@@ -26,10 +26,10 @@ import se.inera.log.messages.IntygSignMessage;
 import se.inera.log.messages.IntygUpdateMessage;
 import se.inera.log.messages.Patient;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -66,7 +66,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logCreateIntyg(LogRequest logRequest) {
-        logCreateIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logCreateIntyg(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logUpdateIntyg(LogRequest logRequest) {
-        logUpdateIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logUpdateIntyg(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logReadIntyg(LogRequest logRequest) {
-        logReadIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logReadIntyg(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logDeleteIntyg(LogRequest logRequest) {
-        logDeleteIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logDeleteIntyg(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -106,7 +106,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSignIntyg(LogRequest logRequest) {
-        logSignIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logSignIntyg(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logRevokeIntyg(LogRequest logRequest) {
-        logRevokeIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logRevokeIntyg(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -126,7 +126,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintIntygAsPDF(LogRequest logRequest) {
-        logPrintIntygAsPDF(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logPrintIntygAsPDF(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -136,7 +136,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintIntygAsDraft(LogRequest logRequest) {
-        logPrintIntygAsDraft(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logPrintIntygAsDraft(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -146,7 +146,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSendIntygToRecipient(LogRequest logRequest) {
-        logSendIntygToRecipient(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+        logSendIntygToRecipient(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
@@ -154,7 +154,8 @@ public class LogServiceImpl implements LogService {
         send(populateLogMessage(logRequest, new IntygSendMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
     }
 
-    private LogUser getLogUser(WebCertUser webCertUser) {
+    @Override
+    public LogUser getLogUser(WebCertUser webCertUser) {
         
         LogUser logUser = new LogUser();
 

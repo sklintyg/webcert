@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="sv" id="ng-app" ng-app="webcert.pub.login">
 <head>
 
 <meta charset="utf-8">
@@ -16,12 +16,28 @@
 
 <link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css" />
 <link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css" />
-<link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css" />
-<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css" />
+<link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css">
+<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css">
+
+<c:choose>
+  <c:when test="${useMinifiedJavaScript == 'true'}">
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+  </c:when>
+  <c:otherwise>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
+    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+  </c:otherwise>
+</c:choose>
 
 </head>
-<body class="start">
-
+<body class="start jsp" id="errorPage" ng-controller="LoginController">
   <div class="container-fluid">
     <div class="content-container">
       <div class="row">
@@ -35,7 +51,7 @@
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="info.loggedout.text" />
               </div>
-              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+              <jsp:include page="login.jsp" />
             </c:when>
 
             <c:when test="${param.reason eq \"timeout\"}">
@@ -43,7 +59,7 @@
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="error.sessiontimeout.text" />
               </div>
-              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+              <jsp:include page="login.jsp" />
             </c:when>
 
             <c:when test="${param.reason eq \"timeout_integration\"}">
@@ -58,7 +74,7 @@
               <div id="noAuth" class="alert alert-warning">
                 <spring:message code="error.noauth.text" />
               </div>
-              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+              <jsp:include page="login.jsp" />
             </c:when>
 
 

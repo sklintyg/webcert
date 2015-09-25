@@ -61,4 +61,12 @@ class OmWebcert {
             }
         }
     }
+
+    boolean avtalsvillkorSynligIMenyn(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            result = page.ppTermsLink.isDisplayed()
+        }
+        return expected == result
+    }
 }

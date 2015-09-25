@@ -42,7 +42,7 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
@@ -161,7 +161,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp) {
+    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp, boolean isEmployer) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
@@ -169,7 +169,7 @@ public class IntygServiceImpl implements IntygService {
 
             verifyEnhetsAuth(intyg.getUtlatande(), true);
 
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses());
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(), isEmployer);
             
             // Log print as PDF to PDL log
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
@@ -205,7 +205,7 @@ public class IntygServiceImpl implements IntygService {
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
         verifyEnhetsAuth(intyg, true);
 
-        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
+        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
 
@@ -305,9 +305,9 @@ public class IntygServiceImpl implements IntygService {
     protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
         Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), isReadOnlyOperation)) {
-            LOG.debug("User not authorized for enhet");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + vardenhet.getEnhetsid());
+            String msg = "User not authorized for enhet " + vardenhet.getEnhetsid();
+            LOG.debug(msg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
         }
     }
 
@@ -391,7 +391,7 @@ public class IntygServiceImpl implements IntygService {
     private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg) {
         String intygsId = intyg.getId();
 
-        String hsaId = webCertUserService.getWebCertUser().getHsaId();
+        String hsaId = webCertUserService.getUser().getHsaId();
         monitoringService.logIntygRevoked(intygsId, hsaId);
 
         // First: send a notification informing stakeholders that this certificate has been revoked

@@ -1,3 +1,5 @@
+Verifiera 1790 att ett intyg som signeras med Kan inte ta ställning visar det som valt när man kopierat det.
+
 !3 Logga in
 
 | skript | !-LoggaIn-! |

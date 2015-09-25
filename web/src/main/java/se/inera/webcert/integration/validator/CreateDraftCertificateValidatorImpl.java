@@ -27,9 +27,9 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
      * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
      */
     @Override
-    public ValidationResult validate(Utlatande utlatande) {
+    public ResultValidator validate(Utlatande utlatande) {
 
-        ValidationResult errors = ValidationResult.newInstance();
+        ResultValidator errors = ResultValidator.newInstance();
 
         validateTypAvUtlatande(utlatande.getTypAvUtlatande(), errors);
         validatePatient(utlatande.getPatient(), errors);
@@ -38,7 +38,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         return errors;
     }
 
-    public void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ValidationResult errors) {
+    public void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ResultValidator errors) {
 
         String intygsTyp = typAvUtlatandeType.getCode();
 
@@ -47,7 +47,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         }
     }
 
-    private void validatePatient(Patient patient, ValidationResult errors) {
+    private void validatePatient(Patient patient, ResultValidator errors) {
 
         if (StringUtils.isBlank(patient.getEfternamn())) {
             errors.addError("efternamn is required");
@@ -58,7 +58,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         }
     }
 
-    private void validateSkapadAv(HosPersonal skapadAv, ValidationResult errors) {
+    private void validateSkapadAv(HosPersonal skapadAv, ResultValidator errors) {
 
         if (StringUtils.isBlank(skapadAv.getFullstandigtNamn())) {
             errors.addError("Physicians full name is required");
@@ -67,7 +67,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         validateEnhet(skapadAv.getEnhet(), errors);
     }
 
-    private void validateEnhet(Enhet enhet, ValidationResult errors) {
+    private void validateEnhet(Enhet enhet, ResultValidator errors) {
 
         if (enhet == null) {
             errors.addError("Enhet is missing");

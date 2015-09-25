@@ -293,6 +293,20 @@
                 "enhetId" : "anestesikliniken",
                 "lakare" : true,
                 "forskrivarKod": "1111"
+            },
+
+            {
+                "firstName": "Tolvan",
+                "lastName": "Privatläkarsson",
+                "personId" : "19121212-1212",
+                "privatLakare" : true
+            },
+
+            {
+                "firstName": "Nina",
+                "lastName": "Greger",
+                "personId" : "19730906-9289",
+                "privatLakare" : true
             }
         ];
 
@@ -322,7 +336,7 @@
                 var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
                 var selector = angular.element( document.querySelector( '#jsonSelect' ) );
                 //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
-                console.log("newselected : " + newSelected + ", old : " + oldVal);
+
                 var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
                 jsonElView.text( loginJson );
                 jsonEl.text( escape( loginJson ) );
@@ -372,6 +386,8 @@
                         <option value="22" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
                         <option value="23">Han Solo (Administratör, Centrum Norr)</option>
                         <option value="24" id="perpersson_anestesikliniken">Per Persson (Läkare Anestesikliniken)</option>
+                        <option value="25" id="private-practitioner-1">Tolvan Privatläkarsson (Test Privatläkare, godkänd)</option>
+                        <option value="26" id="private-practitioner-2">Nina Greger (Test Privatläkare, ej godkänd)</option>
                     </select>
                     <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
                            style="margin-top: 20px;width: 100%">

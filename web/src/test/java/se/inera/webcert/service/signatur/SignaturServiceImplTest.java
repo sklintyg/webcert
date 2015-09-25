@@ -6,12 +6,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-
-import javax.persistence.OptimisticLockException;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
@@ -28,9 +22,11 @@ import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -40,11 +36,22 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
-import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
@@ -80,6 +87,9 @@ public class SignaturServiceImplTest {
 
     @Mock
     private ModuleApi moduleApi;
+
+    @Mock
+    ASN1Util asn1Util;
 
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
@@ -119,36 +129,25 @@ public class SignaturServiceImplTest {
         vardgivare = new Vardgivare("123", "vardgivare");
         vardgivare.setVardenheter(Arrays.asList(vardenhet));
 
-        user = new WebCertUser();
-        user.setNamn(hoSPerson.getNamn());
-        user.setHsaId(hoSPerson.getHsaId());
-        user.setLakare(true);
-        user.setVardgivare(Arrays.asList(vardgivare));
+        user = createWebCertUser(true);
 
-        user.setValdVardenhet(vardenhet);
-        user.setValdVardgivare(vardgivare);
-
-        when(webcertUserService.getWebCertUser()).thenReturn(user);
+        when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
-                internalModelResponse);
+        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
 
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
-            String enhetsId) {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(intygId);
-        utkast.setVersion(version);
-        utkast.setIntygsTyp(type);
-        utkast.setStatus(status);
-        utkast.setModel(model);
-        utkast.setSkapadAv(vardperson);
-        utkast.setSenastSparadAv(vardperson);
-        utkast.setEnhetsId(enhetsId);
-        return utkast;
+    private WebCertUser createWebCertUser(boolean doctor) {
+        WebCertUser user = new WebCertUser(getGrantedRole(doctor), getGrantedPrivileges(doctor));
+        user.setNamn(hoSPerson.getNamn());
+        user.setHsaId(hoSPerson.getHsaId());
+        user.setVardgivare(Arrays.asList(vardgivare));
+        user.setValdVardenhet(vardenhet);
+        user.setValdVardgivare(vardgivare);
+
+        return user;
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -218,7 +217,38 @@ public class SignaturServiceImplTest {
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
-        verify(logService).logSignIntyg(any(LogRequest.class));
+        verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
+
+        assertNotNull(signatureTicket);
+
+        assertNotNull(completedUtkast.getSignatur());
+        assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
+
+        // Assert ticket status has changed from BEARBETAR to SIGNERAD
+        status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
+    }
+
+    @Test
+    public void clientGrpSignatureSuccess() throws IOException {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
+
+        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+
+        // Do the call
+        SignaturTicket signatureTicket = intygSignatureService.clientGrpSignature(ticket.getId(), signature, user);
+
+        verify(intygService).storeIntyg(completedUtkast);
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
+        // Assert pdl log
+        verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
 
         assertNotNull(signatureTicket);
 
@@ -249,7 +279,6 @@ public class SignaturServiceImplTest {
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
     }
-
     @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedDraft() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
@@ -260,8 +289,10 @@ public class SignaturServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void userIsNotDoctorDraft() throws IOException {
+        user = createWebCertUser(false);
+
+        when(webcertUserService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        user.setLakare(false);
 
         intygSignatureService.createDraftHash(INTYG_ID, 1);
     }
@@ -278,10 +309,13 @@ public class SignaturServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void userIsNotDoctorClientSignature() throws IOException {
+        user = createWebCertUser(false);
+
+        when(webcertUserService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
-        user.setLakare(false);
 
         intygSignatureService.clientSignature(ticket.getId(), "test");
     }
@@ -297,10 +331,47 @@ public class SignaturServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void userIsNotDoctorServerSignature() throws IOException {
+        user = createWebCertUser(false);
+
+        when(webcertUserService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
-        user.setLakare(false);
 
         intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
     }
+
+    private GrantedAuthority getGrantedRole(boolean doctor) {
+        if (doctor) {
+            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+        }
+
+        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.text());
+    }
+
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges(boolean doctor) {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+
+        if (doctor) {
+            for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
+            }
+        }
+
+        return privileges;
+    }
+
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson, String enhetsId) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setVersion(version);
+        utkast.setIntygsTyp(type);
+        utkast.setStatus(status);
+        utkast.setModel(model);
+        utkast.setSkapadAv(vardperson);
+        utkast.setSenastSparadAv(vardperson);
+        utkast.setEnhetsId(enhetsId);
+        return utkast;
+    }
+
 }

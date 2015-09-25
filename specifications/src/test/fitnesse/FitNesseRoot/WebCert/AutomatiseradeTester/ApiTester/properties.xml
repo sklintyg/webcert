@@ -1,14 +1,13 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <properties>
-	<Edit/>
-	<Files/>
-	<Help/>
-	<Properties/>
-	<RecentChanges/>
-	<Refactor/>
-	<Search/>
-	<Suite/>
-	<Suites/>
-	<Versions/>
-	<WhereUsed/>
+<Edit/>
+<Files/>
+<Help>API-tester</Help>
+<Properties/>
+<RecentChanges/>
+<Refactor/>
+<Search/>
+<Suite/>
+<Versions/>
+<WhereUsed/>
 </properties>

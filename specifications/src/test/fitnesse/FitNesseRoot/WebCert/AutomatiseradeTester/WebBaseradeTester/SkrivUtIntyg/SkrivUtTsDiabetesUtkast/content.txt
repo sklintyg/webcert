@@ -1,8 +1,8 @@
 !3 Lägg till komplett utkast
 
 | skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-skrivut-1 | ts-diabetes| ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
+| webcert-fitnesse-skrivut-1 | ts-diabetes| ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | 200 |
 
 !3 Logga in
 

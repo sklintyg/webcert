@@ -9,9 +9,17 @@ class UnhandledQAPage extends AbstractLoggedInPage {
 
     static content = {
         unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
+            displayed($("#stat-unitstat-unhandled-question-count"))
+        careUnitSelector(required: false, wait: true) { $("a#wc-care-unit-clinic-selector") }
+        careUnitSelectorLink(required: false, wait: true) { $("a#wc-care-unit-clinic-selector-link") }
+        careUnitSelectorNoWait(required: false) { $("div#wc-care-unit-clinic-selector")}
+        careUnitModal(required: false, wait: true) { displayed($("a#wc-care-unit-clinic-selector-link")) }
+        careUnitModalBody(required: false, wait: true) { displayed($(".modal-body")) }
+        unhandledQATable(required: false, wait: true) { displayed($("#qaTable")) }
         unhandledQATable(required: false) { $("#qaTable") }
 
         noResultsOnUnitInfo { $("#current-list-noResults-unit") }
+        noResultsForQueryInfo(wait: true) { displayed($("#current-list-noResults-query")) }
         noResultsForQueryInfo { $("#current-list-noResults-query") }
 
         advancedFilterBtn { $("#show-advanced-filter-btn") }

@@ -4,6 +4,7 @@
 # General
 inera_root: /opt/inera
 releases_folder: "{{ inera_root }}/releases"
+deploy_from_repo: true
 
 # Spring profiles
 profiles: test

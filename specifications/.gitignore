@@ -1,1 +1,7 @@
 /chromedriver.log
+fitnesse-results.xml
+*.zip
+src/test/fitnesse/FitNesseRoot/TemplateLibrary/
+src/test/fitnesse/FitNesseRoot/properties
+src/test/fitnesse/FitNesseRoot/updateDoNotCopyOverList
+src/test/fitnesse/FitNesseRoot/updateList

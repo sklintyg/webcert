@@ -12,6 +12,9 @@ class EditeraFk7263Page extends AbstractEditCertPage {
 
     static content = {
 
+        // Knappar
+        sparaKnapp { $("#spara-utkast") }
+
         // Meddelanden
         nyttPersonnummer { $("#nyttPersonnummer") }
         signerandeLakare { $("#signingDoctor") }
@@ -34,7 +37,6 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         rekommendationer { name -> module RekommendationerModule, form: form }
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
-        vardenhet { module VardenhetModule }
 
         // date picker
         datepicker { $("div[ng-switch='datepickerMode']") }
@@ -52,6 +54,9 @@ class EditeraFk7263Page extends AbstractEditCertPage {
     }
 
     def waitForSmittkydRendered(){
+        AbstractPage.scrollIntoView(smittskydd.attr("id"));
+        smittskydd.value(val);
+        println('------------------- smittskydd : ' + val );
         waitFor {
             Browser.drive {
                 return doneLoading() && js.animations.smittskydd.rendered;
@@ -131,10 +136,12 @@ class DiagnosModule extends Module {
 class ArbeteModule extends Module {
     static base = { $("#sysselsattning") }
     static content = {
-        nuvarande { $("#arbeteNuvarande") }
-        arbetsuppgifter { $("#currentWork") }
-        arbetslos { $("#arbeteArbetslos") }
-        foraldraledig { $("#arbeteForaldraledig") }
+        // shows and hides with smittskydd
+        println('required false!');
+        nuvarande(required: false) { $("#arbeteNuvarande") }
+        arbetsuppgifter(required: false) { $("#currentWork") }
+        arbetslos(required: false) { $("#arbeteArbetslos") }
+        foraldraledig(required: false) { $("#arbeteForaldraledig") }
     }
 
     def setNuvarandeCheckBox(value){

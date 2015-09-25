@@ -699,4 +699,71 @@ class SvaraOchFraga {
         }
     }
 
+    boolean vidareBefordraKnappVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $("#qaTable button.vidarebefordra-btn").isDisplayed()
+        }
+    }
+
+    boolean vidarebefordradCheckboxVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $("#qaTable input.vidarebefordrad-checkbox").isDisplayed()
+
+        }
+        return expected == result
+    }
+
+    boolean vardenhetValjareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $("div#wc-care-unit-clinic-selector").isDisplayed()
+        }
+        return expected == result
+    }
+
+    boolean vidarebefordraKnappInnePaFragaVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            // TODO use GEB page abstraction
+            result = $("#unhandled-vidarebefordraEjHanterad").isDisplayed()
+        }
+        return expected == result
+    }
+
+
+    boolean filterVidarebefordradVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $('#filterFormVidarebefordrad').isDisplayed()
+        }
+        return expected == result
+    }
+
+    boolean filterValjLakareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $('#filterFormSigneratAv').isDisplayed()
+        }
+        return expected == result
+    }
 }

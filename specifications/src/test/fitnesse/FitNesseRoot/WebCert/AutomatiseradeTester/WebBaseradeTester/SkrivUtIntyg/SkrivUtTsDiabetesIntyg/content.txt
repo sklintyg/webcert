@@ -7,5 +7,5 @@
 
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-5 | och typ | ts-diabetes|
-| säkerställ att | intyg laddat |
-| skriv ut knapp visas |
+| ensure | intyg laddat |
+| ensure | skriv ut vanlig knapp visas |

@@ -50,6 +50,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             }
 
             @Override
+            public PdfResponse pdfEmployer(InternalModelHolder internalModel, List<Status> statuses, ApplicationOrigin applicationOrigin) throws ModuleException {
+                return null;
+            }
+
+            @Override
             public InternalModelResponse createNewInternal(CreateNewDraftHolder draftCertificateHolder) throws ModuleException {
                 return null;
             }

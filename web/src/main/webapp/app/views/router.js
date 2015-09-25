@@ -1,7 +1,7 @@
 /**
  * Created by stephenwhite on 04/03/15.
  */
-angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
+angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     'use strict';
 
     $stateProvider.
@@ -139,7 +139,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
         }).
         state('webcert.fragasvar-qaonly', {
             data: { defaultActive : 'unhandled-qa' },
-            url: '/fragasvar/:certificateType/:certificateId/:qaOnly',
+            url: '/fragasvar/:certificateType/:certificateId',
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
@@ -156,6 +156,15 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.webcert.html',
+                    controller: 'webcert.AboutWebcertCtrl'
+                }
+            }
+        }).
+        state('webcert.terms-about', {
+            url: '/terms/about',
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/omWebcert/omWebcert.terms.html',
                     controller: 'webcert.AboutWebcertCtrl'
                 }
             }
@@ -195,7 +204,17 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
                     controller: 'webcert.AboutWebcertCtrl'
                 }
             }
+        }).
+        state('webcert.terms', {
+            url: '/terms',
+            views: {
+                'dialogs@webcert': {
+                    templateUrl: "/app/views/terms/terms.main.html",
+                    controller: 'webcert.TermsCtrl'
+                }
+            }
         });
 
         $urlRouterProvider.when('', '/create/index');
+
 });

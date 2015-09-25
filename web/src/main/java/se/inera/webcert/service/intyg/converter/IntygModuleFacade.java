@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IntygModuleFacade {
 
-    IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses) throws IntygModuleFacadeException;
+    IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses, boolean isEmployer) throws IntygModuleFacadeException;
 
     CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException;
 

@@ -31,7 +31,7 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 /**
  * @author andreaskaltenbach
@@ -87,11 +87,11 @@ public class IntygModuleApiControllerTest {
         
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
         
-        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, "fk7263")).thenReturn(pdfResponse);
+        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, "fk7263", false)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdf("fk7263", CERTIFICATE_ID);
 
-        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, "fk7263");
+        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, "fk7263", false);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());

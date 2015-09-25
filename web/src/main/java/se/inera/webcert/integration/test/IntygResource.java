@@ -14,9 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -72,7 +72,7 @@ public class IntygResource {
     public Response createDraft(CreateNewDraftRequest request) {
         Utkast utkast = new Utkast();
 
-        se.inera.webcert.service.dto.Patient patient = request.getPatient();
+        Patient patient = request.getPatient();
 
         utkast.setPatientPersonnummer(patient.getPersonnummer());
         utkast.setPatientFornamn(patient.getFornamn());

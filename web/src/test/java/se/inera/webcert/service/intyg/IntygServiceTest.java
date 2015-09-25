@@ -45,7 +45,7 @@ import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
@@ -345,8 +345,8 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygAsPdfFromWebCertDraft() throws IOException, IntygModuleFacadeException {
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList())).thenReturn(buildPdfDocument());
-        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean())).thenReturn(buildPdfDocument());
+        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
         verify(intygRepository, times(1)).findOne(anyString());
@@ -357,8 +357,8 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList())).thenReturn(buildPdfDocument());
-        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean())).thenReturn(buildPdfDocument());
+        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
@@ -372,7 +372,7 @@ public class IntygServiceTest {
         when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(IntygModuleFacadeException.class);
 
         try {
-            intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         } catch (Exception e) {
             verify(moduleFacade, times(1)).getCertificate(anyString(), anyString());
             verify(intygRepository, times(2)).findOne(CERTIFICATE_ID);

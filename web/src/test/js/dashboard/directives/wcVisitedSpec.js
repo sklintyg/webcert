@@ -1,18 +1,19 @@
 describe('wcVisited', function() {
     'use strict';
 
-    beforeEach(angular.mock.module('webcert'));
 
     var $scope;
     var element;
+
+    beforeEach(angular.mock.module('webcert', ['$provide', function($provide) {
+        //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
+    }]));
 
     // Create a form to test the directive on.
     beforeEach(angular.mock.inject(function($compile, $rootScope) {
         $scope = $rootScope;
         $scope.model = { test: 'test' };
-
-        element =
-            angular.element('<form name="form"><input wc-visited type="text" ng-model="model.test" name="test"></form>');
+        element = angular.element('<form name="form"><input wc-visited type="text" ng-model="model.test" name="test"></form>');
         element = $compile(element)($scope);
         $scope.$digest();
     }));

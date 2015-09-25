@@ -274,7 +274,7 @@ class SokSkrivIntyg {
             }
             result = page.kopieraKnapp(intygId).isDisplayed()
         }
-        result
+        return result
     }
 
     boolean skickaStatusVisas() {
@@ -346,9 +346,12 @@ class SokSkrivIntyg {
             waitFor {
                 at VisaFk7263Page
             }
+            waitFor{
+                result = page.intygLaddat.isDisplayed()
+            }
             result = page.intygLaddat.isDisplayed()
         }
-        result
+        return result;
     }
     // END
 
@@ -401,6 +404,9 @@ class SokSkrivIntyg {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
+            waitFor {
+                expected == page.felmeddelandeRuta.isDisplayed()
+            }
             result = page.felmeddelandeRuta.isDisplayed()
         }
         result
@@ -436,6 +442,9 @@ class SokSkrivIntyg {
             waitFor {
                 at VisaFk7263Page
             }
+            waitFor {
+                expected == page.certificateIsSentToRecipientMessage.isDisplayed()
+            }
             result = page.certificateIsSentToRecipientMessage.isDisplayed()
         }
         result
@@ -447,6 +456,9 @@ class SokSkrivIntyg {
             waitFor {
                 at VisaFk7263Page
             }
+            waitFor {
+                expected == page.certificateIsOnQueueToITMessage.isDisplayed()
+            }
             result = page.certificateIsOnQueueToITMessage.isDisplayed()
         }
         result
@@ -456,6 +468,9 @@ class SokSkrivIntyg {
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
+            }
+            waitFor {
+                page.stallNyFragaTillForsakringskassan()
             }
             page.stallNyFragaTillForsakringskassan()
             waitFor {
@@ -469,6 +484,9 @@ class SokSkrivIntyg {
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.nyFragaTillForsakringskassanFormularVisas()
             }
             result = page.nyFragaTillForsakringskassanFormularVisas()
         }
@@ -498,22 +516,31 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean kopieraKnappHarTextSjukskrivning() {
-        def result
-        Browser.drive {
-            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
-        }
-        return result
-    }
+//    boolean kopieraKnappHarTextSjukskrivning() {
+//        def result
+//        Browser.drive {
+//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+//                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
+//        }
+//        return result
+//    }
 
-    boolean kopieraKnappHarInteTextSjukskrivning() {
-        def result
+
+//    boolean kopieraKnappHarInteTextSjukskrivning() {
+//        def result
+//       Browser.drive {
+//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+//                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+//        }
+//        return result
+//    }
+
+    String kopieraKnappHarText() {
+        def text
         Browser.drive {
-            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            text = page.kopieraKnapp.attr("title")
         }
-        return result
+        return text
     }
 
     // ------- utils

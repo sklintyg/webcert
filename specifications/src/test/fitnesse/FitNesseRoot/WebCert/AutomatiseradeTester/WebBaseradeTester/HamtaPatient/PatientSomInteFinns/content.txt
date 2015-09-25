@@ -8,7 +8,7 @@ Testet beskriver fallet när en läkare söker efter en patient som INTE finns i
 !3 Välj patient
 
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas |
+| säkerställ att |sok skriv intyg sidan visas |
 | valj patient | ${personnummer_som_saknas_i_pu} |
 | kontrollera att | PU-tjänst fel |=~/Personnumret du har angivit finns inte i folkbokföringsregistret./|
 

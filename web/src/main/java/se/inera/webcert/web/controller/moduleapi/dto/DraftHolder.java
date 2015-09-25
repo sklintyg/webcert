@@ -17,6 +17,10 @@ public class DraftHolder {
 
     private UtkastStatus status;
 
+    private String enhetsNamn;
+
+    private String vardgivareNamn;
+
     @JsonRawValue
     private String content;
 
@@ -58,4 +62,19 @@ public class DraftHolder {
         this.content = content;
     }
 
+    public String getEnhetsNamn() {
+        return enhetsNamn;
+    }
+
+    public void setEnhetsNamn(String enhetsNamn) {
+        this.enhetsNamn = enhetsNamn;
+    }
+
+    public String getVardgivareNamn() {
+        return vardgivareNamn;
+    }
+
+    public void setVardgivareNamn(String vardgivareNamn) {
+        this.vardgivareNamn = vardgivareNamn;
+    }
 }

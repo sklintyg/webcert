@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <ns2:GetDiagnosInformationResponse xmlns="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:1" xmlns:ns2="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:GetDiagnosInformationResponder:1" xmlns:ns3="urn:riv:itintegration:registry:1">
+      <ns2:diagnosInformation>
+        <informationsId>
+          <root>OID</root>
+          <extension>125</extension>
+        </informationsId>
+        <giltighetstid>
+          <start>20150921</start>
+        </giltighetstid>
+        <verson>1</verson>
+        <rubrik>Akillestendinit, akillesbursit, akillestendinos,hälseneinflammation(På webben)</rubrik>
+        <funktionsnedsattningBeskrivning/>
+        <aktivitetsbegransningBeskrivning/>
+        <huvuddiagnos>
+          <kod>
+            <code>M76</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Akillestendinit</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M76.6</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Akillestendinit</displayName>
+          </kod>
+        </huvuddiagnos>
+        <funktionsnedsattning>
+          <kod>
+            <code>b280</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b280 smärtförnimmelse</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d450</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d450 att gå</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <ovrigFmbInformation>
+          <symtomPrognosBehandling/>
+          <genrellInformation>Information: Total avlastning har inte någon positivt effekt på läkningen utan kan tvärtom vara skadlig för både muskler, senor och den neuro-muskulära funktionen. Långvarigt förlopp: Vid långdragna besvär eller inflammationer på annat ställe bör reumatisk ledsjukdom övervägas.</genrellInformation>
+        </ovrigFmbInformation>
+      </ns2:diagnosInformation>
+      <ns2:diagnosInformation>
+        <informationsId>
+          <root>OID</root>
+          <extension>126</extension>
+        </informationsId>
+        <giltighetstid>
+          <start>20150921</start>
+        </giltighetstid>
+        <verson>1</verson>
+        <rubrik>Höftledsartros</rubrik>
+        <funktionsnedsattningBeskrivning>Funktionen varierar ofta över tid.</funktionsnedsattningBeskrivning>
+        <aktivitetsbegransningBeskrivning>Artros sätter ofta ned gång- och rörelseförmågan.
+          Förmågan att lyfta eller bära tungt kan vara nedsatt.
+          Stillasittande eller stående kan vara svårt.</aktivitetsbegransningBeskrivning>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.9</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.0</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.1</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.2</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.3</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.4</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.5</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.6</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M16.7</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Höftledsartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <funktionsnedsattning>
+          <kod>
+            <code>b130</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b130 Energi och driftsfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b134</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b134 Sömnfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b710</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b710 Funktioner för rörlighet i leder</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b730</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b730 Muskelkraftsfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b280</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b280 smärtförnimmelse</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d430</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d430 att lyfta och bära föremål</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d445</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d445 användning av hand och arm</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d420</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d420 Att förflyttar sig själv</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d410</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d410 att ändra grundläggande kroppsställning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d240</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d240 att hantera stress och andra psykologiska krav</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d415</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d415 att bibehålla kroppsställning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <ovrigFmbInformation>
+          <symtomPrognosBehandling/>
+          <genrellInformation>Överväg deltidssjukskrivning.</genrellInformation>
+        </ovrigFmbInformation>
+      </ns2:diagnosInformation>
+      <ns2:diagnosInformation>
+        <informationsId>
+          <root>OID</root>
+          <extension>127</extension>
+        </informationsId>
+        <giltighetstid>
+          <start>20150921</start>
+        </giltighetstid>
+        <verson>1</verson>
+        <rubrik>Knäartros</rubrik>
+        <funktionsnedsattningBeskrivning>Funktionen varierar ofta över tid.</funktionsnedsattningBeskrivning>
+        <aktivitetsbegransningBeskrivning>Artros sätter ofta ned gång- och rörelseförmågan.
+          Förmågan att lyfta eller bära tungt kan vara nedsatt.
+          Stillasittande eller stående kan vara svårt.</aktivitetsbegransningBeskrivning>
+        <huvuddiagnos>
+          <kod>
+            <code>M17</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.0</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.1</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.2</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.3</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.4</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.5</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>M17.9</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Knäartros</displayName>
+          </kod>
+        </huvuddiagnos>
+        <funktionsnedsattning>
+          <kod>
+            <code>b130</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b130 Energi och driftsfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b134</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b134 Sömnfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b710</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b710 Funktioner för rörlighet i leder</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b730</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b730 Muskelkraftsfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b280</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b280 smärtförnimmelse</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d430</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d430 att lyfta och bära föremål</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d445</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d445 användning av hand och arm</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d420</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d420 Att förflyttar sig själv</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d410</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d410 att ändra grundläggande kroppsställning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d240</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d240 att hantera stress och andra psykologiska krav</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d415</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d415 att bibehålla kroppsställning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <ovrigFmbInformation>
+          <symtomPrognosBehandling/>
+          <genrellInformation>Överväg deltidssjukskrivning.</genrellInformation>
+        </ovrigFmbInformation>
+      </ns2:diagnosInformation>
+      <ns2:diagnosInformation>
+        <informationsId>
+          <root>OID</root>
+          <extension>128</extension>
+        </informationsId>
+        <giltighetstid>
+          <start>20150921</start>
+        </giltighetstid>
+        <verson>1</verson>
+        <rubrik>Annat tillstånd eller rubbning sammanhängande med graviditet</rubrik>
+        <aktivitetsbegransningBeskrivning>nedsatt koncentrationsförmåga,  nedsatt förmåga till fysisk och kognitiv ansträngning</aktivitetsbegransningBeskrivning>
+        <huvuddiagnos>
+          <kod>
+            <code>O26.9</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</displayName>
+          </kod>
+        </huvuddiagnos>
+        <ovrigFmbInformation>
+          <symtomPrognosBehandling>Förändringar av sömnrytmen, yrsel, urinträngningar, värk i bäcken och svårigheter att hitta viloläge är vanliga tillstånd för gravida. Besvär i den första tremånadersperioden (första trimestern) brukar gå över. Tidiga besvär brukar gå över efter den första trimestern. Trötthet på grund av att sömnen störs vid värk kommer vanligen i senare delen av graviditeten och kvarstår troligen till efter barnets födelse. Om besvären kommer senare under graviditeten kan de bli mer långvariga. Tillstånden är svåra att behandla med läkemedel på ett lämpligt sätt.</symtomPrognosBehandling>
+          <genrellInformation>Det är viktigt att de symtom som nedsätter arbetsförmågan beskrivs i det medicinska underlaget. Bedöm om patienten har annan somatisk eller psykisk sjukdom, som depression, om symtomen kommit under första trimestern och kvarstår in i andra trimestern. Överväg remiss till psykolog. Överväg remiss till annan instans (vårdcentral, psykiatrisk mottagning) för att den ska bedöma, eventuellt åtgärda och ta ställning till fortsatt sjukskrivning.</genrellInformation>
+        </ovrigFmbInformation>
+      </ns2:diagnosInformation>
+      <ns2:diagnosInformation>
+        <informationsId>
+          <root>OID</root>
+          <extension>129</extension>
+        </informationsId>
+        <giltighetstid>
+          <start>20150921</start>
+        </giltighetstid>
+        <verson>1</verson>
+        <rubrik>Graviditetsrelaterad rygg-och bäckensmärta</rubrik>
+        <funktionsnedsattningBeskrivning>Benägenheten för smärta kvarstår under hela graviditeten. Smärtintensiteten är belastningsrelaterad och ökar under eller efter belastning. Smärtan medför svårigheter att sitta, stå och gå och svårigheter att lyfta tungt och upprepat.  Arbeten som kan vara svår att klara är sådana som kräver gång längre sträckor, sitta eller stå längre stunder och arbeten som kräver upprepade lyft. När smärtan väcker upprepat under natten ger det dagtrötthet och koncentrationssvårigheter.</funktionsnedsattningBeskrivning>
+        <aktivitetsbegransningBeskrivning>Svårt att sitta, stå och gå. Svårt att lyft tungt och upprepat. Koncentrationssvårigheter och dagtrötthet när smärtan stör sömnen.</aktivitetsbegransningBeskrivning>
+        <huvuddiagnos>
+          <kod>
+            <code>O26.7</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
+          </kod>
+        </huvuddiagnos>
+        <ovrigFmbInformation>
+          <symtomPrognosBehandling>Mer än varannan kvinna får smärta i ryggen eller bäckenet med debut under aktuell graviditet. Smärtan kan starta när som helst under graviditeten, från tidigt till sent, men för de flesta kvinnor debuterar smärtan under graviditetens första hälft. Kvinnorna förlägger smärtan till korsryggen (sacrum) och över skinkorna (glutéerna), inte sällan med smärtutstrålning ned i benen, mot ljumskar, höfter och symfysregionen. Smärtutstrålningen ned i benen känns oftast i låren ned mot knäna men sällan ner i underben och fötter. Smärtans intensitet varierar mellan kvinnor från lindrig till intensiv och är beroende av fysisk belastning av bäckenet. Benägenheten för bäckensmärta under och efter fysisk belastning kvarstår under hela graviditeten men går tillbaka efter förlossningen. För de flesta kvinnor är den belastningsrelaterade smärtan borta inom första halvåret efter förlossningen, men för mellan 5 och 10 % av de kvinnor som fött barn kvarstår smärtan invalidiserande mer än två år efter förlossningen. Gravida kvinnor med hög smärtintensitet och lång smärtduration löper ökad risk för långdragen smärta, även efter förlossningen. Behandling under och efter graviditet bygger på stabiliserande träning av den muskulatur som överför sina krafter från ryggen diagonalt över bäckenet och ned i motsatta sidans benmuskulatur på båda sidor. Den fysikaliska behandlingen bör ske under överinseende av fysioterapeut med särskilt intresse för denna problematik.</symtomPrognosBehandling>
+          <genrellInformation>Observandum / Särskilda överväganden
+            Klinisk undersökning av rygg och bäcken skall utföras. P4-testet är ett smärtprovocerande test med hygglig sensitivitet och god specificitet för att konfirmera bäckenmärtan. Den fysiska arbetsbelastningen är avgörande för kvinnans arbetsförmåga. Eftersom smärtintensiteten är belastningsrelaterad finns det goda möjligheter att minska kvinnans smärtintensitet genom minskad mekanisk belastning av bäckenet.
+
+            Information till patienten
+            Graviditetsrelaterad rygg- och bäckensmärta är ett obehagligt och ibland invalidiserande smärttillstånd. Hos de allra flesta kvinnor går smärttillståndet tillbaka inom 6 månader efter förlossningen.</genrellInformation>
+        </ovrigFmbInformation>
+      </ns2:diagnosInformation>
+      <ns2:diagnosInformation>
+        <informationsId>
+          <root>OID</root>
+          <extension>130</extension>
+        </informationsId>
+        <giltighetstid>
+          <start>20150921</start>
+        </giltighetstid>
+        <verson>1</verson>
+        <rubrik>Knäledsbesvär</rubrik>
+        <funktionsnedsattningBeskrivning>Meniskskador kan ge upphakningar i knäleden och i samband med detta smär-tor vid belastning och svullnad samt inskränkt rörlighet. Andra symtom kan vara svullnad av knäleden.
+
+          Vid främre korsbandsskador beskrivs ofta en ostadighet och känsla av att "knäet viker sig". Vid akuta skador kan svullnaden och smärtan vara så uttalade symtom att patienten inte kan stödja på benet under några dygn.</funktionsnedsattningBeskrivning>
+        <huvuddiagnos>
+          <kod>
+            <code>M23</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>M23 Andra sjukliga förändringar i knäled,S83 Luxation och distorsion i knäets leder och ligament</displayName>
+          </kod>
+        </huvuddiagnos>
+        <huvuddiagnos>
+          <kod>
+            <code>S83</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>M23 Andra sjukliga förändringar i knäled,S83 Luxation och distorsion i knäets leder och ligament</displayName>
+          </kod>
+        </huvuddiagnos>
+        <funktionsnedsattning>
+          <kod>
+            <code>b130</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b130 Energi och driftsfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b134</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b134 Sömnfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b710</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b710 Funktioner för rörlighet i leder</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b730</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b730 Muskelkraftsfunktioner</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <funktionsnedsattning>
+          <kod>
+            <code>b280</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>b280 smärtförnimmelse</displayName>
+          </kod>
+        </funktionsnedsattning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d430</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d430 att lyfta och bära föremål</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d445</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d445 användning av hand och arm</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d000</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d000 påverkad gångförmåga</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d220</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d220 att företa mångfaldiga uppgifter</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d410</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d410 att ändra grundläggande kroppsställning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d465</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d465 att förflytta sig med hjälp av utrustning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d240</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d240 att hantera stress och andra psykologiska krav</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <aktivitetsbegransning>
+          <kod>
+            <code>d415</code>
+            <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+            <codeSystemName>ICF</codeSystemName>
+            <codeSystemVersion>1</codeSystemVersion>
+            <displayName>d415 att bibehålla kroppsställning</displayName>
+          </kod>
+        </aktivitetsbegransning>
+        <ovrigFmbInformation>
+          <symtomPrognosBehandling>Meniskskador kan uppkomma efter trauma samt som en degenerativ förändring. Skador uppstår oftast vid vridvåld. Symtom vid meniskskada är smärta över ledspringan, upphakningar i knäleden samt svullnad. Hos personer med menisk-relaterade besvär i medelåldern och uppåt bör man alltid misstänka samtidig knäledsartros.
+
+            Korsbandsskador kan drabba främre eller bakre korsbanden i knäna och ger akuta symtom med knäledssvullnad och smärta. Skador uppstår oftast med vridvåld. Behandlingen är farmakologisk, sjukgymnastisk och i vissa fall kirur-gisk.</symtomPrognosBehandling>
+          <genrellInformation>Akuta besvär efter en meniskskada brukar pågå upp till 10 dagar. Fall som inte förbättrats bör remitteras till ortoped. Efter operation med till exempel menis-kektomi (bortoperation av skadad menisk) är normal funktion som regel åter-ställd inom 4 veckor.
+
+
+            Efter operation med korsbandsrekonstruktion brukar patienten i normalfallet ha återvunnit en god funktion efter upp till 4 månader.
+
+            Ett fåtal fall med meniskbesvär eller skador återfår inte en tillfredsställande funktionsförmåga vilket brukar bli tydligt efter 1-2 månaders besvär. En anledning kan vara förekomst av artros.</genrellInformation>
+        </ovrigFmbInformation>
+      </ns2:diagnosInformation>
+      <ns2:version/>
+    </ns2:GetDiagnosInformationResponse>

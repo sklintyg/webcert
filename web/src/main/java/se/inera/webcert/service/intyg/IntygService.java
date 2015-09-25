@@ -38,9 +38,12 @@ public interface IntygService {
      * Returns a given certificate as PDF.
      *
      * @param intygId
+     * @param typ
+     * @param isEmployer
+     *            Indicates if the certificate should be for the employer.
      * @return
      */
-    IntygPdf fetchIntygAsPdf(String intygId, String typ);
+    IntygPdf fetchIntygAsPdf(String intygId, String typ, boolean isEmployer);
 
     /**
      * Registers a given certificate in the Intygstjanst.

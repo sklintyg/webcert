@@ -1,4 +1,0 @@
-!contents -R2 -g -p -f -h
-
-!see <IneraWebcert.AllTests.WebTests.MakuleraIntyg.EndastLakareFarMakulera
-!see <IneraWebcert.AllTests.WebTests.MakuleraIntyg.MakuleraIntygFk7263

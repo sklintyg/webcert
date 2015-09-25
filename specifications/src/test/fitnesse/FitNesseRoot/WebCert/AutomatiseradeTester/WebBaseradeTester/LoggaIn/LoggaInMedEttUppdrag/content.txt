@@ -16,8 +16,8 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 
 | skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
-| ohanterade fragor sidan visas |
-| säkerställ att inte | enhetsvaljare visas |
+| säkerställ att |ohanterade fragor sidan visas |
+| säkerställ att inte |enhetsvaljare visas|
 
 !3 Ta bort frågor
 

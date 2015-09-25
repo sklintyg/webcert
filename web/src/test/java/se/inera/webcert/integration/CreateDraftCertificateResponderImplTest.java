@@ -18,7 +18,7 @@ import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
-import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.integration.validator.ResultValidator;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -82,7 +82,7 @@ public class CreateDraftCertificateResponderImplTest {
     public void whenNewCertificateDraftSuccessResponse() {
 
         // Given
-        ValidationResult validationResults = new ValidationResult();
+        ResultValidator resultsValidator = new ResultValidator();
         List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         Vardgivare vardgivare = createVardgivare();
         Vardenhet  vardenhet = createVardenhet(vardgivare);
@@ -96,7 +96,7 @@ public class CreateDraftCertificateResponderImplTest {
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON, vardperson);
 
         //When
-        when(mockValidator.validate(any(Utlatande.class))).thenReturn(validationResults);
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(MiuInformationType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);

@@ -28,9 +28,7 @@
 <script type="text/javascript">
   // Global JS config/constants for this app, to be used by scripts
   var MODULE_CONFIG = {
-    BUILD_NUMBER: '<spring:message code="buildNumber" />',
-    USERCONTEXT: <sec:authentication property="principal.asJson" htmlEscape="false"/>,
-    USE_MINIFIED_JAVASCRIPT: '<c:out value="${useMinifiedJavaScript}"/>'
+    BUILD_NUMBER: '<spring:message code="buildNumber" />'
   }
 </script>
 
@@ -55,10 +53,10 @@
   <c:choose>
     <c:when test="${useMinifiedJavaScript == 'true'}">
       <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-route.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
@@ -70,6 +68,7 @@
     </c:when>
     <c:otherwise>
 	  <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
+      <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.js"></script>

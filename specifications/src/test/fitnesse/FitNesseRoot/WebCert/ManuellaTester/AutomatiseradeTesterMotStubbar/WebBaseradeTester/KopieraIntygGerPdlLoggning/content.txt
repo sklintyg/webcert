@@ -8,7 +8,7 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 !3 Välj patient
 
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas sa smaningom |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 

@@ -29,18 +29,14 @@ class HanteraUtkast {
         }
     }
 
+    // ------- navigation
+
     void gaTillEditIntygMedIntygsid(String id) {
         Browser.drive {
             go "/web/dashboard#/fk7263/edit/${id}"
             waitFor {
                 at se.inera.webcert.pages.fk7263.EditeraFk7263Page
             }
-        }
-    }
-
-    void provaGaTillEditIntygMedIntygsid(String id) {
-        Browser.drive {
-            go "/web/dashboard#/fk7263/edit/${id}"
         }
     }
 
@@ -53,9 +49,15 @@ class HanteraUtkast {
         }
     }
 
+    def provaGaTillEditIntygMedIntygsid(String id) {
+        Browser.drive {
+            go "/web/dashboard#/fk7263/edit/${id}"
+        }
+    }
+
     // ------- behaviour
 
-    void raderaUtkast() {
+  void raderaUtkast() {
         Browser.drive {
             page.radera.click()
             waitFor {
@@ -108,6 +110,19 @@ class HanteraUtkast {
             waitFor {
                 at AbstractEditCertPage
             }
+        }
+    }
+
+    def visaAvanceratFilter() {
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            page.showAdvancedFilter()
+            waitFor {
+                page.advancedFilterForm.isDisplayed()
+            }
+
         }
     }
 
@@ -194,6 +209,57 @@ class HanteraUtkast {
         return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
     }
 
+    boolean ejSigneradeIntygVisas() {
+        return WebcertRestUtils.getNumberOfUnsignedCertificates() > 0
+    }
+
+    boolean vidareBefordraKnappVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            result = $("#unsignedCertTable button.vidarebefordra-btn").isDisplayed()
+
+        }
+        return expected == result
+    }
+
+    boolean vidarebefordradCheckboxVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            result = $("#unsignedCertTable input.vidarebefordrad-checkbox").isDisplayed();
+        }
+        return expected == result
+    }
+
+    boolean filterVidarebefordradVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            // TODO fix this on page instead
+            result = $('#filterFormVidarebefordrad').isDisplayed()
+        }
+        return expected == result
+    }
+
+    boolean filterValjLakareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            // TODO fix this on page instead
+            result = $('#filterFormSparatAv').isDisplayed()
+        }
+        return expected == result
+    }
+
     boolean signeraKnappAktiverad() {
         boolean result
         Browser.drive {
@@ -210,11 +276,20 @@ class HanteraUtkast {
         result
     }
 
+    boolean signeraKnappEjVisas() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            return !page.signeraBtnNoWait.isDisplayed()
+        }
+    }
+
     boolean signeringKraverLakareVisas() {
         boolean result
         Browser.drive {
-            result = page.signRequiresDoctorMessage.isDisplayed()
-        }
+                result = page.signRequiresDoctorMessage.isDisplayed()
+            }
         result
     }
 
@@ -383,5 +458,4 @@ class HanteraUtkast {
         }
         result
     }
-
 }

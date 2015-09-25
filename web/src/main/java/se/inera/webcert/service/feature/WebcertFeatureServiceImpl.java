@@ -48,7 +48,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     private Map<String, Boolean> featuresMap = new HashMap<String, Boolean>();
 
-	private Environment env;
+    private Environment env;
 
     /**
      * Performs initialization of the featuresMap.
@@ -72,6 +72,12 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         Assert.notNull(featuresMap);
 
         for (WebcertFeature feature : WebcertFeature.values()) {
+            // the env name can be different to the enum name which is used in the gui.
+            // as a result we can normalise the env names ... or translate them to the correct enum name.
+            // I think we should normalise but this could be a bigger job, so translation will have to do.
+            if(feature.getEnvName() != null && env.containsProperty(feature.getEnvName())){
+                features.setProperty(feature.getName(), env.getProperty(feature.getEnvName()));
+            }
             featuresMap.put(feature.getName(), Boolean.FALSE);
         }
     }
@@ -127,26 +133,25 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
         Assert.notNull(featureProps);
         Assert.notEmpty(featuresMap);
-        
-        for(Entry<String, Boolean> entry : featuresMap.entrySet()){
+        for (Entry<String, Boolean> entry : featuresMap.entrySet()) {
             String envProp = env.getProperty(entry.getKey());
-			Boolean featureState = null;
-			
-			if(envProp != null){
-				featureState = Boolean.parseBoolean(envProp);
-			} else if(featureProps.getProperty(entry.getKey()) != null){
-				featureState = Boolean.parseBoolean(featureProps.getProperty(entry.getKey()));
-			}
-			
+            Boolean featureState = null;
+
+            if (envProp != null) {
+                featureState = Boolean.parseBoolean(envProp);
+            } else if (featureProps.getProperty(entry.getKey()) != null) {
+                featureState = Boolean.parseBoolean(featureProps.getProperty(entry.getKey()));
+            }
+
             if (featureState != null) {
-            	entry.setValue(featureState);
+                entry.setValue(featureState);
             }
         }
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(se.inera.webcert.service.feature.
      * WebcertFeature)
      */
@@ -156,7 +161,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(java.lang.String)
      */
     @Override
@@ -167,7 +172,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.certificate.modules.support
      * .feature.ModuleFeature, java.lang.String)
@@ -178,7 +183,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(java.lang.String,
      * java.lang.String)
      */
@@ -188,13 +193,12 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             Boolean moduleFeatureState = featuresMap.get(key);
             return (moduleFeatureState != null) ? moduleFeatureState.booleanValue() : false;
         }
-
         return false;
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see se.inera.webcert.service.feature.WebcertFeatureService#getActiveFeatures()
      */
     @Override
@@ -218,13 +222,19 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         this.features = features;
     }
 
+    @Override
+    public void setFeature(String key, String value){
+        this.features.setProperty(key, value);
+        this.featuresMap.put(key, Boolean.parseBoolean(value));
+    }
+
     public Map<String, Boolean> getFeaturesMap() {
         return featuresMap;
     }
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.env = environment;
-	}
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.env = environment;
+    }
 
 }

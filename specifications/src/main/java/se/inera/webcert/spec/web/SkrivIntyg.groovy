@@ -170,6 +170,9 @@ class SkrivIntyg {
     boolean intygSparatVisas() {
         boolean result
         Browser.drive {
+            waitFor{
+                page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            }
             result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
         }
         result

@@ -9,7 +9,7 @@ class IntegrationMedJournalsystem {
 
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
-            go "/visa/intyg/" + intygId
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn="
             waitFor {
                 at VisaFk7263Page
             }
@@ -26,7 +26,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean intygLaddat() {
-        boolean result
+        boolean result;
         Browser.drive {
             result = intygLaddat.isDisplayed()
         }
@@ -66,8 +66,9 @@ class IntegrationMedJournalsystem {
             go "/visa/intyg/" + intygId
             waitFor {
                 at EditeraFk7263Page
+                result = page.errorPanel.isDisplayed()
             }
-            result = page.errorPanel
+
         }
         result
     }
@@ -95,9 +96,12 @@ class IntegrationMedJournalsystem {
     boolean signerandeLakareMeddelandeVisas(expected) {
         boolean result
         Browser.drive {
+            waitFor {
+                page.signerandeLakare.isDisplayed()
+            }
             result = (expected == page.signerandeLakare.text()) && page.signerandeLakare.isDisplayed()
         }
-        result
+        return result
     }
 
     String patientensNamn() {
@@ -190,6 +194,15 @@ class IntegrationMedJournalsystem {
 
     boolean kopieraKnappVisas() {
         boolean result
+        Browser.drive {
+            waitFor {
+                result = page.kopieraKnapp.isDisplayed()
+            }
+        }
+        return result;
+    }
+
+    boolean kopieraKnappVisasEj() {
         Browser.drive {
             result = page.kopieraKnapp.isDisplayed()
         }
@@ -322,11 +335,30 @@ class IntegrationMedJournalsystem {
     }
 
     boolean forlangningSjukskrivningVisas() {
-        boolean result
+        def result
+        Browser.drive {
+            result =  page.kopieraDialogMsgForlangningSjukskrivning();
+        }
+        return result
+    }
+
+//    boolean forlangningSjukskrivningInteVisas() {
+//        Browser.drive {
+//           if(!page.kopieraDialogMsgForlangningSjukskrivningNoWait.present){
+//                return true;
+//            } else {
+//                return !page.kopieraDialogMsgForlangningSjukskrivningNoWait.isDisplayed();
+//            }
+//
+//        }
+//    }
+
+    def sleepForNSeconds(String time) {
+        def n = time as int;
+        def originalMilliseconds = System.currentTimeMillis()
         Browser.drive {
             result = page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
         }
         result
     }
-
 }

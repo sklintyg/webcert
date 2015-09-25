@@ -1,0 +1,184 @@
+ <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="ID2160048293617990008956061579460427447564187593" IssueInstant="2015-09-02T16:06:03.081Z" Version="2.0">
+    <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
+      https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml
+    </saml:Issuer>
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:SignedInfo>
+        <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+        <ds:Reference URI="#ID2160048293617990008956061579460427447564187593">
+          <ds:Transforms>
+            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+            <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+          </ds:Transforms>
+          <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+          <ds:DigestValue>hSAjmTHaHcnujVlQ/Ek1OovGDKqZyv9Uy+hGfDwaQsI=</ds:DigestValue>
+        </ds:Reference>
+      </ds:SignedInfo>
+      <ds:SignatureValue>
+        i5HtuEJFK4auMTtDT6H3ARI3CmtHjtUTHF1UR5myHdIClH+rI+YAHtxMmrhf0FW0upxA2AWoH17y0fViCuMDXA09IvZnPLQnnLkQlcLCidwqQ08M8WDqbmo3K80saIHlGnlKrIAggnnuCchbNW+XDTVnYl3
+        UXLuvCUiLFhCSS0hqSbG6sm0iSIhEcQJml1x1SYuido6ozCfizcX6Vcjn33ouhHfuB/55RlM+88Ti7n+RNi7IRprw7qhMYh/sk3Gh5WiDn/p/M2NVatXsRklrY9KR63XuNiX+v2lc6PDM3FjIX+58sfNJzTSewTFAbvKiYuwavWuAbGKvprwzue
+        xHjA==
+      </ds:SignatureValue>
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>
+            MIIGlzCCBH+gAwIBAgIRANKzVCto/Yfl7EFpkTKewNIwDQYJKoZIhvcNAQEFBQAwQDELMAkGA1UEBhMCU0UxETAPBgNVBAoMCEluZXJhIEFCMR4wHAYDVQQDDBVTSVRIUyBUeXBlIDIgQ0EgdjEg
+            UFAwHhcNMTQxMDA4MTIzMTQxWhcNMTYxMDA4MjE1ODAwWjCBqTELMAkGA1UEBhMCU0UxGDAWBgoJkiaJk/IsZAEZFghTZXJ2aWNlczEUMBIGCgmSJomT8ixkARkWBE5vZDExETAPBgNVBAoMCEluZXJhIEFCMS4wLAYDVQQDDCVpZHAyLmFjY3R
+            lc3Quc2FrZXJoZXRzdGphbnN0LmluZXJhLnNlMScwJQYDVQQFEx5UX1NFUlZJQ0VTX1NFMTY1NTY1NTk0MjMwLTEwQjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCTX5f9jknNAfc0oQaTSPMA8EfbQUoUktlnQ/O74yln7oxTR8
+            Dvna2N76E13Q3XuSi2XPAuDIPz/OO4xMJhGEgVZxMgyTOHFYGxvtvOhEfncUhVUrEMBARqTPftp+y3reqAn9qc9w9kvu6q21VKZWsvZw62u9wD9IdM1dA1m3Ilgb5cebI6vLdAUpWYQwwtVBtnxpWa1tw1rYBkDUsCoQSrOLe16HueY5sDdnWeu
+            J4OQ2E1GBh3dBO9ncl0x0hXwzS3wlSPb3EcLPm3N7Vv2ZMZvI5dmOka8pygNjgy6kA2ivBAAmgGbXdxwB406TCCOokPOLyYsr2Wh0MNEp1KOXEXAgMBAAGjggIgMIICHDAOBgNVHQ8BAf8EBAMCAKAwdwYDVR0fBHAwbjAxoC+gLYYraHR0cDov
+            L2NybDFwcC5zaXRocy5zZS9zaXRoc3R5cGUyY2F2MXBwLmNybDA5oDegNYYzaHR0cDovL2NybDJwcC5zaXRocy5zanVuZXQub3JnL3NpdGhzdHlwZTJjYXYxcHAuY3JsMIHaBggrBgEFBQcBAQSBzTCByjAjBggrBgEFBQcwAYYXaHR0cDovL29
+            jc3AxcHAuc2l0aHMuc2UwKwYIKwYBBQUHMAGGH2h0dHA6Ly9vY3NwMnBwLnNpdGhzLnNqdW5ldC5vcmcwNgYIKwYBBQUHMAKGKmh0dHA6Ly9haWFwcC5zaXRocy5zZS9zaXRoc3R5cGUyY2F2MXBwLmNlcjA+BggrBgEFBQcwAoYyaHR0cDovL2
+            FpYXBwLnNpdGhzLnNqdW5ldC5vcmcvc2l0aHN0eXBlMmNhdjFwcC5jZXIwSwYDVR0gBEQwQjBABgcqhXAjYwICMDUwMwYIKwYBBQUHAgEWJ2h0dHA6Ly9ycGFwcC5zaXRocy5zZS9zaXRoc3JwYXYxcHAuaHRtbDAnBgNVHSUEIDAeBggrBgEFB
+            QcDBAYIKwYBBQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBST0pyEqOjPdHILWq9SxARkG5e+uzAfBgNVHSMEGDAWgBT5V/vYlSUtHe5/9szrwg+78CJv0jANBgkqhkiG9w0BAQUFAAOCAgEATzZZuY9H3i/gonBANHVxQiBHJbfXcCz5TCTxENCG
+            TAFSlxTEF8xhXue9W41DRo78f18q/nS0WJUDXjeYgR+19PsJdxC6gbFbVFjc8I99Ml6qqCSD3T+8j9HIpqP2VMt5SRXpVGfziyqodadVhNZBo3DM1uIv/oXyKNbPSel5i/C7J+W8tffxQfo/iZpqQ/w7wpiGPO5y3BcZK47D9pFLjnG4JJZ08Pn
+            5ugG37en1BCMa7bvIhyTuzJjU043Mw/UDCiKty5eP/xfwCzPLkictFJFUlCVjFHGj5boOxnHDObN1dans/Z3jNZMpIT+hM7+UsGw0B2T0+h+360Et9edtJSqgTAQxqwYQcBYtvVDEwsQ5WgWGcMX+ZeBy6jglp2DusshxEuIVRARK+y37I9V8xz
+            FNxRmeZOZfSvJO0ztOUfifskEkAco4HF9YIg/1eM72lDYU2WVKehm/unRNFb19xKFSmvRpRLHIcP5L6VbOEXTFY7HPvHrXNVYBcGk49A38TT1oklkHPd6xvUJKjpKzQSlKz0jtjcgVYrFMqKJivTM8fjXZ/uQWNK/8E1YzU9P1yq+jBko/r3wJm
+            nMrTf63Bm1jN6YnlI+esTc7WYTrrwXtona4xteDxR+zD2LBYN7bgwiR9JD24P78WzUjHDB/QEKUAQwHPO0pa8FnOg5Elc4=
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </ds:Signature>
+    <saml:Subject>
+      <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">TST5565594230-106J</saml:NameID>
+      <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+        <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">TST5565594230-106J</saml:NameID>
+        <saml:SubjectConfirmationData InResponseTo="agj008j4h2fe0jj32a05e6did7h850" NotOnOrAfter="2015-09-02T16:07:03.081Z" Recipient="https://test.webcert.intygstjanster.se/saml/SSO/alias/defaultAlias"/>
+      </saml:SubjectConfirmation>
+    </saml:Subject>
+    <saml:Conditions>
+      <saml:AudienceRestriction>
+        <saml:Audience>https://test.webcert.intygstjanster.se</saml:Audience>
+      </saml:AudienceRestriction>
+    </saml:Conditions>
+    <saml:AuthnStatement AuthnInstant="2015-09-02T15:13:12.784Z" SessionIndex="2580dfc1-cb60-4e48-befe-0798ebeb5ca8" SessionNotOnOrAfter="2015-09-02T17:06:03.081Z">
+      <saml:AuthnContext>
+        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</saml:AuthnContextClassRef>
+      </saml:AuthnContext>
+    </saml:AuthnStatement>
+    <saml:AttributeStatement>
+      <saml:Attribute FriendlyName="x509IssuerName" Name="urn:sambi:names:attribute:x509IssuerName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>CN=SITHS CA TEST v4,O=SITHS CA,C=SE</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careUnitHsaId" Name="urn:sambi:names:attribute:careUnitHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV1239877878-103D</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="assignmentName" Name="urn:sambi:names:attribute:assignmentName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Test VårdEnhetA</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="authnMethod" Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="levelOfAssurance" Name="urn:sambi:names:attribute:levelOfAssurance" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>urn:sambi:names:ac:classes:LoA3</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="commissionRight" Name="urn:sambi:names:attribute:commissionRight" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Läsa;dia;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;fun;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;lkf;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;lkm;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;lko;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;pad;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;pat;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;und;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;upp;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vbe;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vko;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;voo;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vot;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vpo;SJF</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="assignmentHsaId" Name="urn:sambi:names:attribute:assignmentHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV1239877878-103L</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="middleAndSurname" Name="urn:sambi:names:attribute:middleAndSurname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Gran</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="commissionPurpose" Name="urn:sambi:names:attribute:commissionPurpose" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Vård och behandling</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="systemRole" Name="urn:sambi:names:attribute:systemRole" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>BIF;Loggadministratör</saml:AttributeValue>
+        <saml:AttributeValue>INTYG;Statistik</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="employeeHsaId" Name="urn:sambi:names:attribute:employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TST5565594230-106J</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careProviderHsaId" Name="urn:sambi:names:attribute:careProviderHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV1239877878-0001</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="givenName" Name="urn:sambi:names:attribute:givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Markus</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careProviderName" Name="urn:sambi:names:attribute:careProviderName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV Testdata</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careUnitName" Name="urn:sambi:names:attribute:careUnitName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>VårdEnhetA</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="personalPrescriptionCode" Name="urn:sambi:names:attribute:personalPrescriptionCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+          >
+        <saml:AttributeValue>8787878</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="titleCode" Name="urn:sambi:names:attribute:titleCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>204010</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#vårdenhetsid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV1239877878-103D</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#uppdragsnamn" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Test VårdEnhetA</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#rättighetstyp" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Läsa;dia;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;fun;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;lkf;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;lkm;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;lko;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;pad;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;pat;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;und;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;upp;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vbe;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vko;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;voo;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vot;SJF</saml:AttributeValue>
+        <saml:AttributeValue>Läsa;vpo;SJF</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#uppdragsid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV1239877878-103L</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#mellanOchEfternamn" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Gran</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#syftesbeskrivning" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Vård och behandling</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#systemRoll" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>BIF;Loggadministratör</saml:AttributeValue>
+        <saml:AttributeValue>INTYG;Statistik</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#medarbetarid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TST5565594230-106J</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#vårdgivarid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV1239877878-0001</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#förnamn" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Markus</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#vårdgivarnamn" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>IFV Testdata</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#vårdenhetsnamn" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>VårdEnhetA</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#förskrivarkod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>8787878</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="http://www.carelink.se/names/subject#befattningskod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>204010</saml:AttributeValue>
+      </saml:Attribute>
+    </saml:AttributeStatement>
+  </saml:Assertion>

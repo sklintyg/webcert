@@ -25,7 +25,7 @@
 
 
 *!
-!contents -R4
+!contents -R2 -g -H -f
 
 !*> '''Variables Defined'''
 !define TEST_SYSTEM {slim}
@@ -35,4 +35,5 @@
 
 !*> '''Classpath'''
 ${maven.classpath}
+!pomFile pom.xml
 *!

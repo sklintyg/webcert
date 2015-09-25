@@ -8,8 +8,8 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 !3 Välj patient
 
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas |
+| säkerställ att | sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
-| valj intygstyp sidan visas |
+| säkerställ att |valj intygstyp sidan visas |
 | kontrollera att | patientens namn ar | ${person1.namn} |
 

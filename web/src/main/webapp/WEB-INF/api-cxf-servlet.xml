@@ -36,6 +36,7 @@
       <bean class="se.inera.webcert.web.controller.api.UserApiController" />
       <bean class="se.inera.webcert.web.controller.api.ModuleApiController" />
       <bean class="se.inera.webcert.web.controller.api.UtkastApiController" />
+      <bean class="se.inera.webcert.web.controller.api.FmbApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

@@ -37,6 +37,9 @@ describe('IntygProxy', function() {
         $provide.value('common.CertificateService', {});
         $provide.value('common.messageService', {});
 
+        //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
+
+
     }));
 
     // Get references to the object we want to test from the context.

@@ -1,9 +1,9 @@
 package se.inera.webcert.service.dto;
 
+import se.inera.webcert.service.user.dto.WebCertUser;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import se.inera.webcert.hsa.model.WebCertUser;
 
 public class HoSPerson {
 

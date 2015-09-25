@@ -2,7 +2,7 @@
     <!-- Left column -->
     <div class="col-sm-6 webcert-col webcert-col-primary">
       <div class="print-hide">
-        <a id="tillbakaButton" wc-feature-not-active feature="franJournalsystem" class="backlink-icon" href="/web/dashboard#/create/choose-cert-type/index"
+        <a id="tillbakaButton" wc-authority role="!ROLE_LAKARE_DJUPINTEGRERAD" class="backlink-icon" href="/web/dashboard#/create/choose-cert-type/index"
            title="Tillbaka till Sök/skriv intyg"></a>
         <h1 class="backlink-heading">
           <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
@@ -14,7 +14,7 @@
 
     <!-- Right side -->
     <div class="col-sm-6 webcert-col-secondary print-hide"
-         wc-feature-active feature="hanteraFragor" intygstyp="{{widgetState.certificateType}}">
+         wc-authority feature="hanteraFragor" intygstyp="{{widgetState.certificateType}}">
       <div class="webcert-col-shadow"></div>
       <h2 class="col-head">Fråga &amp; Svar</h2>
       <div ui-view="fragaSvar"/>

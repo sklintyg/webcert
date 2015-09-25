@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -50,7 +50,7 @@ public class StatModuleApiController extends AbstractApiController {
 
         StatsResponse statsResponse = new StatsResponse();
 
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
 
         if (user == null) {
             LOG.warn("getStatistics was called, but webcertUser was null!");

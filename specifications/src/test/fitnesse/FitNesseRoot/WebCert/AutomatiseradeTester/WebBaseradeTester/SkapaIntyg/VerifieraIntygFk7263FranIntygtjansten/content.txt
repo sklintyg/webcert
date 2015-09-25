@@ -9,7 +9,7 @@
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas sa smaningom |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | webcert-fit-1 |

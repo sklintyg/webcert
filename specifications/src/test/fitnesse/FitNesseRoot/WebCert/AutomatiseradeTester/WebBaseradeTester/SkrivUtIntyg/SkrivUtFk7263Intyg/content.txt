@@ -8,4 +8,4 @@
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-1 | och typ | fk7263 |
 | säkerställ att | intyg laddat |
-| skriv ut knapp visas |
+| säkerställ att | skriv ut arbetsgivarutskrift knapp visas |

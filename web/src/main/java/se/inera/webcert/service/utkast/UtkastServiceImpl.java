@@ -16,13 +16,13 @@ import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.util.UpdateUserUtil;
+import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
@@ -43,7 +43,7 @@ import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
@@ -470,7 +470,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast utkast = new Utkast();
 
-        se.inera.webcert.service.dto.Patient patient = request.getPatient();
+        Patient patient = request.getPatient();
 
         utkast.setPatientPersonnummer(patient.getPersonnummer());
         utkast.setPatientFornamn(patient.getFornamn());
@@ -540,7 +540,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private void updateWithUser(Utkast utkast, String modelJson) {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = UpdateUserUtil.createUserObject(user);
         utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
 

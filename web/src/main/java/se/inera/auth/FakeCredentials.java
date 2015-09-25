@@ -54,10 +54,6 @@ public class FakeCredentials implements Serializable {
         this.efternamn = efternamn;
     }
 
-    public void setLakare(boolean lakare) {
-        this.lakare = lakare;
-    }
-
     public String getEnhetId() {
         return enhetId;
     }

@@ -444,4 +444,112 @@
         tableName="OMSANDNING"/>
   </changeSet>
 
+  <changeSet id="18" author="el">
+
+    <createTable tableName="AVTAL_PRIVATLAKARE">
+      <column name="AVTAL_VERSION" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="AVTAL_TEXT" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="GODKANT_AVTAL_PRIVATLAKARE">
+      <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="AVTAL_VERSION" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="HSA_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="GODKAND_DATUM" type="datetime">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="bigint"
+        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE" />
+
+    <addUniqueConstraint
+        columnNames="AVTAL_VERSION, HSA_ID"
+        constraintName="GODKANT_AVTAL_UNIQUE_CONST"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE"/>
+
+  </changeSet>
+
+  <changeSet id="19" author="el">
+    <addColumn tableName="AVTAL_PRIVATLAKARE">
+    <column name="VERSION_DATUM" type="datetime">
+      <constraints nullable="false" />
+    </column>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="20" author="me">
+    <createTable tableName="ROLLER">
+      <column name="ID" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="NAMN" type="varchar(64)">
+        <constraints unique="true" nullable="false" />
+      </column>
+      <column name="TEXT" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="RATTIGHETER">
+      <column name="ID" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="NAMN" type="varchar(64)">
+        <constraints unique="true" nullable="false" />
+      </column>
+      <column name="TEXT" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="ROLLER_RATTIGHETER">
+      <column name="ROLL_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="RATTIGHET_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="21" author="fe">
+    <createTable tableName="FMB">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="ICD10" type="varchar(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TYP" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="URSPRUNG" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TEXT" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="SENAST_UPPDATERAD" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+        columnName="ID" incrementBy="1" startWith="1"
+        tableName="FMB" />
+  </changeSet>
+
 </databaseChangeLog>
