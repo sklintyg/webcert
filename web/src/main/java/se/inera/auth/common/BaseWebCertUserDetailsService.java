@@ -85,8 +85,6 @@ public abstract class BaseWebCertUserDetailsService {
         return sb.toString();
     }
 
-    protected abstract WebCertUser createUser(String userRole);
-
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
         webcertUser.setAktivaFunktioner(availableFeatures);

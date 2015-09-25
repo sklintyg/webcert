@@ -2,16 +2,6 @@ package se.inera.webcert.security;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -24,7 +14,6 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
@@ -39,6 +28,13 @@ import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author andreaskaltenbach
@@ -57,7 +53,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
 
     private static final String LAKARE = "Läkare";
-    private static final String LAKARE_CODE = "204010";
+    private static final String TANDLAKARE = "Tandläkare";
+
+    private static final String LAKARE_KOD_204010 = "204010";
+    private static final String LAKARE_KOD_203090 = "203090";
+    private static final String LAKARE_KOD_204090 = "204090";
 
 
     // ~ Instance fields
@@ -86,7 +86,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             DefaultSavedRequest savedRequest = getCurrentRequest();
 
             // Create the user
-            WebCertUser webCertUser = createUser(lookupUserRole(savedRequest, getAssertion()));
+            WebCertUser webCertUser = createUser(savedRequest, getAssertion());
             return webCertUser;
 
         } catch (Exception e) {
@@ -107,26 +107,21 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return getAssertion(credential.getAuthenticationAssertion());
     }
 
-    // - - - - - Protected scope - - - - -
+    // - - - - - Package scope - - - - -
 
-    @Override
-    protected WebCertUser createUser(String userRole) {
+    WebCertUser createUser(DefaultSavedRequest savedRequest, SakerhetstjanstAssertion assertion) {
 
-        List<Vardgivare> authorizedVardgivare = null;
-
-        try {
-            authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(getAssertion().getHsaId());
-
-        } catch (Exception e) {
-            LOG.error("Failed retrieving authorized units for user {}, error message {}", getAssertion().getHsaId(), e.getMessage());
-            throw new HsaServiceException(getAssertion().getHsaId(), e);
-        }
+        List<Vardgivare> authorizedVardgivare = getAuthorizedVardgivare(assertion.getHsaId());
+        List<GetHsaPersonHsaUserType> hsaPersonInfo = getPersonInfo(assertion.getHsaId());
 
         try {
             assertMIU();
             assertAuthorizedVardgivare(authorizedVardgivare);
 
-            WebCertUser webCertUser = createWebCertUser(userRole, authorizedVardgivare);
+            // Decide user's role
+            String userRole = lookupUserRole(savedRequest, getAssertion(), hsaPersonInfo);
+
+            WebCertUser webCertUser = createWebCertUser(userRole, authorizedVardgivare, hsaPersonInfo);
             return webCertUser;
 
         } catch (MissingMedarbetaruppdragException e) {
@@ -136,10 +131,53 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     }
 
+    private List<Vardgivare> getAuthorizedVardgivare(String hsaId) {
+        try {
+            return hsaOrganizationsService.getAuthorizedEnheterForHosPerson(getAssertion().getHsaId());
 
-    // - - - - - Default scope - - - - -
+        } catch (Exception e) {
+            LOG.error("Failed retrieving authorized units from HSA for user {}, error message {}", hsaId, e.getMessage());
+            throw new HsaServiceException(hsaId, e);
+        }
+    }
 
-    String lookupUserRole(DefaultSavedRequest savedRequest, SakerhetstjanstAssertion assertion) {
+    private List<GetHsaPersonHsaUserType> getPersonInfo(String hsaId) {
+        try {
+            List<GetHsaPersonHsaUserType> hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
+            if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
+                LOG.info("getHsaPersonInfo did not return any info for user '{}'", hsaId);
+            }
+            return hsaPersonInfo;
+
+        } catch (Exception e) {
+            LOG.error("Failed retrieving user information from HSA for user {}, error message {}", hsaId, e.getMessage());
+            throw new HsaServiceException(hsaId, e);
+        }
+    }
+
+    String lookupUserRole(DefaultSavedRequest savedRequest, SakerhetstjanstAssertion assertion, List<GetHsaPersonHsaUserType> hsaPersonInfo) {
+
+        // 1. Kolla yrkesgrupper och se vilken roll som användaren ska ha.
+        //    Görs mha hsaPersonInfo
+        // ?? vad händer om det är mer än en yrkersgrupp
+
+        UserRole userRole = lookupUserRoleByLegitimeradeYrkesgrupper(extractLegitimeradeYrkesgrupper(hsaPersonInfo));
+
+        // If user has the role 'Tandläkare' then return
+        if (UserRole.ROLE_TANDLAKARE.equals(userRole)) {
+            return userRole.name();
+        }
+
+
+        // 2. Kan inte rollen bestämmas via 1 så kombinera befattningskod och gruppförskrivarkod
+        //    för att bestämma användarens roll. Detta ska gå att hämta ur SAML-biljetten
+        //
+        //    Gruppförskrivarkoden också kommer i personalPrescriptionCode och då måste man också hålla reda på beffattningskoden.
+        //
+        //    Ett problem som vi har i Pascal är att om en användare har dubbla legitimationer (vilket förekommer), t ex SSK och AT-läkare. Då kommer det 2 befattningskoder i biljetten, men då litar vi inte på biljetten utan gör en ny slagning mot HSA.
+        if (userRole == null) {
+            userRole = lookupUserRoleByBefattningskod(assertion);
+        }
 
         boolean doctor = isDoctor(assertion);
 
@@ -176,6 +214,41 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return UserRole.ROLE_VARDADMINISTRATOR.name();
     }
 
+    private UserRole lookupUserRoleByBefattningskod(SakerhetstjanstAssertion assertion) {
+
+        List<String> befattningsKoder = assertion.getTitelKod();
+
+        if (befattningsKoder.size() > 1) {
+            // Ett problem som vi har i Pascal är att om en användare har dubbla legitimationer
+            // (vilket förekommer), t ex SSK och AT-läkare. Då kommer det 2 befattningskoder
+            // i biljetten, men då litar vi inte på biljetten utan gör en ny slagning mot HSA.
+
+            // TODO call hsa and return correct UserRole
+            return null;
+
+        } else if (befattningsKoder.contains(LAKARE_KOD_204010)) {
+            return UserRole.ROLE_LAKARE;
+        } else {
+            // Make a lookup for gruppförskrivarkod
+
+            // TODO return lookupUserRoleByGruppforskrivarkod(assertion);
+            LOG.debug("");
+        }
+
+        return null;
+    }
+
+    UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
+        if (legitimeradeYrkesgrupper.contains(LAKARE)) {
+            return UserRole.ROLE_LAKARE;
+        }
+        if (legitimeradeYrkesgrupper.contains(TANDLAKARE)) {
+            return UserRole.ROLE_TANDLAKARE;
+        }
+
+        return null;
+    }
+
     SakerhetstjanstAssertion getAssertion(Assertion assertion) {
         if (assertion == null) {
             throw new IllegalArgumentException("Assertion parameter cannot be null");
@@ -195,7 +268,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     private boolean isDoctor(SakerhetstjanstAssertion assertion) {
         // 'Lakare' flag is calculated by checking for lakare profession in title and title code
-        if (assertion.getTitel().contains(LAKARE) || assertion.getTitelKod().contains(LAKARE_CODE)) {
+        if (assertion.getTitel().contains(LAKARE) || assertion.getTitelKod().contains(LAKARE_KOD_204010)) {
             return true;
         }
 
@@ -216,11 +289,12 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
-    private WebCertUser createWebCertUser(String userRole, List<Vardgivare> authorizedVardgivare) {
-        return createWebCertUser(getRoleRepository().findByName(userRole), authorizedVardgivare);
+    private WebCertUser createWebCertUser(String userRole, List<Vardgivare> authorizedVardgivare, List<GetHsaPersonHsaUserType> hsaPersonInfo) {
+        Role role = getRoleRepository().findByName(userRole);
+        return createWebCertUser(role, authorizedVardgivare, hsaPersonInfo);
     }
 
-    private WebCertUser createWebCertUser(Role role, List<Vardgivare> authorizedVardgivare) {
+    private WebCertUser createWebCertUser(Role role, List<Vardgivare> authorizedVardgivare, List<GetHsaPersonHsaUserType> hsaPersonInfo) {
 
         // Get user's privileges based on his/hers role
         final Map<String, UserRole> grantedRoles = roleToMap(getRoleAuthority(role));
@@ -242,7 +316,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         // Set user's authentication scheme
         webcertUser.setAuthenticationScheme(getAssertion().getAuthenticationScheme());
 
-        decorateWebCertUserWithAdditionalInfo(webcertUser);
+        decorateWebCertUserWithAdditionalInfo(webcertUser, hsaPersonInfo);
         decorateWebCertUserWithAvailableFeatures(webcertUser);
         decorateWebCertUserWithAuthenticationMethod(webcertUser);
         decorateWebCertUserWithDefaultVardenhet(webcertUser);
@@ -250,16 +324,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return webcertUser;
     }
 
-    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser) {
-
-        String userHsaId = webcertUser.getHsaId();
-
-        List<GetHsaPersonHsaUserType> hsaPersonInfo = hsaPersonService.getHsaPersonInfo(userHsaId);
-
-        if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
-            LOG.info("getHsaPersonInfo did not return any info for user '{}'", userHsaId);
-            return;
-        }
+    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser, List<GetHsaPersonHsaUserType> hsaPersonInfo) {
 
         List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
         webcertUser.setSpecialiseringar(specialiseringar);

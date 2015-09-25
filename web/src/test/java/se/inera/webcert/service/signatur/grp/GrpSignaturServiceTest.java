@@ -142,7 +142,6 @@ public class GrpSignaturServiceTest {
         }
     }
 
-
     private OrderResponseType buildOrderResponse() {
         OrderResponseType resp = new OrderResponseType();
         resp.setTransactionId(TX_ID);

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
@@ -26,7 +25,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgr
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +59,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         this.samlCredential = samlCredential;
 
         try {
-            WebCertUser webCertUser = createUser(lookupUserRole());
+            WebCertUser webCertUser = createUser();
             return webCertUser;
 
         } catch (Exception e) {
@@ -75,10 +73,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
 
-    // - - - - - Protected scope - - - - -
+    // - - - - - Default scope - - - - -
 
-    @Override
-    protected WebCertUser createUser(String userRole) {
+    protected WebCertUser createUser() {
 
         String personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
 
@@ -89,9 +86,13 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
         }
 
+        // Lookup user's role
+        String userRole = lookupUserRole();
+
         WebCertUser webCertUser = createWebCertUser(hosPerson, userRole);
         return webCertUser;
     }
+
 
     // - - - - - Private scope - - - - -
 
