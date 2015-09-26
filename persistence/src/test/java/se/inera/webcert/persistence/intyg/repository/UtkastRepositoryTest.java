@@ -8,7 +8,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -120,10 +122,18 @@ public class UtkastRepositoryTest {
 
         List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER, enhetsIds, statuses);
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER, enhetsIds, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));
 
+    }
+
+    private Set<String> allIntygsTyper() {
+        Set<String> set = new HashSet<>();
+        set.add("fk7263");
+        set.add("ts-bas");
+        set.add("ts-diabetes");
+        return set;
     }
 
     @Test

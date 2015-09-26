@@ -363,6 +363,7 @@ public class UtkastServiceImplTest {
         WebCertUser user = new WebCertUser();
         user.setRoles(getGrantedRole());
         user.setAuthorities(getGrantedPrivileges());
+
         user.setHsaId("hsaId");
         user.setNamn("namn");
         List<String> tmp = new ArrayList<String>();

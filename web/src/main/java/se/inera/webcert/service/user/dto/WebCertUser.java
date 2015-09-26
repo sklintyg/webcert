@@ -379,6 +379,21 @@ public class WebCertUser implements UserDetails {
         return hsaId + " [authScheme=" + authenticationScheme + ", lakare=" + isLakare() + "]";
     }
 
-
-
+    /**
+     * Iterates over all roles and flatmaps distinct intygstyper into a set of strings.
+     * @return
+     */
+    @JsonIgnore
+    public Set<String> getIntygsTyper() {
+        Set<String> set = new HashSet<>();
+        if (roles == null || roles.isEmpty()) {
+            return set;
+        }
+        for (Map.Entry<String, UserRole> entry : roles.entrySet()) {
+            if (entry.getValue() != null) {
+                set.addAll(entry.getValue().getAuthorizedIntygsTyper());
+            }
+        }
+        return set;
+    }
 }
