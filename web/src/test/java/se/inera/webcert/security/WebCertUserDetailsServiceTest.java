@@ -165,7 +165,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleLVardadministratorWhenUserIsNotADoctor() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
-        setupCallToGetHsaPersonInfo();
+        //setupCallToGetHsaPersonInfo();
 
         // when
         when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR).get(0));
