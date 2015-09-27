@@ -1,25 +1,20 @@
 package se.inera.webcert.service.user.dto;
 
-import java.io.Serializable;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_TANDLAKARE;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityCoreVersion;
-import org.springframework.util.Assert;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.common.model.UserDetails;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
@@ -28,8 +23,6 @@ import se.inera.webcert.hsa.model.Vardgivare;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import static se.inera.webcert.common.security.authority.UserRole.*;
 
 /**
  * @author andreaskaltenbach
