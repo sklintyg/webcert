@@ -30,4 +30,16 @@ class HeaderMenu {
         }
         return expected == result
     }
+
+    boolean anvandarensRollVisas(String rollNamn) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at HeaderPage
+            }
+            result = page.loggedInRole().text().contains(rollNamn)
+
+        }
+        return result
+    }
 }
