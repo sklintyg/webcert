@@ -145,6 +145,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.copyIntyg = function(cert) {
                 $scope.viewState.createErrorMessageKey = null;
+
+                // We don't have the required info about issuing unit in the supplied 'cert' object, always set to true.
+                // It only affects a piece of text in the Kopiera-dialog anyway.
+                var isOtherCareUnit = true;
+
                 CommonIntygService.copy($scope.viewState,
                     IntygCopyRequestModel.build({
                         intygId: cert.intygId,
@@ -152,7 +157,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         patientPersonnummer: $scope.personnummer,
                         nyttPatientPersonnummer: $stateParams.patientId
                     }),
-                    false
+                    isOtherCareUnit
                 );
             };
 
