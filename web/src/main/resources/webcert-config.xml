@@ -90,6 +90,9 @@
     <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
     <bean id="termsFilter" class="se.inera.auth.TermsFilter"/>
 
+    <!-- Eleg login redirect filter for easier URL handling in PP -->
+    <bean id="elegRedirectFilter" class="se.inera.auth.eleg.ElegRedirectFilter" />
+
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
       class="se.inera.certificate.integration.json.CustomObjectMapper" />
