@@ -38,19 +38,6 @@
         serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
         address="${cgi.funktionstjanster.grp.url}" />
 
-    <jaxws:client id="getFmbDiagnosInfo"
-        serviceClass="se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponderInterface"
-        address="${getfmbdiagnosinfo.endpoint.url}" />
-
-    <jaxws:client id="getFmbInfo"
-        serviceClass="se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbResponderInterface"
-        address="${getfmbinfo.endpoint.url}" />
-
-    <jaxws:client id="getFmbVersionInfo"
-        serviceClass="se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponderInterface"
-        address="${getfmbversioninfo.endpoint.url}" />
-
-
     <!-- GRPT test env TODO wrap in beans profile="wc-security-test -->
     <http:conduit
         name="\{http://funktionstjanster.se/grp/service/v1.0.0/.*.http-conduit">

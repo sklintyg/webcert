@@ -11,19 +11,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbType;
 import se.inera.webcert.persistence.fmb.repository.FmbRepository;
-import se.inera.webcert.service.fmb.FmbService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.FmbContent;
 import se.inera.webcert.web.controller.api.dto.FmbForm;
@@ -61,11 +58,6 @@ public class FmbApiController extends AbstractApiController {
     }
 
     private FmbResponse getFmbResponse(String icd10) {
-//        ImmutableList<FmbForm> forms = ImmutableList.of(
-//                getFmbForm(icd10, FmbFormName.FORM2, FmbType.FALT2_SPB, FmbType.FALT2_GENERAL),
-//                getFmbForm(icd10, FmbFormName.FORM4, FmbType.FALT4),
-//                getFmbForm(icd10, FmbFormName.FORM5, FmbType.FALT5),
-//                getFmbForm(icd10, FmbFormName.FORM8B, FmbType.FALT8B));
         final ArrayList<FmbForm> forms = new ArrayList<>();
         forms.add(getFmbForm(icd10, FmbFormName.FORM2, FmbType.FALT2_SPB, FmbType.FALT2_GENERAL));
         forms.add(getFmbForm(icd10, FmbFormName.FORM4, FmbType.FALT4));

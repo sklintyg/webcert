@@ -1,4 +1,4 @@
-package se.inera.webcert.service.fmb;
+package se.inera.intyg.webcert.integration.fmb.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +27,24 @@ import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponderInterface;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponseType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.*;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.BeslutsunderlagType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.DiagnosInformationType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.HuvuddiagnosType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.ICD10SEType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.OvrigFmbInformationType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionerType;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 
 @Service
 @Transactional("jpaTransactionManager")
-public class FmbService {
+@Configuration
+@EnableScheduling
+public class FmbServiceImpl implements FmbService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FmbService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FmbServiceImpl.class);
 
     public static final String UNKNOWN_TIMESTAMP = "UnknownTimestamp";
 
@@ -52,6 +63,8 @@ public class FmbService {
     @Value("${fmb.logicaladdress}")
     private String logicalAddress;
 
+    @Override
+    @Scheduled(cron = "0 0 2 * * *")
     public void updateData() {
         try {
             LOG.info("FMB data update started");
