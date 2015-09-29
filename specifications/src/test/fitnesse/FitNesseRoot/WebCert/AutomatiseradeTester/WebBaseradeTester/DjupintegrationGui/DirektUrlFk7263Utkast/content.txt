@@ -1,8 +1,8 @@
 !3 Skapa ett nytt intygsutkast
 
 | skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
-| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej | 200 |
+| intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? | intygId? |
+| fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej | 200 | $intygId= |
 
 !3 Logga in
 
@@ -12,7 +12,7 @@
 !3 Visa utkastet via integrationslänken
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration | webcert-fitnesse-signera-1 |
+| visa utkast via integration | $intygId |
 | verifiera tillbakaknapp borta |
 
 !3 Ta bort utkastet

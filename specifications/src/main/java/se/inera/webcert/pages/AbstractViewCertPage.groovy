@@ -10,7 +10,8 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         intygSaknas { $('#cert-load-error') }
         intygLaddat { $('#intyg-vy-laddad') }
 
-        skrivUtKnapp { $("#downloadprint") }
+        skrivUtKnapp(required: false) { $("#downloadprint") }
+        skrivUtKnappEmployer(required: false){ $("#downloadprintemployer") }
         kopieraKnapp(required: false) { $("#copyBtn") }
         makuleraKnapp(required: false) { $("#makuleraBtn") }
         sekretessmarkering { $("#sekretessmarkering") }

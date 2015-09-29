@@ -173,9 +173,13 @@ class HanteraUtkast {
     boolean visaIntygSidanVisas() {
         boolean result
         Browser.drive {
-            result = page.intygLaddat.isDisplayed()
+            waitFor {
+                isAt VisaFk7263Page
+                result = page.intygLaddat.isDisplayed()
+            }
+
         }
-        result
+        return result;
     }
 
     boolean visaIntygSidanVisasMedTyp(intygsTyp) {

@@ -26,7 +26,7 @@ class VisaFk7263Page extends AbstractViewCertPage {
 
         // kopiera dialog text webcert-1449
         copyDialog { $("#copy-dialog") }
-        kopieraDialogMsgInteFranJournalSystem { $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgInteFranJournalSystem(required: false) { $("#msgInteFranJournalSystem") }
         kopieraDialogMsgNyttPersonId {$("#msgNyttPersonId")}
 
         // fraga svar

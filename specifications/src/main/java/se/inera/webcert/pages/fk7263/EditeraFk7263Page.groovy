@@ -18,7 +18,7 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         // Meddelanden
         nyttPersonnummer { $("#nyttPersonnummer") }
         signerandeLakare { $("#signingDoctor") }
-        integrationBorttaget { $("#integration-deleted") }
+        integrationBorttaget(required: false) { $("#integration-deleted") }
 
         // Intyg
         form { $("form") }
@@ -53,21 +53,22 @@ class EditeraFk7263Page extends AbstractEditCertPage {
 
     }
 
-    def waitForSmittkydRendered(){
-        AbstractPage.scrollIntoView(smittskydd.attr("id"));
-        smittskydd.value(val);
-        println('------------------- smittskydd : ' + val );
-        waitFor {
-            Browser.drive {
-                return doneLoading() && js.animations.smittskydd.rendered;
-            }
-        }
-    }
+
+    //def waitForSmittkydRendered(boolean val){
+    //    AbstractPage.scrollIntoView(smittskydd.attr("id"));
+    //    smittskydd.value(val);
+    //    println('------------------- smittskydd : ' + val );
+    //    waitFor {
+    //        Browser.drive {
+    //            return doneLoading() && js.animations.smittskydd.rendered;
+    //        }
+    //    }
+    //}
 
     def setSmittskydd(boolean val) {
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
-        waitForSmittkydRendered();
+        //waitForSmittkydRendered()
     }
 
 }

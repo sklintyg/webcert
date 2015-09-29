@@ -40,11 +40,25 @@ class SkapaUtkast extends RestClientFixture {
     public String respons() {
         return responseStatus;
     }
+    public String intygId() {
+        return intygId;
+    }
 
     def restClient = createRestClient("${baseUrl}services/")
 
+    def generator = { 
+        String alphabet = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join(), int n ->
+        new Random().with {(1..n).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()}
+    }
+
     def execute() {
-        restClient.post(path: "intyg", body: json(), requestContentType: JSON)
+
+        //Assign random id if intygsid = null
+        if(!intygId){
+            intygId = "fitnesse-" + generator( (('A'..'Z')+('0'..'9')).join(), 9 )
+        }
+
+        def resp = restClient.post(path: "intyg", body: json(), requestContentType: JSON)
 
         def json
         //Ts-bas
@@ -77,7 +91,7 @@ class SkapaUtkast extends RestClientFixture {
 
         //Break the json
 
-        def resp = restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
+        resp = restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
 
         if (komplett) {
             

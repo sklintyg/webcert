@@ -146,6 +146,9 @@ class SvaraOchFraga {
     boolean listaMedOhanteradeFragorVisas() {
         boolean result
         Browser.drive {
+            waitFor{
+                at UnhandledQAPage
+            }
             page.hamtaFler()
             result = page.unhandledQATable?.isDisplayed()
         }
@@ -550,6 +553,9 @@ class SvaraOchFraga {
     boolean svarArBorta(String id) {
         boolean result
         Browser.drive {
+            waitFor{
+                at UnhandledQAPage
+            }
             result = !page.isQAVisible(id)
         }
         result

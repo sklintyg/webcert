@@ -237,6 +237,9 @@ class IntegrationMedJournalsystem {
     boolean integrationBorttagetMeddelandeVisas() {
         boolean result
         Browser.drive {
+            waitFor {
+             at EditeraFk7263Page
+            }
             result = page.integrationBorttaget.isDisplayed()
         }
         result
@@ -298,9 +301,12 @@ class IntegrationMedJournalsystem {
     boolean inteFranJournalSystemTextVisas() {
         boolean result
         Browser.drive {
+            waitFor{
+                VisaFk7263Page
+            }
             result = page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
         }
-        result
+        return result
     }
 
 	boolean nyttPersonNummerTextVisas() {
