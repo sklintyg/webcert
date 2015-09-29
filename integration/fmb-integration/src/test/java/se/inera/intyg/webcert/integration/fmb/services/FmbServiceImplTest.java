@@ -41,7 +41,7 @@ import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport
 public class FmbServiceImplTest {
 
     @InjectMocks
-    private FmbService fmbServiceImpl;
+    private FmbServiceImpl fmbServiceImpl;
 
     @Mock
     private GetDiagnosInformationResponderInterface getDiagnosInformationResponder;
