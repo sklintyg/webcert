@@ -54,7 +54,7 @@ public class WebCertUser implements UserDetails {
     private Map<String, UserRole> roles;
     private Map<String, UserPrivilege> authorities;
 
-    private AuthenticationMethod authenticationMethod; // TODO - temporary hack. BANKID, NETID
+    private AuthenticationMethod authenticationMethod;
 
     /** The sole constructor */
     public WebCertUser() {
