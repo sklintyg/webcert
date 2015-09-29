@@ -64,7 +64,7 @@ public class FmbServiceImpl implements FmbService {
     private String logicalAddress;
 
     @Override
-    @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(cron = "${fmb.dataupdate.cron}")
     public void updateData() {
         try {
             LOG.info("FMB data update started");
