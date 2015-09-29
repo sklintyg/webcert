@@ -42,6 +42,7 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
             throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
         }
         switch(loginMethodEnum) {
+            case CCP2:
             case CCP8:
                 return AuthenticationMethod.NET_ID;
 
