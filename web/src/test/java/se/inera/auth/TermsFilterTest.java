@@ -36,8 +36,6 @@ import java.util.Set;
 @RunWith(MockitoJUnitRunner.class)
 public class TermsFilterTest {
 
-
-
     @Mock
     private FilterChain filterChain;
     @Mock
