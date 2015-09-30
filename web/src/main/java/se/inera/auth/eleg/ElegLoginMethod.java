@@ -10,24 +10,24 @@ package se.inera.auth.eleg;
  * Created by eriklupander on 2015-09-23.
  */
 public enum ElegLoginMethod {
-    /** Legacy NetID production */
+    /** Legacy NetID production. */
     CCP1,
 
-    /** Legacy NetID test */
+    /** Legacy NetID test. */
     CCP2,
 
-    /** NetID */
+    /** NetID. */
     CCP8,
 
-    /** BankID */
+    /** BankID. */
     CCP10,
 
-    /** Mobilt BankID */
+    /** Mobilt BankID. */
     CCP11,
 
-    /** BankID  (Telia, future) */
+    /** BankID  (Telia, future). */
     CCP12,
 
-    /** Mobilt BankID (Telia, future) */
+    /** Mobilt BankID (Telia, future). */
     CCP13
 }

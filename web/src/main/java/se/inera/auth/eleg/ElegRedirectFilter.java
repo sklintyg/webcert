@@ -1,14 +1,15 @@
 package se.inera.auth.eleg;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Requests picked up by this Filter will always break the filter chain and send a redirect
@@ -29,12 +30,11 @@ public class ElegRedirectFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         if (elegIdpUrl == null || elegIdpUrl.trim().length() == 0) {
-            throw new IllegalStateException("Cannot redirect to e-leg Identity Provider, " +
-                    "no 'cgi.funktionstjanster.saml.idp.metadata.url' configured. Check your webcert.properties file.");
+            throw new IllegalStateException("Cannot redirect to e-leg Identity Provider, "
+                   + "no 'cgi.funktionstjanster.saml.idp.metadata.url' configured. Check your webcert.properties file.");
         }
 
         httpServletResponse.sendRedirect("/saml/login/alias/eleg?idp=" + elegIdpUrl);
-        return;
     }
 
     // Package public for unit-testing.
