@@ -45,7 +45,9 @@ import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
+import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
@@ -80,6 +82,9 @@ public class WebCertUserDetailsServiceTest {
 
     @Mock
     private RoleRepository roleRepository;
+
+    @Mock
+    private TitleCodeRepository titleCodeRepository;
 
     @Mock
     private WebcertFeatureService webcertFeatureService;
@@ -151,7 +156,10 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-title-codes.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
+        TitleCode titleCode = new TitleCode("204010", "0000000‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
         // when
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
         when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         // then

@@ -26,13 +26,13 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.persistence.roles.model.TitleCode;
+import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +61,8 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     private static final String LAKARE_KOD_203090 = "203090";
     private static final String LAKARE_KOD_204090 = "204090";
 
+    private static final String IMAGINARY_GROUPPRESCRIPTIONCODE = "0000000";
+
 
     // ~ Instance fields
     // =====================================================================================
@@ -73,6 +75,9 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     @Autowired
     private MonitoringLogService monitoringLogService;
+
+    @Autowired
+    private TitleCodeRepository titleCodeRepository;
 
     private SAMLCredential credential;
     private SakerhetstjanstAssertion assertion;
@@ -177,6 +182,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     }
 
+    String getGroupPrescriptionCode() {
+        // TODO create some intelligent logic to get user's group prescription code
+        return "9300005";
+    }
+
     String lookupUserRole() {
         SakerhetstjanstAssertion sa = getAssertion(credential);
 
@@ -251,46 +261,54 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     UserRole lookupUserRoleByBefattningskod(List<String> befattningsKoder) {
-
         String befattningsKod = null;
 
         if (befattningsKoder == null || befattningsKoder.size() == 0) {
             return null;
-        } else if (befattningsKoder.size() == 1) {
-            befattningsKod = befattningsKoder.get(0);
+        }
 
-            if (befattningsKod.equals(LAKARE_KOD_204010)) {
-                return UserRole.ROLE_LAKARE;
-            }
-
-        } else if (befattningsKoder.size() > 1) {
+        if (befattningsKoder.size() > 1) {
             // Ett problem som vi har i Pascal är att om en användare har dubbla legitimationer
             // (vilket förekommer), t ex SSK och AT-läkare. Då kommer det 2 befattningskoder
             // i biljetten, men då litar vi inte på biljetten utan gör en ny slagning mot HSA.
 
-            // TODO call hsa and set correct befattningskod
-            befattningsKod = LAKARE_KOD_203090;  // This is just for test
+            //befattningsKod = LAKARE_KOD_203090;  // This is just for test
+
+            // For now, just return the first title code
+            // TODO Call HSA to decide users title code
+            //befattningsKod = befattningsKoder.get(0);
+            return lookupUserRoleByBefattningskod(befattningsKoder.get(0));
+
+        } else {
+            return lookupUserRoleByBefattningskod(befattningsKoder.get(0));
         }
 
-        return lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningsKod);
     }
 
-    UserRole lookupUserRoleByBefattningskodAndGruppforskrivarkod(String befattningsKod) {
-
-        //9300005, 9400003,9100009
-        // TODO lookup gruppfoskrivarKod in some way
-        String gruppfoskrivarKod = "9300005";
-
-        if (gruppfoskrivarKod == null || gruppfoskrivarKod.length() == 0) {
+    UserRole lookupUserRoleByBefattningskod(String befattningsKod) {
+        if (befattningsKod == null || befattningsKod.equals("")) {
             return null;
         }
 
-        Map<String, List<String>> map = new HashMap<>();
-        map.put(LAKARE_KOD_203090, Arrays.asList(new String[] { "9300005", "9400003" }));
-        map.put(LAKARE_KOD_204090, Arrays.asList(new String[] { "9100009" }));
-
-        if (map.containsKey(befattningsKod) && map.get(befattningsKod).contains(gruppfoskrivarKod)) {
+        if (befattningsKod.equals(LAKARE_KOD_204010)) {
             return UserRole.ROLE_LAKARE;
+        }
+
+        // We cannot decide user's role yet, create another lookup
+        // based on title code and group prescription code
+        String gruppforskrivarKod = getGroupPrescriptionCode();
+        return lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningsKod, gruppforskrivarKod);
+    }
+
+    UserRole lookupUserRoleByBefattningskodAndGruppforskrivarkod(String befattningsKod, String gruppforskrivarKod) {
+        if (befattningsKod == null || gruppforskrivarKod == null) {
+            return null;
+        }
+
+        TitleCode titleCode = titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(befattningsKod, gruppforskrivarKod);
+        if (titleCode != null) {
+            Role role = titleCode.getRole();
+            return UserRole.valueOf(role.getName());
         }
 
         return null;
