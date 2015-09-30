@@ -6,6 +6,7 @@ import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerterms.v1.rivtabp21.GetPrivatePractitionerTermsResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsType;
+
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.AvtalType;
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEnum;
 
@@ -32,6 +33,7 @@ public class GetPrivatePractitionerTermsResponderImpl implements GetPrivatePract
         AvtalType avtalType = new AvtalType();
         avtalType.setAvtalText(latestAvtal.getAvtalText());
         avtalType.setAvtalVersion(latestAvtal.getAvtalVersion());
+        avtalType.setAvtalVersionDatum(latestAvtal.getVersionDatum());
         response.setAvtal(avtalType);
         response.setResultCode(ResultCodeEnum.OK);
         return response;
