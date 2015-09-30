@@ -1,6 +1,6 @@
 Testet beskriver fallet när ett externt system använder vårt REST API för övervakning för att kontrollera systemets status.
 
-| health kontrollera att service |
+| health check service |
 | endpoint | status? |
 | ping | =~/OK[0-9]+/ |
 | db | =~/OK[0-9]+/ |
@@ -9,4 +9,3 @@ Testet beskriver fallet när ett externt system använder vårt REST API för ö
 | intygstjanst | =~/OK[0-9]+/ |
 | uptime | =~/OK[0-9]+/ |
 | signature-queue | =~/OK[0-9]+/ |
-
