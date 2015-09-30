@@ -11,8 +11,10 @@ import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.PrivilegeRepository;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
+import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +41,10 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     @Autowired
     private PrivilegeRepository privilegeRepository;
 
+    @Autowired
+    private TitleCodeRepository titleCodeRepository;
+
+
     // API
 
     @Override
@@ -53,6 +59,9 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
         // == create roles
         loadRoles(UserRole.values());
+
+        // == create roles
+       loadTitleCodes();
 
         alreadySetup = true;
     }
@@ -92,6 +101,17 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         }
     }
 
+    private void loadTitleCodes() {
+
+        LOG.debug("Loading title codes and group prescription codes");
+
+        String[][] titleCodesMatrix = getTitleCodesMatrix();
+
+        for (String[] sarr : titleCodesMatrix) {
+            createTitleCodeIfNotFound(sarr[0], sarr[1], UserRole.valueOf(sarr[2]));
+        }
+    }
+
     private Privilege createPrivilegeIfNotFound(final UserPrivilege userPrivilege) {
         Privilege privilege = privilegeRepository.findByName(userPrivilege.name());
         if (privilege == null) {
@@ -105,17 +125,30 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         Role role = roleRepository.findByName(userRole.name());
         if (role == null) {
             role = new Role(userRole.name(), userRole.toString());
-
-            /*
-            for (Privilege p : privileges) {
-                role.getPrivileges().add(privilegeRepository.findByName(p.getName()));
-            }
-            */
-
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
         return role;
+    }
+
+    private TitleCode createTitleCodeIfNotFound(final String titleCode, final String groupPrescriptionCode, UserRole userRole) {
+        Role role = roleRepository.findByName(userRole.name());
+        if (role == null) {
+            LOG.error("Could not create TitleCode {} since user role {} was not present in database.", titleCode, userRole.name());
+            return null;
+        }
+
+        //List<TitleCode> titleCodes = titleCodeRepository.findByTitleCode(titleCode);
+        TitleCode tc = titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(titleCode, groupPrescriptionCode);
+        if (tc == null) {
+            tc = new TitleCode();
+            tc.setTitleCode(titleCode);
+            tc.setGroupPrescriptionCode(groupPrescriptionCode);
+            tc.setRole(role);
+            titleCodeRepository.save(tc);
+        }
+
+        return tc;
     }
 
     private Set<Privilege> getPrivilegeList(final List<UserPrivilege> userPrivileges) {
@@ -134,10 +167,21 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     }
 
 
+    // ~ User and privileges mapping
+    // ======================================================================================================
     //
-    // User and privileges mapping
     // TODO externalize mapping section
     //
+    private String[][] getTitleCodesMatrix() {
+        String [][] matrix = {
+            {"204010 ", "0000000", UserRole.ROLE_LAKARE.name()},
+            {"203090 ", "9300005", UserRole.ROLE_LAKARE.name()},
+            {"203090 ", "9400003", UserRole.ROLE_LAKARE.name()},
+            {"204090 ", "9100009", UserRole.ROLE_LAKARE.name()}
+        };
+        return matrix;
+    }
+
     private Map<UserRole, List<UserPrivilege>> getUserRolesPrivilegesMap() {
 
         Map<UserRole, List<UserPrivilege>> map = new HashMap<>();
