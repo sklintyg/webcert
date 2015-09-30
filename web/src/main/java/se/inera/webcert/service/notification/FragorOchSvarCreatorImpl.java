@@ -15,64 +15,68 @@ import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 @Component
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
-    private static final String FRAGESTALLARE_FK = "FK";
-    private static final String FRAGESTALLARE_WEBCERT = "WC";
+	private static final String FRAGESTALLARE_FK = "FK";
+	private static final String FRAGESTALLARE_WEBCERT = "WC";
 
-    private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
 
-    @Autowired
-    private FragaSvarRepository fragaSvarRepository;
+	@Autowired
+	private FragaSvarRepository fragaSvarRepository;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see se.inera.webcert.service.notification.FragorOchSvarCreator#createFragorOchSvar(java.lang.String)
-     */
-    @Override
-    public FragorOchSvar createFragorOchSvar(String intygsId) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see se.inera.webcert.service.notification.FragorOchSvarCreator#
+	 * createFragorOchSvar(java.lang.String)
+	 */
+	@Override
+	public FragorOchSvar createFragorOchSvar(String intygsId) {
 
-        List<FragaSvarStatus> fsStatuses = fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId);
+		List<FragaSvarStatus> fsStatuses = fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId);
 
-        FragorOchSvar fs = performCount(fsStatuses);
+		FragorOchSvar fs = performCount(fsStatuses);
 
-        LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
+		LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
 
-        return fs;
-    }
+		return fs;
+	}
 
-    public FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
+	public FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
 
-        int antalFragor = 0;
-        int antalSvar = 0;
-        int antalHanteradeFragor = 0;
-        int antalHanteradeSvar = 0;
+		int antalFragor = 0;
+		int antalSvar = 0;
+		int antalHanteradeFragor = 0;
+		int antalHanteradeSvar = 0;
 
-        for (FragaSvarStatus fsStatus : fsStatuses) {
+		for (FragaSvarStatus fsStatus : fsStatuses) {
 
-            if (isFromWebcert(fsStatus)) {
-                if (fsStatus.hasAnswerSet()) {
-                    antalSvar++;
-                }
-                if (fsStatus.isClosed()) {
-                    antalHanteradeSvar++;
-                }
-            } else if (isFromFK(fsStatus)) {
-                antalFragor++;
-                if (fsStatus.isClosed()) {
-                    antalHanteradeFragor++;
-                }
-            }
-        }
+			// WEBCERT-2001: Vi vill endast öka antalet hanteradeSvar på
+			// faktiska svar från FK.
+			if (isFromWebcert(fsStatus)) {
+				if (fsStatus.hasAnswerSet()) {
+					antalSvar++;
+					if (fsStatus.isClosed()) {
+						antalHanteradeSvar++;
+					}
+				}
+			} else if (isFromFK(fsStatus)) {
+				antalFragor++;
+				if (fsStatus.isClosed()) {
+					antalHanteradeFragor++;
+				}
+			}
+		}
 
-        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
-    }
+		return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor,
+				antalHanteradeSvar);
+	}
 
-    public boolean isFromFK(FragaSvarStatus fsStatus) {
-        return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_FK);
-    }
+	public boolean isFromFK(FragaSvarStatus fsStatus) {
+		return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_FK);
+	}
 
-    public boolean isFromWebcert(FragaSvarStatus fsStatus) {
-        return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_WEBCERT);
-    }
-
+	public boolean isFromWebcert(FragaSvarStatus fsStatus) {
+		return fsStatus.getFrageStallare().equalsIgnoreCase(
+				FRAGESTALLARE_WEBCERT);
+	}
 }
