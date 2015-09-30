@@ -20,7 +20,7 @@ class AbstractLoggedInPage extends AbstractPage {
         omWebcert(required: false, to: OmWebcertPage, toWait: true){$("#menu-about")}
         
         // care unit dialog
-        careUnitSelector(required: false, wait: true) { $("div#wc-care-unit-clinic-selector")}
+        careUnitSelector(required: false) { $("div#wc-care-unit-clinic-selector")}
         activeUnit(required: false) {careUnit -> $("#select-active-unit-${careUnit}")}
         careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitModalBody(required: false) { $(".modal-body") }

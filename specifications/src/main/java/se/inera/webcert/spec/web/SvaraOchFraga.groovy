@@ -62,7 +62,9 @@ class SvaraOchFraga {
     boolean enhetsvaljareVisas() {
         boolean result
         Browser.drive {
-            result = page.careUnitSelector.isDisplayed()
+            waitFor {
+                result = page.careUnitSelectorLink.isDisplayed()
+            }
         }
         result
     }
