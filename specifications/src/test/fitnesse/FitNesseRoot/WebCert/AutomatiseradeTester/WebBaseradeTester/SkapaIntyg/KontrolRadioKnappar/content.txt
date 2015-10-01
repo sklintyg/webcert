@@ -26,7 +26,6 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 | script | !-SkrivIntyg-! |
 | intyg ej komplett visas |
-
 | prognos ar inte vald |
 | rehab nej ej visas|
 
