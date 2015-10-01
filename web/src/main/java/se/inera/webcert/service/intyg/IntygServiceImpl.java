@@ -139,7 +139,9 @@ public class IntygServiceImpl implements IntygService {
             LOG.warn("Error when connecting to intygstjänsten: ", wse.getMessage());
             LOG.info("Stacktrace: ", wse.getStackTrace());
             wse.printStackTrace();
-            LOG.info(wse.getCause().toString());
+            if (wse.getCause() != null) {
+                LOG.info(wse.getCause().toString());
+            }
             // If intygstjansten was unavailable, we return whatever certificates we can find and clearly inform
             // the caller that the set of certificates are only those that have been issued by WebCert.
             List<IntygItem> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
