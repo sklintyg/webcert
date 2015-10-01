@@ -18,9 +18,9 @@ import se.riv.infrastructure.directory.privatepractitioner.validateprivatepracti
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerType;
 
 /**
- * Created by Magnus Ekstrand on 18/06/15.
+ * Interfaces with the get and validate private practitioner services.
  *
- * TODO: Make sure no personal identifiers are logged.
+ * Created by Magnus Ekstrand on 18/06/15.
  */
 public class PPServiceImpl implements PPService {
 
