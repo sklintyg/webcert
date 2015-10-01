@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Base UserDetailsService for both Siths and E-leg based authentication.
+ *
  * Created by eriklupander on 2015-06-16.
  */
 public abstract class BaseWebCertUserDetailsService {

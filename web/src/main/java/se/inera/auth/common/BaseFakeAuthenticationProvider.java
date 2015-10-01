@@ -17,6 +17,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
+ * Provides some common functionality for Fake authentication providers.
+ *
  * Created by eriklupander on 2015-06-16.
  */
 public abstract class BaseFakeAuthenticationProvider implements AuthenticationProvider {

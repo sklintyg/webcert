@@ -37,8 +37,6 @@ import java.util.Map;
 @RunWith(MockitoJUnitRunner.class)
 public class TermsFilterTest {
 
-
-
     @Mock
     private FilterChain filterChain;
     @Mock

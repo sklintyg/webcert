@@ -257,8 +257,10 @@
       </property>
     </bean>
 
-    <!-- TODO Determine if this one is really needed. It's supposed to make the HTTP-client more configurable... -->
+    <!-- TODO Determine if this one is really needed. It's supposed to make the HTTP-client more configurable...
+    Works fine for privatläkare NetId and BankId. Test with Siths too.
     <bean class="org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer"/>
+    -->
 
     <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
     <!-- Do no forget to call initalize method on providers -->
@@ -266,6 +268,7 @@
 
       <constructor-arg>
         <list>
+
 
           <!-- START SERVICE PROVIDER BEAN FOR E-LEG -->
           <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
@@ -287,6 +290,7 @@
                 <property name="signMetadata" value="true"/>
 
                 <!-- The signingKey and encryptionKey refers to the _aliases_ of the key in the keystore defined in the keyManager bean -->
+                <!-- TODO We may need different signing and encryption keys for CGI funktionstjanster than Säkerhetstjanst -->
                 <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
                 <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
                 <property name="requireArtifactResolveSigned" value="true"/>
@@ -377,15 +381,23 @@
             <property name="metadataTrustCheck" value="true"/>
           </bean>
           <!-- END IDENTITY PROVIDER BEAN FOR SITHS -->
+
         </list>
       </constructor-arg>
       <property name="refreshCheckInterval" value="86400000"/>
 
+      <!--
+            Setting SITHS as default login method to be redirected to when requesting protected resource.
+            This value _must_ match the entityID specified in idp-sakerhetstjanst.xml
+      -->
+      <property name="defaultIDP" value="${sakerhetstjanst.saml.idp.metadata.url}" />
     </bean>
 
-    <!-- TODO Determine if these are necessary in Webcert 4.0 since we aren't fetching metadata over http(s) -->
+    <!-- TODO Determine if these are necessary in Webcert 4.0 since we aren't fetching metadata over http(s)
+    FUNGERAR BRA med NetID (privatläkare) och BankID (privatläkare). Behöver testas med Siths också
     <bean id="httpClientFactory" class="se.inera.auth.HttpClientFactory"/>
     <bean id="httpClient" factory-bean="httpClientFactory" factory-method="createInstance"/>
+     -->
 
     <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg -->
     <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">

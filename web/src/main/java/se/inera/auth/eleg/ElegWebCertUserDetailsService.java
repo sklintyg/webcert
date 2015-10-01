@@ -1,5 +1,9 @@
 package se.inera.auth.eleg;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
+
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -24,10 +29,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-
 /**
  * Created by eriklupander on 2015-06-16.
  *
@@ -51,17 +53,11 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Autowired
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
-    private SAMLCredential samlCredential;
-
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
 
-        this.samlCredential = samlCredential;
-
         try {
-            WebCertUser webCertUser = createUser();
-            return webCertUser;
-
+            return createUser(samlCredential);
         } catch (Exception e) {
             if (e instanceof AuthenticationException) {
                 throw e;
@@ -75,7 +71,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     // - - - - - Default scope - - - - -
 
-    protected WebCertUser createUser() {
+    protected WebCertUser createUser(SAMLCredential samlCredential) {
 
         String personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
 
@@ -85,11 +81,11 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         if (hosPerson == null) {
             throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
         }
-
+        
         // Lookup user's role
         String userRole = lookupUserRole();
 
-        WebCertUser webCertUser = createWebCertUser(hosPerson, userRole);
+        WebCertUser webCertUser = createWebCertUser(hosPerson, userRole, samlCredential);
         return webCertUser;
     }
 
@@ -104,11 +100,11 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
     }
 
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String userRole) {
-        return createWebCertUser(hosPerson, getRoleRepository().findByName(userRole));
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String userRole, SAMLCredential samlCredential) {
+        return createWebCertUser(hosPerson, getRoleRepository().findByName(userRole), samlCredential);
     }
 
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role) {
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
 
         // Get user's privileges based on his/hers role
         // Get user's privileges based on his/hers role
@@ -133,7 +129,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
         decorateWebCertUserWithSpecialiceringar(hosPerson, user);
         decorateWebCertUserWithVardgivare(hosPerson, user);
-        decorateWebCertUserWithDefaultVardenhet(hosPerson, user);
+        decorateWebCertUserWithDefaultVardenhet(user);
 
         return user;
     }
@@ -153,7 +149,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
     }
 
-    private void decorateWebCertUserWithDefaultVardenhet(HoSPersonType hosPerson, WebCertUser webCertUser) {
+    private void decorateWebCertUserWithDefaultVardenhet(WebCertUser webCertUser) {
         setFirstVardenhetOnFirstVardgivareAsDefault(webCertUser);
     }
 
@@ -200,8 +196,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private HoSPersonType getHosPerson(String personId) {
-        HoSPersonType hoSPersonType = ppService.getPrivatePractitioner(logicalAddress, null, personId);
-        return hoSPersonType;
+        return ppService.getPrivatePractitioner(logicalAddress, null, personId);
     }
 
     /*

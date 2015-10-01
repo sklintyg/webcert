@@ -1,4 +1,13 @@
-package se.inera.webcert.service.fmb;
+package se.inera.intyg.webcert.integration.fmb.services;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.webcert.persistence.fmb.model.FmbType;
@@ -28,20 +38,10 @@ import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionerType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-
-public class FmbServiceTest {
+public class FmbServiceImplTest {
 
     @InjectMocks
-    private FmbService fmbService;
+    private FmbServiceImpl fmbServiceImpl;
 
     @Mock
     private GetDiagnosInformationResponderInterface getDiagnosInformationResponder;
@@ -71,7 +71,7 @@ public class FmbServiceTest {
         setupVersionsMock("", "");
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(2)).save(fmbCaptor.capture());
@@ -89,7 +89,7 @@ public class FmbServiceTest {
         setupVersionsMock("", "");
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(1)).deleteInBatch(fmbCaptor.capture());
@@ -108,7 +108,7 @@ public class FmbServiceTest {
         setupVersionsMock("", "");
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(1)).deleteInBatch(fmbCaptor.capture());
@@ -129,7 +129,7 @@ public class FmbServiceTest {
         Mockito.doReturn(fmbs).when(fmbRepository).findByUrsprung(FmbCallType.DIAGNOSINFORMATION);
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(1)).deleteInBatch(fmbCaptor.capture());
@@ -150,7 +150,7 @@ public class FmbServiceTest {
         Mockito.doReturn(fmbs).when(fmbRepository).findByUrsprung(FmbCallType.FMB);
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(1)).deleteInBatch(fmbCaptor.capture());
@@ -166,7 +166,7 @@ public class FmbServiceTest {
         setupVersionsMock("", "");
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(0)).save(any(Iterable.class));
@@ -185,7 +185,7 @@ public class FmbServiceTest {
         setupFmbResponse("", createBeslutsunderlag("", "J22"));
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(2)).save(any(Iterable.class));
@@ -203,7 +203,7 @@ public class FmbServiceTest {
         setupFmbResponse("", createBeslutsunderlag("", "J22"));
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(1)).save(any(Iterable.class));
@@ -221,7 +221,7 @@ public class FmbServiceTest {
         setupFmbResponse("", createBeslutsunderlag("", "J22"));
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(1)).save(any(Iterable.class));
@@ -239,7 +239,7 @@ public class FmbServiceTest {
         setupFmbResponse("", createBeslutsunderlag("", "J22"));
 
         //When
-        fmbService.updateData();
+        fmbServiceImpl.updateData();
 
         //Then
         Mockito.verify(fmbRepository, times(0)).save(any(Iterable.class));

@@ -1,16 +1,10 @@
 package se.inera.webcert.service.monitoring;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import se.inera.certificate.logging.HashUtility;
 import se.inera.certificate.logging.LogMarkers;
 
 @Service
@@ -19,19 +13,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private static final String SPACE = " ";
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLogService.class);
-
-    private static final String DIGEST = "SHA-256";
-
-    private MessageDigest msgDigest;
-
-    @PostConstruct
-    public void initMessageDigest() {
-        try {
-            msgDigest = MessageDigest.getInstance(DIGEST);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     @Override
     public void logMailSent(String unitHsaId, String reason) {
@@ -69,23 +50,23 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens) {
-        logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, intygsId, externReferens);
+    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne) {
+        logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logAnswerReceived(Long fragaSvarsId, String intygsId) {
-        logEvent(MonitoringEvent.ANSWER_RECEIVED, fragaSvarsId, intygsId);
+    public void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
+        logEvent(MonitoringEvent.ANSWER_RECEIVED, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logQuestionSent(Long fragaSvarsId, String intygId) {
-        logEvent(MonitoringEvent.QUESTION_SENT, fragaSvarsId, intygId);
+    public void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
+        logEvent(MonitoringEvent.QUESTION_SENT, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logAnswerSent(Long fragaSvarsId, String intygsId) {
-        logEvent(MonitoringEvent.ANSWER_SENT, fragaSvarsId, intygsId);
+    public void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
+        logEvent(MonitoringEvent.ANSWER_SENT, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
@@ -155,12 +136,17 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logPULookup(String personNummer, String result) {
-        logEvent(MonitoringEvent.PU_LOOKUP, hash(personNummer), result);
+        logEvent(MonitoringEvent.PU_LOOKUP, HashUtility.hash(personNummer), result);
     }
 
     @Override
     public void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, hash(userId), avtalVersion);
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, HashUtility.hash(userId), avtalVersion);
+    }
+
+    @Override
+    public void logNotificationSent(String unitId, String hanType) {
+        logEvent(MonitoringEvent.NOTIFICATION_SENT, unitId, hanType);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -171,16 +157,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         LOG.info(LogMarkers.MONITORING, logMsg.toString(), logMsgArgs);
     }
 
-    private String hash(String payload) {
-        try {
-            msgDigest.update(payload.getBytes("UTF-8"));
-            byte[] digest = msgDigest.digest();
-            return new String(Hex.encodeHex(digest));
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     private enum MonitoringEvent {
         MAIL_SENT("Mail sent to unit '{}' for {}"),
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
@@ -189,10 +165,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
-        QUESTION_RECEIVED("Received question from '{}' regarding intyg '{}' with reference '{}'"),
-        ANSWER_RECEIVED("Received answer to question '{}' regarding intyg '{}'"),
-        QUESTION_SENT("Sent question '{}' regarding intyg '{}'"),
-        ANSWER_SENT("Sent answer to question '{}' regarding intyg '{}'"),
+        QUESTION_RECEIVED("Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        ANSWER_RECEIVED("Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        QUESTION_SENT("Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        ANSWER_SENT("Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
         INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}'"),
@@ -207,7 +183,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
-        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}");
+        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}"),
+        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' ");
 
         private String msg;
 

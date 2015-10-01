@@ -1,4 +1,4 @@
-package se.inera.webcert.fmbstub;
+package se.inera.intyg.webcert.integration.fmb.stub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

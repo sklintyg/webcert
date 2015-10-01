@@ -1,4 +1,4 @@
-package se.inera.webcert.service.fmb;
+package se.inera.intyg.webcert.integration.fmb.services;
 
 public class FmbVersionStatus {
 

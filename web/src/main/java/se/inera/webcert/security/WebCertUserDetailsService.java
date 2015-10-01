@@ -2,6 +2,10 @@ package se.inera.webcert.security;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -14,6 +18,7 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
@@ -30,13 +35,6 @@ import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author andreaskaltenbach
@@ -79,11 +77,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     @Autowired
     private TitleCodeRepository titleCodeRepository;
 
-    private SAMLCredential credential;
-    private SakerhetstjanstAssertion assertion;
-    private List<Vardgivare> authorizedVardgivare;
-    private List<GetHsaPersonHsaUserType> hsaPersonInfo;
-    private DefaultSavedRequest savedRequest;
+    // private SAMLCredential credential;
+    // private SakerhetstjanstAssertion assertion;
+    // private List<Vardgivare> authorizedVardgivare;
+    // private List<GetHsaPersonHsaUserType> hsaPersonInfo;
+    // private DefaultSavedRequest savedRequest;
 
     // - - - - - Public scope - - - - -
 
@@ -92,7 +90,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         if (credential == null) {
             throw new RuntimeException("SAMLCredential has not been set.");
         }
-        this.credential = credential;
 
         LOG.info("Loading user...");
         LOG.info("SAML credential is: {}", credential);
@@ -100,14 +97,14 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         try {
             // Get the current request
-            savedRequest = getCurrentRequest();
+            //savedRequest = getCurrentRequest();
 
-            assertion = getAssertion(credential);
-            authorizedVardgivare = getAuthorizedVardgivare(getAssertion(credential).getHsaId());
-            hsaPersonInfo = getPersonInfo(getAssertion(credential).getHsaId());
+            //assertion = getAssertion(credential);
+            //authorizedVardgivare = getAuthorizedVardgivare(getAssertion(credential).getHsaId());
+            //hsaPersonInfo = getPersonInfo(getAssertion(credential).getHsaId());
 
             // Create the user
-            WebCertUser webCertUser = createUser();
+            WebCertUser webCertUser = createUser(credential);
 
             LOG.info("User authentication was successful");
             return webCertUser;
@@ -125,29 +122,26 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     // - - - - - Protected scope - - - - -
 
     protected SakerhetstjanstAssertion getAssertion(SAMLCredential credential) {
-        if (assertion == null) {
-            assertion = getAssertion(credential.getAuthenticationAssertion());
-        }
+        //if (assertion == null) {
+            return getAssertion(credential.getAuthenticationAssertion());
+       // }
 
-        return assertion;
+       // return assertion;
     }
 
     protected List<Vardgivare> getAuthorizedVardgivare(String hsaId) {
-        if (authorizedVardgivare == null) {
-            try {
-                return hsaOrganizationsService.getAuthorizedEnheterForHosPerson(hsaId);
 
-            } catch (Exception e) {
-                LOG.error("Failed retrieving authorized units from HSA for user {}, error message {}", hsaId, e.getMessage());
-                throw new HsaServiceException(hsaId, e);
-            }
+        try {
+            return hsaOrganizationsService.getAuthorizedEnheterForHosPerson(hsaId);
+
+        } catch (Exception e) {
+            LOG.error("Failed retrieving authorized units from HSA for user {}, error message {}", hsaId, e.getMessage());
+            throw new HsaServiceException(hsaId, e);
         }
-
-        return authorizedVardgivare;
     }
 
     protected List<GetHsaPersonHsaUserType> getPersonInfo(String hsaId) {
-        if (hsaPersonInfo == null) {
+        List<GetHsaPersonHsaUserType> hsaPersonInfo = null;
             try {
                 hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
                 if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
@@ -158,7 +152,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
                 LOG.error("Failed retrieving user information from HSA for user {}, error message {}", hsaId, e.getMessage());
                 throw new HsaServiceException(hsaId, e);
             }
-        }
+
 
         return hsaPersonInfo;
     }
@@ -166,13 +160,15 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     // - - - - - Package scope - - - - -
 
-    WebCertUser createUser() {
-
+    WebCertUser createUser(SAMLCredential credential) {
+        String hsaId = getAssertion(credential).getHsaId();
+        List<GetHsaPersonHsaUserType> personInfo = getPersonInfo(hsaId);
+        List<Vardgivare> authorizedVardgivare = getAuthorizedVardgivare(hsaId);
         try {
-            assertMIU();
-            assertAuthorizedVardgivare();
+            assertMIU(credential);
+            assertAuthorizedVardgivare(hsaId, authorizedVardgivare);
 
-            WebCertUser webCertUser = createWebCertUser(lookupUserRole());
+            WebCertUser webCertUser = createWebCertUser(lookupUserRole(credential, personInfo), credential, authorizedVardgivare, personInfo);
             return webCertUser;
 
         } catch (MissingMedarbetaruppdragException e) {
@@ -187,13 +183,13 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return "9300005";
     }
 
-    String lookupUserRole() {
+    String lookupUserRole(SAMLCredential credential, List<GetHsaPersonHsaUserType> personInfo) {
         SakerhetstjanstAssertion sa = getAssertion(credential);
 
         // 1. Kolla yrkesgrupper och se vilken roll som användaren ska ha.
         //    Görs mha hsaPersonInfo
         // ?? vad händer om det är mer än en yrkersgrupp
-        List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(getPersonInfo(sa.getHsaId()));
+        List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(personInfo);
         UserRole userRole = lookupUserRoleByLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
 
         // If user has the role 'Tandläkare' then return
@@ -220,6 +216,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         boolean doctor = UserRole.ROLE_LAKARE.equals(userRole);
 
         // Use the request URI to decide if this is a 'djupintegration' or 'uthopp' user
+        DefaultSavedRequest savedRequest = getCurrentRequest();
         if (savedRequest != null && savedRequest.getRequestURI() != null) {
             String uri = savedRequest.getRequestURI();
 
@@ -334,20 +331,16 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     DefaultSavedRequest getCurrentRequest() {
-        if (savedRequest == null) {
-            HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-            savedRequest = (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-        }
 
-        return savedRequest;
+            HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
+
     }
 
 
     // - - - - - Private scope - - - - -
 
-    private void assertAuthorizedVardgivare() {
-        String hsaId = getAssertion(credential).getHsaId();
-        List<Vardgivare> authorizedVardgivare = getAuthorizedVardgivare(hsaId);
+    private void assertAuthorizedVardgivare(String hsaId, List<Vardgivare> authorizedVardgivare) {
 
         // if user does not have access to any vardgivare, we have to reject authentication
         if (authorizedVardgivare.isEmpty()) {
@@ -355,19 +348,19 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
-    private void assertMIU() {
+    private void assertMIU(SAMLCredential credential) {
         // if user has authenticated with other contract than 'Vård och behandling', we have to reject her
         if (!VARD_OCH_BEHANDLING.equals(getAssertion(credential).getMedarbetaruppdragType())) {
             throw new MissingMedarbetaruppdragException(getAssertion(credential).getHsaId());
         }
     }
 
-    private WebCertUser createWebCertUser(String userRole) {
+    private WebCertUser createWebCertUser(String userRole, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<GetHsaPersonHsaUserType> personInfo) {
         Role role = getRoleRepository().findByName(userRole);
-        return createWebCertUser(role);
+        return createWebCertUser(role, credential,  authorizedVardgivare, personInfo);
     }
 
-    private WebCertUser createWebCertUser(Role role) {
+    private WebCertUser createWebCertUser(Role role, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<GetHsaPersonHsaUserType> personInfo) {
         SakerhetstjanstAssertion sa = getAssertion(credential);
 
         // Get user's privileges based on his/hers role
@@ -382,7 +375,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         webcertUser.setHsaId(sa.getHsaId());
         webcertUser.setNamn(compileName(sa.getFornamn(), sa.getMellanOchEfternamn()));
-        webcertUser.setVardgivare(getAuthorizedVardgivare(sa.getHsaId()));
+        webcertUser.setVardgivare(authorizedVardgivare);
 
         // Förskrivarkod is sensitiv information, not allowed to store real value
         webcertUser.setForskrivarkod("0000000");
@@ -390,16 +383,15 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         // Set user's authentication scheme
         webcertUser.setAuthenticationScheme(sa.getAuthenticationScheme());
 
-        decorateWebCertUserWithAdditionalInfo(webcertUser);
+        decorateWebCertUserWithAdditionalInfo(webcertUser, credential, personInfo);
         decorateWebCertUserWithAvailableFeatures(webcertUser);
-        decorateWebCertUserWithAuthenticationMethod(webcertUser);
-        decorateWebCertUserWithDefaultVardenhet(webcertUser);
+        decorateWebCertUserWithAuthenticationMethod(webcertUser, credential);
+        decorateWebCertUserWithDefaultVardenhet(webcertUser, credential);
 
         return webcertUser;
     }
 
-    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser) {
-        List<GetHsaPersonHsaUserType> hsaPersonInfo = getPersonInfo(getAssertion(credential).getHsaId());
+    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser, SAMLCredential credential, List<GetHsaPersonHsaUserType> hsaPersonInfo) {
 
         List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(hsaPersonInfo);
@@ -410,7 +402,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         webcertUser.setTitel(titel);
     }
 
-    private void decorateWebCertUserWithAuthenticationMethod(WebCertUser webcertUser) {
+    private void decorateWebCertUserWithAuthenticationMethod(WebCertUser webcertUser, SAMLCredential credential) {
         String authenticationScheme = getAssertion(credential).getAuthenticationScheme();
 
         if (authenticationScheme.endsWith(":fake")) {
@@ -420,7 +412,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
-    private void decorateWebCertUserWithDefaultVardenhet(WebCertUser user) {
+    private void decorateWebCertUserWithDefaultVardenhet(WebCertUser user, SAMLCredential credential) {
 
         // Get HSA id for the selected MIU
         String medarbetaruppdragHsaId = getAssertion(credential).getEnhetHsaId();
