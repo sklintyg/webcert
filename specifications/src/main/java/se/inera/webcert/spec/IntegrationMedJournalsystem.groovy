@@ -11,17 +11,6 @@ class IntegrationMedJournalsystem {
         content
     }
 
-    def loggaInSom(String id) {
-        Browser.drive {
-            go "/welcome.jsp"
-
-            waitFor {
-                at WelcomePage
-            }
-            page.loginAs(id)
-        }
-    }
-
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
             go "/visa/intyg/" + intygId + "?alternatePatientSSn="
@@ -41,12 +30,16 @@ class IntegrationMedJournalsystem {
     }
 
     boolean intygLaddat() {
+        boolean result;
         Browser.drive {
             waitFor {
                 at VisaPage
             }
-            intygLaddat.isDisplayed()
+            waitFor {
+                result = page.intygLaddat.isDisplayed();
+            }
         }
+        return result;
     }
 
     boolean intygInteLaddat() {
@@ -110,9 +103,14 @@ class IntegrationMedJournalsystem {
     }
 
     boolean signerandeLakareMeddelandeVisas(expected) {
+        def result
         Browser.drive {
-            return (expected == page.signerandeLakare.text()) && page.signerandeLakare.isDisplayed()
+            waitFor {
+                page.signerandeLakare.isDisplayed()
+            }
+            result = (expected == page.signerandeLakare.text())
         }
+        return result
     }
 
     String patientensNamn() {
@@ -202,7 +200,7 @@ class IntegrationMedJournalsystem {
 
     boolean skrivUtKnappVisas() {
         Browser.drive {
-            return page.skrivUtKnapp.isDisplayed()
+            return (page.skrivUtKnapp?.present && page.skrivUtKnapp.isDisplayed()) || (page.skrivUtKnappEmployer?.present && page.skrivUtKnappEmployer.isDisplayed())
         }
     }
 
@@ -213,9 +211,13 @@ class IntegrationMedJournalsystem {
     }
 
     boolean kopieraKnappVisas() {
+        boolean result;
         Browser.drive {
-            return page.kopieraKnapp.isDisplayed()
+            waitFor {
+                result = page.kopieraKnapp.isDisplayed()
+            }
         }
+        return result;
     }
 
     boolean kopieraKnappVisasEj() {
@@ -256,11 +258,15 @@ class IntegrationMedJournalsystem {
     }
 
     boolean integrationBorttagetMeddelandeVisas() {
+        boolean result;
         Browser.drive {
             waitFor {
                 at EditCertPage
             }
-            return page.integrationBorttaget.isDisplayed()
+            waitFor{
+                result = page.integrationBorttaget.isDisplayed();
+            }
+            return result;
         }
     }
 
@@ -379,5 +385,6 @@ class IntegrationMedJournalsystem {
             }
         }
     }
+
 
 }

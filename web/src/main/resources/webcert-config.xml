@@ -18,6 +18,7 @@
  <!-- <import resource="security/elegSecurityContext.xml" />       -->
   <import resource="security/securityContextAlt.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
+  <import resource="classpath:/fmb-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
   <import resource="classpath:/pp-services-config.xml" />
   <import resource="classpath:/pp-stub-context.xml" />
@@ -90,6 +91,9 @@
     <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
     <bean id="termsFilter" class="se.inera.auth.TermsFilter"/>
 
+    <!-- Eleg login redirect filter for easier URL handling in PP -->
+    <bean id="elegRedirectFilter" class="se.inera.auth.eleg.ElegRedirectFilter" />
+
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
       class="se.inera.certificate.integration.json.CustomObjectMapper" />
@@ -114,4 +118,5 @@
       <property name="queueCapacity" value="25" />
     </bean>
   </beans>
+
 </beans>

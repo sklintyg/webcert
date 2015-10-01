@@ -38,7 +38,7 @@ public abstract class BaseSAMLCredentialTest {
         }
 
         if (assertionPrivatlakare == null) {
-            XMLObject responseXmlObj = readSamlDocument("CGIElegAssertiontest/sample-saml2-response.xml");
+            XMLObject responseXmlObj = readSamlDocument("CGIElegAssertiontest/sample-saml2-response-bankid.xml");
             Response response = (Response) responseXmlObj;
             assertionPrivatlakare = response.getAssertions().get(0);
         }

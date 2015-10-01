@@ -45,6 +45,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>fmb-integration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>notification-stub</artifactId>
     </dependency>
     <dependency>
@@ -117,6 +121,10 @@
       <groupId>se.riv.ehr.logstore</groupId>
       <artifactId>ehr-logstore-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
+      <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
+    </dependency>
 
     <!-- Intyg Schemas -->
     <dependency>
@@ -128,8 +136,8 @@
       <artifactId>intyg-transportstyrelsen-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
-      <artifactId>webcert-privatepractitioner-terms</artifactId>
+      <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner.terms</groupId>
+      <artifactId>intyg-infrastructure-directory-privatepractitioner-terms-schemas</artifactId>
     </dependency>
 
     <!-- CGI GRP schema -->

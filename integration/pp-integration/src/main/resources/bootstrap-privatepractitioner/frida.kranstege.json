@@ -29,7 +29,7 @@
     "enhet": {
     "enhetsId": {
         "root": "1.2.752.129.2.1.4.1",
-        "extension": "HSA123456780-0000"
+        "extension": "HSA123456780-0003"
     },
     "enhetsnamn": "Privatenheten 3",
     "arbetsplatskod": {},
@@ -49,7 +49,7 @@
     "vardgivare": {
         "vardgivareId": {
             "root": "1.2.752.129.2.1.4.1",
-            "extension": "HSA123456780-0000"
+            "extension": "HSA123456780-0002"
         },
         "vardgivarenamn" : "Privatvardgivaren"
     }

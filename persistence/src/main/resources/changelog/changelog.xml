@@ -525,4 +525,31 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="21" author="fe">
+    <createTable tableName="FMB">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="ICD10" type="varchar(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TYP" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="URSPRUNG" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TEXT" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="SENAST_UPPDATERAD" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+        columnName="ID" incrementBy="1" startWith="1"
+        tableName="FMB" />
+  </changeSet>
+
 </databaseChangeLog>

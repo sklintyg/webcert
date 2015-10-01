@@ -30,10 +30,16 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses) throws IntygModuleFacadeException {
+    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses, boolean isEmployer)
+            throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            PdfResponse pdfResponse = moduleApi.pdf(new InternalModelHolder(internalIntygJsonModel), statuses, ApplicationOrigin.WEBCERT);
+            PdfResponse pdfResponse;
+            if (!isEmployer) {
+                pdfResponse = moduleApi.pdf(new InternalModelHolder(internalIntygJsonModel), statuses, ApplicationOrigin.WEBCERT);
+            } else {
+                pdfResponse = moduleApi.pdfEmployer(new InternalModelHolder(internalIntygJsonModel), statuses, ApplicationOrigin.WEBCERT);
+            }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
             LOG.error("ModuleException occured when when generating PDF document from internal");

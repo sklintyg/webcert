@@ -41,7 +41,9 @@ function getUser() {
                 user.jsMinified = false;
             }
         }
-        console.log('---- user.jsMinified : ' + user.jsMinified);
+        if (window.console) {
+            console.log('---- user.jsMinified : ' + user.jsMinified);
+        }
         return data;
     });
 };
@@ -301,7 +303,9 @@ function getUser() {
 
             if (user.jsMinified) {
 
-                console.log('use mini is true! loading compressed modules');
+                if (window.console) {
+                    console.log('use mini is true! loading compressed modules');
+                }
 
                 modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + MODULE_CONFIG.BUILD_NUMBER));
                 // All dependencies for the modules are included in module.min.js
@@ -317,7 +321,9 @@ function getUser() {
 
             // Only needed for development since all dependencies are included in other files.
             if (!user.jsMinified) {
-                console.log('use mini is false! loading modules');
+                if (window.console) {
+                    console.log('use mini is false! loading modules');
+                }
                 angular.forEach(arguments, function(data) {
                     if (data !== undefined && data[0] instanceof Array) {
                         angular.forEach(data[0], function(depdendency) {

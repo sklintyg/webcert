@@ -8,4 +8,4 @@
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-4 | och typ | ts-bas|
 | ensure | intyg laddat |
-| skriv ut knapp visas |
+| ensure | skriv ut vanlig knapp visas |

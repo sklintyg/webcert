@@ -38,7 +38,6 @@
         serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
         address="${cgi.funktionstjanster.grp.url}" />
 
-
     <!-- GRPT test env TODO wrap in beans profile="wc-security-test -->
     <http:conduit
         name="\{http://funktionstjanster.se/grp/service/v1.0.0/.*.http-conduit">

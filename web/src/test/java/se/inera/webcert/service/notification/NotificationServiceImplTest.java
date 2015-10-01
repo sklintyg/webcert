@@ -38,6 +38,7 @@ import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -64,6 +65,9 @@ public class NotificationServiceImplTest {
 
     @Mock
     private NotificationMessageFactory mockNotificationMessageFactory;
+    
+    @Mock
+    private MonitoringLogService mockMonitoringLogService;
     
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
@@ -18,10 +20,13 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+@RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest {
 
     public static final String VARDGIVARE_1 = "VG1";
@@ -36,31 +41,23 @@ public class WebCertUserServiceTest {
 
     @Test
     public void testCheckIfAuthorizedForUnit() {
-
         // anv inloggad på VE1 på VG1
         WebCertUser user = createWebCertUser(false);
 
         assertTrue("ska kunna titta på ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
-
         assertFalse("ska INTE kunna titta på ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
-
         assertTrue("ska kunna redigera ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
-
         assertFalse("ska INTE kunna redigera ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
 
     @Test
     public void testCheckIfAuthorizedForUnitWhenIntegrated() {
-
         // anv i JS-läge inloggad på VE1 på VG1
         WebCertUser user = createWebCertUser(true);
 
         assertTrue("ska kunna titta på ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
-
         assertTrue("ska kunna titta på ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
-
         assertTrue("ska kunna redigera ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
-
         assertFalse("ska INTE kunna redigera ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
 
@@ -125,24 +122,32 @@ public class WebCertUserServiceTest {
         user.setValdVardgivare(vg1);
 
         if (fromJS) {
-            Set<String> set = new HashSet<String>();
-            set.add(WebcertFeature.FRAN_JOURNALSYSTEM.getName());
-            user.setAktivaFunktioner(set);
+            user.setRoles(createUserRoles(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
         }
 
         return user;
     }
 
     private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
     }
 
     private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
         Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
         for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
         }
         return privileges;
+    }
+
+    private Map<String, String> createUserRoles(UserRole... userRoles) {
+        Map<String, String> roles = new HashMap<>();
+
+        for (UserRole userRole : userRoles) {
+            roles.put(userRole.name(), userRole.text());
+        }
+
+        return roles;
     }
 
 }

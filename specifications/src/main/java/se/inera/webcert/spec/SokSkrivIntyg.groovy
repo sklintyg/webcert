@@ -257,13 +257,15 @@ class SokSkrivIntyg {
         result
     }
 
-    boolean kopieraKnappVisasForIntyg(boolean expected = true, String intygId) {
+    boolean kopieraKnappVisasForIntyg(String intygId) {
+        def result
         Browser.drive {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
-            return page.copyBtn(intygId).isDisplayed()
+            result = page.copyBtn(intygId).isDisplayed()
         }
+        return result
     }
 
     boolean skickaStatusVisas() {

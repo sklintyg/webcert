@@ -3,8 +3,8 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 !3 Lägg till komplett utkast
 
 | skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-kopiera-och-signera | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
+| webcert-fitnesse-kopiera-och-signera | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | 200 |
 
 !3 Signera utkastet
 | script | !-HanteraUtkast-! |

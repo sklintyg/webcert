@@ -165,7 +165,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp) {
+    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp, boolean isEmployer) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
@@ -173,7 +173,7 @@ public class IntygServiceImpl implements IntygService {
 
             verifyEnhetsAuth(intyg.getUtlatande(), true);
 
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses());
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(), isEmployer);
             
             // Log print as PDF to PDL log
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
@@ -309,9 +309,9 @@ public class IntygServiceImpl implements IntygService {
     protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
         Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), isReadOnlyOperation)) {
-            LOG.debug("User not authorized for enhet");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + vardenhet.getEnhetsid());
+            String msg = "User not authorized for enhet " + vardenhet.getEnhetsid();
+            LOG.debug(msg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
         }
     }
 

@@ -42,7 +42,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String LOCAL_ENTITY_ID = "localEntityId";
     private static final String REMOTE_ENTITY_ID = "remoteEntityId";
     private static final String HSA_ID = "191212121212";
-    private static final String PERSON_ID = "191212121212";
+    private static final String PERSON_ID = "197705232382";
     //private static Assertion assertionPrivatlakare;
 
     @Mock

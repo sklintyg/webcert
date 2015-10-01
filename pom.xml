@@ -34,6 +34,7 @@
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
+    <rivta-decisionsupport.version>1.0.RC1.0</rivta-decisionsupport.version>
 
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
     <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
@@ -47,6 +48,8 @@
 
     <cgi-funktionstjanster-grp.version>0-SNAPSHOT</cgi-funktionstjanster-grp.version>
     <cgi-funktionstjanster-grp.version.range>(,1.0.0]</cgi-funktionstjanster-grp.version.range>
+
+    <skip-jacoco>true</skip-jacoco>
   </properties>
 
   <modules>
@@ -58,6 +61,7 @@
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
     <module>integration/pp-integration</module>
+    <module>integration/fmb-integration</module>
     <module>specifications</module>
     <module>stubs/fk-stub</module>
     <module>stubs/loggtjanst-stub</module>
@@ -133,6 +137,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>pp-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fmb-integration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -238,6 +247,11 @@
         <artifactId>ehr-logstore-schemas</artifactId>
         <version>${rivta-ehr-logstore.version}</version>
       </dependency>
+      <dependency>
+        <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
+        <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
+        <version>${rivta-decisionsupport.version}</version>
+      </dependency>
 
       <!-- Intyg Schemas -->
       <dependency>
@@ -261,8 +275,8 @@
         <version>${intyg-privatepractitioner.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
-        <artifactId>webcert-privatepractitioner-terms</artifactId>
+        <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner.terms</groupId>
+        <artifactId>intyg-infrastructure-directory-privatepractitioner-terms-schemas</artifactId>
         <version>${intyg-privatepractitioner.version}</version>
       </dependency>
 
@@ -508,6 +522,9 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+            <skip>${skip-jacoco}</skip>
+        </configuration>
         <executions>
           <execution>
             <id>prepare-unit-test-agent</id>

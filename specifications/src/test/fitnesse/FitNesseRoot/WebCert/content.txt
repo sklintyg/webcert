@@ -25,7 +25,7 @@
 
 
 *!
-!contents -R2 -g -H
+!contents -R2 -g -H -f
 
 !*> '''Variables Defined'''
 !define TEST_SYSTEM {slim}

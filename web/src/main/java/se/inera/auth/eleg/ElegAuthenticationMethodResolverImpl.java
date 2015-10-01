@@ -1,11 +1,13 @@
 package se.inera.auth.eleg;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
 import se.inera.webcert.hsa.model.AuthenticationMethod;
+
 
 /**
  * Created by eriklupander on 2015-08-24.
@@ -13,57 +15,50 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 @Service
 public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationMethodResolver {
 
-    @Value("${cgi.saml.issuer.netid.commonNames}")
-    private String netIdIssuerCommonNames;
-
-    @Value("${cgi.saml.issuer.bankid.commonNames}")
-    private String bankIdIssuerCommonNames;
+    private static final Logger log = LoggerFactory.getLogger(ElegAuthenticationMethodResolverImpl.class);
 
     @Autowired(required = false)
     ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
 
+
     @Override
     public AuthenticationMethod resolveAuthenticationMethod(SAMLCredential samlCredential) {
-        String issuerCommonName = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.UTFARDARE_CA_NAMN_ATTRIBUTE);
+        String loginMethod = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.LOGIN_METHOD);
 
-        return resolveAuthenticationMethod(issuerCommonName);
+        if (loginMethod == null || loginMethod.trim().length() == 0) {
+            throw new IllegalArgumentException("Cannot process SAML ticket for e-leg. Null or empty LoginMethod attribute on Assertion. Must be one of ccp8,ccp10,ccp11,ccp12 or ccp13");
+        }
+
+        return resolveAuthenticationMethod(loginMethod);
     }
 
-    private AuthenticationMethod resolveAuthenticationMethod(String issuerCommonName) {
-        if (issuerCommonName == null) {
-            throw new IllegalArgumentException("Cannot resolve issuerCommonName of SAML ticket.");
-        }
+    private AuthenticationMethod resolveAuthenticationMethod(String loginMethod) {
 
-        if (netIdIssuerCommonNames == null || netIdIssuerCommonNames.trim().length() == 0) {
-            throw new IllegalStateException("Cannot resolve AuthenticationMethod from issuer CN, no value set for NetID identifiers using property 'cgi.saml.issuer.netid.commonNames'");
+        ElegLoginMethod loginMethodEnum = null;
+        try {
+            loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("Cannot resolve AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
+            throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
         }
+        switch(loginMethodEnum) {
+            case CCP1:
+                // Legacy NetID identifier for production
+            case CCP2:
+                // Legacy NetID identifier for test
+            case CCP8:
+                return AuthenticationMethod.NET_ID;
 
-        if (bankIdIssuerCommonNames == null || bankIdIssuerCommonNames.trim().length() == 0) {
-            throw new IllegalStateException("Cannot resolve AuthenticationMethod from issuer CN, no value set for BankID identifiers using property 'cgi.saml.issuer.bankid.commonNames'");
-        }
+            case CCP10:
+            case CCP12:
+                return AuthenticationMethod.BANK_ID;
 
-
-        boolean matchesNetId = commonNameMatchesMethod(issuerCommonName, netIdIssuerCommonNames);
-        boolean matchesBankId = commonNameMatchesMethod(issuerCommonName, bankIdIssuerCommonNames);
-        if (matchesNetId && matchesBankId) {
-            throw new IllegalArgumentException("Cannot resolve AuthenticationMethod, both NetID and BankID match specified issuer '" + issuerCommonName + "'");
+            case CCP11:
+            case CCP13:
+                return AuthenticationMethod.MOBILT_BANK_ID;
+            default:
+                break;
         }
-        else if (matchesNetId) {
-            return AuthenticationMethod.NET_ID;
-        } else if (matchesBankId) {
-            return AuthenticationMethod.BANK_ID;
-        } else {
-            throw new IllegalArgumentException("Cannot resolve AuthenticationMethod, issuer '" + issuerCommonName + "' does not match any configured issuer.");
-        }
-    }
-
-    private boolean commonNameMatchesMethod(String issuerCommonName, String matchString) {
-        String[] arr = matchString.split("\\|");
-        for (int a = 0; a < arr.length; a++) {
-            if (issuerCommonName.toLowerCase().trim().contains(arr[a].toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
     }
 }

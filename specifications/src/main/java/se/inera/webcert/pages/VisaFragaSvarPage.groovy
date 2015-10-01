@@ -21,6 +21,7 @@ class VisaFragaSvarPage extends AbstractPage {
         sendQuestionBtn(required: false, wait: true) { displayed($("#sendQuestionBtn")) }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
         skrivUtBtn(required: false, wait: true) { displayed($("#downloadprint")) }
+        skrivUtBtnEmployer(required: false, wait: true) { displayed($("#downloadprintemployer")) }
         kopieraBtn(required: false, wait: true) { displayed($("#copyBtn")) }
         kopieraBtnNoWait(required: false) { $("#copyBtn") }
         makuleraBtn(required: false, wait: true) { displayed($("#makuleraBtn")) }
@@ -162,30 +163,20 @@ class VisaFragaSvarPage extends AbstractPage {
         }
     }
 
-    boolean qaHandledPanel(String internid, boolean expected) {
+    boolean qaHandledPanel(String internid) {
+        def ref = "#qahandled-${internid}";
+        def result
         Browser.drive {
-            def ref = "#qahandled-${internid}";
-            if (expected) {
-                waitFor {
-                    $(ref).isDisplayed()
-                }
-            } else {
-                !$(ref).isDisplayed()
-            }
+                result = $(ref).isDisplayed()
         }
+        return result
     }
 
-    boolean qaUnhandledPanel(String id, boolean expected) {
-        boolean result = false
+    boolean qaUnhandledPanel(String id) { 
+        def ref = "#qaunhandled-${id}";
+        def result
         Browser.drive {
-            def ref = "#qaunhandled-${id}";
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+                result = $(ref).isDisplayed()
         }
         return result
     }

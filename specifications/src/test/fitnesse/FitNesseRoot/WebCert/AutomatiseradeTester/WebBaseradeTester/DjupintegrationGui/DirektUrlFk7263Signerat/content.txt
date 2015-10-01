@@ -1,10 +1,12 @@
 Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg via djupintegration
 
-!3 Välj patient och visa intyget
+!3 Logga in
 
-| script | !-SokSkrivIntyg-! |
+| script | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+
+
+!3 Välj patient och visa intyget
 
 | script | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration | intyg-fit-1 |

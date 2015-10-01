@@ -25,7 +25,7 @@ public class ElegAuthenticationAttributeHelperTest extends BaseSAMLCredentialTes
         testee = new ElegAuthenticationAttributeHelperImpl();
         SAMLCredential cred = buildPrivatlakareSamlCredential();
         String personId = testee.getAttribute(cred, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
-        assertEquals("191212121212", personId);
+        assertEquals("197705232382", personId);
     }
 
     @Test(expected = IllegalArgumentException.class)

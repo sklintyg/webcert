@@ -18,7 +18,7 @@ class EditCertPage extends AbstractEditCertPage {
         // Meddelanden
         nyttPersonnummer(wait: true) { displayed($("#nyttPersonnummer")) }
         signerandeLakare(wait: true) { displayed($("#signingDoctor")) }
-        integrationBorttaget(wait: true) { displayed($("#integration-deleted")) }
+        integrationBorttaget(required: false) { $("#integration-deleted") }
 
         // Intyg
         form { $("form") }

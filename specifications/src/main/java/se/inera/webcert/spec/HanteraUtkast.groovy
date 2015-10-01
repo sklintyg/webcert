@@ -70,13 +70,13 @@ class HanteraUtkast {
                 at EditeraIntygPage
             }
             waitFor {
-                page.radera.click()
+                page.radera.isDisplayed();
             }
-            Thread.sleep(300);
+            page.radera.click();
             waitFor {
-                page.konfirmeraRadera.click()
+                page.konfirmeraRadera.isDisplayed();
             }
-            Thread.sleep(300);
+            page.konfirmeraRadera.click();
         }
     }
 

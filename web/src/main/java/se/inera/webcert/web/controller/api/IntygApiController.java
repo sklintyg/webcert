@@ -21,12 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.converter.IntygDraftsConverter;
-import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
@@ -126,7 +127,12 @@ public class IntygApiController extends AbstractApiController {
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }
 
-        if (checkIfWebcertFeatureIsAvailable(WebcertFeature.FRAN_JOURNALSYSTEM)) {
+        UserRole[] userRoles = new UserRole[] {
+            UserRole.ROLE_LAKARE_DJUPINTEGRERAD,
+            UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD
+        };
+
+        if (checkIfUserHasRole(userRoles)) {
             LOG.debug("Setting djupintegrerad flag on request to true");
             req.setDjupintegrerad(true);
         }

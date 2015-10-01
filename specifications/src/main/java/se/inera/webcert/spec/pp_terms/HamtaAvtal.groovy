@@ -1,5 +1,6 @@
 package se.inera.webcert.spec.pp_terms
 
+import org.joda.time.LocalDateTime
 import se.inera.webcert.spec.util.WsClientFixture
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerterms.v1.rivtabp21.GetPrivatePractitionerTermsResponderInterface
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsType
@@ -13,6 +14,10 @@ class HamtaAvtal extends WsClientFixture {
 
     String avtalText
     Integer avtalVersion
+    LocalDateTime avtalVersionDatum = null
+
+    boolean avtalVersionDatumNotNull = false
+
 
     public HamtaAvtal() {
         super()
@@ -37,7 +42,9 @@ class HamtaAvtal extends WsClientFixture {
 
         avtalText = response.avtal.avtalText
         avtalVersion = response.avtal.avtalVersion
-
+        avtalVersionDatum = response.avtal.avtalVersionDatum
+        avtalVersionDatumNotNull = avtalVersionDatum != null
         response.resultCode
     }
+
 }

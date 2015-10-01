@@ -69,17 +69,15 @@ class SvaraOchFraga {
         }
     }
 
-    boolean enhetsvaljareVisas(boolean expected = true) {
+    boolean enhetsvaljareVisas() {
+        def result 
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            if (expected) {
-                return page.careUnitSelector.isDisplayed()
-            } else {
-                return !page.careUnitSelectorNoWait.present || !page.careUnitSelectorNoWait.isDisplayed()
-            }
+                result = page.careUnitSelectorLink.isDisplayed()
         }
+        return result
     }
 
     def filtreraFragorOchSvar(boolean expected = true) {
@@ -130,25 +128,28 @@ class SvaraOchFraga {
         }
     }
 
-    boolean fragaVisasIListanMedOhanteradeFragor(String id, boolean expected = true) {
+    boolean fragaVisasIListanMedOhanteradeFragor(String id) {
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            return page.qaUnhandledPanel(id, expected)
-
+            result = page.qaUnhandledPanel(id)
         }
+        return result
     }
 
 
-    boolean fragaVisasIListanMedHanteradeFragor(String id, boolean expected = true) {
+    boolean fragaVisasIListanMedHanteradeFragor(String id) {
+        
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            return page.qaHandledPanel(id, expected)
-
+            result = page.qaHandledPanel(id)
         }
+        return result
     }
 
     boolean intygMedFragaSvarSidanVisas() {
@@ -466,7 +467,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            return page.skrivUtBtn.isDisplayed()
+            return (page.skrivUtBtn?.present && page.skrivUtBtn.isDisplayed()) || (page.skrivUtBtnEmployer?.present && page.skrivUtBtnEmployer.isDisplayed())
 
         }
     }

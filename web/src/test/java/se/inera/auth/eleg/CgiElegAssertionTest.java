@@ -32,14 +32,15 @@ public class CgiElegAssertionTest extends BaseSAMLCredentialTest {
 
         CgiElegAssertion assertion = new CgiElegAssertion(assertionPrivatlakare);
 
-        assertEquals("191212121212", assertion.getPersonId());
-        assertEquals("Tolvan", assertion.getFornamn());
-        assertEquals("Tolvansson", assertion.getEfternamn());
+        assertEquals("197705232382", assertion.getPersonId());
+        assertEquals("Frida", assertion.getFornamn());
+        assertEquals("Kranstege", assertion.getEfternamn());
 
-        assertEquals("Testbank A e-Customer CA1 for BankID", assertion.getUtfardareCANamn());
+        assertEquals("Testbank A e-Customer CA2 for BankID", assertion.getUtfardareCANamn());
         assertEquals("Testbank A AB (publ)", assertion.getUtfardareOrganisationsNamn());
         assertEquals("3", assertion.getSecurityLevel());
 
         assertEquals("urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI", assertion.getAuthenticationScheme());
+        assertEquals("ccp10", assertion.getLoginMethod());
     }
 }

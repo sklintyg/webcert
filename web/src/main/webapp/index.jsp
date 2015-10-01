@@ -58,7 +58,7 @@
           <div style="margin-top:60px;"><b>Ny användare</b></div>
           <p>Är du privatläkare och vill kunna utfärda intyg i Webcert? Då behöver du skapa ett konto.</p>
 
-          <p><a href="<spring:eval expression="@webcertProps.getProperty('private.practitioner.portal.registration.url')" />" >
+          <p><a href="<spring:eval expression="@webcertProps.getProperty('privatepractitioner.portal.registration.url')" />" >
             Skapa konto i Webcert</a>
           </p>
         </div>
