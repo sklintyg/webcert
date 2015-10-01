@@ -2,10 +2,6 @@ package se.inera.webcert.security;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -36,6 +32,13 @@ import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * @author andreaskaltenbach
  */
@@ -56,8 +59,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     private static final String TANDLAKARE = "Tandläkare";
 
     private static final String LAKARE_KOD_204010 = "204010";
-    private static final String LAKARE_KOD_203090 = "203090";
-    private static final String LAKARE_KOD_204090 = "204090";
 
     private static final String IMAGINARY_GROUPPRESCRIPTIONCODE = "0000000";
 
@@ -142,17 +143,16 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     protected List<GetHsaPersonHsaUserType> getPersonInfo(String hsaId) {
         List<GetHsaPersonHsaUserType> hsaPersonInfo = null;
-            try {
-                hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
-                if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
-                    LOG.info("getHsaPersonInfo did not return any info for user '{}'", hsaId);
-                }
-
-            } catch (Exception e) {
-                LOG.error("Failed retrieving user information from HSA for user {}, error message {}", hsaId, e.getMessage());
-                throw new HsaServiceException(hsaId, e);
+        try {
+            hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
+            if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
+                LOG.info("getHsaPersonInfo did not return any info for user '{}'", hsaId);
             }
 
+        } catch (Exception e) {
+            LOG.error("Failed retrieving user information from HSA for user {}, error message {}", hsaId, e.getMessage());
+            throw new HsaServiceException(hsaId, e);
+        }
 
         return hsaPersonInfo;
     }
@@ -180,39 +180,37 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     String getGroupPrescriptionCode() {
         // TODO create some intelligent logic to get user's group prescription code
-        return "9300005";
+        return null;
     }
 
     String lookupUserRole(SAMLCredential credential, List<GetHsaPersonHsaUserType> personInfo) {
         SakerhetstjanstAssertion sa = getAssertion(credential);
 
         // 1. Kolla yrkesgrupper och se vilken roll som användaren ska ha.
-        //    Görs mha hsaPersonInfo
-        // ?? vad händer om det är mer än en yrkersgrupp
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(personInfo);
         UserRole userRole = lookupUserRoleByLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
 
-        // If user has the role 'Tandläkare' then return
+        // If user has the role 'Tandläkare' then return, no need to do any more lookup
         if (UserRole.ROLE_TANDLAKARE.equals(userRole)) {
             return userRole.name();
         }
 
-
-        // 2. Kan inte rollen bestämmas via 1 så kombinera befattningskod och gruppförskrivarkod
-        //    för att bestämma användarens roll. Detta ska gå att hämta ur SAML-biljetten
-        //
-        //    Gruppförskrivarkoden också kommer i personalPrescriptionCode och då måste man också hålla reda på beffattningskoden.
-        //
-        //    Ett problem som vi har i Pascal är att om en användare har dubbla legitimationer (vilket förekommer), t ex SSK och AT-läkare. Då kommer det 2 befattningskoder i biljetten, men då litar vi inte på biljetten utan gör en ny slagning mot HSA.
+        // Lookup role by the title code
         if (userRole == null) {
             userRole = lookupUserRoleByBefattningskod(sa.getTitelKod());
         }
 
-        // Lookup user role by doctors title
+        // Lookup role by combination of title code and group prescription code
+        if (userRole == null) {
+            userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(sa.getTitelKod(), sa.getForskrivarkod());
+        }
+
+        // Lookup role by title
         if (userRole == null) {
             userRole = lookupUserRoleByTitel(sa.getTitel());
         }
 
+        // Do we have a doctor yet?
         boolean doctor = UserRole.ROLE_LAKARE.equals(userRole);
 
         // Use the request URI to decide if this is a 'djupintegration' or 'uthopp' user
@@ -258,43 +256,29 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     UserRole lookupUserRoleByBefattningskod(List<String> befattningsKoder) {
-        String befattningsKod = null;
-
         if (befattningsKoder == null || befattningsKoder.size() == 0) {
             return null;
         }
 
-        if (befattningsKoder.size() > 1) {
-            // Ett problem som vi har i Pascal är att om en användare har dubbla legitimationer
-            // (vilket förekommer), t ex SSK och AT-läkare. Då kommer det 2 befattningskoder
-            // i biljetten, men då litar vi inte på biljetten utan gör en ny slagning mot HSA.
-
-            //befattningsKod = LAKARE_KOD_203090;  // This is just for test
-
-            // For now, just return the first title code
-            // TODO Call HSA to decide users title code
-            //befattningsKod = befattningsKoder.get(0);
-            return lookupUserRoleByBefattningskod(befattningsKoder.get(0));
-
-        } else {
-            return lookupUserRoleByBefattningskod(befattningsKoder.get(0));
-        }
-
-    }
-
-    UserRole lookupUserRoleByBefattningskod(String befattningsKod) {
-        if (befattningsKod == null || befattningsKod.equals("")) {
-            return null;
-        }
-
-        if (befattningsKod.equals(LAKARE_KOD_204010)) {
+        if (befattningsKoder.contains(LAKARE_KOD_204010)) {
             return UserRole.ROLE_LAKARE;
         }
 
-        // We cannot decide user's role yet, create another lookup
-        // based on title code and group prescription code
-        String gruppforskrivarKod = getGroupPrescriptionCode();
-        return lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningsKod, gruppforskrivarKod);
+        return null;
+    }
+
+    UserRole lookupUserRoleByBefattningskodAndGruppforskrivarkod(List<String> befattningsKoder, List<String> gruppforskrivarKoder) {
+        // Create matrix
+        for (String befattningskod : befattningsKoder) {
+            for (String gruppforskrivarKod : gruppforskrivarKoder) {
+                UserRole userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningskod, gruppforskrivarKod);
+                if (userRole != null) {
+                    return userRole;
+                }
+            }
+        }
+
+        return null;
     }
 
     UserRole lookupUserRoleByBefattningskodAndGruppforskrivarkod(String befattningsKod, String gruppforskrivarKod) {
@@ -311,6 +295,16 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return null;
     }
 
+    /** Lookup user role by looking into 'legitimerade yrkesgrupper'.
+     * Currently there are only two 'yrkesgrupper' to look for:
+     * <ul>
+     * <li>Läkare</li>
+     * <li>Tandläkare</li>
+     * </ul>
+     *
+     * @param legitimeradeYrkesgrupper string array with 'legitimerade yrkesgrupper'
+     * @return a user role if valid 'yrkesgrupper', otherwise null
+     */
     UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
         if (legitimeradeYrkesgrupper.contains(LAKARE)) {
             return UserRole.ROLE_LAKARE;
@@ -331,10 +325,8 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     DefaultSavedRequest getCurrentRequest() {
-
-            HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-            return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-
+        HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
     }
 
 
@@ -435,7 +427,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     private List<String> extractLegitimeradeYrkesgrupper(List<GetHsaPersonHsaUserType> hsaUserTypes) {
-
         Set<String> lygSet = new TreeSet<>();
 
         for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
@@ -450,7 +441,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     private List<String> extractSpecialiseringar(List<GetHsaPersonHsaUserType> hsaUserTypes) {
-
         Set<String> specSet = new TreeSet<>();
 
         for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
@@ -465,7 +455,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
-
         List<String> titlar = new ArrayList<String>();
 
         for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
@@ -478,7 +467,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
-
         Vardgivare firstVardgivare = user.getVardgivare().get(0);
         user.setValdVardgivare(firstVardgivare);
 
