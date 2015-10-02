@@ -106,6 +106,24 @@ public class WebCertUserDetailsServiceTest {
     }
 
     @Test
+    public void assertRoleAndPrivilgesWhenUserIsAtLakare() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-at-lakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+        TitleCode titleCode = new TitleCode("203090", "0000000‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
     public void assertRoleAndPrivilegesWhenUserHasTitleLakare() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
