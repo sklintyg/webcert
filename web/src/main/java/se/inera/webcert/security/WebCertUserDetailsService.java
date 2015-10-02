@@ -55,12 +55,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
 
-    private static final String LAKARE = "Läkare";
-    private static final String TANDLAKARE = "Tandläkare";
+    private static final String TITLE_LAKARE = "Läkare";
+    private static final String TITLE_TANDLAKARE = "Tandläkare";
 
-    private static final String LAKARE_KOD_204010 = "204010";
-
-    private static final String IMAGINARY_GROUPPRESCRIPTIONCODE = "0000000";
+    private static final String TITLECODE_AT_LAKARE = "204010";
 
 
     // ~ Instance fields
@@ -78,11 +76,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     @Autowired
     private TitleCodeRepository titleCodeRepository;
 
-    // private SAMLCredential credential;
-    // private SakerhetstjanstAssertion assertion;
-    // private List<Vardgivare> authorizedVardgivare;
-    // private List<GetHsaPersonHsaUserType> hsaPersonInfo;
-    // private DefaultSavedRequest savedRequest;
 
     // - - - - - Public scope - - - - -
 
@@ -97,13 +90,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
 
         try {
-            // Get the current request
-            //savedRequest = getCurrentRequest();
-
-            //assertion = getAssertion(credential);
-            //authorizedVardgivare = getAuthorizedVardgivare(getAssertion(credential).getHsaId());
-            //hsaPersonInfo = getPersonInfo(getAssertion(credential).getHsaId());
-
             // Create the user
             WebCertUser webCertUser = createUser(credential);
 
@@ -120,14 +106,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
+
     // - - - - - Protected scope - - - - -
 
     protected SakerhetstjanstAssertion getAssertion(SAMLCredential credential) {
-        //if (assertion == null) {
-            return getAssertion(credential.getAuthenticationAssertion());
-       // }
-
-       // return assertion;
+        return getAssertion(credential.getAuthenticationAssertion());
     }
 
     protected List<Vardgivare> getAuthorizedVardgivare(String hsaId) {
@@ -158,6 +141,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
 
+    protected DefaultSavedRequest getRequest() {
+        HttpServletRequest curRequest = getCurrentRequest();
+        return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
+    }
+
     // - - - - - Package scope - - - - -
 
     WebCertUser createUser(SAMLCredential credential) {
@@ -178,68 +166,67 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     }
 
-    String getGroupPrescriptionCode() {
-        // TODO create some intelligent logic to get user's group prescription code
-        return null;
-    }
-
     String lookupUserRole(SAMLCredential credential, List<GetHsaPersonHsaUserType> personInfo) {
         SakerhetstjanstAssertion sa = getAssertion(credential);
 
-        // 1. Kolla yrkesgrupper och se vilken roll som användaren ska ha.
+        // 1. Bestäm användarens roll utefter legitimerade yrkesgrupper.
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(personInfo);
         UserRole userRole = lookupUserRoleByLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
 
-        // If user has the role 'Tandläkare' then return, no need to do any more lookup
         if (UserRole.ROLE_TANDLAKARE.equals(userRole)) {
             return userRole.name();
         }
 
-        // Lookup role by the title code
+        // 2. Bestäm användarens roll utefter befattningskod
         if (userRole == null) {
             userRole = lookupUserRoleByBefattningskod(sa.getTitelKod());
         }
 
-        // Lookup role by combination of title code and group prescription code
+        // 3. Bestäm användarens roll utefter kombinationen befattningskod och gruppförskrivarkod
         if (userRole == null) {
             userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(sa.getTitelKod(), sa.getForskrivarkod());
         }
 
-        // Lookup role by title
+        // 4. Bestäm användarens roll utefter titlen
         if (userRole == null) {
             userRole = lookupUserRoleByTitel(sa.getTitel());
         }
 
-        // Do we have a doctor yet?
-        boolean doctor = UserRole.ROLE_LAKARE.equals(userRole);
+        // 5. Har vi fått fram en läkare ännu?
+        boolean isDoctor = UserRole.ROLE_LAKARE.equals(userRole);
 
-        // Use the request URI to decide if this is a 'djupintegration' or 'uthopp' user
-        DefaultSavedRequest savedRequest = getCurrentRequest();
+        // 6. Kontrollera ifall användaren kommer via 'djupintegration' eller 'uthopp'
+        DefaultSavedRequest savedRequest = getRequest();
         if (savedRequest != null && savedRequest.getRequestURI() != null) {
             String uri = savedRequest.getRequestURI();
 
             if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
-                if (doctor) {
+                if (isDoctor) {
+                    // 6a. Användaren är läkare som använder Webcert via djupintegration
                     return UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name();
                 } else {
+                    // 6b. Användaren är vårdadministratör som använder Webcert via djupintegration
                     return UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name();
                 }
             }
 
             if (uri.matches(REGEXP_REQUESTURI_UTHOPP)) {
-                if (doctor) {
+                if (isDoctor) {
+                    // 6c. Användaren är läkare som använder Webcert via uthoppslänk.
                     return UserRole.ROLE_LAKARE_UTHOPP.name();
                 } else {
+                    // 6d. Användaren är våradministratör som använder Webcert via uthoppslänk.
                     return UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name();
                 }
             }
         }
 
-        if (doctor) {
+        // 7. Användaren är en läkare inom landstinget som inte är 'djupintegrerad' eller 'uthopp'
+        if (isDoctor) {
             return UserRole.ROLE_LAKARE.name();
         }
 
-        // Default to the 'Vårdadministratör' role
+        // 8. Användaren är en vårdadministratör inom landstinget som inte är 'djupintegrerad' eller 'uthopp'
         return UserRole.ROLE_VARDADMINISTRATOR.name();
     }
 
@@ -248,7 +235,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             return null;
         }
 
-        if (titel.contains(LAKARE)) {
+        if (titel.contains(TITLE_LAKARE)) {
             return UserRole.ROLE_LAKARE;
         }
 
@@ -260,7 +247,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             return null;
         }
 
-        if (befattningsKoder.contains(LAKARE_KOD_204010)) {
+        if (befattningsKoder.contains(TITLECODE_AT_LAKARE)) {
             return UserRole.ROLE_LAKARE;
         }
 
@@ -306,10 +293,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
      * @return a user role if valid 'yrkesgrupper', otherwise null
      */
     UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
-        if (legitimeradeYrkesgrupper.contains(LAKARE)) {
+        if (legitimeradeYrkesgrupper.contains(TITLE_LAKARE)) {
             return UserRole.ROLE_LAKARE;
         }
-        if (legitimeradeYrkesgrupper.contains(TANDLAKARE)) {
+        if (legitimeradeYrkesgrupper.contains(TITLE_TANDLAKARE)) {
             return UserRole.ROLE_TANDLAKARE;
         }
 
@@ -324,9 +311,9 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new SakerhetstjanstAssertion(assertion);
     }
 
-    DefaultSavedRequest getCurrentRequest() {
+    HttpServletRequest getCurrentRequest() {
         HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
+        return curRequest;
     }
 
 
