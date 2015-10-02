@@ -105,23 +105,6 @@ public class WebCertUserDetailsServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
-    @Test
-    public void assertRoleAndPrivilgesWhenUserIsAtLakare() throws Exception {
-        // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-at-lakare.xml");
-        setupCallToAuthorizedEnheterForHosPerson();
-        TitleCode titleCode = new TitleCode("203090", "0000000‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
-
-        // when
-        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
-        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
-
-        // then
-        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
-
-        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
-        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
-    }
 
     @Test
     public void assertRoleAndPrivilegesWhenUserHasTitleLakare() throws Exception {
@@ -155,8 +138,8 @@ public class WebCertUserDetailsServiceTest {
     }
 
     @Test
-    public void assertRoleAndPrivilegesWhenUserHasTitleCodeLakare() throws Exception {
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+    public void assertRoleAndPrivilegesWhenUserIsAtLakare() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-at-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
         TitleCode titleCode = new TitleCode("204010", "0000000‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
@@ -164,6 +147,44 @@ public class WebCertUserDetailsServiceTest {
         // when
         when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
         when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserIsAtLakareButWithoutLicense() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-at-lakare-utan-legitimation.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        TitleCode titleCode = new TitleCode("204090", "9100009‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // when
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilgesWhenUserIsDoctorFromAbroadButHasNotYetASwedishLicense() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-within-EU-ESS-Schweiz.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+        setupCallToGetHsaPersonInfo();
+
+        TitleCode titleCode = new TitleCode("203090", "9300005", getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -311,7 +332,7 @@ public class WebCertUserDetailsServiceTest {
     @Test
     public void testPopulatingWebCertUser() throws Exception {
         // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
         setupCallToGetHsaPersonInfo();
         setupCallToWebcertFeatureService();
@@ -346,7 +367,7 @@ public class WebCertUserDetailsServiceTest {
     @Test
     public void testPopulatingWebCertUserWithTwoUserTypes() throws Exception {
         // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
         GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1", Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));

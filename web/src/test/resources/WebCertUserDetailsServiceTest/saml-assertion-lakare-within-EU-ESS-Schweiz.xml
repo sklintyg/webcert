@@ -58,12 +58,12 @@
       <saml:AttributeValue>urn:sambi:names:ac:classes:LoA3</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute FriendlyName="title" Name="urn:sambi:names:attribute:title"
-        NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>Allmäntjänstgörande</saml:AttributeValue>
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue>Läkare</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute FriendlyName="titleCode" Name="urn:sambi:names:attribute:titleCode"
-                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>204010</saml:AttributeValue>
+        NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:AttributeValue>203090</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute FriendlyName="careProviderHsaId" Name="urn:sambi:names:attribute:careProviderHsaId"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
@@ -116,7 +116,7 @@
     </saml:Attribute>
     <saml:Attribute FriendlyName="personalPrescriptionCode" Name="urn:sambi:names:attribute:personalPrescriptionCode"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>8787878</saml:AttributeValue>
+      <saml:AttributeValue>9300005</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute FriendlyName="employeeHsaId" Name="urn:sambi:names:attribute:employeeHsaId"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
@@ -136,7 +136,7 @@
     </saml:Attribute>
     <saml:Attribute Name="http://www.carelink.se/names/subject#befattningskod"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>204010</saml:AttributeValue>
+      <saml:AttributeValue>203090</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute Name="http://www.carelink.se/names/subject#vårdgivarid"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
@@ -185,7 +185,7 @@
     </saml:Attribute>
     <saml:Attribute Name="http://www.carelink.se/names/subject#förskrivarkod"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>8787878</saml:AttributeValue>
+      <saml:AttributeValue>9300005</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute Name="http://www.carelink.se/names/subject#medarbetarid"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
