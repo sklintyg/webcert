@@ -10,19 +10,16 @@
     <span ng-show="model.otherCareUnit == true" id="annanVardenhet" wc-authority role="!ROLE_PRIVATLAKARE">
       Om intyget är utfärdat på en annan vårdenhet kommer adressuppgifterna att ersättas med de för den vårdenhet du är inloggad på.
     </span>
-    <span ng-show="!model.deepIntegration" id="msgInteFranJournalSystem">
-      <br><br>I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
+    <span wc-authority role="!ROLE_LAKARE_DJUPINTEGRERAD" id="msgInteFranJournalSystem">
+      I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
     </span>
   </p>
   <p ng-show="model.patientId != undefined && model.patientId.length > 0">
     <span id="msgNyttPersonId">
       För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.
     </span>
-  <p>
   </p>
-  <p ng-show="model.intygTyp == 'fk7263'">
-    <span id="msgForlangningSjukskrivning">Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.</span>
-  </p>
+  <span ng-show="model.intygTyp == 'fk7263'" id="msgForlangningSjukskrivning">Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.</span>
 </div>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
