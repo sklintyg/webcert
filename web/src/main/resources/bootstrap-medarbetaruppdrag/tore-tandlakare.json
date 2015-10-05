@@ -3,9 +3,7 @@
 	"forNamn": "Tore",
 	"efterNamn": "Tandläkare",
 	"titel" : "Tandläkare",
-	"legitimeradeYrkesgrupper" : [
-		"Tandläkare"],
-
+	"legitimeradeYrkesgrupper" : ["Tandläkare"],
     "uppdrag":[
     	{
     		"vardgivare": "tandlakare-1",

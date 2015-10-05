@@ -12,8 +12,8 @@
   <properties>
     <geb.env>firefox</geb.env>
     <!-- URLs to services -->
-    <webcert.web.baseUrl>http://localhost:9088/</webcert.web.baseUrl>
-    <webcert.baseUrl>http://localhost:9088/</webcert.baseUrl>
+    <webcert.web.baseUrl>http://localhost:9089/</webcert.web.baseUrl>
+    <webcert.baseUrl>http://localhost:9089/</webcert.baseUrl>
     <logsender.baseUrl>http://localhost:9099/log-sender/</logsender.baseUrl>
     <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
     <fitnesse.port>9126</fitnesse.port>

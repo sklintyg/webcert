@@ -1,10 +1,7 @@
 package se.inera.webcert.pages.fk7263
-
 import geb.Module
 import se.inera.certificate.page.AbstractPage
-import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.AbstractEditCertPage
-import se.inera.webcert.pages.VardenhetModule
 
 class EditCertPage extends AbstractEditCertPage {
 
@@ -18,6 +15,7 @@ class EditCertPage extends AbstractEditCertPage {
         // Meddelanden
         nyttPersonnummer(wait: true) { displayed($("#nyttPersonnummer")) }
         signerandeLakare(wait: true) { displayed($("#signingDoctor")) }
+        signeringKraverLakare(required: false) { $("#sign-requires-doctor-message-text") }
         integrationBorttaget(required: false) { $("#integration-deleted") }
 
         // Intyg

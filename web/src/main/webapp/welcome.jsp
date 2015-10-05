@@ -107,7 +107,7 @@
                 "hsaId": "IFV1239877878-104B",
                 "enhetId": "IFV1239877878-104D",
                 "lakare": true,
-              "forskrivarKod": "2481632"
+                "forskrivarKod": "2481632"
             },
 
             // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
@@ -170,7 +170,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Markus Gran Testanvändare  @ VärdEnhet2A
+            //Markus Gran Testanvändare  @ VårdEnhet2A
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -179,7 +179,7 @@
                 "lakare" : true,
                 "forskrivarKod": "2481632"
             },
-            //Markus Gran Testanvändare  @ VärdEnhetA
+            //Markus Gran Testanvändare  @ VårdEnhetA
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -189,7 +189,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Läkare med flera enheter&mottagningar
+            //Läkare med flera enheter & mottagningar
             {
                 "fornamn" : "Eva",
                 "efternamn" : "Holgersson",
@@ -199,7 +199,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Läkare med massor av enheter&mottagningar
+            //Läkare med massor av enheter & mottagningar
             {
                 "fornamn" : "Staffan",
                 "efternamn" : "Stafett",
@@ -228,7 +228,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Admin personal med flera enheter&mottagningar
+            //Admin personal med flera enheter & mottagningar
             {
                 "fornamn" : "Adam",
                 "efternamn" : "Admin",
@@ -391,12 +391,12 @@
                         <option value="15">Staffan Stafett (Läkare Centrum Väst, Linköping, Norrköping)</option>
                         <option value="16" id ="SE4815162344-1B02_SE4815162344-1A03">Journa La System (Läkare WebCert-Integration Enhet 2)</option>
                         <option value="17" id="SE4815162344-1B01_SE4815162344-1A02">Ivar Integration (Läkare WebCert-Integration Enhet 1)</option>
-                        <option value="18">Adam Admin (Administratör Centrum Väst)</option>
-                        <option value="19">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="20">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="18" id="adam_centrum-vast">Adam Admin (Administratör Centrum Väst)</option>
+                        <option value="19" id="adamo_centrum-vast">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="20" id="adamo_centrum-ost">Adamo Admin (Administratör Centrum Öst)</option>
                         <option value="21" id="fitnesse-admin1">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
                         <option value="22" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
-                        <option value="23">Han Solo (Administratör, Centrum Norr)</option>
+                        <option value="23" id="hansolo_centrum-norr">Han Solo (Administratör, Centrum Norr)</option>
                         <option value="24" id="perpersson_anestesikliniken">Per Persson (Läkare Anestesikliniken)</option>
                         <option value="25" id="private-practitioner-1">Tolvan Privatläkarsson (Test Privatläkare, godkänd)</option>
                         <option value="26" id="private-practitioner-2">Nina Greger (Test Privatläkare, ej godkänd)</option>

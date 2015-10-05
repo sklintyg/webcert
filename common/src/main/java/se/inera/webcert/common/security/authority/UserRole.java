@@ -12,11 +12,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum UserRole {
 
     ROLE_VARDADMINISTRATOR ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD ("Vårdadministratör - djupintegrerad", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_VARDADMINISTRATOR_UTHOPP ("Vårdadministratör - uthopp", "fk7263", "ts-bas", "ts-diabetes"),
+    ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
+    ROLE_VARDADMINISTRATOR_UTHOPP ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
     ROLE_LAKARE ("Läkare", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_LAKARE_DJUPINTEGRERAD ("Läkare - djupintegrerad", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_LAKARE_UTHOPP ("Läkare - uthopp", "fk7263", "ts-bas", "ts-diabetes"),
+    ROLE_LAKARE_DJUPINTEGRERAD ("Läkare", "fk7263", "ts-bas", "ts-diabetes"),
+    ROLE_LAKARE_UTHOPP ("Läkare", "fk7263", "ts-bas", "ts-diabetes"),
     ROLE_PRIVATLAKARE ("Privatläkare", "fk7263", "ts-bas", "ts-diabetes"),
     ROLE_TANDLAKARE ("Tandläkare", "fk7263");
 
