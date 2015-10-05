@@ -38,10 +38,54 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         validate(parameters);
 
         String id = parameters.getPersonalIdentityNumber();
+        String hsa = parameters.getPersonHsaId();
+        if (id != null && !id.isEmpty()) {
+            return getGetPrivatePractitionerResponseTypeForPnr(parameters);
+        } else if (hsa != null && !hsa.isEmpty()) {
+            return getGetPrivatePractitionerResponseTypeForHsaid(parameters);
+        } else {
+            throw new IllegalArgumentException("Inget av argumenten hsaId och personId är satt. Ett av dem måste ha ett värde.");
+        }
+    }
+
+    private GetPrivatePractitionerResponseType getGetPrivatePractitionerResponseTypeForHsaid(GetPrivatePractitionerType parameters) {
+        String hsa = parameters.getPersonHsaId();
+
         GetPrivatePractitionerResponseType response = new GetPrivatePractitionerResponseType();
 
         // if matching -- create error response
-        if (PERSONNUMMER_ERROR_RESPONSE.equals(parameters.getPersonalIdentityNumber())) {
+        if (PERSONNUMMER_ERROR_RESPONSE.equals(hsa)) {
+            response.setHoSPerson(null);
+            response.setResultCode(ResultCodeEnum.ERROR);
+            response.setResultText("FAILURE: an error occured while trying to get private practitioner with hsa id: " + hsa + " exists.");
+            return response;
+        }
+
+        // if matching -- throw exception
+        if (PERSONNUMMER_THROW_EXCEPTION.equals(hsa)) {
+            throw new SOAPFaultException(createSOAPFault());
+        }
+
+        HoSPersonType person = personStub.getByHsaId(hsa);
+
+        if (person == null) {
+            response.setResultCode(ResultCodeEnum.INFO);
+            response.setResultText("No private practitioner with hsa id: " + hsa + " exists.");
+        } else {
+            response.setHoSPerson(person);
+            response.setResultCode(ResultCodeEnum.OK);
+        }
+        return response;
+
+    }
+
+    private GetPrivatePractitionerResponseType getGetPrivatePractitionerResponseTypeForPnr(GetPrivatePractitionerType parameters) {
+        String id = parameters.getPersonalIdentityNumber();
+
+        GetPrivatePractitionerResponseType response = new GetPrivatePractitionerResponseType();
+
+        // if matching -- create error response
+        if (PERSONNUMMER_ERROR_RESPONSE.equals(id)) {
             response.setHoSPerson(null);
             response.setResultCode(ResultCodeEnum.ERROR);
             response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: " + id + " exists.");
@@ -49,11 +93,11 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         }
 
         // if matching -- throw exception
-        if (PERSONNUMMER_THROW_EXCEPTION.equals(parameters.getPersonalIdentityNumber())) {
+        if (PERSONNUMMER_THROW_EXCEPTION.equals(id)) {
             throw new SOAPFaultException(createSOAPFault());
         }
 
-        HoSPersonType person  = personStub.get(id);
+        HoSPersonType person = personStub.get(id);
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.INFO);
@@ -62,7 +106,6 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
             response.setHoSPerson(person);
             response.setResultCode(ResultCodeEnum.OK);
         }
-
         return response;
     }
 
