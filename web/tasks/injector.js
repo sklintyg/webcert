@@ -4,7 +4,8 @@ module.exports = {
             'src/main/webapp/',
             '../../common/web/src/main/resources/META-INF/resources/',
             '../../intygstyper/fk7263/src/main/resources/META-INF/resources/',
-            '../../intygstyper/sjukpenning/src/main/resources/META-INF/resources/'],
+            '../../intygstyper/sjukpenning/src/main/resources/META-INF/resources/',
+            '../../intygstyper/sjukersattning/src/main/resources/META-INF/resources/'],
         addRootSlash : false
     },
     local_dependencies: {

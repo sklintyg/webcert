@@ -92,6 +92,8 @@
 
   <logger name="se.inera.certificate.modules.sjukpenning" level="debug" />
 
+  <logger name="se.inera.certificate.modules.sjukersattning" level="debug" />
+
   <logger name="org.apache.camel" level="error" />
 
   <logger name="org.springframework.transaction" level="info" />
