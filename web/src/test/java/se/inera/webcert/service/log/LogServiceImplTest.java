@@ -9,6 +9,8 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -18,12 +20,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.log.messages.ActivityPurpose;
 import se.inera.log.messages.ActivityType;
 import se.inera.log.messages.IntygReadMessage;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -34,9 +34,9 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 
 import javax.jms.Session;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pehr on 13/11/13.
@@ -58,7 +58,7 @@ public class LogServiceImplTest {
         ReflectionTestUtils.setField(logService, "systemId", "webcert");
         ReflectionTestUtils.setField(logService, "systemName", "WebCert");
         
-        Mockito.when(userService.getUser()).thenReturn(createWcUser());
+        Mockito.when(userService.getUser()).thenReturn(createUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
@@ -105,32 +105,41 @@ public class LogServiceImplTest {
         assertEquals("WebCert", intygReadMessage.getSystemName());
     }
 
-    private WebCertUser createWcUser() {
+    private WebCertUser createUser() {
         
         Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
         
         Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
         vg.setVardenheter(Arrays.asList(ve));
+
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole());
+        user.setAuthorities(getGrantedPrivileges());
+        user.setHsaId("HSAID");
+        user.setNamn("Markus Gran");
+        user.setVardgivare(Arrays.asList(vg));
+        user.changeValdVardenhet("VARDENHET_ID");
         
-        WebCertUser wcu = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
-        wcu.setHsaId("HSAID");
-        wcu.setNamn("Markus Gran");
-        wcu.setVardgivare(Arrays.asList(vg));
-        wcu.changeValdVardenhet("VARDENHET_ID");
-        
-        return wcu;
+        return user;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 }

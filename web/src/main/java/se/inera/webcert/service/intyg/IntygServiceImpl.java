@@ -1,7 +1,9 @@
 package se.inera.webcert.service.intyg;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
@@ -43,6 +45,7 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
@@ -129,6 +132,7 @@ public class IntygServiceImpl implements IntygService {
             switch (response.getResult().getResultCode()) {
             case OK:
                 List<IntygItem> fullIntygItemList = serviceConverter.convertToListOfIntygItem(response.getMeta());
+                filterByIntygTypeForUser(fullIntygItemList);
                 addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
                 return new IntygItemListResponse(fullIntygItemList, false);
             default:
@@ -149,6 +153,17 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    private void filterByIntygTypeForUser(List<IntygItem> fullIntygItemList) {
+        Iterator<IntygItem> i = fullIntygItemList.iterator();
+        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        while(i.hasNext()) {
+            IntygItem intygItem = i.next();
+            if (!intygsTyper.contains(intygItem.getType())) {
+                i.remove();
+            }
+        }
+    }
+
     /**
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
@@ -162,7 +177,7 @@ public class IntygServiceImpl implements IntygService {
     private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, String personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer, enhetId, statuses);
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer, enhetId, statuses, webCertUserService.getUser().getIntygsTyper());
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
     }
 

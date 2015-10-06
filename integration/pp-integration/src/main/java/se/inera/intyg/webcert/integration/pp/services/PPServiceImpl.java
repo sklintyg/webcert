@@ -18,9 +18,9 @@ import se.riv.infrastructure.directory.privatepractitioner.validateprivatepracti
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerType;
 
 /**
- * Created by Magnus Ekstrand on 18/06/15.
+ * Interfaces with the get and validate private practitioner services.
  *
- * TODO: Make sure no personal identifiers are logged.
+ * Created by Magnus Ekstrand on 18/06/15.
  */
 public class PPServiceImpl implements PPService {
 
@@ -35,7 +35,7 @@ public class PPServiceImpl implements PPService {
     @Override
     public HoSPersonType getPrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
 
-        LOG.debug("Getting person information from Privatläkarportalen '{}'", personalIdentityNumber);
+        LOG.debug("Getting person information from Privatläkarportalen.");
 
         // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
         validateIdentifier(hsaIdentityNumber, personalIdentityNumber);
@@ -48,7 +48,7 @@ public class PPServiceImpl implements PPService {
 
     @Override
     public boolean validatePrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
-        LOG.debug("Validating person information from Privatläkarportalen '{}'", personalIdentityNumber);
+        LOG.debug("Validating person information from Privatläkarportalen.");
         validateIdentifier(hsaIdentityNumber, personalIdentityNumber);
 
 
@@ -92,11 +92,7 @@ public class PPServiceImpl implements PPService {
             GetPrivatePractitionerResponseType response = getPrivatePractitionerService.getPrivatePractitioner(logicalAddress, parameters);
 
             if (response.getHoSPerson() == null) {
-                String msg = StringUtils.isEmpty(parameters.getPersonHsaId())
-                        ? "personal identity number: " + parameters.getPersonalIdentityNumber()
-                        : "HSA identity number : " + parameters.getPersonHsaId();
-
-                LOG.info("No private practitioner with {} exists.", msg);
+                LOG.info("No private practitioner with the requested identifiers exist.");
                 return null;
             }
 

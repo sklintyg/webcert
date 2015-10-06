@@ -16,6 +16,7 @@ import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -46,11 +47,7 @@ import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -163,7 +160,16 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
-        return utkastRepository.filterIntyg(filter);
+        List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
+        Iterator<Utkast> i = utkastList.iterator();
+        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        while(i.hasNext()) {
+            Utkast utkast = i.next();
+            if (!intygsTyper.contains(utkast.getIntygsTyp())) {
+                i.remove();
+            }
+        }
+        return utkastList;
     }
 
     @Override

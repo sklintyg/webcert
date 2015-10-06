@@ -62,6 +62,10 @@
 |externReferens|finns?|fraga?|
 |fitnesse-fel-enhet|true|Fel enhet|
 
+|Mail har skickats|
+|avsändare|mottagare|ämne|resultat?|
+|!-no-reply@webcert.intygstjanster.se-!|!-enhet1@webcert.invalid.se-!|Inkommen fråga från Försäkringskassan|true|
+
 !3 Ta bort test-intyg, frågor och mail
 
 |ta bort Intyg|

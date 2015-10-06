@@ -2,8 +2,6 @@ package se.inera.auth.common;
 
 import static org.mockito.Mockito.mock;
 
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.cxf.helpers.XMLUtils;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.saml2.core.Assertion;
@@ -16,6 +14,8 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
+
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * Base class for tests that needs to build a SAMLCredential from sample XML documents.
@@ -44,7 +44,7 @@ public abstract class BaseSAMLCredentialTest {
         }
 
         if (assertionLandstingslakare == null) {
-            XMLObject responseXmlObj = readSamlDocument("WebCertUserDetailsServiceTest/saml-assertion-with-title-code-lakare.xml");
+            XMLObject responseXmlObj = readSamlDocument("WebCertUserDetailsServiceTest/saml-assertion-with-title-lakare.xml");
             assertionLandstingslakare = (Assertion) responseXmlObj;
         }
 

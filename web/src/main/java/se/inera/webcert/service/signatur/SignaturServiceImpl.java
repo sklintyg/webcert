@@ -14,6 +14,7 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -115,7 +116,10 @@ public class SignaturServiceImpl implements SignaturService {
 
     private WebCertUser getWebcertUserForSignering() {
         WebCertUser user = webCertUserService.getUser();
-        if (!user.isLakare()) {
+
+        // TODO CHANGE THIS TO USE UserPrivilege.PRIVILEGE_SIGNERA_INTYG   ????
+        //if (!user.isLakare()) {
+        if (!user.hasPrivilege(UserPrivilege.PRIVILEGE_SIGNERA_INTYG)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User is not a doctor. Could not sign utkast.");
         }

@@ -29,7 +29,7 @@ public class UtkastTestUtil {
     public static final String PERSON_MELLANNAMN = "Svensson";
     public static final String PERSON_EFTERNAMN = "Tolvansson";
 
-    public static final String INTYGSTYP_FK7263 = "FK7263";
+    public static final String INTYGSTYP_FK7263 = "fk7263";
 
     public static final String MODEL = "This is the JSON model of this Intyg "
             + "with some interesting scandinavian characters like Å, Ä and ö added";

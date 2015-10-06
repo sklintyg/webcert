@@ -19,37 +19,46 @@ public class SakerhetstjanstAssertion {
 
     // HSA-titel för specificerad person
     public static final String TITEL_ATTRIBUTE = "urn:sambi:names:attribute:title";
+
     // Personens befattningskod
     private static final String TITEL_KOD_ATTRIBUTE = "urn:sambi:names:attribute:titleCode";
 
-    // Förskrivarkod för specificerad person
+    // Förskrivarkod och gruppförskrivarkod för specificerad person
+    // Om användaren är en legitimerad läkare så kommer förskrivarkoden i attributetet.
+    // Om användaren inte är en legitimerad läkare så kommer gruppförskrivarkoden i attributet.
     public static final String FORSKRIVARKOD_ATTRIBUTE = "urn:sambi:names:attribute:personalPrescriptionCode";
 
     // Användarens HSA-ID.
     public static final String HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:employeeHsaId";
 
+    // Användarens förnamn
     public static final String FORNAMN_ATTRIBUTE = "urn:sambi:names:attribute:givenName";
+
+    // Användarens mellan och efternamn
     public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "urn:sambi:names:attribute:middleAndSurname";
 
     // HSA-identitet på den vårdenhet aktuellt uppdrag tillhör
     public static final String ENHET_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careUnitHsaId";
+
     // Namn på den vårdenhet aktuellt uppdrag tillhör
     private static final String ENHET_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careUnitName";
 
     // HSA-identitet på den vårdgivare aktuellt uppdrag tillhör
     private static final String VARDGIVARE_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careProviderHsaId";
+
     // Namn på den vårdgivare aktuellt uppdrag tillhör
     private static final String VARDGIVARE_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careProviderName";
 
     // Syfte med aktuell uppdrag
     public static final String MEDARBETARUPPDRAG_TYPE = "urn:sambi:names:attribute:commissionPurpose";
+
     // HSA-identitet för valt uppdrag
     public static final String MEDARBETARUPPDRAG_ID = "urn:sambi:names:attribute:assignmentHsaId";
 
-    private List<String> titelKod = new ArrayList<String>();
-    private List<String> titel = new ArrayList<String>();
+    private List<String> titelKod = new ArrayList<>();
+    private List<String> titel = new ArrayList<>();
 
-    private String forskrivarkod;
+    private List<String> forskrivarkod = new ArrayList<>();
 
     private String hsaId;
 
@@ -92,7 +101,7 @@ public class SakerhetstjanstAssertion {
         return titelKod;
     }
 
-    public String getForskrivarkod() {
+    public List<String> getForskrivarkod() {
         return forskrivarkod;
     }
 
@@ -149,7 +158,7 @@ public class SakerhetstjanstAssertion {
                     titelKod.addAll(getValues(attribute));
                     break;
                 case FORSKRIVARKOD_ATTRIBUTE:
-                    forskrivarkod = getValue(attribute);
+                    forskrivarkod.addAll(getValues(attribute));
                     break;
                 case HSA_ID_ATTRIBUTE:
                     hsaId = getValue(attribute);

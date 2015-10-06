@@ -20,9 +20,7 @@ import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.ws.rs.core.Response;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,6 +41,8 @@ public class IntygApiControllerTest {
     private static List<UtkastStatus> DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE);
     private static List<UtkastStatus> DRAFT_COMPLETE_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE);
+
+    private static Set<String> USER_INTYGSTYPER = new HashSet<>();
 
     private static List<Utkast> utkast = TestIntygFactory.createListWithUtkast();
 
@@ -66,6 +66,10 @@ public class IntygApiControllerTest {
     public void setupExpectations() {
 
         mockUser();
+        USER_INTYGSTYPER.clear();
+        USER_INTYGSTYPER.add("fk7263");
+        USER_INTYGSTYPER.add("ts-bas");
+        USER_INTYGSTYPER.add("ts-diabetes");
     }
 
     private void mockUser() {
@@ -88,7 +92,7 @@ public class IntygApiControllerTest {
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygItemListResponse);
 
         // Mock call to database
-        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(utkast);
+        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
 
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
 
@@ -117,7 +121,7 @@ public class IntygApiControllerTest {
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(offlineIntygItemListResponse);
 
         // Mock call to database
-        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(utkast);
+        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
 
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
 

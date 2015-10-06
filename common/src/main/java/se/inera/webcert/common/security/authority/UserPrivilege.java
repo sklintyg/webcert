@@ -1,8 +1,11 @@
 package se.inera.webcert.common.security.authority;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Created by Magnus Ekstrand on 27/08/15.
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UserPrivilege {
 
     PRIVILEGE_SKRIVA_INTYG ("Skriva intyg"),
@@ -11,7 +14,8 @@ public enum UserPrivilege {
     PRIVILEGE_KOPIERA_INTYG ("Kopiera intyg"),
     PRIVILEGE_VIDAREBEFORDRA_UTKAST ("Vidarebefordra utkast"),
     PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR ("Vidarebefordra frågasvar"),
-    PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA ("Besvara fråga om komplettering");
+    PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA ("Besvara fråga om komplettering"),
+    PRIVILEGE_FILTRERA_PA_LAKARE ("Filtrera på annan läkare");
 
     private final String text;
 

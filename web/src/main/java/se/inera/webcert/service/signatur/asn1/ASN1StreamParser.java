@@ -45,15 +45,15 @@ public class ASN1StreamParser {
 
         LimitedQueue<Integer> buffer = new LimitedQueue<>(marker.length);
         try {
-            while(bais.available() > 0) {
-                int b = bais.read() & 0xFF;
+            while (bais.available() > 0) {
+                int b = unsignByte(bais);
                 buffer.add(b);
 
                 if (buffer.size() == marker.length && match(buffer, marker)) {
                     // Extract val
                     StringBuilder buf = new StringBuilder();
-                    for(int a = 0; a < dataLength; a++) {
-                        int c = bais.read() & 0xFF;
+                    for (int a = 0; a < dataLength; a++) {
+                        int c = unsignByte(bais);
                         buf.append((char) c);
                     }
                     return buf.toString();
@@ -67,6 +67,14 @@ public class ASN1StreamParser {
     }
 
     /**
+     * The ASN.1 data stream from NetID is supplied as Base64-encoded bytes which Java treats as signed integers
+     * Perform the [byte] & 0xFF trick to transform the unsigned byte value into an int.
+     */
+    private int unsignByte(ByteArrayInputStream bais) {
+        return bais.read() & 0xFF;
+    }
+
+    /**
      * Iterate over the current sequence of bytes in the buffer. If a non-matching byte
      * is encountered, the iteration terminates and the method returns false.
      *
@@ -77,7 +85,7 @@ public class ASN1StreamParser {
      * @return
      */
     private boolean match(LimitedQueue<Integer> buffer, int[] marker) {
-        for(int a = 0; a < marker.length; a++) {
+        for (int a = 0; a < marker.length; a++) {
             if (!buffer.get(a).equals(marker[a])) {
                  return false;
             }
@@ -102,7 +110,9 @@ public class ASN1StreamParser {
         @Override
         public boolean add(E o) {
             super.add(o);
-            while (size() > limit) { super.remove(); }
+            while (size() > limit) {
+                super.remove();
+            }
             return true;
         }
     }

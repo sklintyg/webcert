@@ -1,9 +1,11 @@
 package se.inera.auth.common;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
@@ -11,11 +13,14 @@ import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
+ * Base UserDetailsService for both Siths and E-leg based authentication.
+ *
  * Created by eriklupander on 2015-06-16.
  */
 public abstract class BaseWebCertUserDetailsService {
@@ -44,12 +49,21 @@ public abstract class BaseWebCertUserDetailsService {
         this.webcertFeatureService = webcertFeatureService;
     }
 
-    public final GrantedAuthority getRoleAuthority(final Role role) {
+    public final UserRole getRoleAuthority(final Role role) {
         return getGrantedRole(role);
     }
 
-    public final Collection<? extends GrantedAuthority> getPrivilegeAuthorities(final Role role) {
-        return getGrantedPrivileges(getPrivileges(role));
+    public final Map<String, UserPrivilege> getPrivilegeAuthorities(final Role role) {
+        List<UserPrivilege> grantedPrivileges = getGrantedPrivileges(getPrivileges(role));
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(grantedPrivileges, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 
@@ -73,24 +87,27 @@ public abstract class BaseWebCertUserDetailsService {
         return sb.toString();
     }
 
-    protected abstract WebCertUser createUser(String userRole);
-
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
         webcertUser.setAktivaFunktioner(availableFeatures);
     }
 
+    protected Map<String, UserRole> roleToMap(UserRole userRole) {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(userRole.name(), userRole);
+        return map;
+    }
 
     // - - - - - Private scope - - - - -
 
-    private GrantedAuthority getGrantedRole(final Role role) {
-        return new SimpleGrantedAuthority(role.getName(), role.getText());
+    private UserRole getGrantedRole(final Role role) {
+        return UserRole.valueOf(role.getName());
     }
 
-    private List<GrantedAuthority> getGrantedPrivileges(final List<Privilege> privileges) {
-        final List<GrantedAuthority> authorities = new ArrayList<>();
+    private List<UserPrivilege> getGrantedPrivileges(final List<Privilege> privileges) {
+        final List<UserPrivilege> authorities = new ArrayList<>();
         for (final Privilege privilege : privileges) {
-            authorities.add(new SimpleGrantedAuthority(privilege.getName(), privilege.getText()));
+            authorities.add(UserPrivilege.valueOf(privilege.getName()));
         }
         return authorities;
     }

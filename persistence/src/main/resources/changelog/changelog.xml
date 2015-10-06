@@ -552,4 +552,25 @@
         tableName="FMB" />
   </changeSet>
 
+  <changeSet id="22" author="me">
+    <createTable tableName="BEFATTNINGSKODER">
+      <column name="ID" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="BEFATTNINGSKOD" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="GRUPPFORSKRIVARKOD" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addUniqueConstraint
+        columnNames="BEFATTNINGSKOD, GRUPPFORSKRIVARKOD"
+        constraintName="BEFATTNINGSKOD_GRUPPFORSKRIVARKOD_UNIQUE_CONST"
+        tableName="BEFATTNINGSKODER"/>
+
+  </changeSet>
+
+
 </databaseChangeLog>

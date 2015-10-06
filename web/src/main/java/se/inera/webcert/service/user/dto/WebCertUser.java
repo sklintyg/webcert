@@ -4,31 +4,25 @@ import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_TANDLAKARE;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityCoreVersion;
-import org.springframework.util.Assert;
-import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.webcert.common.model.UserDetails;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
-import se.inera.webcert.hsa.model.AuthenticationMethod;
-import se.inera.webcert.hsa.model.SelectableVardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.webcert.common.model.UserDetails;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.hsa.model.AuthenticationMethod;
+import se.inera.webcert.hsa.model.SelectableVardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * @author andreaskaltenbach
@@ -57,22 +51,13 @@ public class WebCertUser implements UserDetails {
     private SelectableVardenhet valdVardenhet;
     private SelectableVardenhet valdVardgivare;
 
-    private Map<String, String> roles;
-    private Map<String, String> authorities;
+    private Map<String, UserRole> roles;
+    private Map<String, UserPrivilege> authorities;
 
-    private AuthenticationMethod authenticationMethod; // TODO - temporary hack. BANKID, NETID
+    private AuthenticationMethod authenticationMethod;
 
-    /**
-     * Construct the <code>WebCertUser</code> with its authority details.
-     *
-     * @param role
-     *            the role that should be granted to the caller. Not null.
-     * @param authorities
-     *            the privileges that should be granted to the caller. Not null.
-     */
-    public WebCertUser(GrantedAuthority role, Collection<? extends GrantedAuthority> authorities) {
-        this.roles = getGrantedRoles(role);
-        this.authorities = getGrantedAuthorities(authorities);
+    /** The sole constructor */
+    public WebCertUser() {
     }
 
     public boolean changeValdVardenhet(String vardenhetId) {
@@ -135,8 +120,18 @@ public class WebCertUser implements UserDetails {
      * @return the privileges, sorted by natural key (never <code>null</code>)
      */
     @Override
-    public Map<String, String> getAuthorities() {
+    public Map<String, UserPrivilege> getAuthorities() {
         return this.authorities;
+    }
+
+    /**
+     * Set the authorities/privileges granted to a user.
+     *
+     * @param authorities
+     */
+    @Override
+    public void setAuthorities(Map<String, UserPrivilege> authorities) {
+        this.authorities = authorities;
     }
 
     public String getForskrivarkod() {
@@ -234,7 +229,7 @@ public class WebCertUser implements UserDetails {
      * @return the role, sorted by natural key (never <code>null</code>)
      */
     @Override
-    public Map<String, String> getRoles() {
+    public Map<String, UserRole> getRoles() {
         return this.roles;
     }
 
@@ -244,7 +239,7 @@ public class WebCertUser implements UserDetails {
      * @param roles
      */
     @Override
-    public void setRoles(Map<String, String> roles) {
+    public void setRoles(Map<String, UserRole> roles) {
         this.roles = roles;
     }
 
@@ -339,9 +334,24 @@ public class WebCertUser implements UserDetails {
         return false;
     }
 
+    /**
+     * Returns true if the user's authorities map contains the specified
+     * {@link se.inera.webcert.common.security.authority.UserPrivilege}
+     *
+     * @param privilege
+     * @return
+     */
+    public boolean hasPrivilege(UserPrivilege privilege) {
+        if (authorities == null) {
+            return false;
+        }
+        return authorities.containsKey(privilege.name());
+    }
+
     public boolean isLakare() {
         return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name());
+                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name())
+                || roles.containsKey(ROLE_TANDLAKARE);
     }
 
     public boolean isPrivatLakare() {
@@ -362,75 +372,21 @@ public class WebCertUser implements UserDetails {
         return hsaId + " [authScheme=" + authenticationScheme + ", lakare=" + isLakare() + "]";
     }
 
-
-    // ~ Private scope
-    // ============================================================================
-
-    /*
-     * Ensure array iteration order is predictable
+    /**
+     * Iterates over all roles and flatmaps distinct intygstyper into a set of strings.
+     * @return
      */
-    private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
-        SortedSet<GrantedAuthority> sortedAuthorities =
-               new TreeSet<GrantedAuthority>(new AuthorityComparator());
-
-        for (GrantedAuthority grantedAuthority : authorities) {
-            Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
-            sortedAuthorities.add(grantedAuthority);
+    @JsonIgnore
+    public Set<String> getIntygsTyper() {
+        Set<String> set = new HashSet<>();
+        if (roles == null || roles.isEmpty()) {
+            return set;
         }
-
-        return sortedAuthorities;
-    }
-
-    private SimpleGrantedAuthority castGrantedAuthority(GrantedAuthority authority) {
-        SimpleGrantedAuthority sga;
-
-        if (authority instanceof SimpleGrantedAuthority) {
-            sga = (SimpleGrantedAuthority) authority;
-        } else {
-            sga = new SimpleGrantedAuthority(authority.getAuthority(), "");
-        }
-
-        return sga;
-    }
-
-    private Map<String, String> getGrantedAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        Map<String, String> authorityMap = new HashMap<>();
-
-        SortedSet<GrantedAuthority> sortedSet = sortAuthorities(authorities);
-        for (GrantedAuthority ga : sortedSet) {
-            SimpleGrantedAuthority sga = castGrantedAuthority(ga);
-            authorityMap.put(sga.getAuthority(), sga.getDescription());
-        }
-
-        return Collections.unmodifiableMap(authorityMap);
-    }
-
-    private Map<String, String> getGrantedRoles(GrantedAuthority role) {
-        SimpleGrantedAuthority sga = castGrantedAuthority(role);
-
-        Map<String, String> roles = new HashMap<>();
-        roles.put(sga.getAuthority(), sga.getDescription());
-
-        return Collections.unmodifiableMap(roles);
-    }
-
-    private static class AuthorityComparator implements Comparator<GrantedAuthority>, Serializable {
-        private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-
-        public int compare(GrantedAuthority g1, GrantedAuthority g2) {
-            // Neither should ever be null as each entry is checked before adding it to the set.
-            // If the authority is null, it is a custom authority and should precede others.
-            if (g2.getAuthority() == null) {
-                return -1;
+        for (Map.Entry<String, UserRole> entry : roles.entrySet()) {
+            if (entry.getValue() != null) {
+                set.addAll(entry.getValue().getAuthorizedIntygsTyper());
             }
-
-            if (g1.getAuthority() == null) {
-                return 1;
-            }
-
-            return g1.getAuthority().compareTo(g2.getAuthority());
         }
+        return set;
     }
-
 }

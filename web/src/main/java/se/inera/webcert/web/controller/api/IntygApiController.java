@@ -170,7 +170,7 @@ public class IntygApiController extends AbstractApiController {
 
         if (checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) {
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
-                    ALL_DRAFTS);
+                    ALL_DRAFTS, getWebCertUserService().getUser().getIntygsTyper());
             LOG.debug("Got {} utkast", utkastList.size());
         } else {
             utkastList = Collections.emptyList();

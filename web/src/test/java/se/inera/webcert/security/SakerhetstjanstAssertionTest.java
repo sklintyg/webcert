@@ -1,7 +1,5 @@
 package se.inera.webcert.security;
 
-import javax.xml.transform.stream.StreamSource;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +13,8 @@ import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
+
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * @author andreaskaltenbach
@@ -56,7 +56,7 @@ public class SakerhetstjanstAssertionTest {
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithEnhet);
 
         assertTrue(assertion.getTitelKod().contains("204010"));
-        assertEquals("8787878", assertion.getForskrivarkod());
+        assertEquals("8787878", assertion.getForskrivarkod().get(0));
         assertEquals("TST5565594230-106J", assertion.getHsaId());
         assertEquals("Markus", assertion.getFornamn());
         assertEquals("Gran", assertion.getMellanOchEfternamn());
@@ -84,7 +84,7 @@ public class SakerhetstjanstAssertionTest {
     public void testAssertionNewFormat() {
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithNewFormat);
         assertTrue(assertion.getTitelKod().contains("204010"));
-        assertEquals("8787878", assertion.getForskrivarkod());
+        assertEquals("8787878", assertion.getForskrivarkod().get(0));
         assertEquals("TST5565594230-106J", assertion.getHsaId());
         assertEquals("Markus", assertion.getFornamn());
         assertEquals("Gran", assertion.getMellanOchEfternamn());

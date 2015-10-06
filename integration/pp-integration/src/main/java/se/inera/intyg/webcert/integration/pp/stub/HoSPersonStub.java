@@ -20,4 +20,15 @@ public class HoSPersonStub {
         return personer.get(id);
     }
 
+    public HoSPersonType getByHsaId(String hsaId) {
+        if (hsaId != null) {
+            for (HoSPersonType person : personer.values()) {
+                if (hsaId.equalsIgnoreCase(person.getHsaId().getExtension())) {
+                    return person;
+                }
+            }
+        }
+        return null;
+    }
+
 }
