@@ -1,0 +1,44 @@
+Patientuppgifter ska ej testas för sekretessmarkering i djupintegration.
+
+!3 Skapa testintyg
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk | respons? |
+| webcert-fitnesse-sekretess-1 | fk7263 | ${person5.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej | ICD_10_SE | 200 |
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|vårdgivarId|typ|id|mall|skickat|rättat|
+|${person5.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104N|IFV1239877878-1045|IFV1239877878-1043|FK7263|webcert-fitnesse-sekretess-2|!-SmL-!|nej|nej|
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+!3 Verifiera att sekretessmarkering inte visas på utkast
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa utkast via integration | webcert-fitnesse-sekretess-1 |
+
+| script | !-HanteraUtkast-! |
+| editera sidan visas |
+| reject | sekretessmarkering visas |
+
+!3 Verifiera att sekretessmarkering inte visas på intyg
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration | webcert-fitnesse-sekretess-2 |
+| ensure | intyg laddat |
+
+| script | !-VisaIntyg-! |
+| reject | sekretessmarkering visas |
+
+!3 Ta bort intyg
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-sekretess-1 |
+
+| ta bort intyg |
+| id |
+| webcert-fitnesse-sekretess-2 |
