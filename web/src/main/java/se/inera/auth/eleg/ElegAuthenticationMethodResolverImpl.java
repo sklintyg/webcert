@@ -19,7 +19,7 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 @Service
 public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationMethodResolver {
 
-    private static final Logger log = LoggerFactory.getLogger(ElegAuthenticationMethodResolverImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ElegAuthenticationMethodResolverImpl.class);
 
     @Autowired(required = false)
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
@@ -42,7 +42,7 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
         try {
             loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
         } catch (IllegalArgumentException e) {
-            log.warn("Cannot resolve AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
+            LOG.warn("Cannot resolve AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
             throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
         }
         switch (loginMethodEnum) {

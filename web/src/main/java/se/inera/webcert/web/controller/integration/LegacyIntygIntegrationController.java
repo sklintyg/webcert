@@ -2,16 +2,11 @@ package se.inera.webcert.web.controller.integration;
 
 import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.security.AuthoritiesAssertion;
-import se.inera.webcert.security.AuthoritiesException;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,11 +16,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.security.AuthoritiesAssertion;
+import se.inera.webcert.security.AuthoritiesException;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -46,9 +47,6 @@ public class LegacyIntygIntegrationController extends AuthoritiesAssertion {
     private String urlBaseTemplate;
 
     private String urlFragmentTemplate;
-
-    @Autowired
-    private IntygService intygService;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -102,15 +100,15 @@ public class LegacyIntygIntegrationController extends AuthoritiesAssertion {
      * Gör inget om användare redan har rollen:
      * - ROLE_LAKARE_UTHOPP eller
      * - ROLE_VARDADMINISTRATOR_UTHOPP
-     * 
+     *
      * Om användare har rollen:
      * - ROLE_LAKARE eller
      * - ROLE_VARDADMINISTRATOR
-     * 
+     *
      * så ändra/nedgradera rollen till
      * - ROLE_LAKARE_UTHOPP eller
      * - ROLE_VARDADMINISTRATOR_UTHOPP
-     * 
+     *
      * För alla andra roller, eller ingen roll,
      * släng ett exception.
      */

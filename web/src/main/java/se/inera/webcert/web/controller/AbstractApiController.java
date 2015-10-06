@@ -115,5 +115,4 @@ public abstract class AbstractApiController {
             throw new FeatureNotAvailableException(webcertFeature.getName());
         }
     }
-    
 }

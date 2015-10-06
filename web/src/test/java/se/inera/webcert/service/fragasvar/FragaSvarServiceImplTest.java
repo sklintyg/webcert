@@ -11,11 +11,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +38,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
@@ -68,29 +82,15 @@ import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
 
     private static final String PATIENT_ID = "19121212-1212";
 
-    private LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
-    private LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");
-    private LocalDateTime AUGUST = new LocalDateTime("2013-08-02T11:11:11");
-    private LocalDateTime DECEMBER_YEAR_9999 = new LocalDateTime("9999-12-11T10:22:00");
+    private static final LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
+    private static final LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");
+    private static final LocalDateTime AUGUST = new LocalDateTime("2013-08-02T11:11:11");
+    private static final LocalDateTime DECEMBER_YEAR_9999 = new LocalDateTime("9999-12-11T10:22:00");
 
     @Mock
     private FragaSvarRepository fragasvarRepositoryMock;
@@ -108,7 +108,7 @@ public class FragaSvarServiceImplTest {
     private WebCertUserService webCertUserService;
 
     @Mock
-    WebcertFeatureService webcertFeatureServiceMock;
+    private WebcertFeatureService webcertFeatureServiceMock;
 
     @Mock
     private NotificationService notificationServiceMock;
@@ -118,12 +118,12 @@ public class FragaSvarServiceImplTest {
 
     @Mock
     private MonitoringLogService monitoringServiceMock;
-    
-    @Spy  private ObjectMapper objectMapper = new CustomObjectMapper();
-    
+
+    @Spy
+    private ObjectMapper objectMapper = new CustomObjectMapper();
+
     @InjectMocks
     private FragaSvarServiceImpl service;
-
 
     @Before
     public void setUpLoggerFactory() throws Exception {
@@ -356,8 +356,7 @@ public class FragaSvarServiceImplTest {
 
         // create mocked Utlatande from intygstjansten
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp())).thenReturn(
-                getRevokedIntygContentHolder()
-                );
+                getRevokedIntygContentHolder());
 
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
@@ -447,7 +446,6 @@ public class FragaSvarServiceImplTest {
         assertNotNull(result.getSvarSkickadDatum());
     }
 
-
     @Test(expected = WebCertServiceException.class)
     public void testExceptionThrownWhenIntygIsUnsentToFK() throws IOException {
 
@@ -496,7 +494,6 @@ public class FragaSvarServiceImplTest {
         }
     }
 
-
     private IntygContentHolder getIntygContentHolder() {
         List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
@@ -517,7 +514,6 @@ public class FragaSvarServiceImplTest {
         status.add(new se.inera.certificate.model.Status(CertificateState.CANCELLED, "MI", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, true);
     }
-
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarWsError() {
@@ -793,22 +789,19 @@ public class FragaSvarServiceImplTest {
         service.openQuestionAsUnhandled(1L);
     }
 
-    /*
-     * @Test
-     * public void testVerifyEnhetsAuthOK() {
-     * when(webcertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
-     * service.verifyEnhetsAuth("enhet");
-     * 
-     * verify(webcertUserService).isAuthorizedForUnit(anyString());
-     * }
-     * 
-     * @Test(expected = WebCertServiceException.class)
-     * public void testVerifyEnhetsAuthFail() {
-     * when(webcertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
-     * service.verifyEnhetsAuth("<doesnt-exist>");
-     * 
-     * }
-     */
+    @Test
+    public void testVerifyEnhetsAuthOK() {
+        when(webCertUserService.isAuthorizedForUnit(anyString(), any(Boolean.class))).thenReturn(true);
+        service.verifyEnhetsAuth("enhet");
+
+        verify(webCertUserService).isAuthorizedForUnit(anyString(), any(Boolean.class));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testVerifyEnhetsAuthFail() {
+        when(webCertUserService.isAuthorizedForUnit(anyString(), any(Boolean.class))).thenReturn(false);
+        service.verifyEnhetsAuth("<doesnt-exist>");
+    }
 
     @Test(expected = WebCertServiceException.class)
     public void testFilterFragaSvarWithAuthFail() {

@@ -36,7 +36,7 @@ public class MailNotificationServiceMockedTest {
 
     @Mock
     private HSAWebServiceCalls hsaClient;
-    
+
     @Mock
     private MonitoringLogService monitoringService;
 
@@ -66,7 +66,7 @@ public class MailNotificationServiceMockedTest {
         getHsaUnitResponseType.setEmail("test@test.invalid");
         getHsaUnitResponseType.setHsaIdentity("enhetsid");
         when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
-        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session)null));
+        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
     }
 
@@ -75,7 +75,7 @@ public class MailNotificationServiceMockedTest {
         try {
             SOAPFault soapFault = SOAPFactory.newInstance().createFault();
             soapFault.setFaultString("Connection reset");
-            when(hsaClient.callGetHsaunit(anyString())).thenThrow( new SOAPFaultException(soapFault));
+            when(hsaClient.callGetHsaunit(anyString())).thenThrow(new SOAPFaultException(soapFault));
         } catch (SOAPException e) {
             e.printStackTrace();
         }

@@ -3,13 +3,28 @@ package se.inera.webcert.service.intyg;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
 import org.joda.time.LocalDateTime;
@@ -22,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
@@ -50,11 +66,6 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import java.util.*;
-
 
 /**
  * @author andreaskaltenbach
@@ -98,7 +109,7 @@ public class IntygServiceTest {
 
     @Mock
     private WebCertUserService webCertUserService;
-    
+
     @Mock
     private MonitoringLogService mockMonitoringService;
 
@@ -157,7 +168,7 @@ public class IntygServiceTest {
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        
+
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertEquals(json, intygData.getContents());
@@ -259,7 +270,6 @@ public class IntygServiceTest {
         // Assert pdl log not performed, e.g. listing is not a PDL loggable op.
         verifyZeroInteractions(logservice);
     }
-
 
     @Test
     public void testFetchIntygDataWhenIntygstjanstIsUnavailable() throws Exception {
@@ -393,7 +403,7 @@ public class IntygServiceTest {
 
     private List<Utkast> buildDraftList(boolean unique) throws IOException {
         List<Utkast> draftList = new ArrayList<>();
-        draftList.add(getDraft(unique ? "LONG-UNIQUE-ID":"1", LocalDateTime.now(), null));
+        draftList.add(getDraft(unique ? "LONG-UNIQUE-ID" : "1", LocalDateTime.now(), null));
         return draftList;
     }
 

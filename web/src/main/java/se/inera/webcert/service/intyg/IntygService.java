@@ -3,7 +3,10 @@ package se.inera.webcert.service.intyg;
 import java.util.List;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.service.intyg.dto.*;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
 /**
  * @author andreaskaltenbach

@@ -1,7 +1,9 @@
 package se.inera.auth.eleg;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
@@ -20,7 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class ElegRedirectFilterTest {
 
-    ElegRedirectFilter testee = new ElegRedirectFilter();
+    private ElegRedirectFilter testee = new ElegRedirectFilter();
 
     @Test
     public void testRedirectsIfPropertySet() throws ServletException, IOException {

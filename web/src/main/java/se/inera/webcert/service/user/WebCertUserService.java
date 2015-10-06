@@ -43,7 +43,7 @@ public interface WebCertUserService {
     void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
 
     boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
-    
+
     boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation);
 
     boolean isAuthorizedForUnits(List<String> enhetsHsaIds);

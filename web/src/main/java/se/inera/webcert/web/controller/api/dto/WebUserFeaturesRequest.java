@@ -4,9 +4,9 @@ package se.inera.webcert.web.controller.api.dto;
  * Created by stephenwhite on 15/09/15.
  */
 public class WebUserFeaturesRequest {
-    boolean jsMinified;
 
-    boolean jsLoggning;
+    private boolean jsMinified;
+    private boolean jsLoggning;
 
     public boolean isJsLoggning() {
         return jsLoggning;

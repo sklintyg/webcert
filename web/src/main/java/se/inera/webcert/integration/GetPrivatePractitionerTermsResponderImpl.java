@@ -16,7 +16,7 @@ import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEn
 public class GetPrivatePractitionerTermsResponderImpl implements GetPrivatePractitionerTermsResponderInterface {
 
     @Autowired
-    AvtalService avtalService;
+    private AvtalService avtalService;
 
     @Override
     public GetPrivatePractitionerTermsResponseType getPrivatePractitionerTerms(String logicalAddress, GetPrivatePractitionerTermsType parameters) {

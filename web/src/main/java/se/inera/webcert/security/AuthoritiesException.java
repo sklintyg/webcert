@@ -7,6 +7,8 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class AuthoritiesException extends AuthenticationException {
 
+    private static final long serialVersionUID = -4951218504958281758L;
+
     /**
      * Constructs an {@code AuthenticationException} with the specified message and root cause.
      *

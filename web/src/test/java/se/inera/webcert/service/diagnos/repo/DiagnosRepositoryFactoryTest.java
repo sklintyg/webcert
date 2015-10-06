@@ -32,13 +32,13 @@ public class DiagnosRepositoryFactoryTest {
     private static final String FILE_1 = "classpath:/DiagnosService/KSH97_TESTKODER_1.ANS";
     private static final String FILE_2 = "classpath:/DiagnosService/KSH97_TESTKODER_2.ANS";
     private static final String FILE_3 = "classpath:/DiagnosService/KSH97P_SFAM_TESTKODER.ANS";
-    
+
     @Autowired
     private DiagnosRepositoryFactory factory;
 
     @Before
     public void setup() {
-        
+
     }
 
     @Test

@@ -20,36 +20,27 @@ import java.io.Writer;
 
 /**
  * This test makes use of Equals and HashCode from JAXB basics. All types must implement
- * this. 
+ * this.
  */
 public class FKQuestionConverterTest {
 
-	private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
-	
-	private QuestionFromFkType inflateQuestionFromFK() throws Exception {
-		JAXBContext jaxbContext = JAXBContext
-				.newInstance(QuestionFromFkType.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		return unmarshaller
-				.unmarshal(
-						new StreamSource(
-								new ClassPathResource(
-										"FragaSvarConverterTest/question.xml")
-										.getInputStream()),
-						QuestionFromFkType.class).getValue();
-	}
+    private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
 
-	private QuestionToFkType inflateQuestionToFK() throws Exception {
-		JAXBContext jaxbContext = JAXBContext
-				.newInstance(QuestionToFkType.class);
-		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		return unmarshaller.unmarshal(
-				new StreamSource(
-						new ClassPathResource(
-								"FragaSvarConverterTest/question_to_fk.xml")
-								.getInputStream()), QuestionToFkType.class)
-				.getValue();
-	}
+    private QuestionFromFkType inflateQuestionFromFK() throws Exception {
+        JAXBContext jaxbContext = JAXBContext
+                .newInstance(QuestionFromFkType.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("FragaSvarConverterTest/question.xml").getInputStream()),
+                QuestionFromFkType.class).getValue();
+    }
+
+    private QuestionToFkType inflateQuestionToFK() throws Exception {
+        JAXBContext jaxbContext = JAXBContext
+                .newInstance(QuestionToFkType.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("FragaSvarConverterTest/question_to_fk.xml").getInputStream()),
+                QuestionToFkType.class).getValue();
+    }
 
     private String jaxbToXml(QuestionToFkType object) throws JAXBException {
         ObjectFactory objectFactory = new ObjectFactory();
@@ -65,26 +56,26 @@ public class FKQuestionConverterTest {
         return writer.toString();
     }
 
-	@Test
-	public void testConvertQuestion() throws Exception {
+    @Test
+    public void testConvertQuestion() throws Exception {
 
-		QuestionFromFkType questionFromFK = inflateQuestionFromFK();
-		QuestionToFkType referenceQuestionToFK = inflateQuestionToFK();
+        QuestionFromFkType questionFromFK = inflateQuestionFromFK();
+        QuestionToFkType referenceQuestionToFK = inflateQuestionToFK();
 
-		// convert QuestionFromFK to FragaSvar entity
-		FragaSvar fragaSvar = fragaSvarConverter.convert(questionFromFK);
-		
-		// add some data
-		fragaSvar.setAmne(Amne.KONTAKT);
-		fragaSvar.setInternReferens(321L);
+        // convert QuestionFromFK to FragaSvar entity
+        FragaSvar fragaSvar = fragaSvarConverter.convert(questionFromFK);
 
-		// convert fragaSvar entity to QuestionToFK
-		QuestionToFkType convertedQuestionToFK = FKQuestionConverter.convert(fragaSvar);
+        // add some data
+        fragaSvar.setAmne(Amne.KONTAKT);
+        fragaSvar.setInternReferens(321L);
+
+        // convert fragaSvar entity to QuestionToFK
+        QuestionToFkType convertedQuestionToFK = FKQuestionConverter.convert(fragaSvar);
 
         // compare convertedQuestionToFK to reference
         String expected = jaxbToXml(referenceQuestionToFK);
         String actual = jaxbToXml(convertedQuestionToFK);
         assertEquals(expected, actual);
-	}
+    }
 
 }

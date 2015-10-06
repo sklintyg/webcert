@@ -42,7 +42,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
     }
 
     @Override
-    public boolean supports(Class authentication) {
+    public boolean supports(Class<?> authentication) {
         return FakeElegAuthenticationToken.class.isAssignableFrom(authentication);
     }
 

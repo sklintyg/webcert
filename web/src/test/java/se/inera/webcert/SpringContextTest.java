@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/webcert-config.xml" })
-@ActiveProfiles({"dev"})
+@ActiveProfiles({ "dev" })
 public class SpringContextTest {
 
     private static final String CREDENTIALS = "credentials.file";
@@ -22,19 +22,19 @@ public class SpringContextTest {
 
     @BeforeClass
     public static void setProps() {
-        //System.setProperty(CREDENTIALS, "foo");
+        // System.setProperty(CREDENTIALS, "foo");
         System.setProperty(WEBCERT_CONFIG, "classpath:/webcert-dev.properties");
     }
-    
+
     @AfterClass
     public static void removeProps() {
         System.clearProperty(CREDENTIALS);
         System.clearProperty(WEBCERT_CONFIG);
     }
-    
+
     @Test
     public void testContext() {
         assertTrue(true);
     }
-    
+
 }

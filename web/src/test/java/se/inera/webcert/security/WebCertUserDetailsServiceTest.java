@@ -105,7 +105,6 @@ public class WebCertUserDetailsServiceTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
-
     @Test
     public void assertRoleAndPrivilegesWhenUserHasTitleLakare() throws Exception {
         // given
@@ -215,7 +214,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleLVardadministratorWhenUserIsNotADoctor() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
-        //setupCallToGetHsaPersonInfo();
+        // setupCallToGetHsaPersonInfo();
 
         // when
         when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR).get(0));
@@ -237,7 +236,8 @@ public class WebCertUserDetailsServiceTest {
         setupCallToAuthorizedEnheterForHosPerson();
 
         // when
-        when(roleRepository.findByName(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE_DJUPINTEGRERAD).get(0));
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name()))
+                .thenReturn(getUserRoles(UserRole.ROLE_LAKARE_DJUPINTEGRERAD).get(0));
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -275,7 +275,8 @@ public class WebCertUserDetailsServiceTest {
         setupCallToAuthorizedEnheterForHosPerson();
 
         // when
-        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD).get(0));
+        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name()))
+                .thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD).get(0));
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -294,7 +295,8 @@ public class WebCertUserDetailsServiceTest {
         setupCallToAuthorizedEnheterForHosPerson();
 
         // when
-        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP).get(0));
+        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name()))
+                .thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP).get(0));
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -308,13 +310,13 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         userDetailsService.loadUserBySAML(samlCredential);
     }
-    
+
     @Test(expected = MissingMedarbetaruppdragException.class)
     public void testMissingSelectedUnit() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-without-enhet.xml");
         userDetailsService.loadUserBySAML(samlCredential);
     }
-    
+
     @Test
     public void testNoGivenName() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
@@ -370,8 +372,10 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
-        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1", Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
-        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"), Arrays.asList("Psykoterapeut"));
+        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1",
+                Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
+        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
+                Arrays.asList("Psykoterapeut"));
         List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
 
         // when
@@ -404,39 +408,38 @@ public class WebCertUserDetailsServiceTest {
         // when
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(anyString())).thenThrow(new NullPointerException());
 
-        //then
+        // then
         userDetailsService.loadUserBySAML(samlCredential);
 
         // fail the test if we come to this point
         fail("Expected exception");
     }
 
-
     // ~ Private assertion methods
     // =====================================================================================
 
     private void assertUserPrivileges(UserRole userRole, WebCertUser user) {
         switch (userRole) {
-            case ROLE_LAKARE:
-                assertUserPrivileges(UserPrivilege.values(), user);
-                break;
-            case ROLE_LAKARE_DJUPINTEGRERAD:
-                assertUserPrivileges(getUserPrivilegesForDjupintegreradLakare(), user);
-                break;
-            case ROLE_LAKARE_UTHOPP:
-                assertUserPrivileges(getUserPrivilegesForUthoppLakare(), user);
-                break;
-            case ROLE_VARDADMINISTRATOR:
-                assertUserPrivileges(getUserPrivilegesForVardadministrator(), user);
-                break;
-            case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
-                assertUserPrivileges(getUserPrivilegesForDjupintegreradVardadministrator(), user);
-                break;
-            case ROLE_VARDADMINISTRATOR_UTHOPP:
-                assertUserPrivileges(getUserPrivilegesForUthoppVardadministrator(), user);
-                break;
-            default:
-                fail("Cannot assert user privileges");
+        case ROLE_LAKARE:
+            assertUserPrivileges(UserPrivilege.values(), user);
+            break;
+        case ROLE_LAKARE_DJUPINTEGRERAD:
+            assertUserPrivileges(getUserPrivilegesForDjupintegreradLakare(), user);
+            break;
+        case ROLE_LAKARE_UTHOPP:
+            assertUserPrivileges(getUserPrivilegesForUthoppLakare(), user);
+            break;
+        case ROLE_VARDADMINISTRATOR:
+            assertUserPrivileges(getUserPrivilegesForVardadministrator(), user);
+            break;
+        case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
+            assertUserPrivileges(getUserPrivilegesForDjupintegreradVardadministrator(), user);
+            break;
+        case ROLE_VARDADMINISTRATOR_UTHOPP:
+            assertUserPrivileges(getUserPrivilegesForUthoppVardadministrator(), user);
+            break;
+        default:
+            fail("Cannot assert user privileges");
         }
     }
 
@@ -447,7 +450,6 @@ public class WebCertUserDetailsServiceTest {
             assertTrue(authorities.containsKey(up.name()));
         }
     }
-
 
     // ~ Private setup methods
     // =====================================================================================
@@ -501,7 +503,7 @@ public class WebCertUserDetailsServiceTest {
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(vardgivareList);
     }
-    
+
     private void setupCallToGetHsaPersonInfo() {
 
         List<String> specs = Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar", "Reumatologi");
@@ -519,7 +521,6 @@ public class WebCertUserDetailsServiceTest {
         when(webcertFeatureService.getActiveFeatures()).thenReturn(availableFeatures);
     }
 
-
     // ~ Private setup methods for roles and privileges
     // =====================================================================================
 
@@ -530,29 +531,29 @@ public class WebCertUserDetailsServiceTest {
         List<Privilege> privileges = new ArrayList<>();
 
         switch (userRole) {
-            case ROLE_LAKARE:
-                role = new Role(UserRole.ROLE_LAKARE.name());
-                ups = UserPrivilege.values();
-                break;
-            case ROLE_LAKARE_DJUPINTEGRERAD:
-                role = new Role(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name());
-                ups = getUserPrivilegesForDjupintegreradLakare();
-                break;
-            case ROLE_LAKARE_UTHOPP:
-                role = new Role(UserRole.ROLE_LAKARE_UTHOPP.name());
-                ups = getUserPrivilegesForUthoppLakare();
-                break;
-            case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
-                role = new Role(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name());
-                ups = getUserPrivilegesForDjupintegreradVardadministrator();
-                break;
-            case ROLE_VARDADMINISTRATOR_UTHOPP:
-                role = new Role(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name());
-                ups = getUserPrivilegesForUthoppVardadministrator();
-                break;
-            default:
-                role = new Role(UserRole.ROLE_VARDADMINISTRATOR.name());
-                ups = getUserPrivilegesForVardadministrator();
+        case ROLE_LAKARE:
+            role = new Role(UserRole.ROLE_LAKARE.name());
+            ups = UserPrivilege.values();
+            break;
+        case ROLE_LAKARE_DJUPINTEGRERAD:
+            role = new Role(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name());
+            ups = getUserPrivilegesForDjupintegreradLakare();
+            break;
+        case ROLE_LAKARE_UTHOPP:
+            role = new Role(UserRole.ROLE_LAKARE_UTHOPP.name());
+            ups = getUserPrivilegesForUthoppLakare();
+            break;
+        case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
+            role = new Role(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name());
+            ups = getUserPrivilegesForDjupintegreradVardadministrator();
+            break;
+        case ROLE_VARDADMINISTRATOR_UTHOPP:
+            role = new Role(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name());
+            ups = getUserPrivilegesForUthoppVardadministrator();
+            break;
+        default:
+            role = new Role(UserRole.ROLE_VARDADMINISTRATOR.name());
+            ups = getUserPrivilegesForVardadministrator();
         }
 
         for (UserPrivilege up : ups) {

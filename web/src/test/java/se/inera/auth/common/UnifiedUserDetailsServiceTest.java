@@ -1,5 +1,9 @@
 package se.inera.auth.common;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,11 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
-import se.inera.webcert.security.WebCertUserDetailsService;
-import se.inera.auth.eleg.ElegWebCertUserDetailsService;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import se.inera.auth.eleg.ElegWebCertUserDetailsService;
+import se.inera.webcert.security.WebCertUserDetailsService;
 
 /**
  * Tests so the unified userdetails service forwards the SAMLCredential to the correct underlying userDetailsService
@@ -27,13 +29,13 @@ import static org.mockito.Mockito.*;
 public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Mock
-    ElegWebCertUserDetailsService elegWebCertUserDetailsService;
+    private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
     @Mock
-    WebCertUserDetailsService webCertUserDetailsService;
+    private WebCertUserDetailsService webCertUserDetailsService;
 
     @InjectMocks
-    UnifiedUserDetailsService unifiedUserDetailsService;
+    private UnifiedUserDetailsService unifiedUserDetailsService;
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
@@ -57,7 +59,5 @@ public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
         unifiedUserDetailsService.loadUserBySAML(buildUnknownSamlCredential());
         verify(webCertUserDetailsService, times(0)).loadUserBySAML(any(SAMLCredential.class));
     }
-
-
 
 }

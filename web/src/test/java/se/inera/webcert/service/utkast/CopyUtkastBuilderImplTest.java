@@ -61,7 +61,7 @@ public class CopyUtkastBuilderImplTest {
     private static final String PATIENT_LNAME = "Caesarsson";
 
     private static final String PATIENT_NEW_SSN = "19121212-1414";
-    
+
     private static final String VARDENHET_ID = "SE00001234-5678";
     private static final String VARDENHET_NAME = "Vårdenheten 1";
 
@@ -161,7 +161,7 @@ public class CopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse =  copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -171,7 +171,7 @@ public class CopyUtkastBuilderImplTest {
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
     }
-    
+
     @Test
     public void testPopulateCopyUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
 
@@ -181,7 +181,7 @@ public class CopyUtkastBuilderImplTest {
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
         copyRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         copyRequest.setDjupintegrerad(true);
-        
+
         Person patientDetails = null;
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
@@ -190,7 +190,7 @@ public class CopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse =  copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -200,7 +200,7 @@ public class CopyUtkastBuilderImplTest {
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
     }
-    
+
     @Test
     public void testPopulateCopyUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
 
@@ -216,7 +216,7 @@ public class CopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse =  copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -270,9 +270,9 @@ public class CopyUtkastBuilderImplTest {
         IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
         return ich;
     }
-    
+
     private Utkast createOriginalUtkast() {
-        
+
         Utkast orgUtkast = new Utkast();
         orgUtkast.setIntygsId(INTYG_COPY_ID);
         orgUtkast.setIntygsTyp(INTYG_TYPE);
@@ -292,7 +292,7 @@ public class CopyUtkastBuilderImplTest {
 
         orgUtkast.setSenastSparadAv(vpRef);
         orgUtkast.setSkapadAv(vpRef);
-        
+
         return orgUtkast;
     }
 

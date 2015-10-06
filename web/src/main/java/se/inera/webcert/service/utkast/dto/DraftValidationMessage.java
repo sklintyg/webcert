@@ -29,7 +29,9 @@ public class DraftValidationMessage {
         this.field = field;
     }
 
-    public ValidationMessageType getType() { return type; }
+    public ValidationMessageType getType() {
+        return type;
+    }
 
     public String getMessage() {
         return message;

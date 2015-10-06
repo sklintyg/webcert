@@ -50,15 +50,10 @@ public class TermsFilterTest {
     @Mock
     private Authentication authentication;
     @Mock
-    AvtalService avtalService;
+    private AvtalService avtalService;
 
     @InjectMocks
     private TermsFilter filter;
-
-//    @Before
-//    public void setupFilter() {
-//        filter = new TermsFilter();
-//    }
 
     @Test
     public void testDoFilterNoSessionDoesNothing() throws ServletException, IOException {
@@ -100,7 +95,8 @@ public class TermsFilterTest {
     @Test
     public void testFilterRedirectsWhenAuthenticatedSessionPrivatePractitionerHasNotAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(false);
-        when(authentication.getPrincipal()).thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+        when(authentication.getPrincipal())
+                .thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
@@ -117,7 +113,8 @@ public class TermsFilterTest {
     @Test
     public void testFilterSetsSessionAttributeWhenAuthenticatedSessionPrivatePractitionerHasAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
-        when(authentication.getPrincipal()).thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+        when(authentication.getPrincipal())
+                .thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);

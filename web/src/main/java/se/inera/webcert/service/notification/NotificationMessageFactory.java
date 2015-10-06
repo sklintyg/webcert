@@ -8,7 +8,7 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 public interface NotificationMessageFactory {
 
     NotificationMessage createNotificationMessage(String intygsId, HandelseType handelse);
-    
+
     NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse);
 
     NotificationMessage createNotificationMessage(FragaSvar fragaSvar, HandelseType handelse);

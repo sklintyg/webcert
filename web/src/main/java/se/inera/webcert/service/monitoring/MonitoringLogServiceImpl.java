@@ -188,7 +188,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         private String msg;
 
-        private MonitoringEvent(String msg) {
+        MonitoringEvent(String msg) {
             this.msg = msg;
         }
 

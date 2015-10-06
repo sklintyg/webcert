@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
@@ -23,11 +21,14 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 /**
  * This filter should run after security checks.
  *
- * <li>If not logged in, filter is ignored</li> <li>If session attribute
+ * <li>If not logged in, filter is ignored</li>
+ * <li>If session attribute
  * {@link TermsFilter#PRIVATE_PRACTITIONER_TERMS_ACCEPTED} is set to true,
- * all is well</li> <li>If the authorization context is
+ * all is well</li>
+ * <li>If the authorization context is
  * {@link UnifiedUserDetailsService#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI} (e.g. privatläkare) then we use
- * the {@link AvtalService} to verify that the user has accepted webcert license and terms</li> <li>If user has not
+ * the {@link AvtalService} to verify that the user has accepted webcert license and terms</li>
+ * <li>If user has not
  * accepted webcert license and terms, we redirect them to /terms.jsp (or eq.) _without_ logging them out</li>
  */
 @Component(value = "termsFilter")
@@ -36,8 +37,6 @@ public class TermsFilter extends OncePerRequestFilter {
     static final String PRIVATE_PRACTITIONER_TERMS_ACCEPTED = "ppTermsAccepted";
     static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
     static final String PRIVATE_PRACTITIONER_TERMS_INPROGRESS = "ppTermsInProgress";
-
-    private static final Logger log = LoggerFactory.getLogger(TermsFilter.class);
 
     @Autowired
     private AvtalService avtalService;

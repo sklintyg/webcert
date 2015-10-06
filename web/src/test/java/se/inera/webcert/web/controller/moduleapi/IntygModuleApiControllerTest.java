@@ -3,7 +3,6 @@ package se.inera.webcert.web.controller.moduleapi;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +27,6 @@ import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.user.WebCertUserService;
@@ -41,27 +39,24 @@ public class IntygModuleApiControllerTest {
 
     private static final String CERTIFICATE_ID = "123456";
     private static final String CERTIFICATE_TYPE = "fk7263";
-    private static final String PATIENT_ID = "19121212-1212";
-    
+
     private static final byte[] PDF_DATA = "<pdf-data>".getBytes();
     private static final String PDF_NAME = "the-file.pdf";
-    
+
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
-    
-    private static IntygContentHolder utlatandeHolder;
 
     @Mock
     private IntygService intygService;
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
-    
+
     @Mock
     private ModuleApi moduleApi;
-    
+
     @Mock
     private LogService logService;
-    
+
     @Mock
     private WebCertUserService webcertUserService;
 
@@ -74,19 +69,18 @@ public class IntygModuleApiControllerTest {
         Utlatande utlatande = new Utlatande();
         utlatande.setId(CERTIFICATE_ID);
         utlatande.setTyp(CERTIFICATE_TYPE);
-        
-            List<Status> status = new ArrayList<Status>();
-            status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
-            status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
-            utlatandeHolder =  new IntygContentHolder("<external-json/>", utlatande, status, false);
+
+        List<Status> status = new ArrayList<Status>();
+        status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
     }
 
     @Ignore
     @Test
     public void testGetCertificatePdf() throws Exception {
-        
+
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
-        
+
         when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, "fk7263", false)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdf("fk7263", CERTIFICATE_ID);

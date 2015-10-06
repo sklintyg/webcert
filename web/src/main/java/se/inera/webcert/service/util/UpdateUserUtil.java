@@ -8,10 +8,13 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.dto.HoSPerson;
 
-public class UpdateUserUtil {
+public final class UpdateUserUtil {
+
+    private UpdateUserUtil() {
+    }
 
     /**
-     * Create a user object from WebCertUser
+     * Create a user object from WebCertUser.
      * @param user {@link WebCertUser}
      * @return
      */
@@ -43,8 +46,8 @@ public class UpdateUserUtil {
         VardpersonReferens vardPerson = new VardpersonReferens();
         vardPerson.setNamn(hosPerson.getNamn());
         vardPerson.setHsaId(hosPerson.getHsaId());
-        
+
         return vardPerson;
     }
-    
+
 }

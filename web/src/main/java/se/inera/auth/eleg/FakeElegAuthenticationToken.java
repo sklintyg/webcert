@@ -9,6 +9,8 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
  */
 public class FakeElegAuthenticationToken extends AbstractAuthenticationToken {
 
+    private static final long serialVersionUID = -2796850504529240890L;
+
     private FakeElegCredentials fakeElegCredentials;
 
     public FakeElegAuthenticationToken(FakeElegCredentials fakeElegCredentials) {

@@ -22,7 +22,7 @@ import java.util.List;
 public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
 
     @Autowired
-    UtkastRepository utkastRepository;
+    private UtkastRepository utkastRepository;
 
     @Override
     public void decorateWithUtkastStatus(CertificateResponse certificate) {
@@ -56,7 +56,7 @@ public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
     }
 
     private boolean isRevoked(List<Status> statuses) {
-        for(Status status : statuses) {
+        for (Status status : statuses) {
             if (status.getType() == CertificateState.CANCELLED) {
                 return true;
             }
@@ -65,7 +65,7 @@ public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
     }
 
     private boolean isSent(List<Status> statuses) {
-        for(Status status : statuses) {
+        for (Status status : statuses) {
             if (status.getType() == CertificateState.SENT) {
                 return true;
             }

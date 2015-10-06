@@ -1,7 +1,6 @@
 package se.inera.webcert.service.feature;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,7 +74,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             // the env name can be different to the enum name which is used in the gui.
             // as a result we can normalise the env names ... or translate them to the correct enum name.
             // I think we should normalise but this could be a bigger job, so translation will have to do.
-            if(feature.getEnvName() != null && env.containsProperty(feature.getEnvName())){
+            if (feature.getEnvName() != null && env.containsProperty(feature.getEnvName())) {
                 features.setProperty(feature.getName(), env.getProperty(feature.getEnvName()));
             }
             featuresMap.put(feature.getName(), Boolean.FALSE);
@@ -128,7 +127,6 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * @param featureProps
      * @param featuresMap
      */
-    @SuppressWarnings("rawtypes")
     public void processWebcertAndModuleFeatureProperties(Properties featureProps, Map<String, Boolean> featuresMap) {
 
         Assert.notNull(featureProps);
@@ -151,7 +149,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(se.inera.webcert.service.feature.
      * WebcertFeature)
      */
@@ -161,7 +159,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(java.lang.String)
      */
     @Override
@@ -172,7 +170,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.certificate.modules.support
      * .feature.ModuleFeature, java.lang.String)
@@ -183,7 +181,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(java.lang.String,
      * java.lang.String)
      */
@@ -198,7 +196,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.feature.WebcertFeatureService#getActiveFeatures()
      */
     @Override
@@ -223,7 +221,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     }
 
     @Override
-    public void setFeature(String key, String value){
+    public void setFeature(String key, String value) {
         this.features.setProperty(key, value);
         this.featuresMap.put(key, Boolean.parseBoolean(value));
     }

@@ -26,7 +26,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
 
@@ -201,7 +200,9 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         }
     }
 
-    /** Since this class is @Spy injected at unit test level we need to manually set the ObjectMapper */
+    /**
+     * Since this class is @Spy injected at unit test level we need to manually set the ObjectMapper.
+     */
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }

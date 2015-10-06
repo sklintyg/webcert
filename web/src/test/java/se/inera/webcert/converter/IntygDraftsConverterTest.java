@@ -82,23 +82,23 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testFindLatestStatus() {
-        
+
         LocalDateTime defaultTime = LocalDateTime.now();
         CertificateState res;
         List<Status> statuses;
-        
+
         // test with empty list
         statuses = new ArrayList<>();
         res = IntygDraftsConverter.findLatestStatus(statuses);
         assertEquals(CertificateState.UNHANDLED, res);
-        
+
         // test with just some statuses
         statuses = new ArrayList<>();
         statuses.add(new Status(CertificateState.RECEIVED, "MI", defaultTime.minusHours(2)));
         statuses.add(new Status(CertificateState.SENT, "FK", defaultTime.minusHours(1)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
         assertEquals(CertificateState.SENT, res);
-        
+
         // test with DELETED in the list, which should be removed
         statuses = new ArrayList<>();
         statuses.add(new Status(CertificateState.CANCELLED, "FK", defaultTime.minusHours(2)));
@@ -107,7 +107,7 @@ public class IntygDraftsConverterTest {
         statuses.add(new Status(CertificateState.RECEIVED, "MI", defaultTime.minusHours(4)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
         assertEquals(CertificateState.CANCELLED, res);
-        
+
         // test with DELETED and RESTORED in the list, which should be removed
         statuses = new ArrayList<>();
         statuses.add(new Status(CertificateState.CANCELLED, "FK", defaultTime.minusHours(2)));
@@ -117,14 +117,14 @@ public class IntygDraftsConverterTest {
         statuses.add(new Status(CertificateState.RECEIVED, "MI", defaultTime.minusHours(4)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
         assertEquals(CertificateState.CANCELLED, res);
-        
+
         // test with just DELETED, which will be removed and result in an empty list
         statuses = new ArrayList<>();
         statuses.add(new Status(CertificateState.DELETED, "MI", defaultTime.minusHours(1)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
         assertEquals(CertificateState.UNHANDLED, res);
     }
-    
+
     private void assertOrder(List<ListIntygEntry> res, String expectedOrder) {
 
         StringBuilder sb = new StringBuilder();

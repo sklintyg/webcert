@@ -8,17 +8,17 @@ import se.inera.webcert.service.dto.Vardenhet;
 public class CreateNewDraftCopyRequest {
 
     private String originalIntygId;
-    
+
     private String typ;
 
     private String patientPersonnummer;
-    
+
     private String nyttPatientPersonnummer;
 
     private HoSPerson hosPerson;
 
     private Vardenhet vardenhet;
-    
+
     private boolean djupintegrerad = false;
 
     public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, String patientPersonnummer, HoSPerson hosPerson, Vardenhet vardenhet) {

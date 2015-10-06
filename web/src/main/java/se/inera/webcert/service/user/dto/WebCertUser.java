@@ -31,8 +31,6 @@ public class WebCertUser implements UserDetails {
 
     private static final long serialVersionUID = -2624303818412468774L;
 
-    // private boolean lakare;
-    // private boolean privatLakare;
     private boolean privatLakareAvtalGodkand;
 
     private String personId;
@@ -56,7 +54,7 @@ public class WebCertUser implements UserDetails {
 
     private AuthenticationMethod authenticationMethod;
 
-    /** The sole constructor */
+    /** The sole constructor. */
     public WebCertUser() {
     }
 
@@ -336,7 +334,7 @@ public class WebCertUser implements UserDetails {
 
     /**
      * Returns true if the user's authorities map contains the specified
-     * {@link se.inera.webcert.common.security.authority.UserPrivilege}
+     * {@link se.inera.webcert.common.security.authority.UserPrivilege}.
      *
      * @param privilege
      * @return

@@ -1,6 +1,5 @@
 package se.inera.webcert.service.feature;
 
-import java.util.Properties;
 import java.util.Set;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;

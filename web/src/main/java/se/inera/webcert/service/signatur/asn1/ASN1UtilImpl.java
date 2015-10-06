@@ -1,6 +1,8 @@
 package se.inera.webcert.service.signatur.asn1;
 
-import static se.inera.webcert.service.signatur.asn1.ASN1Type.*;
+import static se.inera.webcert.service.signatur.asn1.ASN1Type.OBJECT_IDENTIFIER;
+import static se.inera.webcert.service.signatur.asn1.ASN1Type.PRINTABLE_STRING;
+import static se.inera.webcert.service.signatur.asn1.ASN1Type.SEQUENCE;
 
 import java.io.IOException;
 
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ASN1UtilImpl implements ASN1Util {
 
-    private static final Logger log = LoggerFactory.getLogger(ASN1UtilImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ASN1UtilImpl.class);
 
     private static final int SEQUENCE_LENGTH = 19;   // 0x13
     private static final int OBJECT_ID_LENGTH = 3;   // 0x03
@@ -47,7 +49,7 @@ public class ASN1UtilImpl implements ASN1Util {
         try {
             return new ASN1StreamParser().parse(IOUtils.toInputStream(asn1Signature), X520_SERIAL_MARKER_BYTE_SEQ, PERSON_ID_LENGTH);
         } catch (IOException e) {
-            log.error("Could not parse personId from NetID signature: " + e.getMessage());
+            LOG.error("Could not parse personId from NetID signature: " + e.getMessage());
             throw new IllegalArgumentException("Could not parse personId from NetID signature, will not sign utkast: " + e.getMessage());
         }
     }

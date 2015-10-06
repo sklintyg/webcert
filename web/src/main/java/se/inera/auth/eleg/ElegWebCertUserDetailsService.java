@@ -1,8 +1,8 @@
 package se.inera.auth.eleg;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
-import java.util.Map;
 /**
  * Created by eriklupander on 2015-06-16.
  *
@@ -81,7 +80,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         if (hosPerson == null) {
             throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
         }
-        
+
         // Lookup user's role
         String userRole = lookupUserRole();
 

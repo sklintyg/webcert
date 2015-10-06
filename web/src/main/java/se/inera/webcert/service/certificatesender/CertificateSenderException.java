@@ -5,6 +5,8 @@ package se.inera.webcert.service.certificatesender;
  */
 public class CertificateSenderException extends Exception {
 
+    private static final long serialVersionUID = 3695710704123118866L;
+
     public CertificateSenderException(String message) {
         super(message);
     }

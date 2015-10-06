@@ -24,7 +24,7 @@ public class PersonApiController extends AbstractApiController {
 
     @Autowired
     private PUService puService;
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
 
@@ -36,7 +36,7 @@ public class PersonApiController extends AbstractApiController {
         LOG.debug("Hämtar personuppgifter för: {}", personnummer);
 
         PersonSvar personSvar = puService.getPerson(personnummer);
-        
+
         monitoringService.logPULookup(personnummer, personSvar.getStatus().name());
 
         return Response.ok(new PersonuppgifterResponse(personSvar)).build();

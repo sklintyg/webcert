@@ -2,9 +2,9 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 
 /**
  * Parameter object for DiagnosService.
- * 
+ *
  * @author npet
- * 
+ *
  */
 public class DiagnosParameter {
 

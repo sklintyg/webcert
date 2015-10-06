@@ -44,6 +44,8 @@ import java.util.Map;
 @RunWith(MockitoJUnitRunner.class)
 public class LogServiceImplTest {
 
+    private static final int DELAY = 10;
+
     @Mock
     private JmsTemplate template = mock(JmsTemplate.class);
 
@@ -51,13 +53,13 @@ public class LogServiceImplTest {
     private WebCertUserService userService = mock(WebCertUserService.class);
 
     @InjectMocks
-    LogServiceImpl logService = new LogServiceImpl();
+    private LogServiceImpl logService = new LogServiceImpl();
 
     @Test
     public void serviceSendsDocumentAndIdForCreate() throws Exception {
         ReflectionTestUtils.setField(logService, "systemId", "webcert");
         ReflectionTestUtils.setField(logService, "systemName", "WebCert");
-        
+
         Mockito.when(userService.getUser()).thenReturn(createUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
@@ -66,7 +68,7 @@ public class LogServiceImplTest {
         logRequest.setIntygId("abc123");
         logRequest.setPatientId("19121212-1212");
         logRequest.setPatientName("Hans Olof van der Test");
-        
+
         logService.logReadIntyg(logRequest);
 
         verify(template, only()).send(messageCreatorCaptor.capture());
@@ -98,17 +100,17 @@ public class LogServiceImplTest {
         assertEquals("19121212-1212", intygReadMessage.getPatient().getPatientId());
         assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
 
-        assertTrue(intygReadMessage.getTimestamp().minusSeconds(10).isBefore(now()));
-        assertTrue(intygReadMessage.getTimestamp().plusSeconds(10).isAfter(now()));
+        assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
+        assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));
 
         assertEquals("webcert", intygReadMessage.getSystemId());
         assertEquals("WebCert", intygReadMessage.getSystemName());
     }
 
     private WebCertUser createUser() {
-        
+
         Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
-        
+
         Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
         vg.setVardenheter(Arrays.asList(ve));
 
@@ -119,7 +121,7 @@ public class LogServiceImplTest {
         user.setNamn("Markus Gran");
         user.setVardgivare(Arrays.asList(vg));
         user.changeValdVardenhet("VARDENHET_ID");
-        
+
         return user;
     }
 

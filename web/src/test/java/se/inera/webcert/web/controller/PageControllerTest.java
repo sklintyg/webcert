@@ -65,25 +65,6 @@ public class PageControllerTest {
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
     }
 
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
-    }
-
     private WebCertUser createMockUser(boolean doctor) {
         WebCertUser user = new WebCertUser();
         user.setRoles(getGrantedRole(doctor));
