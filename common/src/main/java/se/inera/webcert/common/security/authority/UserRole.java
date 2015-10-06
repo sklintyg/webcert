@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UserRole {
 
-    ROLE_VARDADMINISTRATOR ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_VARDADMINISTRATOR_UTHOPP ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_LAKARE ("Läkare", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_LAKARE_DJUPINTEGRERAD ("Läkare", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_LAKARE_UTHOPP ("Läkare", "fk7263", "ts-bas", "ts-diabetes"),
-    ROLE_PRIVATLAKARE ("Privatläkare", "fk7263", "ts-bas", "ts-diabetes"),
+    ROLE_VARDADMINISTRATOR ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
+    ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
+    ROLE_VARDADMINISTRATOR_UTHOPP ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
+    ROLE_LAKARE ("Läkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
+    ROLE_LAKARE_DJUPINTEGRERAD ("Läkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
+    ROLE_LAKARE_UTHOPP ("Läkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
+    ROLE_PRIVATLAKARE ("Privatläkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
     ROLE_TANDLAKARE ("Tandläkare", "fk7263");
 
     private String text;
