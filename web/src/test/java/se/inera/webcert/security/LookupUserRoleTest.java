@@ -4,11 +4,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.model.TitleCode;
@@ -26,13 +30,18 @@ public class LookupUserRoleTest {
     @Mock
     private TitleCodeRepository titleCodeRepository;
 
+    @Before
+    public void setup() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+    }
 
     @Test
     public void lookupUserRoleWhenTitleIsDoctor() {
         // given
         List<String> titles = Arrays.asList(new String[]{"Läkare"});
         // when
-        UserRole userRole = userDetailsService.lookupUserRoleByTitel(titles);
+        UserRole userRole = userDetailsService.lookupUserRoleByLegitimeradeYrkesgrupper(titles);
         // then
         assertTrue(UserRole.ROLE_LAKARE.equals(userRole));
     }
@@ -42,7 +51,7 @@ public class LookupUserRoleTest {
         // given
         List<String> titles = Arrays.asList(new String[] {"Läkare", "Barnmorska", "Sjuksköterska"});
         // when
-        UserRole userRole = userDetailsService.lookupUserRoleByTitel(titles);
+        UserRole userRole = userDetailsService.lookupUserRoleByLegitimeradeYrkesgrupper(titles);
         // then
         assertTrue(UserRole.ROLE_LAKARE.equals(userRole));
     }
@@ -52,7 +61,7 @@ public class LookupUserRoleTest {
         // given
         List<String> titles = Arrays.asList(new String[] {"Barnmorska", "Sjuksköterska"});
         // when
-        UserRole userRole = userDetailsService.lookupUserRoleByTitel(titles);
+        UserRole userRole = userDetailsService.lookupUserRoleByLegitimeradeYrkesgrupper(titles);
         // then
         assertNull(userRole);
     }
