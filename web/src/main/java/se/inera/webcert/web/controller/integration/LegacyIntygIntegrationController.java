@@ -145,10 +145,9 @@ public class LegacyIntygIntegrationController extends AuthoritiesAssertion {
     }
 
     private void updateUserRoles(WebCertUser user) {
-        boolean isDoctor = user.isLakare();
         String userRole = UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name();
 
-        if (isDoctor) {
+        if (user.hasRole(UserRole.ROLE_LAKARE.name())) {
             userRole = UserRole.ROLE_LAKARE_UTHOPP.name();
         }
 

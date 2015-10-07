@@ -55,9 +55,15 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
 
+    // Titles, a.k.a 'legitimerad yrkesgrupp', has a coding system governing these titles. See:
+    // HSA Innehåll Legitimerad yrkesgrupp
+    // http://www.inera.se/TJANSTER--PROJEKT/HSA/Dokument/HSA-kodverk/
     private static final String TITLE_LAKARE = "Läkare";
     private static final String TITLE_TANDLAKARE = "Tandläkare";
 
+    // Titl codes, a.k.a 'befattningskod', has a coding system governing these codes. See:
+    // HSA Innehåll Befattning
+    // http://www.inera.se/TJANSTER--PROJEKT/HSA/Dokument/HSA-kodverk/
     private static final String TITLECODE_AT_LAKARE = "204010";
 
 
@@ -168,75 +174,99 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     String lookupUserRole(SAMLCredential credential, List<GetHsaPersonHsaUserType> personInfo) {
         SakerhetstjanstAssertion sa = getAssertion(credential);
+        UserRole userRole = null;
 
-        // 1. Bestäm användarens roll utefter legitimerade yrkesgrupper.
-        List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(personInfo);
-        UserRole userRole = lookupUserRoleByLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
-
-        if (UserRole.ROLE_TANDLAKARE.equals(userRole)) {
+        // 1. Bestäm användarens roll utefter titel som kommer från SAML.
+        //    Titel ska vara detsamma som legitimerade yrkesgrupper.
+        userRole = lookupUserRoleByLegitimeradeYrkesgrupper(sa.getTitel());
+        if (userRole != null) {
             return userRole.name();
         }
 
-        // 2. Bestäm användarens roll utefter befattningskod
-        if (userRole == null) {
-            userRole = lookupUserRoleByBefattningskod(sa.getTitelKod());
+        // 2. Bestäm användarens roll utefter legitimerade yrkesgrupper som hämtas från HSA.
+        userRole = lookupUserRoleByLegitimeradeYrkesgrupper(extractLegitimeradeYrkesgrupper(personInfo));
+        if (userRole != null) {
+            return userRole.name();
         }
 
-        // 3. Bestäm användarens roll utefter kombinationen befattningskod och gruppförskrivarkod
-        if (userRole == null) {
-            userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(sa.getTitelKod(), sa.getForskrivarkod());
+        // 3. Bestäm användarens roll utefter befattningskod som kommer från SAML.
+        userRole = lookupUserRoleByBefattningskod(sa.getTitelKod());
+        if (userRole != null) {
+            return userRole.name();
         }
 
-        // 4. Bestäm användarens roll utefter titlen
-        if (userRole == null) {
-            userRole = lookupUserRoleByTitel(sa.getTitel());
+        // 4. Bestäm användarens roll utefter kombinationen befattningskod och gruppförskrivarkod
+        userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(sa.getTitelKod(), sa.getForskrivarkod());
+        if (userRole != null) {
+            return userRole.name();
         }
 
-        // 5. Har vi fått fram en läkare ännu?
-        boolean isDoctor = UserRole.ROLE_LAKARE.equals(userRole);
+        // 5. Användaren är en administratör, ta reda på om det är en administratör som
+        //    kommer in via djupintegration eller uthoppslänk
+        userRole = lookupUserRoleByRequestURI(false);
+        if (userRole != null) {
+            return userRole.name();
+        }
 
-        // 6. Kontrollera ifall användaren kommer via 'djupintegration' eller 'uthopp'
+        // 6. Användaren är en vårdadministratör inom landstinget som inte är 'djupintegrerad' eller 'uthopp'
+        return UserRole.ROLE_VARDADMINISTRATOR.name();
+    }
+
+    /** Lookup user role by looking into 'legitimerade yrkesgrupper'.
+     * Currently there are only two 'yrkesgrupper' to look for:
+     * <ul>
+     * <li>Läkare</li>
+     * <li>Tandläkare</li>
+     * </ul>
+     *
+     * @param legitimeradeYrkesgrupper string array with 'legitimerade yrkesgrupper'
+     * @return a user role if valid 'yrkesgrupper', otherwise null
+     */
+    UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
+        if (legitimeradeYrkesgrupper == null || legitimeradeYrkesgrupper.size() == 0) {
+            return null;
+        }
+
+        if (legitimeradeYrkesgrupper.contains(TITLE_LAKARE)) {
+            UserRole userRole = lookupUserRoleByRequestURI(true);
+            if (userRole != null) {
+                return userRole;
+            }
+
+            return UserRole.ROLE_LAKARE;
+        }
+
+        if (legitimeradeYrkesgrupper.contains(TITLE_TANDLAKARE)) {
+            return UserRole.ROLE_TANDLAKARE;
+        }
+
+        return null;
+    }
+
+    private UserRole lookupUserRoleByRequestURI(boolean isLakare) {
         DefaultSavedRequest savedRequest = getRequest();
         if (savedRequest != null && savedRequest.getRequestURI() != null) {
             String uri = savedRequest.getRequestURI();
 
             if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
-                if (isDoctor) {
+                if (isLakare) {
                     // 6a. Användaren är läkare som använder Webcert via djupintegration
-                    return UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name();
+                    return UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
                 } else {
                     // 6b. Användaren är vårdadministratör som använder Webcert via djupintegration
-                    return UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name();
+                    return UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD;
                 }
             }
 
             if (uri.matches(REGEXP_REQUESTURI_UTHOPP)) {
-                if (isDoctor) {
+                if (isLakare) {
                     // 6c. Användaren är läkare som använder Webcert via uthoppslänk.
-                    return UserRole.ROLE_LAKARE_UTHOPP.name();
+                    return UserRole.ROLE_LAKARE_UTHOPP;
                 } else {
                     // 6d. Användaren är våradministratör som använder Webcert via uthoppslänk.
-                    return UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name();
+                    return UserRole.ROLE_VARDADMINISTRATOR_UTHOPP;
                 }
             }
-        }
-
-        // 7. Användaren är en läkare inom landstinget som inte är 'djupintegrerad' eller 'uthopp'
-        if (isDoctor) {
-            return UserRole.ROLE_LAKARE.name();
-        }
-
-        // 8. Användaren är en vårdadministratör inom landstinget som inte är 'djupintegrerad' eller 'uthopp'
-        return UserRole.ROLE_VARDADMINISTRATOR.name();
-    }
-
-    UserRole lookupUserRoleByTitel(List<String> titel) {
-        if (titel == null || titel.size() == 0) {
-            return null;
-        }
-
-        if (titel.contains(TITLE_LAKARE)) {
-            return UserRole.ROLE_LAKARE;
         }
 
         return null;
@@ -248,6 +278,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         if (befattningsKoder.contains(TITLECODE_AT_LAKARE)) {
+            UserRole userRole = lookupUserRoleByRequestURI(true);
+            if (userRole != null) {
+                return userRole;
+            }
+
             return UserRole.ROLE_LAKARE;
         }
 
@@ -260,6 +295,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             for (String gruppforskrivarKod : gruppforskrivarKoder) {
                 UserRole userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningskod, gruppforskrivarKod);
                 if (userRole != null) {
+                    UserRole ur = lookupUserRoleByRequestURI(UserRole.ROLE_LAKARE.equals(userRole));
+                    if (ur != null) {
+                        return ur;
+                    }
+
                     return userRole;
                 }
             }
@@ -277,27 +317,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         if (titleCode != null) {
             Role role = titleCode.getRole();
             return UserRole.valueOf(role.getName());
-        }
-
-        return null;
-    }
-
-    /** Lookup user role by looking into 'legitimerade yrkesgrupper'.
-     * Currently there are only two 'yrkesgrupper' to look for:
-     * <ul>
-     * <li>Läkare</li>
-     * <li>Tandläkare</li>
-     * </ul>
-     *
-     * @param legitimeradeYrkesgrupper string array with 'legitimerade yrkesgrupper'
-     * @return a user role if valid 'yrkesgrupper', otherwise null
-     */
-    UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
-        if (legitimeradeYrkesgrupper.contains(TITLE_LAKARE)) {
-            return UserRole.ROLE_LAKARE;
-        }
-        if (legitimeradeYrkesgrupper.contains(TITLE_TANDLAKARE)) {
-            return UserRole.ROLE_TANDLAKARE;
         }
 
         return null;
