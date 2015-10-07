@@ -31,8 +31,6 @@ public class WebCertUser implements UserDetails {
 
     private static final long serialVersionUID = -2624303818412468774L;
 
-    // private boolean lakare;
-    // private boolean privatLakare;
     private boolean privatLakareAvtalGodkand;
 
     private String personId;
@@ -350,8 +348,7 @@ public class WebCertUser implements UserDetails {
 
     public boolean isLakare() {
         return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name())
-                || roles.containsKey(ROLE_TANDLAKARE);
+                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name());
     }
 
     public boolean isPrivatLakare() {

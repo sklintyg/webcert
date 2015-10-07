@@ -228,7 +228,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         if (legitimeradeYrkesgrupper.contains(TITLE_LAKARE)) {
-            UserRole userRole = lookupUserRoleByRequestURI(UserRole.ROLE_LAKARE);
+            UserRole userRole = lookupUserRoleByRequestURI(true);
             if (userRole != null) {
                 return userRole;
             }
@@ -241,14 +241,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         return null;
-    }
-
-    private UserRole lookupUserRoleByRequestURI(UserRole userRole) {
-        if (UserRole.ROLE_LAKARE.equals(userRole)) {
-            return lookupUserRoleByRequestURI(true);
-        }
-
-        return lookupUserRoleByRequestURI(false);
     }
 
     private UserRole lookupUserRoleByRequestURI(boolean isLakare) {
@@ -286,7 +278,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         if (befattningsKoder.contains(TITLECODE_AT_LAKARE)) {
-            UserRole userRole = lookupUserRoleByRequestURI(UserRole.ROLE_LAKARE);
+            UserRole userRole = lookupUserRoleByRequestURI(true);
             if (userRole != null) {
                 return userRole;
             }
@@ -303,7 +295,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             for (String gruppforskrivarKod : gruppforskrivarKoder) {
                 UserRole userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningskod, gruppforskrivarKod);
                 if (userRole != null) {
-                    UserRole ur = lookupUserRoleByRequestURI(userRole);
+                    UserRole ur = lookupUserRoleByRequestURI(UserRole.ROLE_LAKARE.equals(userRole));
                     if (ur != null) {
                         return ur;
                     }
