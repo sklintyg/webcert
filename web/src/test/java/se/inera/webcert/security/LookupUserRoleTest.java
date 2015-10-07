@@ -41,7 +41,7 @@ public class LookupUserRoleTest {
         // given
         List<String> titles = Arrays.asList(new String[]{"Läkare"});
         // when
-        UserRole userRole = userDetailsService.lookupUserRoleByTitel(titles);
+        UserRole userRole = userDetailsService.lookupUserRoleByLegitimeradeYrkesgrupper(titles);
         // then
         assertTrue(UserRole.ROLE_LAKARE.equals(userRole));
     }
@@ -51,7 +51,7 @@ public class LookupUserRoleTest {
         // given
         List<String> titles = Arrays.asList(new String[] {"Läkare", "Barnmorska", "Sjuksköterska"});
         // when
-        UserRole userRole = userDetailsService.lookupUserRoleByTitel(titles);
+        UserRole userRole = userDetailsService.lookupUserRoleByLegitimeradeYrkesgrupper(titles);
         // then
         assertTrue(UserRole.ROLE_LAKARE.equals(userRole));
     }
@@ -61,7 +61,7 @@ public class LookupUserRoleTest {
         // given
         List<String> titles = Arrays.asList(new String[] {"Barnmorska", "Sjuksköterska"});
         // when
-        UserRole userRole = userDetailsService.lookupUserRoleByTitel(titles);
+        UserRole userRole = userDetailsService.lookupUserRoleByLegitimeradeYrkesgrupper(titles);
         // then
         assertNull(userRole);
     }
