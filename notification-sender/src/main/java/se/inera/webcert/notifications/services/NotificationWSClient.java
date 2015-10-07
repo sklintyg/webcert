@@ -24,7 +24,7 @@ public class NotificationWSClient {
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
             @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
-        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().toString());
+        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().getExtension());
 
         CertificateStatusUpdateForCareResponseType response = null;
 
