@@ -45,7 +45,7 @@ public class SendNotificationStrategyTest {
 
     @InjectMocks
     private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
-    
+
     private Utkast utkast1, utkast2, utkast3;
 
     @Before
@@ -70,21 +70,21 @@ public class SendNotificationStrategyTest {
 
         Utkast res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
         assertNotNull(res);
-        
+
         verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_1);
     }
 
     @Test
     public void testUtkastUnitNotIntegrated() {
-        Utkast res  = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
+        Utkast res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
         assertNull("Should be null, since ENHET_2 is not integrated", res);
-        
+
         verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_2);
     }
 
     @Test
     public void testUtkastWrongType() {
-        Utkast res  = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
+        Utkast res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
         assertNull("Only fk7263 is permitted", res);
         verifyZeroInteractions(mockIntegreradeEnheterRegistry);
     }
@@ -98,33 +98,33 @@ public class SendNotificationStrategyTest {
         verify(mockUtkastRepository).findOne(INTYG_ID_1);
         verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_1);
     }
-    
+
     @Test
     public void testWithFragaSvarWrongType() {
 
         Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_3, INTYG_TS, ENHET_3));
         assertNull(res);
-        
+
         verify(mockUtkastRepository).findOne(INTYG_ID_3);
         verifyZeroInteractions(mockIntegreradeEnheterRegistry);
     }
-    
+
     @Test
     public void testWithFragaSvarUnitNotIntegrated() {
 
         Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_2, INTYG_FK, ENHET_2));
         assertNull(res);
-        
+
         verify(mockUtkastRepository).findOne(INTYG_ID_2);
         verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_2);
     }
-    
+
     @Test
     public void testWithFragaSvarUnitIntygNotPresent() {
 
         Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_4, INTYG_FK, ENHET_1));
         assertNull(res);
-        
+
         verify(mockUtkastRepository).findOne(INTYG_ID_4);
         verifyZeroInteractions(mockIntegreradeEnheterRegistry);
     }

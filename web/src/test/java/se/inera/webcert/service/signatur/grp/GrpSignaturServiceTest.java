@@ -6,6 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,12 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.security.core.GrantedAuthority;
 import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -32,9 +32,10 @@ import se.inera.webcert.service.signatur.grp.factory.GrpCollectPollerFactory;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -76,7 +77,7 @@ public class GrpSignaturServiceTest {
 
     @Before
     public void setupTest() {
-        webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        webCertUser = createUser();
         webCertUser.setPersonId(PERSON_ID);
     }
 
@@ -115,8 +116,10 @@ public class GrpSignaturServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenWebCertUserHasNoPersonId() {
+
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-        when(webCertUserService.getUser()).thenReturn(new WebCertUser(getGrantedRole(), getGrantedPrivileges()));
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
@@ -139,7 +142,6 @@ public class GrpSignaturServiceTest {
         }
     }
 
-
     private OrderResponseType buildOrderResponse() {
         OrderResponseType resp = new OrderResponseType();
         resp.setTransactionId(TX_ID);
@@ -161,16 +163,30 @@ public class GrpSignaturServiceTest {
         return utkast;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private WebCertUser createUser() {
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole());
+        user.setAuthorities(getGrantedPrivileges());
+        return user;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
+    }
+
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 }

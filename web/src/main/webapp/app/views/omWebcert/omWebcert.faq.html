@@ -2,27 +2,28 @@
   <div class="row" id="about-webcert-faq">
     <div class="col-md-12 webcert-col webcert-col-single">
       <div wc-about>
-        <h3>Inloggning</h3>
-        <h4>Varför kan jag inte logga in?</h4>
-        <p>
-          Kontrollera följande: </p>
-        <ul>
-          <li>Att SITHS-kortet (även kallat eTjänstekortet eller tjänstekortet) sitter ordentligt
-            i kortläsaren.
-          </li>
-          <li>Att datorn är ansluten till internet.</li>
-          <li>Att du skrivit rätt webbadress.</li>
-          <li>Att NetiD är installerat på din PC. (Du kan se den som en ikon i menyfältet nere i högra hörnet).</li>
-          <li>Testa att högerklicka på NetiD-ikonen nere till höger. Välj att uppdatera e-legitimationsförflyttning
-            eller läs in kortet på nytt. Testa därefter att gå in i Webcert igen.
-          </li>
-          <li>Att du anger rätt kod när du försöker logga in. Observera att det finns två koder kopplade till ditt kort,
-            en legitimeringskod och en underskriftskod. Vid inloggning används legitimeringskoden.
-          </li>
-        </ul>
-        <p>
-          Om inget av ovanstående fungerar kontaktar du din SITHS-kortadministratör. </p>
-
+        <div wc-authority role="!ROLE_PRIVATLAKARE">
+          <h3>Inloggning</h3>
+          <h4>Varför kan jag inte logga in?</h4>
+          <p>
+            Kontrollera följande: </p>
+          <ul>
+            <li>Att SITHS-kortet (även kallat eTjänstekortet eller tjänstekortet) sitter ordentligt
+              i kortläsaren.
+            </li>
+            <li>Att datorn är ansluten till internet.</li>
+            <li>Att du skrivit rätt webbadress.</li>
+            <li>Att NetiD är installerat på din PC. (Du kan se den som en ikon i menyfältet nere i högra hörnet).</li>
+            <li>Testa att högerklicka på NetiD-ikonen nere till höger. Välj att uppdatera e-legitimationsförflyttning
+              eller läs in kortet på nytt. Testa därefter att gå in i Webcert igen.
+            </li>
+            <li>Att du anger rätt kod när du försöker logga in. Observera att det finns två koder kopplade till ditt kort,
+              en legitimeringskod och en underskriftskod. Vid inloggning används legitimeringskoden.
+            </li>
+          </ul>
+          <p>
+            Om inget av ovanstående fungerar kontaktar du din SITHS-kortadministratör. </p>
+        </div>
 
         <div wc-authority feature="hanteraIntygsutkast">
           <h3>Skriva intyg</h3>
@@ -76,15 +77,13 @@
         <h3>Spara intyg</h3>
 
         <h4>Varför går det inte att spara intyget?</h4>
-        <p>Intyget sparas automatiskt under utfärdandet. Om spara-knappen inte är tillgänglig betyder det att intyget
-          redan är sparat.</p>
+        <p>Intyget sparas hela tiden automatiskt under utfärdandet. Om du stänger webbläsaren innan intyget har hunnit sparas får du en varning.</p>
 
         <div wc-authority feature="hanteraIntygsutkast">
           <h3>Skicka intyg</h3>
 
           <h4>Varför syns inte skicka-knappen?</h4>
-          <p>Du har inte signerat intyget. Observera att intyget låses vid signering, vilket innebär att det inte längre
-            kan ändras eller utplånas.</p>
+          <p>Du har inte signerat intyget. Observera att intyget låses vid signering, vilket innebär att det inte längre kan ändras eller raderas.</p>
 
           <h4>Varför behöver jag patientens samtycke för att skicka intyget?</h4>
           <p>Intyget innehåller patientens personuppgifter, såsom uppgifter om patientens hälsa. För att få skicka
@@ -94,9 +93,9 @@
           <h4>När ska jag skicka intyget till Försäkringskassan?</h4>
           <p>Intyg ska endast skickas till Försäkringskassan om samtliga tre punkter är uppfyllda:</p>
           <ul>
-            <li>sjukskrivningen kommer att vara längre än 14 dagar.</li>
-            <li>patienten kommer ansöka om sjukpenning.</li>
-            <li>patienten kan eller vill inte skicka intyget från Mina intyg.</li>
+            <li>Sjukskrivningen kommer att vara längre än 14 dagar.</li>
+            <li>Patienten kommer ansöka om sjukpenning.</li>
+            <li>Patienten kan eller vill inte skicka intyget från Mina intyg.</li>
           </ul>
           <p>Observera att patienten måste ge sitt samtycke för att du ska kunna skicka intyget elektroniskt direkt till
             Försäkringskassan.</p>
@@ -111,7 +110,8 @@
             vårdenhetens alla frågor och svar under fliken "Frågor och svar".</p>
 
           <h4>Hur vet jag om det har kommit en fråga från Försäkringskassan?</h4>
-          <p>Enhetens vårdadministratör får via mejl information om när ett nytt ärende har kommit in från
+          <p wc-authority role="ROLE_PRIVATLAKARE">När en ny fråga kommit från Försäkringskassan syns en röd notifiering på fliken ”Frågor och svar”. Siffran visar hur många frågor du har fått. Gå in på fliken "Frågor och svar". I listan ser du vilka patienter som Försäkringskassan ställt frågor om.</p>
+          <p wc-authority role="!ROLE_PRIVATLAKARE">Enhetens vårdadministratör får via mejl information om när ett nytt ärende har kommit in från
             Försäkringskassan. Vårdadministratören ansvarar för att rätt läkare får information om det nya ärendet.</p>
 
           <h4>Jag har skickat en fråga till Försäkringskassan, hur ser jag om det kommit ett svar?</h4>
@@ -119,7 +119,7 @@
           <ul>
             <li>Gå in på den berörda patientens intyg.</li>
             <li>Gå in på fliken "Frågor och svar".</li>
-            <li>Enhetens vårdadministratör får via mejl information om när ett nytt ärende från Försäkringskassan har
+            <li wc-authority role="!ROLE_PRIVATLAKARE">Enhetens vårdadministratör får via mejl information om när ett nytt ärende från Försäkringskassan har
               inkommit och ansvarar för att rätt läkare får information om det nya ärendet. Fråga din vårdadministratör
               om svaret har kommit.
             </li>

@@ -1,7 +1,9 @@
 package se.inera.webcert.service.intyg;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
@@ -36,7 +38,11 @@ import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.webcert.service.intyg.dto.*;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -86,7 +92,7 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private NotificationService notificationService;
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
 
@@ -98,21 +104,21 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private UtkastIntygDecorator utkastIntygDecorator;
-    
+
     /* --------------------- Public scope --------------------- */
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp);
         verifyEnhetsAuth(intygsData.getUtlatande(), true);
-        
+
         // Log read to PDL
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande());
         logService.logReadIntyg(logRequest);
-        
+
         // Log read to monitoring log
         monitoringService.logIntygRead(intygsId, intygsTyp);
-        
+
         return intygsData;
     }
 
@@ -129,6 +135,7 @@ public class IntygServiceImpl implements IntygService {
             switch (response.getResult().getResultCode()) {
             case OK:
                 List<IntygItem> fullIntygItemList = serviceConverter.convertToListOfIntygItem(response.getMeta());
+                filterByIntygTypeForUser(fullIntygItemList);
                 addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
                 return new IntygItemListResponse(fullIntygItemList, false);
             default:
@@ -140,6 +147,17 @@ public class IntygServiceImpl implements IntygService {
             // the caller that the set of certificates are only those that have been issued by WebCert.
             List<IntygItem> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
             return new IntygItemListResponse(intygItems, true);
+        }
+    }
+
+    private void filterByIntygTypeForUser(List<IntygItem> fullIntygItemList) {
+        Iterator<IntygItem> i = fullIntygItemList.iterator();
+        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        while (i.hasNext()) {
+            IntygItem intygItem = i.next();
+            if (!intygsTyper.contains(intygItem.getType())) {
+                i.remove();
+            }
         }
     }
 
@@ -156,7 +174,7 @@ public class IntygServiceImpl implements IntygService {
     private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, String personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer, enhetId, statuses);
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer, enhetId, statuses, webCertUserService.getUser().getIntygsTyper());
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
     }
 
@@ -170,11 +188,11 @@ public class IntygServiceImpl implements IntygService {
             verifyEnhetsAuth(intyg.getUtlatande(), true);
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(), isEmployer);
-            
+
             // Log print as PDF to PDL log
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
             logService.logPrintIntygAsPDF(logRequest);
-            
+
             // Log print as PDF to monitoring log
             monitoringService.logIntygPrintPdf(intygsId, intygsTyp);
 
@@ -221,7 +239,7 @@ public class IntygServiceImpl implements IntygService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
     @Override
@@ -340,8 +358,8 @@ public class IntygServiceImpl implements IntygService {
             Utkast utkast = utkastRepository.findOne(intygId);
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                        "Cannot get intyg. Intygstjansten was not reachable and the Utkast could " +
-                        "not be found, perhaps it was issued by a non-webcert system?");
+                        "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
+                                + "not be found, perhaps it was issued by a non-webcert system?");
             }
             return buildIntygContentHolder(typ, utkast);
         }
@@ -384,7 +402,7 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
-     * 
+     *
      * @param intyg
      * @return
      */
@@ -421,7 +439,6 @@ public class IntygServiceImpl implements IntygService {
         // Fourth: mark the originating Utkast as REVOKED
         markUtkastWithRevokedDate(intygsId);
 
-        // Return OK
         return IntygServiceResult.OK;
     }
 

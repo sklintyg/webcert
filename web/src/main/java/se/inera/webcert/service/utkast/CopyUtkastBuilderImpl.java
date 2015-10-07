@@ -45,7 +45,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
     @Autowired
     private IntygService intygService;
-    
+
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
 
@@ -65,16 +65,16 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, intygsTyp);
 
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
-        
+
         GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
-        
+
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         se.inera.certificate.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
         builderResponse.setOrginalEnhetsId(vardenhet.getEnhetsid());
         builderResponse.setOrginalEnhetsNamn(vardenhet.getEnhetsnamn());
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
         builderResponse.setOrginalVardgivarNamn(vardenhet.getVardgivare().getVardgivarnamn());
-        
+
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails);
@@ -102,7 +102,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
-        
+
         builderResponse.setUtkastCopy(utkast);
 
         return builderResponse;
@@ -121,13 +121,13 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
 
         // TODO throw exception if not found
-        
+
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
         builderResponse.setOrginalEnhetsNamn(orgUtkast.getEnhetsNamn());
         builderResponse.setOrginalVardgivarId(orgUtkast.getVardgivarId());
         builderResponse.setOrginalVardgivarNamn(orgUtkast.getVardgivarNamn());
-        
+
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(orgUtkast.getIntygsTyp());
@@ -156,7 +156,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
-        
+
         builderResponse.setUtkastCopy(utkast);
 
         return builderResponse;

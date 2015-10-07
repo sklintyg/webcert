@@ -24,6 +24,8 @@ describe('UnsignedCertCtrlSpec', function() {
 
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
+            $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
+                hasIntygsTyp: function() {return true;} });
             $provide.value('common.dialogService', mockFactory.buildDialogService());
             utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);

@@ -5,7 +5,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 public class SaveAndValidateDraftRequest {
 
     private String intygId;
-    
+
     private long version;
 
     private String draftAsJson;
@@ -42,9 +42,13 @@ public class SaveAndValidateDraftRequest {
         this.draftAsJson = draftAsJson;
     }
 
-    public Boolean getAutoSave() { return autoSave; }
+    public Boolean getAutoSave() {
+        return autoSave;
+    }
 
-    public void setAutoSave(Boolean autoSave) { this.autoSave = autoSave; }
+    public void setAutoSave(Boolean autoSave) {
+        this.autoSave = autoSave;
+    }
 
     public HoSPerson getSavedBy() {
         return savedBy;

@@ -7,16 +7,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextImpl;
 import se.inera.auth.common.UnifiedUserDetailsService;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
@@ -29,14 +29,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsFilterTest {
-
-
 
     @Mock
     private FilterChain filterChain;
@@ -51,15 +50,10 @@ public class TermsFilterTest {
     @Mock
     private Authentication authentication;
     @Mock
-    AvtalService avtalService;
+    private AvtalService avtalService;
 
     @InjectMocks
     private TermsFilter filter;
-
-//    @Before
-//    public void setupFilter() {
-//        filter = new TermsFilter();
-//    }
 
     @Test
     public void testDoFilterNoSessionDoesNothing() throws ServletException, IOException {
@@ -101,7 +95,8 @@ public class TermsFilterTest {
     @Test
     public void testFilterRedirectsWhenAuthenticatedSessionPrivatePractitionerHasNotAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(false);
-        when(authentication.getPrincipal()).thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+        when(authentication.getPrincipal())
+                .thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
@@ -118,7 +113,8 @@ public class TermsFilterTest {
     @Test
     public void testFilterSetsSessionAttributeWhenAuthenticatedSessionPrivatePractitionerHasAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
-        when(authentication.getPrincipal()).thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+        when(authentication.getPrincipal())
+                .thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
@@ -132,23 +128,32 @@ public class TermsFilterTest {
     }
 
     private WebCertUser buildWebCertUser(String authScheme) {
-        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        WebCertUser webCertUser = new WebCertUser();
+
+        webCertUser.setRoles(getGrantedRole());
+        webCertUser.setAuthorities(getGrantedPrivileges());
         webCertUser.setAuthenticationScheme(authScheme);
 
         return webCertUser;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
-    }
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
 
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
+    }
 
 }

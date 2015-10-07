@@ -18,18 +18,25 @@
  */
 package se.inera.webcert.web.controller;
 
+import java.net.URI;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.webcert.service.user.dto.WebCertUser;
+
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.maillink.MailLinkService;
 import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * @author marced
@@ -37,9 +44,6 @@ import se.inera.webcert.service.user.WebCertUserService;
 @Controller
 @RequestMapping(value = "")
 public class PageController {
-
-    @Autowired
-    private Environment environment;
 
     public static final String ADMIN_VIEW = "dashboard#/unhandled-qa";
     public static final String ADMIN_VIEW_REDIRECT = "redirect:/web/" + ADMIN_VIEW;
@@ -57,6 +61,9 @@ public class PageController {
 
     @Autowired
     private WebcertFeatureService webcertFeatureService;
+
+    @Autowired
+    private MailLinkService mailLinkService;
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
@@ -96,4 +103,18 @@ public class PageController {
     public void populateUseMinifiedJavaScript(ModelAndView model) {
         model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
     }
+
+    @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
+    public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
+        URI uri = mailLinkService.intygRedirect(typ, intygId);
+
+        if (uri == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } else {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(uri);
+            return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
+        }
+    }
+
 }

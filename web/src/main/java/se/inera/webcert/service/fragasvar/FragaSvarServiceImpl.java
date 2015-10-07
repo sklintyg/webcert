@@ -1,6 +1,13 @@
 package se.inera.webcert.service.fragasvar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -28,8 +35,11 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.persistence.fragasvar.model.*;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.fragasvar.repository.VantarPa;
@@ -44,10 +54,9 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.service.user.WebCertUserService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 
 /**
  * @author andreaskaltenbach
@@ -68,7 +77,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     private static final CertificateState SENT_STATUS_TYPE = CertificateState.SENT;
-    private static final CertificateState REVOKED_STATUS_TYPE = CertificateState.CANCELLED;
 
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(
             Amne.ARBETSTIDSFORLAGGNING,
@@ -110,9 +118,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Autowired
     private MonitoringLogService monitoringService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     /* --------------------- Public scope --------------------- */
 
     @Override
@@ -122,9 +127,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
                 (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
-                fragaSvar.getExternReferens(), 
-                fragaSvar.getInternReferens(), 
-                fragaSvar.getVardAktorHsaId(), 
+                fragaSvar.getExternReferens(),
+                fragaSvar.getInternReferens(),
+                fragaSvar.getVardAktorHsaId(),
                 (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
 
         // persist the question
@@ -152,10 +157,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        monitoringService.logAnswerReceived(fragaSvar.getExternReferens(), 
+        monitoringService.logAnswerReceived(fragaSvar.getExternReferens(),
                 fragaSvar.getInternReferens(),
                 (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
-                fragaSvar.getVardAktorHsaId(), 
+                fragaSvar.getVardAktorHsaId(),
                 (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
 
         // update the FragaSvar
@@ -275,10 +280,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logAnswerSent(saved.getExternReferens(), 
+        monitoringService.logAnswerSent(saved.getExternReferens(),
                 saved.getInternReferens(),
-                (saved.getIntygsReferens() == null ? null : saved.getIntygsReferens().getIntygsId()), 
-                saved.getVardAktorHsaId(), 
+                (saved.getIntygsReferens() == null ? null : saved.getIntygsReferens().getIntygsId()),
+                saved.getVardAktorHsaId(),
                 (saved.getAmne() == null ? null : saved.getAmne().toString()));
 
         // Notify stakeholders
@@ -368,10 +373,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logQuestionSent(fraga.getExternReferens(), 
+        monitoringService.logQuestionSent(fraga.getExternReferens(),
                 fraga.getInternReferens(),
-                (fraga.getIntygsReferens() == null ? null : fraga.getIntygsReferens().getIntygsId()), 
-                fraga.getVardAktorHsaId(), 
+                (fraga.getIntygsReferens() == null ? null : fraga.getIntygsReferens().getIntygsId()),
+                fraga.getVardAktorHsaId(),
                 (fraga.getAmne() == null ? null : fraga.getAmne().toString()));
 
         // Notify stakeholders
@@ -615,17 +620,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return (booleanObj != null) && booleanObj;
     }
 
-    private boolean isCertificateRevoked(List<se.inera.certificate.model.Status> statuses) {
-        if (statuses != null) {
-            for (se.inera.certificate.model.Status status : statuses) {
-                if (REVOKED_STATUS_TYPE.equals(status.getType())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private boolean isCertificateSentToFK(List<se.inera.certificate.model.Status> statuses) {
         if (statuses != null) {
             for (se.inera.certificate.model.Status status : statuses) {
@@ -647,9 +641,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {
-
-        Long fragaSvarId = fragaSvar.getInternReferens();
-        String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
 
         switch (event) {
         case ANSWER_FROM_FK_HANDLED:

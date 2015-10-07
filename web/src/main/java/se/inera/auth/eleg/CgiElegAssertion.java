@@ -10,6 +10,8 @@ import org.opensaml.xml.XMLObject;
 
 /**
  * SAML-assertion for CGI säkerhetstjänst used for e-leg/privatläkare.
+ *
+ * @author eriklupander
  */
 public class CgiElegAssertion {
 
@@ -20,7 +22,7 @@ public class CgiElegAssertion {
     public static final String UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE = "Issuer_OrganizationName";
     public static final String UTFARDARE_CA_NAMN_ATTRIBUTE = "Issuer_CommonName";
     public static final String SECURITY_LEVEL_ATTRIBUTE = "SecurityLevel"; // 3 == e-leg på fil, 4 == e-leg på kort.
-    public static final String LOGIN_METHOD = "LoginMethod";
+    public static final String LOGIN_METHOD = "LoginMethod";  // ccp1,2,8,10,11,12,13
 
     private String personId;
     private String fornamn;

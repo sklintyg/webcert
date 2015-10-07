@@ -7,21 +7,25 @@ import java.io.Serializable;
  */
 public class FakeCredentials implements Serializable {
 
+    private static final long serialVersionUID = -7620199916206349045L;
+
     private String hsaId;
     private String fornamn;
     private String efternamn;
     private boolean lakare;
+    private boolean tandLakare = false;
     private String enhetId;
     private String forskrivarKod;
 
     public FakeCredentials() {
     }
 
-    public FakeCredentials(String hsaId, String fornamn, String efternamn, boolean lakare, String enhetId) {
+    public FakeCredentials(String hsaId, String fornamn, String efternamn, boolean lakare, boolean tandLakare, String enhetId) {
         this.hsaId = hsaId;
         this.fornamn = fornamn;
         this.efternamn = efternamn;
         this.lakare = lakare;
+        this.tandLakare = tandLakare;
         this.enhetId = enhetId;
         this.forskrivarKod = "1234567";
     }
@@ -62,9 +66,21 @@ public class FakeCredentials implements Serializable {
         this.enhetId = enhetId;
     }
 
-    public String getForskrivarKod() { return forskrivarKod; }
+    public String getForskrivarKod() {
+        return forskrivarKod;
+    }
 
-    public void setForskrivarKod(String forskrivarKod) { this.forskrivarKod = forskrivarKod; }
+    public void setForskrivarKod(String forskrivarKod) {
+        this.forskrivarKod = forskrivarKod;
+    }
+
+    public boolean isTandLakare() {
+        return tandLakare;
+    }
+
+    public void setTandLakare(boolean tandLakare) {
+        this.tandLakare = tandLakare;
+    }
 
     @Override
     public String toString() {

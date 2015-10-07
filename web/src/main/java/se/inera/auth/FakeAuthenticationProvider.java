@@ -9,6 +9,8 @@ import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDR
 import static se.inera.webcert.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
 
+import java.util.ArrayList;
+
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -21,17 +23,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-import org.springframework.security.web.PortResolverImpl;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
-import se.inera.webcert.security.WebCertUserDetailsService;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 
 /**
  * @author andreaskaltenbach
@@ -56,7 +50,7 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
     }
 
     @Override
-    public boolean supports(Class authentication) {
+    public boolean supports(Class<?> authentication) {
         return FakeAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
@@ -81,6 +75,9 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
         if (fakeCredentials.isLakare()) {
             attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));
+        }
+        if (fakeCredentials.isTandLakare()) {
+            attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Tandläkare"));
         }
 
         NameID nameId = new NameIDBuilder().buildObject();

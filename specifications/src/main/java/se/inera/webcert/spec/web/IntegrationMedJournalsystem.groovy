@@ -104,6 +104,16 @@ class IntegrationMedJournalsystem {
         return result
     }
 
+    boolean signeringKraverLakareMeddelandeVisas() {
+        def result
+        Browser.drive {
+            waitFor {
+                result = page.signeringKraverLakare.isDisplayed()
+            }
+        }
+        return result
+    }
+
     String patientensNamn() {
 		String namnOchPersonnummer
         Browser.drive {
@@ -351,17 +361,6 @@ class IntegrationMedJournalsystem {
         
         return result
     }
-
-//    boolean forlangningSjukskrivningInteVisas() {
-//        Browser.drive {
-//           if(!page.kopieraDialogMsgForlangningSjukskrivningNoWait.present){
-//                return true;
-//            } else {
-//                return !page.kopieraDialogMsgForlangningSjukskrivningNoWait.isDisplayed();
-//            }
-//
-//        }
-//    }
 
     def sleepForNSeconds(String time) {
         def n = time as int;

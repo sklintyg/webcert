@@ -34,6 +34,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>hsa-integration</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mail-stub</artifactId>
+    </dependency>
     <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
@@ -53,8 +57,8 @@
       <artifactId>itintegration-monitoring-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
-      <artifactId>webcert-privatepractitioner-terms</artifactId>
+      <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner.terms</groupId>
+      <artifactId>intyg-infrastructure-directory-privatepractitioner-terms-schemas</artifactId>
     </dependency>
     <!-- Misc -->
     <dependency>

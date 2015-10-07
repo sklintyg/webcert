@@ -1,17 +1,16 @@
 package se.inera.webcert.web.controller.monitoring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.service.monitoring.HealthCheckService;
-import se.inera.webcert.service.monitoring.dto.HealthStatus;
-import se.inera.webcert.web.controller.AbstractApiController;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.webcert.service.monitoring.HealthCheckService;
+import se.inera.webcert.service.monitoring.dto.HealthStatus;
+import se.inera.webcert.web.controller.AbstractApiController;
 
 /**
  * RESTinterface for checking the general health status of the application.
@@ -20,8 +19,6 @@ import javax.ws.rs.core.Response;
  *
  */
 public class HealthCheckApiController extends AbstractApiController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(HealthCheckApiController.class);
 
     @Autowired
     private HealthCheckService healthCheck;

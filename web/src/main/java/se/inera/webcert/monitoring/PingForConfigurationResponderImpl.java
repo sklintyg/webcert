@@ -64,7 +64,7 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
         addConfiguration(response, "intygstjanst", pingIntygstjanst.isOk() ? "ok" : "no connection");
         addConfiguration(response, "signatureQueueSize", "" + queueSize.getMeasurement());
         addConfiguration(response, "nbrOfUsers", "" + nbrOfUsers.getMeasurement());
-        
+
         return response;
     }
 

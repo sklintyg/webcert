@@ -35,8 +35,8 @@ import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionerType;
 
-import com.sun.istack.NotNull;
-import com.sun.istack.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -108,7 +108,7 @@ public class FmbServiceImpl implements FmbService {
         fmbRepository.deleteInBatch(fmbs);
     }
 
-    @NotNull
+    @Nonnull
     private FmbVersionStatus getVersionStatus() {
         GetVersionsResponseType versions = getVersionsResponder.getVersions(logicalAddress, new GetVersionsType());
         if (versions == null) {
@@ -127,7 +127,7 @@ public class FmbServiceImpl implements FmbService {
         return new FmbVersionStatus(fmbIsUpToDate, diagnosInfoIsUpToDate);
     }
 
-    private boolean isFmbInfoUpToDate(@NotNull VersionerType versioner) {
+    private boolean isFmbInfoUpToDate(@Nonnull VersionerType versioner) {
         final String fmbDate = versioner.getFmbSenateAndring();
         final List<Fmb> fmbs = fmbRepository.findByUrsprung(FmbCallType.FMB);
         final boolean fmbIsUpToDate = isUpToDate(fmbDate, fmbs);
@@ -135,7 +135,7 @@ public class FmbServiceImpl implements FmbService {
         return fmbIsUpToDate;
     }
 
-    private boolean isDiagnosInfoUpToDate(@NotNull VersionerType versioner) {
+    private boolean isDiagnosInfoUpToDate(@Nonnull VersionerType versioner) {
         final String diagnosInfoDate = versioner.getDiagnosInformationSenateAndring();
         final List<Fmb> diagnosInfos = fmbRepository.findByUrsprung(FmbCallType.DIAGNOSINFORMATION);
         final boolean diagnosInfoIsUpToDate = isUpToDate(diagnosInfoDate, diagnosInfos);
@@ -158,9 +158,9 @@ public class FmbServiceImpl implements FmbService {
         return true;
     }
 
-    @NotNull
+    @Nonnull
     private List<Fmb> getUpdatedDiagnosinfos() {
-        final ArrayList<Fmb> fmbs = new ArrayList<>();
+        final List<Fmb> fmbs = new ArrayList<>();
         final GetDiagnosInformationResponseType diagnosInformation = getDiagnosInformationResponder.getDiagnosInformation(logicalAddress, new GetDiagnosInformationType());
         if (diagnosInformation == null) {
             LOG.warn("Diagnosinformation is null");
@@ -181,8 +181,8 @@ public class FmbServiceImpl implements FmbService {
         return fmbs;
     }
 
-    private List<Fmb> createFmbsForDiagnosInfo(@NotNull String senateAndring, @NotNull DiagnosInformationType information) {
-        ArrayList<Fmb> fmbs = new ArrayList<>();
+    private List<Fmb> createFmbsForDiagnosInfo(@Nonnull String senateAndring, @Nonnull DiagnosInformationType information) {
+        final List<Fmb> fmbs = new ArrayList<>();
         final String falt5 = information.getAktivitetsbegransningBeskrivning();
         final String falt4 = information.getFunktionsnedsattningBeskrivning();
         final OvrigFmbInformationType ovrigFmbInformation = information.getOvrigFmbInformation();
@@ -207,9 +207,9 @@ public class FmbServiceImpl implements FmbService {
         return fmbs;
     }
 
-    @NotNull
+    @Nonnull
     private List<Fmb> getUpdatedFmbs() {
-        final ArrayList<Fmb> fmbs = new ArrayList<>();
+        final List<Fmb> fmbs = new ArrayList<>();
         GetFmbResponseType fmb = getFmbResponder.getFmb(logicalAddress, new GetFmbType());
         if (fmb == null) {
             LOG.warn("FMB response is null");
@@ -230,8 +230,8 @@ public class FmbServiceImpl implements FmbService {
         return fmbs;
     }
 
-    private ArrayList<Fmb> createFmbsForFmbInfo(@NotNull String senateAndring, @NotNull BeslutsunderlagType beslutsunderlag) {
-        ArrayList<Fmb> fmbs = new ArrayList<>();
+    private List<Fmb> createFmbsForFmbInfo(@Nonnull String senateAndring, @Nonnull BeslutsunderlagType beslutsunderlag) {
+        final List<Fmb> fmbs = new ArrayList<>();
         final String falt8b = beslutsunderlag.getTextuelltUnderlag();
         if (falt8b != null) {
             final List<HuvuddiagnosType> huvuddxs = beslutsunderlag.getHuvuddiagnos();
@@ -243,9 +243,9 @@ public class FmbServiceImpl implements FmbService {
         return fmbs;
     }
 
-    @NotNull
+    @Nonnull
     private List<String> getFormatedIcd10Codes(@Nullable List<HuvuddiagnosType> huvuddxs) {
-        final ArrayList<String> codes = new ArrayList<>();
+        final List<String> codes = new ArrayList<>();
         if (huvuddxs == null) {
             LOG.info("Missing huvuddiagnos");
             return codes;

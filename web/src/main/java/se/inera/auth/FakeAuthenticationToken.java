@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
  */
 public class FakeAuthenticationToken extends AbstractAuthenticationToken {
 
+    private static final long serialVersionUID = 6816599869136456844L;
+
     private FakeCredentials fakeCredentials;
 
     public FakeAuthenticationToken(FakeCredentials fakeCredentials) {

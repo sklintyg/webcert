@@ -1,6 +1,10 @@
 package se.inera.auth.eleg;
 
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,14 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
-import org.springframework.test.util.ReflectionTestUtils;
+
 import se.inera.auth.common.BaseSAMLCredentialTest;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-08-26.
@@ -29,13 +28,11 @@ public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest
     private static final java.lang.String INDETERMINATE_LOGIN_METHOD = "";
     private static final java.lang.String UNKNOWN_LOGIN_METHOD = "ccp7";
 
-
-
     @Mock
-    ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
 
     @InjectMocks
-    ElegAuthenticationMethodResolverImpl testee;
+    private ElegAuthenticationMethodResolverImpl testee;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -69,7 +66,6 @@ public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(null);
         testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void testIndeterminateIssuerThrowsException() {

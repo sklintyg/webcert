@@ -13,7 +13,7 @@ public class SendIntygConfiguration {
     private String recipient;
 
     private boolean patientConsent;
-    
+
     private WebCertUser webCertUser;
 
     public SendIntygConfiguration() {

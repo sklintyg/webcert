@@ -6,6 +6,15 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.OptimisticLockException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +22,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
-import se.inera.certificate.integration.json.CustomObjectMapper;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -22,7 +33,6 @@ import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -45,14 +55,6 @@ import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
 
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
 
@@ -68,7 +70,7 @@ public class SignaturServiceImplTest {
     private UtkastRepository mockUtkastRepository;
 
     @Mock
-    IntygService intygService;
+    private IntygService intygService;
 
     @Mock
     private LogService logService;
@@ -89,7 +91,7 @@ public class SignaturServiceImplTest {
     private ModuleApi moduleApi;
 
     @Mock
-    ASN1Util asn1Util;
+    private ASN1Util asn1Util;
 
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
@@ -135,12 +137,15 @@ public class SignaturServiceImplTest {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
 
-        ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
     private WebCertUser createWebCertUser(boolean doctor) {
-        WebCertUser user = new WebCertUser(getGrantedRole(doctor), getGrantedPrivileges(doctor));
+        WebCertUser user = new WebCertUser();
+
+        user.setRoles(getGrantedRole(doctor));
+        user.setAuthorities(getGrantedPrivileges(doctor));
+
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
         user.setVardgivare(Arrays.asList(vardgivare));
@@ -340,25 +345,32 @@ public class SignaturServiceImplTest {
         intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
     }
 
-    private GrantedAuthority getGrantedRole(boolean doctor) {
+    private Map<String, UserRole> getGrantedRole(boolean doctor) {
+        Map<String, UserRole> map = new HashMap<>();
+
         if (doctor) {
-            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+            map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        } else {
+            map.put(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR);
         }
 
-        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.text());
+        return map;
     }
 
+    private Map<String, UserPrivilege> getGrantedPrivileges(boolean doctor) {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+        Map<String, UserPrivilege> privilegeMap = new HashMap<>();
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges(boolean doctor) {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-
+        // convert list to map
         if (doctor) {
-            for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-            }
+            privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+                public String apply(UserPrivilege userPrivilege) {
+                    return userPrivilege.name();
+                }
+            });
         }
 
-        return privileges;
+        return privilegeMap;
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson, String enhetsId) {

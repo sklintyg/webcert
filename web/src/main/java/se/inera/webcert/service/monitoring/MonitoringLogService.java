@@ -1,9 +1,8 @@
 package se.inera.webcert.service.monitoring;
 
 /**
- * Service that writes messages to the monitoring log
- * 
- * 
+ * Service that writes messages to the monitoring log.
+ *
  * @author npet
  *
  */

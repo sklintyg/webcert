@@ -1,11 +1,22 @@
 package se.inera.webcert.service.utkast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.OptimisticLockException;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -16,13 +27,11 @@ import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
@@ -36,21 +45,15 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.signatur.SignaturService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
-import se.inera.webcert.service.user.WebCertUserService;
-
-import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -68,9 +71,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private SignaturService signatureService;
 
     @Autowired
     private LogService logService;
@@ -163,7 +163,16 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
-        return utkastRepository.filterIntyg(filter);
+        List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
+        Iterator<Utkast> i = utkastList.iterator();
+        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        while (i.hasNext()) {
+            Utkast utkast = i.next();
+            if (!intygsTyper.contains(utkast.getIntygsTyp())) {
+                i.remove();
+            }
+        }
+        return utkastList;
     }
 
     @Override

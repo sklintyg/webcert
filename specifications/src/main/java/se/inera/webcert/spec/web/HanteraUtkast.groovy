@@ -349,6 +349,21 @@ class HanteraUtkast {
         result
     }
 
+    boolean utkastAvTypVisasInteIListanAvTidigareUtkast(String intygsTyp) {
+        //
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            waitFor {
+                // TODO use better page abstraction
+                result = $("#unsignedCertTable table tr td span[key=\"certificatetypes\\.$intygsTyp\\.typename\"]").size() == 0
+            }
+        }
+        return result
+    }
+
     // --
     String kanInteTaStallningTsDiabetes() {
         def result

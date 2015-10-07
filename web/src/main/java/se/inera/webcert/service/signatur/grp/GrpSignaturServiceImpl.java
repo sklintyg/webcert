@@ -49,13 +49,13 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
     private GrpServicePortType grpService;
 
     @Autowired
-    UtkastRepository utkastRepository;
+    private UtkastRepository utkastRepository;
 
     @Autowired
-    ThreadPoolTaskExecutor taskExecutor;
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Autowired
-    GrpCollectPollerFactory grpCollectPollerFactory;
+    private GrpCollectPollerFactory grpCollectPollerFactory;
 
     @Override
     public SignaturTicket startGrpAuthentication(String intygId, long version) {
@@ -109,9 +109,9 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
 
     private void validatePersonId(String personId) {
         if (personId == null) {
-            throw new IllegalArgumentException("User principal contained no personId. Cannot issue a GRP auth request " +
-                    "without a valid personId. This condition could theoretically occur if a SITHS-logged in lakare " +
-                    "accidently managed to init a signing with BankID.");
+            throw new IllegalArgumentException("User principal contained no personId. Cannot issue a GRP auth request "
+                    + "without a valid personId. This condition could theoretically occur if a SITHS-logged in lakare "
+                    + "accidently managed to init a signing with BankID.");
         }
     }
 

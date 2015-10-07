@@ -36,6 +36,10 @@
   
   <bean class="se.inera.webcert.service.monitoring.MonitoringLogServiceImpl" />
 
+  <bean id="ppService" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.intyg.webcert.integration.pp.services.PPService" />
+  </bean>
+
   <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
   <task:annotation-driven executor="threadPoolTaskExecutor"/>
 

@@ -421,6 +421,30 @@ class SkrivIntyg {
     }
 
     /**
+     *  Waits for the supplied element to both be displayed and contain a certain text.
+     */
+    def vantaPaAttElementMedIdInnehallerText(String elementId, String textToMatch) {
+        Browser.drive {
+            waitFor{
+                $('#' + elementId, text: contains(textToMatch)).isDisplayed()
+            }
+        }
+        true
+    }
+
+    /**
+     *  Simple check to determine if a element with a known id is visible or not (without waiting).
+     */
+    boolean elementMedIdVisas(String elementId, boolean visas) {
+        def result;
+        Browser.drive {
+            result = $('#' + elementId).isDisplayed()
+        }
+        result == visas
+    }
+
+
+    /**
      * Returns true if the specified text exists in any of the markup within the specified element id. E.g,
      * note that this looks at all HTML, not just text within the element.
      */

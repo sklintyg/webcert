@@ -18,11 +18,13 @@ import org.springframework.security.saml.SAMLCredential;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 
 /**
+ * AuthenticationProvider for fake logged in private practitioners.
+ *
  * Created by eriklupander on 2015-06-16.
  */
 public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
-    ElegWebCertUserDetailsService elegWebCertUserDetailsService;
+    private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -40,7 +42,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
     }
 
     @Override
-    public boolean supports(Class authentication) {
+    public boolean supports(Class<?> authentication) {
         return FakeElegAuthenticationToken.class.isAssignableFrom(authentication);
     }
 

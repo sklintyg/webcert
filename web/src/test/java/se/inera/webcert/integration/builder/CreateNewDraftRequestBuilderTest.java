@@ -27,121 +27,121 @@ import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {
 
-	private static final String CERT_TYPE = "fk7263";
-	private static final String USER_HSAID = "SE1234567890";
-	private static final String UNIT_HSAID = "SE0987654321";
-	private static final String CAREGIVER_HSAID = "SE0000112233";
+    private static final String CERT_TYPE = "fk7263";
+    private static final String USER_HSAID = "SE1234567890";
+    private static final String UNIT_HSAID = "SE0987654321";
+    private static final String CAREGIVER_HSAID = "SE0000112233";
 
-	@Mock
-	HsaOrganizationsService orgServiceMock;
+    @Mock
+    private HsaOrganizationsService orgServiceMock;
 
-	@InjectMocks
-	CreateNewDraftRequestBuilderImpl builder;
+    @InjectMocks
+    private CreateNewDraftRequestBuilderImpl builder;
 
-	@Test
-	public void test() {
-		
-		Vardenhet hsaVardenhet = createHsaVardenhet();
-		when(orgServiceMock.getVardenhet(anyString())).thenReturn(hsaVardenhet);
-		
-		Utlatande utlatande = createUtlatande();
+    @Test
+    public void test() {
 
-		MiuInformationType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
+        Vardenhet hsaVardenhet = createHsaVardenhet();
+        when(orgServiceMock.getVardenhet(anyString())).thenReturn(hsaVardenhet);
 
-		CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, miu);
-		
-		assertNotNull(res);
-		
-		assertEquals(CERT_TYPE, res.getIntygType());
-		
-		assertEquals(USER_HSAID, res.getHosPerson().getHsaId());
-		assertNotNull(res.getHosPerson().getNamn());
-		
-		assertEquals(UNIT_HSAID, res.getVardenhet().getHsaId());
-		assertNotNull(res.getVardenhet().getNamn());
-		assertNotNull(res.getVardenhet().getArbetsplatskod());
-		assertNotNull(res.getVardenhet().getTelefonnummer());
-		assertNotNull(res.getVardenhet().getPostadress());
-		assertNotNull(res.getVardenhet().getPostnummer());
-		assertNotNull(res.getVardenhet().getPostort());
-		
-		assertEquals(CAREGIVER_HSAID, res.getVardenhet().getVardgivare().getHsaId());
-		assertNotNull(res.getVardenhet().getVardgivare().getNamn());
-		
-		assertEquals("19121212-1212", res.getPatient().getPersonnummer());
-		assertEquals("Adam Bertil", res.getPatient().getFornamn());
-		assertEquals("Cesarsson Davidsson", res.getPatient().getMellannamn());
-		assertEquals("Eriksson", res.getPatient().getEfternamn());	
-		
-	}
+        Utlatande utlatande = createUtlatande();
 
-	private Vardenhet createHsaVardenhet() {
-		
-		Vardenhet hsaVardenhet = new Vardenhet();
-		hsaVardenhet.setId(UNIT_HSAID);
-		hsaVardenhet.setNamn("Vardenheten");
-		hsaVardenhet.setArbetsplatskod("0000001");
-		hsaVardenhet.setPostadress("Postaddr");
-		hsaVardenhet.setPostnummer("12345");
-		hsaVardenhet.setPostort("Staden");
-		hsaVardenhet.setTelefonnummer("0123-456789");
-				
-		return hsaVardenhet;
-	}
+        MiuInformationType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
 
-	private Utlatande createUtlatande() {
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, miu);
 
-		Utlatande utlatande = new Utlatande();
+        assertNotNull(res);
 
-		// Type
-		TypAvUtlatande utlTyp = new TypAvUtlatande();
-		utlTyp.setCode(CERT_TYPE);
-		utlatande.setTypAvUtlatande(utlTyp);
+        assertEquals(CERT_TYPE, res.getIntygType());
 
-		// HoSPerson
-		HosPersonal hosPerson = new HosPersonal();
-		hosPerson.setFullstandigtNamn("Abel Baker");
+        assertEquals(USER_HSAID, res.getHosPerson().getHsaId());
+        assertNotNull(res.getHosPerson().getNamn());
 
-		HsaId userHsaId = new HsaId();
-		userHsaId.setExtension(USER_HSAID);
-		userHsaId.setRoot("USERHSAID");
-		hosPerson.setPersonalId(userHsaId);
+        assertEquals(UNIT_HSAID, res.getVardenhet().getHsaId());
+        assertNotNull(res.getVardenhet().getNamn());
+        assertNotNull(res.getVardenhet().getArbetsplatskod());
+        assertNotNull(res.getVardenhet().getTelefonnummer());
+        assertNotNull(res.getVardenhet().getPostadress());
+        assertNotNull(res.getVardenhet().getPostnummer());
+        assertNotNull(res.getVardenhet().getPostort());
 
-		Enhet hosEnhet = new Enhet();
-		HsaId unitHsaId = new HsaId();
-		unitHsaId.setExtension(UNIT_HSAID);
-		unitHsaId.setRoot("UNITHSAID");
-		hosEnhet.setEnhetsId(unitHsaId);
-		hosPerson.setEnhet(hosEnhet);
+        assertEquals(CAREGIVER_HSAID, res.getVardenhet().getVardgivare().getHsaId());
+        assertNotNull(res.getVardenhet().getVardgivare().getNamn());
 
-		utlatande.setSkapadAv(hosPerson);
+        assertEquals("19121212-1212", res.getPatient().getPersonnummer());
+        assertEquals("Adam Bertil", res.getPatient().getFornamn());
+        assertEquals("Cesarsson Davidsson", res.getPatient().getMellannamn());
+        assertEquals("Eriksson", res.getPatient().getEfternamn());
 
-		// Patient
-		PersonId personId = new PersonId();
-		personId.setRoot("PERSNR");
-		personId.setExtension("19121212-1212");
+    }
 
-		Patient patType = new Patient();
-		patType.setPersonId(personId);
-		patType.getFornamn().add("Adam");
-		patType.getFornamn().add("Bertil");
-		patType.getMellannamn().add("Cesarsson");
-		patType.getMellannamn().add("Davidsson");
-		patType.setEfternamn("Eriksson");
-		utlatande.setPatient(patType);
+    private Vardenhet createHsaVardenhet() {
 
-		return utlatande;
-	}
+        Vardenhet hsaVardenhet = new Vardenhet();
+        hsaVardenhet.setId(UNIT_HSAID);
+        hsaVardenhet.setNamn("Vardenheten");
+        hsaVardenhet.setArbetsplatskod("0000001");
+        hsaVardenhet.setPostadress("Postaddr");
+        hsaVardenhet.setPostnummer("12345");
+        hsaVardenhet.setPostort("Staden");
+        hsaVardenhet.setTelefonnummer("0123-456789");
 
-	private MiuInformationType createMIU(String personHsaId, String unitHsaId,
-			LocalDateTime miuEndDate) {
-		MiuInformationType miu = new MiuInformationType();
-		miu.setCareGiver(CAREGIVER_HSAID);
-		miu.setCareGiverName("Landstinget");
-		miu.setCareUnitName("Sjukhuset");
-		miu.setCareUnitHsaIdentity(unitHsaId);
-		miu.setCareUnitEndDate(miuEndDate);
-		miu.setHsaIdentityPerson(personHsaId);
-		return miu;
-	}
+        return hsaVardenhet;
+    }
+
+    private Utlatande createUtlatande() {
+
+        Utlatande utlatande = new Utlatande();
+
+        // Type
+        TypAvUtlatande utlTyp = new TypAvUtlatande();
+        utlTyp.setCode(CERT_TYPE);
+        utlatande.setTypAvUtlatande(utlTyp);
+
+        // HoSPerson
+        HosPersonal hosPerson = new HosPersonal();
+        hosPerson.setFullstandigtNamn("Abel Baker");
+
+        HsaId userHsaId = new HsaId();
+        userHsaId.setExtension(USER_HSAID);
+        userHsaId.setRoot("USERHSAID");
+        hosPerson.setPersonalId(userHsaId);
+
+        Enhet hosEnhet = new Enhet();
+        HsaId unitHsaId = new HsaId();
+        unitHsaId.setExtension(UNIT_HSAID);
+        unitHsaId.setRoot("UNITHSAID");
+        hosEnhet.setEnhetsId(unitHsaId);
+        hosPerson.setEnhet(hosEnhet);
+
+        utlatande.setSkapadAv(hosPerson);
+
+        // Patient
+        PersonId personId = new PersonId();
+        personId.setRoot("PERSNR");
+        personId.setExtension("19121212-1212");
+
+        Patient patType = new Patient();
+        patType.setPersonId(personId);
+        patType.getFornamn().add("Adam");
+        patType.getFornamn().add("Bertil");
+        patType.getMellannamn().add("Cesarsson");
+        patType.getMellannamn().add("Davidsson");
+        patType.setEfternamn("Eriksson");
+        utlatande.setPatient(patType);
+
+        return utlatande;
+    }
+
+    private MiuInformationType createMIU(String personHsaId, String unitHsaId,
+            LocalDateTime miuEndDate) {
+        MiuInformationType miu = new MiuInformationType();
+        miu.setCareGiver(CAREGIVER_HSAID);
+        miu.setCareGiverName("Landstinget");
+        miu.setCareUnitName("Sjukhuset");
+        miu.setCareUnitHsaIdentity(unitHsaId);
+        miu.setCareUnitEndDate(miuEndDate);
+        miu.setHsaIdentityPerson(personHsaId);
+        return miu;
+    }
 }

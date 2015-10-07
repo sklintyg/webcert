@@ -8,7 +8,7 @@ import java.util.List;
 public class SaveDraftResponse {
 
     private long version;
-    
+
     private DraftValidationStatus status;
 
     private List<SaveDraftValidationMessage> messages = new ArrayList<SaveDraftValidationMessage>();

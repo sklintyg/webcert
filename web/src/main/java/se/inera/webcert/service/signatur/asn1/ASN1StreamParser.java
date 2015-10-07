@@ -28,42 +28,46 @@ public class ASN1StreamParser {
      * a sequence of bytes in the stream with the supplied marker sequence of bytes.
      *
      * @param is
-     *      A BASE64-encoded byte stream, typically an ASN.1 signature from NetID
+     *            A BASE64-encoded byte stream, typically an ASN.1 signature from NetID
      * @param marker
-     *      A known sequence of bytes denoting where the wanted value starts in the stream.
+     *            A known sequence of bytes denoting where the wanted value starts in the stream.
      * @param dataLength
-     *      The number of bytes to read following the marker, when found.
+     *            The number of bytes to read following the marker, when found.
      * @return
-     *      String representation of the found value or null if the marker wasn't present in the byte stream.
+     *         String representation of the found value or null if the marker wasn't present in the byte stream.
      * @throws IOException
      */
     public String parse(InputStream is, int[] marker, int dataLength) throws IOException {
         byte[] bytes = IOUtils.toByteArray(is);
         byte[] decoded = Base64.decodeBase64(bytes);
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
-
         LimitedQueue<Integer> buffer = new LimitedQueue<>(marker.length);
-        try {
-            while(bais.available() > 0) {
-                int b = bais.read() & 0xFF;
+
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(decoded)) {
+            while (bais.available() > 0) {
+                int b = unsignByte(bais);
                 buffer.add(b);
 
                 if (buffer.size() == marker.length && match(buffer, marker)) {
                     // Extract val
                     StringBuilder buf = new StringBuilder();
-                    for(int a = 0; a < dataLength; a++) {
-                        int c = bais.read() & 0xFF;
+                    for (int a = 0; a < dataLength; a++) {
+                        int c = unsignByte(bais);
                         buf.append((char) c);
                     }
                     return buf.toString();
                 }
             }
-        } finally {
-            try { is.close(); } catch(Exception e) {};
-            try { bais.close(); } catch(Exception e) {};
         }
         return null;
+    }
+
+    /**
+     * The ASN.1 data stream from NetID is supplied as Base64-encoded bytes which Java treats as signed integers
+     * Perform the [byte] & 0xFF trick to transform the unsigned byte value into an int.
+     */
+    private int unsignByte(ByteArrayInputStream bais) {
+        return bais.read() & 0xFF;
     }
 
     /**
@@ -77,14 +81,13 @@ public class ASN1StreamParser {
      * @return
      */
     private boolean match(LimitedQueue<Integer> buffer, int[] marker) {
-        for(int a = 0; a < marker.length; a++) {
+        for (int a = 0; a < marker.length; a++) {
             if (!buffer.get(a).equals(marker[a])) {
-                 return false;
+                return false;
             }
         }
         return true;
     }
-
 
     /**
      * Internal subclass of LinkedList popping out elements on FIFO-basis when the defined capacity (i.e. limit) is
@@ -93,6 +96,9 @@ public class ASN1StreamParser {
      * @param <E>
      */
     private class LimitedQueue<E> extends LinkedList<E> {
+
+        private static final long serialVersionUID = 507838301817733410L;
+
         private int limit;
 
         public LimitedQueue(int limit) {
@@ -102,7 +108,9 @@ public class ASN1StreamParser {
         @Override
         public boolean add(E o) {
             super.add(o);
-            while (size() > limit) { super.remove(); }
+            while (size() > limit) {
+                super.remove();
+            }
             return true;
         }
     }

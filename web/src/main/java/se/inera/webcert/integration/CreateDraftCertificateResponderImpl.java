@@ -49,7 +49,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private MonitoringLogService monitoringLogService;
-    
+
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
@@ -96,7 +96,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     /**
      * Method checks if invoking person, i.e the health care personal,
-     * is entitled to look at the information
+     * is entitled to look at the information.
      *
      * @param utlatandeType
      * @return
@@ -120,7 +120,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     /**
-     * The response sent back to caller when an error is raised
+     * The response sent back to caller when an error is raised.
+     *
      * @param errorMsg
      * @param errorType
      * @return
@@ -134,7 +135,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     /**
-     * Builds a specific MIU error response
+     * Builds a specific MIU error response.
+     *
      * @param utlatandeType
      * @return
      */
@@ -144,13 +146,14 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
-        
+
         String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId, invokingUnitHsaId);
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 
     /**
-     * Builds a specific validation error response
+     * Builds a specific validation error response.
+     *
      * @param resultsValidator
      * @return
      */
@@ -161,7 +164,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     /**
-     * The response sent back to caller when creating a certificate draft succeeded
+     * The response sent back to caller when creating a certificate draft succeeded.
+     *
      * @param nyttUtkastsId
      * @return
      */

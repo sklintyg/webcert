@@ -4,14 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.feature.WebcertFeature;
@@ -19,9 +19,10 @@ import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageControllerTest {
@@ -64,29 +65,39 @@ public class PageControllerTest {
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
     }
 
-    private WebCertUser createMockUser(boolean isLakare) {
-        return new WebCertUser(getGrantedRole(isLakare), getGrantedPrivileges(isLakare));
+    private WebCertUser createMockUser(boolean doctor) {
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole(doctor));
+        user.setAuthorities(getGrantedPrivileges(doctor));
+        return user;
     }
 
-    private GrantedAuthority getGrantedRole(boolean isLakare) {
-        if (isLakare) {
-            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole(boolean doctor) {
+        Map<String, UserRole> map = new HashMap<>();
+
+        if (doctor) {
+            map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        } else {
+            map.put(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR);
         }
 
-        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.text());
+        return map;
     }
 
+    private Map<String, UserPrivilege> getGrantedPrivileges(boolean doctor) {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+        Map<String, UserPrivilege> privilegeMap = new HashMap<>();
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges(boolean isLakare) {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-
-        if (isLakare) {
-            for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-            }
+        // convert list to map
+        if (doctor) {
+            privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+                public String apply(UserPrivilege userPrivilege) {
+                    return userPrivilege.name();
+                }
+            });
         }
 
-        return privileges;
+        return privilegeMap;
     }
 
 }

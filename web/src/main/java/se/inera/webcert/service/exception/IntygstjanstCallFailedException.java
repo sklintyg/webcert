@@ -7,6 +7,8 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
  */
 public class IntygstjanstCallFailedException extends RuntimeException {
 
+    private static final long serialVersionUID = -4560685423094276902L;
+
     private final ResultType result;
 
     public IntygstjanstCallFailedException(ResultType result) {

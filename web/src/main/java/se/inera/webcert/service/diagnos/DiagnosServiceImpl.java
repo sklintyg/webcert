@@ -137,7 +137,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
@@ -180,7 +180,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override

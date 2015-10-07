@@ -15,8 +15,8 @@ import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
 
 /**
- * Util for building test data
- * 
+ * Util for building test data.
+ *
  * @author nikpet
  *
  */

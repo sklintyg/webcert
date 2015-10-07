@@ -14,9 +14,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
+import se.inera.webcert.client.SendCertificateServiceClient;
+import se.inera.webcert.common.Constants;
 import se.inera.webcert.exception.PermanentException;
 import se.inera.webcert.exception.TemporaryException;
-import se.inera.webcert.client.SendCertificateServiceClient;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
@@ -127,50 +128,6 @@ public class CertificateSendProcessorTest {
         // Then
         verify(sendServiceClient).sendCertificate(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
     }
-
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testIntygsIdIsMissing() throws Exception {
-//        try {
-//            certificateSendProcessor.process(null, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.INTYGS_ID));
-//            throw e;
-//        }
-//        fail();
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testPersonIdIsMissing() throws Exception {
-//        try {
-//            certificateSendProcessor.process(INTYGS_ID1, null, RECIPIENT1, LOGICAL_ADDRESS1);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.PERSON_ID));
-//            throw e;
-//        }
-//        fail();
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testRecipientIsMissing() throws Exception {
-//        try {
-//            certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, null, LOGICAL_ADDRESS1);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.RECIPIENT));
-//            throw e;
-//        }
-//        fail();
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testLogicalAddressIsMissing() throws Exception {
-//        try {
-//        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, null);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.LOGICAL_ADDRESS));
-//            throw e;
-//        }
-//        fail();
-//    }
 
     private SendCertificateToRecipientResponseType createResponse(ResultCodeType resultCodeType, ErrorIdType errorType) {
         ResultType resultType = new ResultType();

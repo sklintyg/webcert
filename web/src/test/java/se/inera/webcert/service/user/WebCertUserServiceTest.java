@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -19,12 +19,9 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest {
@@ -47,7 +44,8 @@ public class WebCertUserServiceTest {
         assertTrue("ska kunna titta på ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
         assertFalse("ska INTE kunna titta på ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
         assertTrue("ska kunna redigera ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
-        assertFalse("ska INTE kunna redigera ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+        assertFalse("ska INTE kunna redigera ett intyg inom VE2",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
 
     @Test
@@ -58,7 +56,8 @@ public class WebCertUserServiceTest {
         assertTrue("ska kunna titta på ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
         assertTrue("ska kunna titta på ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
         assertTrue("ska kunna redigera ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
-        assertFalse("ska INTE kunna redigera ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+        assertFalse("ska INTE kunna redigera ett intyg inom VE2",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
 
     @Test
@@ -92,7 +91,7 @@ public class WebCertUserServiceTest {
 
     private WebCertUser createWebCertUser(boolean fromJS) {
 
-        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        WebCertUser user = createUser();
 
         user.setNamn("A Name");
         user.setHsaId("HSA-id");
@@ -128,23 +127,35 @@ public class WebCertUserServiceTest {
         return user;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private WebCertUser createUser() {
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole());
+        user.setAuthorities(getGrantedPrivileges());
+        return user;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserRole> getGrantedRole() {
+        return createUserRoles(UserRole.ROLE_LAKARE);
     }
 
-    private Map<String, String> createUserRoles(UserRole... userRoles) {
-        Map<String, String> roles = new HashMap<>();
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
+    }
+
+    private Map<String, UserRole> createUserRoles(UserRole... userRoles) {
+        Map<String, UserRole> roles = new HashMap<>();
 
         for (UserRole userRole : userRoles) {
-            roles.put(userRole.name(), userRole.text());
+            roles.put(userRole.name(), userRole);
         }
 
         return roles;

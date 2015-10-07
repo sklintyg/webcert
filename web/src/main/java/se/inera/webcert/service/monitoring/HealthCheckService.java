@@ -52,17 +52,17 @@ public interface HealthCheckService {
      * @return
      */
     String checkUptimeAsString();
-    
+
     /**
      * Check if the connection to Intygstjansten is up.
      *
      * @return
      */
     HealthStatus checkIntygstjanst();
-    
+
     /**
      * Checks the number of logged in users.
-     * 
+     *
      * @return
      */
     HealthStatus checkNbrOfUsers();

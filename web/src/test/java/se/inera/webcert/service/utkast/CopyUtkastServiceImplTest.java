@@ -7,10 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,16 +15,9 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.springframework.core.io.ClassPathResource;
 
-import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.model.CertificateState;
-import se.inera.certificate.model.Status;
-import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -36,15 +25,16 @@ import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.service.user.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -60,8 +50,6 @@ public class CopyUtkastServiceImplTest {
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";
-
-    private static final String PATIENT_NEW_SSN = "19121212-1414";
 
     private static final String VARDENHET_ID = "SE00001234-5678";
     private static final String VARDENHET_NAME = "Vårdenheten 1";
@@ -121,7 +109,8 @@ public class CopyUtkastServiceImplTest {
 
     @Before
     public void expectCallToPUService() throws Exception {
-        PersonSvar personSvar = new PersonSvar(new Person(PATIENT_SSN, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"),
+        PersonSvar personSvar = new PersonSvar(
+                new Person(PATIENT_SSN, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"),
                 PersonSvar.Status.FOUND);
         when(mockPUService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
     }
@@ -223,16 +212,6 @@ public class CopyUtkastServiceImplTest {
 
     private CreateNewDraftCopyRequest buildCopyRequest() {
         return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson, vardenhet);
-    }
-
-    private IntygContentHolder createIntygContentHolder() throws Exception {
-        List<Status> status = new ArrayList<Status>();
-        status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
-        status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
-        Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
-        IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
-        return ich;
     }
 
     // testCreateNewDraftCopyPUtjanstFailed()

@@ -270,8 +270,8 @@
         <version>${intyg-privatepractitioner.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
-        <artifactId>webcert-privatepractitioner-terms</artifactId>
+        <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner.terms</groupId>
+        <artifactId>intyg-infrastructure-directory-privatepractitioner-terms-schemas</artifactId>
         <version>${intyg-privatepractitioner.version}</version>
       </dependency>
 

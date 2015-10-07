@@ -25,12 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.security.AuthoritiesException;
-import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
@@ -57,18 +55,11 @@ public class IntygIntegrationController {
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
 
-
-    @Autowired
-    private IntygService intygService;
-
     @Autowired
     private UtkastRepository utkastRepository;
 
     @Autowired
     private WebCertUserService webCertUserService;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     /**
      * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
@@ -122,7 +113,7 @@ public class IntygIntegrationController {
         if (utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED)) {
             isUtkast = true;
         }
-        
+
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
         return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, isUtkast);
     }
@@ -145,7 +136,7 @@ public class IntygIntegrationController {
      */
     void assertUserRole(WebCertUser user) {
 
-        Map<String, String> userRoles = user.getRoles();
+        Map<String, UserRole> userRoles = user.getRoles();
 
         List<String> gr = Arrays.asList(new String[] { UserRole.ROLE_LAKARE.name(), UserRole.ROLE_VARDADMINISTRATOR.name() });
         for (String role : userRoles.keySet()) {

@@ -9,12 +9,13 @@ import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
 import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
 import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
 import se.funktionstjanster.grp.v1.CollectRequestType;
 import se.funktionstjanster.grp.v1.CollectResponseType;
 import se.funktionstjanster.grp.v1.FaultStatusType;
@@ -23,7 +24,6 @@ import se.funktionstjanster.grp.v1.GrpFaultType;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.funktionstjanster.grp.v1.Property;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.signatur.SignaturService;
@@ -31,9 +31,10 @@ import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -41,29 +42,28 @@ import java.util.Set;
 @RunWith(MockitoJUnitRunner.class)
 public class GrpCollectPollerTest {
 
-    private static final String INTYG_ID = "intyg-1";
-    private static final long VERSION = 1L;
     private static final String PERSON_ID = "19121212-1212";
     private static final String TX_ID = "webcert-tx-1";
     private static final String ORDER_REF = "order-ref-1";
 
     @Mock
-    SignaturService signaturService;
+    private SignaturService signaturService;
 
     @Mock
-    SignaturTicketTracker signaturTicketTracker;
+    private SignaturTicketTracker signaturTicketTracker;
 
     @Mock
-    GrpServicePortType grpService;
+    private GrpServicePortType grpService;
 
     @InjectMocks
-    GrpCollectPollerImpl grpCollectPoller;
+    private GrpCollectPollerImpl grpCollectPoller;
 
     @Test
     public void testSingleSuccessfulCollect() throws GrpFault {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
-        //GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService, signaturTicketTracker, signaturService);
+        // GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService,
+        // signaturTicketTracker, signaturService);
 
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
@@ -81,8 +81,7 @@ public class GrpCollectPollerTest {
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(
                 buildResp(STARTED),
                 buildResp(OUTSTANDING_TRANSACTION),
-                buildResp(COMPLETE)
-        );
+                buildResp(COMPLETE));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
         grpCollectPoller.setWebCertUser(buildWebCertUser());
@@ -92,7 +91,6 @@ public class GrpCollectPollerTest {
         verify(signaturService, times(1)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
     }
-
 
     @Test
     public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpFault {
@@ -122,7 +120,6 @@ public class GrpCollectPollerTest {
         verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
     }
 
-
     private GrpFault buildFault(FaultStatusType faultStatusType) {
         GrpFaultType grpFaultType = new GrpFaultType();
         grpFaultType.setFaultStatus(faultStatusType);
@@ -130,7 +127,6 @@ public class GrpCollectPollerTest {
         GrpFault fault = new GrpFault("", grpFaultType);
         return fault;
     }
-
 
     private CollectResponseType buildResp(ProgressStatusType progressStatusType) {
         CollectResponseType resp = new CollectResponseType();
@@ -143,21 +139,30 @@ public class GrpCollectPollerTest {
     }
 
     private WebCertUser buildWebCertUser() {
-        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
-        webCertUser.setPersonId(PERSON_ID);
-        return webCertUser;
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole());
+        user.setAuthorities(getGrantedPrivileges());
+        user.setPersonId(PERSON_ID);
+        return user;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 }

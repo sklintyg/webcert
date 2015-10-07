@@ -15,9 +15,9 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 
 @Component
 public class DefaultSendNotificationStrategyImpl implements SendNotificationStrategy {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationStrategy.class);
-    
+
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
@@ -30,31 +30,31 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
      * @see se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForIntyg(java.lang.String)
      */
     public Utkast decideNotificationForIntyg(String intygsId) {
-        
+
         Utkast utkast = utkastRepository.findOne(intygsId);
-        
-        if(utkast == null) {
+
+        if (utkast == null) {
             LOG.debug("No Utkast with id '{}' was found", intygsId);
             return null;
         }
-        
+
         return decideNotificationForIntyg(utkast);
     }
-    
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForIntyg(se.inera.webcert.
      * persistence.utkast.model.Utkast)
      */
     @Override
     public Utkast decideNotificationForIntyg(Utkast utkast) {
-        
+
         if (!isIntygsTypAllowed(utkast.getIntygsTyp())) {
             LOG.debug("Utkast '{}' is of type '{}' and is not allowed", utkast.getIntygsId(), utkast.getIntygsTyp());
             return null;
         }
-        
+
         if (!isEnhetIntegrerad(utkast.getEnhetsId())) {
             LOG.debug("Utkast '{}' belongs to a unit that is not integrated", utkast.getIntygsId());
             return null;
@@ -65,7 +65,7 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForFragaSvar(se.inera.webcert
      * .persistence.fragasvar.model.FragaSvar)

@@ -32,6 +32,8 @@ import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 @ContextConfiguration("classpath:MailNotificationServiceTest/test-context.xml")
 public class MailNotificationServiceTest {
 
+    private static final int THRESHOLD = 2000;
+
     private static final String CITYAKUTEN = "cityakuten";
 
     private static final String LANDCENTRALEN = "landcentralen";
@@ -191,7 +193,7 @@ public class MailNotificationServiceTest {
         mailStore.setWait(false);
         mailStore.waitForMails(1);
         long endTimestamp = System.currentTimeMillis();
-        assertTrue(endTimestamp - startTimestamp < 2000);
+        assertTrue(endTimestamp - startTimestamp < THRESHOLD);
         assertEquals(1, mailStore.getMails().size());
         OutgoingMail mail = mailStore.getMails().get(0);
 

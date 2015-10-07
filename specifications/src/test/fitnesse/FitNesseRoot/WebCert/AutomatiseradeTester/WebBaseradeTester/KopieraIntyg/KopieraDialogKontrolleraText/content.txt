@@ -16,7 +16,7 @@ Detta test säkerstaller att texten är som i jira webcert-1447
 
 !4 Testa att tooltip för Kopiera-knapp innehåller text för förnyelse av sjukintyg
 | skript | !-SokSkrivIntyg-! |
-| kontrollera att |kopiera knapp har text | =~/Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning./ |
+| kontrollera att |kopiera knapp har text | =~/Skapar en kopia av befintligt intyg/ |
 
 !4 Testa att nytt personnumer text inte visas i kopieradialogen, men att förlängning av sjukskrivning visas.
 | skript | !-IntegrationMedJournalsystem-! |

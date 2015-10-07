@@ -36,6 +36,7 @@ module.exports = function(grunt) {
 //    grunt.log.write(JSON.stringify(webcert));
 
     var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
+    var CSS_COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
     var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
     var TSDIABETES_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
     var FK7263_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
@@ -229,6 +230,11 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/web/webjars/common/webcert',
                                 connect.static(__dirname + COMMON_DIR)
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/common/css',
+                                connect.static(__dirname + CSS_COMMON_DIR)
                             ));
                         middlewares.push(
                             connect().use(

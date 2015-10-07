@@ -6,7 +6,7 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 public interface SendNotificationStrategy {
 
     Utkast decideNotificationForIntyg(String intygsId);
-    
+
     Utkast decideNotificationForIntyg(Utkast utkast);
 
     Utkast decideNotificationForFragaSvar(FragaSvar fragaSvar);

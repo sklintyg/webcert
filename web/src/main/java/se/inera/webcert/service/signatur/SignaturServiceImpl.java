@@ -1,6 +1,12 @@
 package se.inera.webcert.service.signatur;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+
+import javax.persistence.OptimisticLockException;
+
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -8,12 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -33,18 +41,10 @@ import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.util.UpdateUserUtil;
 
-import javax.persistence.OptimisticLockException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-
 @Service
 public class SignaturServiceImpl implements SignaturService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SignaturServiceImpl.class);
-
-
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -66,9 +66,6 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private MonitoringLogService monitoringService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -115,7 +112,10 @@ public class SignaturServiceImpl implements SignaturService {
 
     private WebCertUser getWebcertUserForSignering() {
         WebCertUser user = webCertUserService.getUser();
-        if (!user.isLakare()) {
+
+        // TODO CHANGE THIS TO USE UserPrivilege.PRIVILEGE_SIGNERA_INTYG   ????
+        //if (!user.isLakare()) {
+        if (!user.hasPrivilege(UserPrivilege.PRIVILEGE_SIGNERA_INTYG)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User is not a doctor. Could not sign utkast.");
         }
@@ -141,8 +141,8 @@ public class SignaturServiceImpl implements SignaturService {
             String signaturPersonId = asn1Util.parsePersonId(rawSignatur);
 
             if (!user.getPersonId().replaceAll("\\-", "").equals(signaturPersonId)) {
-                String errMsg = "Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 " +
-                        "signature data from the NetID client does not match.";
+                String errMsg = "Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 "
+                        + "signature data from the NetID client does not match.";
                 LOG.error(errMsg);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
             }

@@ -156,7 +156,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public LogUser getLogUser(WebCertUser webCertUser) {
-        
+
         LogUser logUser = new LogUser();
 
         logUser.setUserId(webCertUser.getHsaId());

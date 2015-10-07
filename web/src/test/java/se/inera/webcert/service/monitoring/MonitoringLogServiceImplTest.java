@@ -22,7 +22,7 @@ import ch.qos.logback.core.Appender;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceImplTest {
-    
+
     private static final String INTYGS_ID = "INTYGS_ID";
     private static final String ENHET = "ENHET";
     private static final String COPY_INTYGS_ID = "COPY_INTYGS_ID";
@@ -42,33 +42,34 @@ public class MonitoringLogServiceImplTest {
     private static final long INTERN_REFERENS = 97;
     private static final String AMNE = "AMNE";
     private static final String UNIT_HSA_ID = "UNIT_HSA_ID";
-    private static final String USER_HSA_ID = "USER_HSA_ID"; 
+    private static final String USER_HSA_ID = "USER_HSA_ID";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
-    
-    MonitoringLogService logService = new MonitoringLogServiceImpl();
+
+    private MonitoringLogService logService = new MonitoringLogServiceImpl();
 
     @Before
     public void setup() {
-        
+
         final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.addAppender(mockAppender);
     }
-    
+
     @After
     public void teardown() {
         final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.detachAppender(mockAppender);
     }
-    
+
     @Test
     public void shouldLogAnswerReceived() {
         logService.logAnswerReceived(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
-        verifyLog(Level.INFO, "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+        verifyLog(Level.INFO,
+                "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
     }
 
     private void verifyLog(Level logLevel, String logMessage) {
@@ -78,14 +79,15 @@ public class MonitoringLogServiceImplTest {
 
         // Verify log
         assertThat(loggingEvent.getLevel(), is(logLevel));
-        assertThat(loggingEvent.getFormattedMessage(), 
+        assertThat(loggingEvent.getFormattedMessage(),
                 is(logMessage));
     }
 
     @Test
     public void shouldLogAnswerSent() {
         logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
-        verifyLog(Level.INFO, "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+        verifyLog(Level.INFO,
+                "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
     }
 
     @Test
@@ -163,31 +165,36 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogPrivatePractitionerTermsApproved() {
         logService.logPrivatePractitionerTermsApproved(USER_ID, AVTAL_VERSION);
-        verifyLog(Level.INFO, "PP_TERMS_ACCEPTED User 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361' accepted private practitioner terms of version 98");
+        verifyLog(Level.INFO,
+                "PP_TERMS_ACCEPTED User 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361' accepted private practitioner terms of version 98");
     }
 
     @Test
     public void shouldLogPULookup() {
-      logService.logPULookup(PERSON_NUMMER, RESULT);
-        verifyLog(Level.INFO, "PU_LOOKUP Lookup performed on '83e43d8552bbc5ef0fd9fa200688dc2a4ea6c443df46e641d30b07ebc0967b0d' with result 'RESULT'");
+        logService.logPULookup(PERSON_NUMMER, RESULT);
+        verifyLog(Level.INFO,
+                "PU_LOOKUP Lookup performed on '83e43d8552bbc5ef0fd9fa200688dc2a4ea6c443df46e641d30b07ebc0967b0d' with result 'RESULT'");
     }
 
     @Test
     public void shouldLogQuestionReceived() {
         logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE);
-        verifyLog(Level.INFO, "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+        verifyLog(Level.INFO,
+                "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
     }
 
     @Test
     public void shouldLogQuestionSent() {
         logService.logQuestionSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
-        verifyLog(Level.INFO, "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+        verifyLog(Level.INFO,
+                "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
     }
 
     @Test
     public void shouldLogQuestionSentWhenParametersAllNull() {
         logService.logQuestionSent(null, null, null, null, null);
-        verifyLog(Level.INFO, "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'null'");
+        verifyLog(Level.INFO,
+                "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'null'");
     }
 
     @Test

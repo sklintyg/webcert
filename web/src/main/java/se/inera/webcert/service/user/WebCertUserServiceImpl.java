@@ -36,7 +36,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public void assertUserRoles(String[] grantedRoles) throws AuthoritiesException {
-        Map<String, String> userRoles = getUser().getRoles();
+        Map<String, UserRole> userRoles = getUser().getRoles();
 
         List<String> gr = Arrays.asList(grantedRoles);
         for (String role : userRoles.keySet()) {
@@ -90,12 +90,12 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public void updateUserRoles(String[] userRoles) {
-        Map<String, String> roles = new HashMap<>();
+        Map<String, UserRole> roles = new HashMap<>();
 
         for (String userRole : userRoles) {
             Role role = roleRepository.findByName(userRole);
             if (role != null) {
-                roles.put(role.getName(), role.getText());
+                roles.put(role.getName(), UserRole.valueOf(role.getName()));
             }
         }
 

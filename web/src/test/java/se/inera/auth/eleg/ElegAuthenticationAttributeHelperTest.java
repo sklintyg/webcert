@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ElegAuthenticationAttributeHelperTest extends BaseSAMLCredentialTest {
 
-    ElegAuthenticationAttributeHelperImpl testee;
+    private ElegAuthenticationAttributeHelperImpl testee;
 
     @BeforeClass
     public static void setupAsssertions() throws Exception {

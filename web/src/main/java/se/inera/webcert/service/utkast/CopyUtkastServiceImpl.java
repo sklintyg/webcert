@@ -48,13 +48,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private LogService logService;
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.utkast.CopyUtkastService#createCopy(se.inera.webcert.service.utkast.dto.
      * CreateNewDraftCopyRequest)
      */

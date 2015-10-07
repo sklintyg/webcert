@@ -12,7 +12,7 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 public class DraftHolder {
 
     private long version;
-    
+
     private boolean vidarebefordrad;
 
     private UtkastStatus status;
