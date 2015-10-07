@@ -434,15 +434,6 @@ class SvaraOchFraga {
         }
     }
 
-    def gaTillIntygsvyViaUthoppMedIntygsid(String id) {
-        Browser.drive {
-            go "/webcert/web/user/certificate/${id}/questions"
-            waitFor {
-                at VisaFragaSvarPage
-            }
-        }
-    }
-
     public void loggaInIndex() {
         Browser.drive {
             waitFor {
@@ -698,14 +689,14 @@ class SvaraOchFraga {
         }
     }
 
-    boolean lamnaFragaSvarVarningVisas(boolean expected = true) {
+    boolean lamnaFragaSvarVarningVisas() {
+        def result
         Browser.drive {
             waitFor {
-                at VisaFragaSvarPage
+                result = page.qaOnlyDialog.isDisplayed()
             }
-            return page.qaOnlyDialog.isDisplayed()
-
         }
+        return result
     }
 
     def lamnaFragaSvarFortsatt() {

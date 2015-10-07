@@ -1,10 +1,8 @@
 package se.inera.webcert.spec
-
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
-import se.inera.webcert.pages.ts_diabetes.EditCertPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import se.inera.webcert.spec.util.WebcertRestUtils
 
@@ -12,7 +10,9 @@ class SokSkrivIntyg {
 
     def kopiaintygsid
 
+
     // ------- navigation
+
     def loggaInSom(String id) {
         Browser.drive {
             go "/welcome.jsp"
@@ -56,6 +56,7 @@ class SokSkrivIntyg {
     }
 
     // ------- pages
+
     boolean sokSkrivIntygSidanVisas() {
         sokSkrivIntygSidanVisasSaSmaningom()
     }
@@ -85,6 +86,7 @@ class SokSkrivIntyg {
     }
 
     // ------- behaviour
+
     def valjPatient(String personNummer) {
         Browser.drive {
             page.angePatient(personNummer)
