@@ -19,6 +19,7 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         nyttPersonnummer { $("#nyttPersonnummer") }
         signerandeLakare { $("#signingDoctor") }
         integrationBorttaget(required: false) { $("#integration-deleted") }
+        signeringKraverLakare(required: false) { $("#sign-requires-doctor-message-text") }
 
         // Intyg
         form { $("form") }
