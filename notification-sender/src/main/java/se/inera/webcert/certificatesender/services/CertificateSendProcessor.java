@@ -1,7 +1,5 @@
 package se.inera.webcert.certificatesender.services;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import javax.xml.ws.WebServiceException;
 
 import org.apache.camel.Header;
@@ -10,10 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.client.SendCertificateServiceClient;
 import se.inera.webcert.common.Constants;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 
 /**
