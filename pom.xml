@@ -29,7 +29,7 @@
     <intygstyper.version.range>(,2.4.0]</intygstyper.version.range>
 
     <!-- Schemas -->
-    <rivta-clinicalprocess.version>1.0.RC3.0</rivta-clinicalprocess.version>
+    <rivta-clinicalprocess.version>2.0.RC1.0</rivta-clinicalprocess.version>
     <rivta-insuranceprocess.version>3.1.0.0</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
