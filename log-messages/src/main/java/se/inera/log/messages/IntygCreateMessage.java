@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class IntygCreateMessage extends AbstractLogMessage implements Serializable {
 
+    private static final long serialVersionUID = 5465818282454398723L;
+
     public IntygCreateMessage(String intygId) {
         super(ActivityType.CREATE);
         setActivityLevel(intygId);

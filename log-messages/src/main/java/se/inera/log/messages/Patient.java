@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class Patient implements Serializable {
 
+    private static final long serialVersionUID = -3089443403583678480L;
+
     private String patientId;
     private String patientNamn;
 
