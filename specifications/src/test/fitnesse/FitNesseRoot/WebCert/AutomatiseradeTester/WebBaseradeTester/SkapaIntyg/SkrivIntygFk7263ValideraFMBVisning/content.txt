@@ -1,12 +1,12 @@
 !2 Observera att detta test är beroende av mockad data i vår FMB stub för diagnoskod J22
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
@@ -19,10 +19,10 @@ Populera intyget en ICD-10 kod som '''INTE''' omfattas av FMB.
 | !-A00-! |
 
 Här vill vi vänta på att något '''inte''' skall dyka upp, så vi har inget specifikt att göra waitFor - därav en vanlig vänta...
-| script | Vanta | 2 | sekunder |
+| skript | Vanta | 2 | sekunder |
 
 Verifiera att ingen av de fyra fmb rutorna visas
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | element med id | fmb_diagnos_heading_FALT2 | visas | false |
 | element med id | fmb_diagnos_heading_FALT4 | visas | false |
 | element med id | fmb_diagnos_heading_FALT5 | visas | false |
@@ -36,7 +36,7 @@ Verifiera att ingen av de fyra fmb rutorna visas
 
 !4 Verifiera FB-006: ÖvrigFörsäkringsmedicinskinformation.SymtomPrognosBehandling och ÖvrigFörsäkringsmedicinskinformation.GenerellInformation för vald diagnos ska visas upp intill fält 2 i intygsskrivarvyn.
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | vanta pa att element med id | fmb_diagnos_heading_FALT2 | innehaller text | !-J22-! |
 | vanta pa att element med id | fmb_text_FALT2_SPB | innehaller text | !-Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta tecken på inflammation i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.-! |
 | vanta pa att element med id | fmb_text_FALT2_GENERAL | innehaller text | !-Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med mykoplasma pneumoni. Hos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller kol kan symtomen vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.-! |
@@ -44,20 +44,20 @@ Verifiera att ingen av de fyra fmb rutorna visas
 
 !4 Verifiera FB-007: Diagnosinformation.funktionsnedsättningsBeskrivning för vald diagnos ska visas upp intill fält 4 i intygsskrivarvyn.
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | vanta pa att element med id | fmb_diagnos_heading_FALT4 | innehaller text | !-J22-! |
 | vanta pa att element med id | fmb_text_FALT4 | innehaller text | !-Tillståndet är vanligtvis kortvarigt och varar några dagar till några veckor. Ibland får patienten hosta under flera månader vilket är ett uttryck för en sekundärinfektion.-! |
 
 !4 Verifiera FB-008: Diagnosinformation.aktivitetsbegränsningsBeskrivning för vald diagnos ska visas upp intill fält 5 i intygsskrivarvyn.
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | vanta pa att element med id | fmb_diagnos_heading_FALT5 | innehaller text | !-J22-! |
 | vanta pa att element med id | fmb_text_FALT5 | innehaller text | !-Akut bronkit påverkar inte funktionstillståndet, bortsett från irriterande hosta i normalfallet. Bakteriell sekundärinfektion kan påverka allmäntillståndet genom att patienten blir trött.-! |
 
 
 !4 Verifiera FB-009: Alla Beslutsunderlag.textuelltUnderlag för vald diagnos ska visas upp intill fält 8b i intygsskrivarvyn.
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | vanta pa att element med id | fmb_diagnos_heading_FALT8B | innehaller text | !-J22-! |
 | vanta pa att element med id | fmb_text_FALT8B | innehaller text | !-Akut bronkit nedsätter normalt inte arbetsförmågan. Om patienten har långvarig svår hosta kan det möjligen påverka allmäntillståndet genom att patienten blir trött. Sjukskrivning enbart i undantagsfall vid tydligt nedsatt allmäntillstånd i upp till 2 veckor. Röstkrävande yrken kan behöva längre sjukskrivning.-! |
 
@@ -65,11 +65,11 @@ Verifiera att ingen av de fyra fmb rutorna visas
 
 Vi återgår till vårt nyss sparade intyg.
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | ga till editera intyg med typ och | fk7263 | intygid | $intygsid |
 
 Verifiera FB-004,FB-006-009 (igen)
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | text for id | diagnoseCode | innehallar | J22 |
 | vanta pa att element med id | fmb_diagnos_heading_FALT2 | innehaller text | !-J22-! |
 | vanta pa att element med id | fmb_text_FALT2_SPB | innehaller text | !-Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta tecken på inflammation i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.-! |

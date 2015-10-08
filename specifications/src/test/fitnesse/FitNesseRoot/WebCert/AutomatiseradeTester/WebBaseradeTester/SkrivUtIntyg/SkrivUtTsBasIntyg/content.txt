@@ -7,5 +7,5 @@
 
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-4 | och typ | ts-bas|
-| ensure | intyg laddat |
-| ensure | skriv ut vanlig knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skriv ut vanlig knapp visas |

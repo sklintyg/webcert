@@ -30,5 +30,5 @@ Testar WEBCERT-2006
 |internReferens|
 |$internReferens|
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|

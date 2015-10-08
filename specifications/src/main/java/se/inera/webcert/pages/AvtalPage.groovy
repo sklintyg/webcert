@@ -5,16 +5,9 @@ import geb.Page
 import se.inera.certificate.page.AbstractPage
 
 class AvtalPage extends AbstractPage {
-    static at = { waitForModal() }
+    static at = { $(".modal-dialog").isDisplayed() }
 
-    static def waitForModal(){
-        Browser.drive{
-            waitFor {
-                $(".modal-dialog").isDisplayed()
-            }
-        }
-    }
     static content = {
-        termsBody(required:true,wait:true) {$(".modal-dialog")}
+        termsBody(required:false) {$(".modal-dialog")}
     }
 }
