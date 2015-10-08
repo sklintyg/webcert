@@ -1,9 +1,8 @@
 package se.inera.webcert.hsa.services;
 
-import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeResponseType;
-import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeType;
-
 import javax.xml.ws.WebServiceException;
+
+import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeResponseType;
 
 /**
  * Created by Magnus Ekstrand on 27/05/15.

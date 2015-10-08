@@ -13,7 +13,7 @@ public class HsaUnitStub {
     private String email;
     private String name;
 
-    private List<PersonStub> medarbetaruppdrag = new ArrayList();
+    private List<PersonStub> medarbetaruppdrag = new ArrayList<>();
 
     public String getHsaId() {
         return hsaId;

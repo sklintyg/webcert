@@ -103,7 +103,7 @@ public class HsaOrganizationsServiceTest {
 
     @Test
     public void testMultipleEnheter() {
-        
+
         // Load with 3 MIUs belonging to the same vårdgivare
         addMedarbetaruppdrag(PERSON_HSA_ID, "vastmanland", asList(CENTRUM_VAST, CENTRUM_OST, CENTRUM_NORR));
 
@@ -112,58 +112,58 @@ public class HsaOrganizationsServiceTest {
 
         Vardgivare vg = vardgivare.get(0);
         assertEquals(3, vg.getVardenheter().size());
-        
+
         // Assert that mottagningar was loaded for 'centrum-ost'
         Vardenhet centrumOst = getVardenhetById(CENTRUM_OST, vg.getVardenheter());
         assertEquals(1, centrumOst.getMottagningar().size());
-        
+
         // Assert that vårdenheter is sorted alphabetically
-        List<String> correct = Arrays.asList("Vårdcentrum i Norr","Vårdcentrum i Väst","Vårdcentrum i Öst");
-        
+        List<String> correct = Arrays.asList("Vårdcentrum i Norr", "Vårdcentrum i Väst", "Vårdcentrum i Öst");
+
         List<String> vardenheterNames = new ArrayList<String>();
-        for(Vardenhet ve : vg.getVardenheter()) {
+        for (Vardenhet ve : vg.getVardenheter()) {
             vardenheterNames.add(ve.getNamn());
         }
-        
+
         assertThat(vardenheterNames, is(correct));
-        
+
     }
 
     private Vardenhet getVardenhetById(final String vardenhetId, List<Vardenhet> vardenheter) {
-        
+
         Predicate<Vardenhet> pred = new Predicate<Vardenhet>() {
             public boolean apply(Vardenhet v) {
                 return vardenhetId.equalsIgnoreCase(v.getId());
             }
         };
-        
+
         Optional<Vardenhet> results = Iterables.tryFind(vardenheter, pred);
-        
+
         return (results.isPresent()) ? results.get() : null;
     }
 
     @Test
     public void testMultipleVardgivare() throws IOException {
-        
+
         // Load with another vardgivare, which gives two vardgivare available
         addVardgivare("HsaOrganizationsServiceTest/landstinget-ostmanland.json");
 
-        // Assign Gunilla one MIU from each vardgivare 
+        // Assign Gunilla one MIU from each vardgivare
         addMedarbetaruppdrag("Gunilla", "vastmanland", asList(CENTRUM_NORR));
         addMedarbetaruppdrag("Gunilla", "ostmanland", asList("vardcentrum-1"));
 
         List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
-        
+
         assertEquals(2, vardgivare.size());
-        
+
         // Assert that vardgivare is sorted alphabetically
-        List<String> correct = Arrays.asList("Landstinget Västmanland","Landstinget Östmanland");
-        
+        List<String> correct = Arrays.asList("Landstinget Västmanland", "Landstinget Östmanland");
+
         List<String> vardgivareNames = new ArrayList<String>();
-        for(Vardgivare vg : vardgivare) {
+        for (Vardgivare vg : vardgivare) {
             vardgivareNames.add(vg.getNamn());
         }
-        
+
         assertThat(vardgivareNames, is(correct));
     }
 

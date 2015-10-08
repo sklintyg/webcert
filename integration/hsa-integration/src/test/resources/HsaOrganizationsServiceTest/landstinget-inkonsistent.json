@@ -4,12 +4,12 @@
     "namn" : "Landstinget inkonsistent",
     "vardenheter" : [
         {
-        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
+            "@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "enhet1",
             "namn" : "Enhet1",
             "mottagningar" : [
                 {
-                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "mottagning-finns-ej",
                     "namn" : "Finns ej"
                 }

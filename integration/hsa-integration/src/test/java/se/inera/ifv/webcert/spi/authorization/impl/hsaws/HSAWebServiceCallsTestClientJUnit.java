@@ -33,18 +33,18 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
  */
 public class HSAWebServiceCallsTestClientJUnit {
 
-    ApplicationContext ctx;
-    HSAWebServiceCalls client;
+    private ApplicationContext ctx;
+    private HSAWebServiceCalls client;
 
 
     @Before
-    public void init(){
+    public void init() {
         ctx = new ClassPathXmlApplicationContext(new String[] {"HSAWebServiceCallsTest-applicationContext.xml", "hsa-services-config.xml"});
-        client = (HSAWebServiceCalls)ctx.getBean("wsCalls");
+        client = (HSAWebServiceCalls) ctx.getBean("wsCalls");
     }
 
     @Test
-    public void testHSAPing() throws Exception{
+    public void testHSAPing() throws Exception {
         client.callPing();
 
         GetHsaUnitResponseType response = client.callGetHsaunit("IFV1239877878-103F");
