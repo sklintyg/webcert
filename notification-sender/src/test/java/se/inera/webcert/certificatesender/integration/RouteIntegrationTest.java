@@ -6,14 +6,17 @@ import java.util.Enumeration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
@@ -22,16 +25,15 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.base.Throwables;
+
 import se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 import se.inera.webcert.common.Constants;
-
-import com.google.common.base.Throwables;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/certificates/integration-test-certificate-sender-config.xml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIntegrationTest {
-    private static final Logger LOG = LoggerFactory.getLogger(RouteIntegrationTest.class);
 
     private static final int SECONDS_TO_WAIT = 10;
 
@@ -120,7 +122,7 @@ public class RouteIntegrationTest {
             @Override
             public Object doInJms(Session session, QueueBrowser browser) throws JMSException {
                 int counter = 0;
-                Enumeration msgs = browser.getEnumeration();
+                Enumeration<?> msgs = browser.getEnumeration();
                 while (msgs.hasMoreElements()) {
                     msgs.nextElement();
                     counter++;

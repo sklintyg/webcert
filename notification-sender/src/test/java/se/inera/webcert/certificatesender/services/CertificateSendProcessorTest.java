@@ -1,7 +1,5 @@
 package se.inera.webcert.certificatesender.services;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,7 +13,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.webcert.client.SendCertificateServiceClient;
-import se.inera.webcert.common.Constants;
 import se.inera.webcert.exception.PermanentException;
 import se.inera.webcert.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
