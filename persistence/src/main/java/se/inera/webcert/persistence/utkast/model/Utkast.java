@@ -26,7 +26,7 @@ import org.joda.time.LocalDateTime;
 
 /**
  * A draft of a certificate.
- * 
+ *
  * @author marced
  *
  */

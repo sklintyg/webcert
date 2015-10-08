@@ -3,7 +3,7 @@ package se.inera.webcert.persistence.fragasvar.model;
 public class FragaSvarStatus {
 
     private Long fragaSvarId;
-    
+
     private String frageStallare;
 
     private String svarsText;
@@ -37,7 +37,7 @@ public class FragaSvarStatus {
     public boolean hasAnswerSet() {
         return (svarsText != null);
     }
-    
+
     public boolean isClosed() {
         return (status.equals(Status.CLOSED));
     }

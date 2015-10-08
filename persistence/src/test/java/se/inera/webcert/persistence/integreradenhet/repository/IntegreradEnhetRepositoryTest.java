@@ -15,30 +15,27 @@ import se.inera.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({"dev","unit-testing"})
+@ActiveProfiles({ "dev", "unit-testing" })
 @Transactional
 public class IntegreradEnhetRepositoryTest {
 
     @Autowired
     private IntegreradEnhetRepository repository;
-    
+
     @Test
     public void testSaveIntegreradEnhet() {
-        
+
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setEnhetsId("SE1234567890-1A01");
         enhet.setEnhetsNamn("Enhet 1");
         enhet.setVardgivarId("SE1234567890-2B01");
         enhet.setVardgivarNamn("Vardgivare 1");
-        
+
         IntegreradEnhet savedEnhet = repository.save(enhet);
-        
-        
+
         assertNotNull(savedEnhet);
         assertNotNull(savedEnhet.getSkapadDatum());
         assertNull(savedEnhet.getSenasteKontrollDatum());
     }
-    
-    
-    
+
 }

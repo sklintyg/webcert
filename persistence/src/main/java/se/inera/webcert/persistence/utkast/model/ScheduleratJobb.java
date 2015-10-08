@@ -17,14 +17,14 @@ public class ScheduleratJobb {
     @Version
     @Column(name = "VERSION")
     private long version;
-    
+
     @Column(name = "BEARBETAS")
     private boolean bearbetas;
 
     public ScheduleratJobb() {
         super();
     }
-    
+
     public ScheduleratJobb(String id) {
         super();
         this.id = id;

@@ -2,7 +2,6 @@ package se.inera.webcert.persistence.fragasvar.model;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -82,14 +81,4 @@ public class IntygsReferens {
     public void setSigneringsDatum(LocalDateTime signeringsDatum) {
         this.signeringsDatum = signeringsDatum;
     }
-
-    /*
-    public Id getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Id patientId) {
-        this.patientId = patientId;
-    }
-    */
 }

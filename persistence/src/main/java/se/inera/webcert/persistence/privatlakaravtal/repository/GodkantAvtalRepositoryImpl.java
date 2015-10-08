@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom {
 
-    private static final Logger log = LoggerFactory.getLogger(GodkantAvtalRepositoryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GodkantAvtalRepositoryImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -25,7 +25,7 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
     public void approveAvtal(String hsaId, Integer avtalVersion) {
 
         if (userHasApprovedAvtal(hsaId, avtalVersion)) {
-            log.info("User with hsaId '" + hsaId + "' has already approved privatlakaravtal version '" + avtalVersion + "'");
+            LOG.info("User with hsaId '" + hsaId + "' has already approved privatlakaravtal version '" + avtalVersion + "'");
             return;
         }
 
@@ -64,7 +64,7 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
                 entityManager.remove(godkantAvtal);
             }
         } catch (NoResultException e) {
-            log.warn("Could not remove GodkantAvtal for user with hsaId '" + hsaId + "', avtal version '" + avtalVersion + "'. No approval found.");
+            LOG.warn("Could not remove GodkantAvtal for user with hsaId '" + hsaId + "', avtal version '" + avtalVersion + "'. No approval found.");
         }
     }
 
@@ -74,7 +74,7 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
                 .setParameter("hsaId", hsaId)
                 .getResultList();
 
-        for(GodkantAvtal godkantAvtal : godkandaAvtal) {
+        for (GodkantAvtal godkantAvtal : godkandaAvtal) {
             entityManager.remove(godkantAvtal);
         }
     }
