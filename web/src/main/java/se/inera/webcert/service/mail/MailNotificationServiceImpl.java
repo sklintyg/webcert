@@ -39,6 +39,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     static final String PRIVATE_PRACTITIONER_HSAID_PREFIX = "SE165565594230-WEBCERT";
 
+    private static final String DEFAULT_PATH_SEGMENT = "certificate";
+    private static final String PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
+
     @Value("${mail.admin}")
     private String adminMailAddress;
 
@@ -209,11 +212,15 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private MailNotificationEnhet getUnit(FragaSvar fragaSvar) {
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
-        if (careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH).startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX)) {
+        if (isPrivatePractitionerEnhet(careUnitId)) {
             String personHsaId = fragaSvar.getVardperson().getHsaId();
             return getPrivatePractitionerEnhet(personHsaId);
         }
         return getHsaUnit(careUnitId);
+    }
+
+    private boolean isPrivatePractitionerEnhet(String careUnitId) {
+        return careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH).startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX);
     }
 
     private MailNotificationEnhet getHsaUnit(String careUnitId) {
@@ -245,8 +252,16 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     public String intygsUrl(FragaSvar fragaSvar) {
-        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/certificate/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
+        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/" + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId()) + "/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
         LOG.debug("Intygsurl: " + url);
         return url;
+    }
+
+    private String resolvePathSegment(String enhetsId) {
+        if (isPrivatePractitionerEnhet(enhetsId)) {
+            return PRIVATE_PRACTITIONER_PATH_SEGMENT;
+        } else {
+            return DEFAULT_PATH_SEGMENT;
+        }
     }
 }

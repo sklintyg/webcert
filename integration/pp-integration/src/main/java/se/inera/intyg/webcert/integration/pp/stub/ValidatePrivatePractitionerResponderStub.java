@@ -10,6 +10,7 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import se.inera.certificate.logging.HashUtility;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
@@ -38,12 +39,12 @@ public class ValidatePrivatePractitionerResponderStub implements ValidatePrivate
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("No private practitioner with personal identity number: " + id + " exists.");
+            response.setResultText("No private practitioner with personal identity number: " + HashUtility.hash(id) + " exists.");
         } else if (person.isGodkandAnvandare()) {
             response.setResultCode(ResultCodeEnum.OK);
         } else {
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("Private practitioner with personal identity number: " + id + " is not authorized to use webcert.");
+            response.setResultText("Private practitioner with personal identity number: " + HashUtility.hash(id) + " is not authorized to use webcert.");
         }
         return response;
     }

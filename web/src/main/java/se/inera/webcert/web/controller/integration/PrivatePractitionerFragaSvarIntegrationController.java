@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -22,33 +21,25 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
- * Controller to enable an external user to access certificates directly from a
- * link in an external patient care system.
- *
- * @author nikpet
+ * Created by eriklupander on 2015-10-08.
  */
-@Path("/certificate")
-public class LegacyIntygIntegrationController extends BaseIntegrationController {
+@Path("/pp-certificate")
+public class PrivatePractitionerFragaSvarIntegrationController extends BaseIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
 
-    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
-
     private String urlFragmentTemplate;
 
-
-
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
+    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
+        this.urlFragmentTemplate = urlFragmentTemplate;
     }
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
-     * the certificate. Can be used for all types of certificates.
+     * the questions for the cert. Can be used for FK7263 certificates.
      *
      * @param uriInfo
      * @param intygId
@@ -70,15 +61,6 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
-    public void setUrlBaseTemplate(String urlBaseTemplate) {
-        this.urlBaseTemplate = urlBaseTemplate;
-    }
-
-    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
-        this.urlFragmentTemplate = urlFragmentTemplate;
-    }
-
-
     // - - - - - Default scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
@@ -91,18 +73,18 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
 
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
-        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
+    }
+
+
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return new String[]{UserRole.ROLE_PRIVATLAKARE.name()};
     }
 
     @Override
     protected void updateUserRoles(WebCertUser user) {
-        boolean isDoctor = user.isLakare();
-        String userRole = UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name();
-
-        if (isDoctor) {
-            userRole = UserRole.ROLE_LAKARE_UTHOPP.name();
-        }
-        super.writeUserRoles(userRole);
+       // No need to update user roles for this controller.
     }
-
 }

@@ -10,6 +10,7 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import se.inera.certificate.logging.HashUtility;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
@@ -88,7 +89,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         if (PERSONNUMMER_ERROR_RESPONSE.equals(id)) {
             response.setHoSPerson(null);
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: " + id + " exists.");
+            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: " + HashUtility.hash(id) + " exists.");
             return response;
         }
 
@@ -101,7 +102,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.INFO);
-            response.setResultText("No private practitioner with personal identity number: " + id + " exists.");
+            response.setResultText("No private practitioner with personal identity number: " + HashUtility.hash(id) + " exists.");
         } else {
             response.setHoSPerson(person);
             response.setResultCode(ResultCodeEnum.OK);
