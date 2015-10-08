@@ -472,7 +472,7 @@ class HanteraUtkast {
     boolean sekretessmarkeringVisas() {
         def result
         Browser.drive {
-            at EditeraIntygPage
+            at EditeraFk7263Page
             result = page.sekretessmarkering.isDisplayed()
         }
         result
