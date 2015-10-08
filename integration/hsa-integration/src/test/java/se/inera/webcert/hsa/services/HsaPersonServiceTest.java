@@ -30,11 +30,11 @@ public class HsaPersonServiceTest {
     private static final String INVALID_HSA_ID = "SE88888888";
 
     @Mock
-    HSAWebServiceCalls hsaWebServiceCalls;
+    private HSAWebServiceCalls hsaWebServiceCalls;
 
     @InjectMocks
-    HsaPersonServiceImpl hsaPersonService;
-    
+    private HsaPersonServiceImpl hsaPersonService;
+
     @Before
     public void setupExpectations() {
 
