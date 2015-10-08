@@ -35,9 +35,10 @@ class IntegrationMedJournalsystem {
 
     boolean intygInteLaddat() {
         boolean result
-        Thread.sleep(2000)
         Browser.drive {
-            result = intygSaknas.isDisplayed()
+            waitFor{
+                result = intygSaknas.isDisplayed()
+            }
         }
         result
     }
@@ -197,10 +198,11 @@ class IntegrationMedJournalsystem {
     boolean skrivUtKnappVisas() {
         boolean result
         Browser.drive {
-            result = page.skrivUtKnapp.isDisplayed()
+            result = (page.skrivUtKnapp?.present && page.skrivUtKnapp.isDisplayed()) || (page.skrivUtKnappEmployer?.present && page.skrivUtKnappEmployer.isDisplayed())
         }
-        result
+        return result
     }
+
 
     boolean kopieraKnappVisas() {
         boolean result
