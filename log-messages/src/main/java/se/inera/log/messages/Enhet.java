@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class Enhet implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String enhetsId;
     private String enhetsNamn;
 
