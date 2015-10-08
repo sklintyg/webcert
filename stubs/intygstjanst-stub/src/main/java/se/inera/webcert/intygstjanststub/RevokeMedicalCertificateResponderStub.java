@@ -1,8 +1,11 @@
 package se.inera.webcert.intygstjanststub;
 
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
@@ -12,10 +15,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.v1.StatusType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 import se.riv.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
-
-import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-10.
