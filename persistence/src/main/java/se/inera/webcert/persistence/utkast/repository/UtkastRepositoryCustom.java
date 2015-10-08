@@ -56,7 +56,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid, @Param("statuses") List<UtkastStatus> statuses);
 
     /**
-     * Return the status of a draft
+     * Return the status of a draft.
      * @param intygsId
      * @return
      */
@@ -64,7 +64,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     UtkastStatus getIntygsStatus(@Param("intygsId") String intygsId);
 
     /**
-     * Return the HSA-ID for the Enhet on which the Utkast was created
+     * Return the HSA-ID for the Enhet on which the Utkast was created.
      * @param intygsId
      * @return
      */

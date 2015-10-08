@@ -7,7 +7,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -18,6 +17,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "BEFATTNINGSKODER")
 public class TitleCode {
+
+    private static final int PRIME = 31;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -78,14 +79,24 @@ public class TitleCode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TitleCode titleCode1 = (TitleCode) o;
 
-        if (!groupPrescriptionCode.equals(titleCode1.groupPrescriptionCode)) return false;
-        if (!id.equals(titleCode1.id)) return false;
-        if (!titleCode.equals(titleCode1.titleCode)) return false;
+        if (!groupPrescriptionCode.equals(titleCode1.groupPrescriptionCode)) {
+            return false;
+        }
+        if (!id.equals(titleCode1.id)) {
+            return false;
+        }
+        if (!titleCode.equals(titleCode1.titleCode)) {
+            return false;
+        }
 
         return true;
     }
@@ -93,8 +104,8 @@ public class TitleCode {
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + titleCode.hashCode();
-        result = 31 * result + groupPrescriptionCode.hashCode();
+        result = PRIME * result + titleCode.hashCode();
+        result = PRIME * result + groupPrescriptionCode.hashCode();
         return result;
     }
 
