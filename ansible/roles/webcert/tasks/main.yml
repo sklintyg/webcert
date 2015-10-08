@@ -7,8 +7,12 @@
 - name: create release directory
   file: path={{ releases_folder }} state=directory
 
+- name: Make sure webcert-liquibase-runner file download is forced when using shapshots repo
+  file: state=absent  path={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
+  when: repo == "snapshots"
+
 - name: download webcert-liquibase-runner-{{ version }}.jar
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.jar
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=webcert-liquibase-runner&v={{ version }}
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
   when: deploy_from_repo
 
@@ -19,31 +23,39 @@
 - name: run liquibase update
   command: java -jar {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar --changeLogFile="changelog/changelog.xml" --username="{{ database_username }}" --password="{{ database_password }}" --url="{{ database_url }}" --driver="{{ database_driver }}" --contexts=none update
 
+- name: Make sure webcert-web file download is forced when using shapshots repo
+  file: state=absent  path={{ releases_folder }}/webcert-web-{{ version }}.war
+  when: repo == "snapshots"
+
 - name: Download webcert-web-{{ version }}.war
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
            dest={{ releases_folder }}/webcert-web-{{ version }}.war
   when: deploy_from_repo
 
-- name: copy webcert-web-{{ version }}.war
+- name: Copy webcert-web-{{ version }}.war from THIS machine when not deploying from remote repo
   copy: src={{ inventory_dir }}/../web/target/webcert.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
   when: not deploy_from_repo
 
-- name: remove old version of unpacked ROOT war
+- name: Remove old version of unpacked ROOT war
   file: state=absent
       path={{ webapps_folder }}/ROOT
 
-- name: remove old version of ROOT war
+- name: Remove old version of ROOT war
   file: state=absent
       path={{ webapps_folder }}/ROOT.war
 
-- name: deploy webcert-web-{{ version }}.war as ROOT.war
+- name: Deploy webcert-web-{{ version }}.war as ROOT.war
   command: cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war
 
+- name: Make sure log-sender file download is forced when using shapshots repo
+  file: state=absent  path={{ releases_folder }}/log-sender-{{ version }}.war
+  when: repo == "snapshots"
+
 - name: Download log-sender-{{ version }}.war
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=log-sender&v={{ version }}&p=war
            dest={{ releases_folder }}/log-sender-{{ version }}.war
   when: deploy_from_repo
-
+  #https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
 - name: copy log-sender-{{ version }}.war
   copy: src={{ inventory_dir }}/../log-sender/target/log-sender.war dest={{ releases_folder }}/log-sender-{{ version }}.war
   when: not deploy_from_repo
