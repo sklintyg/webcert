@@ -28,7 +28,8 @@
 <script type="text/javascript">
   // Global JS config/constants for this app, to be used by scripts
   var MODULE_CONFIG = {
-    BUILD_NUMBER: '<spring:message code="buildNumber" />'
+    BUILD_NUMBER: '<spring:message code="buildNumber" />',
+    PP_HOST: '<spring:eval expression="@webcertProps.getProperty(\'private.practitioner.portal.registration.url\')" />'
   }
 </script>
 
