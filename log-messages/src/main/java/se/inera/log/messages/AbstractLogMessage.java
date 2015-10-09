@@ -44,8 +44,8 @@ public class AbstractLogMessage implements Serializable {
     private Enhet resourceOwner;
 
     public AbstractLogMessage() {
-        
     }
+
     /**
      * Constructor for a log message.
      *

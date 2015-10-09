@@ -28,7 +28,7 @@ public class IntygStore {
 
     public void addIntyg(GetCertificateForCareResponseType request) {
         LOG.debug("IntygStore: adding intyg " + request.getMeta().getCertificateId() + " to store.");
-        if (intyg.containsKey(request.getMeta().getCertificateId() )) {
+        if (intyg.containsKey(request.getMeta().getCertificateId())) {
             LOG.debug("IntygStore: Not adding "  + request.getMeta().getCertificateId() + " to store. Is already present.");
             return;
         }
@@ -75,8 +75,6 @@ public class IntygStore {
         GetCertificateForCareResponseType getCertificateForCareResponseType = intyg.get(extension);
         if (getCertificateForCareResponseType != null) {
             getCertificateForCareResponseType.getMeta().getStatus().add(status);
-        } else {
-
         }
     }
 

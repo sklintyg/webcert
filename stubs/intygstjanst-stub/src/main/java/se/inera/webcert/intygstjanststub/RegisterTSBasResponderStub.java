@@ -22,7 +22,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 public class RegisterTSBasResponderStub implements RegisterTSBasResponderInterface {
 
     @Autowired
-    IntygStore intygStore;
+    private IntygStore intygStore;
 
     @Override
     @StubModeAware

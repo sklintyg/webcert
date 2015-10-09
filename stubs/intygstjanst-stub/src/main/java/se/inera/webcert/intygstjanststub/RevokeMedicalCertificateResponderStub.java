@@ -17,13 +17,10 @@ import se.inera.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.v1.StatusType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
 
-/**
- * Created by eriklupander on 2015-06-10.
- */
 public class RevokeMedicalCertificateResponderStub implements RevokeMedicalCertificateResponderInterface {
 
     @Autowired
-    IntygStore intygStore;
+    private IntygStore intygStore;
 
     @Override
     @StubModeAware

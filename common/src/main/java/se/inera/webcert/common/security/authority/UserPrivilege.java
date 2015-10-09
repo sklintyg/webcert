@@ -19,7 +19,7 @@ public enum UserPrivilege {
 
     private final String text;
 
-    private UserPrivilege(String text) {
+    UserPrivilege(String text) {
         this.text = text;
     }
 

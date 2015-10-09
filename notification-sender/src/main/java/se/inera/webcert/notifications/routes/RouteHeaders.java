@@ -1,6 +1,9 @@
 package se.inera.webcert.notifications.routes;
 
-public interface RouteHeaders {
+public final class RouteHeaders {
+
+    private RouteHeaders() {
+    }
 
     public static final String LOGISK_ADRESS = "logiskAdress";
     public static final String INTYGS_ID = "intygsId";
