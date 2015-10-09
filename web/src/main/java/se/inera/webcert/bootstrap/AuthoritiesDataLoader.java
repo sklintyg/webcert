@@ -61,7 +61,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         loadRoles(UserRole.values());
 
         // == create roles
-       loadTitleCodes();
+        loadTitleCodes();
 
         alreadySetup = true;
     }
@@ -239,13 +239,21 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
             UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
             UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
             UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
-            UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST });
+            UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+            UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
+            UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
+            UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
+            UserPrivilege.PRIVILEGE_NAVIGERING });
     }
 
     private List<UserPrivilege> getUthoppsVardadministratorPrivilegeList() {
         return Arrays.asList(new UserPrivilege[] {
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
-                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST });
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+                UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
+                UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
+                UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
+                UserPrivilege.PRIVILEGE_NAVIGERING });
     }
 
     private List<UserPrivilege> getDjupintegreradVardadministratorPrivilegeList() {
@@ -266,7 +274,11 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
-                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
+                UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
+                UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
+                UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
+                UserPrivilege.PRIVILEGE_NAVIGERING });
     }
 
     private List<UserPrivilege> getUthoppsLakarePrivilegeList() {
@@ -274,7 +286,11 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
-                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
+                UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
+                UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
+                UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
+                UserPrivilege.PRIVILEGE_NAVIGERING });
     }
 
     private List<UserPrivilege> getDjupintegreradLakarePrivilegeList() {
