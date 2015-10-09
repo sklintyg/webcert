@@ -2,18 +2,28 @@ package se.inera.auth.eleg;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensaml.saml2.core.NameID;
 import org.springframework.security.saml.SAMLCredential;
+
 import se.inera.auth.common.BaseSAMLCredentialTest;
+import se.inera.auth.exceptions.HsaServiceException;
+import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
@@ -28,11 +38,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 /**
  * Created by eriklupander on 2015-06-25.
  */
@@ -43,7 +48,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String REMOTE_ENTITY_ID = "remoteEntityId";
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "197705232382";
-    //private static Assertion assertionPrivatlakare;
 
     @Mock
     private PPService ppService;
@@ -63,6 +67,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Mock
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
 
@@ -71,20 +78,44 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         bootstrapSamlAssertions();
     }
 
-    @Test
-    public void testSuccessfulLogin() {
+    @Before
+    public void setupForSuccess() {
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
         when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles().get(0));
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
-
-        NameID nameId = mock(NameID.class);
-        Object o = testee.loadUserBySAML(new SAMLCredential(nameId, assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
-        assertNotNull(o);
     }
 
-    // TODO tests for not OK avtal, not OK validate vs pp, not found in HSA etc.
+    @Test
+    public void testSuccessfulLogin() {
+        Object o = testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+        assertNotNull(o);
+
+        // WEBCERT-2028
+        verify(avtalService, times(1)).userHasApprovedLatestAvtal(anyString());
+    }
+
+    @Test
+    public void testNotValidPrivatePractitionerThrowsException() {
+        reset(ppService);
+        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(false);
+
+        thrown.expect(PrivatePractitionerAuthorizationException.class);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test
+    public void testNotFoundInHSAThrowsException() {
+        reset(ppService);
+        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
+        when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(null);
+
+        thrown.expect(HsaServiceException.class);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
 
     private HoSPersonType buildHosPerson() {
         HoSPersonType hoSPersonType = new HoSPersonType();
@@ -115,7 +146,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private List<Role> buildUserRoles() {
         List<Privilege> privileges = new ArrayList<>();
 
-        for (UserPrivilege up: UserPrivilege.values()) {
+        for (UserPrivilege up : UserPrivilege.values()) {
             Privilege privilege = new Privilege(up.name());
             privileges.add(privilege);
         }
