@@ -5,6 +5,9 @@ package se.inera.webcert.common;
  */
 public final class Constants {
 
+    private Constants() {
+    }
+
     /** Messaging. */
     public static final String STORE_MESSAGE = "STORE";
     public static final String SEND_MESSAGE = "SEND";
