@@ -70,7 +70,7 @@ Vi återgår till vårt nyss sparade intyg.
 
 Verifiera FB-004,FB-006-009 (igen)
 | skript | !-SkrivIntyg-! |
-| text for id | diagnoseCode | innehallar | J22 |
+| text for id | diagnoseCode | innehaller | J22 |
 | vanta pa att element med id | fmb_diagnos_heading_FALT2 | innehaller text | !-J22-! |
 | vanta pa att element med id | fmb_text_FALT2_SPB | innehaller text | !-Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta tecken på inflammation i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.-! |
 | vanta pa att element med id | fmb_text_FALT2_GENERAL | innehaller text | !-Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med mykoplasma pneumoni. Hos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller kol kan symtomen vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.-! |

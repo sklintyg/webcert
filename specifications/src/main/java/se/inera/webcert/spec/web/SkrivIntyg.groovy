@@ -181,7 +181,9 @@ class SkrivIntyg {
     boolean intygEjKomplettVisas() {
         boolean result
         Browser.drive {
-            AbstractPage.scrollIntoView(page.intygetSparatOchEjKomplettMeddelande.attr('id'));
+            waitFor{
+                page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
             result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result

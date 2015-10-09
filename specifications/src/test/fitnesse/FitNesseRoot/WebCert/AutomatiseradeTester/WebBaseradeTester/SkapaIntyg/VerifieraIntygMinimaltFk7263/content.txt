@@ -1,8 +1,8 @@
 !3 Ladda ett litet fk7263
 
 |Intyg|
-|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
-|${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|S|nej|nej|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat| respons? |
+|${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|S|nej|nej| 200 |
 
 !3 Logga in
 | skript | !-LoggaIn-! |

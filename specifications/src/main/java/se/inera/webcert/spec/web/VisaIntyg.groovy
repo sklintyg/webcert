@@ -64,7 +64,7 @@ class VisaIntyg {
         boolean result
         Browser.drive {
             waitFor {
-                at VisaPage
+                at VisaIntygPage
             }
             result = page.skrivUtKnapp.isDisplayed()
         }
@@ -75,7 +75,7 @@ class VisaIntyg {
         boolean result
         Browser.drive {
             waitFor {
-                at VisaPage
+                at VisaIntygPage
             }
             result = page.skrivUtKnappEmployer.isDisplayed()
         }
