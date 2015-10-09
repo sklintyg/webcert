@@ -42,7 +42,7 @@ class VisaFk7263Page extends VisaPage {
 
         // kopiera dialog text webcert-1449
         copyDialog(wait: true){ displayed($("#copy-dialog")) }
-        kopieraDialogMsgInteFranJournalSystemNoWait{ $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgInteFranJournalSystemNoWait(required:false) { $("#msgInteFranJournalSystem") }
         kopieraDialogMsgInteFranJournalSystem(required:false, wait: true){ displayed($("#msgInteFranJournalSystem")) }
         kopieraDialogMsgNyttPersonIdNoWait{$("#msgNyttPersonId")}
         kopieraDialogMsgNyttPersonId(required:false, wait: true){ displayed($("#msgNyttPersonId")) }

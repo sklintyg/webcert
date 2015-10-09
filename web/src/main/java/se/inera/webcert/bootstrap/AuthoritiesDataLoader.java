@@ -61,7 +61,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         loadRoles(UserRole.values());
 
         // == create roles
-       loadTitleCodes();
+        loadTitleCodes();
 
         alreadySetup = true;
     }
