@@ -96,7 +96,8 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         collectTask.setOrderRef(orderRef);
         collectTask.setTransactionId(transactionId);
         collectTask.setWebCertUser(webCertUser);
-        taskExecutor.execute(collectTask, 6000L);
+        final long startTimeout = 6000L;
+        taskExecutor.execute(collectTask, startTimeout);
     }
 
     private String validateOrderResponseTxId(AuthenticateRequestType authRequest, OrderResponseType orderResponse) {

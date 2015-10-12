@@ -89,8 +89,8 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                     }
                 });
 
-        LOG.debug("User '{}' has {} VoB medarbetaruppdrag for {} vårdgivare", new Object[] { hosPersonHsaId,
-                vardgivareIdToMiuInformation.size(), vardgivareIdToMiuInformation.keySet().size() });
+        LOG.debug("User '{}' has {} VoB medarbetaruppdrag for {} vårdgivare", hosPersonHsaId,
+                vardgivareIdToMiuInformation.size(), vardgivareIdToMiuInformation.keySet().size());
 
         for (String vardgivareId : vardgivareIdToMiuInformation.keySet()) {
             Vardgivare vardgivare = createVardgivareFromMIU(vardgivareIdToMiuInformation.get(vardgivareId));
@@ -150,10 +150,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         if (fromDate != null && now.isBefore(fromDate)) {
             return false;
         }
-        if (toDate != null && now.isAfter(toDate)) {
-            return false;
-        }
-        return true;
+        return !(toDate != null && now.isAfter(toDate));
     }
 
     private List<CareUnitType> fetchSubEnheter(Vardgivare vardgivare, String enhetDn) {
@@ -285,9 +282,11 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         }
         vardenhet.setPostadress(postaAddress.toString());
         String lastLine = lines.get(lines.size() - 1);
-        if (lastLine.length() > 7 && Character.isDigit(lastLine.charAt(0))) {
-            vardenhet.setPostnummer(lastLine.substring(0, 6).trim());
-            vardenhet.setPostort(lastLine.substring(6).trim());
+        final int shortestLengthToIncludeBothPnrAndPostort = 7;
+        if (lastLine.length() > shortestLengthToIncludeBothPnrAndPostort && Character.isDigit(lastLine.charAt(0))) {
+            final int startPostort = 6;
+            vardenhet.setPostnummer(lastLine.substring(0, startPostort).trim());
+            vardenhet.setPostort(lastLine.substring(startPostort).trim());
         } else {
             vardenhet.setPostnummer(DEFAULT_POSTNR);
             vardenhet.setPostort(lastLine.trim());

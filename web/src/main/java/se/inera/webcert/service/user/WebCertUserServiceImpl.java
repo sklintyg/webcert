@@ -8,7 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.security.AuthoritiesException;
@@ -91,15 +93,22 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public void updateUserRoles(String[] userRoles) {
         Map<String, UserRole> roles = new HashMap<>();
+        Map<String, UserPrivilege> authorities = new HashMap<>();
 
         for (String userRole : userRoles) {
             Role role = roleRepository.findByName(userRole);
             if (role != null) {
                 roles.put(role.getName(), UserRole.valueOf(role.getName()));
+                for (Privilege userAuthority : role.getPrivileges()) {
+                    if (!authorities.containsKey(userAuthority.getName())) {
+                        authorities.put(userAuthority.getName(), UserPrivilege.valueOf(userAuthority.getName()));
+                    }
+                }
             }
         }
 
         getUser().setRoles(roles);
+        getUser().setAuthorities(authorities);
     }
 
 

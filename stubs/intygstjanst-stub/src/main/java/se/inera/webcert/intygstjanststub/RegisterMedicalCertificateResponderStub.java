@@ -25,7 +25,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 public class RegisterMedicalCertificateResponderStub implements RegisterMedicalCertificateResponderInterface {
 
     @Autowired
-    IntygStore intygStore;
+    private IntygStore intygStore;
 
     @Override
     @StubLatencyAware

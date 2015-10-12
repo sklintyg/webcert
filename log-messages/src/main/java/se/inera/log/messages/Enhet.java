@@ -14,8 +14,9 @@ public class Enhet implements Serializable {
     private String vardgivareId;
     private String vardgivareNamn;
 
-    public Enhet() {}
-    
+    public Enhet() {
+    }
+
     public Enhet(String enhetsId, String vardgivareId) {
         this(enhetsId, null, vardgivareId, null);
     }

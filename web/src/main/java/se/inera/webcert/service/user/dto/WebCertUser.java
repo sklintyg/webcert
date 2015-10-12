@@ -4,7 +4,6 @@ import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_TANDLAKARE;
 
 import java.util.ArrayList;
 import java.util.Collections;

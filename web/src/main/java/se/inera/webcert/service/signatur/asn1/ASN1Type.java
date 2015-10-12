@@ -5,12 +5,15 @@ package se.inera.webcert.service.signatur.asn1;
  *
  * Created by eriklupander on 2015-09-01.
  */
-public interface ASN1Type {
+public final class ASN1Type {
 
-    byte SET = 0x31;
-    byte SEQUENCE = 0x30;
-    byte OBJECT_IDENTIFIER = 0x06;
-    byte UTF8_STRING = 0x0C;
-    byte PRINTABLE_STRING = 0x13;
+    public static final byte SET = 0x31;
+    public static final byte SEQUENCE = 0x30;
+    public static final byte OBJECT_IDENTIFIER = 0x06;
+    public static final byte UTF8_STRING = 0x0C;
+    public static final byte PRINTABLE_STRING = 0x13;
+
+    private ASN1Type() {
+    }
 
 }

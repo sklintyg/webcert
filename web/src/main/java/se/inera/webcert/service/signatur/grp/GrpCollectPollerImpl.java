@@ -60,7 +60,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     @Autowired
     private GrpServicePortType grpService;
 
-    private long ms = 3000L;
+    private final long defaultSleepMs = 3000L;
+    private long ms = defaultSleepMs;
 
     @Override
     public void run() {
@@ -166,14 +167,17 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
         this.ms = ms;
     }
 
+    @Override
     public void setOrderRef(String orderRef) {
         this.orderRef = orderRef;
     }
 
+    @Override
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
 
+    @Override
     public void setWebCertUser(WebCertUser webCertUser) {
         this.webCertUser = webCertUser;
     }

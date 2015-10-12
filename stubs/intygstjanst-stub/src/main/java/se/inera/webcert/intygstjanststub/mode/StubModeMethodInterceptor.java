@@ -18,18 +18,14 @@ public class StubModeMethodInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
+        if (StubModeSingleton.getInstance().getStubMode() == StubMode.OFFLINE) {
+            throw new WebServiceException("Stub is in OFFLINE mode");
+        }
 
-        try {
-            if (StubModeSingleton.getInstance().getStubMode() == StubMode.OFFLINE) {
-                throw new WebServiceException("Stub is in OFFLINE mode");
-            }
-
-            // Artificially sleep if latency is set to other that 0L
+        // Artificially sleep if latency is set to other that 0L
 //            if (StubModeSingleton.getInstance().getLatency() != 0L) {
 //                Thread.sleep(StubModeSingleton.getInstance().getLatency() );
 //            }
-            return invocation.proceed();
-        } finally {
-        }
+        return invocation.proceed();
     }
 }
