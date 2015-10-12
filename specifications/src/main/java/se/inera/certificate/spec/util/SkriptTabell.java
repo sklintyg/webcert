@@ -11,30 +11,48 @@ public class SkriptTabell extends ScriptTable {
     }
 
     @Override
-    protected String getTableType() { return "skriptTabell"; }
+    protected String getTableType() {
+        return "skriptTabell";
+    }
 
     @Override
-    protected String getTableKeyword() { return "skript"; }
+    protected String getTableKeyword() {
+        return "skript";
+    }
 
     @Override
-    protected String getStartKeyword() { return "starta"; }
+    protected String getStartKeyword() {
+        return "starta";
+    }
 
     @Override
-    protected String getCheckKeyword() { return "kontrollera att"; }
+    protected String getCheckKeyword() {
+        return "kontrollera att";
+    }
 
     @Override
-    protected String getCheckNotKeyword() { return "kontrollera att inte"; }
+    protected String getCheckNotKeyword() {
+        return "kontrollera att inte";
+    }
 
     @Override
-    protected String getEnsureKeyword() { return "säkerställ att"; }
+    protected String getEnsureKeyword() {
+        return "säkerställ att";
+    }
 
     @Override
-    protected String getRejectKeyword() { return "säkerställ att inte"; }
+    protected String getRejectKeyword() {
+        return "säkerställ att inte";
+    }
 
     @Override
-    protected String getNoteKeyword() { return "notering"; }
+    protected String getNoteKeyword() {
+        return "notering";
+    }
 
     @Override
-    protected String getShowKeyword() { return "visa"; }
+    protected String getShowKeyword() {
+        return "visa";
+    }
 
 }
