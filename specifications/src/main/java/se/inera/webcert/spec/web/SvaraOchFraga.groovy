@@ -1,11 +1,8 @@
 package se.inera.webcert.spec.web
-
 import se.inera.certificate.spec.Browser
-import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.VisaFragaSvarPage
-import se.inera.webcert.pages.WelcomePage
 
 class SvaraOchFraga {
 
@@ -63,8 +60,9 @@ class SvaraOchFraga {
         boolean result
         Browser.drive {
             waitFor {
-                result = page.careUnitSelectorLink.isDisplayed()
+                doneLoading()
             }
+            result = page.careUnitSelectorLink.isDisplayed()
         }
         result
     }

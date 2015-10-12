@@ -1,10 +1,7 @@
 package se.inera.webcert.pages.fk7263
-
 import geb.Module
 import se.inera.certificate.page.AbstractPage
-import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.AbstractEditCertPage
-import se.inera.webcert.pages.VardenhetModule
 
 class EditeraFk7263Page extends AbstractEditCertPage {
 
@@ -54,22 +51,9 @@ class EditeraFk7263Page extends AbstractEditCertPage {
 
     }
 
-
-    //def waitForSmittkydRendered(boolean val){
-    //    AbstractPage.scrollIntoView(smittskydd.attr("id"));
-    //    smittskydd.value(val);
-    //    println('------------------- smittskydd : ' + val );
-    //    waitFor {
-    //        Browser.drive {
-    //            return doneLoading() && js.animations.smittskydd.rendered;
-    //        }
-    //    }
-    //}
-
     def setSmittskydd(boolean val) {
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
-        //waitForSmittkydRendered()
     }
 
 }
@@ -213,7 +197,8 @@ class PrognosModule extends Module {
 
     def prognosValue(){
         AbstractPage.scrollIntoView("capacityForWork4");
-        return prognos.value();
+        def prognosValue = prognos.value();
+        return prognosValue;
     }
 }
 
@@ -242,8 +227,9 @@ class RekommendationerModule extends Module {
         ovrigt { $("#rekommendationOvrigt") }
         ovrigtBeskrivning { $("#rekommendationOvrigtBeskrivning") }
         rehabYes { $("#rehabYes") }
-        rehabNo(wait: true) { displayed($("#rehabNo")) }
-        rehabNoNoWait{ $("#rehabNo") }
+        //rehabNo(required: false, wait: true) { displayed($("#rehabNo")) }
+        rehabNo { $("#rehabNo") }
+        rehabNoNoWait { $("#rehabNo") }
     }
 
     def valjArbetslivsinriktadRehabilitering(String arAktuell) {

@@ -1,7 +1,5 @@
 package se.inera.webcert.spec.web
-
 import org.openqa.selenium.Keys
-import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
@@ -313,15 +311,15 @@ class SkrivIntyg {
     String prognos() {
         def result = '';
         Browser.drive {
-            result = page.prognos.prognos.value();
+            result = page.prognos.prognosValue();
         }
         result
     }
 
-    boolean prognosArInteVald() {
+    boolean prognosArVald() {
         def result;
         Browser.drive {
-            result = page.prognos.prognos.value() == null;
+            result = page.prognos.prognos.value() != null;
         }
         result
     }

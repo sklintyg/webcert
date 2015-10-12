@@ -9,7 +9,7 @@
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
-!3 Kontrol att radioknappar är i rätt tillstånd
+!3 Kontrollera att radioknappar är i rätt tillstånd
 
 | skript | !-SkrivIntyg-! |
 | kontrollera att | prognos | YES |
@@ -26,9 +26,8 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 | skript | !-SkrivIntyg-! |
 | säkerställ att | intyg ej komplett visas |
-
-| prognos ar inte vald |
-| säkerställ att | rehab nej ej visas|
+| säkerställ att | prognos ar vald |
+| säkerställ att inte | rehab nej visas|
 
 !3 Ta bort utkastet
 
