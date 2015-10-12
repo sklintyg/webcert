@@ -42,7 +42,7 @@ WebCert
 JDBC URL : jdbc:h2:tcp://localhost:9094/mem:dataSource
 ```
 
-Intygg  
+Intyg
 ```
 JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
 ```
