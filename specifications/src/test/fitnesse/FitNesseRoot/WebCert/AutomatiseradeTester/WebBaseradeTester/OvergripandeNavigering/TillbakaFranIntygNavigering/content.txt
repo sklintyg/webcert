@@ -36,7 +36,7 @@ Testa navigering från editera intygssidan. Verifierar WEBCERT-1603/1604
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
-!3 Om man kommer från ej signerade intyg och klcik tillbaka ska man komma dit
+!3 Om man kommer från ej signerade intyg och klick tillbaka ska man komma dit
 
 | skript | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
