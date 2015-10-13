@@ -38,6 +38,7 @@ class EditeraFk7263Page extends AbstractEditCertPage {
 
         // date picker
         datepicker { $("div[ng-switch='datepickerMode']") }
+
         // Intygsvalidering
         valideringIntygBaseratPa(required: false) { $("#validationMessages_intygbaseratpa") }
         valideringDiagnos(required: false) { $("#validationMessages_diagnos") }

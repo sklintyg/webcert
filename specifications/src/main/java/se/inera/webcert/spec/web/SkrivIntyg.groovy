@@ -103,7 +103,7 @@ class SkrivIntyg {
     boolean valideringsfelFunktionsnedsattningVisas() {
         def result
         Browser.drive {
-            result =page.valideringFunktionsnedsattning.isDisplayed()
+            result = page.valideringFunktionsnedsattning.isDisplayed()
         }
         result
     }
