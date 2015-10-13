@@ -818,6 +818,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
+
             // TODO use GEB page abstraction
             def ref = "#unhandled-vidarebefordraEjHanterad"
             if (expected) {
@@ -837,9 +838,17 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            result = $('#filterFormVidarebefordrad').isDisplayed()
+
+            def ref = "'#filterFormVidarebefordrad"
+            if (expected) {
+                waitFor {
+                    result = $(ref).isDisplayed()
+                }
+            } else {
+                result = !$(ref).isDisplayed()
+            }
         }
-        return expected == result
+        result
     }
 
     boolean filterValjLakareVisas(boolean expected) {
@@ -848,8 +857,16 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            result = $('#filterFormSigneratAv').isDisplayed()
+
+            def ref = "#filterFormSigneratAv"
+            if (expected) {
+                waitFor {
+                    result = $(ref).isDisplayed()
+                }
+            } else {
+                result = !$(ref).isDisplayed()
+            }
         }
-        return expected == result
+        result
     }
 }
