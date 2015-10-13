@@ -133,7 +133,6 @@ class VisaFk7263Page extends AbstractViewCertPage {
         vardperson_telefonnummer { $("#vardperson_telefonnummer") }
     }
 
-
     def sendWithValidation() {
         skickaKnapp.click()
         waitFor {

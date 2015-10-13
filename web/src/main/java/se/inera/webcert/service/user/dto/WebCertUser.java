@@ -4,7 +4,6 @@ import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
 import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_TANDLAKARE;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -348,8 +347,7 @@ public class WebCertUser implements UserDetails {
 
     public boolean isLakare() {
         return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name())
-                || roles.containsKey(ROLE_TANDLAKARE);
+                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name());
     }
 
     public boolean isPrivatLakare() {

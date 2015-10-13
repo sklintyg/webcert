@@ -67,7 +67,8 @@ public class ASN1StreamParser {
      * Perform the [byte] & 0xFF trick to transform the unsigned byte value into an int.
      */
     private int unsignByte(ByteArrayInputStream bais) {
-        return bais.read() & 0xFF;
+        final int ff = 0xFF;
+        return bais.read() & ff;
     }
 
     /**

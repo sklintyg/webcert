@@ -2,30 +2,32 @@ package se.inera.webcert.certificatesender.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
-import org.apache.camel.*;
+import org.apache.camel.CamelContext;
+import org.apache.camel.CamelExecutionException;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.collect.ImmutableMap;
 
 import se.inera.webcert.common.Constants;
 import se.inera.webcert.exception.PermanentException;
 import se.inera.webcert.exception.TemporaryException;
 
-import com.google.common.collect.ImmutableMap;
-
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
 @MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
 public class RouteTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
 
     private static final String MESSAGE_BODY = "message";
 

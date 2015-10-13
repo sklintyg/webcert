@@ -11,58 +11,64 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         intygSaknas { $("#cert-load-error") }
         intygVy(wait: true) { displayed($('#intyg-vy-laddad')) }
 
-        newQuestionBtn(required: false, wait: true) { displayed($("#askQuestionBtn")) }
+        // Buttons
+        newQuestionBtn(required: false, wait: true) { $("#askQuestionBtn") }
         newQuestionBtnNoWait(required: false) { $("#askQuestionBtn") }
-        newQuestionForm(required: false, wait: true) { displayed($("#newQuestionForm")) }
+        newQuestionForm(required: false) { $("#newQuestionForm") }
         newQuestionFormNoWait(required: false) {$("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
         newQuestionTopic { $("#new-question-topic") }
-        sendQuestionBtn(required: false, wait: true) { displayed($("#sendQuestionBtn")) }
+
+        sendQuestionBtn(required: false, wait: true) { $("#sendQuestionBtn") }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
-        skrivUtBtn(required: false, wait: true) { displayed($("#downloadprint")) }
-        skrivUtBtnEmployer(required: false, wait: true) { displayed($("#downloadprintemployer")) }
-        kopieraBtn(required: false, wait: true) { displayed($("#copyBtn")) }
+        makuleraButton { $("#makuleraBtn") }
+
+        skrivUtBtn(required: false, wait: true) { $("#downloadprint") }
+        skrivUtBtnEmployer(required: false, wait: true) { $("#downloadprintemployer") }
+
+        copyButton(wait: true) { $("#copyBtn") }
+        kopieraBtn(required: false, wait: true) { $("#copyBtn") }
         kopieraBtnNoWait(required: false) { $("#copyBtn") }
-        makuleraBtn(required: false, wait: true) { displayed($("#makuleraBtn")) }
+
+        makuleraBtn(required: false, wait: true) { $("#makuleraBtn") }
         makuleraBtnNoWait(required: false) { $("#makuleraBtn") }
-        skickaTillFkBtn(required: false, wait: true) { displayed($("#sendBtn")) }
+
+        skickaTillFkBtn(required: false, wait: true) { $("#sendBtn") }
         skickaTillFkBtnNoWait(required: false) { $("#sendBtn") }
 
-        qaOnlyDialog(required: false, wait: true) { displayed($("#qa-only-warning-dialog")) }
-        qaOnlyDialogFortsatt(required: false, wait: true) { displayed($("#button1continue-dialog")) }
+        // Dialogs
+        qaOnlyDialog(required: false, wait: true) { $("#qa-only-warning-dialog") }
+        qaOnlyDialogFortsatt(required: false, wait: true) { $("#button1continue-dialog") }
         qaOnlyDialogCancel(required: false) { $("#button2qa-only-warning-dialog") }
 
-        unhandledQAList(wait: true) { displayed($("#unhandledQACol")) }
+        unhandledQAList(wait: true) { $("#unhandledQACol") }
 
-        questionIsSentToFkMessage(required: false, wait: true) { displayed($("#question-is-sent-to-fk-message-text")) }
+        questionIsSentToFkMessage(required: false, wait: true) { $("#question-is-sent-to-fk-message-text") }
         questionIsSentToFkMessageNoWait(required: false) { $("#question-is-sent-to-fk-message-text") }
-        closeSentMessage(wait: true) { displayed($("#question-is-sent-to-fk-message-text > button")) }
 
-        certificateRevokedMessage(required: false, wait: true) { displayed($("#certificate-is-revoked-message-text")) }
-        certificateIsSentToFKMessage(required: false, wait: true) {
-            displayed($("#certificate-is-sent-to-fk-message-text"))
-        }
-        certificateIsSentToFKMessageNoWait(required: false) {
-            $("#certificate-is-sent-to-fk-message-text")
-        }
+        closeSentMessage(wait: true) { $("#question-is-sent-to-fk-message-text > button") }
+
+        certificateRevokedMessage(required: false, wait: true) { $("#certificate-is-revoked-message-text") }
+        certificateIsSentToFKMessage(required: false, wait: true) { $("#certificate-is-sent-to-fk-message-text") }
+        certificateIsSentToFKMessageNoWait(required: false) { $("#certificate-is-sent-to-fk-message-text") }
         certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
 
-        copyButton(wait: true) { displayed($("#copyBtn")) }
-        makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
-        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
+        makuleraConfirmationOkButton(wait: true) { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
-        tillbakaButton(wait: true) { displayed($("#tillbakaButton")) }
+        tillbakaButton(wait: true) { $("#tillbakaButton") }
 
-        hanteraButton(wait: true) { displayed($("#button1checkhanterad-dialog-hantera")) }
-        ejHanteraButton(wait: true) { displayed($("#button1checkhanterad-dialog-ejhantera")) }
-        hanteraTillbakaButton(wait: true) { displayed($("#button1checkhanterad-dialog-tillbaka")) }
+        hanteraButton(wait: true) { $("#button1checkhanterad-dialog-hantera") }
+        ejHanteraButton(wait: true) { $("#button1checkhanterad-dialog-ejhantera") }
+        hanteraTillbakaButton(wait: true) { $("#button1checkhanterad-dialog-tillbaka") }
 
-        qaCheckEjHanteradDialog(wait: true) { displayed($("#qa-check-hanterad-dialog")) }
+        qaCheckEjHanteradDialog(wait: true) { $("#qa-check-hanterad-dialog") }
 
+        linkEjSigneradeUtkast(required: false) { $("#menu-unsigned") }
+        linkSokSkrivIntyg(required: false) { $("#menu-skrivintyg") }
     }
 
     def copy() {

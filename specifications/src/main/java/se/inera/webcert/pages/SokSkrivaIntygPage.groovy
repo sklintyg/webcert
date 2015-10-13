@@ -10,7 +10,9 @@ class SokSkrivaIntygPage extends AbstractLoggedInPage {
         personnummerFortsattKnapp { $("#skapapersonnummerfortsatt") }
         puFelmeddelande { $("#puerror") }
 
-        valjIntygTyp { $("#valj-intyg-typ")}
+        sokSkrivIntygLink(required: false) { $("#menu-skrivintyg") }
+
+        valjIntygTyp(required: false) { $("#valj-intyg-typ") }
     }
 
     def angePatient(String patient) {
@@ -20,4 +22,5 @@ class SokSkrivaIntygPage extends AbstractLoggedInPage {
             doneLoading()
         }
     }
+
 }

@@ -24,7 +24,7 @@ public class NotificationStubRestApi {
     public Collection<CertificateStatusUpdateForCareType> notifieringar() {
         return notificationStore.getNotifications();
     }
-    
+
     @POST
     @Path("/clear")
     public void clear() {

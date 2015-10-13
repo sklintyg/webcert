@@ -9,7 +9,10 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 
 import java.util.UUID;
 
-public class UtkastTestUtil {
+public final class UtkastTestUtil {
+
+    private UtkastTestUtil() {
+    }
 
     public static final String ENHET_1_ID = "ENHET_1_ID";
     public static final String ENHET_2_ID = "ENHET_2_ID";
@@ -91,9 +94,9 @@ public class UtkastTestUtil {
 
         return intyg;
     }
-    
+
     public static Signatur buildSignatur(String intygId, String signeradAv, LocalDateTime signeringsDatum) {
-        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>");  
+        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>");
     }
-    
+
 }

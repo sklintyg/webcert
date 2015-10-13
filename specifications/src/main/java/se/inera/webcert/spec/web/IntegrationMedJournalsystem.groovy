@@ -26,7 +26,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean intygLaddat() {
-        boolean result;
+        def result;
         Browser.drive {
             result = intygLaddat.isDisplayed()
         }
@@ -34,7 +34,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean intygInteLaddat() {
-        boolean result
+        def result
         Browser.drive {
             waitFor{
                 result = intygSaknas.isDisplayed()
@@ -62,7 +62,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean utkastVisasViaIntegrationMedBehorighetsfel(String intygId) {
-        boolean result
+        def result
         Browser.drive {
             go "/visa/intyg/" + intygId
             waitFor {
@@ -75,7 +75,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean utkastVisasViaIntegrationUtanBehorighetsfel(String intygId) {
-        boolean result
+        def result
         Browser.drive {
             go "/visa/intyg/" + intygId
             waitFor {
@@ -95,7 +95,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean signerandeLakareMeddelandeVisas(expected) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 page.signerandeLakare.isDisplayed()
@@ -170,7 +170,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean intygsFelVisas() {
-        boolean result
+        def result
         Browser.drive {
             result = page.intygFel.isDisplayed()
         }
@@ -188,77 +188,72 @@ class IntegrationMedJournalsystem {
 
 
     boolean skickaKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.skickaKnapp.isDisplayed()
+            result = page.skickaKnapp?.isDisplayed()
         }
         result
     }
 
     boolean skrivUtKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
             result = (page.skrivUtKnapp?.present && page.skrivUtKnapp.isDisplayed()) || (page.skrivUtKnappEmployer?.present && page.skrivUtKnappEmployer.isDisplayed())
         }
-        return result
+        result
     }
 
-
     boolean kopieraKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
-                result = page.kopieraKnapp.isDisplayed()
+                result = page.kopieraKnapp?.isDisplayed()
             }
         }
         return result;
     }
 
-    boolean kopieraKnappVisasEj() {
-        Browser.drive {
-            result = page.kopieraKnapp.isDisplayed()
-        }
-        result
-    }
-
     boolean makuleraKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.makuleraKnapp.isDisplayed()
+            result = page.makuleraKnapp?.isDisplayed()
         }
         result
     }
 
     boolean verifieraTillbakaknappBorta() {
+        def result
         Browser.drive {
-            waitFor() {
-                !page.tillbakaButton
-            }
+            result = page.tillbakaButton?.isDisplayed()
         }
-        true
+        result
     }
 
     boolean raderaUtkastFelmeddelandeVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.errorPanel.isDisplayed()
+            waitFor {
+                result = page.errorPanel?.isDisplayed()
+            }
         }
         result
     }
 
     boolean integrationBorttagetMeddelandeVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
-             at EditeraFk7263Page
+                at EditeraFk7263Page
             }
-            result = page.integrationBorttaget.isDisplayed()
+            waitFor {
+                result = page.integrationBorttaget?.isDisplayed()
+            }
         }
         result
     }
 
     boolean vidarebefordraEjHanteradFragaEjSynlig() {
-        boolean result
+        def result
         Browser.drive {
             result = !page.vidarebefordraEjHanterad.present
         }
@@ -266,7 +261,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean webcertLogoEjKlickbar() {
-        boolean result
+        def result
         Browser.drive {
             result = !page.webcertLogoLink.present
         }
@@ -274,7 +269,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean huvudmenyEjSynlig() {
-        boolean result
+        def result
         Browser.drive {
             result = !page.huvudmeny.present
         }
@@ -282,7 +277,7 @@ class IntegrationMedJournalsystem {
     }
 
     boolean bytVardenhetEjSynlig() {
-        boolean result
+        def result
         Browser.drive {
             result = !page.bytVardenhetLink.present
         }
@@ -290,16 +285,15 @@ class IntegrationMedJournalsystem {
     }
 
     boolean loggaUtEjSynlig() {
-        boolean result
+        def result
         Browser.drive {
             result = !page.loggaUtLink
         }
         result
     }
 
-
     boolean omWebcertKanOppnasViaLank() {
-        boolean result
+        def result
         Browser.drive {
             page.omWebcertLink.click()
             waitFor {
@@ -311,43 +305,40 @@ class IntegrationMedJournalsystem {
     }
 
     boolean inteFranJournalSystemTextVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor{
                 VisaFk7263Page
             }
             result = page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
         }
-        return result
+        result
     }
 
 	boolean nyttPersonNummerTextVisas() {
-		boolean result
+		def result
 		Browser.drive {
 			result = page.kopieraDialogMsgNyttPersonId.isDisplayed()
 		}
-		return result
+		result
 	}
-	
 
     def toggleKopieraDialogen(boolean val) {
-        if (val) {
-            Browser.drive {
+        Browser.drive {
+            if (val) {
                 page.openCopyDialog();
-                page.copyDialog.isDisplayed();
-            }
-        } else {
-            Browser.drive {
+                page.copyDialog?.isDisplayed();
+            } else {
                 page.closeCopyDialog();
-                !page.copyDialog.isDisplayed();
+                !page.copyDialog?.isDisplayed();
             }
         }
     }
 
     boolean kopieraDialogenVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.copyDialog.isDisplayed();
+            result = page.copyDialog?.isDisplayed();
         }
         result
     }
@@ -358,18 +349,9 @@ class IntegrationMedJournalsystem {
             waitFor {
                 at AbstractViewCertPage
             }
-            result =  page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();  
-        }
-        
-        return result
-    }
-
-    def sleepForNSeconds(String time) {
-        def n = time as int;
-        def originalMilliseconds = System.currentTimeMillis()
-        Browser.drive {
-            result = page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            result =  page.kopieraDialogMsgForlangningSjukskrivning?.isDisplayed();
         }
         result
     }
+
 }

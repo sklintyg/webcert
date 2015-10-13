@@ -4,7 +4,7 @@
     "namn" : "King's Landing",
     "vardenheter" : [
         {
-        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
+            "@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "red-keep",
             "namn" : "Vårdcentrum Red Keep"
         }

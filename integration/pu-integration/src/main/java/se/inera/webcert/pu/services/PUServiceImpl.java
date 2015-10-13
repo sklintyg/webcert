@@ -1,20 +1,26 @@
 package se.inera.webcert.pu.services;
 
-import com.google.common.annotations.VisibleForTesting;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import se.inera.population.residentmaster.v1.*;
+
+import se.inera.population.residentmaster.v1.JaNejTYPE;
+import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
+import se.inera.population.residentmaster.v1.NamnTYPE;
+import se.inera.population.residentmaster.v1.ResidentType;
+import se.inera.population.residentmaster.v1.SvenskAdressTYPE;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
 
-import javax.xml.ws.soap.SOAPFaultException;
+import com.google.common.annotations.VisibleForTesting;
 
 public class PUServiceImpl implements PUService {
 

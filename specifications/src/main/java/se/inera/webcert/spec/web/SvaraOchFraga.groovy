@@ -77,7 +77,7 @@ class SvaraOchFraga {
     }
 
     boolean fraganArSkickadTillFkMeddelandeVisas() {
-        boolean result
+        def result
         Browser.drive {
             result = page.questionIsSentToFkMessage.isDisplayed()
         }
@@ -96,7 +96,9 @@ class SvaraOchFraga {
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         boolean result
         Browser.drive {
-            result = page.unhandledQAPanelWithText(text)?.isDisplayed()
+            waitFor {
+                result = page.unhandledQAPanelWithText(text)?.isDisplayed()
+            }
         }
         result
     }
@@ -112,7 +114,9 @@ class SvaraOchFraga {
     boolean fragaVisasIListanMedHanteradeFragor(String id) {
         boolean result
         Browser.drive {
-            result = page.handledQAPanel(id)?.isDisplayed()
+            waitFor {
+                result = page.handledQAPanel(id)?.isDisplayed()
+            }
         }
         result
     }
@@ -130,7 +134,9 @@ class SvaraOchFraga {
     boolean intygArRattatMeddelandeVisas() {
         boolean result
         Browser.drive {
-            result = page.certificateRevokedMessage?.isDisplayed()
+            waitFor {
+                result = page.certificateRevokedMessage?.isDisplayed()
+            }
         }
         result
     }
@@ -138,7 +144,9 @@ class SvaraOchFraga {
     boolean intygArSkickatTillFkMeddelandeVisas() {
         boolean result
         Browser.drive {
-            result = page.certificateIsSentToFKMessage?.isDisplayed()
+            waitFor {
+                result = page.certificateIsSentToFKMessage?.isDisplayed()
+            }
         }
         result
     }
@@ -176,23 +184,36 @@ class SvaraOchFraga {
     }
 
     boolean nyFragaFormularVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.newQuestionForm.isDisplayed()
+            waitFor {
+                result = page.newQuestionForm.isDisplayed()
+            }
+        }
+        result
+    }
+
+    boolean nyFragaFormularInteVisas() {
+        def result
+        Browser.drive {
+           wait(1000);  // wait 1 second to make sure the little things has rendered
+           result = page.newQuestionForm?.isDisplayed()
         }
         result
     }
 
     boolean nyFragaKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.newQuestionBtn.isDisplayed()
+            waitFor {
+                result = page.newQuestionBtn.isDisplayed()
+            }
         }
         result
     }
 
     boolean ohanteradeFragorSidanVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 result = isAt UnhandledQAPage
@@ -278,7 +299,7 @@ class SvaraOchFraga {
     }
 
     boolean fragaVisas(String id) {
-        boolean result
+        def result
         Browser.drive {
             result = page.isQAVisible(id)
         }
@@ -304,48 +325,61 @@ class SvaraOchFraga {
     }
 
     boolean intygArSkickatTillIntygstjanstenMeddelandeVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.certificateIsSentToITMessage.isDisplayed()
+            waitFor {
+                result = page.certificateIsSentToITMessage?.isDisplayed()
+            }
         }
         result
     }
 
     boolean skrivUtKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.skrivUtKnapp.isDisplayed()
+            waitFor {
+                result = page.skrivUtKnapp?.isDisplayed()
+            }
         }
         result
     }
 
     boolean kopieraKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.kopieraKnapp.isDisplayed()
+            waitFor {
+                result = page.kopieraKnapp?.isDisplayed()
+            }
         }
         result
     }
 
     boolean makuleraKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.makuleraKnapp.isDisplayed()
+            waitFor {
+                result = page.makuleraKnapp?.isDisplayed()
+            }
         }
+        result
     }
 
     boolean skickaTillFkKnappVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.skickaKnapp.isDisplayed()
+            waitFor {
+                result = page.skickaKnapp?.isDisplayed()
+            }
         }
         result
     }
 
     public boolean arFragaHanterad(String internId) {
-        boolean result
+        def result
         Browser.drive {
-            result = page.handledQAPanel(internId).isDisplayed()
+            waitFor {
+                result = page.handledQAPanel(internId)?.isDisplayed()
+            }
         }
         result
     }
@@ -357,44 +391,41 @@ class SvaraOchFraga {
     }
 
     public boolean arFragaOhanterad(String internId) {
-        boolean result
+        def result
         Browser.drive {
-            result = page.unhandledQAPanel(internId).isDisplayed()
-        }
-        result
-    }
-
-    boolean arFragaVidarebefordrad(String id) {
-        boolean result
-        Browser.drive {
-            // TODO:
+            waitFor {
+                result = page.unhandledQAPanel(internId)?.isDisplayed()
+            }
         }
         result
     }
 
     public boolean MarkeraObehandladknappFörFrågaVisas(String internId) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            page.qaHandledPanel(internId).isDisplayed()
-
-            result = page.markAsUnhandledBtn(internId).isDisplayed()
+            waitFor {
+                page.qaHandledPanel(internId).isDisplayed()
+            }
+            waitFor {
+                result = page.markAsUnhandledBtn(internId)?.isDisplayed()
+            }
         }
         result
     }
 
     public boolean FragaMedIdHarFragenamn(String internId, String namn) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            page.qaUnhandledPanel(internId).isDisplayed()
-
-            page.frageStallarNamn(internId).isDisplayed()
-
+            waitFor {
+                page.qaUnhandledPanel(internId).isDisplayed()
+                page.frageStallarNamn(internId).isDisplayed()
+            }
             result = page.frageStallarNamn(internId).text().contains(namn)
         }
         result
@@ -406,28 +437,30 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            page.unitstatUnhandledQuestionsBadgde.isDisplayed()
-
+            waiFor {
+                page.unitstatUnhandledQuestionsBadgde.isDisplayed()
+            }
             result = page.unitstatUnhandledQuestionsBadgde.text()
         }
         result
     }
 
     public boolean FragaMedIdHarSvarsnamn(String internId, String namn) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            page.besvarareNamn(internId).isDisplayed()
-
+            waitFor {
+                page.besvarareNamn(internId).isDisplayed()
+            }
             result = page.besvarareNamn(internId).text().contains(namn)
         }
         result
     }
 
     boolean visasFkRubrik(String id) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -438,7 +471,7 @@ class SvaraOchFraga {
     }
 
     boolean visasFkKontakt(String id) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -449,7 +482,7 @@ class SvaraOchFraga {
     }
 
     boolean visasFkKompletteringar(String id) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -460,7 +493,7 @@ class SvaraOchFraga {
     }
 
     boolean fragaMedIdHarText(String id, String text) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -471,7 +504,7 @@ class SvaraOchFraga {
     }
 
     boolean fragaMedIdHarSvarstext(String id, String text) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -482,15 +515,17 @@ class SvaraOchFraga {
     }
 
     boolean intygSaknasVisas() {
-        boolean result
+        def result
         Browser.drive {
-            result = page.intygSaknas.isDisplayed()
+            waitFor {
+                result = page.intygSaknas?.isDisplayed()
+            }
         }
         result
     }
 
     boolean sokSkrivIntygSidanVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 result = isAt SokSkrivaIntygPage
@@ -500,13 +535,13 @@ class SvaraOchFraga {
     }
 
     boolean lamnaFragaSvarVarningVisas() {
+        def result
         Browser.drive {
             waitFor {
-                at VisaFragaSvarPage
+                result = page.qaOnlyDialog?.isDisplayed()
             }
-            return page.qaOnlyDialog.isDisplayed()
-
         }
+        result
     }
 
     def lamnaFragaSvarFortsatt() {
@@ -535,9 +570,13 @@ class SvaraOchFraga {
     }
 
     boolean lamnaFragaSvarEjHanteradDialogVisas() {
+        def result
         Browser.drive {
-            return page.qaCheckEjHanteradDialog.isDisplayed()
+            waitFor {
+                result = page.qaCheckEjHanteradDialog.isDisplayed()
+            }
         }
+        result
     }
 
     def klickaPaHanteraKnappen() {
@@ -550,8 +589,9 @@ class SvaraOchFraga {
         }
     }
 
+
     boolean svarArBorta(String id) {
-        boolean result
+        def result
         Browser.drive {
             waitFor{
                 at UnhandledQAPage
@@ -568,7 +608,7 @@ class SvaraOchFraga {
     }
 
     boolean svarArMed(String id) {
-        boolean result
+        def result
         Browser.drive {
             result = page.isQAVisible(id)
         }
@@ -604,40 +644,46 @@ class SvaraOchFraga {
     }
 
     boolean infotextIngaFragarPaEnhetVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.noResultsOnUnitInfo.isDisplayed()
+            waitFor {
+                result = page.noResultsOnUnitInfo?.isDisplayed()
+            }
         }
         result
     }
 
     boolean infotextIngetSokresultatVisas() {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.noResultsForQueryInfo.isDisplayed()
+            waitFor {
+                result = page.noResultsForQueryInfo?.isDisplayed()
+            }
         }
         result
     }
 
     def visasAllaFragorKnappen(boolean expected = true) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.visaAllaFragaBtn.isDisplayed()
+            waitFor {
+                result = page.visaAllaFragaBtn?.isDisplayed()
+            }
         }
         result
     }
 
     boolean visasEnhetsknappen(String id, boolean expected = true) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -648,7 +694,7 @@ class SvaraOchFraga {
     }
 
     boolean forEnhetenArSiffran(String id, String expected) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -670,16 +716,22 @@ class SvaraOchFraga {
     }
 
     boolean visasEnhetsvaletIModal(String id) {
-        boolean result
+        def result
         Browser.drive {
-            page.careUnitModalBody.isDisplayed()
-            result = page.careUnitModalBody.isDisplayed() && page.isCareUnitModalVisible(id)
+            waitFor {
+                page.careUnitModalBody.isDisplayed()
+
+            }
+            page.isCareUnitModalVisible(id)
+            waitFor {
+                result = page.careUnitModalBody?.isDisplayed()
+            }
         }
         result
     }
 
     boolean forEnhetenIModalenArSiffran(String id, String expected) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -700,59 +752,87 @@ class SvaraOchFraga {
     def valjEnhetIModal(String id) {
         Browser.drive {
             page.modalIsDisplayed()
-
             page.selectCareUnitModal(id)
         }
     }
 
     boolean vidareBefordraKnappVisas(boolean expected) {
-        boolean result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = $("#qaTable button.vidarebefordra-btn").isDisplayed()
+
+            def ref = "#qaTable button.vidarebefordra-btn"
+            if (expected) {
+                waitFor {
+                    result = $(ref).isDisplayed()
+                }
+            } else {
+                result = !$(ref).isDisplayed()
+            }
         }
+        result
     }
 
     boolean vidarebefordradCheckboxVisas(boolean expected) {
-        boolean result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = $("#qaTable input.vidarebefordrad-checkbox").isDisplayed()
 
+            def ref = "#qaTable input.vidarebefordrad-checkbox"
+            if (expected) {
+                waitFor {
+                    result = $(ref).isDisplayed()
+                }
+            } else {
+                result = !$(ref).isDisplayed()
+            }
         }
-        return expected == result
+        result
     }
 
     boolean vardenhetValjareVisas(boolean expected) {
-        boolean result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = $("div#wc-care-unit-clinic-selector").isDisplayed()
+            def ref = "div#wc-care-unit-clinic-selector"
+            if (expected) {
+                waitFor {
+                    result = $(ref).isDisplayed()
+                }
+            } else {
+                result = !$(ref).isDisplayed()
+            }
         }
-        return expected == result
+        result
     }
 
     boolean vidarebefordraKnappInnePaFragaVisas(boolean expected) {
-        boolean result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
             // TODO use GEB page abstraction
-            result = $("#unhandled-vidarebefordraEjHanterad").isDisplayed()
+            def ref = "#unhandled-vidarebefordraEjHanterad"
+            if (expected) {
+                waitFor {
+                    result = $(ref).isDisplayed()
+                }
+            } else {
+                result = !$(ref).isDisplayed()
+            }
         }
-        return expected == result
+        result
     }
 
-
     boolean filterVidarebefordradVisas(boolean expected) {
-        boolean result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -763,7 +843,7 @@ class SvaraOchFraga {
     }
 
     boolean filterValjLakareVisas(boolean expected) {
-        boolean result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage

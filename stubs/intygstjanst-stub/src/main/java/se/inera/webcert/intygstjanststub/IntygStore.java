@@ -1,19 +1,19 @@
 package se.inera.webcert.intygstjanststub;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import se.inera.webcert.intygstjanststub.mode.StubModeAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 import se.riv.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
 
@@ -28,7 +28,7 @@ public class IntygStore {
 
     public void addIntyg(GetCertificateForCareResponseType request) {
         LOG.debug("IntygStore: adding intyg " + request.getMeta().getCertificateId() + " to store.");
-        if (intyg.containsKey(request.getMeta().getCertificateId() )) {
+        if (intyg.containsKey(request.getMeta().getCertificateId())) {
             LOG.debug("IntygStore: Not adding "  + request.getMeta().getCertificateId() + " to store. Is already present.");
             return;
         }
@@ -75,8 +75,6 @@ public class IntygStore {
         GetCertificateForCareResponseType getCertificateForCareResponseType = intyg.get(extension);
         if (getCertificateForCareResponseType != null) {
             getCertificateForCareResponseType.getMeta().getStatus().add(status);
-        } else {
-
         }
     }
 

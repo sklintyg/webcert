@@ -4,15 +4,17 @@ import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
-import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import se.inera.webcert.spec.util.WebcertRestUtils
 
 class SokSkrivIntyg {
 
     def kopiaintygsid
+    def intygsid
+
 
     // ------- navigation
+
     def gaTillSokSkrivIntyg() {
         Browser.drive {
             go "/web/dashboard#/create/index"
@@ -48,6 +50,7 @@ class SokSkrivIntyg {
     }
 
     // ------- pages
+
     boolean sokSkrivIntygSidanVisas() {
         boolean result
         Browser.drive {
@@ -81,6 +84,7 @@ class SokSkrivIntyg {
     }
 
     // ------- behaviour
+
     void valjPatient(String personNummer) {
         Browser.drive {
             page.angePatient(personNummer)
@@ -124,7 +128,6 @@ class SokSkrivIntyg {
         }
     }
 
-
     void valjKopieraIDialogen() {
         Browser.drive {
             page.kopieraDialogKopieraKnapp.click()
@@ -140,16 +143,10 @@ class SokSkrivIntyg {
         }
     }
 
-    def intygsid
-
     def kopieraIntygOchGaTillVisaSida(String intygId) {
         Browser.drive {
             page.copy(intygId)
         }
-    }
-
-    String intygsid() {
-        intygsid
     }
 
     void oppnaKopieraDialogen() {
@@ -190,7 +187,10 @@ class SokSkrivIntyg {
     boolean makuleraBekraftelseVisas() {
         boolean result
         Browser.drive {
-            result = page.makuleraConfirmationOkButton.isDisplayed()
+            waiFor {
+                page.makuleraConfirmationOkButton.isDisplayed()
+                result = page.makuleraConfirmationOkButton.isDisplayed()
+            }
         }
         result
     }
@@ -207,20 +207,24 @@ class SokSkrivIntyg {
                 at SokSkrivaIntygPage
             }
             page.careUnitSelector.click()
-
             page.selectCareUnit(careUnit);
 
         }
     }
+
     // ------- state
+
     boolean namnFinnsEjMeddelandeVisas() {
         boolean result
         Browser.drive {
-            page.puFelmeddelande.isDisplayed()
+            waitFor {
+                page.puFelmeddelande.isDisplayed()
+                result = page.puFelmeddelande.isDisplayed()
+            }
         }
         result
     }
-	
+
 	String PUTjänstFel() {
 		String felmeddelande
 		Browser.drive {
@@ -228,20 +232,23 @@ class SokSkrivIntyg {
 		}
 		return felmeddelande
 	}
-	
 
     boolean valjIntygstypSynlig() {
         boolean result
         Browser.drive {
-            result = page.intygTyp.isDisplayed()
+            waitFor {
+                page.intygTyp.isDisplayed()
+                result = page.intygTyp.isDisplayed()
+            }
         }
         result
     }
 
-    boolean valjIntygstypEjSynlig() {
+    boolean valjIntygstypInteSynlig() {
         boolean result
         Browser.drive {
-            result = !page.intygTypNoWait.isDisplayed()
+            wait(1000);  // wait 1 second to make sure the little things has rendered
+            result = page.intygTyp?.isDisplayed()
         }
         result
     }
@@ -249,7 +256,10 @@ class SokSkrivIntyg {
     boolean sekretessmarkeringTextSynlig() {
         boolean result
         Browser.drive {
-            result = page.sekretessmarkering.isDisplayed()
+            waitFor {
+                page.sekretessmarkering.isDisplayed()
+                result = page.sekretessmarkering.isDisplayed()
+            }
         }
         result
     }
@@ -259,8 +269,8 @@ class SokSkrivIntyg {
         Browser.drive {
             waitFor {
                 at SokSkrivValjIntygTypPage
+                result = page.patientNamn.text()
             }
-            result = page.patientNamn.text()
         }
         result
     }
@@ -270,8 +280,9 @@ class SokSkrivIntyg {
         Browser.drive {
             waitFor {
                 at SokSkrivValjIntygTypPage
+                page.kopieraKnapp(intygId).isDisplayed()
+                result = page.kopieraKnapp(intygId).isDisplayed()
             }
-            result = page.kopieraKnapp(intygId).isDisplayed()
         }
         return result
     }
@@ -279,7 +290,10 @@ class SokSkrivIntyg {
     boolean skickaStatusVisas() {
         boolean result
         Browser.drive {
-            result = page.certificateIsSentToRecipientMessage; //.isDisplayed()
+            waitFor {
+                page.certificateIsSentToRecipientMessage.isDisplayed()
+                result = page.certificateIsSentToRecipientMessage.isDisplayed()
+            }
         }
         result
     }
@@ -306,12 +320,6 @@ class SokSkrivIntyg {
         }
     }
 
-    def visaSokSkrivIntyg() {
-        Browser.drive {
-
-        }
-    }
-
     def kanEjMakuleraVisatIntyg() {
         Browser.drive {
             !page.makuleraKnappSyns()
@@ -321,8 +329,7 @@ class SokSkrivIntyg {
     boolean makuleradStatusVisas() {
         boolean result
         Browser.drive {
-            result = page.makuleraStatusSyns(); //.isDisplayed()
-            //return $("#certificate-is-revoked-message-text").isDisplayed()
+            result = page.makuleraStatusSyns();
         }
         result
     }
@@ -368,7 +375,10 @@ class SokSkrivIntyg {
             waitFor {
                 at VisaTsBasPage
             }
-            result = page.intygLaddat.isDisplayed()
+            waitFor {
+                page.intygLaddat.isDisplayed()
+                result = page.intygLaddat.isDisplayed()
+            }
         }
         result
     }
@@ -379,7 +389,10 @@ class SokSkrivIntyg {
             waitFor {
                 at VisaTsDiabetesPage
             }
-            result = page.intygLaddat.isDisplayed()
+            waitFor {
+                page.intygLaddat.isDisplayed()
+                result = page.intygLaddat.isDisplayed()
+            }
         }
         result
     }
@@ -390,7 +403,10 @@ class SokSkrivIntyg {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.careUnitSelector.isDisplayed()
+            waitFor {
+                page.careUnitSelector.isDisplayed()
+                result = page.careUnitSelector.isDisplayed()
+            }
         }
         result
     }
@@ -402,9 +418,9 @@ class SokSkrivIntyg {
                 at SokSkrivValjIntygTypPage
             }
             waitFor {
-                expected == page.felmeddelandeRuta.isDisplayed()
+                page.felmeddelandeRuta.isDisplayed()
+                result = page.felmeddelandeRuta.isDisplayed()
             }
-            result = page.felmeddelandeRuta.isDisplayed()
         }
         result
     }
@@ -420,9 +436,6 @@ class SokSkrivIntyg {
     void intygstjanstStubLatency(Long latency = 0L) {
         WebcertRestUtils.setIntygTjanstStubLatency(latency)
     }
-//
-//        }
-//    }
 
     void skickaVisatIntygTillForsakringskassan() {
         Browser.drive {
@@ -440,9 +453,9 @@ class SokSkrivIntyg {
                 at VisaFk7263Page
             }
             waitFor {
-                expected == page.certificateIsSentToRecipientMessage.isDisplayed()
+                page.certificateIsSentToRecipientMessage.isDisplayed()
+                result = page.certificateIsSentToRecipientMessage.isDisplayed()
             }
-            result = page.certificateIsSentToRecipientMessage.isDisplayed()
         }
         result
     }
@@ -454,9 +467,9 @@ class SokSkrivIntyg {
                 at VisaFk7263Page
             }
             waitFor {
-                expected == page.certificateIsOnQueueToITMessage.isDisplayed()
+                page.certificateIsOnQueueToITMessage.isDisplayed()
+                result = page.certificateIsOnQueueToITMessage.isDisplayed()
             }
-            result = page.certificateIsOnQueueToITMessage.isDisplayed()
         }
         result
     }
@@ -469,7 +482,6 @@ class SokSkrivIntyg {
             waitFor {
                 page.stallNyFragaTillForsakringskassan()
             }
-            page.stallNyFragaTillForsakringskassan()
             waitFor {
                 page.nyFragaTillForsakringskassanFormularVisas()
             }
@@ -483,9 +495,9 @@ class SokSkrivIntyg {
                 at VisaFk7263Page
             }
             waitFor {
-                expected == page.nyFragaTillForsakringskassanFormularVisas()
+                page.nyFragaTillForsakringskassanFormularVisas()
+                result = page.nyFragaTillForsakringskassanFormularVisas()
             }
-            result = page.nyFragaTillForsakringskassanFormularVisas()
         }
         result
     }
@@ -502,35 +514,18 @@ class SokSkrivIntyg {
     }
 
     boolean nyFragaSkickadBekraftelseVisas(boolean expected = true) {
+        def result
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
             }
             waitFor {
-                expected == page.nyFragaSkickadTextVisas()
+                page.nyFragaSkickadTextVisas()
+                result = expected == page.nyFragaSkickadTextVisas()
             }
-            true
+            result
         }
     }
-
-//    boolean kopieraKnappHarTextSjukskrivning() {
-//        def result
-//        Browser.drive {
-//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-//                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
-//        }
-//        return result
-//    }
-
-
-//    boolean kopieraKnappHarInteTextSjukskrivning() {
-//        def result
-//       Browser.drive {
-//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-//                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
-//        }
-//        return result
-//    }
 
     String kopieraKnappHarText() {
         def text
@@ -541,12 +536,17 @@ class SokSkrivIntyg {
     }
 
     // ------- utils
+
     void ateraktiveraKopieraDialogen() {
         Browser.deleteCookie("wc.dontShowCopyDialog");
     }
 
     def kopiaintygsid() {
         kopiaintygsid
+    }
+
+    String intygsid() {
+        intygsid
     }
 
     boolean kanForfattaIntyg(String intygsTypText) {
@@ -582,7 +582,6 @@ class SokSkrivIntyg {
     }
 
     boolean intygAvTypVisasInteIListanAvTidigareIntyg(String intygsTyp) {
-        //
         boolean result = false
         Browser.drive {
             waitFor {

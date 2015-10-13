@@ -2,17 +2,19 @@ package se.inera.webcert.intygstjanststub;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.webcert.intygstjanststub.mode.StubLatencyAware;
 import se.inera.webcert.intygstjanststub.mode.StubModeAware;
-import se.riv.clinicalprocess.healthcond.certificate.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.StatusType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
 
 /**
  * Created by eriklupander on 2015-06-10.

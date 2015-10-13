@@ -24,6 +24,7 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
@@ -45,6 +46,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private PPService ppService;
+
+    @Autowired
+    private AvtalService avtalService;
 
     @Autowired
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
@@ -116,7 +120,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setRoles(grantedRoles);
         user.setAuthorities(grantedPrivileges);
 
-        user.setPrivatLakareAvtalGodkand(false);
+        user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
         user.setForskrivarkod(hosPerson.getForskrivarkod());

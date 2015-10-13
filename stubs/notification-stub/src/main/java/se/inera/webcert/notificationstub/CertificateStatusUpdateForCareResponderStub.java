@@ -30,12 +30,12 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         String utlatandeId = utlatande.getUtlatandeId().getExtension();
 
         StringBuilder sb = new StringBuilder();
-        
+
         if (utlatande.getSigneringsdatum() != null) {
             sb.append(" Signeringsdatum: " + utlatande.getSigneringsdatum());
             sb.append("\n");
         }
-        
+
         if (utlatande.getPatient() != null) {
             sb.append(" Patient: " + utlatande.getPatient().getPersonId().getExtension());
             sb.append("\n");

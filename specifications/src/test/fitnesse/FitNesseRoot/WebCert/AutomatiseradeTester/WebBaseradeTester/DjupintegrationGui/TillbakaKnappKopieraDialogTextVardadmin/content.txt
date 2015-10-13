@@ -1,0 +1,16 @@
+Testa att vårdadmin hamnar i djupintegrationsläge
+
+!3 Välj patient och visa intyget
+
+| script | !-SvaraOchFraga-! |
+| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
+| ga till svara och fraga |
+| svara och fraga sidan visas|
+
+!4 Testa att nytt personnumer text visas i kopieradialogen.
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | intyg-fit-vardadmin | personnummer | ${person1.personnummer} |
+| verifiera tillbakaknapp borta |
+| toggle kopiera dialogen | true |
+| nytt person nummer text visas |
+| inte fran journal system text inte visas |

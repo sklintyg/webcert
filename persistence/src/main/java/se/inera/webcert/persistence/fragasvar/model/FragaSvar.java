@@ -30,7 +30,6 @@ public class FragaSvar {
     /**
      * The (system-wide) unique id for this entity.
      */
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long internReferens;

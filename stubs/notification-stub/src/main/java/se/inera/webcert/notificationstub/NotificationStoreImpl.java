@@ -17,7 +17,7 @@ import com.google.common.collect.Ordering;
 
 
 public class NotificationStoreImpl implements NotificationStore {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(NotificationStore.class);
 
     private static final double LOAD = 0.8;
@@ -36,7 +36,7 @@ public class NotificationStoreImpl implements NotificationStore {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.notificationstub.NotificationStore#put(java.lang.String,
      * se.inera.certificate.clinicalprocess
      * .healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType)
@@ -54,7 +54,7 @@ public class NotificationStoreImpl implements NotificationStore {
     }
 
     public void purge(Multimap<String, CertificateStatusUpdateForCareType> notificationsMap) {
-        
+
         LOG.debug("NotificationStore contains {} notifications, pruning old ones...", notificationsMap.size());
 
         // find the oldest ones
@@ -80,7 +80,7 @@ public class NotificationStoreImpl implements NotificationStore {
             String intygsId = objToRemove.getUtlatande().getUtlatandeId().getExtension();
             notificationsMap.remove(intygsId, objToRemove);
         }
-        
+
         LOG.debug("Pruning done! NotificationStore now contains {} notifications", notificationsMap.size());
     }
 
@@ -94,7 +94,7 @@ public class NotificationStoreImpl implements NotificationStore {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.notificationstub.NotificationStore#getNotifications()
      */
     @Override
@@ -104,7 +104,7 @@ public class NotificationStoreImpl implements NotificationStore {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.notificationstub.NotificationStore#clear()
      */
     @Override
