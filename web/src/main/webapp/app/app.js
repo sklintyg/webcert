@@ -27,6 +27,11 @@ window.getAnimationsState = function(which) {
 }
 // --- end test hooks
 
+// Globally configure jquery not to cache ajax requests.
+// Our other angular $http service driven requests have their own solution (using an interceptor)
+
+$.ajaxSetup({ cache: false });
+
 // before we do anything.. we need to get the user
 var user;
 function getUser() {

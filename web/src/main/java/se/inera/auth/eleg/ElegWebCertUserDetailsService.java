@@ -110,7 +110,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
 
         // Get user's privileges based on his/hers role
-        // Get user's privileges based on his/hers role
         final Map<String, UserRole> grantedRoles = roleToMap(getRoleAuthority(role));
         final Map<String, UserPrivilege> grantedPrivileges = getPrivilegeAuthorities(role);
 
@@ -123,8 +122,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
-        user.setForskrivarkod(hosPerson.getForskrivarkod());
         user.setNamn(hosPerson.getFullstandigtNamn());
+
+        // Forskrivarkod should be always be seven zeros
+        user.setForskrivarkod("0000000");
 
         decorateWebCertUserWithAuthenticationScheme(samlCredential, user);
         decorateWebCertUserWithAuthenticationMethod(samlCredential, user);
