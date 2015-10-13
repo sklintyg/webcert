@@ -9,4 +9,3 @@ Testet beskriver fallet när ett externt system använder vårt REST API för ö
 | intygstjanst | =~/OK[0-9]+/ |
 | uptime | =~/OK[0-9]+/ |
 | signature-queue | =~/OK[0-9]+/ |
-

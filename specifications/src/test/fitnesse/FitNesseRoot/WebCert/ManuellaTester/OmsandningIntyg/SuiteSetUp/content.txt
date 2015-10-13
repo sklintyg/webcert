@@ -4,5 +4,5 @@
 | geb.env | chrome |
 
 !2 Starta browser
-!| script | Browser |
+!| skript | Browser |
 | öppna |

@@ -2,12 +2,12 @@ Verifiera 1790 att ett intyg som signeras med Kan inte ta ställning visar det s
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | ts-diabetes |
 | $intygsid= | intygsid |
 
@@ -20,32 +20,32 @@ Populera intyget med information i samtliga fält så det blir komplett
 | Storgatan 1 | 12345 | Göteborg | A,B,C | korkort | 2010 | typ2 | true | true | true | 2011 | Träning | true | true | true | true | 4 | true | 1 | true | true | 2014-01-02 | false | true | 1,1 | 1,2 | 0,2 | 0,8 | 0,6 | 0,9 | true | true | | bedomning | Inga kommentar | Sjukdommar | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
 
 !3 Kontrollera att kan inte ta ställning är satt.
-!| script | HanteraUtkast |
-| ensure | kan inte ta stallning ts diabetes |
+!| skript | HanteraUtkast |
+| säkerställ att | kan inte ta stallning ts diabetes |
 
 !3 Spara och signera
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | intyg sparat visas |
 
-| script | !-HanteraUtkast-! |
-| ensure | signera knapp visas |
-| ensure | signera knapp aktiverad |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | signera knapp visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
 
 !3 Kopiera intyget
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | kopiera visat intyg | ts-diabetes |
 | $kopiaintygsid= | kopiaintygsid |
 
 !3 Kontrollera att kan inte ta ställning fortfarande är satt.
-!| script | HanteraUtkast |
-| ensure | kan inte ta stallning ts diabetes |
+!| skript | HanteraUtkast |
+| säkerställ att | kan inte ta stallning ts diabetes |
 
 !3 Ta bort utkastet
 

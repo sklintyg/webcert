@@ -2,20 +2,21 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | logga in |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
 
-!3 Välj patient och visa intyget
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 
-| script | !-IntegrationMedJournalsystem-! |
+| skript | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration | intyg-fit-1 |
 | verifiera tillbakaknapp borta |
 | vidarebefordra ej hanterad fraga ej synlig |
 
 !3 Verifiera att djupintegrationsläget visar rätt element
 
-| script | !-IntegrationMedJournalsystem-! |
+| skript | !-IntegrationMedJournalsystem-! |
 | webcert logo ej klickbar |
 | huvudmeny ej synlig |
 | byt vardenhet ej synlig |

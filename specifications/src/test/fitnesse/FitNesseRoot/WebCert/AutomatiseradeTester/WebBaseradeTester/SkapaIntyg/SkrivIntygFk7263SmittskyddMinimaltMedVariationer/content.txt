@@ -1,11 +1,11 @@
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
@@ -18,15 +18,15 @@ Populera intyget med information i samtliga fält så det blir komplett
 | true | 40 | true |
 
 !3 Verifiera att utkastet inte saknar några översättningsnycklar
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | inga oversattningsnycklar saknas |
 
 !3 Spara och signera
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | intyg sparat visas |
 
 !3 Ta bort utkastet

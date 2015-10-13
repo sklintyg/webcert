@@ -2,7 +2,7 @@ Testet beskriver fallet när en användare filtrerar frågor på frågeställare
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Lägg till frågor
@@ -14,22 +14,22 @@ Testet beskriver fallet när en användare filtrerar frågor på frågeställare
 
 !3 Givet att det finns frågor, verifiera att filtreringen på frågeställare fungerar
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | visa avancerat filter |
 | valj fragestallare | FK |
 | filtrera fragor och svar |
-| visas fraga| $internReferens1 |
-| doljs fraga| $internReferens2 |
+| säkerställ att | fraga| $internReferens1 | visas |
+| säkerställ att inte | fraga| $internReferens2 | visas |
 
 !4 Byt frågeställare och gör om filtreringen
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | valj fragestallare | WC |
 | filtrera fragor och svar |
-| visas fraga| $internReferens2 |
-| doljs fraga| $internReferens1 |
+| säkerställ att | fraga| $internReferens2 | visas |
+| säkerställ att inte | fraga| $internReferens1 | visas |
 | aterstall sokformular |
 
 !3 Ta bort frågor

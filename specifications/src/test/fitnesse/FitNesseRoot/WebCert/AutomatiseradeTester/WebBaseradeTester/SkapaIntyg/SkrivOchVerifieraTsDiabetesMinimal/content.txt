@@ -1,11 +1,11 @@
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person4.personnummer} | av typ | ts-diabetes |
 | $intygsid= | intygsid |
 
@@ -19,18 +19,18 @@ Populera intyget med information i samtliga fält utom 2 c-e som ska vara dolda 
 
 !3 Spara och signera
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | intyg sparat visas |
 
-| script | !-HanteraUtkast-! |
-| ensure | signera knapp visas |
-| ensure | signera knapp aktiverad |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | signera knapp visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas med typ | ts-diabetes |
-| ensure | intyget signerat meddelande visas |
+| säkerställ att | intyget signerat meddelande visas |
 
 !3 Verifiera att fälten i intyget syns och innehåller korrekt data
 

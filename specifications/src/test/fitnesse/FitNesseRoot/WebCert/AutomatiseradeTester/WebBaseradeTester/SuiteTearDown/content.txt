@@ -1,4 +1,4 @@
-| script | Browser |
+| skript | Browser |
 | stäng |
 
 !3 Ta bort intyg

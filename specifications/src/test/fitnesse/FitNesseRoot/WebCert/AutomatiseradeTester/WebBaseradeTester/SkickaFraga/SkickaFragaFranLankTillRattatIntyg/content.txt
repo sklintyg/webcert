@@ -2,18 +2,18 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Verifiera att det går att visa intyget
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-fit-3-revoked |
 | intyg med fraga svar sidan visas |
 
 !3 Verifiera att det inte går att skicka nya frågor till försäkringskassan
 
-| script | !-SvaraOchFraga-! |
-| ny fraga knapp visas | false |
-| intyg ar rattat meddelande visas |
+| skript | !-SvaraOchFraga-! |
+| säkerställ att inte | ny fraga knapp visas |
+| säkerställ att | intyg ar rattat meddelande visas |
 

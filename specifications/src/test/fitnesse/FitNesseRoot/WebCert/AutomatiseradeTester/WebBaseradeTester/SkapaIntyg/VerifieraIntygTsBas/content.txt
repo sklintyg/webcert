@@ -6,9 +6,13 @@
 
 !3 Logga in
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+
+!3 Välj patient
+
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | webcert-fit-1 |
@@ -22,7 +26,7 @@
 
 !3 Verifiera att inga översättningsnycklar saknas
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | inga oversattningsnycklar saknas |
 
 !3 Ta bort intyget

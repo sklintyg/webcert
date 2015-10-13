@@ -7,7 +7,7 @@
 ActiveMQ-inställningar för omsändning bör fungera out-of-the-box, annars kan man behöva modifiera dessa i jetty-web.xml
 
 !3 Stäng ner stubben
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intygstjanst stub offline |
 
 !3 Lägg till komplett utkast
@@ -18,7 +18,7 @@ ActiveMQ-inställningar för omsändning bör fungera out-of-the-box, annars kan
 | webcert-fitnesse-signera-3 | ts-diabetes | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | |
 
 !3 Logga in
-!| script | !-LoggaIn-! |
+!| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Signera utkasten
@@ -35,11 +35,11 @@ ActiveMQ-inställningar för omsändning bör fungera out-of-the-box, annars kan
 | webcert-fitnesse-signera-3 | ts-diabetes | 2 |
 
 !3 Aktivera stubben
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intygstjanst stub online |
 
 !3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 10000 |
 | finns intyg i stub med | webcert-fitnesse-signera-2 | vantetid | 10000 |
 | finns intyg i stub med | webcert-fitnesse-signera-3 | vantetid | 10000 |

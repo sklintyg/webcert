@@ -1,51 +1,33 @@
 package se.inera.webcert.pages.fk7263
 
-import se.inera.webcert.pages.VisaPage
+import se.inera.webcert.pages.AbstractViewCertPage
 
-class VisaFk7263Page extends VisaPage {
+class VisaFk7263Page extends AbstractViewCertPage {
+        
     static content = {
 
         // messages
         intygSaknas { $("#cert-load-error") }
-        intygLaddat(wait: true) { displayed($('#intyg-vy-laddad')) }
+        intygLaddat(wait: true) { $('#intyg-vy-laddad') }
         intygFel { $("#cert-inline-error") }
-        certificateIsSentToITMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-it-message-text")) }
-        certificateIsSentToRecipientMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-recipient-message-text")) }
-        certificateIsRevokedMessage(required: false,wait: true) { displayed($("#certificate-is-revoked-message-text")) }
+        certificateIsSentToITMessage(required: false, wait: true) { $("#certificate-is-sent-to-it-message-text") }
+        certificateIsSentToRecipientMessage(required: false, wait: true) { $("#certificate-is-sent-to-recipient-message-text") }
+        certificateIsRevokedMessage(required: false,wait: true) { $("#certificate-is-revoked-message-text") }
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
         visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
         certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
-
         // copy dialog
-        annanEnhetText(wait: true) { displayed($("#annanVardenhet"))}
-
-        // header
-        webcertLogoLink(required: false) { $("#webcertLogoLink") }
-        bytVardenhetLink(required: false) { $("#wc-care-unit-clinic-selector") }
-        loggaUtLink(required: false) { $("#logoutLink") }
-        omWebcertLink { $("#aboutLink") }
-        omWebcertDialog(required: false,wait: true) { displayed($("#omWebcertDialog")) }
-        huvudmeny(required: false) { $("#huvudmeny")}
+        annanEnhetText(wait: true) { $("#annanVardenhet") }
 
         // intyg top panel
-        tillbakaButton(required: false) { $("#tillbakaButton")}
-        copyButton(wait: true) { displayed($("#copyBtn")) }
-        makuleraButton(required: false,wait: true) { displayed($("#makuleraBtn")) }
-        kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
-        kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
-        kopieraDialogVisaInteIgen { $("#dontShowAgain") }
-        makuleraDialogKopieraKnapp(wait: true) { displayed($("#button1makulera-dialog")) }
-        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
 
         skickaDialogBody { $("span[key=\"fk7263.label.send.body\"]") }
 
         // kopiera dialog text webcert-1449
-        copyDialog(wait: true){ displayed($("#copy-dialog")) }
-        kopieraDialogMsgInteFranJournalSystemNoWait(required:false) { $("#msgInteFranJournalSystem") }
-        kopieraDialogMsgInteFranJournalSystem(required:false, wait: true){ displayed($("#msgInteFranJournalSystem")) }
-        kopieraDialogMsgNyttPersonIdNoWait{$("#msgNyttPersonId")}
-        kopieraDialogMsgNyttPersonId(required:false, wait: true){ displayed($("#msgNyttPersonId")) }
+        copyDialog { $("#copy-dialog") }
+        kopieraDialogMsgInteFranJournalSystem(required: false) { $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgNyttPersonId {$("#msgNyttPersonId")}
 
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
@@ -151,46 +133,6 @@ class VisaFk7263Page extends VisaPage {
         vardperson_telefonnummer { $("#vardperson_telefonnummer") }
     }
 
-    def copy() {
-        $("#copyBtn").click()
-        waitFor {
-            doneLoading()
-        }
-        kopieraDialogKopieraKnapp.click()
-    }
-
-    def openCopyDialog() {
-        $("#copyBtn").click()
-        waitFor {
-            doneLoading()
-        }
-    }
-
-    def closeCopyDialog() {
-        $("#button2copy-dialog").click()
-        waitFor {
-            doneLoading()
-        }
-    }
-
-    def makulera() {
-        $("#makuleraBtn").click()
-        waitFor {
-            doneLoading()
-        }
-        makuleraDialogKopieraKnapp.click()
-    }
-
-    boolean exists(content) {
-        content
-    }
-
-    def kanInteMakulera() {
-        waitFor {
-            !exists(makuleraButton)
-        }
-    }
-
     def sendWithValidation() {
         skickaKnapp.click()
         waitFor {
@@ -212,10 +154,11 @@ class VisaFk7263Page extends VisaPage {
     }
 
     boolean nyFragaTillForsakringskassanFormularVisas(boolean expected = true) {
+        def result;
         waitFor {
-            expected == nyFragaFrageText.isDisplayed()
+            nyFragaFrageText.isDisplayed()
         }
-        true
+        expected == nyFragaFrageText.isDisplayed()
     }
 
     def fillNyFragaFormular() {
@@ -233,8 +176,8 @@ class VisaFk7263Page extends VisaPage {
 
     boolean nyFragaSkickadTextVisas(boolean expected = true) {
         waitFor {
-            expected == nyFragaSkickadTextruta.isDisplayed()
+            nyFragaSkickadTextruta.isDisplayed()
         }
-        true
+        expected == nyFragaSkickadTextruta.isDisplayed()
     }
 }

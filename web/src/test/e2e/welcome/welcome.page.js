@@ -13,7 +13,7 @@ var WelcomePage = function() {
         // var id = 'IFV1239877878-104B_IFV1239877878-1042';
         element(by.id(userId)).click();
         element(loginButton.click());
-    }
+    };
 
 };
 

@@ -17,90 +17,90 @@
 | OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-priv-1| HSA0000-123456789 | Tolvan Privatläkarsson | HSA123456789-0000 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
 
 !3 Se till att privatläkaren har godkänt webcert avtal via testbarhets-API
-| script | !-LaggTillGodkannande-! |
+| skript | !-LaggTillGodkannande-! |
 | lagg till godkannande | HSA0000-123456789 |
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | private-practitioner-1 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | ga till sok skriv intyg |
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Verifiera att knapp för signera är synlig
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | signera knapp visas |
 
 !3 Gå till sidan för Ej signerade utkast
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
 | ej signerade intyg sidan visas |
 
 !3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas.
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | visa avancerat filter |
 | filterVidarebefordradVisas | false |
 | filterValjLakareVisas |  false |
 
 
 !3 Verifiera knappen för att vidarebeforda EJ finns i tabellen över ej signerade utkast
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | vidare befordra knapp visas | false |
 | vidarebefordrad checkbox visas | false |
 
 !3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-priv-1 | och typ | fk7263 |
 
 !3 Verifiera att förväntade knappar för en privatläkare visas
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | kopiera knapp visas |
 | makulera knapp visas |
 | skicka knapp visas |
 | skriv ut knapp visas |
 
 !3 Gå till listsida för Fråga & Svar
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | ga till svara och fraga |
 | lista med ohanterade fragor visas |
 
 
 !3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | visa avancerat filter |
 | filter vidarebefordrad visas | false |
 | filter valj lakare visas | false |
 
 
 !3 Vidarebefordra-knapp i listan får ej visas
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | vidare befordra knapp visas | false |
 | vidarebefordrad checkbox visas | false |
 
 !3 Vårdenhets-väljaren får ej synas för privatläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | vardenhet valjare visas | false |
 
 !3 Gå in på frågan och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare.
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
 | vidarebefordra knapp inne pa fraga visas | false |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | ga till svara och fraga |
 | lista med ohanterade fragor visas |
 
 !3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | visa fraga | $internReferens2 |
 | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
@@ -108,15 +108,15 @@
 
 !3 Gå till Om Webcert
 
-| script | !-OmWebcert-! |
+| skript | !-OmWebcert-! |
 | ga till om webcert |
 
 !3 Verifiera att Avtalsvillkorsalternativet syns
-| script | !-OmWebcert-! |
+| skript | !-OmWebcert-! |
 | avtalsvillkor synlig i menyn | true |
 
 !3 Verifiera att länk för Ändra uppgifter visas (skall endast visas för privatläkare)
-!| script | HeaderMenu |
+!| skript | HeaderMenu |
 | redigera anvandare visas | true |
 
 

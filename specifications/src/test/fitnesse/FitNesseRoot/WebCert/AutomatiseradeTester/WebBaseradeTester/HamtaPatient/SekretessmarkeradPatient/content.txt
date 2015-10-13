@@ -1,13 +1,17 @@
 Testet beskriver fallet när en läkare söker efter en patient som finns i PU-tjänsten och har sekretess markering.
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som |IFV1239877878-104B_IFV1239877878-1042|
+
 !3 Välj patient
 
 | skript | !-SokSkrivIntyg-! |
-| logga in som |IFV1239877878-104B_IFV1239877878-1042|
-| säkerställ att |sok skriv intyg sidan visas sa smaningom |
+| säkerställ att |sok skriv intyg sidan visas |
 | valj patient | ${person5.personnummer} |
 | valj intygstyp sidan visas |
 | kontrollera att | patientens namn ar | ${person5.namn} |
-| säkerställ att | valj intygstyp ej synlig |
+| säkerställ att inte | valj intygstyp synlig |
 | säkerställ att | sekretessmarkering text synlig |
-| säkerställ att inte |kopiera knapp visas for intyg | intyg-fit-9 |
+| säkerställ att inte | kopiera knapp visas for intyg | intyg-fit-9 |

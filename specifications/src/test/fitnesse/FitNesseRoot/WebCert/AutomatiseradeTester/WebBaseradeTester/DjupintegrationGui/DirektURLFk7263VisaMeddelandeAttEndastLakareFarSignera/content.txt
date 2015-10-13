@@ -8,16 +8,16 @@ Testet kontroller att meddelandet om att endast läkare får signera utkast visa
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 
 !3 Visa utkastet via integrationslänken
 
-| script | !-IntegrationMedJournalsystem-! |
+| skript | !-IntegrationMedJournalsystem-! |
 | visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} |
-| ensure | signeringKraverLakareMeddelandeVisas |
+| säkerställ att | signeringKraverLakareMeddelandeVisas |
 
 !3 Ta bort utkastet
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | radera utkast |

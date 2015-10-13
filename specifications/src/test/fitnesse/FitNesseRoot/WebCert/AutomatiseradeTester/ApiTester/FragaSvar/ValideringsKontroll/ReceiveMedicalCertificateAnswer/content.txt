@@ -200,5 +200,5 @@ Schemat har dokumentation att namn får vara tomt, dock så tillåter inte anpas
 |internReferens|
 |$internReferens|
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|
