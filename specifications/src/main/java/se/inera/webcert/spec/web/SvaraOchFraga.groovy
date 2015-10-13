@@ -669,7 +669,7 @@ class SvaraOchFraga {
         result
     }
 
-    def visasAllaFragorKnappen(boolean expected = true) {
+    def visasAllaFragorKnappen() {
         def result
         Browser.drive {
             waitFor {
@@ -682,13 +682,13 @@ class SvaraOchFraga {
         result
     }
 
-    boolean visasEnhetsknappen(String id, boolean expected = true) {
+    boolean visasEnhetsknappen(String id) {
         def result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.isCareUnitVisible(id, expected)
+            result = page.isCareUnitVisible(id)
         }
         result
     }
@@ -756,116 +756,75 @@ class SvaraOchFraga {
         }
     }
 
-    boolean vidareBefordraKnappVisas(boolean expected) {
+    boolean vidareBefordraKnappVisas() {
+        def ref = "#qaTable button.vidarebefordra-btn"
         def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-
-            def ref = "#qaTable button.vidarebefordra-btn"
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+            result = $(ref).isDisplayed()
         }
         result
     }
 
-    boolean vidarebefordradCheckboxVisas(boolean expected) {
+    boolean vidarebefordradCheckboxVisas() {
+        def ref = "#qaTable input.vidarebefordrad-checkbox"
         def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-
-            def ref = "#qaTable input.vidarebefordrad-checkbox"
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+            result = $(ref).isDisplayed()
         }
         result
     }
 
-    boolean vardenhetValjareVisas(boolean expected) {
+    boolean vardenhetValjareVisas() {
+        def ref = "div#wc-care-unit-clinic-selector"
         def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            def ref = "div#wc-care-unit-clinic-selector"
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+            result = $(ref).isDisplayed()
         }
         result
     }
 
-    boolean vidarebefordraKnappInnePaFragaVisas(boolean expected) {
+    boolean vidarebefordraKnappInnePaFragaVisas() {
+        def ref = "#unhandled-vidarebefordraEjHanterad"
         def result = false
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-
             // TODO use GEB page abstraction
-            def ref = "#unhandled-vidarebefordraEjHanterad"
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+            result = $(ref).isDisplayed()
         }
         result
     }
 
-    boolean filterVidarebefordradVisas(boolean expected) {
+    boolean filterVidarebefordradVisas() {
+        def ref = "'#filterFormVidarebefordrad"
         def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-
-            def ref = "'#filterFormVidarebefordrad"
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+            result = $(ref)?.isDisplayed()
         }
         result
     }
 
-    boolean filterValjLakareVisas(boolean expected) {
+    boolean filterValjLakareVisas() {
+        def ref = "#filterFormSigneratAv"
         def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-
-            def ref = "#filterFormSigneratAv"
-            if (expected) {
-                waitFor {
-                    result = $(ref).isDisplayed()
-                }
-            } else {
-                result = !$(ref).isDisplayed()
-            }
+            result = $(ref)?.isDisplayed()
         }
         result
     }

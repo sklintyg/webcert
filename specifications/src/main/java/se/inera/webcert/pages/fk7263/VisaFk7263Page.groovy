@@ -157,9 +157,8 @@ class VisaFk7263Page extends AbstractViewCertPage {
         def result;
         waitFor {
             nyFragaFrageText.isDisplayed()
-            result = expected == nyFragaFrageText.isDisplayed()
         }
-        result
+        expected == nyFragaFrageText.isDisplayed()
     }
 
     def fillNyFragaFormular() {
@@ -177,8 +176,8 @@ class VisaFk7263Page extends AbstractViewCertPage {
 
     boolean nyFragaSkickadTextVisas(boolean expected = true) {
         waitFor {
-            expected == nyFragaSkickadTextruta.isDisplayed()
+            nyFragaSkickadTextruta.isDisplayed()
         }
-        true
+        expected == nyFragaSkickadTextruta.isDisplayed()
     }
 }
