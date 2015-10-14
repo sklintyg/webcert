@@ -11,7 +11,7 @@ public enum FrageStallare {
         this.kod = kod;
     }
 
-    public boolean equals(String kodValue) {
+    public boolean isKodEqual(String kodValue) {
         return this.kod.equalsIgnoreCase(kodValue);
     }
 

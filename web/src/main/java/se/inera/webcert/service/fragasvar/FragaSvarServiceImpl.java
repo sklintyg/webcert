@@ -146,7 +146,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new IllegalStateException("No question found with internal ID " + internId);
         }
 
-        if (FrageStallare.FORSAKRINGSKASSAN.equals(fragaSvar.getFrageStallare())) {
+        if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(fragaSvar.getFrageStallare())) {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
@@ -443,7 +443,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
 
         // Enforce business rule FS-011, from FK + answer should remain closed
-        if (!FrageStallare.WEBCERT.equals(fragaSvar.getFrageStallare())
+        if (!FrageStallare.WEBCERT.isKodEqual(fragaSvar.getFrageStallare())
                 && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "FS-011: Cant revert status for question " + frageSvarId);
@@ -454,7 +454,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
-            if (FrageStallare.WEBCERT.equals(fragaSvar.getFrageStallare())) {
+            if (FrageStallare.WEBCERT.isKodEqual(fragaSvar.getFrageStallare())) {
                 fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
             } else {
                 fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
@@ -623,7 +623,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private boolean isCertificateSentToFK(List<se.inera.certificate.model.Status> statuses) {
         if (statuses != null) {
             for (se.inera.certificate.model.Status status : statuses) {
-                if (FrageStallare.FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
+                if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }
             }

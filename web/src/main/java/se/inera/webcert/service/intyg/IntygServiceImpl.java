@@ -421,9 +421,9 @@ public class IntygServiceImpl implements IntygService {
 
         for (FragaSvar closedFragaSvar : closedFragaSvarArr) {
             String frageStallare = closedFragaSvar.getFrageStallare();
-            if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
+            if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(frageStallare)) {
                 notificationService.sendNotificationForQuestionHandled(closedFragaSvar);
-            } else if (FrageStallare.WEBCERT.equals(frageStallare)) {
+            } else if (FrageStallare.WEBCERT.isKodEqual(frageStallare)) {
                 notificationService.sendNotificationForAnswerHandled(closedFragaSvar);
             }
 
