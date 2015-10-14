@@ -134,6 +134,15 @@
   </servlet-mapping>
 
   <filter>
+    <filter-name>idpSelectionFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>idpSelectionFilter</filter-name>
+    <url-pattern>/webcert/web/user/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <filter-name>elegRedirectFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
   </filter>

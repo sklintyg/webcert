@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import org.apache.cxf.helpers.XMLUtils;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
+import se.inera.auth.common.AuthConstants;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
@@ -490,7 +492,7 @@ public class WebCertUserDetailsServiceTest {
         }
 
         SavedRequest savedRequest = new DefaultSavedRequest(request, new PortResolverImpl());
-        request.getSession().setAttribute(WebCertUserDetailsService.SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+        request.getSession().setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
 
         return request;
     }

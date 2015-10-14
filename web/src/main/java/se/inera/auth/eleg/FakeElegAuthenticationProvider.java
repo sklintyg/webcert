@@ -15,7 +15,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 
+import se.inera.auth.common.AuthConstants;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
+
+import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
 /**
  * AuthenticationProvider for fake logged in private practitioners.
@@ -51,7 +54,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
 
         Assertion assertion = new AssertionBuilder().buildObject();
 
-        attachAuthenticationContext(assertion, BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
+        attachAuthenticationContext(assertion, FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
 
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);

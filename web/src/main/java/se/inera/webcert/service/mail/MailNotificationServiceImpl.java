@@ -42,6 +42,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final String DEFAULT_PATH_SEGMENT = "certificate";
     private static final String PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
 
+
+
     @Value("${mail.admin}")
     private String adminMailAddress;
 

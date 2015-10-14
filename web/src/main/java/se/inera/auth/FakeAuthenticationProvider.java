@@ -1,5 +1,6 @@
 package se.inera.auth;
 
+import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
@@ -24,6 +25,7 @@ import org.springframework.security.providers.ExpiringUsernameAuthenticationToke
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
+import se.inera.auth.common.AuthConstants;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 
@@ -59,7 +61,7 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
         Assertion assertion = new AssertionBuilder().buildObject();
 
-        attachAuthenticationContext(assertion, BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF);
+        attachAuthenticationContext(assertion, FAKE_AUTHENTICATION_SITHS_CONTEXT_REF);
 
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);

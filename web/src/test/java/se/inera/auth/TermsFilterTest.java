@@ -1,26 +1,16 @@
 package se.inera.auth;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextImpl;
-import se.inera.auth.common.UnifiedUserDetailsService;
-import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.service.privatlakaravtal.AvtalService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
@@ -28,11 +18,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextImpl;
+
+import se.inera.auth.common.AuthConstants;
+import se.inera.auth.common.UnifiedUserDetailsService;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsFilterTest {
@@ -69,7 +72,7 @@ public class TermsFilterTest {
     public void testDoFilterNotAuthenticatedSessionDoesNothing() throws ServletException, IOException {
 
         when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(null);
+        when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(null);
 
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
@@ -80,10 +83,10 @@ public class TermsFilterTest {
 
     @Test
     public void testDoFilterAuthenticatedSessionNotPrivatePractitionerDoesNothing() throws ServletException, IOException {
-        when(authentication.getPrincipal()).thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT));
+        when(authentication.getPrincipal()).thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
+        when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
 
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
@@ -96,10 +99,10 @@ public class TermsFilterTest {
     public void testFilterRedirectsWhenAuthenticatedSessionPrivatePractitionerHasNotAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(false);
         when(authentication.getPrincipal())
-                .thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+                .thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
+        when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
 
@@ -114,10 +117,10 @@ public class TermsFilterTest {
     public void testFilterSetsSessionAttributeWhenAuthenticatedSessionPrivatePractitionerHasAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
         when(authentication.getPrincipal())
-                .thenReturn(buildWebCertUser(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+                .thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
+        when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
 
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);

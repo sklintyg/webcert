@@ -13,10 +13,15 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import se.inera.auth.common.AuthConstants;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.auth.common.UnifiedUserDetailsService;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.service.user.dto.WebCertUser;
+
+import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 
 /**
  * This filter should run after security checks.
@@ -35,7 +40,6 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 public class TermsFilter extends OncePerRequestFilter {
 
     static final String PRIVATE_PRACTITIONER_TERMS_ACCEPTED = "ppTermsAccepted";
-    static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
     static final String PRIVATE_PRACTITIONER_TERMS_INPROGRESS = "ppTermsInProgress";
 
     @Autowired
@@ -100,7 +104,7 @@ public class TermsFilter extends OncePerRequestFilter {
     }
 
     private boolean isElegAuthContext(WebCertUser webCertUser) {
-        return webCertUser.getAuthenticationScheme().equals(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI)
-                || webCertUser.getAuthenticationScheme().equals(BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
+        return webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI)
+                || webCertUser.getAuthenticationScheme().equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
     }
 }
