@@ -1,5 +1,9 @@
 package se.inera.auth;
 
+import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -13,15 +17,9 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import se.inera.auth.common.AuthConstants;
-import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.auth.common.UnifiedUserDetailsService;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.service.user.dto.WebCertUser;
-
-import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
-import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
-import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 
 /**
  * This filter should run after security checks.

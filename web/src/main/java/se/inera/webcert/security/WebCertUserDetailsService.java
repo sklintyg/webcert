@@ -3,6 +3,14 @@ package se.inera.webcert.security;
 import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -16,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import se.inera.auth.common.AuthConstants;
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
@@ -33,13 +40,6 @@ import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author andreaskaltenbach

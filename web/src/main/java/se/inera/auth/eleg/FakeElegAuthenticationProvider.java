@@ -1,5 +1,7 @@
 package se.inera.auth.eleg;
 
+import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+
 import java.util.ArrayList;
 
 import org.opensaml.saml2.core.Assertion;
@@ -15,10 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 
-import se.inera.auth.common.AuthConstants;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
-
-import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
 /**
  * AuthenticationProvider for fake logged in private practitioners.

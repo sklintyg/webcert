@@ -10,6 +10,7 @@ public class Person {
     private final String postnummer;
     private final String postort;
 
+    // CHECKSTYLE:OFF ParameterNumber
     public Person(String personnummer, boolean sekretessmarkering, String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
         this.personnummer = personnummer;
         this.sekretessmarkering = sekretessmarkering;
@@ -20,6 +21,7 @@ public class Person {
         this.postnummer = postnummer;
         this.postort = postort;
     }
+    // CHECKSTYLE:ON ParameterNumber
 
     public String getPersonnummer() {
         return personnummer;
