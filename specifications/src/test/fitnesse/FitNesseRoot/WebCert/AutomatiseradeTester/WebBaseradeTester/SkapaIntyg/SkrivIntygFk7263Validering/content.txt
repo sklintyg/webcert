@@ -29,8 +29,8 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 | 2014-09-17 |
 
 | skript | !-SkrivIntyg-! |
-| intyg ej komplett visas |
-| inga valideringsfel visas |
+| säkerställ att | intyg ej komplett visas |
+| säkerställ att | inga valideringsfel visas |
 
 !3 Om man valt "Visa vad som saknas" på ett tomt intyg ska alla valideringsfel för obligatoriska fält visas
 
@@ -40,13 +40,13 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 
 | skript | !-SkrivIntyg-! |
 | visa vad som saknas |
-| intyg ej komplett visas |
+| säkerställ att | intyg ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
 | Skriv Intyg |
-| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos ej visas? | valideringsfel rekommendationer ej visas? | valideringsfel vardperson ej visas? |
-| true | true | true | true | true | true | true | true | true |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| true                                   | true                          | true                                       | true                                        | true                                 | true                                | false                         | false                                  | false                            |
 
 
 !3 Respektive länk till formulärdel med fel skall trigga scrollning till avsett avsnitt vid klick (webcert-1751/1752)
@@ -60,18 +60,19 @@ Sidan skall nu ha scrollats till relevant element. Selenium fixar tyvärr inte a
 
 | skript | !-SkrivIntyg-! |
 | dolj vad som saknas |
-| intyg ej komplett visas |
+| säkerställ att | intyg ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
 | Skriv Intyg |
-| valideringsfel intyg baserat pa ej visas? | valideringsfel diagnos ej visas? | valideringsfel funktionsnedsattning ej visas? | valideringsfel aktivitetsbegransning ej visas? | valideringsfel sysselsattning ej visas? | valideringsfel arbetsformaga ej visas? | valideringsfel prognos ej visas? | valideringsfel rekommendationer ej visas? | valideringsfel vardperson ej visas? |
-| true | true | true | true | true | true | true | true | true |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| false                                  | false                         | false                                      | false                                       | false                                | false                               | false                         | false                                  | false                            |
 
 | skript | !-SkrivIntyg-! |
 | visa vad som saknas |
 
 !3 Fyll i diagnos och arbetsförmåga
+
 | Populera Fk7263 |
 | diagnos1 | nedsattMed100 |
 | a00 | true |
@@ -82,8 +83,8 @@ Kontrollera valideringsmeddelanden.
 Kontrollera valideringsmeddelanden.
 
 | Skriv Intyg |
-| valideringsfel intyg baserat pa visas? | valideringsfel diagnos ej visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga ej visas? | valideringsfel prognos ej visas? | valideringsfel rekommendationer ej visas? | valideringsfel vardperson ej visas? |
-| true | true | true | true | true | true | true | true | true |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| true                                   | false                         | true                                       | true                                        | true                                 | false                               | false                         | false                                  | false                            |
 
 !3 Fyll blanktecken i sysselsättning, funktionsnedsattning och aktivitetsbegransning
 | Populera Fk7263 |
@@ -96,8 +97,8 @@ Kontrollera valideringsmeddelanden.
 Kontrollera valideringsmeddelanden.
 
 | Skriv Intyg |
-| valideringsfel intyg baserat pa visas? | valideringsfel diagnos ej visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? |valideringsfel sysselsattning visas? | valideringsfel arbetsformaga ej visas? | valideringsfel prognos ej visas? | valideringsfel rekommendationer ej visas? | valideringsfel vardperson ej visas? |
-| true | true | true | true | true | true | true | true | true |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| true                                   | false                         | true                                       | true                                        | true                                 | false                               | false                         | false                                  | false                            |
 
 !3 Fyll i resten av intyget korrekt
 
@@ -121,11 +122,11 @@ Kontrollera valideringsmeddelanden.
 Inga valideringsfel ska vara kvar
 
 | Skriv Intyg |
-| valideringsfel intyg baserat pa ej visas? | valideringsfel diagnos ej visas? | valideringsfel funktionsnedsattning ej visas? | valideringsfel aktivitetsbegransning ej visas? | valideringsfel sysselsattning ej visas? | valideringsfel arbetsformaga ej visas? | valideringsfel prognos ej visas? | valideringsfel rekommendationer ej visas? | valideringsfel vardperson ej visas? |
-| true | true | true | true | true | true | true | true | true |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| false                                  | false                         | false                                      | false                                       | false                                | false                               | false                         | false                                  | false                            |
 
 | skript | !-SkrivIntyg-! |
-| intyg sparat visas |
+| säkerställ att | intyg sparat visas |
 
 | ta bort utkast |
 | utkastId |

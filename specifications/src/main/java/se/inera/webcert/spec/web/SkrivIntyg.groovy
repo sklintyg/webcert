@@ -66,7 +66,7 @@ class SkrivIntyg {
         return result
     }
 
-    boolean ingaValideringsfelVisas() {
+    boolean ingaingaValideringsfelVisas() {
         def result
         Browser.drive {
             result = !page.valideringIntygBaseratPa.isDisplayed() &&
@@ -87,7 +87,7 @@ class SkrivIntyg {
     boolean valideringsfelIntygBaseratPaVisas() {
         def result
         Browser.drive {
-            result = page.valideringIntygBaseratPa.isDisplayed()
+            result = page.valideringIntygBaseratPa?.isDisplayed()
         }
         result
     }
@@ -95,7 +95,7 @@ class SkrivIntyg {
     boolean valideringsfelDiagnosVisas() {
         def result
         Browser.drive {
-            result = page.valideringDiagnos.isDisplayed()
+            result = page.valideringDiagnos?.isDisplayed()
         }
         result
     }
@@ -111,7 +111,7 @@ class SkrivIntyg {
     boolean valideringsfelAktivitetsbegransningVisas() {
         def result
         Browser.drive {
-            result = page.valideringAktivitetsbegransning.isDisplayed()
+            result = page.valideringAktivitetsbegransning?.isDisplayed()
         }
         result
     }
@@ -119,7 +119,7 @@ class SkrivIntyg {
     boolean valideringsfelSysselsattningVisas() {
         def result
         Browser.drive {
-            result = page.valideringSysselsattning.isDisplayed();
+            result = page.valideringSysselsattning?.isDisplayed();
         }
         result
     }
@@ -127,7 +127,7 @@ class SkrivIntyg {
     boolean valideringsfelArbetsformagaVisas() {
         def result
         Browser.drive {
-            result = page.valideringArbetsformaga.isDisplayed()
+            result = page.valideringArbetsformaga?.isDisplayed()
         }
         result
     }
@@ -135,7 +135,7 @@ class SkrivIntyg {
     boolean valideringsfelPrognosVisas() {
         def result
         Browser.drive {
-            result = page.valideringPrognos.isDisplayed()
+            result = page.valideringPrognos?.isDisplayed()
         }
         result
     }
@@ -143,7 +143,7 @@ class SkrivIntyg {
     boolean valideringsfelRekommendationerVisas() {
         def result
         Browser.drive {
-            result = page.valideringRekommendationer.isDisplayed()
+            result = page.valideringRekommendationer?.isDisplayed()
         }
         result
     }
@@ -151,7 +151,7 @@ class SkrivIntyg {
     boolean valideringsfelVardpersonVisas() {
         def result
         Browser.drive {
-            result = page.valideringVardperson.isDisplayed()
+            result = page.valideringVardperson?.isDisplayed()
         }
         result
     }
