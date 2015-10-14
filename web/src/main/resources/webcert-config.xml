@@ -86,7 +86,11 @@
       </property>
     </bean>
 
-    <bean id="idpSelectionFilter" class="se.inera.auth.IdpSelectionFilter"/>
+    <bean id="savedRequestFactory" class="se.inera.auth.SavedRequestFactoryImpl"/>
+
+    <bean id="idpSelectionFilter" class="se.inera.auth.IdpSelectionFilter">
+        <property name="savedRequestFactory" ref="savedRequestFactory"/>
+    </bean>
 
     <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
     <bean id="termsFilter" class="se.inera.auth.TermsFilter"/>

@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
@@ -37,6 +39,9 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
     @Value("${sakerhetstjanst.saml.idp.metadata.url}")
     private String sithsIdp;
 
+    @Autowired
+    private SavedRequestFactory savedRequestFactory;
+
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain) throws ServletException, IOException {
 
@@ -48,14 +53,14 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
             // Get the principal, if a proper WebCertUser we're logged in and can continue down the filter chain
             Authentication authentication = extractAuthentication(session);
             if (isAuthenticatedInWebcert(authentication)) {
-                doFilter(req, resp, filterChain);
+                filterChain.doFilter(req, resp);
                 return;
             }
         }
 
         // If not logged in, we need to put the request URI into the savedrequests
         if (session != null) {
-            session.setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, new DefaultSavedRequest(req, new PortResolverImpl()));
+            session.setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequestFactory.buildSavedRequest(req));
         }
 
         // Finally, send redirect to explict login path for the appropriate IDP depending on the requestURI
@@ -70,7 +75,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
    }
 
     private Authentication extractAuthentication(HttpSession session) {
-        return ((SecurityContextImpl) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication();
+        return ((SecurityContext) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication();
     }
 
     private boolean isAuthenticatedInWebcert(Authentication authentication) {
@@ -81,5 +86,8 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
         return session != null && session.getAttribute(SPRING_SECURITY_CONTEXT) != null;
     }
 
-
+    // Setter for the savedRequestFactory
+    public void setSavedRequestFactory(SavedRequestFactory savedRequestFactory) {
+        this.savedRequestFactory = savedRequestFactory;
+    }
 }
