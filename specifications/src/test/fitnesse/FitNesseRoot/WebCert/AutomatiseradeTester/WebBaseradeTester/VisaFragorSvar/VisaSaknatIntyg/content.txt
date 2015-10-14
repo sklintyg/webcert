@@ -2,12 +2,12 @@ Testet beskriver fallet när en användare försöker komma åt ett icke exister
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Verifiera att intyg saknas visas
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-som-saknas |
 | intyg saknas visas |
 

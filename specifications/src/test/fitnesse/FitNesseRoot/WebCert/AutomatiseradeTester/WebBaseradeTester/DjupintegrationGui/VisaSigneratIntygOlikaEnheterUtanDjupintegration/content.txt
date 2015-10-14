@@ -11,95 +11,95 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar
 
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| ensure | intyg laddat |
-| ensure | skicka knapp visas |
-| ensure | skriv ut knapp visas |
-| ensure | kopiera knapp visas |
-| ensure | makulera knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar
 
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| ensure | intyg laddat |
-| ensure | skicka knapp visas |
-| ensure | skriv ut knapp visas |
-| ensure | kopiera knapp visas |
-| ensure | makulera knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| ensure | intyg laddat |
-| ensure | skicka knapp visas |
-| ensure | skriv ut knapp visas |
-| ensure | kopiera knapp visas |
-| ensure | makulera knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| ensure | intyg laddat |
-| ensure | skicka knapp visas |
-| ensure | skriv ut knapp visas |
-| ensure | kopiera knapp visas |
-| ensure | makulera knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1046 |
 
 !3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar
 
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| ensure | intyg laddat |
-| ensure | skicka knapp visas |
-| ensure | skriv ut knapp visas |
-| ensure | kopiera knapp visas |
-| ensure | makulera knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-104C |
 
 !3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar
 
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| ensure | intyg inte laddat |
+| säkerställ att | intyg inte laddat |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| ensure | intyg laddat |
-| ensure | skicka knapp visas |
-| ensure | skriv ut knapp visas |
-| ensure | kopiera knapp visas |
-| ensure | makulera knapp visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 
 !3 Ta bort intyg
 

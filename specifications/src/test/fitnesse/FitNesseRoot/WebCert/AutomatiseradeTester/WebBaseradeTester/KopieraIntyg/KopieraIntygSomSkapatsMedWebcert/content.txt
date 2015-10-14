@@ -6,38 +6,50 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
 | webcert-fitnesse-kopiera-och-signera | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | 200 |
 
-!3 Signera utkastet
-| script | !-HanteraUtkast-! |
+!3 Logga in
+
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+!3 Signera utkastet
+| skript | !-HanteraUtkast-! |
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-kopiera-och-signera |
 | editera sidan visas |
-| ensure | signera knapp visas |
-| ensure | signera knapp aktiverad |
+| säkerställ att | signera knapp visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| ensure | intyget signerat meddelande visas |
+| säkerställ att | intyget signerat meddelande visas |
 
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Välj patient
 
-| script | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-| sok skriv intyg sidan visas sa smaningom |
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 
 
 !3 Kopiera intyget och hämta ut id på kopian
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | kopiera intyg och ga till visa sida | webcert-fitnesse-kopiera-och-signera |
 | visa edit intyg sidan visas                                                |
 |$intygsid=                           | intygsid                             |
 
-!3 Verifiera att strukturerad information för diagnoskoder och annat som hamnar i Fält 13 Övrigt har bibehållen struktur
-| script | !-HanteraUtkast-! |
+!3 Logga in
+
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+!3 Verifiera att strukturerad information för diagnoskoder och annat som hamnar i Fält 13 Övrigt har bibehållen struktur
+| skript | !-HanteraUtkast-! |
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | $intygsid |
 | editera fk7263 sidan visas |

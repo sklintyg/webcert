@@ -1,11 +1,11 @@
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person4.personnummer} | av typ | ts-bas|
 | $intygsid= | intygsid |
 
@@ -16,7 +16,7 @@ Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra 
 | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
 | 77 | 66 | 55 | 44 | 33 | 22 |
 
-| script | !-ValideringTsBas-! |
+| skript | !-ValideringTsBas-! |
 | intyg ej komplett visas |
 | validering syn visas |
 
@@ -26,7 +26,7 @@ Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra 
 | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
 | 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 |
 
-| script | !-ValideringTsBas-! |
+| skript | !-ValideringTsBas-! |
 | intyg ej komplett visas |
 | inga valideringsfel visas |
 
@@ -38,7 +38,7 @@ Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra 
 
 !3 Vänta tills intyget är sparat.
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | visa vad som saknas |
 | intyg ej komplett visas |
 
@@ -50,7 +50,7 @@ Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra 
 
 !3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | dolj vad som saknas |
 | intyg ej komplett visas |
 
@@ -65,17 +65,17 @@ Kontrollera valideringsmeddelanden.
 | postnummer |
 | |
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | visa vad som saknas |
 
 !3 Kontrollera att länk för att scrolla till felmeddelande går att klicka på
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | klicka pa fellank | ts-bas.label.bedomning |
 
 !3 Kontrollera att patient validering visas
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | dolj vad som saknas |
 | intyg ej komplett visas |
 | visa vad som saknas |
@@ -90,7 +90,7 @@ Kontrollera valideringsmeddelanden.
 | intygetAvser | identifieringstyp | postnummer |
 | C | korkort | 12345 |
 
-| script | !-ValideringTsBas-! |
+| skript | !-ValideringTsBas-! |
 | intyg ej komplett visas |
 
 !3 Kontrollera valideringsmeddelanden.
@@ -105,7 +105,7 @@ Kontrollera valideringsmeddelanden.
 | diabetesA | diabetestyp    | diabetesBehandlingKost |
 | true      | typ2           | true |
 
-| script | !-ValideringTsBas-! |
+| skript | !-ValideringTsBas-! |
 | intyg ej komplett visas |
 
 !3 Kontrollera valideringsmeddelande för diabetes.
@@ -119,7 +119,7 @@ Kontrollera valideringsmeddelanden.
 | diabetesBehandlingKost |
 | false |
 
-| script | !-ValideringTsBas-! |
+| skript | !-ValideringTsBas-! |
 | intyg ej komplett visas |
 
 !3 Kontrollera valideringsmeddelande för diabetes.

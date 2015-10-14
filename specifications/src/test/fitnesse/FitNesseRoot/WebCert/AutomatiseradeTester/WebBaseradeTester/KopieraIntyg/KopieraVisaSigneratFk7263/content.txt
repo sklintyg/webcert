@@ -1,10 +1,14 @@
 Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett nytt utkast baserat på det.
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
 !3 Välj patient och visa intyget
 
-| script | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-1 |
@@ -12,12 +16,12 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 
 !3 Kopiera intyget
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | kopiera visat intyg | FK7263 |
 
 !3 Författarstöd visas
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | editera sidan visas |
 
 !3 WEBCERT-1732 prognosBeskrivning  måste fyllas i om Går ej att bedöma är valt
@@ -25,14 +29,14 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 | prognosBeskrivning |
 | Måste fyllas i |
 
-| script | !-HanteraUtkast-! |
-| ensure | intyget komplett meddelande visas |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | intyget komplett meddelande visas |
 | radera utkast |
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | visa intyg sidan visas |
 
-| script | !-HanteraUtkast-! |
-| ensure | inga ej signerade intyg visas |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | inga ej signerade intyg visas |
 
 

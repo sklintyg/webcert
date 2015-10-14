@@ -8,7 +8,7 @@ Testar WEBCERT-2006
 |fitnesse-saknat-intyg|
 |fitnesse-fel-enhet|
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|
 
 !3 Givet att det finns inga frågor med följande extern referenser
@@ -48,5 +48,5 @@ Testar WEBCERT-2006
 |fitnesse-saknat-intyg|
 |fitnesse-fel-enhet|
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|

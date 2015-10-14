@@ -1,11 +1,11 @@
 Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Logga in
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
@@ -15,19 +15,19 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 | true | true |
 
 !3 Signera intyget
-| script | !-HanteraUtkast-! |
-| ensure | intyget komplett meddelande visas |
-| ensure | signera knapp aktiverad |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | intyget komplett meddelande visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| ensure | intyget signerat meddelande visas |
+| säkerställ att | intyget signerat meddelande visas |
 
 !3 Gå till intyget via djupintegration
-| script | !-IntegrationMedJournalsystem-! |
+| skript | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | $intygsid | personnummer | ${person2.personnummer} |
 
 !3 Kopiera intyget
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | kopiera visat intyg | FK7263 |
 | $kopiaintygsid= | kopiaintygsid |
 
@@ -37,9 +37,9 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 | false |
 
 !3 Intyget ska nu EJ gå att signera
-| script | !-HanteraUtkast-! |
-| ensure | intyget ej komplett meddelande visas |
-| ensure | signera knapp ej aktiverad |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | intyget ej komplett meddelande visas |
+| säkerställ att inte | signera knapp aktiverad |
 
 !3 Populera intyget
 | Populera Fk7263 |
@@ -47,12 +47,12 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 | true | 2014-09-17 | !-B080B-! | Kliar konstant | Kan inte fokusera på arbetet | true | Polis | 40 | true  |
 
 !3 Intyget ska nu gå att signera
-| script | !-HanteraUtkast-! |
-| ensure | intyget komplett meddelande visas |
-| ensure | signera knapp aktiverad |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | intyget komplett meddelande visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| ensure | intyget signerat meddelande visas |
+| säkerställ att | intyget signerat meddelande visas |
 
 !3 Ta bort intyg
 | ta bort utkast |

@@ -1,11 +1,11 @@
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
@@ -19,10 +19,10 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 
 !3 Spara
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | intyg sparat visas |
 
 !3 Testa variationer
@@ -33,14 +33,14 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | nedsattMed100start | nedsattMed100slut |
 | 0 | +40 |
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
-| script | Browser |
+| skript | Browser |
 | ladda om |
 
-| script | !-SkrivIntyg-! |
-| check | sjukskrivningsperiod | 41 |
+| skript | !-SkrivIntyg-! |
+| kontrollera att | sjukskrivningsperiod | 41 |
 
 !4 En 25% sjukskrivning ger rätt antal timmar
 
@@ -48,34 +48,34 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | nedsattMed25 | nedsattMed50 | nedsattMed75 | nedsattMed100 |
 | true | true | true | false |
 
-| script | !-SkrivIntyg-! |
-| check | arbetstid 25 | 30 |
-| check | arbetstid 50 | 20 |
-| check | arbetstid 75 | 10 |
+| skript | !-SkrivIntyg-! |
+| kontrollera att | arbetstid 25 | 30 |
+| kontrollera att | arbetstid 50 | 20 |
+| kontrollera att | arbetstid 75 | 10 |
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
-| script | Browser |
+| skript | Browser |
 | ladda om |
 
-| script | !-SkrivIntyg-! |
-| check | arbetstid 25 | 30 |
-| check | arbetstid 50 | 20 |
-| check | arbetstid 75 | 10 |
+| skript | !-SkrivIntyg-! |
+| kontrollera att | arbetstid 25 | 30 |
+| kontrollera att | arbetstid 50 | 20 |
+| kontrollera att | arbetstid 75 | 10 |
 
 !4 verifiera webcert-1721
 | Populera Fk7263 |
 | nedsattMed25 | nedsattMed50 | nedsattMed75 | nedsattMed100 |
 | true | true | true | true |
 
-| script | !-SkrivIntyg-! |
-| check | sjukskrivningsperiod | 28 |
+| skript | !-SkrivIntyg-! |
+| kontrollera att | sjukskrivningsperiod | 28 |
 
 !4 Spara utkastet för att inte få varningsrutan om att utkastet ej är sparat vid stängning av sidan
 
-| script | !-HanteraUtkast-! |
-| ensure | har sparat |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | har sparat |
 
 !3 Ta bort utkastet
 

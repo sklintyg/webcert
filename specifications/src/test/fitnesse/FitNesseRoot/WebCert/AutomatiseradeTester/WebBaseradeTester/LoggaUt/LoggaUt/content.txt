@@ -2,14 +2,14 @@ Testet beskriver fallet när en användare loggar ut och försöker nå startsid
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 
 !3 Verifiera att användaren kan logga ut och att användaren blir utloggad
 
-| script | !-LoggaUt-! |
+| skript | !-LoggaUt-! |
 | logga ut |
 | login sidan visas |
 | ga till startsidan |
-| startsidan visas inte |
+| säkerställ att inte | startsidan visas |
 

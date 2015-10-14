@@ -30,6 +30,6 @@
 | internReferens |
 | $internReferens |
 
-| script | Mailbox |
+| skript | Mailbox |
 | rensa |
 

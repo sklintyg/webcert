@@ -2,10 +2,10 @@ Testet beskriver fallet när en tandläkare loggar in.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | tore-tandlakare |
 
 !3 Verifiera att titel tandläkare visas i headern.
-| script | !-HeaderMenu-! |
+| skript | !-HeaderMenu-! |
 | anvandarens roll visas | Tandläkare |
 

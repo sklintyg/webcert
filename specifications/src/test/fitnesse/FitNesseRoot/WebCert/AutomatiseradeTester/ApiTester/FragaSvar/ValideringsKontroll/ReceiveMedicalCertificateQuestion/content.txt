@@ -212,5 +212,5 @@ Schemat har dokumentation att namn får vara tomt, dock så tillåter inte anpas
 |id|
 |fitnesse-intyg-1|
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|

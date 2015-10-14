@@ -8,19 +8,22 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 
 !3 Givet att det finns ett komplett utkast, verifiera att det går att signera det
 
-| script | !-HanteraUtkast-! |
+!3 Login
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+| skript | !-HanteraUtkast-! |
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | ts-diabetes | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| ensure | signera knapp visas |
-| ensure | signera knapp aktiverad |
+| säkerställ att | signera knapp visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| ensure | intyget signerat meddelande visas |
+| säkerställ att | intyget signerat meddelande visas |
 
 !3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns intyg i intygstjansten med | webcert-fitnesse-signera-1 | vantetid | 5000 |
 
 !3 Ta bort utkast

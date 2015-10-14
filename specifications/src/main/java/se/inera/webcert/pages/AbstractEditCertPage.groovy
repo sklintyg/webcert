@@ -1,14 +1,14 @@
 package se.inera.webcert.pages
 
-import geb.Browser
 import geb.Module
-import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 
-class AbstractEditCertPage extends AbstractPage {
-
+class AbstractEditCertPage extends AbstractLoggedInPage {
+    
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
 
     static content = {
+        namnOchPersonnummer { $("#patientNamnPersonnummer") }
         namnOchPersonnummer(required: false) { $("#patientNamnPersonnummer") }
         tillbakaButton(required: false) { $("#tillbakaButton") }
         radera(required: false) { $("#ta-bort-utkast") }
@@ -81,11 +81,9 @@ class AbstractEditCertPage extends AbstractPage {
     }
 
     boolean harSparat(){
-        waitFor {
-            return doneLoading() && (intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed())
-        }
+        return intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed();
     }
-
+    
     boolean isSignBtnDisplayed(){
         signeraBtn.isDisplayed()
     }

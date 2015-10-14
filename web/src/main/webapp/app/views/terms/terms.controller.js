@@ -53,7 +53,8 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                             );
                         },
                         text: 'avtal.approve.label',
-                        id: 'acceptTermsBtn'
+                        id: 'acceptTermsBtn',
+                        className: 'btn-success'
                     },
                     {
                         name: 'print',
@@ -65,11 +66,11 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                                 '</head>';
 
                             var body = '<body onload="window.print()">' +
-                                '<img class="pull-left" style="padding-bottom: 20px" src="/img/webcert_grey_small.png" />' +
+                                '<img class="pull-left" style="padding-bottom: 20px" src="/img/webcert_black.png" />' +
                                 '<p style="clear:left;padding-bottom:50px;color:#535353">' +
-                                '<span style="padding-left:20px;padding-right:30px">Version : ' +
-                                $scope.modalOptions.terms.avtal.avtalVersion + '</span>' +
-                                '<span>Datum : ' + $scope.modalOptions.terms.avtal.versionDatum + '</span></p>' +
+                                '<span style="">Version: ' +
+                                $scope.modalOptions.terms.avtal.avtalVersion + '</span><br>' +
+                                '<span>Datum: ' + $scope.modalOptions.terms.avtal.versionDatum + '</span></p>' +
                                 '<h1 style="color: black;font-size: 2em">Användarvillkor för Webcert</h1>' +
                                 '<p style="clear:left;padding-bottom: 10px">' + $scope.modalOptions.terms.avtal.avtalText + '</p>' +
                                 '<p style="clear:left;color:#535353;padding-top:50px">' + $location.absUrl() + '</p>' +
@@ -79,23 +80,24 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
 
                             var template = head + body + footer;
 
+                            var popupWin = null;
                             if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-                                var popupWin = window.open('', '_blank',
+                                popupWin = window.open('', '_blank',
                                     'width=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no');
                                 popupWin.window.focus();
                                 popupWin.document.write(template);
                                 setTimeout(function() {
                                     popupWin.close();
                                 }, 100);
-                                popupWin.onbeforeunload = function(event) {
+                                popupWin.onbeforeunload = function(/*event*/) {
                                     popupWin.close();
                                 };
-                                popupWin.onabort = function(event) {
+                                popupWin.onabort = function(/*event*/) {
                                     popupWin.document.close();
                                     popupWin.close();
                                 };
                             } else {
-                                var popupWin = window.open('', '_blank',
+                                popupWin = window.open('', '_blank',
                                     'width=800,scrollbars=yes,menubar=no,toolbar=no,location=no,status=no,titlebar=no');
                                 popupWin.document.open();
                                 popupWin.document.write(template);
@@ -113,19 +115,15 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                             if (endsWith(UserModel.user.authenticationScheme, ':fake')) {
                                 $window.location = '/logout';
                             } else {
-                                iid_Invoke('Logout');
+                                iid_Invoke('Logout'); // jshint ignore:line
                                 $window.location = '/saml/logout/';
                             }
                         },
                         text: 'avtal.logout.label',
                         id: 'logoutTermsBtn'
                     }
-
                 ],
-
                 showClose: false
-
             };
-
         }]
 );

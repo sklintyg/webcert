@@ -8,22 +8,26 @@ Detta test verifierar att sekretessmarkering visas på både utkast och intygsvy
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
 |${person5.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fitnesse-sekretess-2|!-SmL-!|nej|nej|
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
 !3 Verifiera sekretessmarkering på utkast
 
-| script | !-HanteraUtkast-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| skript | !-HanteraUtkast-! |
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-sekretess-1 |
 | editera sidan visas |
-| sekretessmarkering visas |
+| säkerställ att | sekretessmarkering visas |
 
 !3 Verifiera sekretessmarkering på intyg
 
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | webcert-fitnesse-sekretess-2 | och typ | fk7263 |
-| ensure | intyg laddat |
-| sekretessmarkering visas |
-| ensure | kopiera knapp ej visas |
+| säkerställ att | intyg laddat |
+| säkerställ att | sekretessmarkering visas |
+| säkerställ att inte | kopiera knapp visas |
 
 !3 Ta bort intyg
 

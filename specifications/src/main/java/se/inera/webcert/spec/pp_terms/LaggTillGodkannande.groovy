@@ -1,5 +1,6 @@
 package se.inera.webcert.spec.pp_terms
 
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.spec.util.RestClientFixture
 
 /**

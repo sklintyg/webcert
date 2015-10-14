@@ -2,16 +2,18 @@
 | se.inera.webcert.pages |
 | se.inera.webcert.pages.fk7263 |
 | se.inera.webcert.spec |
-| se.inera.webcert.spec.fk7263 |
-| se.inera.webcert.spec.pp_terms |
-| se.inera.webcert.spec.ts_bas |
-| se.inera.webcert.spec.ts_diabetes |
+| se.inera.webcert.spec.api |
+| se.inera.webcert.spec.web |
+| se.inera.webcert.spec.web.fk7263 |
+| se.inera.webcert.spec.web.ts_bas |
+| se.inera.webcert.spec.web.ts_diabetes |
 | se.inera.webcert.spec.util |
 | se.inera.certificate.spec |
 | se.inera.certificate.spec.util |
 | se.inera.certificate.spec.util.jms |
 | se.inera.webcert.spec.certificate_sender |
 | se.inera.webcert.spec.notification_sender |
+| se.inera.webcert.spec.pp_terms |
 
 !| Config |
 | property | value |

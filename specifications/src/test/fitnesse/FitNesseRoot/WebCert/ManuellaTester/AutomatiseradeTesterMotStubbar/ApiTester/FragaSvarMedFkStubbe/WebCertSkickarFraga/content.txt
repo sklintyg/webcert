@@ -1,6 +1,6 @@
 !3 Ta bort eventualla gamla frågor till försäkringskassan (stub)
 
-| script | !-RensaFragorSvarTillFk-! |
+| skript | !-RensaFragorSvarTillFk-! |
 | rensa fragor |
 
 !3 Givet ett intyg
@@ -23,7 +23,7 @@
 
 !3 Ta bort frågan till försäkringskassan (stub)
 
-| script | !-RensaFragorSvarTillFk-! |
+| skript | !-RensaFragorSvarTillFk-! |
 | rensa fragor |
 
 !3 Ta bort intyg och fråga

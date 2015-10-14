@@ -15,12 +15,12 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | visa alla fragor |
@@ -30,13 +30,13 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 
 !3 Verifiera att en dialog för att hantera fråga och svar visas när man försöka att lämna sidan
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | lamna fraga svar|
 | lamna fraga svar ej hanterad dialog visas |
 
 !3 Verifiera att fraga svar blir hanterad när man klicka på hantera knappen
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | klicka pa hantera tillbaka knappen |
 | intyg med fraga svar sidan visas |
 
