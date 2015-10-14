@@ -17,6 +17,7 @@
 | OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-priv-1| HSA0000-123456789 | Tolvan Privatläkarsson | HSA123456789-0000 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
 
 !3 Se till att privatläkaren har godkänt webcert avtal via testbarhets-API
+
 | skript | !-LaggTillGodkannande-! |
 | lagg till godkannande | HSA0000-123456789 |
 
@@ -35,51 +36,53 @@
 | $intygsid= | intygsid |
 
 !3 Verifiera att knapp för signera är synlig
+
 | skript | !-HanteraUtkast-! |
-| signera knapp visas |
+| säkerställ att | signera knapp visas |
 
 !3 Gå till sidan för Ej signerade utkast
+
 | skript | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
-| ej signerade intyg sidan visas |
+| säkerställ att | ej signerade intyg sidan visas |
 
 !3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas.
+
 | skript | !-HanteraUtkast-! |
 | visa avancerat filter |
-| filterVidarebefordradVisas | false |
-| filterValjLakareVisas |  false |
-
+| säkerställ att inte | filterVidarebefordradVisas |
+| säkerställ att inte| filterValjLakareVisas |
 
 !3 Verifiera knappen för att vidarebeforda EJ finns i tabellen över ej signerade utkast
-| skript | !-HanteraUtkast-! |
-| vidare befordra knapp visas | false |
-| vidarebefordrad checkbox visas | false |
 
-!3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
+| skript | !-HanteraUtkast-! |
+| säkerställ att inte | vidare befordra knapp visas |
+| säkerställ att inte | vidarebefordrad checkbox visas |
+
+!3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på och verifiera att förväntade knappar för en privatläkare visas
+
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-priv-1 | och typ | fk7263 |
-
-!3 Verifiera att förväntade knappar för en privatläkare visas
-| skript | !-VisaIntyg-! |
-| kopiera knapp visas |
-| makulera knapp visas |
-| skicka knapp visas |
-| skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
+| säkerställ att | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
 
 !3 Gå till listsida för Fråga & Svar
+
 !| skript | SvaraOchFraga |
 | ga till svara och fraga |
-| lista med ohanterade fragor visas |
-
+| säkerställ att | lista med ohanterade fragor visas |
 
 !3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare
+
 !| skript | SvaraOchFraga |
 | visa avancerat filter |
 | säkerställ att inte | filter vidarebefordrad visas |
 | säkerställ att inte | filter valj lakare visas |
 
-
 !3 Vidarebefordra-knapp i listan får ej visas
+
 !| skript | SvaraOchFraga |
 | säkerställ att inte | vidare befordra knapp visas    |
 | säkerställ att inte | vidarebefordrad checkbox visas |
@@ -89,33 +92,34 @@
 | säkerställ att inte | vardenhet valjare visas |
 
 !3 Gå in på frågan och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare.
+
 !| skript | SvaraOchFraga |
 | visa fraga | $internReferens1 |
 | säkerställ att      | intyg med fraga svar sidan visas |
 | säkerställ att inte | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
+
 !| skript | SvaraOchFraga |
 | ga till svara och fraga |
 | säkerställ att | lista med ohanterade fragor visas |
 
 !3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare
+
 !| skript | SvaraOchFraga |
 | visa fraga | $internReferens2 |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
 | säkerställ att inte | vidarebefordra knapp inne pa fraga visas |
 
-!3 Gå till Om Webcert
+!3 Gå till Om Webcert och verifiera att avtalsvillkorsalternativet syns
 
 | skript | !-OmWebcert-! |
 | ga till om webcert |
-
-!3 Verifiera att Avtalsvillkorsalternativet syns
-| skript | !-OmWebcert-! |
 | säkerställ att | avtalsvillkor synlig i menyn |
 
 !3 Verifiera att länk för Ändra uppgifter visas (skall endast visas för privatläkare)
+
 !| skript | HeaderMenu |
 | säkerställ att | redigera anvandare visas |
 
