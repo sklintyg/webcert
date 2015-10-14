@@ -102,7 +102,6 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                     throw new RuntimeException("Unhandled progress status type: " + resp.getProgressStatus());
                 }
 
-
             } catch (GrpFault grpFault) {
                 handleGrpFault(grpFault);
                 // Always terminate loop after a GrpFault has been encountered
