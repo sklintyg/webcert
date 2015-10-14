@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import se.inera.auth.common.UnifiedUserDetailsService;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
@@ -29,7 +28,7 @@ import se.inera.webcert.service.user.dto.WebCertUser;
  * {@link TermsFilter#PRIVATE_PRACTITIONER_TERMS_ACCEPTED} is set to true,
  * all is well</li>
  * <li>If the authorization context is
- * {@link UnifiedUserDetailsService#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI} (e.g. privatläkare) then we use
+ * {@link URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI} (e.g. privatläkare) then we use
  * the {@link AvtalService} to verify that the user has accepted webcert license and terms</li>
  * <li>If user has not
  * accepted webcert license and terms, we redirect them to /terms.jsp (or eq.) _without_ logging them out</li>

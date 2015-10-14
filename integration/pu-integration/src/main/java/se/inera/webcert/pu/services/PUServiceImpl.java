@@ -68,6 +68,7 @@ public class PUServiceImpl implements PUService {
         }
     }
 
+    @Override
     @VisibleForTesting
     @CacheEvict(value = "personCache", allEntries = true)
     public void clearCache() {
@@ -75,8 +76,12 @@ public class PUServiceImpl implements PUService {
     }
 
     private String normalizeId(String personId) {
-        if (personId.length() == 13) {
-            return personId.substring(0, 8) + personId.substring(9);
+        final int lengthOfPnrIncludingDash = 13;
+        if (personId.length() == lengthOfPnrIncludingDash) {
+            final int birthDateBeginIndex = 0;
+            final int birthDateEndIndex = 8;
+            final int birthNumberBeginIndex = 9;
+            return personId.substring(birthDateBeginIndex, birthDateEndIndex) + personId.substring(birthNumberBeginIndex);
         } else {
             return personId;
         }
