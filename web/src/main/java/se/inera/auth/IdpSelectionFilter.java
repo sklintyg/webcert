@@ -22,11 +22,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import se.inera.auth.common.AuthConstants;
+import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * This class is used to make IDP selection automatic for uthoppslänkar and djupintegratinslänkar for non-authenticated
  * users.
+ *
+ * Requests from authenticated users are just passed down the filter chain.
  *
  * Created by eriklupander on 2015-10-12.
  */
@@ -63,7 +66,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
             session.setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequestFactory.buildSavedRequest(req));
         }
 
-        // Finally, send redirect to explict login path for the appropriate IDP depending on the requestURI
+        // Finally, send redirect to explicit login path for the appropriate IDP depending on the requestURI
         String requestURI = req.getRequestURI();
         if (requestURI.contains("/webcert/web/user/certificate/")) {
              resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp=" + sithsIdp);
@@ -79,7 +82,10 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
     }
 
     private boolean isAuthenticatedInWebcert(Authentication authentication) {
-        return authentication.isAuthenticated() && authentication.getPrincipal() != null && authentication.getPrincipal() instanceof WebCertUser;
+        return authentication != null
+                && authentication.isAuthenticated()
+                && authentication.getPrincipal() != null
+                && authentication.getPrincipal() instanceof WebCertUser;
     }
 
     private boolean hasSessionWithSpringContext(HttpSession session) {

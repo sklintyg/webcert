@@ -34,15 +34,13 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
 
+    private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "certificate";
+    private static final String QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
+
     private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan";
     private static final String INCOMING_ANSWER_SUBJECT = "Försäkringskassan har svarat på en fråga";
 
     static final String PRIVATE_PRACTITIONER_HSAID_PREFIX = "SE165565594230-WEBCERT";
-
-    private static final String DEFAULT_PATH_SEGMENT = "certificate";
-    private static final String PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
-
-
 
     @Value("${mail.admin}")
     private String adminMailAddress;
@@ -261,9 +259,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private String resolvePathSegment(String enhetsId) {
         if (isPrivatePractitionerEnhet(enhetsId)) {
-            return PRIVATE_PRACTITIONER_PATH_SEGMENT;
+            return QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT;
         } else {
-            return DEFAULT_PATH_SEGMENT;
+            return QA_NOTIFICATION_DEFAULT_PATH_SEGMENT;
         }
     }
 }

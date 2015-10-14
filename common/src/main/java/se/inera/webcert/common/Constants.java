@@ -1,6 +1,8 @@
 package se.inera.webcert.common;
 
 /**
+ * Defines a number of global constants in Webcert, e.g. constants that may be used across several subprojects.
+ *
  * Created by eriklupander on 2015-05-22.
  */
 public final class Constants {
