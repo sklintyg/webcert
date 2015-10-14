@@ -6,6 +6,7 @@ Testet beskriver fallet när en tandläkare loggar in.
 | logga in som | tore-tandlakare |
 
 !3 Verifiera att titel tandläkare visas i headern.
+
 | skript | !-HeaderMenu-! |
-| anvandarens roll visas | Tandläkare |
+| säkerställ att | anvandarens roll visas | Tandläkare |
 

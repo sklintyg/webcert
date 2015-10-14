@@ -13,7 +13,7 @@
 
 | skript | !-IntegrationMedJournalsystem-! |
 | visa utkast via integration | $intygId |
-| verifiera tillbakaknapp borta |
+| säkerställ att inte | verifiera tillbakaknapp synlig |
 
 !3 Ta bort utkastet
 

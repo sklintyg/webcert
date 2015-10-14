@@ -16,17 +16,16 @@ I det här fallet finns inte intyget som frågan ställs på.
 
 | skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 | säkerställ att | fraga | $internReferens1 | visas i listan med ohanterade fragor |
-| säkerställ att inte | fraga | $internReferens1 | visas i listan med hanterade fragor |
+
 !3 Verifiera att det går att svara på frågan
 
 | skript | !-SvaraOchFraga-! |
 | svara pa fraga | $internReferens1 | med svar | Här svarar Fitnesse på frågan |
 | säkerställ att inte | fraga | $internReferens1 | visas i listan med ohanterade fragor |
-| säkerställ att | fraga | $internReferens1 | visas i listan med hanterade fragor |
 
 !3 Ta bort fråga
 

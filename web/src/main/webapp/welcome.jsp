@@ -316,7 +316,6 @@
                 "efternamn" : "Tandläkare",
                 "hsaId" : "tore-tandlakare",
                 "enhetId" : "tandenheten-1",
-                "lakare" : true,
                 "tandLakare" : true,
                 "forskrivarKod": "6745341"
             }

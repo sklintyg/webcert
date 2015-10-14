@@ -75,36 +75,36 @@
 !3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare
 !| skript | SvaraOchFraga |
 | visa avancerat filter |
-| filter vidarebefordrad visas | false |
-| filter valj lakare visas | false |
+| säkerställ att inte | filter vidarebefordrad visas |
+| säkerställ att inte | filter valj lakare visas |
 
 
 !3 Vidarebefordra-knapp i listan får ej visas
 !| skript | SvaraOchFraga |
-| vidare befordra knapp visas | false |
-| vidarebefordrad checkbox visas | false |
+| säkerställ att inte | vidare befordra knapp visas    |
+| säkerställ att inte | vidarebefordrad checkbox visas |
 
 !3 Vårdenhets-väljaren får ej synas för privatläkare
 !| skript | SvaraOchFraga |
-| vardenhet valjare visas | false |
+| säkerställ att inte | vardenhet valjare visas |
 
 !3 Gå in på frågan och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare.
 !| skript | SvaraOchFraga |
 | visa fraga | $internReferens1 |
-| intyg med fraga svar sidan visas |
-| vidarebefordra knapp inne pa fraga visas | false |
+| säkerställ att      | intyg med fraga svar sidan visas |
+| säkerställ att inte | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
 !| skript | SvaraOchFraga |
 | ga till svara och fraga |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 
 !3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare
 !| skript | SvaraOchFraga |
 | visa fraga | $internReferens2 |
 | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
-| vidarebefordra knapp inne pa fraga visas | false |
+| säkerställ att inte | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå till Om Webcert
 
@@ -113,12 +113,11 @@
 
 !3 Verifiera att Avtalsvillkorsalternativet syns
 | skript | !-OmWebcert-! |
-| avtalsvillkor synlig i menyn | true |
+| säkerställ att | avtalsvillkor synlig i menyn |
 
 !3 Verifiera att länk för Ändra uppgifter visas (skall endast visas för privatläkare)
 !| skript | HeaderMenu |
-| redigera anvandare visas | true |
-
+| säkerställ att | redigera anvandare visas |
 
 !3 Ta bort utkastet
 

@@ -14,8 +14,7 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         radera(required: false) { $("#ta-bort-utkast") }
         skrivUtBtn(required: false) { $("#skriv-ut-utkast") }
         konfirmeraRadera(required: false) { $("#confirm-draft-delete-button") }
-        signeraBtn(required: false ){ $("#signera-utkast-button") }
-        signeraBtnNoWait(required: false) { $("#signera-utkast-button") }
+        signeraBtn(required: false ) { $("#signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         intygetSparatOchKomplettMeddelande(required: false){ $("#intyget-sparat-och-komplett-meddelande") }

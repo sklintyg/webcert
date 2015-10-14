@@ -4,22 +4,20 @@
 | skript | Browser |
 | stäng |
 
-
 | skript | Browser |
 | öppna |
 
 !3 Logga in
-
 | skript | !-LoggaIn-! |
 | logga in som | private-practitioner-1 |
 
 !3 Verifiera att vi hamnar på avtalssidan
 | skript | !-HanteraAvtal-! |
-| verifiera pa avtal sida | true |
+| säkerställ att | avtalsida visas |
 
 !3 Godkänn webcert avtal och verifiera att vi hamnat på startsidan inne i webcert
 | skript | !-HanteraAvtal-! |
-| godkann avtal |
+| visa startsida vid godkant avtal |
 
 !3 Städa. Se till att den nu inloggade privatläkaren inte har godkänt webcert avtal
 | skript | !-TaBortGodkannande-! |

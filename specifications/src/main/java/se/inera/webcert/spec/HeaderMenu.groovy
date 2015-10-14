@@ -19,27 +19,25 @@ class HeaderMenu {
         }
     }
 
-    boolean redigeraAnvandareVisas(boolean expected) {
-        boolean result = false
+    boolean redigeraAnvandareVisas() {
+        def result
         Browser.drive {
             waitFor {
                 at HeaderPage
             }
-            result = page.editUserLink().isDisplayed()
-
+            result = page.editUserLink()?.isDisplayed()
         }
-        return expected == result
+        result
     }
 
     boolean anvandarensRollVisas(String rollNamn) {
-        boolean result = false
+        def result
         Browser.drive {
             waitFor {
                 at HeaderPage
             }
             result = page.loggedInRole().text().contains(rollNamn)
-
         }
-        return result
+        result
     }
 }

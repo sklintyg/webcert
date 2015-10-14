@@ -8,8 +8,7 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
 
     static content = {
 
-        intygSaknas { $("#cert-load-error") }
-        intygVy(wait: true) { displayed($('#intyg-vy-laddad')) }
+        intygVy(wait: true) { $('#intyg-vy-laddad') }
 
         // Buttons
         newQuestionBtn(required: false, wait: true) { $("#askQuestionBtn") }
@@ -54,7 +53,7 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
 
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
-        makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
+        makuleraDialogMakuleraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton(wait: true) { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
@@ -84,7 +83,7 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         waitFor {
             doneLoading()
         }
-        makuleraDialogKopieraKnapp.click()
+        makuleraDialogMakuleraKnapp.click()
     }
 
     def showNewQuestionForm() {

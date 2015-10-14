@@ -26,13 +26,14 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
 
         visaVadSomSaknasLista(required: false) {$("#visa-vad-som-saknas-lista")}
         
+        // Kopiera
         kopieraDialogKopieraKnapp(to: AbstractEditCertPage, toWait: true) { $("#button1copy-dialog") }
         kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
+
         // makulera
-        makuleraDialogKopieraKnapp(wait: true) { displayed($("#button1makulera-dialog")) }
-        // makulera confirmation
-        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
+        makuleraDialogMakuleraKnapp(wait: true) { $("#button1makulera-dialog") }
+        makuleraConfirmationOkButton(wait: true) { $("#confirmationOkButton") }
 
         // messages
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
@@ -79,9 +80,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         closeSentMessage(wait: true) { displayed($("#question-is-sent-to-fk-message-text > button")) }
 
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
-        certificateIsSentToFKMessage(required: false) {
-            $("#certificate-is-sent-to-fk-message-text")
-        }
+        certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text")}
         certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
 
         hanteraButton(to: UnhandledQAPage, toWait: true) { $("#button1checkhanterad-dialog-hantera") }
@@ -132,7 +131,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         waitFor {
             doneLoading()
         }
-        makuleraDialogKopieraKnapp.click()
+        makuleraDialogMakuleraKnapp.click()
         waitFor {
             doneLoading()
         }

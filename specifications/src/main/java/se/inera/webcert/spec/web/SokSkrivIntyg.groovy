@@ -187,10 +187,10 @@ class SokSkrivIntyg {
     boolean makuleraBekraftelseVisas() {
         boolean result
         Browser.drive {
-            waiFor {
+            waitFor {
                 page.makuleraConfirmationOkButton.isDisplayed()
-                result = page.makuleraConfirmationOkButton.isDisplayed()
             }
+            result = page.makuleraConfirmationOkButton.isDisplayed()
         }
         result
     }
@@ -236,18 +236,6 @@ class SokSkrivIntyg {
     boolean valjIntygstypSynlig() {
         boolean result
         Browser.drive {
-            waitFor {
-                page.intygTyp.isDisplayed()
-                result = page.intygTyp.isDisplayed()
-            }
-        }
-        result
-    }
-
-    boolean valjIntygstypInteSynlig() {
-        boolean result
-        Browser.drive {
-            wait(1000);  // wait 1 second to make sure the little things has rendered
             result = page.intygTyp?.isDisplayed()
         }
         result
@@ -276,15 +264,14 @@ class SokSkrivIntyg {
     }
 
     boolean kopieraKnappVisasForIntyg(String intygId) {
-        boolean result
+        def result
         Browser.drive {
             waitFor {
                 at SokSkrivValjIntygTypPage
-                page.kopieraKnapp(intygId).isDisplayed()
-                result = page.kopieraKnapp(intygId).isDisplayed()
             }
+            result = page.kopieraKnapp(intygId)?.isDisplayed()
         }
-        return result
+        result
     }
 
     boolean skickaStatusVisas() {
@@ -373,10 +360,7 @@ class SokSkrivIntyg {
         boolean result
         Browser.drive {
             waitFor {
-                at VisaTsBasPage
-            }
-            waitFor {
-                page.intygLaddat.isDisplayed()
+                isAt VisaTsBasPage
                 result = page.intygLaddat.isDisplayed()
             }
         }
@@ -387,10 +371,7 @@ class SokSkrivIntyg {
         boolean result
         Browser.drive {
             waitFor {
-                at VisaTsDiabetesPage
-            }
-            waitFor {
-                page.intygLaddat.isDisplayed()
+                isAt VisaTsDiabetesPage
                 result = page.intygLaddat.isDisplayed()
             }
         }
@@ -549,8 +530,8 @@ class SokSkrivIntyg {
         intygsid
     }
 
-    boolean kanForfattaIntyg(String intygsTypText) {
-        boolean result = false
+    boolean anvandareKanForfattaIntygPa(String intygsTypText) {
+        def result = false
         Browser.drive {
             waitFor {
                 at SokSkrivValjIntygTypPage
@@ -559,27 +540,28 @@ class SokSkrivIntyg {
 
             waitFor {
                 // TODO use better page abstraction
-                result = $("#intygType option[label=\"$intygsTypText\"]").size() > 0
+                page.intygTyp.isDisplayed()
             }
+            result = $("#intygType option[label=\"$intygsTypText\"]").size() > 0
         }
-        return result
+        result
     }
 
-    boolean kanInteForfattaIntyg(String intygsTypText) {
-        boolean result = false
-        Browser.drive {
-            waitFor {
-                at SokSkrivValjIntygTypPage
-            }
-            page.waitForModalBackdropToHide();
-
-            waitFor {
-                // TODO use better page abstraction
-                result = $("#intygType option[label=\"$intygsTypText\"]").size() == 0
-            }
-        }
-        return result
-    }
+//    boolean attAnvandareKanForfattaIntygPa(String intygsTypText) {
+//        def result
+//        Browser.drive {
+//            waitFor {
+//                at SokSkrivValjIntygTypPage
+//            }
+//            page.waitForModalBackdropToHide();
+//
+//            waitFor {
+//                // TODO use better page abstraction
+//                result = $("#intygType option[label=\"$intygsTypText\"]").size() == 0
+//            }
+//        }
+//        return result
+//    }
 
     boolean intygAvTypVisasInteIListanAvTidigareIntyg(String intygsTyp) {
         boolean result = false

@@ -2,7 +2,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Säkerställ JIRA - WEBCERT-1449</Help>
+<Help>Kopiera nytt personnummer - säkerställ JIRA-issue WEBCERT-1449</Help>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>

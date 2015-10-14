@@ -38,7 +38,7 @@
 | skript | !-HanteraUtkast-! |
 | visa avancerat filter |
 | filterVidarebefordradVisas | true |
-| filterValjLakareVisas |  true |
+| filterValjLakareVisas | true |
 
 
 !3 Verifiera knappen för att vidarebeforda finns i tabellen över ej signerade utkast
@@ -65,20 +65,20 @@
 !3 Kontrollera så filtret visar "Frågor och svar som är" eller "Signerat av" för landstingsläkare
 !| skript | SvaraOchFraga |
 | visa avancerat filter |
-| filter vidarebefordrad visas | true |
-| filter valj lakare visas | true |
+| filter vidarebefordrad visas |
+| filter valj lakare visas |
 
 
 !3 Vidarebefordra-knapp i listan får visas
 !| skript | SvaraOchFraga |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
+| vidare befordra knapp visas |
+| vidarebefordrad checkbox visas |
 
 !3 Gå in på frågan och verifiera att Vidarebefordra-knappen är synlig för landstingsläkare
 !| skript | SvaraOchFraga |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
-| vidarebefordra knapp inne pa fraga visas | true |
+| vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
 !| skript | SvaraOchFraga |
@@ -90,7 +90,7 @@
 | visa fraga | $internReferens2 |
 | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
-| vidarebefordra knapp inne pa fraga visas | true |
+| vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå till Om Webcert
 

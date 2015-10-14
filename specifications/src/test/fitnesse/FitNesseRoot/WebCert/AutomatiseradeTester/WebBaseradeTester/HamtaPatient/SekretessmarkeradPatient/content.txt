@@ -10,7 +10,7 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 | skript | !-SokSkrivIntyg-! |
 | säkerställ att |sok skriv intyg sidan visas |
 | valj patient | ${person5.personnummer} |
-| valj intygstyp sidan visas |
+| säkerställ att | valj intygstyp sidan visas |
 | kontrollera att | patientens namn ar | ${person5.namn} |
 | säkerställ att inte | valj intygstyp synlig |
 | säkerställ att | sekretessmarkering text synlig |

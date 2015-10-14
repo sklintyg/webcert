@@ -133,11 +133,16 @@ Om en användare väljer att hantera ett intyg som är utfärdat på en annan v�
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-104C |
 
-!3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar
+!3 Verifiera att det går att visa alla intyg för alla vårdenheter och mottagningar vid samma vårdgivare. Men det ska bara ska gå att skicka och makulera intyg för den inloggade vårdenheten/mottagningen.
 
 | skript | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration | intyg-fit-101 |
-| säkerställ att | intyg inte laddat |
+| säkerställ att | intyg laddat |
+| säkerställ att | intyg laddat |
+| säkerställ att inte | skicka knapp visas |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att inte | makulera knapp visas |
 | visa intyg via integration | intyg-fit-102 |
 | säkerställ att | intyg laddat |
 | säkerställ att inte | skicka knapp visas |

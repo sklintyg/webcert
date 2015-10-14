@@ -14,22 +14,23 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 !3 Välj patient och visa intyget
 
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas |
+| säkerställ att | sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
-| valj intygstyp sidan visas |
+| säkerställ att | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-105 |
-| visa ts diabetes sidan visas |
+| säkerställ att | visa ts diabetes sidan visas |
 
 !3 Makulera intyget
 
 | skript | !-SokSkrivIntyg-! |
 | makulera visat intyg |
-| makulera bekraftelse visas |
+| säkerställ att | makulera bekraftelse visas |
 | bekrafta makulera |
-| visa ts diabetes sidan visas |
-| makulerad status visas |
+| säkerställ att | visa ts diabetes sidan visas |
+| säkerställ att | makulerad status visas |
 
 !3 Verifiera att Intygstjänsten makulerat intyget (asynkron sändning, webcert-1314)
+
 | skript | !-IntygstjanstAsynk-! |
 | finns makulerat intyg i intygstjansten med | intyg-fit-105 | vantetid | 5000 |
 

@@ -1,8 +1,7 @@
 package se.inera.webcert.pages.ts_bas
+import se.inera.webcert.pages.AbstractViewCertPage
 
-import se.inera.webcert.pages.VisaIntygPage
-
-class VisaTsBasPage extends VisaIntygPage {
+class VisaTsBasPage extends AbstractViewCertPage {
 
     static content = {
 

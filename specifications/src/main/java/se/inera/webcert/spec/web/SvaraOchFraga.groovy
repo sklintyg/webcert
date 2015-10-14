@@ -806,7 +806,7 @@ class SvaraOchFraga {
     }
 
     boolean filterVidarebefordradVisas() {
-        def ref = "'#filterFormVidarebefordrad"
+        def ref = "#filterFormVidarebefordrad"
         def result = false
         Browser.drive {
             waitFor {

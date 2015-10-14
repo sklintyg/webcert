@@ -7,8 +7,6 @@ class VisaFk7263Page extends AbstractViewCertPage {
     static content = {
 
         // messages
-        intygSaknas { $("#cert-load-error") }
-        intygLaddat(wait: true) { $('#intyg-vy-laddad') }
         intygFel { $("#cert-inline-error") }
         certificateIsSentToITMessage(required: false, wait: true) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false, wait: true) { $("#certificate-is-sent-to-recipient-message-text") }
@@ -27,7 +25,7 @@ class VisaFk7263Page extends AbstractViewCertPage {
         // kopiera dialog text webcert-1449
         copyDialog { $("#copy-dialog") }
         kopieraDialogMsgInteFranJournalSystem(required: false) { $("#msgInteFranJournalSystem") }
-        kopieraDialogMsgNyttPersonId {$("#msgNyttPersonId")}
+        kopieraDialogMsgNyttPersonId { $("#msgNyttPersonId") }
 
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }

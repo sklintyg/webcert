@@ -14,7 +14,6 @@ class VisaIntyg {
         }
     }
 
-
     boolean intygLaddat() {
         boolean result
         Browser.drive {

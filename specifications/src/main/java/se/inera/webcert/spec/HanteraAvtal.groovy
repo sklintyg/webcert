@@ -10,45 +10,40 @@ import se.inera.webcert.pages.WelcomePage
  */
 class HanteraAvtal {
 
-    def result
 
-    boolean verifieraPaAvtalSida(boolean expected = true) {
-        result = false
+    boolean avtalsidaVisas() {
+        def result = false
         Browser.drive {
             waitFor {
                 at PrivatlakarAvtalPage
             }
-            result = page.acceptTermsBtn.isDisplayed()
+            result = page.acceptTermsBtn.isDisplayed() && page
         }
-        result = result == expected
+        result
     }
 
-    def godkannAvtal() {
+    def visaStartsidaVidGodkantAvtal() {
         Browser.drive {
             waitFor {
                 at PrivatlakarAvtalPage
             }
-
             waitFor {
                 page.acceptTermsBtn.click()
             }
-
             waitFor {
                 at SokSkrivaIntygPage
             }
         }
     }
 
-    def avbojAvtal() {
+    def visaLoginsidaVidAvbojtAvtal() {
         Browser.drive {
             waitFor {
                 at PrivatlakarAvtalPage
             }
-
             waitFor {
                 page.logoutTermsBtn.click()
             }
-
             waitFor {
                 at WelcomePage
             }

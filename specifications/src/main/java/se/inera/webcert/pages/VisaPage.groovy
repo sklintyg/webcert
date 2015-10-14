@@ -3,6 +3,7 @@ package se.inera.webcert.pages
 import se.inera.certificate.page.AbstractPage
 
 class VisaPage extends AbstractPage {
+
     static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
 
     static content = {
