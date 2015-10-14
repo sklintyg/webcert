@@ -24,21 +24,10 @@ public abstract class BaseIntegrationController extends AuthoritiesAssertion {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationController.class);
 
-    protected WebCertUserService webCertUserService;
-
-    protected String urlBaseTemplate;
-
-    public void setUrlBaseTemplate(String urlBaseTemplate) {
-        this.urlBaseTemplate = urlBaseTemplate;
-    }
-
-    @Autowired
-    public void setWebCertUserService(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
-    }
+    private WebCertUserService webCertUserService;
+    private String urlBaseTemplate;
 
     protected abstract String[] getGrantedRoles();
-
     protected abstract void updateUserRoles(WebCertUser user);
 
     /*
@@ -95,5 +84,25 @@ public abstract class BaseIntegrationController extends AuthoritiesAssertion {
             return false;
         }
         return true;
+    }
+
+
+
+    @Autowired
+    public void setUrlBaseTemplate(String urlBaseTemplate) {
+        this.urlBaseTemplate = urlBaseTemplate;
+    }
+
+    protected String getUrlBaseTemplate() {
+        return urlBaseTemplate;
+    }
+
+    @Autowired
+    public void setWebCertUserService(WebCertUserService webCertUserService) {
+        this.webCertUserService = webCertUserService;
+    }
+
+    protected WebCertUserService getWebCertUserService() {
+        return webCertUserService;
     }
 }

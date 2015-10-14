@@ -21,7 +21,6 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
@@ -47,11 +46,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private UtkastRepository utkastRepository;
-
-    @Autowired
-    public void setWebCertUserService(WebCertUserService webCertUserService) {
-        super.webCertUserService = webCertUserService;
-    }
+//
+//    @Autowired
+//    public void setWebCertUserService(WebCertUserService webCertUserService) {
+//        super.webCertUserService = webCertUserService;
+//    }
 
     @Override
     protected String[] getGrantedRoles() {
@@ -93,7 +92,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         // Enable user features
-        webCertUserService.enableFeaturesOnUser();
+        getWebCertUserService().enableFeaturesOnUser();
 
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -135,7 +134,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             urlFragmentTemplate = this.urlIntygFragmentTemplate;
         }
 
-        URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }

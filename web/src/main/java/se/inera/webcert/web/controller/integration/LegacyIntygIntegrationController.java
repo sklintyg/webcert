@@ -70,10 +70,6 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
-    public void setUrlBaseTemplate(String urlBaseTemplate) {
-        this.urlBaseTemplate = urlBaseTemplate;
-    }
-
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
@@ -89,7 +85,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
-        URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }

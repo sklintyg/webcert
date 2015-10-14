@@ -71,10 +71,11 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
-        URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
+
 
 
 
