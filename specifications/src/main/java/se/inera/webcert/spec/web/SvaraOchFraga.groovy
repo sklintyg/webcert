@@ -144,9 +144,7 @@ class SvaraOchFraga {
     boolean intygArSkickatTillFkMeddelandeVisas() {
         boolean result
         Browser.drive {
-            waitFor {
-                result = page.certificateIsSentToFKMessage?.isDisplayed()
-            }
+            result = page.certificateIsSentToFKMessage?.isDisplayed()
         }
         result
     }
@@ -186,15 +184,14 @@ class SvaraOchFraga {
     boolean nyFragaFormularVisas() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.newQuestionForm.isDisplayed()
-            }
+            result = page.newQuestionForm?.isDisplayed()
         }
         result
     }
 
     boolean nyFragaFormularInteVisas() {
         def result
+
         Browser.drive {
            wait(1000);  // wait 1 second to make sure the little things has rendered
            result = page.newQuestionForm?.isDisplayed()
@@ -205,9 +202,7 @@ class SvaraOchFraga {
     boolean nyFragaKnappVisas() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.newQuestionBtn.isDisplayed()
-            }
+            result = page.newQuestionBtn?.isDisplayed()
         }
         result
     }
@@ -328,8 +323,9 @@ class SvaraOchFraga {
         def result
         Browser.drive {
             waitFor {
-                result = page.certificateIsSentToITMessage?.isDisplayed()
+                page.certificateIsSentToITMessage.isDisplayed()
             }
+            result = page.certificateIsSentToITMessage.isDisplayed()
         }
         result
     }
@@ -337,9 +333,7 @@ class SvaraOchFraga {
     boolean skrivUtKnappVisas() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.skrivUtKnapp?.isDisplayed()
-            }
+            result = page.skrivUtKnapp?.isDisplayed()
         }
         result
     }
@@ -347,9 +341,7 @@ class SvaraOchFraga {
     boolean kopieraKnappVisas() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.kopieraKnapp?.isDisplayed()
-            }
+            result = page.kopieraKnapp?.isDisplayed()
         }
         result
     }
@@ -357,9 +349,7 @@ class SvaraOchFraga {
     boolean makuleraKnappVisas() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.makuleraKnapp?.isDisplayed()
-            }
+            result = page.makuleraKnapp?.isDisplayed()
         }
         result
     }
@@ -367,9 +357,7 @@ class SvaraOchFraga {
     boolean skickaTillFkKnappVisas() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.skickaKnapp?.isDisplayed()
-            }
+            result = page.skickaKnapp?.isDisplayed()
         }
         result
     }
@@ -378,8 +366,9 @@ class SvaraOchFraga {
         def result
         Browser.drive {
             waitFor {
-                result = page.handledQAPanel(internId)?.isDisplayed()
+                page.handledQAPanel(internId).isDisplayed()
             }
+            result = page.handledQAPanel(internId).isDisplayed()
         }
         result
     }
@@ -394,8 +383,9 @@ class SvaraOchFraga {
         def result
         Browser.drive {
             waitFor {
-                result = page.unhandledQAPanel(internId)?.isDisplayed()
+                page.unhandledQAPanel(internId)?.isDisplayed()
             }
+            result = page.unhandledQAPanel(internId).isDisplayed()
         }
         result
     }
@@ -408,10 +398,9 @@ class SvaraOchFraga {
             }
             waitFor {
                 page.qaHandledPanel(internId).isDisplayed()
+                page.markAsUnhandledBtn(internId).isDisplayed()
             }
-            waitFor {
-                result = page.markAsUnhandledBtn(internId)?.isDisplayed()
-            }
+            result = page.markAsUnhandledBtn(internId).isDisplayed()
         }
         result
     }

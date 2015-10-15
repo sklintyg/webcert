@@ -18,14 +18,14 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | ohanterade fragor sidan visas |
 | säkerställ att | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
-| intyg med fraga svar sidan visas |
+| säkerställ att| intyg med fraga svar sidan visas |
 
 !3 Verifiera att det går att skicka en ny fråga till försäkringskassan
 
 | skript | !-SvaraOchFraga-! |
 | ny fraga knapp visas |
 | valj ny fraga |
-| ny fraga formular visas |
+| säkerställ att | ny fraga formular visas |
 | säkerställ att inte | skicka fraga knapp aktiverad |
 | skicka fraga | En fråga från Fitnesse 1 | med amne | 1 |
 | säkerställ att | fragan ar skickad till fk meddelande visas |

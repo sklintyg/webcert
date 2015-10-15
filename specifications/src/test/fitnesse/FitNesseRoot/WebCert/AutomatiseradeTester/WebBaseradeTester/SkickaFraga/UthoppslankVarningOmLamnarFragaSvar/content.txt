@@ -1,20 +1,16 @@
-Testet beskriver fallet när en användare kommer till fråga/svar från journalsystemet via uthoppslänk.
+Testet beskriver fallet när en användare kommer till fråga/svar från ett journalsystem via uthoppslänk.
 
 !3 Logga in
 
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
-!3 Givet att det finns ett intyg och att man går till det vi uthoppslänken
+!3 Givet att det finns ett intyg och att man går till det vi uthoppslänken, verifiera att rätt knappar visas
 
 | skript | !-SvaraOchFraga-! |
 | ga till intygsvy via uthopp med intygsid | intyg-fit-6 |
-| intyg med fraga svar sidan visas |
-
-!4 Verifiera att rätt knappar visas
-
-| skript | !-SvaraOchFraga-! |
-| säkerställ att | skriv ut knapp visas |
+| säkerställ att | intyg med fraga svar sidan visas |
+| säkerställ att      | skriv ut knapp visas |
 | säkerställ att inte | kopiera knapp visas |
 | säkerställ att inte | makulera knapp visas |
 | säkerställ att inte | skicka till fk knapp visas |
@@ -46,17 +42,17 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 
 | skript | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-fit-6 |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 
 !4 Verifiera att alla knappar visas
 
 | skript | !-SvaraOchFraga-! |
 | säkerställ att | kopiera knapp visas |
 | säkerställ att | makulera knapp visas |
-| säkerställ att |  skicka till fk knapp visas |
+| säkerställ att | skicka till fk knapp visas |
 
 !4 Verifiera att man inte får en varningsdialog om man försöker lämna sidan
 
 | skript | !-SvaraOchFraga-! |
 | ga till sok skriva intyg |
-| sok skriva intyg sidan visas |
+| säkerställ att | sok skriva intyg sidan visas |

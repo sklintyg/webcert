@@ -5,11 +5,11 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
-!3 Verifiera att det går att visa intygget
+!3 Verifiera att det går att visa intyget
 
 | skript | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-fit-2-ej-skickat-till-fk |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 
 !3 Verifiera att det inte går att skicka nya frågor till försäkringskassan
 

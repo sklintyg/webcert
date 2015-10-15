@@ -9,7 +9,7 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 
 | skript | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-fit-3-revoked |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 
 !3 Verifiera att det inte går att skicka nya frågor till försäkringskassan
 

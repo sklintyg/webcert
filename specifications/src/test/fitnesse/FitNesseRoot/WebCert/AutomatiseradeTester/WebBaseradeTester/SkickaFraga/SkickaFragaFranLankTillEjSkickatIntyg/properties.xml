@@ -2,7 +2,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Från länk till ej skickat intyg</Help>
+<Help>Skicka fråga till FK på intyg som ej är skickat till FK</Help>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
