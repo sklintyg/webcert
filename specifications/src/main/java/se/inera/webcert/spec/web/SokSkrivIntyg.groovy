@@ -34,7 +34,6 @@ class SokSkrivIntyg {
     }
 
     def skickaDetVisadeIntygetAvTyp(String typ) {
-
         Browser.drive {
             waitFor {
                 if (typ == "fk7263") {
@@ -277,17 +276,39 @@ class SokSkrivIntyg {
     boolean skickaStatusVisas() {
         boolean result
         Browser.drive {
-            waitFor {
-                page.certificateIsSentToRecipientMessage.isDisplayed()
-                result = page.certificateIsSentToRecipientMessage.isDisplayed()
-            }
+            result = page.certificateIsSentToRecipientMessage?.isDisplayed()
         }
         result
     }
 
-    boolean skickaStatusVisasMedRattMeddelande(String containsText) {
+    boolean meddelandeIntygInteSkickatVisas() {
         boolean result
         Browser.drive {
+            waitFor {
+                page.certificateIsNotSentToFkMessage.isDisplayed()
+            }
+            result = page.certificateIsNotSentToFkMessage.isDisplayed();
+        }
+        result
+    }
+
+    boolean meddelandeForStatusIntygInteSkickatVisas(String containsText) {
+        boolean result
+        Browser.drive {
+            waitFor {
+                page.certificateIsSentToITMessage.isDisplayed()
+            }
+            result = page.certificateIsSentToITMessage.text().contains(containsText);
+        }
+        result
+    }
+
+    boolean meddelandeForStatusIntygSkickatVisas(String containsText) {
+        boolean result
+        Browser.drive {
+            waitFor {
+                page.certificateIsOnQueueToITMessage.isDisplayed()
+            }
             result = page.certificateIsOnQueueToITMessage.text().contains(containsText);
         }
         result

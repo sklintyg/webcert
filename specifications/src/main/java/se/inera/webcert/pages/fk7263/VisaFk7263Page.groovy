@@ -8,12 +8,14 @@ class VisaFk7263Page extends AbstractViewCertPage {
 
         // messages
         intygFel { $("#cert-inline-error") }
+
         certificateIsSentToITMessage(required: false, wait: true) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false, wait: true) { $("#certificate-is-sent-to-recipient-message-text") }
-        certificateIsRevokedMessage(required: false,wait: true) { $("#certificate-is-revoked-message-text") }
+        certificateIsRevokedMessage(required: false, wait: true) { $("#certificate-is-revoked-message-text") }
+        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
+
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
         visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
-        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
         // copy dialog
         annanEnhetText(wait: true) { $("#annanVardenhet") }

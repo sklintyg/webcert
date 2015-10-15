@@ -3,6 +3,7 @@ package se.inera.webcert.pages
 class SokSkrivaIntygPage extends AbstractLoggedInPage {
 
     static url = "/web/dashboard#/create/choose-patient/index"
+
     static at = { doneLoading() && $("#skapa-valj-patient").isDisplayed() }
 
     static content = {
