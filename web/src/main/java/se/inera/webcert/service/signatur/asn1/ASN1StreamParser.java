@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 public class ASN1StreamParser {
 
     private static final int FF = 0xFF;
+    private static final int BIT8 = 7;
 
     /**
      * Tries to extract a value from the supplied base64-encoded InputStream by trying to match
@@ -108,11 +109,11 @@ public class ASN1StreamParser {
      * Second and following octets give the length, base 256, most significant digit first.</li>
      */
     private int determineContentLength(int lengthOctet, ByteArrayInputStream bais) {
-        if (!BitHelper.isSet((byte) lengthOctet, 7)) {
+        if (!BitHelper.isSet((byte) lengthOctet, BIT8)) {
             return lengthOctet;
         } else {
             // e.g. number of bytes that makes up the length scalar.
-            byte numLengthOctets = BitHelper.unset((byte) lengthOctet, 7);
+            byte numLengthOctets = BitHelper.unset((byte) lengthOctet, BIT8);
 
             int total = unsignByte(bais) * (FF + 1);
             for (int a = 1; a < numLengthOctets; a++) {
