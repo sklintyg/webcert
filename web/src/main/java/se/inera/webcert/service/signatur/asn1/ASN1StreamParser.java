@@ -23,6 +23,8 @@ import org.apache.commons.io.IOUtils;
  */
 public class ASN1StreamParser {
 
+    private static final int FF = 0xFF;
+
     /**
      * Tries to extract a value from the supplied base64-encoded InputStream by trying to match
      * a sequence of bytes in the stream with the supplied marker sequence of bytes.
@@ -37,7 +39,7 @@ public class ASN1StreamParser {
      *         String representation of the found value or null if the marker wasn't present in the byte stream.
      * @throws IOException
      */
-    public String parse(InputStream is, int[] marker, int dataLength) throws IOException {
+    public byte[] parse(InputStream is, int[] marker, int dataLength) throws IOException {
         byte[] bytes = IOUtils.toByteArray(is);
         byte[] decoded = Base64.decodeBase64(bytes);
 
@@ -50,12 +52,49 @@ public class ASN1StreamParser {
 
                 if (buffer.size() == marker.length && match(buffer, marker)) {
                     // Extract val
-                    StringBuilder buf = new StringBuilder();
-                    for (int a = 0; a < dataLength; a++) {
-                        int c = unsignByte(bais);
-                        buf.append((char) c);
-                    }
-                    return buf.toString();
+                    return readValue(dataLength, bais);
+                }
+            }
+        }
+        return null;
+    }
+
+    private byte[] readValue(int dataLength, ByteArrayInputStream bais) {
+        byte[] value = new byte[dataLength];
+        for (int a = 0; a < dataLength; a++) {
+            value[a] = (byte) unsignByte(bais);
+        }
+        return value;
+    }
+
+    /**
+     * When we do not know the length beforehand, use this one. For a primer on the ASN.1 format, see
+     * http://luca.ntop.org/Teaching/Appunti/asn1.html
+     *
+     * @param is
+     *      InputStream of bytes to parse, should be Base64 encoded.
+     * @param marker
+     *      Sequence of bytes to match in the supplied stream.
+     * @return
+     *      The value directly following the end of the marker+length octets as an array of bytes.
+     *
+     */
+    public byte[] parseDynamicLength(InputStream is, int[] marker) throws IOException {
+        byte[] bytes = IOUtils.toByteArray(is);
+        byte[] decoded = Base64.decodeBase64(bytes);
+
+        LimitedQueue<Integer> buffer = new LimitedQueue<>(marker.length);
+
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(decoded)) {
+            while (bais.available() > 0) {
+                int b = unsignByte(bais);
+                buffer.add(b);
+
+                if (buffer.size() == marker.length && match(buffer, marker)) {
+
+                    int lengthOctet = unsignByte(bais);
+                    int contentLength = determineContentLength(lengthOctet, bais);
+                    return readValue(contentLength, bais);
                 }
             }
         }
@@ -63,11 +102,35 @@ public class ASN1StreamParser {
     }
 
     /**
+     * <li>Short form. One octet. Bit 8 has value "0" and bits 7-1 give the length.</li>
+     *
+     * <li>Long form. Two to 127 octets. Bit 8 of first octet has value "1" and bits 7-1 give the number of additional length octets.
+     * Second and following octets give the length, base 256, most significant digit first.</li>
+     */
+    private int determineContentLength(int lengthOctet, ByteArrayInputStream bais) {
+        if (!BitHelper.isSet((byte) lengthOctet, 7)) {
+            return lengthOctet;
+        } else {
+            // e.g. number of bytes that makes up the length scalar.
+            byte numLengthOctets = BitHelper.unset((byte) lengthOctet, 7);
+
+            int total = unsignByte(bais) * (FF + 1);
+            for (int a = 1; a < numLengthOctets; a++) {
+                int i = unsignByte(bais);
+
+                total += i;
+            }
+            return total;
+        }
+    }
+
+
+    /**
      * The ASN.1 data stream from NetID is supplied as Base64-encoded bytes which Java treats as signed integers
      * Perform the [byte] & 0xFF trick to transform the unsigned byte value into an int.
      */
     private int unsignByte(ByteArrayInputStream bais) {
-        final int ff = 0xFF;
+        final int ff = FF;
         return bais.read() & ff;
     }
 
@@ -76,10 +139,6 @@ public class ASN1StreamParser {
      * is encountered, the iteration terminates and the method returns false.
      *
      * All bytes in the buffer must exactly match the supplied marker sequence.
-     *
-     * @param buffer
-     * @param marker
-     * @return
      */
     private boolean match(LimitedQueue<Integer> buffer, int[] marker) {
         for (int a = 0; a < marker.length; a++) {
@@ -89,6 +148,8 @@ public class ASN1StreamParser {
         }
         return true;
     }
+
+
 
     /**
      * Internal subclass of LinkedList popping out elements on FIFO-basis when the defined capacity (i.e. limit) is

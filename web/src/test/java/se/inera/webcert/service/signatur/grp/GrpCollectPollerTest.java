@@ -62,8 +62,6 @@ public class GrpCollectPollerTest {
     public void testSingleSuccessfulCollect() throws GrpFault {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
-        // GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService,
-        // signaturTicketTracker, signaturService);
 
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);

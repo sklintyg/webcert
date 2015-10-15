@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.persistence.OptimisticLockException;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -113,8 +115,6 @@ public class SignaturServiceImpl implements SignaturService {
     private WebCertUser getWebcertUserForSignering() {
         WebCertUser user = webCertUserService.getUser();
 
-        // TODO CHANGE THIS TO USE UserPrivilege.PRIVILEGE_SIGNERA_INTYG   ????
-        //if (!user.isLakare()) {
         if (!user.hasPrivilege(UserPrivilege.PRIVILEGE_SIGNERA_INTYG)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User is not a doctor. Could not sign utkast.");
@@ -129,24 +129,51 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch Webcert user
         WebCertUser user = getWebcertUserForSignering();
 
-        // If privatläkare, we must match the personId on the user principal with the personId extracted from the signature data.
-        validateLoggedInPrivatePractitionerDidSign(user, rawSignatur);
+        // For NetID-based signing, we must match the personId / hsaId on the user principal with the serialNumber
+        // extracted from the signature data.
+        validateSigningIdentity(user, rawSignatur);
 
         // Use method common between NetID and BankID to finish signing.
         return finalizeClientSignature(ticketId, rawSignatur, user);
     }
 
-    private void validateLoggedInPrivatePractitionerDidSign(WebCertUser user, String rawSignatur) {
-        if (user.isPrivatLakare()) {
-            String signaturPersonId = asn1Util.parsePersonId(rawSignatur);
+    private void validateSigningIdentity(WebCertUser user, String rawSignatur) {
 
-            if (!user.getPersonId().replaceAll("\\-", "").equals(signaturPersonId)) {
-                String errMsg = "Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 "
+        // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
+        if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
+            String signaturPersonId = asn1Util.parsePersonId(IOUtils.toInputStream(rawSignatur));
+
+            if (verifyPersonIdEqual(user, signaturPersonId)) {
+                String errMsg = "Cannot finalize signing of Utkast, the logged in user's personId and the personId in the ASN.1 "
+                        + "signature data from the NetID client does not match.";
+                LOG.error(errMsg);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+            }
+
+        }
+
+        // Siths-inloggade måste signera med samma SITHS-kort som de loggade in med.
+        if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
+            String signaturHsaId = asn1Util.parseHsaId(IOUtils.toInputStream(rawSignatur));
+
+            if (verifyHsaIdEqual(user, signaturHsaId)) {
+                String errMsg = "Cannot finalize signing of Utkast, the logged in user's hsaId and the hsaId in the ASN.1 "
                         + "signature data from the NetID client does not match.";
                 LOG.error(errMsg);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
             }
         }
+    }
+
+    // Strips off any hyphens
+    private boolean verifyPersonIdEqual(WebCertUser user, String signaturPersonId) {
+        return !user.getPersonId().trim().replaceAll("\\-", "").equals(signaturPersonId.trim().replaceAll("\\-", ""));
+    }
+
+    // We may need to tweak this if it turns out we _somehow_ are getting HsaId's from the sig. that doesn't exactly
+    // match what we got from SAML-tickets or HSA on session start. (Kronoberg, see WEBCERT-1501)
+    private boolean verifyHsaIdEqual(WebCertUser user, String signaturHsaId) {
+        return !user.getHsaId().trim().replaceAll("\\-", "").equalsIgnoreCase(signaturHsaId.trim().replaceAll("\\-", ""));
     }
 
     @Override
