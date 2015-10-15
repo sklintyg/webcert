@@ -35,7 +35,7 @@ public class CertificateStoreProcessor {
         } catch (ExternalServiceCallException e) {
             switch (e.getErroIdEnum()) {
             case TECHNICAL_ERROR:
-            case APPLICATION_ERROR: // TODO: is this temporary?
+            case APPLICATION_ERROR:
                 throw new TemporaryException(e.getMessage());
             default:
                 throw new PermanentException(e.getMessage());
