@@ -70,7 +70,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             }
         }).
         state('webcert.intyg', {
-            abstract : true,
+            abstract : true, // jshint ignore:line
             data: { defaultActive : 'index' },
             views: {
                 'content@' : {
@@ -209,7 +209,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             url: '/terms',
             views: {
                 'dialogs@webcert': {
-                    templateUrl: "/app/views/terms/terms.main.html",
+                    templateUrl: '/app/views/terms/terms.main.html',
                     controller: 'webcert.TermsCtrl'
                 }
             }
