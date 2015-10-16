@@ -16,13 +16,24 @@ module.exports = function(config) {
         browsers: [ 'PhantomJS' ],
 
         plugins: [
+            'karma-coverage',
             'karma-jasmine',
             'karma-junit-reporter',
             'karma-phantomjs-launcher',
             'karma-mocha-reporter'
         ],
 
-        reporters: [ 'dots', 'junit' ],
+        reporters: [ 'dots', 'junit', 'coverage' ],
+
+        preprocessors: {
+            'src/main/webapp/app/**/*.js': ['coverage']
+        },
+
+        coverageReporter: {
+            type : 'lcovonly',
+            dir : 'target/karma_coverage/',
+            subdir: '.'
+        },
 
         junitReporter: {
             outputFile: 'target/surefire-reports/TEST-karma-test-results.xml'
