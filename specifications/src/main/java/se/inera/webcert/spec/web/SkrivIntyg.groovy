@@ -1,5 +1,6 @@
 package se.inera.webcert.spec.web
 import org.openqa.selenium.Keys
+import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
@@ -165,6 +166,53 @@ class SkrivIntyg {
 
     // ------- validering end
 
+    /**
+     * Simulate entering of a diagnosis code on athe given diagnos input field
+     *
+     * @param diagnosCode
+     * @param diagnosField
+     * @return
+     */
+    def mataInDiagnoskodFörDiagnosfältMedId(String diagnosCode, String diagnosField) {
+
+        Browser.drive {
+            AbstractPage.scrollIntoView("diagnoseCode");
+            //definera elementreferens till det type-ahead element vi vill välja
+            def diagnoseCodeElement = page.$('#' + diagnosField)
+
+            waitFor {
+                diagnoseCodeElement.isDisplayed()
+            }
+
+            //..och sätt värdet
+            diagnoseCodeElement << diagnosCode
+        }
+    }
+
+    /**
+     * Simulate selecting a type-ahead suggestion fo a more detailed diagnosis code in the suggestion dropdown attached
+     * to a given diagnos code/description field.
+     *
+     * @param diagnosField
+     * @param diagnosForslagsTextAttValja
+     * @return
+     */
+    def väljDiagnosförslagFörFältSomInnehållerText(String diagnosField, String diagnosForslagsTextAttValja) {
+        Browser.drive {
+            AbstractPage.scrollIntoView("diagnoseCode");
+            //Definera elementreferens till det type-ahead element vi vill välja
+            def typeAheadElement = page.$('#' + diagnosField + ' + UL li a', text: contains(diagnosForslagsTextAttValja))[0]
+
+            //..vänta på att ett sådant förslag är synligt...
+            waitFor {
+                typeAheadElement.isDisplayed()
+            }
+
+            //..och klicka på det
+            typeAheadElement.click()
+        }
+    }
+
     def vanta(int sekunder) {
         Browser.drive {
             Thread.sleep(sekunder * 1000)
@@ -246,6 +294,8 @@ class SkrivIntyg {
         }
         result
     }
+
+
 
     String diagnos2Kod() {
         def result
