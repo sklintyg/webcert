@@ -1,6 +1,7 @@
 !3 Logga in som privatläkare som ej har godkänt webcert avtal, men som är godkänd privatläkare (i stubbe)
 
 !4 Stäng och öppna browsern specifikt för att rensa sessionen
+
 | skript | Browser |
 | stäng |
 
@@ -8,17 +9,21 @@
 | öppna |
 
 !3 Logga in
+
 | skript | !-LoggaIn-! |
 | logga in som | private-practitioner-1 |
 
 !3 Verifiera att vi hamnar på avtalssidan
+
 | skript | !-HanteraAvtal-! |
 | säkerställ att | avtalsida visas |
 
 !3 Godkänn webcert avtal och verifiera att vi hamnat på startsidan inne i webcert
+
 | skript | !-HanteraAvtal-! |
-| visa startsida vid godkant avtal |
+| godkann avtal |
 
 !3 Städa. Se till att den nu inloggade privatläkaren inte har godkänt webcert avtal
+
 | skript | !-TaBortGodkannande-! |
 | ta bort godkannande |

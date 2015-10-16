@@ -1,9 +1,12 @@
 package se.inera.webcert.spec.web
 import org.openqa.selenium.Keys
 import se.inera.certificate.spec.Browser
+import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
+import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
+import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
 
 class SkrivIntyg {
 
@@ -11,34 +14,38 @@ class SkrivIntyg {
 
     def skapaNyttIntygsutkastForPatientAvTyp(String patient, String typ) {
         Browser.drive {
-
             waitFor {
                 at SokSkrivaIntygPage
             }
-
             page.angePatient(patient)
 
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
-
             page.valjIntygsTyp(typ)
 
-            if (typ == "FK7263") {
-                waitFor {
-                    at se.inera.webcert.pages.fk7263.EditeraFk7263Page
-                }
-            } else if (typ == "ts-bas") {
-                waitFor {
-                    at se.inera.webcert.pages.ts_bas.EditeraTsBasPage
-                }
-            } else if (typ == "ts-diabetes") {
-                waitFor {
-                    at se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
-                }
-            }
+            waitForIntygstyp(typ)
 
             intygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
+        }
+    }
+
+    void waitForIntygstyp(String intygstyp) {
+        String typ = intygstyp.toLowerCase()
+        def page = AbstractEditCertPage
+
+        if (typ == "fk7263") {
+            page = EditeraFk7263Page
+        } else if (typ == "ts-bas") {
+            page = EditeraTsBasPage
+        } else if (typ == "ts-diabetes") {
+            page = EditeraTsDiabetesPage
+        }
+
+        Browser.drive {
+            waitFor {
+                at page
+            }
         }
     }
 
@@ -66,7 +73,7 @@ class SkrivIntyg {
         return result
     }
 
-    boolean ingaingaValideringsfelVisas() {
+    boolean ingaValideringsfelVisas() {
         def result
         Browser.drive {
             result = !page.valideringIntygBaseratPa.isDisplayed() &&
@@ -180,6 +187,7 @@ class SkrivIntyg {
         boolean result
         Browser.drive {
             waitFor{
+                doneLoading()
                 page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
             }
             result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()

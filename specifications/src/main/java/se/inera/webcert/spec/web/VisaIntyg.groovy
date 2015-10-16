@@ -70,17 +70,6 @@ class VisaIntyg {
         return result
     }
 
-    boolean skrivUtArbetsgivarutskriftKnappVisas() {
-        boolean result
-        Browser.drive {
-            waitFor {
-                at VisaIntygPage
-            }
-            result = page.skrivUtKnappEmployer.isDisplayed()
-        }
-        return result
-    }
-
     boolean kopieraKnappVisas() {
         boolean result
         Browser.drive {

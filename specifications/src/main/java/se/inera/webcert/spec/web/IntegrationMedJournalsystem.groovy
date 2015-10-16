@@ -1,7 +1,5 @@
 package se.inera.webcert.spec.web
-
 import se.inera.certificate.spec.Browser
-import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 
@@ -320,6 +318,9 @@ class IntegrationMedJournalsystem {
 	boolean textNyttPersonnummerVisas() {
 		def result
 		Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
 			result = page.kopieraDialogMsgNyttPersonId?.isDisplayed()
 		}
 		result
@@ -342,9 +343,6 @@ class IntegrationMedJournalsystem {
     boolean forlangningSjukskrivningVisas() {
         def result
         Browser.drive {
-            waitFor {
-                at AbstractViewCertPage
-            }
             result =  page.kopieraDialogMsgForlangningSjukskrivning?.isDisplayed();
         }
         result

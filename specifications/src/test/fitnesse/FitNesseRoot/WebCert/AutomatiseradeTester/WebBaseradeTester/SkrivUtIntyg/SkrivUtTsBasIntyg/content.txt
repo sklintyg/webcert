@@ -8,4 +8,4 @@
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-4 | och typ | ts-bas|
 | säkerställ att | intyg laddat |
-| säkerställ att | skriv ut vanlig knapp visas |
+| säkerställ att | skriv ut knapp visas |

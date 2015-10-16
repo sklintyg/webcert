@@ -296,6 +296,9 @@ class SvaraOchFraga {
     boolean fragaVisas(String id) {
         def result
         Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
             result = page.isQAVisible(id)
         }
         result
@@ -333,7 +336,7 @@ class SvaraOchFraga {
     boolean skrivUtKnappVisas() {
         def result
         Browser.drive {
-            result = page.skrivUtKnapp?.isDisplayed()
+            result = page.skrivUtKnappEmployer?.isDisplayed()
         }
         result
     }
@@ -638,9 +641,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                result = page.noResultsOnUnitInfo?.isDisplayed()
-            }
+            result = page.noResultsOnUnitInfo?.isDisplayed()
         }
         result
     }
@@ -651,9 +652,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                result = page.noResultsForQueryInfo?.isDisplayed()
-            }
+            result = page.noResultsForQueryInfo?.isDisplayed()
         }
         result
     }
@@ -664,9 +663,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                result = page.visaAllaFragaBtn?.isDisplayed()
-            }
+            result = page.visaAllaFragaBtn?.isDisplayed()
         }
         result
     }
