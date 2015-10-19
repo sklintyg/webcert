@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!DOCTYPE html>
-<div class="container" style="margin-bottom: 20px">
+<div class="container" style="margin-bottom: 8px">
   <div class="row">
     <h4>Välj inloggning</h4>
   </div>

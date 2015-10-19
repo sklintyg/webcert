@@ -40,7 +40,7 @@
     <div class="content-container">
       <div class="row">
         <div class="col-xs-6">
-          <img class="pull-right webcert-log" src="/img/webcert_big.png" />
+          <img class="pull-right webcert-logo" src="/img/webcert_big.png" />
         </div>
         <div class="col-xs-6">
           <h1>Välkommen till Webcert</h1>
@@ -57,13 +57,11 @@
 
           <jsp:include page="login.jsp" />
 
-          <div style="margin-top:60px;" class="well"><b>Ny användare</b>
+          <div style="margin-top:30px;" class="graybox"><b>Ny användare</b>
             <p>Är du privatläkare och vill kunna utfärda intyg i Webcert? Då behöver du skapa ett konto.</p>
 
-            <p><a
-                href="<spring:eval expression="@webcertProps.getProperty('privatepractitioner.portal.registration.url')" />">
+            <a href="<spring:eval expression="@webcertProps.getProperty('privatepractitioner.portal.registration.url')" />">
               Skapa konto i Webcert</a>
-            </p>
           </div>
         </div>
       </div>
