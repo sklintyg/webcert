@@ -45,7 +45,7 @@ public class UserApiController extends AbstractApiController {
 
     @Autowired
     private WebcertFeatureService featureService;
-    
+
     @Autowired
     private MonitoringLogServiceImpl monitoringService;
 
