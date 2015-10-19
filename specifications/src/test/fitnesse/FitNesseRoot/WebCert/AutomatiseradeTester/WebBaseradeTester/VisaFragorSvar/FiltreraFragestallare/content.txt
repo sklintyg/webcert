@@ -1,3 +1,5 @@
+Ignorerat i väntan på WEBCERT-2061
+
 Testet beskriver fallet när en användare filtrerar frågor på frågeställare.
 
 !3 Logga in
