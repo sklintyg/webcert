@@ -572,5 +572,29 @@
 
   </changeSet>
 
+  <changeSet id="23" author="el">
+    <createTable tableName="BEFATTNINGSKODER_ROLL">
+      <column name="BEFATTNINGSKOD_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ROLL_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint constraintName="BEFATTNINGSKODER_ROLL_ROLL_FK"
+        baseColumnNames="ROLL_ID" baseTableName="BEFATTNINGSKODER_ROLL"
+        referencedColumnNames="ID" referencedTableName="ROLLER" />
+
+    <addForeignKeyConstraint constraintName="BEFATTNINGSKODER_ROLL_BEFATTNINGSKOD_FK"
+        baseColumnNames="BEFATTNINGSKOD_ID" baseTableName="BEFATTNINGSKODER_ROLL"
+        referencedColumnNames="ID" referencedTableName="BEFATTNINGSKODER" />
+
+    <addUniqueConstraint
+        columnNames="BEFATTNINGSKOD_ID, ROLL_ID"
+        constraintName="BEFATTNINGSKOD_ROLL_UNIQUE_CONST"
+        tableName="BEFATTNINGSKODER_ROLL"/>
+  </changeSet>
+
 
 </databaseChangeLog>

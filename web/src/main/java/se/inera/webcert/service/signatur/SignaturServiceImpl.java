@@ -172,6 +172,7 @@ public class SignaturServiceImpl implements SignaturService {
 
     // We may need to tweak this if it turns out we _somehow_ are getting HsaId's from the sig. that doesn't exactly
     // match what we got from SAML-tickets or HSA on session start. (Kronoberg, see WEBCERT-1501)
+    // Consider making a 2-way "subset of" check, if either string is subset of the other, we're OK.
     private boolean verifyHsaIdEqual(WebCertUser user, String signaturHsaId) {
         return !user.getHsaId().trim().replaceAll("\\-", "").equalsIgnoreCase(signaturHsaId.trim().replaceAll("\\-", ""));
     }

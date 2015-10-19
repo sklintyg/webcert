@@ -7,8 +7,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -31,8 +32,8 @@ public class TitleCode {
     @Column(name = "GRUPPFORSKRIVARKOD")
     private String groupPrescriptionCode;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.EAGER, orphanRemoval = true)
-    @PrimaryKeyJoinColumn
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false, fetch = FetchType.EAGER)
+    @JoinTable(name = "BEFATTNINGSKODER_ROLL", inverseJoinColumns = @JoinColumn(name = "ROLL_ID", referencedColumnName = "ID"), joinColumns = @JoinColumn(name = "BEFATTNINGSKOD_ID", referencedColumnName = "ID"))
     private Role role;
 
     public TitleCode() {

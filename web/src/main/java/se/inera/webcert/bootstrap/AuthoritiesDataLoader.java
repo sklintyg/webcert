@@ -25,10 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 /**
  * Created by Magnus Ekstrand on 28/08/15.
  */
-@Component
+@Component(value = "authoritiesDataLoader")
 public class AuthoritiesDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthoritiesDataLoader.class);
@@ -127,7 +128,27 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
             role = new Role(userRole.name(), userRole.toString());
             role.setPrivileges(privileges);
             roleRepository.save(role);
+        } else {
+            role = updatePrivilegesOnRoleIfChanged(role, privileges);
         }
+        return role;
+    }
+
+    private Role updatePrivilegesOnRoleIfChanged(Role role, Collection<Privilege> privileges) {
+
+        // Add any new privilege present in privileges Collection not present on Role.
+        if (!role.getPrivileges().containsAll(privileges)) {
+           for (Privilege p : privileges) {
+               if (!role.getPrivileges().contains(p)) {
+                   role.getPrivileges().add(p);
+               }
+           }
+           role = roleRepository.save(role);
+        }
+
+        // We do not remove privileges from the role based on statically defined privileges per role in the enumerations.
+        // Förvaltningen may add new privileges or relations directly to the database and these must be retained on a server restart.
+        // We will refactor this later anyway.
         return role;
     }
 
@@ -138,16 +159,14 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
             return null;
         }
 
-        //List<TitleCode> titleCodes = titleCodeRepository.findByTitleCode(titleCode);
         TitleCode tc = titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(titleCode, groupPrescriptionCode);
         if (tc == null) {
             tc = new TitleCode();
             tc.setTitleCode(titleCode);
             tc.setGroupPrescriptionCode(groupPrescriptionCode);
             tc.setRole(role);
-            titleCodeRepository.save(tc);
+            tc = titleCodeRepository.save(tc);
         }
-
         return tc;
     }
 
@@ -235,15 +254,15 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     }
 
     private List<UserPrivilege> getVardadministratorPrivilegeList() {
-        return Arrays.asList(new UserPrivilege[] {
-            UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
-            UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
-            UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
-            UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
-            UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
-            UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
-            UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
-            UserPrivilege.PRIVILEGE_NAVIGERING });
+        return Arrays.asList(new UserPrivilege[]{
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+                UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
+                UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
+                UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
+                UserPrivilege.PRIVILEGE_NAVIGERING});
     }
 
     private List<UserPrivilege> getUthoppsVardadministratorPrivilegeList() {
