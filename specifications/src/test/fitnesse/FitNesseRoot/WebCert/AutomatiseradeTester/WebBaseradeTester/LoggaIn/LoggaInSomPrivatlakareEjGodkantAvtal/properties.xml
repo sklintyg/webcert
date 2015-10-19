@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <properties>
-<Edit>true</Edit>
-<Files>true</Files>
+<Edit/>
+<Files/>
 <Help>Logga in som privatläkare och godkänn avtal</Help>
-<Properties>true</Properties>
-<RecentChanges>true</RecentChanges>
-<Refactor>true</Refactor>
-<Search>true</Search>
+<Properties/>
+<Prune/>
+<RecentChanges/>
+<Refactor/>
+<Search/>
 <Test/>
-<Versions>true</Versions>
-<WhereUsed>true</WhereUsed>
+<Versions/>
+<WhereUsed/>
 </properties>
