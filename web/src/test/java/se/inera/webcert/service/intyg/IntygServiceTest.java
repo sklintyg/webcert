@@ -44,6 +44,7 @@ import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -173,7 +174,7 @@ public class IntygServiceTest {
 
         assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getUtlatande().getId());
-        assertEquals("19121212-1212", intygData.getUtlatande().getGrundData().getPatient().getPersonId());
+        assertEquals("19121212-1212", intygData.getUtlatande().getGrundData().getPatient().getPersonId().getPersonnummer());
 
     }
 
@@ -215,7 +216,7 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
-        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
 
         ArgumentCaptor<ListCertificatesForCareType> argument = ArgumentCaptor.forClass(ListCertificatesForCareType.class);
 
@@ -249,7 +250,7 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listErrorResponse);
 
-        intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
     }
 
     @Test
@@ -263,7 +264,7 @@ public class IntygServiceTest {
                 WebServiceException.class);
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false));
 
-        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
         assertNotNull(intygItemListResponse);
         assertEquals(1, intygItemListResponse.getIntygItemList().size());
 
@@ -340,7 +341,7 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
-        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
         assertEquals(3, intygItemListResponse.getIntygItemList().size());
         verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
@@ -352,7 +353,7 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
-        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
         assertEquals(2, intygItemListResponse.getIntygItemList().size());
         verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }

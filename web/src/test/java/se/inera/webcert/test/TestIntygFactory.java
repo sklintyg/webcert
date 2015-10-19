@@ -8,6 +8,7 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -68,11 +69,11 @@ public final class TestIntygFactory {
     }
 
     public static Utkast createUtkast(String id, LocalDateTime lastUpdated) {
-        return createUtkast(id, lastUpdated, "A Type", "A Person", "HSA1234", UtkastStatus.DRAFT_COMPLETE, "19121212-1212");
+        return createUtkast(id, lastUpdated, "A Type", "A Person", "HSA1234", UtkastStatus.DRAFT_COMPLETE, new Personnummer("19121212-1212"));
     }
 
     public static Utkast createUtkast(String id, LocalDateTime lastUpdated, String type, String modifiedBy, String modifiedByHsaId,
-            UtkastStatus status, String patientId) {
+            UtkastStatus status, Personnummer patientId) {
 
         VardpersonReferens vp = new VardpersonReferens();
         vp.setNamn(modifiedBy);

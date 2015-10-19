@@ -123,7 +123,7 @@ public class UtkastRepositoryTest {
 
         List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER, enhetsIds, statuses,
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER.getPersonnummer(), enhetsIds, statuses,
                 allIntygsTyper());
 
         assertThat(results.size(), is(2));

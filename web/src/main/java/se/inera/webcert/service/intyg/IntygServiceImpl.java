@@ -20,6 +20,7 @@ import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.webcert.client.converter.RevokeRequestConverter;
@@ -123,9 +124,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygItemListResponse listIntyg(List<String> enhetId, String personnummer) {
+    public IntygItemListResponse listIntyg(List<String> enhetId, Personnummer personnummer) {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
-        request.setPersonId(personnummer);
+        request.setPersonId(personnummer.getPersonnummer());
         request.getEnhet().addAll(enhetId);
 
         try {
@@ -164,17 +165,17 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
-    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<IntygItem> fullIntygItemList, List<String> enhetId, String personnummer) {
+    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<IntygItem> fullIntygItemList, List<String> enhetId, Personnummer personnummer) {
         List<IntygItem> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
 
         intygItems.removeAll(fullIntygItemList);
         fullIntygItemList.addAll(intygItems);
     }
 
-    private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, String personnummer) {
+    private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer, enhetId, statuses, webCertUserService.getUser().getIntygsTyper());
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, webCertUserService.getUser().getIntygsTyper());
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
     }
 

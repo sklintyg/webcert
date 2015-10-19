@@ -1,38 +1,39 @@
 package se.inera.webcert.web.controller.api.dto;
 
 import org.apache.commons.lang3.StringUtils;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 public class CopyIntygRequest {
 
-    private String patientPersonnummer;
+    private Personnummer patientPersonnummer;
 
-    private String nyttPatientPersonnummer;
+    private Personnummer nyttPatientPersonnummer;
 
     public CopyIntygRequest() {
 
     }
 
-    public String getPatientPersonnummer() {
+    public Personnummer getPatientPersonnummer() {
         return patientPersonnummer;
     }
 
-    public void setPatientPersonnummer(String patientPersonnummer) {
+    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
         this.patientPersonnummer = patientPersonnummer;
     }
 
-    public String getNyttPatientPersonnummer() {
+    public Personnummer getNyttPatientPersonnummer() {
         return nyttPatientPersonnummer;
     }
 
-    public void setNyttPatientPersonnummer(String nyttPatientPersonnummer) {
+    public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
         this.nyttPatientPersonnummer = nyttPatientPersonnummer;
     }
 
     public boolean containsNewPersonnummer() {
-        return StringUtils.isNotBlank(nyttPatientPersonnummer);
+        return nyttPatientPersonnummer != null && StringUtils.isNotBlank(nyttPatientPersonnummer.getPersonnummer());
     }
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(patientPersonnummer);
+        return patientPersonnummer != null && StringUtils.isNotBlank(patientPersonnummer.getPersonnummer());
     }
 }

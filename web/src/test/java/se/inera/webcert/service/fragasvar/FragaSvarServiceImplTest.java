@@ -48,6 +48,7 @@ import com.google.common.collect.Maps;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -85,7 +86,7 @@ import se.inera.webcert.util.ReflectionUtils;
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
 
-    private static final String PATIENT_ID = "19121212-1212";
+    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
 
     private static final LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
     private static final LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");

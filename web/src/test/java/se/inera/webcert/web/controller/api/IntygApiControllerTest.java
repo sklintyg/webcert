@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -35,7 +36,7 @@ import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygApiControllerTest {
 
-    private static final String PNR = "19121212-1212";
+    private static final Personnummer PNR = new Personnummer("19121212-1212");
 
     private static final String ENHET_ID = "ABC123";
 
@@ -94,9 +95,9 @@ public class IntygApiControllerTest {
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygItemListResponse);
 
         // Mock call to database
-        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
+        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR.getPersonnummer(), ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
 
-        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
+        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 
         @SuppressWarnings("unchecked")
         List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
@@ -109,7 +110,7 @@ public class IntygApiControllerTest {
     public void testListIntygWhenUserHasNoAssignments() {
         when(user.getIdsOfSelectedVardenhet()).thenReturn(Collections.<String> emptyList());
 
-        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
+        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         verifyZeroInteractions(intygService);
@@ -125,9 +126,9 @@ public class IntygApiControllerTest {
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(offlineIntygItemListResponse);
 
         // Mock call to database
-        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
+        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR.getPersonnummer(), ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
 
-        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
+        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 
         @SuppressWarnings("unchecked")
         List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();

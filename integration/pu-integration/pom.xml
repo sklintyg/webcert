@@ -21,6 +21,10 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-support</artifactId>
+    </dependency>
 
     <!-- Logging -->
     <dependency>

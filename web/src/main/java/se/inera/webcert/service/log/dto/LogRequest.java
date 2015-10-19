@@ -1,12 +1,13 @@
 package se.inera.webcert.service.log.dto;
 
 import se.inera.certificate.common.util.StringUtil;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 public class LogRequest {
 
     private String intygId;
 
-    private String patientId;
+    private Personnummer patientId;
 
     private String patientName;
 
@@ -34,11 +35,11 @@ public class LogRequest {
         this.intygId = intygId;
     }
 
-    public String getPatientId() {
+    public Personnummer getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(Personnummer patientId) {
         this.patientId = patientId;
     }
 

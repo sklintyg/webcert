@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
@@ -31,9 +32,9 @@ public class PersonApiController extends AbstractApiController {
     @GET
     @Path("/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getPersonuppgifter(@PathParam("personnummer") String personnummer) {
-
-        LOG.debug("Hämtar personuppgifter för: {}", personnummer);
+    public Response getPersonuppgifter(@PathParam("personnummer") String personnummerIn) {
+        Personnummer personnummer = new Personnummer(personnummerIn);
+        LOG.debug("Hämtar personuppgifter för: {}", personnummer.getPnrHash());
 
         PersonSvar personSvar = puService.getPerson(personnummer);
 

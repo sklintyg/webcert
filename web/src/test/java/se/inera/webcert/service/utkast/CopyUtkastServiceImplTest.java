@@ -16,6 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -46,7 +47,7 @@ public class CopyUtkastServiceImplTest {
 
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final String PATIENT_SSN = "19121212-1212";
+    private static final Personnummer PATIENT_SSN = new Personnummer("19121212-1212");
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";

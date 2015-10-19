@@ -1,8 +1,10 @@
 package se.inera.webcert.service.dto;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
+
 public class Patient {
 
-    private String personnummer;
+    private Personnummer personnummer;
 
     private String fornamn;
 
@@ -19,11 +21,11 @@ public class Patient {
 
     }
 
-    public String getPersonnummer() {
+    public Personnummer getPersonnummer() {
         return personnummer;
     }
 
-    public void setPersonnummer(String personnummer) {
+    public void setPersonnummer(Personnummer personnummer) {
         this.personnummer = personnummer;
     }
 

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
@@ -101,7 +102,7 @@ public class NotificationMessageFactoryTest {
         utkast.setIntygsTyp("fk7263");
         utkast.setEnhetsId("SE12345678-1000");
         utkast.setEnhetsNamn("Vårdenhet 1");
-        utkast.setPatientPersonnummer("19121212-1212");
+        utkast.setPatientPersonnummer(new Personnummer("19121212-1212"));
         utkast.setPatientFornamn("Tolvan");
         utkast.setPatientEfternamn("Tolvansson");
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);

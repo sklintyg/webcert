@@ -1,12 +1,13 @@
 package se.inera.webcert.web.controller.api.dto;
 
 import org.joda.time.LocalDateTime;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 public class ListIntygEntry {
 
     private String intygId;
 
-    private String patientId;
+    private Personnummer patientId;
 
     private IntygSource source;
 
@@ -34,11 +35,11 @@ public class ListIntygEntry {
         this.intygId = intygId;
     }
 
-    public String getPatientId() {
+    public Personnummer getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(Personnummer patientId) {
         this.patientId = patientId;
     }
 

@@ -1,5 +1,7 @@
 package se.inera.webcert.service.monitoring;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
+
 /**
  * Service that writes messages to the monitoring log.
  *
@@ -56,7 +58,7 @@ public interface MonitoringLogService {
 
     void logUtkastPrint(String intygsId, String intygsTyp);
 
-    void logPULookup(String personNummer, String result);
+    void logPULookup(Personnummer personNummer, String result);
 
     void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion);
 

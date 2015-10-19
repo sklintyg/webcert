@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
@@ -46,7 +47,7 @@ public class PUServiceTest {
 
     @Test
     public void checkExistingPersonWithFullAddress() {
-        Person person = service.getPerson("19121212-1212").getPerson();
+        Person person = service.getPerson(new Personnummer("19121212-1212")).getPerson();
         assertEquals("Tolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
         assertEquals("Svensson, Storgatan 1, PL 1234", person.getPostadress());
@@ -56,7 +57,7 @@ public class PUServiceTest {
 
     @Test
     public void checkExistingPersonWithMinimalAddress() {
-        Person person = service.getPerson("20121212-1212").getPerson();
+        Person person = service.getPerson(new Personnummer("20121212-1212")).getPerson();
         assertEquals("Lilltolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
         assertEquals("Storgatan 1", person.getPostadress());
@@ -66,7 +67,7 @@ public class PUServiceTest {
 
     @Test
     public void checkExistingPersonWithMellannamn() {
-        Person person = service.getPerson("19520614-2597").getPerson();
+        Person person = service.getPerson(new Personnummer("19520614-2597")).getPerson();
         assertEquals("Per Peter", person.getFornamn());
         assertEquals("Pärsson", person.getEfternamn());
         assertEquals("Svensson", person.getMellannamn());
@@ -74,13 +75,13 @@ public class PUServiceTest {
     
     @Test
     public void checkNonExistingPerson() {
-        Person person = service.getPerson("19121212-7169").getPerson();
+        Person person = service.getPerson(new Personnummer("19121212-7169")).getPerson();
         assertNull(person);
     }
 
     @Test
     public void checkConfidentialPerson() {
-        Person person = service.getPerson("19540123-2540").getPerson();
+        Person person = service.getPerson(new Personnummer("19540123-2540")).getPerson();
         assertEquals("Maj", person.getFornamn());
         assertEquals("Pärsson", person.getEfternamn());
         assertEquals("KUNGSGATAN 5", person.getPostadress());
@@ -104,7 +105,7 @@ public class PUServiceTest {
         ReflectionTestUtils.setField(((Advised) service).getTargetSource().getTarget(), "service", mockResidentService);
 
         // First request should call the lookup service
-        Person person = service.getPerson("19121212-1212").getPerson();
+        Person person = service.getPerson(new Personnummer("19121212-1212")).getPerson();
         verify(mockResidentService).lookupResidentForFullProfile(logicalAddress, parameters);
         assertEquals("Tolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
@@ -113,7 +114,7 @@ public class PUServiceTest {
         assertEquals("Småmåla", person.getPostort());
 
         // This request should be cached
-        person = service.getPerson("19121212-1212").getPerson();
+        person = service.getPerson(new Personnummer("19121212-1212")).getPerson();
         // lookupResidentForFullProfile should still only be called once
         verify(mockResidentService).lookupResidentForFullProfile(logicalAddress, parameters);
         // person information should still be the same
@@ -150,20 +151,20 @@ public class PUServiceTest {
         ReflectionTestUtils.setField(((Advised) service).getTargetSource().getTarget(), "service", mockResidentService);
 
         // First request should call the lookup service
-        PersonSvar personsvar = service.getPerson("19121212-1212");
+        PersonSvar personsvar = service.getPerson(new Personnummer("19121212-1212"));
         verify(mockResidentService).lookupResidentForFullProfile(logicalAddress, parameters);
         assertEquals(personsvar.getStatus(), PersonSvar.Status.ERROR);
         assertNull(personsvar.getPerson());
 
         // since first request returned an error this request should call the lookup service again
-        personsvar = service.getPerson("19121212-1212");
+        personsvar = service.getPerson(new Personnummer("19121212-1212"));
         // lookupResidentForFullProfile should still only be called once
         verify(mockResidentService, times(2)).lookupResidentForFullProfile(logicalAddress, parameters);
         assertEquals(personsvar.getStatus(), PersonSvar.Status.ERROR);
         assertNull(personsvar.getPerson());
 
         // the third attempt will go through and should return real data
-        personsvar = service.getPerson("19121212-1212");
+        personsvar = service.getPerson(new Personnummer("19121212-1212"));
         // lookupResidentForFullProfile should still only be called once
         verify(mockResidentService, times(3)).lookupResidentForFullProfile(logicalAddress, parameters);
         assertEquals(personsvar.getStatus(), PersonSvar.Status.FOUND);
@@ -175,7 +176,7 @@ public class PUServiceTest {
         assertEquals("Småmåla", person.getPostort());
 
         // the fourth attempt will return cached data, lookupResidentForFullProfile should only be called 3 times total
-        personsvar = service.getPerson("19121212-1212");
+        personsvar = service.getPerson(new Personnummer("19121212-1212"));
         // lookupResidentForFullProfile should still only be called once
         verify(mockResidentService, times(3)).lookupResidentForFullProfile(logicalAddress, parameters);
         assertEquals(personsvar.getStatus(), PersonSvar.Status.FOUND);

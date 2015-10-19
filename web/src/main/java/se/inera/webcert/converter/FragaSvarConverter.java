@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import se.inera.certificate.model.common.internal.HoSPersonal;
 import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.FkKontaktType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
@@ -121,7 +122,7 @@ public class FragaSvarConverter {
 
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
-            intygsReferens.setPatientId(source.getPatient().getPersonId().getExtension());
+            intygsReferens.setPatientId(new Personnummer(source.getPatient().getPersonId().getExtension()));
         }
 
         intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());

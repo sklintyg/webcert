@@ -19,6 +19,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceImplTest {
@@ -35,7 +36,7 @@ public class MonitoringLogServiceImplTest {
     private static final String USER_ID = "USER_ID";
     private static final Integer AVTAL_VERSION = 98;
     private static final String HAN_TYPE = "HAN_TYPE";
-    private static final String PERSON_NUMMER = "PERSON_NUMMER";
+    private static final Personnummer PERSON_NUMMER = new Personnummer("PERSON_NUMMER");
     private static final String RESULT = "RESULT";
     private static final String FRAGESTALLARE = "FRAGESTALLARE";
     private static final String EXTERN_REFERENS = "EXTERN_REFERENS";

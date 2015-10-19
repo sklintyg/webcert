@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
@@ -45,7 +46,7 @@ public class ReceiveAnswerResponderImplTest {
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
     private static final String EJ_INTEGRERAD_ENHET = "SE4815162344-1A03";
 
-    private static final String PATIENT_ID = "19121212-1212";
+    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
 
 
     @Mock private MailNotificationService mockMailNotificationService;

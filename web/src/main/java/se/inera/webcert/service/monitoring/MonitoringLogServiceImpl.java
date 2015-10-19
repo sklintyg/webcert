@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.certificate.logging.HashUtility;
 import se.inera.certificate.logging.LogMarkers;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 @Service
 public class MonitoringLogServiceImpl implements MonitoringLogService {
@@ -135,8 +136,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logPULookup(String personNummer, String result) {
-        logEvent(MonitoringEvent.PU_LOOKUP, HashUtility.hash(personNummer), result);
+    public void logPULookup(Personnummer personNummer, String result) {
+        logEvent(MonitoringEvent.PU_LOOKUP, Personnummer.getPnrHashSafe(personNummer), result);
     }
 
     @Override

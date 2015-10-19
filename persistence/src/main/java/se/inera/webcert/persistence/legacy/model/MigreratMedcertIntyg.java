@@ -8,6 +8,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 /**
  * Entity for a Medcert certificate migrated into Webcert.
@@ -106,12 +107,12 @@ public class MigreratMedcertIntyg {
         this.patientNamn = patientNamn;
     }
 
-    public String getPatientPersonnummer() {
-        return patientPersonnummer;
+    public Personnummer getPatientPersonnummer() {
+        return new Personnummer(patientPersonnummer);
     }
 
-    public void setPatientPersonnummer(String patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer;
+    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
+        this.patientPersonnummer = patientPersonnummer.getPersonnummer();
     }
 
     public LocalDateTime getSkapad() {

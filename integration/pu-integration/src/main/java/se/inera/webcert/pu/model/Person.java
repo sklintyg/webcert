@@ -1,7 +1,9 @@
 package se.inera.webcert.pu.model;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
+
 public class Person {
-    private final String personnummer;
+    private final Personnummer personnummer;
     private final boolean sekretessmarkering;
     private final String fornamn;
     private final String mellannamn;
@@ -11,7 +13,7 @@ public class Person {
     private final String postort;
 
     // CHECKSTYLE:OFF ParameterNumber
-    public Person(String personnummer, boolean sekretessmarkering, String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
+    public Person(Personnummer personnummer, boolean sekretessmarkering, String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
         this.personnummer = personnummer;
         this.sekretessmarkering = sekretessmarkering;
         this.fornamn = fornamn;
@@ -23,7 +25,7 @@ public class Person {
     }
     // CHECKSTYLE:ON ParameterNumber
 
-    public String getPersonnummer() {
+    public Personnummer getPersonnummer() {
         return personnummer;
     }
 

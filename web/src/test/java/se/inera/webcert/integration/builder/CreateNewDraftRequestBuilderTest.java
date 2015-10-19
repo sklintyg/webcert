@@ -68,7 +68,7 @@ public class CreateNewDraftRequestBuilderTest {
         assertEquals(CAREGIVER_HSAID, res.getVardenhet().getVardgivare().getHsaId());
         assertNotNull(res.getVardenhet().getVardgivare().getNamn());
 
-        assertEquals("19121212-1212", res.getPatient().getPersonnummer());
+        assertEquals("19121212-1212", res.getPatient().getPersonnummer().getPersonnummer());
         assertEquals("Adam Bertil", res.getPatient().getFornamn());
         assertEquals("Cesarsson Davidsson", res.getPatient().getMellannamn());
         assertEquals("Eriksson", res.getPatient().getEfternamn());

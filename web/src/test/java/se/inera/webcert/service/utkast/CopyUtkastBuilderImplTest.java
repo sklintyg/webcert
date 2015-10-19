@@ -29,6 +29,7 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
@@ -55,12 +56,12 @@ public class CopyUtkastBuilderImplTest {
 
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final String PATIENT_SSN = "19121212-1212";
+    private static final Personnummer PATIENT_SSN = new Personnummer("19121212-1212");
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";
 
-    private static final String PATIENT_NEW_SSN = "19121212-1414";
+    private static final Personnummer PATIENT_NEW_SSN = new Personnummer("19121212-1414");
 
     private static final String VARDENHET_ID = "SE00001234-5678";
     private static final String VARDENHET_NAME = "Vårdenheten 1";

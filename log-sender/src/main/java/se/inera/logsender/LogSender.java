@@ -177,7 +177,7 @@ public class LogSender {
 
     private PatientType patient(Patient source) {
         PatientType patient = new PatientType();
-        patient.setPatientId(source.getPatientId().replace("-", ""));
+        patient.setPatientId(source.getPatientId().getPersonnummerWithoutDash());
         patient.setPatientName(source.getPatientNamn());
         return patient;
     }

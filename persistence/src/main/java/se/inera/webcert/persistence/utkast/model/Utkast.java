@@ -23,6 +23,7 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 /**
  * A draft of a certificate.
@@ -196,12 +197,12 @@ public class Utkast {
         this.vardgivarNamn = vardgivarNamn;
     }
 
-    public String getPatientPersonnummer() {
-        return patientPersonnummer;
+    public Personnummer getPatientPersonnummer() {
+        return new Personnummer(patientPersonnummer);
     }
 
-    public void setPatientPersonnummer(String patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer;
+    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
+        this.patientPersonnummer = patientPersonnummer.getPersonnummer();
     }
 
     public String getPatientFornamn() {

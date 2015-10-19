@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -156,7 +157,7 @@ public class SendNotificationStrategyTest {
         utkast.setIntygsTyp(intygsTyp);
         utkast.setEnhetsId(enhetsId);
         utkast.setEnhetsNamn("Vårdenheten");
-        utkast.setPatientPersonnummer("19121212-1212");
+        utkast.setPatientPersonnummer(new Personnummer("19121212-1212"));
         utkast.setPatientFornamn("Tolvan");
         utkast.setPatientEfternamn("Tolvansson");
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);

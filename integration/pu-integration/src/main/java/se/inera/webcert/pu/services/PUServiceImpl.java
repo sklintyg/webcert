@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.population.residentmaster.v1.JaNejTYPE;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
 import se.inera.population.residentmaster.v1.NamnTYPE;
@@ -36,17 +37,16 @@ public class PUServiceImpl implements PUService {
     @Cacheable(value = "personCache",
                key = "#personId",
                unless = "#result.status == T(se.inera.webcert.pu.model.PersonSvar$Status).ERROR")
-    public PersonSvar getPerson(String personId) {
-        String normalizedId = normalizeId(personId);
+    public PersonSvar getPerson(Personnummer personId) {
 
-        LOG.debug("Looking up person '{}'({})", normalizedId, personId);
+        LOG.debug("Looking up person '{}'", personId.getPnrHash());
         LookupResidentForFullProfileType parameters = new LookupResidentForFullProfileType();
         parameters.setLookUpSpecification(new LookUpSpecificationType());
-        parameters.getPersonId().add(normalizedId);
+        parameters.getPersonId().add(personId.getPersonnummerWithoutDash());
         try {
             LookupResidentForFullProfileResponseType response = service.lookupResidentForFullProfile(logicaladdress, parameters);
             if (response.getResident().isEmpty()) {
-                LOG.warn("No person '{}'({}) found", normalizedId, personId);
+                LOG.warn("No person '{}' found", personId.getPnrHash());
                 return new PersonSvar(null, PersonSvar.Status.NOT_FOUND);
             }
 
@@ -59,11 +59,11 @@ public class PUServiceImpl implements PUService {
             String adressRader = buildAdress(adress);
             Person person = new Person(personId, resident.getSekretessmarkering() == JaNejTYPE.J, namn.getFornamn(),
                     namn.getMellannamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
-            LOG.debug("Person '{}' found", normalizedId);
+            LOG.debug("Person '{}' found", personId.getPnrHash());
 
             return new PersonSvar(person, PersonSvar.Status.FOUND);
         } catch (SOAPFaultException e) {
-            LOG.warn("Error occured, no person '{}'({}) found", normalizedId, personId);
+            LOG.warn("Error occured, no person '{}' found", personId.getPnrHash());
             return new PersonSvar(null, PersonSvar.Status.ERROR);
         }
     }
@@ -73,18 +73,6 @@ public class PUServiceImpl implements PUService {
     @CacheEvict(value = "personCache", allEntries = true)
     public void clearCache() {
         LOG.debug("personCache cleared");
-    }
-
-    private String normalizeId(String personId) {
-        final int lengthOfPnrIncludingDash = 13;
-        if (personId.length() == lengthOfPnrIncludingDash) {
-            final int birthDateBeginIndex = 0;
-            final int birthDateEndIndex = 8;
-            final int birthNumberBeginIndex = 9;
-            return personId.substring(birthDateBeginIndex, birthDateEndIndex) + personId.substring(birthNumberBeginIndex);
-        } else {
-            return personId;
-        }
     }
 
     private String buildAdress(SvenskAdressTYPE adress) {

@@ -29,6 +29,7 @@ import org.w3.wsaddressing10.AttributedURIType;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
@@ -65,7 +66,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private static final String INTYG_TYPE = "fk7263";
 
     private static final String INTYG_ID = "123";
-    private static final String PATIENT_ID = "19121212-1212";
+    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
     private static final java.lang.String SAMPLE_XML = "<xml></xml>";
 
     @Mock
