@@ -1,5 +1,6 @@
 package se.inera.webcert.service.monitoring;
 
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logUserLogout(String userHsaId, String authScheme) {
         logEvent(MonitoringEvent.USER_LOGOUT, userHsaId, authScheme);
+    }
+
+    @Override
+    public void logUserAgreementAccepted(String userHsaId, int version, LocalDateTime date) {
+        logEvent(MonitoringEvent.USER_AGREEMENT_ACCEPTED, userHsaId, version, date);
     }
 
     @Override
@@ -163,6 +169,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
         USER_LOGIN("Login user '{}' using scheme '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
+        USER_AGREEMENT_ACCEPTED("User '{}' accepted agreement version '{}' with date '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),

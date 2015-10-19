@@ -1,9 +1,10 @@
 package se.inera.webcert.service.monitoring;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertThat;
 
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,7 @@ public class MonitoringLogServiceImplTest {
     private static final String AMNE = "AMNE";
     private static final String UNIT_HSA_ID = "UNIT_HSA_ID";
     private static final String USER_HSA_ID = "USER_HSA_ID";
+    private static final int VERSION = 1;
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -79,9 +81,9 @@ public class MonitoringLogServiceImplTest {
         final LoggingEvent loggingEvent = captorLoggingEvent.getValue();
 
         // Verify log
-        assertThat(loggingEvent.getLevel(), is(logLevel));
+        assertThat(loggingEvent.getLevel(), equalTo(logLevel));
         assertThat(loggingEvent.getFormattedMessage(),
-                is(logMessage));
+                equalTo(logMessage));
     }
 
     @Test
@@ -208,6 +210,13 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUserLogout() {
         logService.logUserLogout(HSA_ID, AUTH_SCHEME);
         verifyLog(Level.INFO, "USER_LOGOUT Logout user 'HSA_ID' using scheme 'AUTH_SCHEME'");
+    }
+
+    @Test
+    public void shouldLogUserAgreementAccepted() {
+        LocalDateTime DATE = new LocalDateTime(2016, 10, 19, 14, 0, 0);
+        logService.logUserAgreementAccepted(HSA_ID, VERSION, DATE );
+        verifyLog(Level.INFO, "USER_AGREEMENT_ACCEPTED User 'HSA_ID' accepted agreement version '1' with date '2016-10-19T14:00:00.000'");
     }
 
     @Test

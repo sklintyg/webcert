@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -44,6 +45,9 @@ public class UserApiController extends AbstractApiController {
 
     @Autowired
     private WebcertFeatureService featureService;
+    
+    @Autowired
+    private MonitoringLogServiceImpl monitoringService;
 
     /**
      * Retrieves the security context of the logged in user as JSON.
@@ -122,6 +126,9 @@ public class UserApiController extends AbstractApiController {
     public Response godkannAvtal() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
+            Avtal avtal = avtalService.getLatestAvtal();
+            monitoringService.logUserAgreementAccepted(user.getHsaId(), avtal.getAvtalVersion(), avtal.getVersionDatum());
+
             avtalService.approveLatestAvtal(user.getHsaId());
             user.setPrivatLakareAvtalGodkand(true);
         }
