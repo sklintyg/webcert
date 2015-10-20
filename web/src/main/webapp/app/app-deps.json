@@ -10,6 +10,7 @@
     "/app/views/fragorOchSvar/fragorOchSvarEnhetsId.filter.js",
     "/app/views/fragorOchSvar/wcVardenhetSelector.directive.js",
     "/app/views/omWebcert/omWebcert.controller.js",
+    "/app/views/omWebcert/omWebcertTerms.controller.js",
     "/app/views/omWebcert/wcAbout.directive.js",
     "/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.controller.js",
     "/app/views/sokSkrivIntyg/sokSkrivIntyg.controller.js",

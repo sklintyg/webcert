@@ -165,7 +165,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.terms.html',
-                    controller: 'webcert.AboutWebcertCtrl'
+                    controller: 'webcert.AboutWebcertTermsCtrl'
                 }
             }
         }).
