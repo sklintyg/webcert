@@ -8,7 +8,9 @@
         <ul>
           <li wc-authority feature="hanteraIntygsutkast" intygstyp="fk7263">Läkarintyg FK 7263</li>
           <li wc-authority feature="hanteraIntygsutkast" intygstyp="ts-bas">Transportstyrelsens läkarintyg</li>
-          <li wc-authority feature="hanteraIntygsutkast" intygstyp="ts-diabetes">Transportstyrelsens läkarintyg, diabetes</li>
+          <li wc-authority feature="hanteraIntygsutkast" intygstyp="ts-diabetes">Transportstyrelsens läkarintyg,
+            diabetes
+          </li>
         </ul>
         <p>
           I kommande versioner av tjänsten blir det möjligt att utfärda fler typer av läkarintyg. </p>
@@ -16,12 +18,15 @@
         <h4>Användarkrav för Webcert</h4>
         <div wc-authority role="ROLE_PRIVATLAKARE">
           <ul>
-            <li>Har en e-legitimation</li>
-            <li>Är legitimerad läkare enligt Socialstyrelsens register över legitimerad hälso- och sjukvårdspersonal (HOSP).</li>
+            <li>Att du har en e-legitimation</li>
+            <li>Att du är legitimerad läkare enligt Socialstyrelsens register över legitimerad hälso- och
+              sjukvårdspersonal (HOSP).
+            </li>
           </ul>
 
           <h4>Om e-legitimation</h4>
-          <p>För att logga in i Werbcert och signera intygen använder du samma e-legitimation som när du loggar in i din bank.</p>
+          <p>För att logga in i Webcert och signera intyg använder du samma e-legitimation som när du loggar in i din
+            bank.</p>
         </div>
         <div wc-authority role="!ROLE_PRIVATLAKARE">
           <ul>
@@ -37,7 +42,8 @@
           <p>
             SITHS-kortet är en personlig legitimation som inte får lånas ut. Både kort och koder ska förvaras på ett
             säkert sätt. </p>
-          <p>Om du har problem med att logga in med ditt kort eller vill veta vilken behörighet du har så kan du testa det
+          <p>Om du har problem med att logga in med ditt kort eller vill veta vilken behörighet du har så kan du testa
+            det
             här: <a href="https://test.siths.se/" target="_blank">test.siths.se</a></p>
           <p>Om du förlorat ditt kort eller misstänker att någon obehörig fått kännedom om dina koder ska kortet spärras
             omedelbart. Om ditt kort har spärrats eller om du glömt någon av koderna ska du vända dig till din
@@ -52,55 +58,56 @@
 
         </div>
         <div wc-authority role="!ROLE_PRIVATLAKARE">
-          <p>Webcert har två typer av användare: läkare och vårdadministratörer (exempelvis läkarsekreterare). Behörighet
-            för inloggning:</p>
+          <p>Webcert har flera typer av användare: läkare, tandläkare och vårdadministratörer (exempelvis
+            läkarsekreterare). Behörighet för inloggning:</p>
           <ul>
             <li>Vårdadministratör ska ha medarbetaruppdraget "Vård och behandling" i HSA.</li>
-            <li>Läkare ska vara legitimerad läkare eller AT-läkare samt ha medarbetaruppdraget "Vård och behandling" i
-              HSA.
+            <li>Tandläkare ska vara legitimerad tandläkare samt ha medarbetaruppdraget ”Vård och behandling” i HSA.</li>
+            <li>Läkare ska ha medarbetaruppdraget ”Vård och behandling” i HSA samt vara något av följande:
+              <ul>
+                <li>legitimerade läkare</li>
+                <li>AT-läkare</li>
+                <li>läkare inom och utanför EU/ESS/Schweiz som ännu inte har svensk läkarlegitimation, men som är
+                  legitimerade i sitt hemland och som av vårdgivaren har tilldelats en gruppförskrivarkod och därmed har
+                  ett särskilt förordnande att utöva läkaryrket.
+                </li>
+                <li>vikarierande examinerad läkare (examinerade AT-läkare som ännu inte fått sin legitimation och
+                  personer som har tagit sin läkarexamen men ännu inte påbörjat AT-tjänstgöring) som av vårdgivaren har
+                  tilldelats en gruppförskrivarkod och därmed har ett särskilt förordnande att utöva läkaryrket.
+                </li>
+              </ul>
             </li>
           </ul>
-          <p>Alla användare kan skapa, skriva och spara utkast. Endast läkare kan signera och skriva ut intyg samt besvara
-            frågor med ämnet "komplettering". Vårdadministratör kan via mejl notifiera läkare om att signera sparade
-            intyg.</p>
+          <p>Alla användare kan skapa, skriva och spara utkast. Endast läkare och tandläkare kan signera och makulera
+            intyg samt besvara frågor med ämnet "komplettering". Vårdadministratör kan via mejl notifiera läkare om att
+            signera sparade intyg.</p>
         </div>
 
-        <div wc-authority role="ROLE_PRIVATLAKARE">
-          <h4>Invånarens intyg</h4>
-          <p>Intyg som signeras i Webcert sparas även i webbtjänsten Mina intyg, där invånaren själv kan hantera sitt intyg. Mina intyg nås via 1177 Vårdguidens e-tjänster www.1177.se. I Mina intyg kan invånaren skicka intyget vidare elektroniskt till någon av de anslutna mottagarna, det går även att skriva ut intyget.</p>
-        </div>
-        <div wc-authority role="!ROLE_PRIVATLAKARE">
-          <h4>Funktioner och invånarens hantering</h4>
-          <p>Intyg som signeras i Webcert sparas även i webbtjänsten Mina intyg, där invånaren själv kan hantera sitt
-            intyg. Mina intyg nås via 1177 Vårdguidens e-tjänster. I Mina intyg kan invånaren skicka intyget vidare
-            elektroniskt till någon av de anslutna mottagarna, det går även att skriva ut intyget.</p>
-        </div>
-        <p>
-          Om patienten inte vill använda Mina intyg är det möjligt för läkaren att skicka vissa intygstyper elektroniskt
-          direkt från Webcert till mottagaren. Observera att patientens samtycke då krävs. </p>
-        <p>
-          Om intyget inte skickas på något av dessa sätt kan läkaren skriva ut en kopia på det signerade intyget från
-          Webcert och ge till patienten. </p>
-        <p>
-          För vissa intygstyper finns en elektronisk funktion för frågor och svar. Via funktionen kan läkaren och
-          Försäkringskassan kommunicera om ett utfärdat intyg. </p>
+        <h4>Invånarens intyg</h4>
+        <p>I samband med att intyget signeras görs det tillgängligt för invånaren i Mina intyg. I Mina intyg kan
+          invånaren skicka intyget vidare elektroniskt till någon av de anslutna mottagarna, eller skriva ut det. Mina
+          intyg nås via 1177 Vårdguidens e-tjänster www.1177.se</p>
+        <p>Om invånaren inte vill använda Mina intyg är det möjligt för läkaren att skicka intyget elektroniskt direkt
+          från Webcert till mottagaren. Observera att invånarens samtycke då krävs.</p>
+        <p>Läkaren kan också skriva ut det signerade intyget från Webcert och ge till patienten.</p>
+        <p>För Försäkringskassans intyg finns en elektronisk funktion för frågor och svar. Via funktionen kan läkaren
+          och Försäkringskassan kommunicera om ett signerat intyg.</p>
+
         <h4>Webbläsare som stöds</h4>
-        <p>
-          För att kunna använda Webcerts funktioner behöver du någon av följande webbläsare: </p>
-        <ul>
-          <li>Internet Explorer 9 eller efterföljande versioner. <span wc-authority role="ROLE_PRIVATLAKARE">Det går att använda andra webbläsare men då finns viss risk för att problem uppstår.</span></li>
-        </ul>
-        <p>Du måste även ha JavaScript aktiverat i din webbläsare för att kunna använda Webcert.</p>
+        <p>För att kunna använda Webcerts funktioner behöver du Internet Explorer 9 eller efterföljande versioner. Det
+          går att använda andra webbläsare men då finns viss risk för att problem uppstår. Du måste även ha JavaScript
+          aktiverat i din webbläsare för att kunna använda Webcert.</p>
 
         <h4>Adress till vårdenheten</h4>
         <div wc-authority role="ROLE_PRIVATLAKARE">
-          <p>Intyg som utfärdas i Webcert innehåller adress- och kontaktinformation till den vårdenhet du arbetar för och som du angivit när du skapade ett konto för att använda Webcert. Adressuppgifter kan ändras via länken Ändra uppgifter.</p>
+          <p>Intyg som utfärdas i Webcert innehåller adress- och kontaktinformation till den vårdenhet du arbetar för
+            och som du angivit när du skapade ett konto för att använda Webcert. Adressuppgifter kan ändras via länken
+            Ändra uppgifter.</p>
         </div>
         <div wc-authority role="!ROLE_PRIVATLAKARE">
-          <p>
-            Intyg som utfärdas i Webcert innehåller adress- och kontaktinformation till den eller de vårdenheter du
-            arbetar för. För landstingsanställda läkare hämtas uppgifterna från HSA. Om du upptäcker att adress- och kontaktinformation är
-            fel, så kan informationen ändras i HSA. </p>
+          <p>Intyg som utfärdas i Webcert innehåller adress- och kontaktuppgifter till den vårdenhet du är inloggad på
+            när utkastet skapas. För landstingsanställda läkare hämtas uppgifterna från HSA. Om du upptäcker att adress-
+            och kontaktinformationen är fel, så kan du begära ändring i HSA-katalogen.</p>
         </div>
 
         <h4>
