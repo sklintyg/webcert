@@ -3,8 +3,6 @@
 (function() {
     'use strict';
 
-    //window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
-
     // --- define test hooks
     window.doneLoading = false;
     window.dialogDoneLoading = true;
@@ -126,23 +124,6 @@
                     // Apply global changes to arguments, or perform other
                     // nefarious acts.
 
-                    if (key === 'get') {
-                        // Add build number to all html get requests.
-                        // Ignore templates already provided in templateCache (angular ui uses these)
-                        if (MODULE_CONFIG.BUILD_NUMBER &&
-                            arguments.length > 0 && !$templateCache.get(arguments[0]) &&
-                            arguments[0].indexOf('.html', arguments[0].length - 5) !== -1) {
-                            // Add build number
-                            if (arguments[0].indexOf('?') >= 0) {
-                                arguments[0] += '&';
-                            }
-                            else {
-                                arguments[0] += '?';
-                            }
-                            arguments[0] += MODULE_CONFIG.BUILD_NUMBER;
-                        }
-                    }
-
                     return $http[key].apply($http, arguments);
                 };
             });
@@ -180,31 +161,6 @@
         showButtonBar: true
     });
 
-    // IE8 doesn't have Array.indexOf function, check and add it as early as possible
-    // Commented out for now, maybe IE8 won't come back?
-/*    function checkAddIndexOf() {
-
-        if (!Array.prototype.indexOf) {
-            Array.prototype.indexOf = function(elt /*, from*//*) {
-                var len = this.length >>> 0;
-
-                var from = Number(arguments[1]) || 0;
-                from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-                if (from < 0) {
-                    from += len;
-                }
-
-                for (; from < len; from++) {
-                    if (from in this &&
-                        this[from] === elt) {
-                        return from;
-                    }
-                }
-                return -1;
-            };
-        }
-    }
-*/
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel',
         function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel) {
@@ -243,15 +199,14 @@
                 });
 
             $rootScope.$on('$stateNotFound',
-                function(/*event, unfoundState, fromState, fromParams*/) {
-                    //$log.log('$stateNotFound '+unfoundState.to+'  - fired when a state cannot be found by its name.');
-                    //$log.log(unfoundState, fromState, fromParams);
-
+                function(event, unfoundState, fromState, fromParams) {
+                    $log.debug('$stateNotFound '+unfoundState.to + '  - fired when a state cannot be found by its name.');
+                    $log.debug(unfoundState, fromState, fromParams);
                 });
 
             $rootScope.$on('$stateChangeSuccess',
                 function(event, toState/*, toParams, fromState, fromParams*/) {
-                    //$log.log('$stateChangeSuccess to '+toState.name+'- fired once the state transition is complete.');
+                    $log.debug('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
                     if (!UserModel.termsAccepted && UserModel.transitioning && toState.name === 'webcert.terms') {
                         UserModel.transitioning = false;
                     }
@@ -259,21 +214,21 @@
                 });
 
             $rootScope.$on('$stateChangeError',
-                function(/*event, toState, toParams, fromState, fromParams, error*/) {
-                    //$log.log("$stateChangeError");
-                    //$log.log(toState);
+                function(event, toState, toParams, fromState, fromParams, error) {
+                    $log.debug('$stateChangeError');
+                    $log.debug(toState);
                 });
 
             $rootScope.$on('$viewContentLoading', function(/*event, viewConfig*/) {
                 // runs on individual scopes, so putting it in "run" doesn't work.
                 $window.rendered = false;
-                //$log.log('+++ $viewContentLoading, rendered : ' + $window.rendered);
+                $log.debug('+++ $viewContentLoading, rendered : ' + $window.rendered);
             });
 
             $rootScope.$on('$viewContentLoaded', function(/*event*/) {
-                //$log.log('$viewContentLoaded - fired after dom rendered',event);
+                $log.debug('$viewContentLoaded - fired after dom rendered',event);
                 $window.rendered = true;
-                //$log.log('--- $viewContentLoaded, rendered : ' + $window.rendered);
+                $log.debug('--- $viewContentLoaded, rendered : ' + $window.rendered);
             });
 
         }]);
@@ -353,7 +308,6 @@
                         }
 
                         // Everything is loaded, bootstrap the application with all dependencies.
-                        //angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
                         document.documentElement.setAttribute('ng-app', 'webcert');
                         angular.bootstrap(document, allModules);
 
@@ -411,7 +365,7 @@
         // the Console. We want to keep that behavior; however, we
         // want to intercept it so that we can also log the errors
         // to the server for later analysis.
-        app.provider('$exceptionHandler', function $exceptionHandlerProvider() {
+        app.provider('$exceptionHandler', function() { // $exceptionHandlerProvider
             this.$get = ['common.errorLogService', function(errorLogService) {
                 return errorLogService;
             }];

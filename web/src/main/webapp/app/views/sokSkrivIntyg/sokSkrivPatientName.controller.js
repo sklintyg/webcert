@@ -14,11 +14,11 @@ angular.module('webcert').controller('webcert.EditPatientNameCtrl',
             } else {
                 $scope.efternamn = PatientModel.efternamn;
             }
-            
+
             $scope.personNotFound = ($stateParams.mode === 'notFound');
-            
+
             $scope.errorOccured = ($stateParams.mode === 'errorOccured');
-            
+
             $scope.chooseCertType = function() {
                 PatientModel.fornamn = $scope.fornamn;
                 PatientModel.mellannamn = null;

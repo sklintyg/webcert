@@ -73,7 +73,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             function loadFilterForm() {
 
                 resetFilterState();
-                loadSavedByList($scope.widgetState.valdVardenhet);
+                loadSavedByList();
 
                 // Use saved choice if cookie has saved a filter
                 var storedFilter = $cookieStore.get('unsignedCertFilter');

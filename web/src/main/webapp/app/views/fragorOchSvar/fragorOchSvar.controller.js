@@ -83,7 +83,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 replyLatest: undefined
             };
 
-            // $scope.qaListUnhandled = undefined;
             $scope.activeUnit = {};
             $scope.filterQuery = {};
             var unitStats = {};
@@ -155,9 +154,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                 QuestionAnswer.getQA(preparedQuery, function(successData) {
 
-                    $log.log('QuestionAnswer.getQA success +++++++++++++++');
+                    $log.debug('QuestionAnswer.getQA success +++++++++++++++');
 
-                    //$log.log('--- preparedQuery : ' + JSON.stringify(preparedQuery));
+                    $log.debug('--- preparedQuery : ' + JSON.stringify(preparedQuery));
                     $scope.widgetState.totalCount = successData.totalCount;
 
                     var qaListQuery = [];
