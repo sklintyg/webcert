@@ -191,12 +191,17 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     //
     // TODO externalize mapping section
     //
+
+    /*
+     * Each row in matrix holds; befattningskod, gruppförskrivarkod, roll
+     */
     private String[][] getTitleCodesMatrix() {
         String [][] matrix = {
-            {"204010 ", "0000000", UserRole.ROLE_LAKARE.name()},
-            {"203090 ", "9300005", UserRole.ROLE_LAKARE.name()},
-            {"203090 ", "9400003", UserRole.ROLE_LAKARE.name()},
-            {"204090 ", "9100009", UserRole.ROLE_LAKARE.name()}
+            {"204010", "0000000", UserRole.ROLE_LAKARE.name()},
+            {"203090", "9300005", UserRole.ROLE_LAKARE.name()},
+            {"203090", "9400003", UserRole.ROLE_LAKARE.name()},
+            {"204090", "9100009", UserRole.ROLE_LAKARE.name()}
+
         };
         return matrix;
     }

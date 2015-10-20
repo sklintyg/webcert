@@ -33,7 +33,6 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
-import se.inera.auth.common.AuthConstants;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
@@ -69,9 +68,13 @@ import java.util.TreeSet;
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserDetailsServiceTest {
 
-    private static final String PERSONAL_HSA_ID = "TST5565594230-106J";
-    private static final String ENHET_HSA_ID = "IFV1239877878-103H";
-    private static final String HEAD_DOCTOR = "Överläkare";
+    private static final String PERSONAL_HSAID = "TST5565594230-106J";
+
+    private static final String VARDGIVARE_HSAID = "IFV1239877878-0001";
+    private static final String ENHET_HSAID_1 = "IFV1239877878-103H";
+    private static final String ENHET_HSAID_2 = "IFV1239877878-103P";
+
+    private static final String TITLE_HEAD_DOCTOR = "Överläkare";
 
     @InjectMocks
     private WebCertUserDetailsService userDetailsService = new WebCertUserDetailsService();
@@ -121,6 +124,22 @@ public class WebCertUserDetailsServiceTest {
 
         assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
         assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserHasTandLakare() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-tandlakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_TANDLAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_TANDLAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_TANDLAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_TANDLAKARE, webCertUser);
     }
 
     @Test
@@ -175,16 +194,17 @@ public class WebCertUserDetailsServiceTest {
     }
 
     @Test
-    public void assertRoleAndPrivilgesWhenUserIsDoctorFromAbroadButHasNotYetASwedishLicense() throws Exception {
+    public void assertRoleAndPrivilgesWhenUserIsDoctorButHasNotYetASwedishLicense() throws Exception {
         // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-within-EU-ESS-Schweiz.xml");
-        setupCallToAuthorizedEnheterForHosPerson();
-        setupCallToGetHsaPersonInfo();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
+        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        TitleCode titleCode = new TitleCode("204090", "9100009", getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
-        TitleCode titleCode = new TitleCode("203090", "9300005", getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        setupCallToAuthorizedEnheterForHosPerson();
 
         // when
-        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
+        when(roleRepository.findByName(anyString())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
         when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
 
         // then
@@ -192,6 +212,27 @@ public class WebCertUserDetailsServiceTest {
 
         assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
         assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeDoesNotMatch() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-bad-groupPrescriptionCode.xml");
+        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
+        when(roleRepository.findByName(anyString())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(null);
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_VARDADMINISTRATOR.name()));
+        assertTrue(webCertUser.getForskrivarkod().equals("0000000"));
+        assertUserPrivileges(UserRole.ROLE_VARDADMINISTRATOR, webCertUser);
     }
 
     @Test
@@ -347,24 +388,24 @@ public class WebCertUserDetailsServiceTest {
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
+        assertEquals(PERSONAL_HSAID, webCertUser.getHsaId());
         assertEquals("Markus Gran", webCertUser.getNamn());
         assertEquals(1, webCertUser.getVardgivare().size());
-        assertEquals("vg", webCertUser.getVardgivare().get(0).getId());
+        assertEquals(VARDGIVARE_HSAID, webCertUser.getVardgivare().get(0).getId());
         assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
         assertEquals(vardgivare, webCertUser.getValdVardgivare());
         assertNotNull(webCertUser.getValdVardenhet());
-        assertEquals(ENHET_HSA_ID, webCertUser.getValdVardenhet().getId());
+        assertEquals(ENHET_HSAID_1, webCertUser.getValdVardenhet().getId());
         assertEquals(3, webCertUser.getSpecialiseringar().size());
         assertEquals(2, webCertUser.getLegitimeradeYrkesgrupper().size());
-        assertEquals(HEAD_DOCTOR, webCertUser.getTitel());
+        assertEquals(TITLE_HEAD_DOCTOR, webCertUser.getTitel());
         assertFalse(webCertUser.getAktivaFunktioner().isEmpty());
 
         assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
         assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
 
-        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
-        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
+        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSAID);
+        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSAID);
         verify(webcertFeatureService).getActiveFeatures();
     }
 
@@ -374,20 +415,20 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
-        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1",
+        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel1",
                 Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
-        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
+        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
                 Arrays.asList("Psykoterapeut"));
         List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
 
         // when
-        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSA_ID)).thenReturn(userTypes);
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
         when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
+        assertEquals(PERSONAL_HSAID, webCertUser.getHsaId());
         assertEquals("Markus Gran", webCertUser.getNamn());
 
         assertEquals(3, webCertUser.getSpecialiseringar().size());
@@ -398,8 +439,8 @@ public class WebCertUserDetailsServiceTest {
         assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
         assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
 
-        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
-        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
+        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSAID);
+        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSAID);
     }
 
     @Test(expected = HsaServiceException.class)
@@ -423,6 +464,9 @@ public class WebCertUserDetailsServiceTest {
     private void assertUserPrivileges(UserRole userRole, WebCertUser user) {
         switch (userRole) {
         case ROLE_LAKARE:
+            assertUserPrivileges(UserPrivilege.values(), user);
+            break;
+        case ROLE_TANDLAKARE:
             assertUserPrivileges(UserPrivilege.values(), user);
             break;
         case ROLE_LAKARE_DJUPINTEGRERAD:
@@ -460,15 +504,22 @@ public class WebCertUserDetailsServiceTest {
 
         GetHsaPersonHsaUserType type = new GetHsaPersonHsaUserType();
         type.setHsaIdentity(hsaId);
-        type.setTitle(title);
 
-        HsaTitles hsaTitles = new HsaTitles();
-        hsaTitles.getHsaTitle().addAll(titles);
-        type.setHsaTitles(hsaTitles);
+        if (title != null) {
+            type.setTitle(title);
+        }
 
-        SpecialityNames specNames = new SpecialityNames();
-        specNames.getSpecialityName().addAll(specialities);
-        type.setSpecialityNames(specNames);
+        if (titles != null && titles.size() >0) {
+            HsaTitles hsaTitles = new HsaTitles();
+            hsaTitles.getHsaTitle().addAll(titles);
+            type.setHsaTitles(hsaTitles);
+        }
+
+        if (specialities != null && specialities.size() >0) {
+            SpecialityNames specNames = new SpecialityNames();
+            specNames.getSpecialityName().addAll(specialities);
+            type.setSpecialityNames(specNames);
+        }
 
         return type;
     }
@@ -498,12 +549,12 @@ public class WebCertUserDetailsServiceTest {
     }
 
     private void setupCallToAuthorizedEnheterForHosPerson() {
-        vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
-        vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
-        vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSA_ID, "TestVårdEnhet2A VårdEnhet2A"));
+        vardgivare = new Vardgivare(VARDGIVARE_HSAID, "IFV Testlandsting");
+        vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSAID_1, "VårdEnhet2A"));
+        vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSAID_2, "Vårdcentralen"));
 
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(vardgivareList);
+        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSAID)).thenReturn(vardgivareList);
     }
 
     private void setupCallToGetHsaPersonInfo() {
@@ -511,9 +562,9 @@ public class WebCertUserDetailsServiceTest {
         List<String> specs = Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar", "Reumatologi");
         List<String> titles = Arrays.asList("Läkare", "Psykoterapeut");
 
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, HEAD_DOCTOR, specs, titles));
+        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
 
-        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSA_ID)).thenReturn(userTypes);
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
     }
 
     private void setupCallToWebcertFeatureService() {
@@ -535,6 +586,10 @@ public class WebCertUserDetailsServiceTest {
         switch (userRole) {
         case ROLE_LAKARE:
             role = new Role(UserRole.ROLE_LAKARE.name());
+            ups = UserPrivilege.values();
+            break;
+        case ROLE_TANDLAKARE:
+            role = new Role(UserRole.ROLE_TANDLAKARE.name());
             ups = UserPrivilege.values();
             break;
         case ROLE_LAKARE_DJUPINTEGRERAD:
