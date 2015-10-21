@@ -37,8 +37,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUserAgreementAccepted(String userHsaId, int version, LocalDateTime date) {
-        logEvent(MonitoringEvent.USER_AGREEMENT_ACCEPTED, userHsaId, version, date);
+    public void logConsentGiven(String id, String hsaId, int version, LocalDateTime date) {
+        logEvent(MonitoringEvent.CONSENT_GIVEN, HashUtility.hash(id), hsaId, version, date);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
         USER_LOGIN("Login user '{}' using scheme '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
-        USER_AGREEMENT_ACCEPTED("User '{}' accepted agreement version '{}' with date '{}'"),
+        CONSENT_GIVEN("Consent given by user '{}', hsaId '{}', version '{}', date '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),

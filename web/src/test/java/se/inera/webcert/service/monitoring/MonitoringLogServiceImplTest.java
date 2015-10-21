@@ -213,10 +213,10 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
-    public void shouldLogUserAgreementAccepted() {
+    public void shouldLogConsentGiven() {
         LocalDateTime DATE = new LocalDateTime(2016, 10, 19, 14, 0, 0);
-        logService.logUserAgreementAccepted(HSA_ID, VERSION, DATE );
-        verifyLog(Level.INFO, "USER_AGREEMENT_ACCEPTED User 'HSA_ID' accepted agreement version '1' with date '2016-10-19T14:00:00.000'");
+        logService.logConsentGiven(USER_ID, HSA_ID, VERSION, DATE );
+        verifyLog(Level.INFO, "CONSENT_GIVEN Consent given by user 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361', hsaId 'HSA_ID', version '1', date '2016-10-19T14:00:00.000'");
     }
 
     @Test

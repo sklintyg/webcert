@@ -19,7 +19,7 @@ public interface MonitoringLogService {
 
     void logUserLogout(String userHsaId, String authScheme);
 
-    void logUserAgreementAccepted(String userHsaId, int version, LocalDateTime date);
+    void logConsentGiven(String id, String userHsaId, int version, LocalDateTime date);
 
     void logUserSessionExpired(String userHsaId, String authScheme);
 
