@@ -48,6 +48,7 @@ import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -74,10 +75,14 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceTest {
 
+    private static final String HSA_ID = "HSA-123";
+    private static final String CREATED_BY_NAME = "Läkare Läkarsson";
+    private static final String SENAST_SPARAD_NAME = "Spara Sparasson";
     private static final String CERTIFICATE_ID = "123";
     private static final String CERTIFICATE_TYPE = "fk7263";
 
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
+
 
     @Mock
     private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
@@ -107,6 +112,7 @@ public class IntygServiceTest {
     private String json;
     private Utlatande utlatande;
     private CertificateResponse certificateResponse;
+    private VardpersonReferens vardpersonReferens = new VardpersonReferens();
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -116,6 +122,9 @@ public class IntygServiceTest {
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
+
+        vardpersonReferens.setHsaId(HSA_ID);
+        vardpersonReferens.setNamn(CREATED_BY_NAME);
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
@@ -262,7 +271,7 @@ public class IntygServiceTest {
         request.getEnhet().add("enhet-1");
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenThrow(
                 WebServiceException.class);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false, null, null));
 
         IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
         assertNotNull(intygItemListResponse);
@@ -336,7 +345,7 @@ public class IntygServiceTest {
 
     @Test
     public void testDraftAddedToListResponseIfUnique() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
@@ -348,13 +357,61 @@ public class IntygServiceTest {
 
     @Test
     public void testDraftNotAddedToListResponseIfNotUnique() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
         IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
+        assertEquals("Dr. Who", intygItemListResponse.getIntygItemList().get(0).getSignedBy());
         assertEquals(2, intygItemListResponse.getIntygItemList().size());
+        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+    }
+
+    @Test
+    public void testDraftAddedWithSkapadAvNameIfMatching() throws Exception {
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, vardpersonReferens, null));
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
+                listResponse);
+
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
+        assertEquals(3, intygItemListResponse.getIntygItemList().size());
+
+        // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
+        assertEquals(CREATED_BY_NAME, intygItemListResponse.getIntygItemList().get(2).getSignedBy());
+        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+    }
+
+    @Test
+    public void testDraftAddedWithSenastSparadAvNameIfMatching() throws Exception {
+        vardpersonReferens.setNamn(SENAST_SPARAD_NAME);
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, null, vardpersonReferens));
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
+                listResponse);
+
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
+        assertEquals(3, intygItemListResponse.getIntygItemList().size());
+
+        // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
+        assertEquals(SENAST_SPARAD_NAME, intygItemListResponse.getIntygItemList().get(2).getSignedBy());
+        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+    }
+
+    @Test
+    public void testDraftAddedWithHsaIdIfNoneMatching() throws Exception {
+        vardpersonReferens.setNamn(SENAST_SPARAD_NAME);
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, null, null));
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
+                listResponse);
+
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
+        assertEquals(3, intygItemListResponse.getIntygItemList().size());
+
+        // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
+        assertEquals(HSA_ID, intygItemListResponse.getIntygItemList().get(2).getSignedBy());
         verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
 
@@ -402,9 +459,12 @@ public class IntygServiceTest {
         return pdf;
     }
 
-    private List<Utkast> buildDraftList(boolean unique) throws IOException {
+    private List<Utkast> buildDraftList(boolean unique, VardpersonReferens skapadAv, VardpersonReferens senastSparadAv) throws IOException {
         List<Utkast> draftList = new ArrayList<>();
-        draftList.add(getDraft(unique ? "LONG-UNIQUE-ID" : "1", LocalDateTime.now(), null));
+        Utkast draft = getDraft(unique ? "LONG-UNIQUE-ID" : "1", LocalDateTime.now(), null);
+        draft.setSkapadAv(skapadAv);
+        draft.setSenastSparadAv(senastSparadAv);
+        draftList.add(draft);
         return draftList;
     }
 
@@ -417,7 +477,7 @@ public class IntygServiceTest {
         utkast.setSkickadTillMottagareDatum(sendDate);
         utkast.setAterkalladDatum(revokeDate);
         utkast.setStatus(UtkastStatus.SIGNED);
-        Signatur signatur = new Signatur(LocalDateTime.now(), "Läkar Läkarsson", CERTIFICATE_ID, "", "", "");
+        Signatur signatur = new Signatur(LocalDateTime.now(), HSA_ID, CERTIFICATE_ID, "", "", "");
         utkast.setSignatur(signatur);
 
         return utkast;

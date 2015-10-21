@@ -146,11 +146,27 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         IntygItem intygItem = new IntygItem();
 
         intygItem.setId(utkast.getIntygsId());
-        intygItem.setSignedBy(utkast.getSignatur().getSigneradAv());
+        intygItem.setSignedBy(resolvedSignedBy(utkast));
         intygItem.setSignedDate(utlatande.getGrundData().getSigneringsdatum());
         intygItem.setType(utkast.getIntygsTyp());
         intygItem.setStatuses(buildStatusesFromUtkast(utkast));
         return intygItem;
+    }
+
+    /**
+     * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
+     * we return the Name instead of the HSA ID.
+     * @param utkast
+     * @return
+     */
+    private String resolvedSignedBy(Utkast utkast) {
+        if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSkapadAv().getNamn();
+        } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSenastSparadAv().getNamn();
+        } else {
+            return utkast.getSignatur().getSigneradAv();
+        }
     }
 
     /**
