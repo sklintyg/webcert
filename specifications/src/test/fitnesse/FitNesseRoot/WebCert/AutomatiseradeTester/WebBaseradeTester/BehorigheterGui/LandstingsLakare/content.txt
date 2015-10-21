@@ -10,11 +10,6 @@
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt | internReferens? |
 | OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1| IFV1239877878-104B | Tolvan Privatläkarsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
 
-!3 Se till att landstingsläkaren har godkänt webcert avtal via testbarhets-API
-
-| skript | !-LaggTillGodkannande-! |
-| lagg till godkannande | IFV1239877878-104B |
-
 !3 Logga in
 
 | skript | !-LoggaIn-! |

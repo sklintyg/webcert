@@ -1,8 +1,4 @@
-Ignorerat i väntan på WEBCERT-2062
-
-!3 Logga in som privatläkare som ej har godkänt webcert avtal, men som är godkänd privatläkare (i stubbe)
-
-!4 Stäng och öppna browsern specifikt för att rensa sessionen
+!3 Stäng och öppna browsern specifikt för att rensa sessionen
 
 | skript | Browser |
 | stäng |
@@ -10,7 +6,12 @@ Ignorerat i väntan på WEBCERT-2062
 | skript | Browser |
 | öppna |
 
-!3 Logga in
+!3 Säkerstall att läkaren vi kommer logga in som inte har godkänt avtal
+
+| skript | !-HanteraAnvandarAvtal-! |
+| ta bort godkannande for hsaid | HSA0000-123456789 |
+
+!3 Logga in som privatläkaren som ej har godkänt webcert avtal, men som är godkänd privatläkare (i stubbe)
 
 | skript | !-LoggaIn-! |
 | logga in som | private-practitioner-1 |
@@ -27,5 +28,5 @@ Ignorerat i väntan på WEBCERT-2062
 
 !3 Städa. Se till att den nu inloggade privatläkaren inte har godkänt webcert avtal
 
-| skript | !-TaBortGodkannande-! |
-| ta bort godkannande |
+| skript | !-HanteraAnvandarAvtal-! |
+| ta bort godkannande for hsaid | HSA0000-123456789 |

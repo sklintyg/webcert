@@ -18,8 +18,8 @@
 
 !3 Se till att privatläkaren har godkänt webcert avtal via testbarhets-API
 
-| skript | !-LaggTillGodkannande-! |
-| lagg till godkannande | HSA0000-123456789 |
+| skript | !-HanteraAnvandarAvtal-! |
+| lagg till godkannande for hsaid | HSA0000-123456789 |
 
 !3 Logga in
 
@@ -122,6 +122,11 @@
 
 !| skript | HeaderMenu |
 | säkerställ att | redigera anvandare visas |
+
+!3 Ta bort godkännandet av privatläkarens webcert avtal
+
+| skript | !-HanteraAnvandarAvtal-! |
+| ta bort godkannande for hsaid | HSA0000-123456789 |
 
 !3 Ta bort utkastet
 
