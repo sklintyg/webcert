@@ -153,11 +153,4 @@ public class FragaSvarConverter {
         intygsReferens.setSigneringsDatum(utlatande.getGrundData().getSigneringsdatum());
         return intygsReferens;
     }
-
-    /*
-    private static Id toCommonId(Patient patient) {
-        return new Id(patient.isSamordningsNummer() ? Constants.SAMORDNING_ID_OID : Constants.PERSON_ID_OID, patient.getPersonId());
-    }
-    */
-
 }
