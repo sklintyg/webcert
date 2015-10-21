@@ -45,8 +45,8 @@ abstract class AbstractPage extends Page {
 
     // use inside content definitions to prevent wait success until the element is displayed
     // with the option element(wait:true){ displayed($('#element-id')) }
-    static displayed(elem) {
-        (elem?.displayed) ? elem : null
-    }
+    //static displayed(elem) {
+    //    (elem?.displayed) ? elem : null
+    //}
 
 }
