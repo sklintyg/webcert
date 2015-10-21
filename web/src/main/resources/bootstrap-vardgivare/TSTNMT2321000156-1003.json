@@ -1,0 +1,18 @@
+{
+  "@class" : "se.inera.webcert.hsa.model.Vardgivare",
+  "id" : "TSTNMT2321000156-1002",
+  "namn" : "NMT vg1",
+  "vardenheter" : [
+    {
+      "@class" : "se.inera.webcert.hsa.model.Vardenhet",
+      "id" : "TSTNMT2321000156-1003",
+      "namn" : "NMT vg1 ve1",
+      "epost" : "enhet1@webcert.invalid.se",
+      "telefonnummer" : "0101234567890",
+      "postadress" : "NMT gata 1",
+      "postnummer" : "12345",
+      "postort" : "Testhult",
+      "arbetsplatskod" : ""
+    }
+  ]
+}
