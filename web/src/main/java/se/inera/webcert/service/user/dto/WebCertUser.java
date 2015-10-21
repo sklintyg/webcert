@@ -1,17 +1,7 @@
 package se.inera.webcert.service.user.dto;
 
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.common.model.UserDetails;
 import se.inera.webcert.common.security.authority.UserPrivilege;
@@ -20,8 +10,18 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_TANDLAKARE;
 
 /**
  * @author andreaskaltenbach
@@ -299,7 +299,8 @@ public class WebCertUser implements UserDetails {
     /**
      * Checks if a user has been granted a specific role.
      *
-     * @param role the role to check
+     * @param role
+     *            the role to check
      * @return true if user has the role, otherwise false
      */
     public boolean hasRole(String role) {
@@ -314,12 +315,13 @@ public class WebCertUser implements UserDetails {
      * Checks if a user has been granted a specific role.
      * Method will return true if one role matches user's granted roles.
      *
-     * @param roles The roles to check.
+     * @param roles
+     *            The roles to check.
      * @return true If user has one of the roles, otherwise false.
      */
     public boolean hasRole(String[] roles) {
         if (roles == null) {
-           return false;
+            return false;
         }
 
         for (String role : roles) {
@@ -345,9 +347,23 @@ public class WebCertUser implements UserDetails {
         return authorities.containsKey(privilege.name());
     }
 
+    /**
+     * Determines if the user's roles contains a lakare role or not.
+     * <ul>
+     * The following roles are considered lakare:
+     * <li>ROLE_LAKARE</li>
+     * <li>ROLE_LAKARE_DJUPINTEGRERAD</li>
+     * <li>ROLE_LAKARE_UTHOPP</li>
+     * <li>ROLE_PRIVATLAKARE</li>
+     * <li>ROLE_TANDLAKARE</li>
+     * </ul>
+     * Note: This construct smells a bit, as it's somewhat ambigous what isLakare could be interpreted as?
+     * @return true if role is one the above, otherwise false
+     */
     public boolean isLakare() {
         return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name());
+                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name())
+                || roles.containsKey(ROLE_TANDLAKARE.name());
     }
 
     public boolean isPrivatLakare() {

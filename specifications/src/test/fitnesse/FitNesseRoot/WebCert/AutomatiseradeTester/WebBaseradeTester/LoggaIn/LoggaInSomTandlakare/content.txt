@@ -5,6 +5,12 @@ Testet beskriver fallet när en tandläkare loggar in.
 | skript | !-LoggaIn-! |
 | logga in som | tore-tandlakare |
 
+!3 Verifiera att man hamnar på Sök/Skriv intyg
+   (se WEBCERT-2069)
+
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
+
 !3 Verifiera att titel tandläkare visas i headern.
 
 | skript | !-HeaderMenu-! |

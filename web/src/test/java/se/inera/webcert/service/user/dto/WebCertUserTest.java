@@ -1,9 +1,14 @@
 package se.inera.webcert.service.user.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import org.junit.Before;
+import org.junit.Test;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.hsa.model.Mottagning;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,17 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-
-import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class WebCertUserTest {
 
@@ -33,6 +31,20 @@ public class WebCertUserTest {
         assertNotNull(res);
         assertTrue(res.length() > 0);
         System.out.println(res);
+    }
+
+    @Test
+    public void testIsLakare() {
+        assertTrue(wcu.isLakare());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR));
+        assertFalse(wcu.isLakare());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_PRIVATLAKARE));
+        assertTrue(wcu.isLakare());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_TANDLAKARE));
+        assertTrue(wcu.isLakare());
     }
 
     @Test
@@ -111,7 +123,7 @@ public class WebCertUserTest {
 
         WebCertUser wcu = new WebCertUser();
 
-        wcu.setRoles(getGrantedRole());
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE));
         wcu.setAuthorities(getGrantedPrivileges());
 
         wcu.setNamn("A Name");
@@ -152,9 +164,9 @@ public class WebCertUserTest {
         return wcu;
     }
 
-    private Map<String, UserRole> getGrantedRole() {
+    private Map<String, UserRole> getGrantedRole(UserRole role) {
         Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        map.put(role.name(), role);
         return map;
     }
 
