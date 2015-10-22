@@ -7,7 +7,6 @@
     "/app/views/ejSigneradeUtkast/ejSigneradeUtkast.controller.js",
     "/app/views/fragorOchSvar/fragorOchSvar.controller.js",
     "/app/views/fragorOchSvar/fragorOchSvar.service.js",
-    "/app/views/fragorOchSvar/fragorOchSvarEnhetsId.filter.js",
     "/app/views/fragorOchSvar/wcVardenhetSelector.directive.js",
     "/app/views/omWebcert/omWebcert.controller.js",
     "/app/views/omWebcert/omWebcertTerms.controller.js",

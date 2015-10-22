@@ -23,8 +23,7 @@ describe('UnhandledQACtrlSpec', function() {
         changedFrom: undefined,
         changedTo: undefined,
 
-        vantarPa: 'ALLA_OHANTERADE',
-        replyLatest: undefined
+        vantarPa: 'ALLA_OHANTERADE'
     };
 
     var testQAResponse = {

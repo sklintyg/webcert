@@ -79,8 +79,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 changedFrom: undefined,
                 changedTo: undefined,
 
-                vantarPa: undefined,
-                replyLatest: undefined
+                vantarPa: undefined
             };
 
             $scope.activeUnit = {};
@@ -120,10 +119,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                 if (filterQuery.changedTo) {
                     filterQuery.changedTo = $filter('date')(filterQuery.changedTo, 'yyyy-MM-dd');
-                }
-
-                if (filterQuery.replyLatest) {
-                    filterQuery.replyLatest = $filter('date')(filterQuery.replyLatest, 'yyyy-MM-dd');
                 }
 
                 if ($scope.filterForm.questionFrom === 'FK') {
