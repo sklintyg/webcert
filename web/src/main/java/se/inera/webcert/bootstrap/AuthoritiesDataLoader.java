@@ -287,8 +287,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     }
 
     private List<UserPrivilege> getTandlakarePrivilegeList() {
-        // TODO ordna med rättigheter för tandläkare. Det mesta talar för att tandläkare skall ha exakt samma som
-        // vanlig läkare, men enbart för fk7263
         return Arrays.asList(UserPrivilege.values());
     }
 
