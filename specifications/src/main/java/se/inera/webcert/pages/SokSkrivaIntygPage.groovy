@@ -1,22 +1,19 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
+class SokSkrivaIntygPage extends AbstractLoggedInPage {
 
-class SokSkrivaIntygPage extends AbstractPage {
+    static url = "/web/dashboard#/create/choose-patient/index"
 
     static at = { doneLoading() && $("#skapa-valj-patient").isDisplayed() }
 
     static content = {
-        personnummer(wait: true) { displayed($("#pnr")) }
-        personnummerFortsattKnapp(wait: true) { displayed($("#skapapersonnummerfortsatt")) }
-        puFelmeddelande(wait: true) { displayed($("#puerror")) }
+        personnummer { $("#pnr") }
+        personnummerFortsattKnapp { $("#skapapersonnummerfortsatt") }
+        puFelmeddelande { $("#puerror") }
 
-        logoutLink { $("#logoutLink") }
-        valjIntygTyp { $("#valj-intyg-typ")}
-    }
+        sokSkrivIntygLink(required: false) { $("#menu-skrivintyg") }
 
-    def selectCareUnit(String careUnit) {
-        $("#select-active-unit-${careUnit}").click()
+        valjIntygTyp(required: false) { $("#valj-intyg-typ") }
     }
 
     def angePatient(String patient) {
@@ -26,8 +23,5 @@ class SokSkrivaIntygPage extends AbstractPage {
             doneLoading()
         }
     }
-    
-    def logout() {
-        logoutLink.click()
-    }
+
 }

@@ -73,7 +73,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             function loadFilterForm() {
 
                 resetFilterState();
-                loadSavedByList($scope.widgetState.valdVardenhet);
+                loadSavedByList();
 
                 // Use saved choice if cookie has saved a filter
                 var storedFilter = $cookieStore.get('unsignedCertFilter');
@@ -162,9 +162,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 return converted;
             }
 
-            function isToBeforeFrom() {
-                var to = $scope.filterForm.lastFilterQuery.filter.savedTo;
-                var from = $scope.filterForm.lastFilterQuery.filter.savedFrom;
+            function isToBeforeFrom(to, from) {
                 if (to === null || to === undefined || to === '') {
                     return false;
                 }
@@ -198,8 +196,10 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
                 $scope.widgetState.invalidFromDate = $scope.filterFormElement['filter-changedate-from'].$error.date;
                 $scope.widgetState.invalidToDate = $scope.filterFormElement['filter-changedate-to'].$error.date;
-                $scope.widgetState.invalidToBeforeFromDate = isToBeforeFrom();
 
+                var to = $scope.filterForm.lastFilterQuery.filter.savedTo;
+                var from = $scope.filterForm.lastFilterQuery.filter.savedFrom;
+                $scope.widgetState.invalidToBeforeFromDate = isToBeforeFrom(to, from);
 
                 $scope.widgetState.runningQuery = true;
                 UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {

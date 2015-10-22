@@ -2,10 +2,10 @@ package se.inera.webcert.persistence.fragasvar.model;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 @Embeddable
 public class IntygsReferens {
@@ -13,11 +13,11 @@ public class IntygsReferens {
     public IntygsReferens() {
     }
 
-    public IntygsReferens(String intygsId, String intygsTyp, String patientId,
+    public IntygsReferens(String intygsId, String intygsTyp, Personnummer patientId,
                           String patientName, LocalDateTime signeringsDatum) {
         this.intygsId = intygsId;
         this.intygsTyp = intygsTyp;
-        this.patientId = patientId;
+        this.patientId = patientId.getPersonnummer();
         this.patientNamn = patientName;
         this.signeringsDatum = signeringsDatum;
     }
@@ -59,12 +59,12 @@ public class IntygsReferens {
         this.intygsTyp = intygsTyp;
     }
 
-    public String getPatientId() {
-        return patientId;
+    public Personnummer getPatientId() {
+        return new Personnummer(patientId);
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
+    public void setPatientId(Personnummer patientId) {
+        this.patientId = patientId.getPersonnummer();
     }
 
     public String getPatientNamn() {
@@ -82,14 +82,4 @@ public class IntygsReferens {
     public void setSigneringsDatum(LocalDateTime signeringsDatum) {
         this.signeringsDatum = signeringsDatum;
     }
-
-    /*
-    public Id getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Id patientId) {
-        this.patientId = patientId;
-    }
-    */
 }

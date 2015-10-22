@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class FakeCredentials implements Serializable {
 
+    private static final long serialVersionUID = -7620199916206349045L;
+
     private String hsaId;
     private String fornamn;
     private String efternamn;
@@ -64,9 +66,13 @@ public class FakeCredentials implements Serializable {
         this.enhetId = enhetId;
     }
 
-    public String getForskrivarKod() { return forskrivarKod; }
+    public String getForskrivarKod() {
+        return forskrivarKod;
+    }
 
-    public void setForskrivarKod(String forskrivarKod) { this.forskrivarKod = forskrivarKod; }
+    public void setForskrivarKod(String forskrivarKod) {
+        this.forskrivarKod = forskrivarKod;
+    }
 
     public boolean isTandLakare() {
         return tandLakare;

@@ -1,9 +1,14 @@
 package se.inera.webcert.persistence.privatlakaravtal.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
-
-import javax.persistence.*;
 
 /**
  * Created by eriklupander on 2015-08-05.

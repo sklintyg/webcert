@@ -1,8 +1,8 @@
 package se.inera.auth.eleg;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +24,12 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
-import java.util.Map;
 /**
  * Created by eriklupander on 2015-06-16.
  *
@@ -46,6 +46,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private PPService ppService;
+
+    @Autowired
+    private AvtalService avtalService;
 
     @Autowired
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
@@ -81,7 +84,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         if (hosPerson == null) {
             throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
         }
-        
+
         // Lookup user's role
         String userRole = lookupUserRole();
 
@@ -107,7 +110,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
 
         // Get user's privileges based on his/hers role
-        // Get user's privileges based on his/hers role
         final Map<String, UserRole> grantedRoles = roleToMap(getRoleAuthority(role));
         final Map<String, UserPrivilege> grantedPrivileges = getPrivilegeAuthorities(role);
 
@@ -117,11 +119,13 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setRoles(grantedRoles);
         user.setAuthorities(grantedPrivileges);
 
-        user.setPrivatLakareAvtalGodkand(false);
+        user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
-        user.setForskrivarkod(hosPerson.getForskrivarkod());
         user.setNamn(hosPerson.getFullstandigtNamn());
+
+        // Forskrivarkod should be always be seven zeros
+        user.setForskrivarkod("0000000");
 
         decorateWebCertUserWithAuthenticationScheme(samlCredential, user);
         decorateWebCertUserWithAuthenticationMethod(samlCredential, user);

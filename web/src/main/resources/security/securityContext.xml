@@ -257,7 +257,6 @@
       </property>
     </bean>
 
-
     <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
     <bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
 
@@ -290,7 +289,6 @@
                 <property name="requireArtifactResolveSigned" value="true"/>
                 <property name="requireLogoutRequestSigned" value="true"/>
                 <property name="requireLogoutResponseSigned" value="true"/>
-                <property name="idpDiscoveryEnabled" value="false"/>
               </bean>
             </constructor-arg>
 
@@ -349,7 +347,6 @@
                 <property name="requireArtifactResolveSigned" value="true"/>
                 <property name="requireLogoutRequestSigned" value="false"/>
                 <property name="requireLogoutResponseSigned" value="false"/>
-                <property name="idpDiscoveryEnabled" value="false"/>
               </bean>
             </constructor-arg>
           </bean>
@@ -383,12 +380,14 @@
       <property name="refreshCheckInterval" value="86400000"/>
 
       <!-- Setting SITHS as default login method to be redirected to when requesting protected resource. -->
-      <!-- This value _must_ match the entityID specified in idp-sakerhetstjanst.xml. -->
+      <!-- This value _must_ match the entityID specified in idp-sakerhetstjanst.xml.  -->
       <property name="defaultIDP" value="${sakerhetstjanst.saml.idp.metadata.url}" />
 
+
       <!-- This makes sure the Sakerhetstjanst SP metadata is used by default -->
-      <!-- This value _must_ match the entityID specified in sp-sakerhetstjanst.xml -->
+      <!-- This value _must_ match the entityID specified in sp-sakerhetstjanst.xml  -->
       <property name="hostedSPName" value="${sakerhetstjanst.saml.entityId}" />
+
     </bean>
 
     <!-- TODO Determine if these are necessary in Webcert 4.0 since we aren't fetching metadata over http(s)

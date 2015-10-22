@@ -1,20 +1,24 @@
 !3 Logga in som privatläkare som ej har godkänt webcert avtal, men som är godkänd privatläkare (i stubbe). Avböj avtalet.
+
 !4 Stäng och öppna browsern för att explicit rensa sessionen
-| script | Browser |
+
+| skript | Browser |
 | stäng |
 
-| script | Browser |
+| skript | Browser |
 | öppna |
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | private-practitioner-1 |
 
 !3 Verifiera att vi hamnar på avtalssidan
-| script | !-HanteraAvtal-! |
-| verifiera pa avtal sida |
+
+| skript | !-HanteraAvtal-! |
+| säkerställ att | avtalsida visas |
 
 !3 Avböj webcert avtal och verifiera att vi hamnar på welcome.jsp igen
-| script | !-HanteraAvtal-! |
+
+| skript | !-HanteraAvtal-! |
 | avboj avtal |

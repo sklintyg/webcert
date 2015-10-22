@@ -33,7 +33,6 @@ public class UtkastIntygDecoratorTest {
     private static final String INTYG_TYPE = "fk7263";
 
     private static final String INTYG_ID = "123";
-    private static final String PATIENT_ID = "19121212-1212";
 
     private Utkast signedUtkast;
 
@@ -75,7 +74,8 @@ public class UtkastIntygDecoratorTest {
     public void testRevokedIntygDoesNotAddAnyStatuses() {
 
         CertificateResponse response = buildCertificateResponse();
-        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(), response.getMetaData(), true);
+        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(), response.getMetaData(),
+                true);
 
         testee.decorateWithUtkastStatus(revokedResponse);
         assertEquals(1, response.getMetaData().getStatus().size());
@@ -102,7 +102,6 @@ public class UtkastIntygDecoratorTest {
         testee.decorateWithUtkastStatus(response);
         assertEquals(3, response.getMetaData().getStatus().size());
     }
-
 
     @Test
     public void testSentStatusIsAddedFromUtkast() {
@@ -134,7 +133,7 @@ public class UtkastIntygDecoratorTest {
         assertEquals(CertificateState.CANCELLED, response.getMetaData().getStatus().get(2).getType());
     }
 
-    private CertificateResponse buildCertificateResponse()  {
+    private CertificateResponse buildCertificateResponse() {
         CertificateResponse response = new CertificateResponse("{}", null, buildCertificateMetaData(), false);
         return response;
     }
@@ -147,7 +146,6 @@ public class UtkastIntygDecoratorTest {
         metaData.getStatus().add(statusSigned);
         return metaData;
     }
-
 
     private HoSPerson buildHosPerson() {
         HoSPerson person = new HoSPerson();

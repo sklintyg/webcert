@@ -33,7 +33,7 @@ public enum HSABefattning {
 
     private String description;
 
-    private HSABefattning(String code, String desc) {
+    HSABefattning(String code, String desc) {
         this.code = code;
         this.description = desc;
     }

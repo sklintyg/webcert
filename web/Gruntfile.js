@@ -1,9 +1,10 @@
+/*global __dirname:false*/
 /* global module */
-function config(name) {
+/*function config(name) {
     return require('./tasks/' + name);
-}
+}*/
 
-var path = require('path');
+require('path');
 
 
 module.exports = function(grunt) {
@@ -25,7 +26,7 @@ module.exports = function(grunt) {
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
-    var TEST_RESOURCES_DIR = 'src/test/resources';
+    //var TEST_RESOURCES_DIR = 'src/test/resources';
 
     var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
         return file.replace(/\/app\//g, SRC_DIR);
@@ -66,9 +67,10 @@ module.exports = function(grunt) {
             webcert: {
                 options: {
                     jshintrc: '../target/build-tools/jshint/.jshintrc',
-                    force: true
+                    force: false,
+                    ignores: ['**/templates.js', '**/*.min.js', '**/vendor/*.js']
                 },
-                src: ['Gruntfile.js', !SRC_DIR + 'vendor/*.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js', '!' + SRC_DIR + '/app.min.js']
+                src: ['Gruntfile.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js']
             }
         },
 
@@ -206,76 +208,78 @@ module.exports = function(grunt) {
                 }
             }
         },
-
+/*
         protractor: {
             options: {
-                configFile: "node_modules/grunt-protractor-runner/node_modules/protractor/example/conf.js", // Default config file
+                configFile: 'node_modules/grunt-protractor-runner/node_modules/protractor/example/conf.js', // Default config file
                 keepAlive: true, // If false, the grunt process stops when the test fails.
                 noColor: false, // If true, protractor will not use colors in its output.
                 args: {
                     // Arguments passed to the command
                 }
             },
-            your_target: {   // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
+
+            // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
+            your_target: { // jshint ignore:line
                 options: {
-                    configFile: "src/test/resources/protractor.conf.js", // Target-specific config file
+                    configFile: 'src/test/resources/protractor.conf.js', // Target-specific config file
                     args: {} // Target-specific arguments
                 }
             }
         },
 
-        protractor_webdriver: {
+        protractor_webdriver: { // jshint ignore:line
             options: {
                 // Task-specific options go here.
             },
-            your_target: {
+            your_target: { // jshint ignore:line
                 // Target-specific file lists and/or options go here.
             }
         },
-
+*/
         connect: {
             server: {
                 options: {
                     port: 9089,
                     base: 'src/main/webapp',
                     hostname: '*',
-                    middleware: function(connect, options) {
+                    middleware: function(connect/*, options*/) {
                         var proxy = require('grunt-connect-proxy/lib/utils').proxyRequest;
                         var middlewares = [];
                         middlewares.push(
                             connect().use(
                                 '/web',
-                                connect.static(__dirname + '/src/main/webapp')
+                                connect.static(__dirname + '/src/main/webapp') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/app',
-                                connect.static(__dirname + '/src/main/webapp/app')
+                                connect.static(__dirname + '/src/main/webapp/app') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/webcert',
-                                connect.static(__dirname + COMMON_DIR)
+                                connect.static(__dirname + COMMON_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/css',
-                                connect.static(__dirname + CSS_COMMON_DIR)
+                                connect.static(__dirname + CSS_COMMON_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/fk7263/webcert',
-                                connect.static(__dirname + FK7263_DIR)
+                                connect.static(__dirname + FK7263_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/ts-bas/webcert',
-                                connect.static(__dirname + TSBAS_DIR)
+                                connect.static(__dirname + TSBAS_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/ts-diabetes/webcert',
-                                connect.static(__dirname + TSDIABETES_DIR)
+                                connect.static(__dirname + TSDIABETES_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(

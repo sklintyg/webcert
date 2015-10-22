@@ -30,16 +30,70 @@ describe('UnhandledQACtrlSpec', function() {
     var testQAResponse = {
         'totalCount': 3,
         'results': [
-            {'internReferens': 13, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test1', 'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812', 'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B', 'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26', 'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000', 'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}}, 'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632', 'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1', 'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'}, 'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'},
-            {'internReferens': 14, 'frageStallare': 'FK', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test2', 'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812', 'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B', 'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26', 'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000', 'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}}, 'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632', 'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1', 'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'}, 'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'},
-            {'internReferens': 15, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test3', 'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812', 'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B', 'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26', 'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000', 'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}}, 'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632', 'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1', 'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'}, 'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'}
+            {'internReferens': 13, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test1',
+                'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812',
+                'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B',
+                'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26',
+                'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000',
+                'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}},
+                'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632',
+                'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1',
+                'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890',
+                'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'},
+                'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'},
+            {'internReferens': 14, 'frageStallare': 'FK', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test2',
+                'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812',
+                'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B',
+                'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26',
+                'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000',
+                'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}},
+                'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632',
+                    'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1',
+                    'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890',
+                    'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041',
+                    'vardgivarnamn': 'WebCert-Vårdgivare1'}, 'status': 'PENDING_EXTERNAL_ACTION',
+                'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'},
+            {'internReferens': 15, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test3',
+                'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812',
+                'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B',
+                'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26',
+                'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000',
+                'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}},
+                'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632',
+                    'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1',
+                    'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla',
+                    'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se',
+                    'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'},
+                'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'}
         ]
     };
     var testWCQAResponse = {
         'totalCount': 3,
         'results': [
-            {'internReferens': 13, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test1', 'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812', 'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B', 'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26', 'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000', 'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}}, 'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632', 'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1', 'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'}, 'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'},
-            {'internReferens': 15, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test3', 'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812', 'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B', 'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26', 'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000', 'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}}, 'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632', 'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1', 'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla', 'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se', 'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'}, 'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'}
+            {'internReferens': 13, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test1',
+                'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812',
+                'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B',
+                'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26',
+                'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000',
+                'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}},
+                'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632',
+                    'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1',
+                    'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla',
+                    'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se',
+                    'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'},
+                'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'},
+            {'internReferens': 15, 'frageStallare': 'WC', 'amne': 'AVSTAMNINGSMOTE', 'frageText': 'test3',
+                'frageSigneringsDatum': '2015-01-27T16:02:31.812', 'frageSkickadDatum': '2015-01-27T16:02:31.812',
+                'senasteHandelse': '2015-01-27T16:02:31.812', 'vardAktorHsaId': 'IFV1239877878-104B',
+                'vardAktorNamn': 'Åsa Andersson', 'intygsReferens': {'intygsId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26',
+                'intygsTyp': 'fk7263', 'patientNamn': 'Tolvan Tolvansson', 'signeringsDatum': '2015-01-27T16:01:10.000',
+                'patientId': {'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}},
+                'vardperson': {'hsaId': 'IFV1239877878-104B', 'namn': 'Åsa Andersson', 'forskrivarKod': '2481632',
+                    'enhetsId': 'IFV1239877878-1042', 'arbetsplatsKod': '0000000', 'enhetsnamn': 'WebCert-Enhet1',
+                    'postadress': 'Storgatan 1', 'postnummer': '12345', 'postort': 'Småmåla',
+                    'telefonnummer': '0101234567890', 'epost': 'enhet1@webcert.invalid.se',
+                    'vardgivarId': 'IFV1239877878-1041', 'vardgivarnamn': 'WebCert-Vårdgivare1'},
+                'status': 'PENDING_EXTERNAL_ACTION', 'vidarebefordrad': false, 'senasteHandelseDatum': '2015-01-27T16:02:31.812'}
         ]
     };
 
@@ -59,7 +113,8 @@ describe('UnhandledQACtrlSpec', function() {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
             $provide.value('common.statService', statService);
             $provide.value('common.fragaSvarCommonService', jasmine.createSpyObj('common.fragaSvarCommonService',
-                [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState', 'buildMailToLink', 'checkQAonlyDialog' ]));
+                [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState',
+                    'buildMailToLink', 'checkQAonlyDialog' ]));
             $provide.value('common.User', {});
 
             var modalMock;
@@ -78,12 +133,13 @@ describe('UnhandledQACtrlSpec', function() {
             $window.location = {};
 
             //configure this value with the provider.
-            $provide.value("$window", $window);
+            $provide.value('$window', $window);
         }]);
 
         inject(['$rootScope', '$location', '$timeout', '$httpBackend', '$controller', '$cookieStore',
             'common.fragaSvarCommonService',
-            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookieStore_, _fragaSvarCommonService_) {
+            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookieStore_,
+                _fragaSvarCommonService_) {
                 $scope = $rootScope.$new();
                 $location = _$location_;
                 $httpBackend = _$httpBackend_;
@@ -111,7 +167,8 @@ describe('UnhandledQACtrlSpec', function() {
             var defaultQuery = angular.copy(testDefaultQuery);
             defaultQuery.questionFromWC = true;
             $cookieStore.put('savedFilterQuery', defaultQuery);
-            $httpBackend.expectGET('/api/fragasvar/sok?pageSize=10&questionFromFK=false&questionFromWC=false&startFrom=0&vantarPa=ALLA_OHANTERADE').respond(200,
+            $httpBackend.
+                expectGET('/api/fragasvar/sok?pageSize=10&questionFromFK=false&questionFromWC=false&startFrom=0&vantarPa=ALLA_OHANTERADE').respond(200,
                 testWCQAResponse);
             $scope.filterList();
             $httpBackend.flush();

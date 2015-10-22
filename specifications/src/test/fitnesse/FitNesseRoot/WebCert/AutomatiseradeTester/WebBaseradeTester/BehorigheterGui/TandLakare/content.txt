@@ -29,113 +29,112 @@
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | tore-tandlakare |
 
 !3 Se till att endast fk7263 finns tillgängligt att författa intyg på
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | ga till sok skriv intyg |
 | valj patient | ${person1.personnummer} |
-| kan forfatta intyg | Läkarintyg FK 7263 |
-| kan inte forfatta intyg | Transportstyrelsens läkarintyg |
-| kan inte forfatta intyg | Transportstyrelsens läkarintyg, diabetes |
+| säkerställ att | anvandare kan forfatta intyg pa | Läkarintyg FK 7263 |
+| säkerställ att inte | anvandare kan forfatta intyg pa | Transportstyrelsens läkarintyg |
+| säkerställ att inte | anvandare kan forfatta intyg pa | Transportstyrelsens läkarintyg, diabetes |
 
 !3 Se till att endast fk7263 intyg listas.
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intyg av typ | ts-bas | visas inte i listan av tidigare intyg |
 
 !3 Återgå så vi kan börja författa
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | ga till sok skriv intyg |
 
-
 !3 Skapa ett nytt intygsutkast
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Verifiera att knapp för signera är synlig
-| script | !-HanteraUtkast-! |
-| signera knapp visas |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | signera knapp visas |
 
 !3 Gå till sidan för Ej signerade utkast
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
-| ej signerade intyg sidan visas |
+| säkerställ att | ej signerade intyg sidan visas |
 
 !3 Se till att endast fk7263 utkast listas.
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | utkast av typ | ts-bas | visas inte i listan av tidigare utkast |
 
 !3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" visas
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | visa avancerat filter |
-| filterVidarebefordradVisas | true |
-| filterValjLakareVisas |  true |
+| säkerställ att | filterVidarebefordradVisas |
+| säkerställ att | filterValjLakareVisas      |
 
 !3 Verifiera knappen för att vidarebeforda finns i tabellen över ej signerade utkast
-| script | !-HanteraUtkast-! |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | vidare befordra knapp visas    |
+| säkerställ att | vidarebefordrad checkbox visas |
 
 !3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
-| script | !-VisaIntyg-! |
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-dent-1 | och typ | fk7263 |
 
 !3 Verifiera att förväntade knappar för en tandläkare visas (Skicka visas ej eftersom intyget redan är skickat)
-| script | !-VisaIntyg-! |
-| kopiera knapp visas |
-| makulera knapp visas |
-| skriv ut knapp visas |
+| skript | !-VisaIntyg-! |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
+| säkerställ att | skriv ut knapp visas |
 
 !3 Gå till listsida för Fråga & Svar
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | ga till svara och fraga |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 
 
 !3 Kontrollera så filtret visar "Frågor och svar som är" eller "Signerat av" för tandläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | visa avancerat filter |
-| filter vidarebefordrad visas | true |
-| filter valj lakare visas | true |
+| säkerställ att | filter vidarebefordrad visas |
+| säkerställ att | filter valj lakare visas     |
 
 
 !3 Vidarebefordra-knapp i listan får visas
-!| script | SvaraOchFraga |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
+!| skript | SvaraOchFraga |
+| säkerställ att | vidare befordra knapp visas    |
+| säkerställ att | vidarebefordrad checkbox visas |
 
 !3 Gå in på frågan och verifiera att Vidarebefordra-knappen är synlig för tandläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
-| vidarebefordra knapp inne pa fraga visas | true |
+| säkerställ att | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | ga till svara och fraga |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 
 !3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen är synlig för tandläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
 | visa fraga | $internReferens2 |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
-| vidarebefordra knapp inne pa fraga visas | true |
+| säkerställ att | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå till Om Webcert
 
-| script | !-OmWebcert-! |
+| skript | !-OmWebcert-! |
 | ga till om webcert |
 
 !3 Verifiera att Avtalsvillkorsalternativet inte syns
-| script | !-OmWebcert-! |
-| avtalsvillkor synlig i menyn | false |
+| skript | !-OmWebcert-! |
+| säkerställ att inte | avtalsvillkor synlig i menyn |
 
 !3 Verifiera att länk för Ändra uppgifter inte visas (skall endast visas för privatläkare)
-!| script | HeaderMenu |
-| redigera anvandare visas | false |
+!| skript | HeaderMenu |
+| säkerställ att inte | redigera anvandare visas |
 
 
 !3 Ta bort utkastet

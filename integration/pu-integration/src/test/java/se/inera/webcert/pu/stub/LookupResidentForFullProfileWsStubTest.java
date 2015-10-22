@@ -1,21 +1,22 @@
 package se.inera.webcert.pu.stub;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.population.residentmaster.v1.JaNejTYPE;
+
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
 import se.inera.population.residentmaster.v1.PersonpostTYPE;
 import se.inera.population.residentmaster.v1.ResidentType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LookupResidentForFullProfileWsStubTest {
@@ -48,7 +49,7 @@ public class LookupResidentForFullProfileWsStubTest {
     public void noPersonIdThrowsException() {
         LookupResidentForFullProfileType parameters = defaultRequest();
         parameters.getPersonId().clear();
-        LookupResidentForFullProfileResponseType result = ws.lookupResidentForFullProfile("address", parameters);
+        ws.lookupResidentForFullProfile("address", parameters);
         fail();
     }
 
@@ -58,7 +59,7 @@ public class LookupResidentForFullProfileWsStubTest {
         LookupResidentForFullProfileType parameters = defaultRequest();
         parameters.getPersonId().clear();
         parameters.getPersonId().add("1212121212");
-        LookupResidentForFullProfileResponseType address = ws.lookupResidentForFullProfile("address", parameters);
+        ws.lookupResidentForFullProfile("address", parameters);
         fail("How do we generate an ResultCode error?");
     }
 
@@ -66,7 +67,7 @@ public class LookupResidentForFullProfileWsStubTest {
     public void noLookupSpecificationThrowsException() {
         LookupResidentForFullProfileType parameters = defaultRequest();
         parameters.setLookUpSpecification(null);
-        LookupResidentForFullProfileResponseType address = ws.lookupResidentForFullProfile("address", parameters);
+        ws.lookupResidentForFullProfile("address", parameters);
         fail();
     }
 

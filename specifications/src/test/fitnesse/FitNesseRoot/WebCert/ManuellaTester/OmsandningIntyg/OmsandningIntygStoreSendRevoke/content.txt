@@ -9,7 +9,7 @@
     vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=25&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=60000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=2000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2
 
 !3 Stäng ner stubben
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intygstjanst stub offline |
 
 !3 Lägg till komplett utkast
@@ -21,7 +21,7 @@
 
 !3 Logga in
 
-!|script     |!-LoggaIn-!                          |
+!|skript     |!-LoggaIn-!                          |
 |logga in som|IFV1239877878-104B_IFV1239877878-1042|
 
 !3 Signera utkastet
@@ -45,20 +45,20 @@
 !2 Aktivera stubben och validera state i den i takt med att meddelandena har processats.
 
 !3 Aktiverastubben
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intygstjanst stub online |
 
 !3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 60000 |
 
 !3 Verifiera att intyget skickats.
 
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns intyg i stub skickad till | webcert-fitnesse-signera-1 | skickad till | FK | med vantetid | 15000 |
 
 !3 Verifiera att intyget makulerats.
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns makulerat intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 15000 |
 
 !3 Ta bort utkast

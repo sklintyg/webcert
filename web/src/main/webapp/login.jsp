@@ -3,19 +3,18 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!DOCTYPE html>
-<div class="container" style="margin-bottom: 20px">
+<div class="container" style="margin-bottom: 8px">
   <div class="row">
     <h4>Välj inloggning</h4>
   </div>
   <div class="row">
 
-    <div class="col-xs-2">
+    <div class="buttonbar">
       <a href="/saml/login/alias/defaultAlias?idp=<spring:eval expression="@webcertProps.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
          class="btn btn-success" id="loginBtn">SITHS-kort</a>
-    </div>
-    <div class="col-xs-10">
+
       <a href="/saml/login/alias/eleg?idp=<spring:eval expression="@webcertProps.getProperty('cgi.funktionstjanster.saml.idp.metadata.url')" />"
-         class="btn btn-success" id="loginBtn2">E-legitimation</a>
+         class="btn btn-success" id="loginBtn2" style="margin-left: 20px;">E-legitimation</a>
     </div>
   </div>
 </div>

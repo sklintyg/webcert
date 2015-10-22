@@ -18,7 +18,7 @@
 |recipients|subject|body|
 | !-[enhet1@webcert.invalid.se]-! | !-Inkommen fråga från Försäkringskassan-! | =~/En ny fråga-svar har inkommit till !-WebCert-Enhet1-!/ |
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|
 
 !2 Undantagsflöden
@@ -55,6 +55,6 @@
 | externReferens |
 | FK-1234 |
 
-| script | Mailbox |
+| skript | Mailbox |
 | rensa |
 

@@ -40,12 +40,14 @@
     <div class="content-container">
       <div class="row">
         <div class="col-xs-6">
-          <img class="pull-right webcert-log" src="/img/webcert_big.png" />
+          <img class="pull-right webcert-logo" src="/img/webcert_big.png" />
         </div>
         <div class="col-xs-6">
           <h1>Välkommen till Webcert</h1>
-          <p>Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
-            kommunicera med Försäkringskassan om läkarintyg FK 7263. För närvarande stödjer tjänsten följande intyg:
+          <p>
+            Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
+            kommunicera med Försäkringskassan om läkarintyg FK&nbsp;7263. För närvarande stödjer tjänsten följande
+            intyg:
           <ul style="margin-bottom:30px">
             <li>Läkarintyg FK 7263</li>
             <li>Transportstyrelsens läkarintyg</li>
@@ -55,12 +57,12 @@
 
           <jsp:include page="login.jsp" />
 
-          <div style="margin-top:60px;"><b>Ny användare</b></div>
-          <p>Är du privatläkare och vill kunna utfärda intyg i Webcert? Då behöver du skapa ett konto.</p>
+          <div style="margin-top:30px;" class="graybox"><b>Ny användare</b>
+            <p>Är du privatläkare och vill kunna utfärda intyg i Webcert? Då behöver du skapa ett konto.</p>
 
-          <p><a href="<spring:eval expression="@webcertProps.getProperty('privatepractitioner.portal.registration.url')" />" >
-            Skapa konto i Webcert</a>
-          </p>
+            <a href="<spring:eval expression="@webcertProps.getProperty('privatepractitioner.portal.registration.url')" />">
+              Skapa konto i Webcert</a>
+          </div>
         </div>
       </div>
     </div>

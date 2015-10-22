@@ -15,13 +15,13 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 public class AvtalServiceImpl implements AvtalService {
 
     @Autowired
-    AvtalRepository avtalRepository;
+    private AvtalRepository avtalRepository;
 
     @Autowired
-    GodkantAvtalRepository godkantAvtalRepository;
+    private GodkantAvtalRepository godkantAvtalRepository;
 
     @Autowired
-    MonitoringLogService monitoringLogService;
+    private MonitoringLogService monitoringLogService;
 
     @Override
     public boolean userHasApprovedLatestAvtal(String userId) {

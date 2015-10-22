@@ -42,29 +42,26 @@ import java.util.Map;
 @RunWith(MockitoJUnitRunner.class)
 public class GrpCollectPollerTest {
 
-    private static final String INTYG_ID = "intyg-1";
-    private static final long VERSION = 1L;
     private static final String PERSON_ID = "19121212-1212";
     private static final String TX_ID = "webcert-tx-1";
     private static final String ORDER_REF = "order-ref-1";
 
     @Mock
-    SignaturService signaturService;
+    private SignaturService signaturService;
 
     @Mock
-    SignaturTicketTracker signaturTicketTracker;
+    private SignaturTicketTracker signaturTicketTracker;
 
     @Mock
-    GrpServicePortType grpService;
+    private GrpServicePortType grpService;
 
     @InjectMocks
-    GrpCollectPollerImpl grpCollectPoller;
+    private GrpCollectPollerImpl grpCollectPoller;
 
     @Test
     public void testSingleSuccessfulCollect() throws GrpFault {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
-        //GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService, signaturTicketTracker, signaturService);
 
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
@@ -82,8 +79,7 @@ public class GrpCollectPollerTest {
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(
                 buildResp(STARTED),
                 buildResp(OUTSTANDING_TRANSACTION),
-                buildResp(COMPLETE)
-        );
+                buildResp(COMPLETE));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
         grpCollectPoller.setWebCertUser(buildWebCertUser());
@@ -93,7 +89,6 @@ public class GrpCollectPollerTest {
         verify(signaturService, times(1)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
     }
-
 
     @Test
     public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpFault {
@@ -123,7 +118,6 @@ public class GrpCollectPollerTest {
         verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
     }
 
-
     private GrpFault buildFault(FaultStatusType faultStatusType) {
         GrpFaultType grpFaultType = new GrpFaultType();
         grpFaultType.setFaultStatus(faultStatusType);
@@ -131,7 +125,6 @@ public class GrpCollectPollerTest {
         GrpFault fault = new GrpFault("", grpFaultType);
         return fault;
     }
-
 
     private CollectResponseType buildResp(ProgressStatusType progressStatusType) {
         CollectResponseType resp = new CollectResponseType();

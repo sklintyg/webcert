@@ -1,5 +1,7 @@
 package se.inera.webcert.service.mail;
 
+import java.util.Locale;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
@@ -15,7 +17,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import se.inera.certificate.common.util.StringUtil;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
@@ -25,8 +26,6 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
-import java.util.Locale;
-
 /**
  * @author andreaskaltenbach
  */
@@ -34,6 +33,9 @@ import java.util.Locale;
 public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+
+    private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "certificate";
+    private static final String QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
 
     private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan";
     private static final String INCOMING_ANSWER_SUBJECT = "Försäkringskassan har svarat på en fråga";
@@ -210,11 +212,15 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private MailNotificationEnhet getUnit(FragaSvar fragaSvar) {
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
-        if (careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH).startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX)) {
+        if (isPrivatePractitionerEnhet(careUnitId)) {
             String personHsaId = fragaSvar.getVardperson().getHsaId();
             return getPrivatePractitionerEnhet(personHsaId);
         }
         return getHsaUnit(careUnitId);
+    }
+
+    private boolean isPrivatePractitionerEnhet(String careUnitId) {
+        return careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH).startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX);
     }
 
     private MailNotificationEnhet getHsaUnit(String careUnitId) {
@@ -246,8 +252,16 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     public String intygsUrl(FragaSvar fragaSvar) {
-        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/certificate/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
+        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/" + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId()) + "/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
         LOG.debug("Intygsurl: " + url);
         return url;
+    }
+
+    private String resolvePathSegment(String enhetsId) {
+        if (isPrivatePractitionerEnhet(enhetsId)) {
+            return QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT;
+        } else {
+            return QA_NOTIFICATION_DEFAULT_PATH_SEGMENT;
+        }
     }
 }

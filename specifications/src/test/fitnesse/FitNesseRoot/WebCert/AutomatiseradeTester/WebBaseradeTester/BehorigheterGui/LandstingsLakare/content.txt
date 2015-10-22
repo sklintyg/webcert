@@ -10,101 +10,99 @@
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt | internReferens? |
 | OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1| IFV1239877878-104B | Tolvan Privatläkarsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
 
-!3 Se till att landstingsläkaren har godkänt webcert avtal via testbarhets-API
-| script | !-LaggTillGodkannande-! |
-| lagg till godkannande | IFV1239877878-104B |
-
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Verifiera att knapp för signera är synlig
-| script | !-HanteraUtkast-! |
-| signera knapp visas |
+
+| skript | !-HanteraUtkast-! |
+| säkerställ att | signera knapp visas |
 
 !3 Gå till sidan för Ej signerade utkast
-| script | !-HanteraUtkast-! |
+
+| skript | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
-| ej signerade intyg sidan visas |
+| säkerställ att | ej signerade intyg sidan visas |
 
 !3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas (TODO: Ändra till false sen!)
-| script | !-HanteraUtkast-! |
-| visa avancerat filter |
-| filterVidarebefordradVisas | true |
-| filterValjLakareVisas |  true |
 
+| skript | !-HanteraUtkast-! |
+| visa avancerat filter |
+| säkerställ att | filterVidarebefordradVisas |
+| säkerställ att | filterValjLakareVisas |
 
 !3 Verifiera knappen för att vidarebeforda finns i tabellen över ej signerade utkast
-| script | !-HanteraUtkast-! |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
 
-!3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
-| script | !-VisaIntyg-! |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | vidare befordra knapp visas |
+| säkerställ att | vidarebefordrad checkbox visas |
+
+!3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på och verifiera att förväntade knappar för en landstingsläkare visas (Skicka visas ej eftersom intyget redan är skickat)
+
+| skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-1 | och typ | fk7263 |
-
-!3 Verifiera att förväntade knappar för en landstingsläkare visas (Skicka visas ej eftersom intyget redan är skickat)
-| script | !-VisaIntyg-! |
-| kopiera knapp visas |
-| makulera knapp visas |
-| skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
+| säkerställ att | skriv ut knapp visas |
 
 !3 Gå till listsida för Fråga & Svar
-!| script | SvaraOchFraga |
-| ga till svara och fraga |
-| lista med ohanterade fragor visas |
 
+!| skript | SvaraOchFraga |
+| ga till svara och fraga |
+| säkerställ att | lista med ohanterade fragor visas |
 
 !3 Kontrollera så filtret visar "Frågor och svar som är" eller "Signerat av" för landstingsläkare
-!| script | SvaraOchFraga |
-| visa avancerat filter |
-| filter vidarebefordrad visas | true |
-| filter valj lakare visas | true |
 
+!| skript | SvaraOchFraga |
+| visa avancerat filter |
+| säkerställ att | filter vidarebefordrad visas |
+| säkerställ att | filter valj lakare visas |
 
 !3 Vidarebefordra-knapp i listan får visas
-!| script | SvaraOchFraga |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
 
-!3 Gå in på frågan och verifiera att Vidarebefordra-knappen är synlig för landstingsläkare
-!| script | SvaraOchFraga |
+!| skript | SvaraOchFraga |
+| säkerställ att | vidare befordra knapp visas |
+| säkerställ att | vidarebefordrad checkbox visas |
+
+!3 Gå in på frågan och verifiera att vidarebefordra-knappen är synlig för landstingsläkare
+
+!| skript | SvaraOchFraga |
 | visa fraga | $internReferens1 |
-| intyg med fraga svar sidan visas |
-| vidarebefordra knapp inne pa fraga visas | true |
+| säkerställ att | intyg med fraga svar sidan visas |
+| säkerställ att | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
-!| script | SvaraOchFraga |
+
+!| skript | SvaraOchFraga |
 | ga till svara och fraga |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 
-!3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen är synlig för landstingsläkare
-!| script | SvaraOchFraga |
+!3 Gå in på frågan med komplettering på och verifiera att vidarebefordra-knappen är synlig för landstingsläkare
+
+!| skript | SvaraOchFraga |
 | visa fraga | $internReferens2 |
-| intyg med fraga svar sidan visas |
+| säkerställ att | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
-| vidarebefordra knapp inne pa fraga visas | true |
+| säkerställ att | vidarebefordra knapp inne pa fraga visas |
 
-!3 Gå till Om Webcert
+!3 Gå till Om Webcert och verifiera att avtalsvillkorsalternativet inte syns
 
-| script | !-OmWebcert-! |
+| skript | !-OmWebcert-! |
 | ga till om webcert |
-
-!3 Verifiera att Avtalsvillkorsalternativet inte syns
-| script | !-OmWebcert-! |
-| avtalsvillkor synlig i menyn | false |
+| säkerställ att inte | avtalsvillkor synlig i menyn |
 
 !3 Verifiera att länk för Ändra uppgifter inte visas (skall endast visas för privatläkare)
-!| script | HeaderMenu |
-| redigera anvandare visas | false |
 
+!| skript | HeaderMenu |
+| säkerställ att inte | redigera anvandare visas |
 
 !3 Ta bort utkastet
 

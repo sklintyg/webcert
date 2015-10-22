@@ -2,6 +2,7 @@ package se.inera.webcert.persistence.intyg.repository.util;
 
 import org.joda.time.LocalDateTime;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -9,7 +10,10 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 
 import java.util.UUID;
 
-public class UtkastTestUtil {
+public final class UtkastTestUtil {
+
+    private UtkastTestUtil() {
+    }
 
     public static final String ENHET_1_ID = "ENHET_1_ID";
     public static final String ENHET_2_ID = "ENHET_2_ID";
@@ -24,7 +28,7 @@ public class UtkastTestUtil {
     public static final String HOS_PERSON3_ID = "SE123484628";
     public static final String HOS_PERSON3_NAMN = "Dr. Johan Steen";
 
-    public static final String PERSON_NUMMER = "19121212-1212";
+    public static final Personnummer PERSON_NUMMER = new Personnummer("19121212-1212");
     public static final String PERSON_FORNAMN = "Tolvan";
     public static final String PERSON_MELLANNAMN = "Svensson";
     public static final String PERSON_EFTERNAMN = "Tolvansson";
@@ -57,14 +61,14 @@ public class UtkastTestUtil {
     }
 
     public static Utkast buildUtkast(String enhetsId, UtkastStatus status, String type, String hoSPersonId,
-            String hoSPersonNamn, String personNummer, String personFornamn, String personMellannamn,
+            String hoSPersonNamn, Personnummer personNummer, String personFornamn, String personMellannamn,
             String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         return buildUtkast(UUID.randomUUID().toString(), enhetsId, status, type, hoSPersonId, hoSPersonNamn,
                 personNummer, personFornamn, personMellannamn, personEfternamn, model, senastSparadDatum);
     }
 
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String type,
-            String hoSPersonId, String hoSPersonNamn, String personNummer, String personFornamn,
+            String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
             String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygsId);
@@ -91,9 +95,9 @@ public class UtkastTestUtil {
 
         return intyg;
     }
-    
+
     public static Signatur buildSignatur(String intygId, String signeradAv, LocalDateTime signeringsDatum) {
-        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>");  
+        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>");
     }
-    
+
 }

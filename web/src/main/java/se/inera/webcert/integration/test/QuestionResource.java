@@ -118,7 +118,6 @@ public class QuestionResource {
         }
     }
 
-    
     @GET
     @Path("/extern/{externReferens}/translate")
     @Produces(MediaType.APPLICATION_JSON)

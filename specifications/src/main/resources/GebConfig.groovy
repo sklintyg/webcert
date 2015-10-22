@@ -10,6 +10,9 @@ import org.openqa.selenium.Platform
 waiting {
     timeout = 4 // default wait is two seconds
 }
+
+atCheckWaiting = true
+
 environments {
     saucelabschrome {
         driver = {

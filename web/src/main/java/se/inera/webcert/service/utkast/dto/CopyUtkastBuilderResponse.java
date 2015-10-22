@@ -5,13 +5,13 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 public class CopyUtkastBuilderResponse {
 
     private Utkast utkastCopy;
-    
+
     private String orginalEnhetsId;
-    
+
     private String orginalEnhetsNamn;
-    
+
     private String orginalVardgivarId;
-    
+
     private String orginalVardgivarNamn;
 
     public Utkast getUtkastCopy() {

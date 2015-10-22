@@ -21,10 +21,9 @@ public class GetEmployeeServiceTest {
 
     private static final String LOGICAL_ADDRESS = "1234567890";
     private static final String VALID_HSA_ID = "SE11837399";
-    private static final String INVALID_HSA_ID = "SE88888888";
 
     @InjectMocks
-    GetEmployeeServiceImpl employeeService = new GetEmployeeServiceImpl();
+    private GetEmployeeServiceImpl employeeService = new GetEmployeeServiceImpl();
 
     @Before
     public void setup() {

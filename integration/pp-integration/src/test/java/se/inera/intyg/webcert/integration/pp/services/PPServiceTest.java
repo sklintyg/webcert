@@ -38,7 +38,7 @@ public class PPServiceTest {
     @Test
     public void whenServiceResultCodeIsErrorThenExpectNullResponse() {
         HoSPersonType hoSPersonType = service.getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_ERROR_RESPONSE);
-        assertNull(null);
+        assertNull(hoSPersonType);
     }
 
     @Test(expected = WebServiceException.class)
@@ -55,6 +55,5 @@ public class PPServiceTest {
     public void whenHsaIdAndPersonalIdIsSetThenExceptionThrown() {
         service.getPrivatePractitioner("address", "any HSA-ID", "any PERSONNUMMER");
     }
-
 
 }

@@ -6,11 +6,11 @@
 
 
 !3 Stäng ner stubben
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intygstjanst stub offline |
 
 !3 Logga in
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
 !3 Lägg till komplett utkast
@@ -39,20 +39,20 @@
 
 
 !3 Aktiverastubben
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | intygstjanst stub online |
 
 !3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 10000 |
 
 !3 Verifiera att intyget skickats.
 
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns intyg i stub skickad till | webcert-fitnesse-signera-1 | skickad till | FK | med vantetid | 10000 |
 
 !3 Verifiera att intyget makulerats.
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns makulerat intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 10000 |
 
 

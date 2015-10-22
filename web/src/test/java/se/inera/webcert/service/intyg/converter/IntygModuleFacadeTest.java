@@ -52,7 +52,7 @@ public class IntygModuleFacadeTest {
     public void testConvertFromInternalToPdfDocument() throws IntygModuleFacadeException, ModuleException {
 
         byte[] pdfData = "PDFDATA".getBytes();
-        PdfResponse pdfResp = new PdfResponse(pdfData , "file.pdf");
+        PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
         when(moduleApi.pdf(any(InternalModelHolder.class), any(List.class), any(ApplicationOrigin.class))).thenReturn(pdfResp);
 
         IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>(), false);

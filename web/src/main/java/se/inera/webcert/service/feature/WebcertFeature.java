@@ -14,11 +14,11 @@ public enum WebcertFeature {
     private String name;
     private String envName;
 
-    private WebcertFeature(String name) {
+    WebcertFeature(String name) {
         this.name = name;
     }
 
-    private WebcertFeature(String name, String envName) {
+    WebcertFeature(String name, String envName) {
         this(name);
         this.envName = envName;
     }

@@ -24,14 +24,17 @@ import se.inera.log.messages.AbstractLogMessage;
 
 public class LogResource {
 
-    private long timeOut = 1000;
-    
-    LogResource() {}
-    
+    private static final int DEFAULT_TIMEOUT = 1000;
+
+    private long timeOut = DEFAULT_TIMEOUT;
+
+    LogResource() {
+    }
+
     LogResource(long timeOut) {
         this.timeOut = timeOut;
     }
-    
+
     @Autowired
     @Qualifier("jmsPDLLogTemplateNoTx")
     private JmsTemplate jmsTemplate;
@@ -56,7 +59,6 @@ public class LogResource {
         return Response.ok().build();
     }
 
-
     @GET
     @Path("/count")
     @Produces(MediaType.APPLICATION_JSON)
@@ -74,7 +76,7 @@ public class LogResource {
             }
         });
     }
-    
+
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)

@@ -2,7 +2,9 @@ angular.module('webcertTest').value('mockResponse', {
     utkastList: {
         'totalCount':1,
         'results':[
-            {'intygId':'2885f159-51e7-41bc-aba0-88fb02b2d667','patientId':'19121212-1212','source':'WC','intygType':'fk7263','status':'DRAFT_COMPLETE','lastUpdatedSigned':'2015-01-28T13:47:22.071','updatedSignedBy':'Jan Nilsson','vidarebefordrad':false}
+            {'intygId':'2885f159-51e7-41bc-aba0-88fb02b2d667','patientId':'19121212-1212','source':'WC',
+                'intygType':'fk7263','status':'DRAFT_COMPLETE','lastUpdatedSigned':'2015-01-28T13:47:22.071',
+                'updatedSignedBy':'Jan Nilsson','vidarebefordrad':false}
         ]
     },
     utkast: {

@@ -7,6 +7,9 @@ import org.springframework.security.core.AuthenticationException;
  * does not have the necessary roles in HSA etc.)
  */
 public class PrivatePractitionerAuthorizationException extends AuthenticationException {
+
+    private static final long serialVersionUID = -6776225248097482781L;
+
     public PrivatePractitionerAuthorizationException(String message) {
         super(message);
     }

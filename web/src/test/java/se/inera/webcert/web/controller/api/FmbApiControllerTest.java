@@ -1,11 +1,23 @@
 package se.inera.webcert.web.controller.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbCallType;
@@ -15,16 +27,6 @@ import se.inera.webcert.web.controller.api.dto.FmbContent;
 import se.inera.webcert.web.controller.api.dto.FmbForm;
 import se.inera.webcert.web.controller.api.dto.FmbFormName;
 import se.inera.webcert.web.controller.api.dto.FmbResponse;
-
-import javax.ws.rs.core.Response;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
 
 public class FmbApiControllerTest {
 
@@ -56,41 +58,41 @@ public class FmbApiControllerTest {
 
     @Test
     public void testGetFmbForIcd10IsReturningCorrectIcdCode() throws Exception {
-        //Given
+        // Given
         String icd10 = "asdf";
 
-        //When
+        // When
         FmbResponse response = (FmbResponse) controller.getFmbForIcd10(icd10).getEntity();
 
-        //Then
+        // Then
         assertEquals(icd10.toUpperCase(), response.getIcd10Code());
     }
 
     @Test
     public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData() throws Exception {
-        //Given
+        // Given
         Mockito.doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
-        //When
+        // When
         FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
 
-        //Then
+        // Then
         assertEquals(0, response.getForms().size());
         Mockito.verify(fmbService, times(1)).updateData();
     }
 
     @Test
     public void testGetFmbForIcd10HandlesAddsTextForOneRow() throws Exception {
-        //Given
+        // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String text = "testtext";
         fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, text, "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
-        //When
+        // When
         FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
 
-        //Then
+        // Then
         assertEquals(FmbFormName.values().length, response.getForms().size());
 
         List<FmbForm> forms = response.getForms();
@@ -105,17 +107,17 @@ public class FmbApiControllerTest {
 
     @Test
     public void testGetFmbForIcd10HandlesAddsListOfTextsForSeveralRows() throws Exception {
-        //Given
+        // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String testtext = "testtext";
         fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, testtext, "1"));
         fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, testtext, "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
-        //When
+        // When
         FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
 
-        //Then
+        // Then
         assertEquals(FmbFormName.values().length, response.getForms().size());
 
         List<FmbForm> forms = response.getForms();

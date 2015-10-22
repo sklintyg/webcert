@@ -1,27 +1,27 @@
 package se.inera.webcert.service.utkast.dto;
 
 import org.apache.commons.lang3.StringUtils;
-
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Vardenhet;
 
 public class CreateNewDraftCopyRequest {
 
     private String originalIntygId;
-    
+
     private String typ;
 
-    private String patientPersonnummer;
-    
-    private String nyttPatientPersonnummer;
+    private Personnummer patientPersonnummer;
+
+    private Personnummer nyttPatientPersonnummer;
 
     private HoSPerson hosPerson;
 
     private Vardenhet vardenhet;
-    
+
     private boolean djupintegrerad = false;
 
-    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, String patientPersonnummer, HoSPerson hosPerson, Vardenhet vardenhet) {
+    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, Personnummer patientPersonnummer, HoSPerson hosPerson, Vardenhet vardenhet) {
         this.originalIntygId = orginalIntygsId;
         this.typ = intygsTyp;
         this.patientPersonnummer = patientPersonnummer;
@@ -30,7 +30,7 @@ public class CreateNewDraftCopyRequest {
     }
 
     public boolean containsNyttPatientPersonnummer() {
-        return StringUtils.isNotBlank(nyttPatientPersonnummer);
+        return nyttPatientPersonnummer != null && StringUtils.isNotBlank(nyttPatientPersonnummer.getPersonnummer());
     }
 
     public String getOriginalIntygId() {
@@ -49,19 +49,19 @@ public class CreateNewDraftCopyRequest {
         this.typ = typ;
     }
 
-    public String getPatientPersonnummer() {
+    public Personnummer getPatientPersonnummer() {
         return patientPersonnummer;
     }
 
-    public void setPatientPersonnummer(String patientPersonnummer) {
+    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
         this.patientPersonnummer = patientPersonnummer;
     }
 
-    public String getNyttPatientPersonnummer() {
+    public Personnummer getNyttPatientPersonnummer() {
         return nyttPatientPersonnummer;
     }
 
-    public void setNyttPatientPersonnummer(String nyttPatientPersonnummer) {
+    public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
         this.nyttPatientPersonnummer = nyttPatientPersonnummer;
     }
 

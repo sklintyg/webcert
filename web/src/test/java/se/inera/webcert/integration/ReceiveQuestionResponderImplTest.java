@@ -6,6 +6,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +20,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
@@ -26,11 +31,6 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.notification.NotificationService;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveQuestionResponderImplTest {
@@ -82,20 +82,20 @@ public class ReceiveQuestionResponderImplTest {
 
         ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
-        
+
         // should place notification on queue
         verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
     }
-    
+
     @Test
     public void testReceive() {
 
         ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk.xml");
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
-        
+
         // should mail notification
         verify(mockMailNotificationService).sendMailForIncomingQuestion(any(FragaSvar.class));
 
@@ -121,7 +121,8 @@ public class ReceiveQuestionResponderImplTest {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             QuestionFromFkType question = unmarshaller
                     .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                            QuestionFromFkType.class).getValue();
+                            QuestionFromFkType.class)
+                    .getValue();
             return question;
         } catch (Exception e) {
             return null;

@@ -1,5 +1,6 @@
 package se.inera.webcert.common.security.authority;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,13 +24,11 @@ public enum UserRole {
     private String text;
     private Set<String> authorizedIntygsTyper;
 
-    private UserRole(String text, String ... intygsTyper) {
+    UserRole(String text, String... intygsTyper) {
         this.text = text;
         authorizedIntygsTyper = new HashSet<>();
 
-        for (String authorizedIntygsTyp : intygsTyper) {
-            authorizedIntygsTyper.add(authorizedIntygsTyp);
-        }
+        Collections.addAll(authorizedIntygsTyper, intygsTyper);
     }
 
     public boolean equalsName(String otherName) {
@@ -40,11 +39,9 @@ public enum UserRole {
         return (otherText == null) ? false : text.equals(otherText);
     }
 
-    
     public Set<String> getAuthorizedIntygsTyper() {
         return authorizedIntygsTyper;
     }
-
 
     public String text() {
         return this.text;
@@ -52,7 +49,6 @@ public enum UserRole {
 
     /**
      * This is only to make serialization of enum using Jackson Shape.OBJECT to work properly.
-     * @return
      */
     public String getName() {
         return this.text;

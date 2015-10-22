@@ -1,0 +1,34 @@
+Testet kontroller att läkare som kommer in till Webcert via uthoppslänk får se en varningsdialog 
+när hen väljer att lämna sidan 'Frågor och svar' och gå till 'Ej signerade utkast' eller 'Sök/skriv intyg'
+
+!3 Skapa ett nytt intygsutkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-utkast-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej |
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+!3 Visa utkastet via uthoppslänk
+
+| script | !-IntegrationViaUthoppslank-! |
+| ga till intygsvy via uthopp med intygs id | webcert-fitnesse-utkast-1 |
+| ensure | meddelande intyget inte skickat visas |
+| note | Gå till Ej signerade utkast |
+| ga till ej signerade utkast |
+| ensure | lamna fraga svar varning visas |
+| avbryt lamna fraga och svar |
+| note | Visa utkast |
+| ga till intygsvy via uthopp med intygs id | webcert-fitnesse-utkast-1 |
+| note | Gå till Sök/skriv intyg |
+| ga till sok skriva intyg |
+| ensure | lamna fraga svar varning visas |
+| avbryt lamna fraga och svar |
+
+!3 Ta bort utkastet
+
+| script | !-TaBortUtkast-! |
+| ta bort utkast | webcert-fitnesse-utkast-1 |

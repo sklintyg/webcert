@@ -6,7 +6,7 @@ import se.inera.webcert.persistence.roles.model.Role;
 
 /**
  *
- * Created by Magnus Ekstrand on 2015-08-27
+ * Created by Magnus Ekstrand on 2015-08-27.
  *
  */
 public interface RoleRepository extends JpaRepository<Role, Long> {

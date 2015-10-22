@@ -21,15 +21,15 @@ public interface DiagnosService {
      * @return
      */
     DiagnosResponse getDiagnosisByCode(String code, String codeSystem);
-    
+
     /**
      * Returns all diagnoses in the repository exactly matching the code.
-     * 
+     *
      * @param code
-     *           The code to search for.
+     *            The code to search for.
      * @param codeSystem
-     *           The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
-     * @return
+     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     * @retur
      */
     DiagnosResponse getDiagnosisByCode(String code, Diagnoskodverk codeSystem);
 

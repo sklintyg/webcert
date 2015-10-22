@@ -1,21 +1,20 @@
 package se.inera.webcert.pages
 
-import geb.Browser
 import geb.Module
-import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 
-class AbstractEditCertPage extends AbstractPage {
-
+class AbstractEditCertPage extends AbstractLoggedInPage {
+    
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
 
     static content = {
+        namnOchPersonnummer { $("#patientNamnPersonnummer") }
         namnOchPersonnummer(required: false) { $("#patientNamnPersonnummer") }
         tillbakaButton(required: false) { $("#tillbakaButton") }
         radera(required: false) { $("#ta-bort-utkast") }
         skrivUtBtn(required: false) { $("#skriv-ut-utkast") }
         konfirmeraRadera(required: false) { $("#confirm-draft-delete-button") }
-        signeraBtn(required: false ){ $("#signera-utkast-button") }
-        signeraBtnNoWait(required: false) { $("#signera-utkast-button") }
+        signeraBtn(required: false ) { $("#signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         intygetSparatOchKomplettMeddelande(required: false){ $("#intyget-sparat-och-komplett-meddelande") }
@@ -81,11 +80,9 @@ class AbstractEditCertPage extends AbstractPage {
     }
 
     boolean harSparat(){
-        waitFor {
-            return doneLoading() && (intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed())
-        }
+        return intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed();
     }
-
+    
     boolean isSignBtnDisplayed(){
         signeraBtn.isDisplayed()
     }

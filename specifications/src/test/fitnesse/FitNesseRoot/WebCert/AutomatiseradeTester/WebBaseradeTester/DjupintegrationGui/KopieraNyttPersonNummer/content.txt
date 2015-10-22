@@ -1,0 +1,28 @@
+!3 Säkerställa jira webcert-1449
+
+Testet säkerställa att texten i kopieradialog ändras beroende om ett nytt personnummer.
+Också att texten "I de fall patienten har ändrat namn eller adress så uppdateras den informationen." inte synes den skulle bara synes i webcert.
+
+!3 Välj patient och visa intyget
+
+| skript | logga in |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
+| skript | sok skriv intyg |
+| säkerställ att | sok skriv intyg sidan visas |
+
+!4 Testa att nytt personnumer text visas i kopieradialogen.
+
+| skript | integration med journalsystem |
+| visa intyg | intyg-fit-1 | via integration med personnummer | ${person2.personnummer} |
+| säkerställ att | kopiera dialogen visas |
+| säkerställ att | text nytt personnummer visas |
+| säkerställ att inte | text inte fran journalsystem visas |
+
+!4 Testa att nytt personnumer text inte visas.
+
+| skript | integration med journalsystem |
+| visa intyg | intyg-fit-1 | via integration med personnummer |  |
+| säkerställ att | kopiera dialogen visas |
+| säkerställ att inte | text nytt personnummer visas |
+| säkerställ att inte | text inte fran journalsystem visas |

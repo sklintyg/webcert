@@ -155,7 +155,7 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
-        
+
         verify(mockMonitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
     }
 
@@ -167,7 +167,7 @@ public class UtkastServiceImplTest {
         when(userService.getUser()).thenReturn(user);
 
         try {
-            draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion()-1);
+            draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
             Assert.fail("OptimisticLockException expected");
         } catch (OptimisticLockException e) {
             // Expected
@@ -181,7 +181,7 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verifyZeroInteractions(logService);
-        
+
         verifyZeroInteractions(mockMonitoringService);
     }
 
@@ -192,7 +192,7 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logPrintIntygAsDraft(any(LogRequest.class));
-        
+
         verify(mockMonitoringService).logUtkastPrint(INTYG_ID, INTYG_TYPE);
     }
 
@@ -211,7 +211,7 @@ public class UtkastServiceImplTest {
     @Test(expected = OptimisticLockException.class)
     public void testDeleteDraftThatIsSignedWrongVersion() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion()-1);
+        draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
     }
 
     @Test
@@ -241,7 +241,7 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
-        
+
         verify(mockMonitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
         assertNotNull("An DraftValidation should be returned", res);

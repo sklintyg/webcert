@@ -1,5 +1,4 @@
 package se.inera.webcert.spec
-
 import geb.Browser
 import se.inera.webcert.pages.PrivatlakarAvtalPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
@@ -10,45 +9,36 @@ import se.inera.webcert.pages.WelcomePage
  */
 class HanteraAvtal {
 
-    def result
 
-    boolean verifieraPaAvtalSida(boolean expected = true) {
-        result = false
+    boolean avtalsidaVisas() {
+        def result = false
         Browser.drive {
             waitFor {
                 at PrivatlakarAvtalPage
             }
             result = page.acceptTermsBtn.isDisplayed()
         }
-        result = result == expected
+        result
     }
 
-    def godkannAvtal() {
+    void godkannAvtal() {
         Browser.drive {
             waitFor {
-                at PrivatlakarAvtalPage
+                isAt PrivatlakarAvtalPage
             }
-
-            waitFor {
-                page.acceptTermsBtn.click()
-            }
-
+            page.acceptTermsBtn.click()
             waitFor {
                 at SokSkrivaIntygPage
             }
         }
     }
 
-    def avbojAvtal() {
+    void avbojAvtal() {
         Browser.drive {
             waitFor {
-                at PrivatlakarAvtalPage
+                isAt PrivatlakarAvtalPage
             }
-
-            waitFor {
-                page.logoutTermsBtn.click()
-            }
-
+            page.logoutTermsBtn.click()
             waitFor {
                 at WelcomePage
             }

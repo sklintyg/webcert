@@ -1,7 +1,5 @@
 package se.inera.webcert.certificatesender.services;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import javax.xml.ws.WebServiceException;
 
 import org.apache.camel.Header;
@@ -10,11 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.client.SendCertificateServiceClient;
 import se.inera.webcert.common.Constants;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
 /**
  * Created by eriklupander on 2015-05-21.
@@ -37,21 +36,25 @@ public class CertificateSendProcessor {
         try {
             response = sendServiceClient.sendCertificate(intygsId, personId, recipient, logicalAddress);
 
-            if (ResultCodeType.ERROR == response.getResult().getResultCode()) {
-                LOG.warn("Error occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
+            final ResultType result = response.getResult();
+            final String resultText = result.getResultText();
+            if (ResultCodeType.ERROR == result.getResultCode()) {
+                LOG.warn("Error occured when trying to send intyg '{}'; {}", intygsId, resultText);
 
-                switch (response.getResult().getErrorId()) {
+                switch (result.getErrorId()) {
                     case APPLICATION_ERROR:
                     case TECHNICAL_ERROR:
-                        throw new TemporaryException(response.getResult().getResultText());
+                        throw new TemporaryException(resultText);
                     case REVOKED:
                     case VALIDATION_ERROR:
-                        throw new PermanentException(response.getResult().getResultText());
+                        throw new PermanentException(resultText);
+                    default:
+                        throw new PermanentException("Unhandled error type: " + result.getErrorId() + " - " + resultText);
                 }
 
             } else {
-                if (ResultCodeType.INFO.equals(response.getResult().getResultCode())) {
-                    LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue.", intygsId, response.getResult().getResultText());
+                if (ResultCodeType.INFO.equals(result.getResultCode())) {
+                    LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue.", intygsId, resultText);
                 }
             }
 

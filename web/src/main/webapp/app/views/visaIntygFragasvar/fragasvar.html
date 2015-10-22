@@ -1,10 +1,10 @@
-<div class="row webcert-multicol" id="viewQAAndCert">
-  <div class="webcert-multicol-background">
+<div class="row webcert-multicol webcert-multicol-background-white" id="viewQAAndCert">
+  <div class="webcert-multicol-container">
 
     <!-- Left column -->
     <div class="col-sm-6 webcert-col webcert-col-primary print-hide">
       <div wc-authority feature="hanteraFragor" intygstyp="{{widgetState.certificateType}}">
-        <a id="tillbakaButton" wc-authority role="!ROLE_LAKARE_DJUPINTEGRERAD" class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
+        <a id="tillbakaButton" wc-authority="PRIVILEGE_NAVIGERING" class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
         <h1 class="backlink-heading">Fråga och svar</h1>
         <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
       </div>
@@ -12,7 +12,7 @@
     <!-- Certificate Left side end -->
 
     <!-- Right side -->
-    <div class="col-sm-6 webcert-col-secondary">
+    <div class="col-sm-6 webcert-col-secondary webcert-col-tallest-grey">
       <div class="print-hide">
         <div class="webcert-col-shadow"></div>
         <h2 class="col-head">

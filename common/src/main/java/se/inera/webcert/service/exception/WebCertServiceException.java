@@ -7,6 +7,8 @@ package se.inera.webcert.service.exception;
  */
 public final class WebCertServiceException extends RuntimeException {
 
+    private static final long serialVersionUID = -5060049906425434207L;
+
     private final WebCertServiceErrorCodeEnum errorCode;
 
     /**

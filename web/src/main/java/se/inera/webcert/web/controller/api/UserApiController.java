@@ -1,22 +1,33 @@
 package se.inera.webcert.web.controller.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.privatlakaravtal.AvtalService;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
-import se.inera.webcert.web.controller.api.dto.WebUserFeaturesRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
+import se.inera.webcert.web.controller.api.dto.WebUserFeaturesRequest;
 
 /**
  * Controller for accessing the users security context.
@@ -30,10 +41,13 @@ public class UserApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
 
     @Autowired
-    AvtalService avtalService;
+    private AvtalService avtalService;
 
     @Autowired
-    WebcertFeatureService featureService;
+    private WebcertFeatureService featureService;
+
+    @Autowired
+    private MonitoringLogServiceImpl monitoringService;
 
     /**
      * Retrieves the security context of the logged in user as JSON.
@@ -51,18 +65,18 @@ public class UserApiController extends AbstractApiController {
     @Path("/features")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest){
+    public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
         WebCertUser user = getWebCertUserService().getUser();
-        List<String> mutFeatures = new ArrayList(user.getAktivaFunktioner());
+        List<String> mutFeatures = new ArrayList<>(user.getAktivaFunktioner());
         updateFeatures(webUserFeaturesRequest.isJsLoggning(), WebcertFeature.JS_LOGGNING.getName(), mutFeatures);
         updateFeatures(webUserFeaturesRequest.isJsMinified(), WebcertFeature.JS_MINIFIED.getName(), mutFeatures);
         user.setAktivaFunktioner(new TreeSet<String>(mutFeatures));
         return Response.ok(user.getAktivaFunktioner()).build();
     }
 
-    private void updateFeatures(boolean feature, String name, List<String>features){
-        if(feature){
-            if(features.indexOf(name) < 0 ){
+    private void updateFeatures(boolean feature, String name, List<String>features) {
+        if (feature) {
+            if (features.indexOf(name) < 0) {
                 features.add(name);
                 featureService.setFeature(name, "true");
             }
@@ -112,6 +126,9 @@ public class UserApiController extends AbstractApiController {
     public Response godkannAvtal() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
+            Avtal avtal = avtalService.getLatestAvtal();
+            monitoringService.logConsentGiven(user.getPersonId(), user.getHsaId(), avtal.getAvtalVersion(), avtal.getVersionDatum());
+
             avtalService.approveLatestAvtal(user.getHsaId());
             user.setPrivatLakareAvtalGodkand(true);
         }

@@ -3,6 +3,7 @@ package se.inera.webcert.pages
 import se.inera.certificate.page.AbstractPage
 
 class VisaPage extends AbstractPage {
+
     static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
 
     static content = {
@@ -20,12 +21,12 @@ class VisaPage extends AbstractPage {
         makuleraKnapp(required: false) { $("#makuleraBtn") }
         sekretessmarkering { $("#sekretessmarkering") }
 
-        skickaKnappNoWait{$("#sendBtn") }
-        skrivUtKnappNoWait{$("#downloadprint") }
-        kopieraKnappNoWait(required: false){$("#copyBtn") }
-        makuleraKnappNoWait{$("#makuleraBtn") }
+        skickaKnappNoWait { $("#sendBtn") }
+        skrivUtKnappNoWait { $("#downloadprint") }
+        kopieraKnappNoWait(required: false) { $("#copyBtn") }
+        makuleraKnappNoWait { $("#makuleraBtn") }
 
-        kopieraDialogMsgForlangningSjukskrivning(required:false,wait: true) { displayed($("#msgForlangningSjukskrivning")) }
+        kopieraDialogMsgForlangningSjukskrivning(required:false, wait: true) { $("#msgForlangningSjukskrivning") }
         kopieraDialogMsgForlangningSjukskrivningNoWait(required:false) { $("#msgForlangningSjukskrivning") }
 
     }

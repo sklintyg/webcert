@@ -1,5 +1,7 @@
 package se.inera.auth.eleg;
 
+import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+
 import java.util.ArrayList;
 
 import org.opensaml.saml2.core.Assertion;
@@ -42,7 +44,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
     }
 
     @Override
-    public boolean supports(Class authentication) {
+    public boolean supports(Class<?> authentication) {
         return FakeElegAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
@@ -51,7 +53,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
 
         Assertion assertion = new AssertionBuilder().buildObject();
 
-        attachAuthenticationContext(assertion, BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
+        attachAuthenticationContext(assertion, FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
 
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);

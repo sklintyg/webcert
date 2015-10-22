@@ -1,10 +1,12 @@
 package se.inera.webcert.service.signatur.asn1;
 
-import static se.inera.webcert.service.signatur.asn1.ASN1Type.*;
+import static se.inera.webcert.service.signatur.asn1.ASN1Type.SEQUENCE;
+import static se.inera.webcert.service.signatur.asn1.ASN1Type.OBJECT_IDENTIFIER;
+import static se.inera.webcert.service.signatur.asn1.ASN1Type.PRINTABLE_STRING;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ASN1UtilImpl implements ASN1Util {
 
-    private static final Logger log = LoggerFactory.getLogger(ASN1UtilImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ASN1UtilImpl.class);
 
     private static final int SEQUENCE_LENGTH = 19;   // 0x13
     private static final int OBJECT_ID_LENGTH = 3;   // 0x03
@@ -30,6 +32,11 @@ public class ASN1UtilImpl implements ASN1Util {
             SEQUENCE, SEQUENCE_LENGTH,
             OBJECT_IDENTIFIER, OBJECT_ID_LENGTH, 0x55, 0x04, 0x05,
             PRINTABLE_STRING, PERSON_ID_LENGTH
+    };
+
+    private static final int[] X520_SERIAL_MARKER_BYTE_SEQ_NO_LENGTH = new int[] {
+            OBJECT_IDENTIFIER, OBJECT_ID_LENGTH, 0x55, 0x04, 0x05,
+            PRINTABLE_STRING
     };
 
     /**
@@ -43,12 +50,42 @@ public class ASN1UtilImpl implements ASN1Util {
      * @throws
      *      IllegalArgumentException if no serialNumber (e.g. personnummer) could be parsed from the signature.
      */
-    public String parsePersonId(String asn1Signature) {
+    public String parsePersonId(InputStream asn1Signature) {
         try {
-            return new ASN1StreamParser().parse(IOUtils.toInputStream(asn1Signature), X520_SERIAL_MARKER_BYTE_SEQ, PERSON_ID_LENGTH);
+            byte[] value = new ASN1StreamParser().parse(asn1Signature, X520_SERIAL_MARKER_BYTE_SEQ, PERSON_ID_LENGTH);
+            return returnAsString(value);
         } catch (IOException e) {
-            log.error("Could not parse personId from NetID signature: " + e.getMessage());
+            LOG.error("Could not parse personId from NetID signature: " + e.getMessage());
             throw new IllegalArgumentException("Could not parse personId from NetID signature, will not sign utkast: " + e.getMessage());
+        }
+    }
+
+    private String returnAsString(byte[] value) {
+        if (value != null) {
+            return new String(value);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Tries to parse a hsaId from the supplied base64-encoded signature data.
+     *
+     * Should be present in the X520 DN serial field, but since length of the hsaId is indeterminate, we must use
+     * the ASN.1 length bits to determine how many bytes to read after the marker.
+     *
+     * @param asn1Signature
+     * @return
+     */
+    @Override
+    public String parseHsaId(InputStream asn1Signature) {
+        try {
+            byte[] value = new ASN1StreamParser().parseDynamicLength(asn1Signature, X520_SERIAL_MARKER_BYTE_SEQ_NO_LENGTH);
+            return returnAsString(value);
+
+        } catch (IOException e) {
+            LOG.error("Could not parse hsaId from NetID signature: " + e.getMessage());
+            throw new IllegalArgumentException("Could not parse hsaId from NetID signature, will not sign utkast: " + e.getMessage());
         }
     }
 

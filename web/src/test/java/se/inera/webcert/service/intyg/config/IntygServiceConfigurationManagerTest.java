@@ -13,39 +13,39 @@ import org.junit.Test;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 
 public class IntygServiceConfigurationManagerTest {
-        
+
     private IntygServiceConfigurationManagerImpl configurationManager;
-        
+
     @Before
     public void setup() {
         configurationManager = new IntygServiceConfigurationManagerImpl();
         configurationManager.setObjectMapper(new CustomObjectMapper());
     }
-        
+
     @Test
     public void testUnmarshallForSendIntygWithConsent() {
-        
+
         String configAsJson = "{\"recipient\":\"FK\",\"patientConsent\":true}";
-        
+
         SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
-        
+
         assertNotNull(config);
         assertEquals("FK", config.getRecipient());
         assertTrue(config.isPatientConsent());
         assertThat(config.getPatientConsentMessage(), containsString("mottagare FK med "));
     }
-    
+
     @Test
     public void testUnmarshallForSendIntygWithoutConsent() {
-        
+
         String configAsJson = "{\"recipient\":\"TS\",\"patientConsent\":false}";
-        
+
         SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
-        
+
         assertNotNull(config);
         assertEquals("TS", config.getRecipient());
         assertFalse(config.isPatientConsent());
         assertThat(config.getPatientConsentMessage(), containsString("mottagare TS utan "));
     }
-    
+
 }

@@ -13,8 +13,7 @@ angular.module('webcert').directive('wcVisited',
 
             link: function(scope, element, attrs, ctrl) {
                 ctrl.$visited = false;
-                // TODO: Replace bind with one after updating to Angular 1.2.x.
-                element.bind('blur', function() {
+                element.one('blur', function() {
                     element.addClass('wc-visited');
                     scope.$apply(function() {
                         ctrl.$visited = true;

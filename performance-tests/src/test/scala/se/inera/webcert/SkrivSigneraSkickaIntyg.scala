@@ -54,6 +54,12 @@ class SkrivSigneraSkickaIntyg extends Simulation {
 			.body(StringBody("""{"codeSystem":"ICD_10_SE","codeFragment":"A00","nbrOfResults":10}"""))
 			.headers(Headers.json)
 		)
+		// TODO FMB lookup?
+		.pause(1 seconds)
+			.exec(http("Lookup FMB")
+				.get("/api/fmb/J22?cacheSlayer=" + System.currentTimeMillis())
+				.headers(Headers.json)
+		)
 		.pause(3 seconds)
 		.exec(http("Autosave certificate 2")
 			.put("/moduleapi/utkast/fk7263/${intyg}/1?autoSave=true")

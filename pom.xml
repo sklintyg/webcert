@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.14</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -49,7 +49,7 @@
     <cgi-funktionstjanster-grp.version>0-SNAPSHOT</cgi-funktionstjanster-grp.version>
     <cgi-funktionstjanster-grp.version.range>(,1.0.0]</cgi-funktionstjanster-grp.version.range>
 
-    <skip-jacoco>true</skip-jacoco>
+    <skip-coverage>true</skip-coverage>
   </properties>
 
   <modules>
@@ -528,7 +528,7 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <configuration>
-            <skip>${skip-jacoco}</skip>
+            <skip>${skip-coverage}</skip>
         </configuration>
         <executions>
           <execution>

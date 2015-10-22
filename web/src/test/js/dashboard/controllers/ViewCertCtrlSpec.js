@@ -55,7 +55,7 @@ describe('ViewCertCtrl', function() {
     beforeEach(angular.mock.module('webcert', function($provide) {
         dialogService = jasmine.createSpyObj('common.dialogService', [ 'showDialog' ]);
         modalMock = jasmine.createSpyObj('modal', [ 'close' ]);
-        modalMock.result = {then:function(){}}
+        modalMock.result = {then:function(){}};
         dialogService.showDialog.and.callFake(function(){
             return modalMock;
         });
@@ -74,7 +74,12 @@ describe('ViewCertCtrl', function() {
         $stateParams = {qaOnly:false};
         $provide.value('$stateParams', $stateParams);
 
-        $provide.value('common.featureService', { features: { 'HANTERA_FRAGOR': 'hanteraFragor' }, isFeatureActive: function() { return true; } }); // jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ])
+        $provide.value('common.featureService', {
+            features: {
+                'HANTERA_FRAGOR': 'hanteraFragor'
+            },
+            isFeatureActive: function() { return true; }
+        });
         $provide.value('common.UserModel',getTestUser({ROLE_LAKARE_UTHOPP: 'Läkare - uthopp'}));
     }));
 

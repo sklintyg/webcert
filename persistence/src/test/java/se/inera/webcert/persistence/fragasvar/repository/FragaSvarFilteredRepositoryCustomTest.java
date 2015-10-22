@@ -24,7 +24,7 @@ import se.inera.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
 
 /**
  * Test for filtering FragaSvar.
- * 
+ *
  * @author nikpet
  *
  */

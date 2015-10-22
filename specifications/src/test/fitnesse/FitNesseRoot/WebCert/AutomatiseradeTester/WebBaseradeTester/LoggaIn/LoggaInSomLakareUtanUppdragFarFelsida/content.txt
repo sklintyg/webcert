@@ -2,11 +2,11 @@ Testet beskriver fallet när en läkare utan uppdrag logga in.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-104D |
 
 !3 Verifiera att man hamnar på access denied sidan.
 
-| script | !-LoggaUt-! |
+| skript | !-LoggaUt-! |
 | access denied sidan visas |
 

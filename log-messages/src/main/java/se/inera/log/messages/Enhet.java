@@ -7,14 +7,16 @@ import java.io.Serializable;
  */
 public class Enhet implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String enhetsId;
     private String enhetsNamn;
 
     private String vardgivareId;
     private String vardgivareNamn;
 
-    public Enhet() {}
-    
+    public Enhet() {
+    }
+
     public Enhet(String enhetsId, String vardgivareId) {
         this(enhetsId, null, vardgivareId, null);
     }

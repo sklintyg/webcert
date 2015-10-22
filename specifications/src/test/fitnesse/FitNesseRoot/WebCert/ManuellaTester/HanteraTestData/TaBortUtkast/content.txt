@@ -1,2 +1,2 @@
-|script|ta bort utkast|
+|skript|ta bort utkast|
 |ta bort utkast|webcert-fitnesse-ejkomplett-fk-1|

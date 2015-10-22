@@ -36,9 +36,9 @@ import se.inera.webcert.service.signatur.dto.SignaturTicket;
 @Scope(value = "prototype")
 public class GrpCollectPollerImpl implements GrpCollectPoller {
 
-    private static final Logger log = LoggerFactory.getLogger(GrpCollectPollerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrpCollectPollerImpl.class);
 
-    private static long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
+    private static final long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
 
     private String orderRef;
     private String transactionId;
@@ -60,7 +60,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     @Autowired
     private GrpServicePortType grpService;
 
-    private long ms = 3000L;
+    private final long defaultSleepMs = 3000L;
+    private long ms = defaultSleepMs;
 
     @Override
     public void run() {
@@ -72,31 +73,33 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
             try {
 
                 CollectResponseType resp = grpService.collect(req);
-                log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
+                LOG.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
                 switch (resp.getProgressStatus()) {
-                    case COMPLETE:
-                        String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
-                        if (!subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""))) {
-                            throw new IllegalStateException("Could not process GRP Collect COMPLETE response, subject serialNumber did not match issuing WebCertUser.");
-                        }
+                case COMPLETE:
+                    String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
+                    if (!subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""))) {
+                        throw new IllegalStateException(
+                                "Could not process GRP Collect COMPLETE response, subject serialNumber did not match issuing WebCertUser.");
+                    }
 
-                        String signature = resp.getSignature();
-                        signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
-                        log.info("Signature was successfully persisted and ticket updated.");
-                        return;
-                    case USER_SIGN:
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.VANTA_SIGN);
-
-                        break;
-                    case OUTSTANDING_TRANSACTION:
-                    case STARTED:
-                    case USER_REQ:
-                        break;
-                    case NO_CLIENT:
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
-                        log.info("GRP collect returned ProgressStatusType: {}, " +
-                                "has the user started their BankID or Mobilt BankID application?", resp.getProgressStatus());
-                        break;
+                    String signature = resp.getSignature();
+                    signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
+                    LOG.info("Signature was successfully persisted and ticket updated.");
+                    return;
+                case USER_SIGN:
+                    signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.VANTA_SIGN);
+                    break;
+                case OUTSTANDING_TRANSACTION:
+                case STARTED:
+                case USER_REQ:
+                    break;
+                case NO_CLIENT:
+                    signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
+                    LOG.info("GRP collect returned ProgressStatusType: {}, " + "has the user started their BankID or Mobilt BankID application?",
+                            resp.getProgressStatus());
+                    break;
+                default:
+                    throw new RuntimeException("Unhandled progress status type: " + resp.getProgressStatus());
                 }
 
             } catch (GrpFault grpFault) {
@@ -121,23 +124,23 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private void handleGrpFault(GrpFault grpFault) {
         signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.OKAND);
         switch (grpFault.getFaultInfo().getFaultStatus()) {
-            case CLIENT_ERR:
-                log.error("GRP collect failed with CLIENT_ERR, message: {}", grpFault.getFaultInfo().getDetailedDescription());
-                break;
-            case USER_CANCEL:
-                log.info("User cancelled BankID signing.");
-                break;
-            case ALREADY_COLLECTED:
-            case EXPIRED_TRANSACTION:
-                log.info("GRP collect failed with status {}, this is expected " +
-                                "when the user doesn't start their BankID client and transaction times out after ~3 minutes.",
-                        grpFault.getFaultInfo().getFaultStatus());
-                break;
-            default:
-                log.error("Unexpected GrpFault thrown when performing GRP collect: {}. Message: {}",
-                        grpFault.getFaultInfo().getFaultStatus().toString(),
-                        grpFault.getFaultInfo().getDetailedDescription());
-                break;
+        case CLIENT_ERR:
+            LOG.error("GRP collect failed with CLIENT_ERR, message: {}", grpFault.getFaultInfo().getDetailedDescription());
+            break;
+        case USER_CANCEL:
+            LOG.info("User cancelled BankID signing.");
+            break;
+        case ALREADY_COLLECTED:
+        case EXPIRED_TRANSACTION:
+            LOG.info("GRP collect failed with status {}, this is expected "
+                    + "when the user doesn't start their BankID client and transaction times out after ~3 minutes.",
+                    grpFault.getFaultInfo().getFaultStatus());
+            break;
+        default:
+            LOG.error("Unexpected GrpFault thrown when performing GRP collect: {}. Message: {}",
+                    grpFault.getFaultInfo().getFaultStatus().toString(),
+                    grpFault.getFaultInfo().getDetailedDescription());
+            break;
         }
     }
 
@@ -160,20 +163,23 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     }
 
     /**
-     * Use this for unit-testing purposes only
+     * Use this for unit-testing purposes only.
      */
     void setMs(long ms) {
         this.ms = ms;
     }
 
+    @Override
     public void setOrderRef(String orderRef) {
         this.orderRef = orderRef;
     }
 
+    @Override
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
 
+    @Override
     public void setWebCertUser(WebCertUser webCertUser) {
         this.webCertUser = webCertUser;
     }

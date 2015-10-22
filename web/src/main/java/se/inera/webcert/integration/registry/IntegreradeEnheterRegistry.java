@@ -7,6 +7,6 @@ public interface IntegreradeEnheterRegistry {
     boolean addIfNotExistsIntegreradEnhet(IntegreradEnhetEntry entry);
 
     boolean isEnhetIntegrerad(String enhetHsaId);
-    
+
     void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry);
 }

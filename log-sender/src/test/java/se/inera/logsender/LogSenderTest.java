@@ -44,6 +44,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Node;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
@@ -112,7 +113,7 @@ public class LogSenderTest {
         Enhet enhet = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
         logMessage.setUserCareUnit(enhet);
 
-        Patient patient = new Patient("19121212-1212", "Tolv Tolvasson");
+        Patient patient = new Patient(new Personnummer("19121212-1212"), "Tolv Tolvasson");
         logMessage.setPatient(patient);
         
         Enhet owner = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");

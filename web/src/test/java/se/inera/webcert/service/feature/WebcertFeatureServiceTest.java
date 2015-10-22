@@ -9,6 +9,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,15 +23,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.ModuleEntryPoint;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebcertFeatureServiceTest {
@@ -94,11 +95,11 @@ public class WebcertFeatureServiceTest {
     }
 
     private String makeModuleName(ModuleFeature moduleFeature, String moduleName) {
-        return StringUtils.join(new String[]{moduleFeature.getName(), moduleName}, ".");
+        return StringUtils.join(new String[] { moduleFeature.getName(), moduleName }, ".");
     }
 
     @Test
-    public void testProcessWebcertAndModelFeatures(){
+    public void testProcessWebcertAndModelFeatures() {
 
         Map<String, Boolean> featuresMap = new HashMap<>();
         featuresMap.put(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), Boolean.FALSE);
@@ -118,7 +119,6 @@ public class WebcertFeatureServiceTest {
         assertFalse(featuresMap.get(WebcertFeature.MAKULERA_INTYG.getName()));
         assertFalse(featuresMap.get(WebcertFeature.KOPIERA_INTYG.getName()));
     }
-
 
     @Test
     public void testIsFeatureActive() {
@@ -155,7 +155,8 @@ public class WebcertFeatureServiceTest {
         featureService.setFeatures(featureProps);
         featureService.initFeaturesMap();
 
-        assertFalse(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName())); //This should be overridden by env prop
+        // This should be overridden by env prop
+        assertFalse(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
 
     }
 
@@ -176,7 +177,5 @@ public class WebcertFeatureServiceTest {
 
         assertThat(res, contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
     }
-
-
 
 }

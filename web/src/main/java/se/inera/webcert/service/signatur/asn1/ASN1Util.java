@@ -1,5 +1,7 @@
 package se.inera.webcert.service.signatur.asn1;
 
+import java.io.InputStream;
+
 /**
  * A declarative interface for accessing data within an ASN.1 container.
  *
@@ -7,6 +9,7 @@ package se.inera.webcert.service.signatur.asn1;
  */
 public interface ASN1Util {
 
-    String parsePersonId(String asn1Signature);
+    String parsePersonId(InputStream asn1Signature);
 
+    String parseHsaId(InputStream asn1Signature);
 }

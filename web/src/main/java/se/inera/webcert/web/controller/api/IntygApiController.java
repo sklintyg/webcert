@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -118,7 +119,7 @@ public class IntygApiController extends AbstractApiController {
 
         HoSPerson hosPerson = createHoSPersonFromUser();
         Vardenhet vardenhet = createVardenhetFromUser();
-        String patientPersonnummer = copyRequest.getPatientPersonnummer();
+        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
 
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
 
@@ -145,15 +146,15 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummer
+     * @param personNummerIn
      *            personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
     @Path("/person/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummer) {
-
+    public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
+        Personnummer personNummer = new Personnummer(personNummerIn);
         LOG.debug("Retrieving intyg for person {}", personNummer);
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
@@ -169,7 +170,7 @@ public class IntygApiController extends AbstractApiController {
         List<Utkast> utkastList;
 
         if (checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) {
-            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
+            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer.getPersonnummer(), enhetsIds,
                     ALL_DRAFTS, getWebCertUserService().getUser().getIntygsTyper());
             LOG.debug("Got {} utkast", utkastList.size());
         } else {

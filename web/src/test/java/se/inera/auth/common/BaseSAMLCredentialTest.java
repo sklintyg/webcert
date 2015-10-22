@@ -68,9 +68,11 @@ public abstract class BaseSAMLCredentialTest {
     protected SAMLCredential buildPrivatlakareSamlCredential() {
         return new SAMLCredential(mock(NameID.class), assertionPrivatlakare, "", "");
     }
+
     protected SAMLCredential buildLandstingslakareSamlCredential() {
         return new SAMLCredential(mock(NameID.class), assertionLandstingslakare, "", "");
     }
+
     protected SAMLCredential buildUnknownSamlCredential() {
         return new SAMLCredential(mock(NameID.class), assertionUnknownAuthCtx, "", "");
     }

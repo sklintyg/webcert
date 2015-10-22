@@ -6,7 +6,7 @@ public enum ActivityPurpose {
 
     private String type;
 
-    private ActivityPurpose(String type) {
+    ActivityPurpose(String type) {
         this.type = type;
     }
 

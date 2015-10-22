@@ -15,11 +15,15 @@ public enum UserPrivilege {
     PRIVILEGE_VIDAREBEFORDRA_UTKAST ("Vidarebefordra utkast"),
     PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR ("Vidarebefordra frågasvar"),
     PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA ("Besvara fråga om komplettering"),
-    PRIVILEGE_FILTRERA_PA_LAKARE ("Filtrera på annan läkare");
+    PRIVILEGE_FILTRERA_PA_LAKARE ("Filtrera på annan läkare"),
+    PRIVILEGE_ATKOMST_ANDRA_ENHETER ("Åtkomst andra vårdenheter"),
+    PRIVILEGE_HANTERA_PERSONUPPGIFTER ("Hantera personuppgifter"),
+    PRIVILEGE_HANTERA_MAILSVAR ("Hantera notifieringsmail om frågasvar"),
+    PRIVILEGE_NAVIGERING ("Navigera i menyer, på logo, tillbakaknappar");
 
     private final String text;
 
-    private UserPrivilege(String text) {
+    UserPrivilege(String text) {
         this.text = text;
     }
 

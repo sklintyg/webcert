@@ -55,8 +55,9 @@ public class CertificateRevokeProcessor {
                             LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
                                     intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId());
                             throw new PermanentException(resultOfCall.getErrorText());
+                        default:
+                            throw new TemporaryException(resultOfCall.getErrorText());
                     }
-                    throw new TemporaryException(resultOfCall.getErrorText());
                 default:
                     throw new TemporaryException(resultOfCall.getErrorText());
             }

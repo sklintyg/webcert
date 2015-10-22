@@ -3,16 +3,10 @@ package se.inera.intyg.webcert.integration.pp.stub;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
-import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
-import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
+import se.inera.certificate.logging.HashUtility;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitioner.v1.rivtabp21.ValidatePrivatePractitionerResponderInterface;
@@ -38,12 +32,12 @@ public class ValidatePrivatePractitionerResponderStub implements ValidatePrivate
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("No private practitioner with personal identity number: " + id + " exists.");
+            response.setResultText("No private practitioner with personal identity number: " + HashUtility.hash(id) + " exists.");
         } else if (person.isGodkandAnvandare()) {
             response.setResultCode(ResultCodeEnum.OK);
         } else {
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("Private practitioner with personal identity number: " + id + " is not authorized to use webcert.");
+            response.setResultText("Private practitioner with personal identity number: " + HashUtility.hash(id) + " is not authorized to use webcert.");
         }
         return response;
     }

@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import se.inera.webcert.security.WebCertUserDetailsService;
 import se.inera.auth.eleg.ElegWebCertUserDetailsService;
 
+import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
+
 /**
  * Created by eriklupander on 2015-08-12.
  *
@@ -22,14 +25,11 @@ import se.inera.auth.eleg.ElegWebCertUserDetailsService;
 @Service
 public class UnifiedUserDetailsService implements SAMLUserDetailsService {
 
-    public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT = "urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient";
-    public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI = "urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI";
-
-    /** User details service for e-leg authenticated private practitioners */
+    /** User details service for e-leg authenticated private practitioners. */
     @Autowired
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
-    /** User details service for SITHS authenticated personnel */
+    /** User details service for SITHS authenticated personnel. */
     @Autowired
     private WebCertUserDetailsService webCertUserDetailsService;
 

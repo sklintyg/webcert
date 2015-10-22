@@ -22,16 +22,16 @@ import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
 @Service
 public class AvtalRepositoryFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
 
     @Value("${privatepractitioner.defaultterms.file}")
-    String fileUrl;
+    private String fileUrl;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     @Autowired
-    AvtalRepository avtalRepository;
+    private AvtalRepository avtalRepository;
 
     @PostConstruct
     public void populateStandardAvtal() {
@@ -42,7 +42,7 @@ public class AvtalRepositoryFactory {
                 Resource resource = resourceLoader.getResource(fileUrl);
 
                 if (!resource.exists()) {
-                    log.error("Could not read privatlakare avtal file since the resource '{}' does not exist", fileUrl);
+                    LOG.error("Could not read privatlakare avtal file since the resource '{}' does not exist", fileUrl);
                     return;
                 }
 
@@ -52,10 +52,10 @@ public class AvtalRepositoryFactory {
                 avtal.setAvtalVersion(1);
                 avtal.setVersionDatum(LocalDateTime.now());
                 avtalRepository.save(avtal);
-                log.info("Persisted basic Avtal for privatlakare.");
+                LOG.info("Persisted basic Avtal for privatlakare.");
 
             } catch (IOException ioe) {
-                log.error("Something went wrong while persisting basic privatlakaravtal on startup. Message: " + ioe.getMessage() );
+                LOG.error("Something went wrong while persisting basic privatlakaravtal on startup. Message: " + ioe.getMessage());
                 throw new RuntimeException(ioe);
             }
         }

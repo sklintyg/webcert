@@ -5,9 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Collection;
 
 /**
  * Created by Magnus Ekstrand on 2015-08-26.
@@ -67,29 +65,22 @@ public class Privilege {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Privilege)) {
+            return false;
+        }
+
+        Privilege privilege = (Privilege) o;
+
+        return name.equals(privilege.name);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Privilege privilege = (Privilege) obj;
-        if (!privilege.equals(privilege.name)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return name.hashCode();
     }
 
     @Override

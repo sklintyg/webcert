@@ -17,7 +17,7 @@
 !3 För att rensa cachen kan man göra så här:
 
 {{{
-|script|Hsa Cache|
+|skript|Hsa Cache|
 |rensa|
 }}}
 

@@ -82,11 +82,11 @@ public final class ConvertToFKTypes {
         pt.setFullstandigtNamn(ir.getPatientNamn());
 
         String root = PersonnummerValidator.PERSONNUMMER_ROOT;
-        if (SamordningsnummerValidator.isSamordningsNummer(ir.getPatientId())) {
+        if (ir.getPatientId().isSamordningsNummer()) {
             root = SamordningsnummerValidator.SAMORDNINGSNUMMER_ROOT;
         }
 
-        pt.setPersonId(toII(root, ir.getPatientId()));
+        pt.setPersonId(toII(root, ir.getPatientId().getPersonnummer()));
 
         lu.setPatient(pt);
         lu.setSigneringsTidpunkt(ir.getSigneringsDatum());

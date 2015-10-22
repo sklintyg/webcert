@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author andreaskaltenbach
  */
 @Component
 public class MailStore {
+    private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);
 
     private static final long MAX_TIMEOUT = 5000;
     public static final long POLL_INTERVAL = 10L;
@@ -40,6 +43,7 @@ public class MailStore {
                 try {
                     this.wait(MAX_TIMEOUT);
                 } catch (InterruptedException e) {
+                    LOG.info("Interrupt encountered. Continuing.");
                 }
             }
         }

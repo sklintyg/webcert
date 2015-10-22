@@ -31,7 +31,7 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({"dev","unit-testing"})
+@ActiveProfiles({ "dev", "unit-testing" })
 @Transactional
 public class UtkastRepositoryTest {
 
@@ -55,24 +55,24 @@ public class UtkastRepositoryTest {
         assertThat(read.getEnhetsId(), is(notNullValue()));
 
         assertThat(read.getModel(), is(equalTo(UtkastTestUtil.MODEL)));
-        
+
         assertThat(read.getSignatur(), is(nullValue()));
     }
-    
+
     @Test
     public void testFindOneWithSignature() {
-        
+
         Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
         String intygsId = utkast.getIntygsId();
         utkast.setSignatur(UtkastTestUtil.buildSignatur(intygsId, "A", LocalDateTime.now()));
-        
+
         Utkast saved = utkastRepository.save(utkast);
         Utkast read = utkastRepository.findOne(intygsId);
 
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getSignatur(), is(notNullValue()));
     }
-    
+
     @Test
     public void testFindByEnhetsIdDontReturnSigned() {
 
@@ -104,7 +104,8 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.SIGNED));
 
-        List<Object[]> result = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(Arrays.asList(UtkastTestUtil.ENHET_1_ID), Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
+        List<Object[]> result = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(Arrays.asList(UtkastTestUtil.ENHET_1_ID),
+                Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
         assertThat(result.size(), is(1));
 
         Object[] resObjs = result.get(0);
@@ -122,7 +123,8 @@ public class UtkastRepositoryTest {
 
         List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER, enhetsIds, statuses, allIntygsTyper());
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER.getPersonnummer(), enhetsIds, statuses,
+                allIntygsTyper());
 
         assertThat(results.size(), is(2));
 

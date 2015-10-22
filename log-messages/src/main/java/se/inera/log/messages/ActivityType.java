@@ -14,7 +14,7 @@ public enum ActivityType {
 
     private String type;
 
-    private ActivityType(String type) {
+    ActivityType(String type) {
         this.type = type;
     }
 

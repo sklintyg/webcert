@@ -5,18 +5,18 @@ package se.inera.webcert.intygstjanststub.mode;
  *
  * Created by erikl on 15-04-09.
  */
-public class StubModeSingleton {
+public final class StubModeSingleton {
 
     private static StubMode stubMode = StubMode.ONLINE;
     private static long latency = 0L;
 
-    private volatile static StubModeSingleton stubModeSingleton;
+    private static volatile StubModeSingleton stubModeSingleton;
 
     private StubModeSingleton() {
     }
 
     public static StubModeSingleton getInstance() {
-        if(stubModeSingleton == null) {
+        if (stubModeSingleton == null) {
             synchronized (StubModeSingleton.class) {
                 stubModeSingleton = new StubModeSingleton();
             }

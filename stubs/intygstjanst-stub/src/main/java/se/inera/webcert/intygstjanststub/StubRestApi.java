@@ -1,15 +1,21 @@
 package se.inera.webcert.intygstjanststub;
 
+import java.util.Collection;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Collection;
-
 import se.inera.webcert.intygstjanststub.mode.StubMode;
 import se.inera.webcert.intygstjanststub.mode.StubModeSingleton;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
@@ -102,7 +108,7 @@ public class StubRestApi {
     @Path("/latency/{millis}")
     public Response setStubMode(@PathParam("millis") Long millis) {
         try {
-            if(millis < 0L || millis > Long.MAX_VALUE) {
+            if (millis < 0L || millis > Long.MAX_VALUE) {
                 throw new IllegalArgumentException();
             }
             StubModeSingleton.getInstance().setLatency(millis);

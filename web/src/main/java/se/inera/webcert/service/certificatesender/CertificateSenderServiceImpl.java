@@ -14,6 +14,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.common.Constants;
 
 /**
@@ -44,7 +45,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     }
 
     @Override
-    public void sendCertificate(String intygsId, String personId, String recipientId) {
+    public void sendCertificate(String intygsId, Personnummer personId, String recipientId) {
         jmsTemplate.send(new SendCertificateMessageCreator(intygsId, personId, recipientId, logicalAddress));
     }
 
@@ -81,11 +82,11 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     static final class SendCertificateMessageCreator implements MessageCreator {
 
         private String intygsId;
-        private String personId;
+        private Personnummer personId;
         private String recipientId;
         private String logicalAddress;
 
-        public SendCertificateMessageCreator(String intygsId, String personId, String recipientId, String logicalAddress) {
+        public SendCertificateMessageCreator(String intygsId, Personnummer personId, String recipientId, String logicalAddress) {
             this.intygsId = intygsId;
             this.personId = personId;
             this.recipientId = recipientId;
@@ -98,7 +99,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
-            message.setStringProperty(Constants.PERSON_ID, personId);
+            message.setStringProperty(Constants.PERSON_ID, personId.getPersonnummer());
             message.setStringProperty(Constants.RECIPIENT, recipientId);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;

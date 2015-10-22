@@ -1,165 +1,3404 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <ns2:GetFmbResponse xmlns="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:1" xmlns:ns2="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:GetFmbResponder:1" xmlns:ns3="urn:riv:itintegration:registry:1">
-      <ns2:beslutsunderlag>
-        <underlagsId>
-          <root>OID</root>
-          <extension>188</extension>
-        </underlagsId>
-        <giltighetstid>
-          <start>20150921</start>
-        </giltighetstid>
-        <version>1</version>
-        <textuelltUnderlag>Medelsvår (smärta redan vid tidig belastning, påvisbar rörelseinskränkning)</textuelltUnderlag>
-        <sjukskrivningstid>
-          <value>3</value>
-          <unit>wk</unit>
-        </sjukskrivningstid>
-        <senastAndrad>20150921</senastAndrad>
-        <rehabiliteringsInformation>
-          <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
-            Samverkan med andra
-            Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
-        </rehabiliteringsInformation>
-        <villkor>
-          <urvalArbetsbelastning>
-            <arbetsbelastning>
-              <kod>
-                <code>hoftlag</code>
-                <codeSystem>OID</codeSystem>
-                <codeSystemName/>
-                <codeSystemVersion/>
-                <displayName>Lätt belastning på  höftleder</displayName>
-              </kod>
-            </arbetsbelastning>
-          </urvalArbetsbelastning>
-          <urvalSvarighetsgrad>
-            <svarighetsgrad>
-              <kod>
-                <code>6736007</code>
-                <codeSystem>1.2.752.116.2.1.1</codeSystem>
-                <codeSystemName>Snomed CT-SE</codeSystemName>
-                <codeSystemVersion/>
-                <displayName>medelsvår</displayName>
-              </kod>
-            </svarighetsgrad>
-          </urvalSvarighetsgrad>
-        </villkor>
-        <huvuddiagnos>
+<ns2:GetFmbResponse xmlns:ns3="urn:riv:itintegration:registry:1" xmlns:ns2="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:GetFmbResponder:1" xmlns="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:1">
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.1</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <villkor/>
+    <huvuddiagnos>
+      <kod>
+        <code>O26.9</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</displayName>
+        <originalText>O26.9:Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.2</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Uppgift saknas</sjukskrivningstidText>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bäckenbälte (sacrobälte) och anpassad fysisk träning. Anpassad fysisk belastning på arbetet. Optimera arbetsbelastning och arbetsgrad utifrån kvinnans smärtintensitet. Smärtintensitet &lt;30-50 som värst senaste veckan, mätt med visual analogue scale, är ett bra riktmärke. Vid kraftig smärtintensitet kan avlastning med kryck-käppar vara till hjälp vid längre förflyttning. Hos kvinnor där smärtan hindar eller omöjliggör normal aktivitet under många månader, är det av stor vikt att kvinnan hittar alternativa möjligheter att träna sin kropp utan att belasta bäckenet, exempelvis träning i bassäng.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
           <kod>
-            <code>M16</code>
+            <code>lindrig</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>255604002</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O26.7</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
+        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.3</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Uppgift saknas</sjukskrivningstidText>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bäckenbälte (sacrobälte) och anpassad fysisk träning. Anpassad fysisk belastning på arbetet. Optimera arbetsbelastning och arbetsgrad utifrån kvinnans smärtintensitet. Smärtintensitet &lt;30-50 som värst senaste veckan, mätt med visual analogue scale, är ett bra riktmärke. Vid kraftig smärtintensitet kan avlastning med kryck-käppar vara till hjälp vid längre förflyttning. Hos kvinnor där smärtan hindar eller omöjliggör normal aktivitet under många månader, är det av stor vikt att kvinnan hittar alternativa möjligheter att träna sin kropp utan att belasta bäckenet, exempelvis träning i bassäng.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>medelsvår</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>6736007</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O26.7</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
+        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.4</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Fram till förlossningen</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bäckenbälte (sacrobälte) och anpassad fysisk träning. Anpassad fysisk belastning på arbetet. Optimera arbetsbelastning och arbetsgrad utifrån kvinnans smärtintensitet. Smärtintensitet &lt;30-50 som värst senaste veckan, mätt med visual analogue scale, är ett bra riktmärke. Vid kraftig smärtintensitet kan avlastning med kryck-käppar vara till hjälp vid längre förflyttning. Hos kvinnor där smärtan hindar eller omöjliggör normal aktivitet under många månader, är det av stor vikt att kvinnan hittar alternativa möjligheter att träna sin kropp utan att belasta bäckenet, exempelvis träning i bassäng.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>svår</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>24484000</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O26.7</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
+        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.5</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 10 dagar</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>10</value>
+      <unit>d</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Då knäbesvär i första hand påverkar gångförmågan bör möjligheterna till tempo-rärt arbetsbyte till icke knäbelastande arbete övervägas. Överväg transporthjälp till och från arbetet.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor/>
+    <huvuddiagnos>
+      <kod>
+        <code>S83</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
+        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.6</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Då knäbesvär i första hand påverkar gångförmågan bör möjligheterna till tempo-rärt arbetsbyte till icke knäbelastande arbete övervägas. Överväg transporthjälp till och från arbetet.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalUtfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>84877006</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>artroskopi av knä med operation av menisk</displayName>
+            <originalText/>
+          </kod>
+        </utfordAtgard>
+      </urvalUtfordAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S83</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
+        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.7</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>I fall med stora krav på god gångförmåga, mycket gång i trappor eller tung belastning, och vid längre tids besvär måste arbetsbyte till mindre knäbelastande arbete övervägas.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalUtfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>84877006</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>artroskopi av knä med operation av menisk</displayName>
+            <originalText/>
+          </kod>
+        </utfordAtgard>
+      </urvalUtfordAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S83</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
+        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.8</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 12 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>12</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Då knäbesvär i första hand påverkar gångförmågan bör möjligheterna till tempo-rärt arbetsbyte till icke knäbelastande arbete övervägas. Överväg transporthjälp till och från arbetet.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalKomplicerandeFaktor>
+        <komplicerandeFaktor>
+          <kod>
+            <code>22591001</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>degeneration av brosk och/eller menisk i knä</displayName>
+            <originalText/>
+          </kod>
+        </komplicerandeFaktor>
+      </urvalKomplicerandeFaktor>
+      <urvalUtfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>84877006</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>artroskopi av knä med operation av menisk</displayName>
+            <originalText/>
+          </kod>
+        </utfordAtgard>
+      </urvalUtfordAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S83</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
+        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.9</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 4 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>4</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Då knäbesvär i första hand påverkar gångförmågan bör möjligheterna till tempo-rärt arbetsbyte till icke knäbelastande arbete övervägas. Överväg transporthjälp till och från arbetet.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalUtfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>35926005</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>operation av korsband i knä</displayName>
+            <originalText/>
+          </kod>
+        </utfordAtgard>
+      </urvalUtfordAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S83.5</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>S83.5</displayName>
+        <originalText>S83.5</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.10</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 4 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>4</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Då knäbesvär i första hand påverkar gångförmågan bör möjligheterna till tempo-rärt arbetsbyte till icke knäbelastande arbete övervägas. Överväg transporthjälp till och från arbetet.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalUtfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>35926005</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>operation av korsband i knä</displayName>
+            <originalText/>
+          </kod>
+        </utfordAtgard>
+      </urvalUtfordAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S83.5</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>S83.5</displayName>
+        <originalText>S83.5</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.11</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Då knäbesvär i första hand påverkar gångförmågan bör möjligheterna till tempo-rärt arbetsbyte till icke knäbelastande arbete övervägas. Överväg transporthjälp till och från arbetet.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor/>
+    <huvuddiagnos>
+      <kod>
+        <code>S83.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>S83.6</displayName>
+        <originalText>S83.6</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.12</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.13</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>5</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Måttlig belastning på höfleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.14</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.15</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.16</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>5</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Måttlig belastning på höfleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.17</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 12 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>12</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.18</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>upp till
+      eller fram till operation</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>12</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.19</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>upp till
+      eller fram till operation</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>12</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>5</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Måttlig belastning på höfleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.20</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>upp till
+      eller fram till operation</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>12</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.21</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalPlaneradAtgard>
+        <planeradAtgard>
+          <kod>
+            <code>397956004</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>artroplastik med protes i höft</displayName>
+            <originalText/>
+          </kod>
+        </planeradAtgard>
+      </urvalPlaneradAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.22</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 4 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>4</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>5</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Måttlig belastning på höfleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalPlaneradAtgard>
+        <planeradAtgard>
+          <kod>
+            <code>397956004</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>artroplastik med protes i höft</displayName>
+            <originalText/>
+          </kod>
+        </planeradAtgard>
+      </urvalPlaneradAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.23</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalPlaneradAtgard>
+        <planeradAtgard>
+          <kod>
+            <code>397956004</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>artroplastik med protes i höft</displayName>
+            <originalText/>
+          </kod>
+        </planeradAtgard>
+      </urvalPlaneradAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.24</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Fysisk aktivitet/information att ge till patienten?
+        Fysisk aktivitet i sig förvärrar inte sjukdomen. Lagom anpassad fysisk aktivitet bör rekommenderas.
+        (tydligare rek)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid sjuskrivning mer än tre månader alt. vid fysiskt krävande arbete. (se Excelfilen – står vid 2 rek) Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas.
+        Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M45</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
+        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.25</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M45</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
+        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.26</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Fysisk aktivitet/information att ge till patienten?
+        Fysisk aktivitet i sig förvärrar inte sjukdomen. Lagom anpassad fysisk aktivitet bör rekommenderas.
+        (tydligare rek)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid sjuskrivning mer än tre månader alt. vid fysiskt krävande arbete. (se Excelfilen – står vid 2 rek) Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas.
+        Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M45</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
+        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.27</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M45</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
+        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.28</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Fysisk aktivitet/information att ge till patienten?
+        Fysisk aktivitet i sig förvärrar inte sjukdomen. Lagom anpassad fysisk aktivitet bör rekommenderas.
+        (tydligare rek)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid sjuskrivning mer än tre månader alt. vid fysiskt krävande arbete. (se Excelfilen – står vid 2 rek) Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas.
+        Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M46</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M46</displayName>
+        <originalText>M46</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.29</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M46</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M46</displayName>
+        <originalText>M46</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.30</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Fysisk aktivitet/information att ge till patienten?
+        Fysisk aktivitet i sig förvärrar inte sjukdomen. Lagom anpassad fysisk aktivitet bör rekommenderas.
+        (tydligare rek)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid sjuskrivning mer än tre månader alt. vid fysiskt krävande arbete. (se Excelfilen – står vid 2 rek) Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas.
+        Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>4</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning på  höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M46</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M46</displayName>
+        <originalText>M46</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.31</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>6</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning på höftleder</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M46</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M46</displayName>
+        <originalText>M46</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.32</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Lätta graviditetskräkningar</displayName>
+        <originalText>O21.0:Lätta graviditetskräkningar</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.33</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Lätta graviditetskräkningar</displayName>
+        <originalText>O21.0:Lätta graviditetskräkningar</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.34</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.2</displayName>
+        <originalText>O21.2</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.35</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.2</displayName>
+        <originalText>O21.2</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.36</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.8</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.8</displayName>
+        <originalText>O21.8</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.37</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.8</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.8</displayName>
+        <originalText>O21.8</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.38</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.9</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.9</displayName>
+        <originalText>O21.9</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.39</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.9</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.9</displayName>
+        <originalText>O21.9</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.40</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>8</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <villkor/>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Graviditetskräkningar med ämnesomsättning rubbning</displayName>
+        <originalText>O21.1:Graviditetskräkningar med ämnesomsättning rubbning</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.41</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O47</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Förvärkar och hotande förtidsbörd</displayName>
+        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.42</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O47</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Förvärkar och hotande förtidsbörd</displayName>
+        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.43</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <sjukskrivningstidText>Fram till förlossning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalKomplicerandeFaktor>
+        <komplicerandeFaktor>
+          <kod>
+            <code>28976200</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>Cervixpåverkan</displayName>
+            <originalText/>
+          </kod>
+        </komplicerandeFaktor>
+      </urvalKomplicerandeFaktor>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O47</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Förvärkar och hotande förtidsbörd</displayName>
+        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.44</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <sjukskrivningstidText>Fram till förlossning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera anpassning av arbetsuppgifter</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalSamsjuklighet>
+        <samsjuklighet>
+          <kod>
+            <code>O30</code>
             <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
             <codeSystemName>ICD-10-SE</codeSystemName>
-            <codeSystemVersion>1</codeSystemVersion>
-            <displayName>Höftledsartros</displayName>
+            <displayName>Flerbördsgraviditet</displayName>
+            <originalText/>
           </kod>
-        </huvuddiagnos>
-      </ns2:beslutsunderlag>
-      <ns2:beslutsunderlag>
-        <underlagsId>
-          <root>OID</root>
-          <extension>189</extension>
-        </underlagsId>
-        <giltighetstid>
-          <start>20150921</start>
-        </giltighetstid>
-        <version>1</version>
-        <textuelltUnderlag>Medelsvår (smärta redan vid tidig belastning, påvisbar rörelseinskränkning)</textuelltUnderlag>
-        <sjukskrivningstid>
-          <value>6</value>
-          <unit>wk</unit>
-        </sjukskrivningstid>
-        <senastAndrad>20150921</senastAndrad>
-        <rehabiliteringsInformation>
-          <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
-            Samverkan med andra
-            Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
-        </rehabiliteringsInformation>
-        <villkor>
-          <urvalArbetsbelastning>
-            <arbetsbelastning>
-              <kod>
-                <code>hoftmattlig</code>
-                <codeSystem>OID</codeSystem>
-                <codeSystemName/>
-                <codeSystemVersion/>
-                <displayName>Måttlig belastning på höfleder</displayName>
-              </kod>
-            </arbetsbelastning>
-          </urvalArbetsbelastning>
-          <urvalSvarighetsgrad>
-            <svarighetsgrad>
-              <kod>
-                <code>6736007</code>
-                <codeSystem>1.2.752.116.2.1.1</codeSystem>
-                <codeSystemName>Snomed CT-SE</codeSystemName>
-                <codeSystemVersion/>
-                <displayName>medelsvår</displayName>
-              </kod>
-            </svarighetsgrad>
-          </urvalSvarighetsgrad>
-        </villkor>
-        <huvuddiagnos>
+        </samsjuklighet>
+      </urvalSamsjuklighet>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>O47</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Förvärkar och hotande förtidsbörd</displayName>
+        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.45</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Vid anpassad belastning och hjälp med transport till och från arbetet behövs i regel ingen sjukskrivning. Anpassade arbetsuppgifter: Vid långvariga besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete. Vid belastande arbeten (till exempel med mycket gående) finns ofta anledning att se över arbetssituationen för att bedöma om arbetsuppgifterna kan behöva anpassas under läkningen.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
           <kod>
-            <code>M16</code>
-            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
-            <codeSystemName>ICD-10-SE</codeSystemName>
-            <codeSystemVersion>1</codeSystemVersion>
-            <displayName>Höftledsartros</displayName>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
           </kod>
-        </huvuddiagnos>
-      </ns2:beslutsunderlag>
-      <ns2:beslutsunderlag>
-        <underlagsId>
-          <root>OID</root>
-          <extension>190</extension>
-        </underlagsId>
-        <giltighetstid>
-          <start>20150921</start>
-        </giltighetstid>
-        <version>1</version>
-        <textuelltUnderlag>Svåra artrosbesvär (vilosmärta, betydande rörelseinskränkning)</textuelltUnderlag>
-        <sjukskrivningstid>
-          <value>12</value>
-          <unit>wk</unit>
-        </sjukskrivningstid>
-        <senastAndrad>20150921</senastAndrad>
-        <rehabiliteringsInformation>
-          <beskrivning>Medicinsk rehabilitering, Artrosskola. Förbyggande sjukskrivning kan behövas. Arbetsrelaterade åtgärder Det kan vara aktuellt med t.ex. ergonomiska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid tungt arbete och efter artoplastik. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Hög belastning bör undvikas.
-            Samverkan med andra
-            Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
-        </rehabiliteringsInformation>
-        <villkor>
-          <urvalArbetsbelastning>
-            <arbetsbelastning>
-              <kod>
-                <code>hofthog</code>
-                <codeSystem>OID</codeSystem>
-                <codeSystemName/>
-                <codeSystemVersion/>
-                <displayName>Hög belastning på höftleder</displayName>
-              </kod>
-            </arbetsbelastning>
-          </urvalArbetsbelastning>
-          <urvalSvarighetsgrad>
-            <svarighetsgrad>
-              <kod>
-                <code>24484000</code>
-                <codeSystem>1.2.752.116.2.1.1</codeSystem>
-                <codeSystemName>Snomed CT-SE</codeSystemName>
-                <codeSystemVersion/>
-                <displayName>svår</displayName>
-              </kod>
-            </svarighetsgrad>
-          </urvalSvarighetsgrad>
-        </villkor>
-        <huvuddiagnos>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M76.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akillestendinit</displayName>
+        <originalText>M76.6:Akillestendinit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.46</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Vid anpassad belastning och hjälp med transport till och från arbetet behövs i regel ingen sjukskrivning. Anpassade arbetsuppgifter: Vid långvariga besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete. Vid belastande arbeten (till exempel med mycket gående) finns ofta anledning att se över arbetssituationen för att bedöma om arbetsuppgifterna kan behöva anpassas under läkningen.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
           <kod>
-            <code>M16</code>
-            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
-            <codeSystemName>ICD-10-SE</codeSystemName>
-            <codeSystemVersion>1</codeSystemVersion>
-            <displayName>Höftledsartros</displayName>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
           </kod>
-        </huvuddiagnos>
-      </ns2:beslutsunderlag>
-    </ns2:GetFmbResponse>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M76.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akillestendinit</displayName>
+        <originalText>M76.6:Akillestendinit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.47</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Vid anpassad belastning och hjälp med transport till och från arbetet behövs i regel ingen sjukskrivning. Anpassade arbetsuppgifter: Vid långvariga besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete. Vid belastande arbeten (till exempel med mycket gående) finns ofta anledning att se över arbetssituationen för att bedöma om arbetsuppgifterna kan behöva anpassas under läkningen.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>2</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Måttlig belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M76.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akillestendinit</displayName>
+        <originalText>M76.6:Akillestendinit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.48</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Vid anpassad belastning och hjälp med transport till och från arbetet behövs i regel ingen sjukskrivning. Anpassade arbetsuppgifter: Vid långvariga besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete. Vid belastande arbeten (till exempel med mycket gående) finns ofta anledning att se över arbetssituationen för att bedöma om arbetsuppgifterna kan behöva anpassas under läkningen.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSjukdomsforlopp>
+        <sjukdomsforlopp>
+          <kod>
+            <code>tbd1</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>utdraget förlopp</displayName>
+            <originalText/>
+          </kod>
+        </sjukdomsforlopp>
+      </urvalSjukdomsforlopp>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M76.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akillestendinit</displayName>
+        <originalText>M76.6:Akillestendinit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.49</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 4 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>4</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Vid anpassad belastning och hjälp med transport till och från arbetet behövs i regel ingen sjukskrivning. Anpassade arbetsuppgifter: Vid långvariga besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete. Vid belastande arbeten (till exempel med mycket gående) finns ofta anledning att se över arbetssituationen för att bedöma om arbetsuppgifterna kan behöva anpassas under läkningen.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalKomplicerandeFaktor>
+        <komplicerandeFaktor>
+          <kod>
+            <code>tbd2</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>Övervikt</displayName>
+            <originalText/>
+          </kod>
+        </komplicerandeFaktor>
+      </urvalKomplicerandeFaktor>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M76.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akillestendinit</displayName>
+        <originalText>M76.6:Akillestendinit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.50</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bedöm om uppgifter med mindre belastning kan erbjudas vid arbeten med mycket gående eller annan ensidig belastning (som klättring på stege). För  patienter kan det vara aktuellt att ordna transport till och från arbetsplatsen för att patienten ska klara sitt arbete.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S86.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Skada på akillessena</displayName>
+        <originalText>S86.0:Skada på akillessena</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.51</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 14 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>14</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bedöm om uppgifter med mindre belastning kan erbjudas vid arbeten med mycket gående eller annan ensidig belastning (som klättring på stege). För  patienter kan det vara aktuellt att ordna transport till och från arbetsplatsen för att patienten ska klara sitt arbete.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S86.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Skada på akillessena</displayName>
+        <originalText>S86.0:Skada på akillessena</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.52</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>2</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bedöm om uppgifter med mindre belastning kan erbjudas vid arbeten med mycket gående eller annan ensidig belastning (som klättring på stege). För  patienter kan det vara aktuellt att ordna transport till och från arbetsplatsen för att patienten ska klara sitt arbete.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S86.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Skada på stora vadmuskeln</displayName>
+        <originalText>S86.1:Skada på stora vadmuskeln</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.53</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 10 veckor</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>10</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Bedöm om uppgifter med mindre belastning kan erbjudas vid arbeten med mycket gående eller annan ensidig belastning (som klättring på stege). För  patienter kan det vara aktuellt att ordna transport till och från arbetsplatsen för att patienten ska klara sitt arbete.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>S86.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Skada på stora vadmuskeln</displayName>
+        <originalText>S86.1:Skada på stora vadmuskeln</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.54</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter. Koppla in företagshälsovården eller arbetsgivaren och Försäkringskassan tidigt. Det kan bli aktuellt med ergonomiska förbättringsåtgärder, anpassade arbets-uppgifter eller omplacering. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M07</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
+        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.55</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter. Koppla in företagshälsovården eller arbetsgivaren och Försäkringskassan tidigt. Det kan bli aktuellt med ergonomiska förbättringsåtgärder, anpassade arbets-uppgifter eller omplacering. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M07</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
+        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.56</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter. Koppla in företagshälsovården eller arbetsgivaren och Försäkringskassan tidigt. Det kan bli aktuellt med ergonomiska förbättringsåtgärder, anpassade arbets-uppgifter eller omplacering. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M07</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
+        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.57</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Diskutera ändrade arbetsuppgifter. Koppla in företagshälsovården eller arbetsgivaren och Försäkringskassan tidigt. Det kan bli aktuellt med ergonomiska förbättringsåtgärder, anpassade arbets-uppgifter eller omplacering. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M07</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
+        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.58</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.59</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.60</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.61</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.62</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.63</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.64</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.65</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>255604002</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>lindrig</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.66</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.67</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>6736007</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>medelsvår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.68</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>3</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>1</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Lätt belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.69</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>6</value>
+      <unit>mo</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <rehabiliteringsInformation>
+      <beskrivning>Medicinsk rehabilitering
+        Intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumati-kersjukhus eller specialanläggning med mera.
+        Förebyggande sjukskrivning (jämför den innan)
+        Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, re-habilitering på reumatikersjukhus eller specialanläggning med mera. (lagt till)
+        Arbetsrelaterade åtgärder
+        Det kan vara aktuellt med t.ex. ergono-miska förbättringsåtgärder, anpassade arbetsuppgifter eller omplacering. Diskutera åtgärder vid behov. Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt av patienten. Mycket tungt arbete bör undvikas helt. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.
+        Samverkan med andra
+        Företagshälsovården och/eller arbetsgiva-ren och Försäkringskassan bör kopplas in tidigt.</beskrivning>
+    </rehabiliteringsInformation>
+    <villkor>
+      <urvalArbetsbelastning>
+        <arbetsbelastning>
+          <kod>
+            <code>3</code>
+            <codeSystem>Saknas</codeSystem>
+            <codeSystemName>Arbetsbeslastning</codeSystemName>
+            <displayName>Hög belastning</displayName>
+            <originalText/>
+          </kod>
+        </arbetsbelastning>
+      </urvalArbetsbelastning>
+      <urvalSvarighetsgrad>
+        <svarighetsgrad>
+          <kod>
+            <code>24484000</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <displayName>svår</displayName>
+            <originalText/>
+          </kod>
+        </svarighetsgrad>
+      </urvalSvarighetsgrad>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:version>
+    <senasteVersionsuppdatering>20151020</senasteVersionsuppdatering>
+    <senateAndring>20151020</senateAndring>
+  </ns2:version>
+</ns2:GetFmbResponse>

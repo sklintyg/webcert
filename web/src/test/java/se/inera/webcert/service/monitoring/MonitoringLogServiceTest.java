@@ -1,6 +1,5 @@
 package se.inera.webcert.service.monitoring;
 
-
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,17 +23,15 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 
-
 /**
  * Unit test to assure that the monitoring log produces relevant messages.
- * 
+ *
  * @author npet
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceTest {
 
-   
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
@@ -57,7 +54,7 @@ public class MonitoringLogServiceTest {
 
     @Test
     public void testThatMonitoringLogProducesLogMessage() {
-        
+
         monitoringLogService.logUserLogin("ABC123", "test-scheme");
 
         verify(mockAppender).doAppend(captorLoggingEvent.capture());

@@ -1,9 +1,11 @@
 package se.inera.webcert.service.monitoring;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
+import org.joda.time.LocalDateTime;
+
 /**
- * Service that writes messages to the monitoring log
- * 
- * 
+ * Service that writes messages to the monitoring log.
+ *
  * @author npet
  *
  */
@@ -16,6 +18,8 @@ public interface MonitoringLogService {
     void logUserLogin(String userHsaId, String authScheme);
 
     void logUserLogout(String userHsaId, String authScheme);
+
+    void logConsentGiven(String id, String userHsaId, int version, LocalDateTime date);
 
     void logUserSessionExpired(String userHsaId, String authScheme);
 
@@ -57,7 +61,7 @@ public interface MonitoringLogService {
 
     void logUtkastPrint(String intygsId, String intygsTyp);
 
-    void logPULookup(String personNummer, String result);
+    void logPULookup(Personnummer personNummer, String result);
 
     void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion);
 

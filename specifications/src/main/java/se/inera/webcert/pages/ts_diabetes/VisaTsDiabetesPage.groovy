@@ -1,28 +1,11 @@
 package se.inera.webcert.pages.ts_diabetes
+import se.inera.webcert.pages.AbstractViewCertPage
 
-import se.inera.webcert.pages.VisaPage
-
-class VisaTsDiabetesPage extends VisaPage {
+class VisaTsDiabetesPage extends AbstractViewCertPage {
 
     static content = {
 
-        intygSaknas { $("#cert-load-error") }
-        intygLaddat(wait: true) { displayed($('#intyg-vy-laddad')) }
-        visaVadSomSaknasLista(required: false,wait: true) { displayed($("#visa-vad-som-saknas-lista")) }
-        visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
-
-        copyButton(wait: true) { displayed($("#copyBtn")) }
-        makuleraButton { $("#makuleraBtn") }
-        kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
-        makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
-        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
-
         skickaDialogBodyTsDiabetes { $("span[key=\"ts-diabetes.label.send.body\"]") }
-
-        certificateIsSentToITMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-it-message-text")) }
-        certificateIsSentToRecipientMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-recipient-message-text")) }
-        certificateIsRevokedMessage(required: false,wait: true) { displayed($("#certificate-is-revoked-message-text")) }
-        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
         patientpostadress { $("#patientpostadress") }
         patientpostnummer { $("#patientpostnummer") }
@@ -68,22 +51,6 @@ class VisaTsDiabetesPage extends VisaPage {
         vardenhet_postnummer { $("#vardenhet_postnummer") }
         vardenhet_postort { $("#vardenhet_postort") }
         vardenhet_telefonnummer { $("#vardenhet_telefonnummer") }
-    }
-
-    def copy() {
-        $("#copyBtn").click()
-        waitFor {
-            doneLoading()
-        }
-        kopieraDialogKopieraKnapp.click()
-    }
-
-    def makulera() {
-        $("#makuleraBtn").click()
-        waitFor {
-            doneLoading()
-        }
-        makuleraDialogKopieraKnapp.click()
     }
 
     def sendWithValidation() {
