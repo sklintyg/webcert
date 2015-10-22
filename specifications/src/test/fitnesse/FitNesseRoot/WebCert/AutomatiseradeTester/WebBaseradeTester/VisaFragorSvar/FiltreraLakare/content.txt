@@ -20,6 +20,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj lakare med namn | Åsa Andersson |
 | filtrera fragor och svar |
 | säkerställ att| fraga | $internReferens2 | visas |
@@ -29,6 +30,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 !4 Byt läkare och gör om filtreringen
 
 | skript | !-SvaraOchFraga-! |
+| aterstall sokformular |
 | valj lakare med namn | Lars Andersson |
 | filtrera fragor och svar |
 | säkerställ att | fraga | $internReferens3 | visas |
@@ -44,6 +46,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj lakare med namn | Jan Nilsson |
 | filtrera fragor och svar |
 | säkerställ att | fraga | $internReferens1 | visas |

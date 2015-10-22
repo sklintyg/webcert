@@ -29,6 +29,7 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj datum fran | 2013-01-02 |
 | valj datum till | 2013-01-03 |
 | filtrera fragor och svar |

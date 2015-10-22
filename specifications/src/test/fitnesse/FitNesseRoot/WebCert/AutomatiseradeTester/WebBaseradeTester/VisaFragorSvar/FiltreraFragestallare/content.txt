@@ -20,6 +20,7 @@ Testet beskriver fallet när en användare filtrerar frågor på frågeställare
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj fragestallare | FK |
 | filtrera fragor och svar |
 | säkerställ att | fraga| $internReferens1 | visas |
