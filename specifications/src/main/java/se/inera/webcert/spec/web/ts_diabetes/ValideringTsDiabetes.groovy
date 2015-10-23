@@ -1,6 +1,4 @@
 package se.inera.webcert.spec.web.ts_diabetes
-
-import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 
 class ValideringTsDiabetes {
@@ -11,17 +9,23 @@ class ValideringTsDiabetes {
         }
     }
 
-    boolean intygSparatVisas() {
+    boolean meddelandeIntygetKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            waitFor {
+                page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            }
+            result = page.intygetSparatOchKomplettMeddelande?.isDisplayed()
         }
         result
     }
 
-    boolean intygEjKomplettVisas() {
+    boolean meddelandeIntygetEjKomplettVisas() {
         boolean result
         Browser.drive {
+            waitFor {
+                page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
             result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result

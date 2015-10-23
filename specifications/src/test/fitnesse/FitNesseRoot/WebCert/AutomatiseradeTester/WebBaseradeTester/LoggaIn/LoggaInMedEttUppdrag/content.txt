@@ -15,7 +15,7 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 !3 Verifiera att enhetsväljaren ej visas.
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | säkerställ att |ohanterade fragor sidan visas |
 | säkerställ att inte |enhetsvaljare visas|
 

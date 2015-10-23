@@ -6,7 +6,7 @@ import se.inera.webcert.pages.VisaFragaSvarPage
 
 class SvaraOchFraga {
 
-    void gaTillSvaraOchFraga() {
+    void gaTillFragorOchSvar() {
         Browser.drive {
             go "/web/dashboard#/unhandled-qa"
             waitFor {
@@ -628,6 +628,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
+            // TODO move to page abstraction
             page.hanteraTillbakaButtonClick()
 
             // also need to wait for the dialog shim to hide
@@ -636,18 +637,16 @@ class SvaraOchFraga {
     }
 
     boolean infotextIngaFragarPaEnhetVisas() {
-        def result
+        boolean result
         Browser.drive {
-            waitFor {
-                at UnhandledQAPage
-            }
+            isAt UnhandledQAPage
             result = page.noResultsOnUnitInfo?.isDisplayed()
         }
         result
     }
 
     boolean infotextIngetSokresultatVisas() {
-        def result
+        boolean result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -669,7 +668,7 @@ class SvaraOchFraga {
     }
 
     boolean visasEnhetsknappen(String id) {
-        def result
+        boolean result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -680,7 +679,7 @@ class SvaraOchFraga {
     }
 
     boolean forEnhetenArSiffran(String id, String expected) {
-        def result
+        boolean result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -702,7 +701,7 @@ class SvaraOchFraga {
     }
 
     boolean visasEnhetsvaletIModal(String id) {
-        def result
+        boolean result
         Browser.drive {
             waitFor {
                 page.careUnitModalBody.isDisplayed()
@@ -717,7 +716,7 @@ class SvaraOchFraga {
     }
 
     boolean forEnhetenIModalenArSiffran(String id, String expected) {
-        def result
+        boolean result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -744,7 +743,7 @@ class SvaraOchFraga {
 
     boolean vidareBefordraKnappVisas() {
         def ref = "#qaTable button.vidarebefordra-btn"
-        def result = false
+        boolean result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -756,7 +755,7 @@ class SvaraOchFraga {
 
     boolean vidarebefordradCheckboxVisas() {
         def ref = "#qaTable input.vidarebefordrad-checkbox"
-        def result = false
+        boolean result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -768,7 +767,7 @@ class SvaraOchFraga {
 
     boolean vardenhetValjareVisas() {
         def ref = "div#wc-care-unit-clinic-selector"
-        def result = false
+        boolean result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -779,39 +778,39 @@ class SvaraOchFraga {
     }
 
     boolean vidarebefordraKnappInnePaFragaVisas() {
-        def ref = "#unhandled-vidarebefordraEjHanterad"
-        def result = false
+        boolean result = false
         Browser.drive {
-            waitFor {
-                at VisaFragaSvarPage
-            }
-            // TODO use GEB page abstraction
-            result = $(ref).isDisplayed()
+            isAt VisaFragaSvarPage
+            result = page.vidarebefordradKnappPaFraga.isDisplayed()
         }
         result
     }
 
     boolean filterVidarebefordradVisas() {
-        def ref = "#filterFormVidarebefordrad"
-        def result = false
+        boolean result = false
         Browser.drive {
-            waitFor {
-                at UnhandledQAPage
-            }
-            result = $(ref)?.isDisplayed()
+            isAt UnhandledQAPage
+            result = page.filterVidarebefordrad?.isDisplayed()
         }
         result
     }
 
-    boolean filterValjLakareVisas() {
-        def ref = "#filterFormSigneratAv"
-        def result = false
+    boolean filterSparatAvVisas() {
+        boolean result = false
         Browser.drive {
-            waitFor {
-                at UnhandledQAPage
-            }
-            result = $(ref)?.isDisplayed()
+            isAt UnhandledQAPage
+            result = page.filterSparatAv?.isDisplayed()
         }
         result
     }
+
+    boolean filterSigneratAvVisas() {
+        boolean result = false
+        Browser.drive {
+            isAt UnhandledQAPage
+            result = page.filterSigneratAv?.isDisplayed()
+        }
+        result
+    }
+
 }

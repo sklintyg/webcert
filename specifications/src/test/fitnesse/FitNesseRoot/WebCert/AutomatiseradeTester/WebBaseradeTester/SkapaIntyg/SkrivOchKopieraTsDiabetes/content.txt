@@ -29,7 +29,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | säkerställ att | har sparat |
 
 | skript | !-SkrivIntyg-! |
-| intyg sparat visas |
+| meddelande intyget komplett visas |
 
 | skript | !-HanteraUtkast-! |
 | säkerställ att | signera knapp visas |

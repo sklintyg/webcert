@@ -16,7 +16,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 !3 Verifiera att filtreringen på läkare fungerar
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
@@ -43,7 +43,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | visa avancerat filter |
 | aterstall sokformular |

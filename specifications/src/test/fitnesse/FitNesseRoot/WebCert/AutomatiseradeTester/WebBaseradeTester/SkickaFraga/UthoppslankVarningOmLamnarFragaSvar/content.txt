@@ -31,7 +31,7 @@ Testet beskriver fallet när en användare kommer till fråga/svar från ett jou
 !4 Verifiera att man inte får en varningsdialog om man går tillbaka och lämnar sidan igen
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ga till sok skriva intyg |
 | säkerställ att | sok skriva intyg sidan visas |
 

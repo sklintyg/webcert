@@ -8,7 +8,6 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
 
     static content = {
-        namnOchPersonnummer { $("#patientNamnPersonnummer") }
         namnOchPersonnummer(required: false) { $("#patientNamnPersonnummer") }
         tillbakaButton(required: false) { $("#tillbakaButton") }
         radera(required: false) { $("#ta-bort-utkast") }
@@ -17,8 +16,10 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         signeraBtn(required: false ) { $("#signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+
         intygetSparatOchKomplettMeddelande(required: false){ $("#intyget-sparat-och-komplett-meddelande") }
         intygetSparatOchEjKomplettMeddelande(required: false){ $("#intyget-sparat-och-ej-komplett-meddelande") }
+
         errorPanel(required: false) { $("#error-panel") }
         visaVadSomSaknasKnapp(required: false) { $("#showCompleteButton") }
         doljVadSomSaknasKnapp(required: false) { $("#hideCompleteButton") }

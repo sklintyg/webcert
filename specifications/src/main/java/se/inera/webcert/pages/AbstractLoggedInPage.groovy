@@ -27,12 +27,6 @@ class AbstractLoggedInPage extends AbstractPage {
         modalBackdrop(required:false) {$('.modal-backdrop')}
     }
 
-    def waitForModalBackdropToHide(){
-        waitFor() {
-            return !modalBackdrop.isDisplayed();
-        }
-    }
-
     def selectCareUnit(String careUnit) {
         activeUnit(careUnit).click()
         waitFor {

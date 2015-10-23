@@ -12,15 +12,16 @@
 !3 Testa valideringsfel
 
 Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fältet men inga andra valideringsfel ska visas.
+
 | Populera Ts Diabetes|
 | diabetesAr | intygetAvser | synA | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | hypoglykemierG  | hypoglykemierAllvarligForekomstVakenTid |
 | 3000 | D | false | 77 | 66 | 55 | 44 | 33 | 22 | true | 3000-13-30 |
 
 | skript | !-ValideringTsDiabetes-! |
-| intyg ej komplett visas |
-| validering diabetes visas |
-| validering syn visas |
-| validering hypoglykemier visas |
+| säkerställ att | meddelande intyget ej komplett visas |
+| säkerställ att | validering diabetes visas |
+| säkerställ att | validering syn visas |
+| säkerställ att | validering hypoglykemier visas |
 
 !3 Med giltiga värden ska detta valideringsfel försvinna
 
@@ -29,8 +30,8 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 | 2002 | 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 | false |
 
 | skript | !-ValideringTsDiabetes-! |
-| intyg ej komplett visas |
-| inga valideringsfel visas |
+| säkerställ att | meddelande intyget ej komplett visas |
+| säkerställ att | inga valideringsfel visas |
 
 !3 Om man valt "Visa vad som saknas" på ett tomt intyg ska alla valideringsfel för obligatoriska fält visas
 
@@ -40,7 +41,7 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 
 | skript | !-SkrivIntyg-! |
 | visa vad som saknas |
-| intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 !3 Kontrollera valideringsmeddelanden.
 
@@ -56,7 +57,7 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 
 | skript | !-SkrivIntyg-! |
 | dolj vad som saknas |
-| intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
@@ -67,14 +68,14 @@ Kontrollera valideringsmeddelanden.
 | skript | !-SkrivIntyg-! |
 | visa vad som saknas |
 
-!3 Fyll i intyget avser och identifieringstyp 
+!3 Fyll i vad intyget avser och identifieringstyp
 
 | Populera Ts Diabetes|
 | intygetAvser | identifieringstyp |
 | C | korkort |
 
 | skript | !-ValideringTsDiabetes-! |
-| intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 !3 Kontrollera valideringsmeddelanden.
 

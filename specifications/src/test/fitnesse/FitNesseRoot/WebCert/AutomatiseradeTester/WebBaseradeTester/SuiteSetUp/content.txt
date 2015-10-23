@@ -1,15 +1,17 @@
 !include -c .WebCert.AutomatiseradeTester.SuiteSetUp
 
 !3 Ta bort eventuella kvarvarande utkast på enheten
-| skript | ta bort utkast |
-|ta bort utkast for enhet| IFV1239877878-1042 |
-|kontrollera att|respons|200|
+
+| skript | ta bort utkast  |
+| ta bort alla utkast |
+| kontrollera att | respons | 200 |
 
 
 !3 Ta bort eventuella kvarvarande frågor på enheten
+
 | skript | ta bort fraga |
-|ta bort fragor for enhet| IFV1239877878-1042 |
-|kontrollera att|respons|200|
+| ta bort alla fragor |
+| kontrollera att | respons | 200 |
 
 !3 Ta bort eventuella kvarvarande intyg
 

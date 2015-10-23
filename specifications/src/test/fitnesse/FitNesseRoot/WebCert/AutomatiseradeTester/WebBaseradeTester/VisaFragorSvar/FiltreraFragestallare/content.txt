@@ -17,7 +17,7 @@ Testet beskriver fallet när en användare filtrerar frågor på frågeställare
 !3 Givet att det finns frågor, verifiera att filtreringen på frågeställare fungerar
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | visa avancerat filter |
 | aterstall sokformular |

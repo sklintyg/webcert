@@ -15,7 +15,7 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 !3 Verifiera att enhetsväljaren visas och att man kan byta enhet
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | enhetsvaljare visas |
 | valj vardenhet | IFV1239877878-1045 |

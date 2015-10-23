@@ -21,7 +21,7 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | visa alla fragor |
 | ohanterade fragor sidan visas |
 | lista med ohanterade fragor visas |

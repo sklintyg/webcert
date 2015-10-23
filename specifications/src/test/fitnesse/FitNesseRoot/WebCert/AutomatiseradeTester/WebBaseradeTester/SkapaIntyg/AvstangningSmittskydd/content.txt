@@ -85,7 +85,7 @@
 | säkerställ att | diagnosArSynligt |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 !2 Verifiera
 

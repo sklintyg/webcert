@@ -10,9 +10,13 @@ class UnsignedIntygPage extends AbstractLoggedInPage {
         unsignedIntygTable(required: false) { $("#unsignedCertTable") }
         ingaEjSigneradeIntyg { $("#current-list-noResults-query") }
 
-        advancedFilterBtn(wait: true) { displayed($("#show-advanced-filter-btn")) }
-        advancedFilterResetBtn(wait: true) { displayed($("#reset-search-form")) }
-        advancedFilterForm(wait: true) { displayed($("#advanced-filter-form")) }
+        advancedFilterBtn(wait: true) { $("#show-advanced-filter-btn") }
+        advancedFilterResetBtn(wait: true) { $("#reset-search-form") }
+        advancedFilterForm(wait: true) { $("#advanced-filter-form") }
+
+        filterVidarebefordrad(required: false) { $("#filterFormVidarebefordrad") }
+        filterSparatAv(required: false) { $("#filterFormSparatAv") }
+        filterSigneratAv(required: false) { $("#filterFormSigneratAv") }
     }
 
     def showAdvancedFilter() {

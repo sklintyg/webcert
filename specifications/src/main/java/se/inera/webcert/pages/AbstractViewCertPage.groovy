@@ -77,7 +77,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         qaSvarstext {internid -> $("#answerText-${internid}")}
     
         questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
-        closeSentMessage(wait: true) { displayed($("#question-is-sent-to-fk-message-text > button")) }
+        closeSentMessage(wait: true) { $("#question-is-sent-to-fk-message-text > button") }
 
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text")}

@@ -23,7 +23,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | säkerställ att | har sparat |
 
 | skript | !-SkrivIntyg-! |
-| intyg sparat visas |
+| meddelande intyget komplett visas |
 
 !3 Testa variationer
 

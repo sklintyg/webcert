@@ -16,7 +16,7 @@
 
 
 !| skript | SvaraOchFraga |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | enhetsvaljare visas |
 | visas fraga | $internReferens1 |
 | visas fraga | $internReferens2 |

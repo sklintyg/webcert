@@ -14,7 +14,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | säkerställ att | ohanterade fragor sidan visas |
 | säkerställ att | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |

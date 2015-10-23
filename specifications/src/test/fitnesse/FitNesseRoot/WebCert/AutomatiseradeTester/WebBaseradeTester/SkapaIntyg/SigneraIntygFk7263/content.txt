@@ -21,7 +21,7 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| säkerställ att | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 
 
 !3 Login
@@ -38,14 +38,14 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| säkerställ att | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 
 
 !3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
+
 | skript | !-IntygstjanstAsynk-! |
 | finns intyg i intygstjansten med | webcert-fitnesse-signera-1 | vantetid | 5000 |
 | finns intyg i intygstjansten med | webcert-fitnesse-signera-2 | vantetid | 5000 |
-
 
 !3 Ta bort utkast
 

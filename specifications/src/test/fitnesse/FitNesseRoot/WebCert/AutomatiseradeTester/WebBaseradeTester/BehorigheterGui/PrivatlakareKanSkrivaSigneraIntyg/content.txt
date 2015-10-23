@@ -50,8 +50,8 @@
 
 | skript | !-HanteraUtkast-! |
 | visa avancerat filter |
-| säkerställ att inte | filterVidarebefordradVisas |
-| säkerställ att inte| filterValjLakareVisas |
+| säkerställ att inte | filter vidarebefordrad visas |
+| säkerställ att inte| filter sparat av visas |
 
 !3 Verifiera knappen för att vidarebeforda EJ finns i tabellen över ej signerade utkast
 
@@ -63,15 +63,15 @@
 
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-priv-1 | och typ | fk7263 |
-| säkerställ att | kopiera knapp visas |
-| säkerställ att | makulera knapp visas |
 | säkerställ att | skicka knapp visas |
 | säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
 
 !3 Gå till listsida för Fråga & Svar
 
 !| skript | SvaraOchFraga |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | säkerställ att | lista med ohanterade fragor visas |
 
 !3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare
@@ -79,7 +79,7 @@
 !| skript | SvaraOchFraga |
 | visa avancerat filter |
 | säkerställ att inte | filter vidarebefordrad visas |
-| säkerställ att inte | filter valj lakare visas |
+| säkerställ att inte | filter signerat av visas |
 
 !3 Vidarebefordra-knapp i listan får ej visas
 
@@ -88,6 +88,7 @@
 | säkerställ att inte | vidarebefordrad checkbox visas |
 
 !3 Vårdenhets-väljaren får ej synas för privatläkare
+
 !| skript | SvaraOchFraga |
 | säkerställ att inte | vardenhet valjare visas |
 
@@ -101,7 +102,7 @@
 !3 Gå tillbaka till listsida för Fråga & Svar
 
 !| skript | SvaraOchFraga |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | säkerställ att | lista med ohanterade fragor visas |
 
 !3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare
