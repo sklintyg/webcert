@@ -79,7 +79,7 @@ public class IdpSelectionFilterTest {
         initMocksForAuthenticated();
 
         when(httpServletRequest.getRequestURI()).thenReturn(DEFAULT_QA_PATH);
-        when(httpServletRequest.getSession(false)).thenReturn(httpSession);
+        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
         verify(httpServletResponse, times(0)).sendRedirect(anyString());
     }
@@ -88,7 +88,7 @@ public class IdpSelectionFilterTest {
     public void testNonAuthenticatedSithsIsRedirected() throws ServletException, IOException {
         initMocksForUnauthenticated();
         when(httpServletRequest.getRequestURI()).thenReturn(DEFAULT_QA_PATH);
-        when(httpServletRequest.getSession(false)).thenReturn(httpSession);
+        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
         verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp="));
     }
@@ -97,7 +97,7 @@ public class IdpSelectionFilterTest {
     public void testNonAuthenticatedPPIsRedirected() throws ServletException, IOException {
         initMocksForUnauthenticated();
         when(httpServletRequest.getRequestURI()).thenReturn(PP_QA_PATH);
-        when(httpServletRequest.getSession(false)).thenReturn(httpSession);
+        when(httpServletRequest.getSession(true)).thenReturn(httpSession);
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
         verify(httpServletResponse, times(1)).sendRedirect(contains("/saml/login/alias/" + AuthConstants.ALIAS_ELEG + "?idp="));
     }
