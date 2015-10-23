@@ -155,7 +155,7 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
         Personnummer personNummer = new Personnummer(personNummerIn);
-        LOG.debug("Retrieving intyg for person {}", personNummer);
+        LOG.debug("Retrieving intyg for person {}", personNummer.getPnrHash());
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 
