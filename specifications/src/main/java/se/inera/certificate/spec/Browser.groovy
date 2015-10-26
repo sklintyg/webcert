@@ -56,4 +56,8 @@ public class Browser {
     static String getTitle() {
         browser.getDriver().getTitle()
     }
+
+    static getDriver() {
+        return browser.getDriver();
+    }
 }
