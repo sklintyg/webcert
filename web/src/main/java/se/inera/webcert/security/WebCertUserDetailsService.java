@@ -339,7 +339,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     private void assertAuthorizedVardgivare(String hsaId, List<Vardgivare> authorizedVardgivare) {
 
-        // if user does not have access to any vardgivare, we have to reject authentication
+        // if user does not have access to any vardgivare, we have to reject the authorization
         if (authorizedVardgivare.isEmpty()) {
             throw new MissingMedarbetaruppdragException(hsaId);
         }
