@@ -71,7 +71,7 @@
     <c:otherwise>
 	  <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
       <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
+      <script type="text/javascript" src="/vendor/angular.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.js"></script>
