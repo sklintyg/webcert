@@ -3,7 +3,9 @@ package se.inera.webcert.pages.fk7263
 import se.inera.webcert.pages.AbstractViewCertPage
 
 class VisaFk7263Page extends AbstractViewCertPage {
-        
+
+    static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
+
     static content = {
 
         // messages
