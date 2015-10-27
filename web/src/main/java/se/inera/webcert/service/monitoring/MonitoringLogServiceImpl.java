@@ -141,8 +141,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, HashUtility.hash(userId), avtalVersion);
+    public void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion) {
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, HashUtility.hash(personId), avtalVersion);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
-        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}"),
+        PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' ");
 
         private String msg;

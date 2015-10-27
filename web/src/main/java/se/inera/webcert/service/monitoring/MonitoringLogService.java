@@ -60,7 +60,7 @@ public interface MonitoringLogService {
 
     void logPULookup(Personnummer personNummer, String result);
 
-    void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion);
+    void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion);
 
     void logNotificationSent(String unitId, String hanType);
 }

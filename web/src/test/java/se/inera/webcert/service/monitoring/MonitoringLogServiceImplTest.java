@@ -33,7 +33,6 @@ public class MonitoringLogServiceImplTest {
     private static final String RECIPIENT = "RECIPIENT";
     private static final String AUTH_SCHEME = "AUTH_SCHEME";
     private static final String REASON = "REASON";
-    private static final String USER_ID = "USER_ID";
     private static final Integer AVTAL_VERSION = 98;
     private static final String HAN_TYPE = "HAN_TYPE";
     private static final Personnummer PERSON_NUMMER = new Personnummer("PERSON_NUMMER");
@@ -44,6 +43,7 @@ public class MonitoringLogServiceImplTest {
     private static final String AMNE = "AMNE";
     private static final String UNIT_HSA_ID = "UNIT_HSA_ID";
     private static final String USER_HSA_ID = "USER_HSA_ID";
+    private static final String PERSON_ID = "PERSON_ID";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -165,9 +165,9 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogPrivatePractitionerTermsApproved() {
-        logService.logPrivatePractitionerTermsApproved(USER_ID, AVTAL_VERSION);
+        logService.logPrivatePractitionerTermsApproved(HSA_ID, PERSON_ID, AVTAL_VERSION);
         verifyLog(Level.INFO,
-                "PP_TERMS_ACCEPTED User 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361' accepted private practitioner terms of version 98");
+                "PP_TERMS_ACCEPTED User 'HSA_ID', personId 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' accepted private practitioner terms of version '98'");
     }
 
     @Test
