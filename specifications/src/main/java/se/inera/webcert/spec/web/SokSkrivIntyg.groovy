@@ -46,8 +46,8 @@ class SokSkrivIntyg {
                 } else if (typ == "ts-diabetes") {
                     at se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
                 }
-                page.sendWithValidation()
             }
+            page.sendWithValidation()
         }
     }
 

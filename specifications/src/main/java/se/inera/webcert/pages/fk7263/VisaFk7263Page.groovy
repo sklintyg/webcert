@@ -143,7 +143,7 @@ class VisaFk7263Page extends AbstractViewCertPage {
         }
         skickaDialogCheck.click()
         waitFor {
-            doneLoading()
+            skickaDialogSkickaKnapp.isEnabled()
         }
         skickaDialogSkickaKnapp.click()
     }
