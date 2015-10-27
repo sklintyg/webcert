@@ -140,6 +140,7 @@ class VisaFk7263Page extends AbstractViewCertPage {
         waitFor {
             doneLoading()
             skickaDialogBody.text().contains("Försäkringskassan.")
+            skickaDialogCheck.isDisplayed()
         }
         skickaDialogCheck.click()
         waitFor {

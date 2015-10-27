@@ -22,7 +22,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         
         kopieraDialogMsgForlangningSjukskrivning(required:false) { $("#msgForlangningSjukskrivning") }
 
-        tillbakaButton(required: false) { $("#tillbakaButton") }
+        tillbakaBtn(required: false) { $("#tillbakaButton") }
 
         visaVadSomSaknasLista(required: false) {$("#visa-vad-som-saknas-lista")}
         
@@ -168,8 +168,8 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
     }
 
     def tillbaka() {
-        AbstractPage.scrollIntoView(tillbakaButton.attr('id'));
-        tillbakaButton.click()
+        AbstractPage.scrollIntoView(tillbakaBtn.attr('id'));
+        tillbakaBtn.click()
         waitFor {
             doneLoading()
         }
