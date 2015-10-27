@@ -9,26 +9,26 @@ när hen väljer att lämna sidan 'Frågor och svar' och gå till 'Ej signerade 
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 
 !3 Visa utkastet via uthoppslänk
 
-| script | !-IntegrationViaUthoppslank-! |
+| skript | !-IntegrationViaUthoppslank-! |
 | ga till intygsvy via uthopp med intygs id | webcert-fitnesse-utkast-1 |
-| ensure | meddelande intyget inte skickat visas |
-| note | Gå till Ej signerade utkast |
+| säkerställ att | meddelande intyget inte skickat visas |
+| notering | Gå till Ej signerade utkast |
 | ga till ej signerade utkast |
-| ensure | lamna fraga svar varning visas |
+| säkerställ att | lamna fraga svar varning visas |
 | avbryt lamna fraga och svar |
-| note | Visa utkast |
+| notering | Visa utkast |
 | ga till intygsvy via uthopp med intygs id | webcert-fitnesse-utkast-1 |
-| note | Gå till Sök/skriv intyg |
+| notering | Gå till Sök/skriv intyg |
 | ga till sok skriva intyg |
-| ensure | lamna fraga svar varning visas |
+| säkerställ att | lamna fraga svar varning visas |
 | avbryt lamna fraga och svar |
 
 !3 Ta bort utkastet
 
-| script | !-TaBortUtkast-! |
+| skript | !-TaBortUtkast-! |
 | ta bort utkast | webcert-fitnesse-utkast-1 |
