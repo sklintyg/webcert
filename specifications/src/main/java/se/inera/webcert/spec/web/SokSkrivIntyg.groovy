@@ -2,8 +2,11 @@ package se.inera.webcert.spec.web
 
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
+import se.inera.webcert.pages.fk7263.EditeraFk7263Page
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
+import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
+import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import se.inera.webcert.spec.util.WebcertRestUtils
 
@@ -162,11 +165,11 @@ class SokSkrivIntyg {
             page.copy()
             waitFor {
                 if (typ == "FK7263") {
-                    at se.inera.webcert.pages.fk7263.EditeraFk7263Page
+                    at EditeraFk7263Page
                 } else if (typ == "ts-bas") {
-                    at se.inera.webcert.pages.ts_bas.EditeraTsBasPage
+                    at EditeraTsBasPage
                 } else if (typ == "ts-diabetes") {
-                    at se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
+                    at EditeraTsDiabetesPage
                 }
             }
 
