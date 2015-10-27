@@ -224,7 +224,7 @@ class IntegrationMedJournalsystem {
     boolean verifieraTillbakaknappSynlig() {
         def result
         Browser.drive {
-            result = page.tillbakaButton?.isDisplayed()
+            result = page.tillbakaBtn?.isDisplayed()
         }
         result
     }

@@ -9,11 +9,14 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
 
     static content = {
         namnOchPersonnummer(required: false) { $("#patientNamnPersonnummer") }
-        tillbakaButton(required: false) { $("#tillbakaButton") }
-        radera(required: false) { $("#ta-bort-utkast") }
+
+        // Knappar
+        tillbakaBtn(required: false) { $("#tillbakaButton") }
+        raderaBtn(required: false) { $("#ta-bort-utkast") }
+        konfirmeraRaderaBtn(required: false) { $("#confirm-draft-delete-button") }
         skrivUtBtn(required: false) { $("#skriv-ut-utkast") }
-        konfirmeraRadera(required: false) { $("#confirm-draft-delete-button") }
         signeraBtn(required: false ) { $("#signera-utkast-button") }
+
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
 
@@ -74,7 +77,7 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
     }
 
     def tillbaka() {
-        tillbakaButton.click();
+        tillbakaBtn.click();
         waitFor {
             doneLoading()
         }
@@ -86,6 +89,26 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
     
     boolean isSignBtnDisplayed(){
         signeraBtn.isDisplayed()
+    }
+
+    def tabortUtkast() {
+        waitFor {
+            raderaBtn.isDisplayed()
+        }
+        raderaBtn.click()
+        waitFor {
+            doneLoading()
+        }
+    }
+
+    def konfirmeraTabortUtkast() {
+        waitFor {
+            konfirmeraRaderaBtn.isDisplayed()
+        }
+        konfirmeraRaderaBtn.click()
+        waitFor {
+            doneLoading()
+        }
     }
 
 }

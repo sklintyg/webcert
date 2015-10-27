@@ -25,7 +25,7 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 !3 Författarstöd visas
 
 | skript | !-HanteraUtkast-! |
-| editera sidan visas |
+| säkerställ att | editera sidan visas |
 | radera utkast |
 
 | skript | !-SokSkrivIntyg-! |
@@ -39,7 +39,7 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 !3 Författarstöd visas
 
 | skript | !-HanteraUtkast-! |
-| editera sidan visas |
+| säkerställ att | editera sidan visas |
 | radera utkast |
 
 | skript | !-SokSkrivIntyg-! |
