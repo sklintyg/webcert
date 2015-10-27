@@ -47,7 +47,7 @@ abstract class AbstractPage extends Page {
         if (root == null) {
             root = "body"
         }
-        Object result = waitForJavascriptCallback(NgClientSideScripts.WaitForAngular, root);
+        Object result = waitForJavascriptCallback(NgClientSideScripts.WAIT_FOR_ANGULAR, root);
         if (result != null) {
             throw new RuntimeException(result.toString());
         }
