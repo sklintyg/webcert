@@ -146,8 +146,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logNotificationSent(String unitId, String hanType) {
-        logEvent(MonitoringEvent.NOTIFICATION_SENT, unitId, hanType);
+    public void logNotificationSent(String hanType, String unitId) {
+        logEvent(MonitoringEvent.NOTIFICATION_SENT, hanType, unitId);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -185,7 +185,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
-        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' ");
+        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'");
 
         private String msg;
 

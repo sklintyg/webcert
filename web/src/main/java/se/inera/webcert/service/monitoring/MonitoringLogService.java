@@ -62,5 +62,5 @@ public interface MonitoringLogService {
 
     void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion);
 
-    void logNotificationSent(String unitId, String hanType);
+    void logNotificationSent(String hanType, String unitId);
 }

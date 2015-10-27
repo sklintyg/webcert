@@ -159,8 +159,8 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogNotificationSent() {
-        logService.logNotificationSent(ENHET, HAN_TYPE);
-        verifyLog(Level.INFO, "NOTIFICATION_SENT Sent notification of type 'ENHET' to unit 'HAN_TYPE' ");
+        logService.logNotificationSent(HAN_TYPE, ENHET);
+        verifyLog(Level.INFO, "NOTIFICATION_SENT Sent notification of type 'HAN_TYPE' to unit 'ENHET'");
     }
 
     @Test
