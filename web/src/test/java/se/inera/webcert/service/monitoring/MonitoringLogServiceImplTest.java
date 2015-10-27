@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertThat;
 
-import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +44,6 @@ public class MonitoringLogServiceImplTest {
     private static final String AMNE = "AMNE";
     private static final String UNIT_HSA_ID = "UNIT_HSA_ID";
     private static final String USER_HSA_ID = "USER_HSA_ID";
-    private static final int VERSION = 1;
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -210,13 +208,6 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUserLogout() {
         logService.logUserLogout(HSA_ID, AUTH_SCHEME);
         verifyLog(Level.INFO, "USER_LOGOUT Logout user 'HSA_ID' using scheme 'AUTH_SCHEME'");
-    }
-
-    @Test
-    public void shouldLogConsentGiven() {
-        LocalDateTime DATE = new LocalDateTime(2016, 10, 19, 14, 0, 0);
-        logService.logConsentGiven(USER_ID, HSA_ID, VERSION, DATE );
-        verifyLog(Level.INFO, "CONSENT_GIVEN Consent given by user 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361', hsaId 'HSA_ID', version '1', date '2016-10-19T14:00:00.000'");
     }
 
     @Test
