@@ -60,14 +60,14 @@ abstract class AbstractPage extends Page {
         }
     }
 
-    def waitForModalBackdropToHide(){
-        waitFor() {
-            return !modalBackdrop.isDisplayed();
-        }
-    }
-
     static boolean isButtonDisabled(button){
         return button.@disabled == 'true';
+    }
+
+    def waitForModalBackdropToHide(){
+        waitFor {
+            return !modalBackdrop.isDisplayed();
+        }
     }
 
     def elementForId(elementId){
@@ -77,11 +77,5 @@ abstract class AbstractPage extends Page {
     def elementForClass(classId){
         return $("." + classId);
     }
-
-    // use inside content definitions to prevent wait success until the element is displayed
-    // with the option element(wait:true){ displayed($('#element-id')) }
-    //static displayed(elem) {
-    //    (elem?.displayed) ? elem : null
-    //}
 
 }
