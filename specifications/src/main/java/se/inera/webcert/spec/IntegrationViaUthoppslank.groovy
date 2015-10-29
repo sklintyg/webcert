@@ -41,6 +41,17 @@ class IntegrationViaUthoppslank {
         return result
     }
 
+    boolean svaraEjMojligtDialogVisasInte() {
+        def result
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            result = !page.svaraEjMojligtDialog.isDisplayed()
+        }
+        return result
+    }
+
     def gaTillEjSigneradeUtkast() {
         Browser.drive {
             waitFor {

@@ -42,6 +42,12 @@ public class FragaSvar extends RestClientFixture {
 
     String vardAktorNamn
 
+    // Komplettering
+    String falt
+    String text
+
+    Komplettering komplettering
+
     String internReferens() {
         internReferens
     }
@@ -81,6 +87,22 @@ public class FragaSvar extends RestClientFixture {
         if (vardAktorNamn) fraga.vardAktorNamn = vardAktorNamn
         if (fkKontakt) fraga.externaKontakter = [fkKontakt]
 
+        if (falt && text) {
+            komplettering = new Komplettering(falt, text)
+            fraga.kompletteringar = [komplettering]
+        }
+        if (text) fraga.text = text
+
         JsonOutput.toJson(fraga)
+    }
+
+    class Komplettering {
+        String falt
+        String text
+
+        Komplettering(String falt, String text) {
+            this.falt = falt
+            this.text = text
+        }
     }
 }
