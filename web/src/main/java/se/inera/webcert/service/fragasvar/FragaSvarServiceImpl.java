@@ -32,6 +32,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
@@ -239,7 +240,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webCertUserService.getUser();
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.hasPrivilege(UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
                     + ") can only be answered by user that is Lakare");
