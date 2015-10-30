@@ -229,6 +229,22 @@ class IntegrationMedJournalsystem {
         result
     }
 
+    boolean verifieraVidarebefordraUtkastSynlig() {
+        def result
+        Browser.drive {
+            result = page.vidarebefordraEjHanterad?.isDisplayed()
+        }
+        result
+    }
+
+    boolean verifieraSigneraKnappSynlig() {
+        def result
+        Browser.drive {
+            result = page.signeraBtn?.isDisplayed()
+        }
+        result
+    }
+
     boolean raderaUtkastFelmeddelandeVisas() {
         def result
         Browser.drive {
