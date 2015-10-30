@@ -26,6 +26,8 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
         sekretessmarkering(required: false) { $("#sekretessmarkering") }
         vardenhet { module VardenhetModule }
+
+        vidarebefordraEjHanterad(required: false) { $('#vidarebefordraEjHanterad') }
     }
 
     static boolean doneSaving() {
