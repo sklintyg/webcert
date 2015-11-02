@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.14</version>
+    <version>1.0.15</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -166,6 +166,11 @@
       </dependency>
 
       <!-- Common -->
+      <dependency>
+        <groupId>se.inera.intyg.common</groupId>
+        <artifactId>common-build-tools</artifactId>
+        <version>${common.version}</version>
+      </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>common-support</artifactId>
@@ -514,6 +519,41 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-build-tools</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <skip>${dependency.unpack.skip}</skip>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>se.inera.intyg.common</groupId>
+                  <artifactId>common-build-tools</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/build-tools</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>${project.build.directory}/build-tools/checkstyle/checkstyle.xml</configLocation>
+          <suppressionsLocation>${project.build.directory}/build-tools/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+          <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+          <logViolationsToConsole>true</logViolationsToConsole>
+          <failOnViolation>true</failOnViolation>
+          <violationSeverity>info</violationSeverity>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
