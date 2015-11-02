@@ -356,16 +356,16 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     // - - - - - Private scope - - - - -
 
     private void assertAuthorizedVardgivare(String hsaId, List<Vardgivare> authorizedVardgivare) {
-        LOG.debug("Assert authorized vårdgivare.");
+        LOG.debug("Assert user has authorization to one or more 'vårdenheter'");
 
         // if user does not have access to any vardgivare, we have to reject authentication
-        if (authorizedVardgivare.isEmpty()) {
+        if (authorizedVardgivare == null || authorizedVardgivare.isEmpty()) {
             throw new MissingMedarbetaruppdragException(hsaId);
         }
     }
 
     private void assertMIU(SAMLCredential credential) {
-        LOG.debug("Assert medarbetaruppdrag.");
+        LOG.debug("Assert 'medarbetaruppdrag (MIU)'");
 
         // if user has authenticated with other contract than 'Vård och behandling', we have to reject her
         if (!VARD_OCH_BEHANDLING.equals(getAssertion(credential).getMedarbetaruppdragType())) {
