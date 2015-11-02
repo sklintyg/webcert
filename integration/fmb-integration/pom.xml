@@ -50,7 +50,6 @@
       <artifactId>cxf-rt-transports-http</artifactId>
     </dependency>
 
-
     <!-- Spring -->
     <dependency>
       <groupId>org.springframework</groupId>

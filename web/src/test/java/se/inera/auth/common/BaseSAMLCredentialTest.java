@@ -2,7 +2,7 @@ package se.inera.auth.common;
 
 import static org.mockito.Mockito.mock;
 
-import org.apache.cxf.staxutils.StaxUtils;
+import org.apache.cxf.helpers.XMLUtils;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.NameID;
@@ -56,7 +56,7 @@ public abstract class BaseSAMLCredentialTest {
     }
 
     private static XMLObject readSamlDocument(String docPath) throws Exception {
-        Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
+        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
                 docPath).getInputStream()));
         org.w3c.dom.Element documentElement = doc.getDocumentElement();
 

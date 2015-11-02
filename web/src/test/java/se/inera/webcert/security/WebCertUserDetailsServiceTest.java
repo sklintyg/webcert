@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
-import org.apache.cxf.staxutils.StaxUtils;
+import org.apache.cxf.helpers.XMLUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -542,7 +542,7 @@ public class WebCertUserDetailsServiceTest {
     }
 
     private SAMLCredential createSamlCredential(String filename) throws Exception {
-        Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
+        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
                 "WebCertUserDetailsServiceTest/" + filename).getInputStream()));
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(Assertion.DEFAULT_ELEMENT_NAME);
