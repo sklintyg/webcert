@@ -3,7 +3,8 @@ package se.inera.webcert.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.cxf.helpers.XMLUtils;
+
+import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensaml.DefaultBootstrap;
@@ -33,19 +34,19 @@ public class SakerhetstjanstAssertionTest {
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(Assertion.DEFAULT_ELEMENT_NAME);
 
-        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+        Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-with-enhet.xml").getInputStream()));
         assertionWithEnhet = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
 
-        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+        doc = (Document) StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-without-enhet.xml").getInputStream()));
         assertionWithoutEnhet = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
 
-        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+        doc = (Document) StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-with-multiple-titles.xml").getInputStream()));
         assertionWithMultipleTitles = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
 
-        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+        doc = (Document) StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-new.xml").getInputStream()));
         assertionWithNewFormat = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
     }
