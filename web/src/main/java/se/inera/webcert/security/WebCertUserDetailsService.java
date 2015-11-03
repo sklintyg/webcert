@@ -4,6 +4,7 @@ import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_K
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,8 +91,13 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         LOG.info("Start user authentication...");
-        LOG.debug("SAML credential is: {}", credential);
 
+        if (LOG.isDebugEnabled()) {
+            // I dont want read this object every time.
+            // Will do only of we have enabled debugging.
+            String str = ToStringBuilder.reflectionToString(credential);
+            LOG.debug("SAML credential is:\n{}", str);
+        }
 
         try {
             // Create the user
@@ -234,7 +240,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
      * @return a user role if valid 'yrkesgrupper', otherwise null
      */
     UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
-        LOG.debug("  - legitimerade yrkesgrupper");
+        LOG.debug("  * legitimerade yrkesgrupper");
         if (legitimeradeYrkesgrupper == null || legitimeradeYrkesgrupper.size() == 0) {
             return null;
         }
@@ -256,7 +262,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     private UserRole lookupUserRoleByRequestURI(boolean isLakare) {
-        LOG.debug("  - request URI");
+        LOG.debug("  * request URI");
 
         DefaultSavedRequest savedRequest = getRequest();
         if (savedRequest != null && savedRequest.getRequestURI() != null) {
@@ -287,7 +293,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     UserRole lookupUserRoleByBefattningskod(List<String> befattningsKoder) {
-        LOG.debug("  - befattningskod");
+        LOG.debug("  * befattningskod");
 
         if (befattningsKoder == null || befattningsKoder.size() == 0) {
             return null;
@@ -325,19 +331,25 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     UserRole lookupUserRoleByBefattningskodAndGruppforskrivarkod(String befattningsKod, String gruppforskrivarKod) {
-        LOG.debug("  - befattningskod i kombination med gruppförskrivarkod");
+        LOG.debug("  * befattningskod i kombination med gruppförskrivarkod");
+        LOG.debug("    befattningskod = {}, gruppförskrivarkod = {}", befattningsKod, gruppforskrivarKod);
 
         if (befattningsKod == null || gruppforskrivarKod == null) {
             return null;
         }
 
         TitleCode titleCode = titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(befattningsKod, gruppforskrivarKod);
-        if (titleCode != null) {
-            Role role = titleCode.getRole();
-            return UserRole.valueOf(role.getName());
+        if (titleCode == null) {
+            LOG.debug("    kombinationen befattningskod and gruppförskrivarkod finns inte i databasen");
+            return null;
         }
 
-        return null;
+        Role role = titleCode.getRole();
+        if (role == null) {
+            throw new RuntimeException("titleCode.getRole() returnerade 'null' vilket indikerar att tabellen BEFATTNINGSKODER_ROLL i databasen har felaktig data");
+        }
+
+        return UserRole.valueOf(role.getName());
     }
 
     SakerhetstjanstAssertion getAssertion(Assertion assertion) {
