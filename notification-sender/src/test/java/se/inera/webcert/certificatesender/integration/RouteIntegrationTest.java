@@ -14,6 +14,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,15 +24,22 @@ import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.common.base.Throwables;
 
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 import se.inera.webcert.common.Constants;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/certificates/integration-test-certificate-sender-config.xml")
+@BootstrapWith(CamelTestContextBootstrapper.class)
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIntegrationTest {
 
@@ -50,7 +58,7 @@ public class RouteIntegrationTest {
     private Queue dlq;
 
     @Autowired
-    MockSendCertificateServiceClientImpl sendCertificateServiceClient;
+    private MockSendCertificateServiceClientImpl sendCertificateServiceClient;
 
     @Before
     public void resetStub() {
