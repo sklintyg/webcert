@@ -39,15 +39,10 @@
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
     <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
     <intyg-transportstyrelsen.version>1.0.0</intyg-transportstyrelsen.version>
+    <intyg-privatepractitioner.version>1.0.0</intyg-privatepractitioner.version>
+    <intyg-privatepractitioner-terms.version>1.0.0</intyg-privatepractitioner-terms.version>
 
-    <intyg-privatepractitioner.version>0-SNAPSHOT</intyg-privatepractitioner.version>
-    <intyg-privatepractitioner.version.range>(,1.0.0]</intyg-privatepractitioner.version.range>
-
-    <intyg-privatepractitioner-terms.version>0-SNAPSHOT</intyg-privatepractitioner-terms.version>
-    <intyg-privatepractitioner-terms.version.range>(,1.0.0]</intyg-privatepractitioner-terms.version.range>
-
-    <cgi-funktionstjanster-grp.version>0-SNAPSHOT</cgi-funktionstjanster-grp.version>
-    <cgi-funktionstjanster-grp.version.range>(,1.0.0]</cgi-funktionstjanster-grp.version.range>
+    <cgi-funktionstjanster-grp.version>1.0.0</cgi-funktionstjanster-grp.version>
 
     <skip-coverage>true</skip-coverage>
   </properties>
@@ -581,9 +576,7 @@
         <configuration>
           <includeProperties>
             common.version,
-            intygstyper.version,
-            intyg-privatepractitioner.version,
-            intyg-privatepractitioner-terms.version
+            intygstyper.version
           </includeProperties>
           <properties>
             <property>
@@ -593,14 +586,6 @@
             <property>
               <name>intygstyper.version</name>
               <version>${intygstyper.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-privatepractitioner.version</name>
-              <version>${intyg-privatepractitioner.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-privatepractitioner-terms.version</name>
-              <version>${intyg-privatepractitioner-terms.version.range}</version>
             </property>
           </properties>
         </configuration>
