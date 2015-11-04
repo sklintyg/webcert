@@ -5,6 +5,9 @@ Testet beskriver fallet när HoS-personal går in på ett signerat FK7263 intyg 
 | skript | logga in |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
 | skript | !-SokSkrivIntyg-! |
 | sok skriv intyg sidan visas |
 

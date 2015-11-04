@@ -25,7 +25,6 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -50,11 +49,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private UtkastRepository utkastRepository;
-//
-//    @Autowired
-//    public void setWebCertUserService(WebCertUserService webCertUserService) {
-//        super.webCertUserService = webCertUserService;
-//    }
 
     @Override
     protected String[] getGrantedRoles() {
@@ -65,10 +59,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate.
      *
-     * @param uriInfo
      * @param intygId
      *            The id of the certificate to view.
-     * @return
      */
     @GET
     @Path("/{intygId}")
@@ -80,11 +72,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param uriInfo
      * @param intygId
      *            The id of the certificate to view.
      * @param typ The type of certificate
-     * @return
      */
     @GET
     @Path("/{typ}/{intygId}")
@@ -95,7 +85,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
             return Response.serverError().build();
         }
 
-        // Enable user features
         getWebCertUserService().enableFeaturesOnUser();
 
         Boolean isUtkast = false;
@@ -117,7 +106,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
 
-
     // - - - - - Private scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
@@ -125,7 +113,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
-        Map<String, Object> urlParams = new HashMap<String, Object>();
+        Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
         urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
@@ -141,18 +129,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    @Override
-    protected void updateUserRoles(WebCertUser user) {
-        boolean isDoctor = user.isLakare();
-        String userRole = UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name();
-
-        if (isDoctor) {
-            userRole = UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name();
-        }
-
-        super.writeUserRoles(userRole);
     }
 
 }

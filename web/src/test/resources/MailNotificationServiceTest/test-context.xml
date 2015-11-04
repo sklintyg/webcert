@@ -36,6 +36,10 @@
   
   <bean class="se.inera.webcert.service.monitoring.MonitoringLogServiceImpl" />
 
+  <bean class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.webcert.service.user.WebCertUserService" />
+  </bean>
+
   <bean id="ppService" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.webcert.integration.pp.services.PPService" />
   </bean>

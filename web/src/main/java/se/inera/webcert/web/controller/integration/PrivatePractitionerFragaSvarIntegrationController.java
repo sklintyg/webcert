@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2015-10-08.
@@ -41,10 +40,8 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
      * Fetches a certificate from IT and then performs a redirect to the view that displays
      * the questions for the cert. Can be used for FK7263 certificates.
      *
-     * @param uriInfo
      * @param intygId
      *            The id of the certificate to view.
-     * @return
      */
     @GET
     @Path("/{intygId}/questions")
@@ -67,7 +64,7 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
-        Map<String, Object> urlParams = new HashMap<String, Object>();
+        Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
@@ -76,16 +73,9 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
-
-
-
     @Override
     protected String[] getGrantedRoles() {
         return new String[]{UserRole.ROLE_PRIVATLAKARE.name()};
     }
 
-    @Override
-    protected void updateUserRoles(WebCertUser user) {
-       // No need to update user roles for this controller.
-    }
 }

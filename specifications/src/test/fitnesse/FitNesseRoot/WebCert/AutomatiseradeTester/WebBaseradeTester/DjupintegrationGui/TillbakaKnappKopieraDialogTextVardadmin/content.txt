@@ -5,6 +5,9 @@ Verifiera att en vårdadministratör som använder en djupintegrationslänk hamn
 | skript | logga in |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
 | skript | svara och fraga |
 | ga till fragor och svar |
 | säkerställ att | svara och fraga sidan visas|
