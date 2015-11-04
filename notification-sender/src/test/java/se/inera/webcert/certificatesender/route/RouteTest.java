@@ -13,28 +13,34 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringDelegatingTestContextLoader;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.apache.camel.test.spring.MockEndpoints;
+import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.ImmutableMap;
-
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import se.inera.webcert.certificatesender.routes.CertificateRouteBuilder;
 import se.inera.webcert.common.Constants;
+
+import com.google.common.collect.ImmutableMap;
 import se.inera.webcert.exception.PermanentException;
 import se.inera.webcert.exception.TemporaryException;
 
 //@RunWith(CamelSpringJUnit4ClassRunner.class)
 //@ContextConfiguration //("/certificates/unit-test-certificate-sender-config.xml")
-//@MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
+@BootstrapWith(CamelTestContextBootstrapper.class)
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
+    @DirtiesContext
 
 //@RunWith(CamelSpringJUnit4ClassRunner.class)
 //@ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
@@ -245,5 +251,4 @@ public class RouteTest { //extends AbstractJUnit4SpringContextTests {
 //            };
 //        }
 //    }
-
 }
