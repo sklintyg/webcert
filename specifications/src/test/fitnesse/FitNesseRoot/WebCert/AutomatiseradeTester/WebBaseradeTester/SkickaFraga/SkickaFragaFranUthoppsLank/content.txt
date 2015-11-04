@@ -5,6 +5,9 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_UTHOPP |
+
 !3 Verifiera att det går att visa intyget
 
 | skript | !-SvaraOchFraga-! |

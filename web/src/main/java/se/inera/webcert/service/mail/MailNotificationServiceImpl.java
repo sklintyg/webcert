@@ -23,6 +23,7 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.user.WebCertUserService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
@@ -35,6 +36,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
 
     private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "certificate";
+    private static final String QA_NOTIFICATION_LANDSTING_PATH_SEGMENT = "basic-certificate";
     private static final String QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
 
     private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan";
@@ -69,6 +71,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Value("${privatepractitioner.logicaladdress}")
     private String ppLogicalAddress;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     private void logError(String type, FragaSvar fragaSvar, Exception e) {
         Long id = fragaSvar.getInternReferens();
@@ -251,6 +256,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         return null;
     }
 
+    @Override
     public String intygsUrl(FragaSvar fragaSvar) {
         String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/" + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId()) + "/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
         LOG.debug("Intygsurl: " + url);
@@ -260,8 +266,11 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private String resolvePathSegment(String enhetsId) {
         if (isPrivatePractitionerEnhet(enhetsId)) {
             return QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT;
-        } else {
+        }
+        if (webCertUserService != null && webCertUserService.getUser() != null && webCertUserService.getUser().isRoleUthopp()) {
             return QA_NOTIFICATION_DEFAULT_PATH_SEGMENT;
         }
+        return QA_NOTIFICATION_LANDSTING_PATH_SEGMENT;
     }
+
 }

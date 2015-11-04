@@ -12,6 +12,10 @@ när hen väljer att lämna sidan 'Frågor och svar' och gå till 'Ej signerade 
 | script | !-LoggaIn-! |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_UTHOPP |
+
+
 !3 Visa utkastet via uthoppslänk
 
 | script | !-IntegrationViaUthoppslank-! |

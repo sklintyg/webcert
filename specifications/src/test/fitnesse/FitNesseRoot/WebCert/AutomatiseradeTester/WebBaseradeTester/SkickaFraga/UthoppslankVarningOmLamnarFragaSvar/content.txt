@@ -5,6 +5,9 @@ Testet beskriver fallet när en användare kommer till fråga/svar från ett jou
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_UTHOPP |
+
 !3 Givet att det finns ett intyg och att man går till det vi uthoppslänken, verifiera att rätt knappar visas
 
 | skript | !-SvaraOchFraga-! |

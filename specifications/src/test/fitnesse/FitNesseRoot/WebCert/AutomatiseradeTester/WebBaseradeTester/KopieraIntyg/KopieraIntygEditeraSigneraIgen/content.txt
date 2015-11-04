@@ -28,6 +28,9 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Gå till intyget via djupintegration
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
 | skript | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | $intygsid | personnummer | ${person2.personnummer} |
 

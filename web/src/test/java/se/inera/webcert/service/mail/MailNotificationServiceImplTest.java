@@ -24,6 +24,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
@@ -43,6 +45,9 @@ public class MailNotificationServiceImplTest {
 
     @Mock
     private PPService ppService;
+
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @Before
     public void setUp() throws Exception {
@@ -196,6 +201,59 @@ public class MailNotificationServiceImplTest {
         Address[] allRecipients = mimeMessage.getAllRecipients();
         assertEquals(1, allRecipients.length);
         assertEquals(epost, allRecipients[0].toString());
+    }
+
+    @Test
+    public void testIntygsUrlUthopp() throws Exception {
+        //Given
+        final WebCertUser user = Mockito.mock(WebCertUser.class);
+        Mockito.when(user.isRoleUthopp()).thenReturn(true);
+        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+        final FragaSvar fragaSvar = new FragaSvar();
+        fragaSvar.setVardperson(new Vardperson());
+        fragaSvar.setIntygsReferens(new IntygsReferens());
+
+        //When
+        final String url = mailNotificationService.intygsUrl(fragaSvar);
+
+        //Then
+        assertEquals("WebCertHostUrl/webcert/web/user/certificate/null/questions", url);
+    }
+
+    @Test
+    public void testIntygsUrlLandsting() throws Exception {
+        //Given
+        final WebCertUser user = Mockito.mock(WebCertUser.class);
+        Mockito.when(user.isRoleUthopp()).thenReturn(false);
+        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+        final FragaSvar fragaSvar = new FragaSvar();
+        fragaSvar.setVardperson(new Vardperson());
+        fragaSvar.setIntygsReferens(new IntygsReferens());
+
+        //When
+        final String url = mailNotificationService.intygsUrl(fragaSvar);
+
+        //Then
+        assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/null/questions", url);
+    }
+
+    @Test
+    public void testIntygsUrlPp() throws Exception {
+        //Given
+        final WebCertUser user = Mockito.mock(WebCertUser.class);
+        Mockito.when(user.isRoleUthopp()).thenReturn(false);
+        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+        final FragaSvar fragaSvar = new FragaSvar();
+        final Vardperson vardperson = new Vardperson();
+        vardperson.setEnhetsId(MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");
+        fragaSvar.setVardperson(vardperson);
+        fragaSvar.setIntygsReferens(new IntygsReferens());
+
+        //When
+        final String url = mailNotificationService.intygsUrl(fragaSvar);
+
+        //Then
+        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/null/questions", url);
     }
 
 }
