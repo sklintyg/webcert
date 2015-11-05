@@ -34,7 +34,7 @@
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
-    <rivta-decisionsupport.version>1.0.RC1.0</rivta-decisionsupport.version>
+    <rivta-decisionsupport.version>1.0.RC4.0</rivta-decisionsupport.version>
 
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
     <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
