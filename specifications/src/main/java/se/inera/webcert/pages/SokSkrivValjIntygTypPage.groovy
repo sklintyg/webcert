@@ -36,13 +36,13 @@ class SokSkrivValjIntygTypPage extends AbstractLoggedInPage {
     }
 
     def valjIntygstypFk7263() {
-        intygTyp.value("1")
+        intygTyp.value("string:fk7263")
     }
     def valjIntygstypTsBas() {
-        intygTyp.value("2")
+        intygTyp.value("string:ts-bas")
     }
     def valjIntygstypTsDiabetes() {
-        intygTyp.value("3")
+        intygTyp.value("string:ts-diabetes")
     }
     
     def valjIntygsTyp(String typ) {

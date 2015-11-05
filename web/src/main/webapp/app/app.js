@@ -66,7 +66,7 @@
 
             // Configure 403 interceptor provider
             http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp');
-            $httpProvider.responseInterceptors.push('common.http403ResponseInterceptor');
+            $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
             // Enable debug logging
             $logProvider.debugEnabled(false);

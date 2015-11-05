@@ -2,9 +2,9 @@
  * Controller for logic related to listing questions and answers
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
-    ['$rootScope', '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
+    ['$rootScope', '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
         'common.fragaSvarCommonService', 'webcert.QuestionAnswer',
-        function($rootScope, $cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService,
+        function($rootScope, $cookies, $filter, $location, $log, $scope, $timeout, $window, dialogService,
             fragaSvarCommonService, QuestionAnswer) {
             'use strict';
 
@@ -142,9 +142,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
             function getQA() {
                 $scope.widgetState.activeErrorMessageKey = null;
-                $cookieStore.put('enhetsId', enhetId);
+                $cookies.putObject('enhetsId', enhetId);
                 var preparedQuery = prepareFilterQuery(enhetId, $scope.filterQuery);
-                $cookieStore.put('savedFilterQuery', preparedQuery);
+                $cookies.putObject('savedFilterQuery', preparedQuery);
                 $scope.filterQuery = preparedQuery;
 
                 QuestionAnswer.getQA(preparedQuery, function(successData) {
@@ -200,7 +200,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             }
 
             function resetFilterForm() {
-                $cookieStore.remove('savedFilterQuery');
+                $cookies.remove('savedFilterQuery');
                 $scope.filterQuery = angular.copy(defaultQuery);
                 $scope.filterForm.vantarPaSelector = $scope.statusList[1];
                 $scope.filterForm.lakareSelector = $scope.lakareList[0];
@@ -211,12 +211,12 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             function loadSearchForm() {
 
                 // Check if cookie exists
-                if ($cookieStore.get('savedFilterQuery') === undefined) {
+                if ($cookies.getObject('savedFilterQuery') === undefined) {
                     resetFilterForm(); // Set default state for filter form
                 } else {
 
                     // Load filter from cookie
-                    $scope.filterQuery = $cookieStore.get('savedFilterQuery');
+                    $scope.filterQuery = $cookies.getObject('savedFilterQuery');
 
                     // If we saved an old query where we had fetched more load everything up to that page
                     if ($scope.filterQuery.startFrom > 0) {
@@ -241,8 +241,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     }
 
                     if ($scope.filterForm.vantarPaSelector) {
-                        $scope.filterForm.vantarPaSelector = selectVantarPaByValue($cookieStore
-                            .get('savedFilterQuery').vantarPa);
+                        $scope.filterForm.vantarPaSelector = selectVantarPaByValue($cookies
+                            .getObject('savedFilterQuery').vantarPa);
                     } else {
                         $scope.filterForm.vantarPaSelector = $scope.statusList[1];
                     }
@@ -268,10 +268,10 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     if (list && (list.length > 0)) {
                         $scope.lakareList.unshift($scope.lakareListEmptyChoice);
 
-                        if ($cookieStore.get('savedFilterQuery') &&
-                            $cookieStore.get('savedFilterQuery').lakareSelector) {
-                            $scope.filterQuery.lakareSelector = selectLakareByHsaId($cookieStore
-                                .get('savedFilterQuery').lakareSelector.hsaId);
+                        if ($cookies.getObject('savedFilterQuery') &&
+                            $cookies.getObject('savedFilterQuery').lakareSelector) {
+                            $scope.filterQuery.lakareSelector = selectLakareByHsaId($cookies
+                                .getObject('savedFilterQuery').lakareSelector.hsaId);
                         } else {
                             $scope.lakareSelector = $scope.lakareList[0];
                         }
@@ -376,12 +376,12 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 $scope.activeUnit = unit;
 
                 // If we change enhet then we probably don't want the same filter criterias
-                if ($cookieStore.get('enhetsId') && $cookieStore.get('enhetsId') !== unit.id) {
+                if ($cookies.getObject('enhetsId') && $cookies.getObject('enhetsId') !== unit.id) {
                     resetFilterForm();
                 }
 
                 // Set unit id (reset search form resets it)
-                $cookieStore.put('enhetsId', unit.id);
+                $cookies.putObject('enhetsId', unit.id);
                 enhetId = unit.id;
 
                 $scope.widgetState.filteredYet = false; // so proper info message is displayed if no items are found

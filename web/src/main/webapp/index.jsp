@@ -19,17 +19,17 @@
 
 <c:choose>
   <c:when test="${useMinifiedJavaScript == 'true'}">
-    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
-    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="/pubapp/login.controller.js"></script>
   </c:when>
   <c:otherwise>
-    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
-    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.js"></script>
     <script type="text/javascript" src="/pubapp/login.controller.js"></script>
   </c:otherwise>
 </c:choose>
@@ -70,7 +70,7 @@
   <div class="content-footer">
     <p>Webcert använder kakor. <a href="#" ng-click="showCookieText = !showCookieText">Läs mer om Kakor (cookies)</a>
     </p>
-    <div collapse="!showCookieText" class="bluebox">
+    <div uib-collapse="!showCookieText" class="bluebox">
       <h4>Om Kakor (cookies)</h4>
       <p>
         Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som

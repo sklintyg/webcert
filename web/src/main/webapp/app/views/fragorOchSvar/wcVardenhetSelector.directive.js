@@ -1,6 +1,6 @@
 angular.module('webcert').directive('wcCareUnitClinicSelector',
-    [ '$cookieStore', '$rootScope', '$timeout', 'common.User', 'common.statService',
-        function($cookieStore, $rootScope, $timeout, User, statService) {
+    [ '$cookies', '$rootScope', '$timeout', 'common.User', 'common.statService',
+        function($cookies, $rootScope, $timeout, User, statService) {
             'use strict';
 
             return {
@@ -96,8 +96,8 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                     }
 
                     //initial selection, now handles cases when no enhetsId cookie has been set.
-                    if ($scope.units.length > 2 && $cookieStore.get('enhetsId')) {
-                        $scope.selectUnit(selectUnitById($scope.units, $cookieStore.get('enhetsId')));
+                    if ($scope.units.length > 2 && $cookies.getObject('enhetsId')) {
+                        $scope.selectUnit(selectUnitById($scope.units, $cookies.getObject('enhetsId')));
                     } else {
                         $scope.selectUnit(selectFirstUnit($scope.units));
                     }

@@ -2,7 +2,7 @@ describe('UnhandledQACtrlSpec', function() {
     'use strict';
 
     var $controller;
-    var $cookieStore;
+    var $cookies;
     var $scope;
     var $location;
     var $httpBackend;
@@ -107,6 +107,7 @@ describe('UnhandledQACtrlSpec', function() {
 
     beforeEach(function() {
 
+        module('webcertTest');
         module('webcert', ['$provide', function($provide) {
 
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
@@ -130,22 +131,24 @@ describe('UnhandledQACtrlSpec', function() {
 
             var $window = {};
             $window.location = {};
+            $window.document = window.document; // document is now needed for ngCookies
 
             //configure this value with the provider.
             $provide.value('$window', $window);
         }]);
 
-        inject(['$rootScope', '$location', '$timeout', '$httpBackend', '$controller', '$cookieStore',
+        inject(['$rootScope', '$location', '$timeout', '$httpBackend', '$controller', '$cookies', '$document',
             'common.fragaSvarCommonService',
-            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookieStore_,
+            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookies_, $document,
                 _fragaSvarCommonService_) {
                 $scope = $rootScope.$new();
                 $location = _$location_;
                 $httpBackend = _$httpBackend_;
                 $timeout = _$timeout_;
                 $controller = _$controller_;
-                $cookieStore = _$cookieStore_;
+                $cookies = _$cookies_;
                 fragaSvarCommonService = _fragaSvarCommonService_;
+                console.log("$document2: ",$document);
                 controller = $controller('webcert.UnhandledQACtrl', { $scope: $scope });
             }]);
     });
@@ -153,7 +156,7 @@ describe('UnhandledQACtrlSpec', function() {
     describe('UnhandledQACtrl listing and filtering of QAs ', function() {
 
         it('should get and fill currentList with 3 entries when savedFilterQuery is not set', function() {
-            $cookieStore.remove('savedFilterQuery');
+            $cookies.remove('savedFilterQuery');
             $httpBackend.expectGET('/api/fragasvar/sok?pageSize=10&questionFromFK=false&questionFromWC=false&startFrom=0&vantarPa=ALLA_OHANTERADE').respond(200,
                 testQAResponse);
             $scope.filterList();
@@ -165,7 +168,7 @@ describe('UnhandledQACtrlSpec', function() {
 
             var defaultQuery = angular.copy(testDefaultQuery);
             defaultQuery.questionFromWC = true;
-            $cookieStore.put('savedFilterQuery', defaultQuery);
+            $cookies.putObject('savedFilterQuery', defaultQuery);
             $httpBackend.
                 expectGET('/api/fragasvar/sok?pageSize=10&questionFromFK=false&questionFromWC=false&startFrom=0&vantarPa=ALLA_OHANTERADE').respond(200,
                 testWCQAResponse);
@@ -211,7 +214,7 @@ describe('UnhandledQACtrlSpec', function() {
             $scope.$broadcast('qa-filter-select-care-unit', unit);
             $httpBackend.flush();
 
-            expect($cookieStore.get('enhetsId')).toBe('IFV1239877878-1045');
+            expect($cookies.getObject('enhetsId')).toBe('IFV1239877878-1045');
             expect($scope.activeUnit).toEqual(unit);
         });
     });

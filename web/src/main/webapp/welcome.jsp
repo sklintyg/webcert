@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
 
-    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.min.js"></script>
 
     <style type="text/css">
         textarea {
@@ -350,7 +350,7 @@
         angular.module('WcWelcomeApp.controllers', []).
             controller('welcomeController', function($scope) {
               $scope.loginModel = loginArr;
-              $scope.selectedIndex = 0;
+              $scope.selectedIndex = '0';
               $scope.$watch('selectedIndex', function(newSelected, oldVal) {
                 var jsonEl = angular.element( document.querySelector( '#userJson' ) );
                 var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );

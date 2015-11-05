@@ -2,7 +2,7 @@ describe('UnsignedCertCtrlSpec', function() {
     'use strict';
 
     var $controller;
-    var $cookieStore;
+    var $cookies;
     var $scope;
     var $location;
     var $timeout;
@@ -36,8 +36,8 @@ describe('UnsignedCertCtrlSpec', function() {
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
-        inject(['$rootScope', '$location', '$httpBackend', '$controller', '$cookieStore', '$timeout', 'mockResponse',
-            function($rootScope, _$location_, _$httpBackend_, _$controller_, _$cookieStore_, _$timeout_, _mockResponse_) {
+        inject(['$rootScope', '$location', '$httpBackend', '$controller', '$cookies', '$timeout', 'mockResponse', '$document',
+            function($rootScope, _$location_, _$httpBackend_, _$controller_, _$cookies_, _$timeout_, _mockResponse_, $document) {
                 $scope = $rootScope.$new();
                 $scope.filterFormElement = {
                     'filter-changedate-from': { $error: {}},
@@ -51,12 +51,13 @@ describe('UnsignedCertCtrlSpec', function() {
                 $location = _$location_;
                 $httpBackend = _$httpBackend_;
                 $controller = _$controller_;
-                $cookieStore = _$cookieStore_;
+                $cookies = _$cookies_;
                 $timeout = _$timeout_;
                 mockResponse = _mockResponse_;
 
                 $httpBackend.expectGET('/api/utkast/lakare/').respond(200, {});
                 $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
+                console.log("$document1: ",$document);
                 controller = $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
                 $httpBackend.flush();
                 $timeout.flush();
@@ -92,12 +93,12 @@ describe('UnsignedCertCtrlSpec', function() {
             $httpBackend.flush();
 
             // then update filter filter savedBy info
-            var filter = $cookieStore.get('unsignedCertFilter');
+            var filter = $cookies.getObject('unsignedCertFilter');
             filter.filter.savedBy = {
                 name: 'Visa alla',
                 hsaId: 'hsaIdFromHell'
             };
-            $cookieStore.put('unsignedCertFilter', filter);
+            $cookies.putObject('unsignedCertFilter', filter);
 
             // finally make sure successful call runs through savedBy functions
             $httpBackend.expectGET('/api/utkast/lakare/').respond(200, {});
@@ -117,7 +118,7 @@ describe('UnsignedCertCtrlSpec', function() {
         });
 
         it('should get and fill currentList with 1 entry when unsignedCertFilter is not set', function() {
-            $cookieStore.remove('unsignedCertFilter');
+            $cookies.remove('unsignedCertFilter');
             $httpBackend.expectGET('/api/utkast?enhetsId=enhet1&pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
             $scope.filterDrafts();
             $httpBackend.flush();
@@ -125,7 +126,7 @@ describe('UnsignedCertCtrlSpec', function() {
         });
 
         it('should get utkast list based on date filter', function() {
-            $cookieStore.remove('unsignedCertFilter');
+            $cookies.remove('unsignedCertFilter');
             $scope.filterForm.lastFilterQuery.filter.savedTo = '2015-01-10';
             $scope.filterForm.lastFilterQuery.filter.savedFrom = '2015-10-10';
             $httpBackend.expectGET('/api/utkast?enhetsId=enhet1&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0').respond(200, {results: [], totalCount: 0});
@@ -135,7 +136,7 @@ describe('UnsignedCertCtrlSpec', function() {
         });
 
         it('should handle error if list could not be fetched from server', function() {
-            $cookieStore.remove('unsignedCertFilter');
+            $cookies.remove('unsignedCertFilter');
             $httpBackend.expectGET('/api/utkast?enhetsId=enhet1&pageSize=10&startFrom=0').respond(500);
             $scope.filterDrafts();
             $httpBackend.flush();

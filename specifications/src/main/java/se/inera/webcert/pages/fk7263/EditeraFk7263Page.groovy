@@ -37,7 +37,7 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         ovrigt { $("#otherInformation") }
 
         // date picker
-        datepicker { $("div[ng-switch='datepickerMode']") }
+        datepicker(required: false) { $("div[ng-switch='datepickerMode']") }
 
         // Intygsvalidering
         valideringIntygBaseratPa(required: false) { $("#validationMessages_intygbaseratpa") }

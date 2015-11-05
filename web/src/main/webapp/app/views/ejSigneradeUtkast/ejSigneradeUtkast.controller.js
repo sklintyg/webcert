@@ -2,9 +2,9 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
-    [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
+    [ '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
         'webcert.UtkastProxy', 'common.User', 'common.UtkastNotifyService', 'common.DateUtilsService',
-        function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, UtkastProxy,
+        function($cookies, $filter, $location, $log, $scope, $timeout, $window, dialogService, UtkastProxy,
             User, utkastNotifyService, dateUtilsService) {
             'use strict';
 
@@ -76,7 +76,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 loadSavedByList();
 
                 // Use saved choice if cookie has saved a filter
-                var storedFilter = $cookieStore.get('unsignedCertFilter');
+                var storedFilter = $cookies.getObject('unsignedCertFilter');
                 if (storedFilter && storedFilter.filter.savedBy) {
                     $scope.filterForm.lastFilterQuery.filter.savedBy =
                         selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
@@ -190,8 +190,8 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 $scope.widgetState.filteredYet = true;
                 $scope.filterForm.lastFilterQuery.startFrom = 0;
                 var filterQuery = $scope.filterForm.lastFilterQuery;
-                $cookieStore.put('enhetsId', filterQuery.enhetsId);
-                $cookieStore.put('unsignedCertFilter', $scope.filterForm.lastFilterQuery);
+                $cookies.putObject('enhetsId', filterQuery.enhetsId);
+                $cookies.putObject('unsignedCertFilter', $scope.filterForm.lastFilterQuery);
                 filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
 
                 $scope.widgetState.invalidFromDate = $scope.filterFormElement['filter-changedate-from'].$error.date;
@@ -214,7 +214,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             };
 
             $scope.resetFilter = function() {
-                $cookieStore.remove('unsignedCertFilter');
+                $cookies.remove('unsignedCertFilter');
                 resetFilterState();
                 $scope.filterDrafts();
             };
