@@ -49,7 +49,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     // ~ Static fields/initializers
     // =====================================================================================
 
-    public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+/.*";
+    public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
     public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
