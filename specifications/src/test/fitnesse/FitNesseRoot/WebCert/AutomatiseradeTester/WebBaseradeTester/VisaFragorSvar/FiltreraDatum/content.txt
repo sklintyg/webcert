@@ -8,7 +8,7 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 !3 Verifiera att förväntade informationrutor avseende frågor på enhet/sökresultat visas
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | säkerställ att | infotext inga fragar pa enhet visas |
 | säkerställ att inte | infotext inget sokresultat visas |
@@ -25,7 +25,7 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 !3 Verifiera att filtreringen på läkare fungerar
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
@@ -39,6 +39,7 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | säkerställ att inte | fraga| $internReferens4 | visas |
 
 !3 Filtrera så inga träffar fås, verifiera förväntat infomeddelande
+
 | skript | !-SvaraOchFraga-! |
 | valj datum fran | 2012-01-02 |
 | valj datum till | 2012-01-03 |

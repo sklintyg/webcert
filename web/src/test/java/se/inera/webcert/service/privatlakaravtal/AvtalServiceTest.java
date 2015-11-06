@@ -27,6 +27,7 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 public class AvtalServiceTest {
 
     private static final String USER_ID = "userId";
+    private static final String PERSON_ID = "personId";
     private static final Integer AVTAL_VERSION_1 = 1;
     private static final Integer AVTAL_VERSION_2 = 2;
 
@@ -70,19 +71,19 @@ public class AvtalServiceTest {
     @Test
     public void testApproveAvtal() {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
-        avtalService.approveLatestAvtal(USER_ID);
+        avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
         verify(godkantAvtalRepository, times(1)).approveAvtal(anyString(), anyInt());
-        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), anyInt());
+        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), anyString(), anyInt());
     }
 
     @Test(expected = IllegalStateException.class)
     public void testApproveAvtalNoAvtalInDB() {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
         try {
-            avtalService.approveLatestAvtal(USER_ID);
+            avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
         } catch (Exception e) {
             verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
-            verify(monitoringLogService, times(0)).logPrivatePractitionerTermsApproved(anyString(), anyInt());
+            verify(monitoringLogService, times(0)).logPrivatePractitionerTermsApproved(anyString(), anyString(), anyInt());
             throw e;
         }
     }

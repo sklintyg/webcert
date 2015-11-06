@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
-import org.apache.cxf.helpers.XMLUtils;
+import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -165,8 +165,8 @@ public class WebCertUserDetailsServiceTest {
         TitleCode titleCode = new TitleCode("204010", "0000000‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         // when
-        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
         when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -183,8 +183,8 @@ public class WebCertUserDetailsServiceTest {
         TitleCode titleCode = new TitleCode("204090", "9100009‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         // when
-        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
         when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -212,6 +212,23 @@ public class WebCertUserDetailsServiceTest {
 
         assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
         assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeIsEmptyObject() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
+        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
+        when(roleRepository.findByName(anyString())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(new TitleCode());
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
     }
 
     @Test
@@ -243,8 +260,8 @@ public class WebCertUserDetailsServiceTest {
         TitleCode titleCode = new TitleCode("204010", "0000000‘", getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         // when
-        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
         when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+        when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(titleCode);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -525,7 +542,7 @@ public class WebCertUserDetailsServiceTest {
     }
 
     private SAMLCredential createSamlCredential(String filename) throws Exception {
-        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+        Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
                 "WebCertUserDetailsServiceTest/" + filename).getInputStream()));
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(Assertion.DEFAULT_ELEMENT_NAME);

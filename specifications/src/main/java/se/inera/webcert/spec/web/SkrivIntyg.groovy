@@ -220,25 +220,24 @@ class SkrivIntyg {
         true
     }
 
-    boolean intygSparatVisas() {
+    boolean meddelandeIntygetKomplettVisas() {
         boolean result
         Browser.drive {
-            waitFor{
+            waitFor {
                 page.intygetSparatOchKomplettMeddelande.isDisplayed()
             }
-            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            result = page.intygetSparatOchKomplettMeddelande?.isDisplayed()
         }
         result
     }
 
-    boolean intygEjKomplettVisas() {
+    boolean meddelandeIntygetEjKomplettVisas() {
         boolean result
         Browser.drive {
-            waitFor{
-                doneLoading()
+            waitFor {
                 page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
             }
-            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            result = page.intygetSparatOchEjKomplettMeddelande?.isDisplayed()
         }
         result
     }

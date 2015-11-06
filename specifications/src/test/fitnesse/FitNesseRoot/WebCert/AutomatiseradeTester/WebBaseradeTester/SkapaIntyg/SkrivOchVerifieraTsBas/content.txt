@@ -23,14 +23,14 @@ Populera intyget med information i samtliga fält så det blir komplett
 | säkerställ att | har sparat |
 
 | skript | !-SkrivIntyg-! |
-| intyg sparat visas |
+| meddelande intyget komplett visas |
 
 | skript | !-HanteraUtkast-! |
 | säkerställ att | signera knapp visas |
 | säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas med typ | ts-bas |
-| säkerställ att | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 
 !3 Verifiera att fälten i intyget syns och innehåller korrekt data
 

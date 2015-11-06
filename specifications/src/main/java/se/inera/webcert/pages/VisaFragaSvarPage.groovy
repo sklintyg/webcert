@@ -68,6 +68,10 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
 
         linkEjSigneradeUtkast(required: false) { $("#menu-unsigned") }
         linkSokSkrivIntyg(required: false) { $("#menu-skrivintyg") }
+
+        vidarebefordradKnappPaFraga(required: false) { $("#unhandled-vidarebefordraEjHanterad") }
+
+        svaraEjMojligtDialog(required: false) { $('#answerDisabledReasonPanel') }
     }
 
     def copy() {

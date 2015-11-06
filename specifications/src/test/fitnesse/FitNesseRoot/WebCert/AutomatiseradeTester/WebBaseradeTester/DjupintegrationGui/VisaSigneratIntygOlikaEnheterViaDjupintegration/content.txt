@@ -15,6 +15,9 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
 !3 Verifiera att det går att visa intyg som ligger på samma vårdenhet, men inte på andra vårdgivare
 
 | skript | !-IntegrationMedJournalsystem-! |
@@ -38,6 +41,9 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
 
 !3 Verifiera att det går att visa intyg som ligger på samma vårdenhet eller dess mottagningar, men att det bara ska gå att skicka och makulera intyg för den inloggade vårdenheten/mottagningen.
 
@@ -76,6 +82,9 @@ Om en användare väljer att hantera ett intyg som är utfärdat på en annan v�
 
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1046 |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
 
 !3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar, men bara går att skicka och makulera intyg för den inloggade vårdenhet/mottagningen
 
@@ -132,6 +141,9 @@ Om en användare väljer att hantera ett intyg som är utfärdat på en annan v�
 
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-104C |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
 
 !3 Verifiera att det går att visa alla intyg för alla vårdenheter och mottagningar vid samma vårdgivare. Men det ska bara ska gå att skicka och makulera intyg för den inloggade vårdenheten/mottagningen.
 

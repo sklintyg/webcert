@@ -2,7 +2,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Säkerställ att inga värden populeras automatiskt när man skapat ett tomt utkast för avstängning smittskydd</Help>
+<Help>Säkerställ att värden populeras automatiskt när man skapat ett tomt utkast för avstängning smittskydd</Help>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>

@@ -1,0 +1,29 @@
+Verifiera att en vårdadministratör som använder en djupintegrationslänk har rätt behörighet i Utkastläge
+
+!3 Skapa ett nytt intygsutkast
+
+| skapa utkast |
+| intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? | intygId? |
+| fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej | 200 | $intygId= |
+
+
+!3 Logga in
+
+| skript | logga in |
+| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD |
+
+!3 Visa utkastet via integrationslänken
+
+| skript | !-IntegrationMedJournalsystem-! |
+| visa utkast via integration | $intygId |
+| säkerställ att inte | verifiera tillbakaknapp synlig |
+| säkerställ att inte | verifiera signera knapp synlig |
+| säkerställ att inte | verifiera vidarebefordra utkast synlig |
+
+!3 Ta bort utkastet
+
+| skript | !-HanteraUtkast-! |
+| radera utkast |

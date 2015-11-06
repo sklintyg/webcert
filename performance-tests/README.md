@@ -1,5 +1,9 @@
 # Webcert prestandatest
 
+## PROBLEM 2015-10-26
+- FragaSvar Har fått stänga av Ny fråga och uppföljande delar då dessa kräver att det kopplade intyget skall finnas i IT eller som signerat Utkast i WC
+- SkrivSigneraSkickaIntyg
+
 ## Målmiljö
 Primärt är det QA-miljön hos Basefarm som prestandatesterna skall exekveras mot. Tanken är att en aktuell anonymiserad produktionsdump skall läsas in i databasen.
  
@@ -42,6 +46,15 @@ Simulationen SkrivSigneraSkickaIntyg nyttjar cirkulärt dessa personnummer för 
 iteration som skall författa och signera ett intyg.
 
 ## Hur startar jag en simulering
+
+### Välj målmiljö
+Ett alternativ är att öppna pom.xml och redigera element under <properties>
+
+- <baseUrl>http://localhost:9088</baseUrl>
+
+Alternativt kan man ange -DbaseUrl=....... på kommandoraden.
+
+### Exekvering från command-lineß
 
 Från command-line fungerar följande:
 

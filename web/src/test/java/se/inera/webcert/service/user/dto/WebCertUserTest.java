@@ -183,4 +183,31 @@ public class WebCertUserTest {
         return privilegeMap;
     }
 
+    @Test
+    public void testIsRoleUthopp() throws Exception {
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE));
+        assertFalse(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
+        assertFalse(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_PRIVATLAKARE));
+        assertFalse(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_TANDLAKARE));
+        assertFalse(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR));
+        assertFalse(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD));
+        assertFalse(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE_UTHOPP));
+        assertTrue(wcu.isRoleUthopp());
+
+        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP));
+        assertTrue(wcu.isRoleUthopp());
+    }
+
 }

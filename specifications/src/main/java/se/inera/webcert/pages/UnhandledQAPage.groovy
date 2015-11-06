@@ -1,24 +1,20 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.spec.Browser
-
 class UnhandledQAPage extends AbstractLoggedInPage {
 
     static url = "/web/dashboard#/unhandled-qa"
     static at = { doneLoading() && $("#unhandled-qa").isDisplayed() }
 
     static content = {
-        unitstatUnhandledQuestionsBadgde(required: false,wait: true) { $("#stat-unitstat-unhandled-question-count") }
+        unitstatUnhandledQuestionsBadgde(required: false, wait: true) { $("#stat-unitstat-unhandled-question-count") }
         careUnitSelector(required: false) { $("a#wc-care-unit-clinic-selector") }
         careUnitSelectorLink(required: false) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitSelectorNoWait(required: false) { $("div#wc-care-unit-clinic-selector")}
-        careUnitModal(required: false, wait: true) { displayed($("a#wc-care-unit-clinic-selector-link")) }
-        careUnitModalBody(required: false, wait: true) { displayed($(".modal-body")) }
-        unhandledQATable(required: false, wait: true) { displayed($("#qaTable")) }
+        careUnitModal(required: false, wait: true) { $("a#wc-care-unit-clinic-selector-link") }
+        careUnitModalBody(required: false, wait: true) { $(".modal-body") }
         unhandledQATable(required: false) { $("#qaTable") }
 
         noResultsOnUnitInfo { $("#current-list-noResults-unit") }
-        noResultsForQueryInfo(wait: true) { displayed($("#current-list-noResults-query")) }
         noResultsForQueryInfo { $("#current-list-noResults-query") }
 
         advancedFilterBtn { $("#show-advanced-filter-btn") }
@@ -31,6 +27,11 @@ class UnhandledQAPage extends AbstractLoggedInPage {
         advancedFilterStatus { $("#qp-showStatus") }
         advancedFilterSearchBtn { $("#filter-qa-btn") }
         advancedFilterResetBtn  { $("#reset-search-form") }
+
+        filterVidarebefordrad(required: false) { $("#filterFormVidarebefordrad") }
+        filterSparatAv(required: false) { $("#filterFormSparatAv") }
+        filterSigneratAv(required: false) { $("#filterFormSigneratAv") }
+
         visaAllaFragaBtn(required: false) { $("#select-active-unit-wc-all") }
         vcCentrumVastBtn(required: false) { $("select-active-unit-centrum-vast") }
         fetchMoreBtn { $("#hamtaFler") }

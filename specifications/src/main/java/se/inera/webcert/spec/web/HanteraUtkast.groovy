@@ -1,10 +1,14 @@
 package se.inera.webcert.spec.web
-
 import se.inera.certificate.spec.Browser
-import se.inera.webcert.pages.*
+import se.inera.webcert.pages.AbstractEditCertPage
+import se.inera.webcert.pages.SokSkrivaIntygPage
+import se.inera.webcert.pages.UnsignedIntygPage
+import se.inera.webcert.pages.VisaFragaSvarPage
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
+import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
+import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import se.inera.webcert.spec.util.WebcertRestUtils
 
@@ -15,15 +19,15 @@ class HanteraUtkast {
             go "/web/dashboard#/$typ/edit/$intygid"
             if (typ == "fk7263") {
                 waitFor {
-                    at se.inera.webcert.pages.fk7263.EditeraFk7263Page
+                    at EditeraFk7263Page
                 }
             } else if (typ == "ts-bas") {
                 waitFor {
-                    at se.inera.webcert.pages.ts_bas.EditeraTsBasPage
+                    at EditeraTsBasPage
                 }
             } else if (typ == "ts-diabetes") {
                 waitFor {
-                    at se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
+                    at EditeraTsDiabetesPage
                 }
             }
         }
@@ -35,7 +39,7 @@ class HanteraUtkast {
         Browser.drive {
             go "/web/dashboard#/fk7263/edit/${id}"
             waitFor {
-                at se.inera.webcert.pages.fk7263.EditeraFk7263Page
+                at EditeraFk7263Page
             }
         }
     }
@@ -86,14 +90,6 @@ class HanteraUtkast {
         boolean result
         Browser.drive {
             result = page.harSparat()
-        }
-        result
-    }
-
-    boolean intygEjKomplettVisas() {
-        boolean result
-        Browser.drive {
-            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result
     }
@@ -208,6 +204,7 @@ class HanteraUtkast {
     }
 
     // ---------- elements
+
     boolean ingaEjSigneradeIntygVisas() {
         return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
     }
@@ -242,23 +239,26 @@ class HanteraUtkast {
     boolean filterVidarebefordradVisas() {
         boolean result = false
         Browser.drive {
-            waitFor {
-                at UnsignedIntygPage
-            }
-            // TODO fix this on page instead
-            result = $("#filterFormVidarebefordrad")?.isDisplayed()
+            isAt UnsignedIntygPage
+            result = page.filterVidarebefordrad?.isDisplayed()
         }
         result
     }
 
-    boolean filterValjLakareVisas() {
+    boolean filterSparatAvVisas() {
         boolean result = false
         Browser.drive {
-            waitFor {
-                at UnsignedIntygPage
-            }
-            // TODO fix this on page instead
-            result = $("#filterFormSparatAv")?.isDisplayed()
+            isAt UnsignedIntygPage
+            result = page.filterSparatAv?.isDisplayed()
+        }
+        result
+    }
+
+    boolean filterSigneratAvVisas() {
+        boolean result = false
+        Browser.drive {
+            isAt UnsignedIntygPage
+            result = page.filterSigneratAv?.isDisplayed()
         }
         result
     }
@@ -287,27 +287,32 @@ class HanteraUtkast {
         result
     }
 
-    boolean intygetSigneratMeddelandeVisas() {
+    boolean meddelandeIntygetKomplettVisas() {
         boolean result
         Browser.drive {
-            // this is kind of a special case as the page changes based on intyg's type
-            result = page.certificateIsSentToITMessage.isDisplayed()
+            waitFor {
+                page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            }
+            result = page.intygetSparatOchKomplettMeddelande?.isDisplayed()
         }
         result
     }
 
-    boolean intygetEjKomplettMeddelandeVisas() {
+    boolean meddelandeIntygetEjKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            waitFor {
+                page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
+            result = page.intygetSparatOchEjKomplettMeddelande?.isDisplayed()
         }
         result
     }
 
-    boolean intygetKomplettMeddelandeVisas() {
+    boolean meddelandeIntygetSigneratVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            result = page.certificateIsSentToITMessage?.isDisplayed()
         }
         result
     }
@@ -315,7 +320,7 @@ class HanteraUtkast {
     boolean felmeddelandeVisas() {
         boolean result
         Browser.drive {
-            result = page.errorPanel.isDisplayed()
+            result = page.errorPanel?.isDisplayed()
         }
         result
     }

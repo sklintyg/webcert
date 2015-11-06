@@ -41,6 +41,8 @@ public class FmbApiController extends AbstractApiController {
     @Autowired
     private FmbService fmbService;
 
+    private boolean dataUpdateCalled = false;
+
     @GET
     @Path("/{icd10}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -49,9 +51,10 @@ public class FmbApiController extends AbstractApiController {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
         }
         final FmbResponse result = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
-        if (result.getForms().isEmpty() && fmbRepository.count() == 0) {
+        if (!dataUpdateCalled && result.getForms().isEmpty() && fmbRepository.count() == 0) {
             fmbService.updateData();
             final FmbResponse newResult = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
+            dataUpdateCalled = true;
             return Response.ok(newResult).build();
         }
         return Response.ok(result).build();

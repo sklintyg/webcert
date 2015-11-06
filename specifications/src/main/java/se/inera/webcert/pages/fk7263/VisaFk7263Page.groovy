@@ -29,8 +29,10 @@ class VisaFk7263Page extends AbstractViewCertPage {
         kopieraDialogMsgInteFranJournalSystem(required: false) { $("#msgInteFranJournalSystem") }
         kopieraDialogMsgNyttPersonId { $("#msgNyttPersonId") }
 
-        // fraga svar
+        // Vidarebefordra utkast
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
+
+        // fraga svar
         nyFragaSvarKnapp { $("#askQuestionBtn") }
         nyFragaFrageText { $("#newQuestionText") }
         nyFragaFrageAmne { $("#new-question-topic") }

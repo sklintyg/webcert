@@ -14,7 +14,7 @@ Testet beskriver fallet när användaren navigerar mellan alla delar av Webcert.
 !3 Verifiera att man kan nå Frågor och svar
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 
 !3 Verifiera att man kan nå Ej signerade intyg

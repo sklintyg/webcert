@@ -36,13 +36,13 @@ public class AvtalServiceImpl implements AvtalService {
     }
 
     @Override
-    public void approveLatestAvtal(String userId) {
+    public void approveLatestAvtal(String userId, String personId) {
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
         if (latestAvtalVersion == null || latestAvtalVersion == -1) {
             throw new IllegalStateException("Cannot approve private practitioner avtal, no avtal exists in the database.");
         }
         godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
-        monitoringLogService.logPrivatePractitionerTermsApproved(userId, latestAvtalVersion);
+        monitoringLogService.logPrivatePractitionerTermsApproved(userId, personId, latestAvtalVersion);
     }
 
     @Override

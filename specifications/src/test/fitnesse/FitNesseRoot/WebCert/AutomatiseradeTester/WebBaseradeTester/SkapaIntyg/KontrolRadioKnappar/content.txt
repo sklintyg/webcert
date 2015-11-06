@@ -25,7 +25,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | true |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 | säkerställ att | prognos ar vald |
 | säkerställ att inte | rehab nej visas|
 

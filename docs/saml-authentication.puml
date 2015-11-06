@@ -1,0 +1,19 @@
+@startuml
+actor User
+User -> Browser: I want to login
+Browser -> Webcert: Login request
+Webcert --> Browser: Redirect to IdP
+
+Browser -> IdP: SAML Authentication Request
+IdP --> Browser: Select method
+Browser -\ IdP: Perform authentication
+
+IdP -\ BankIDNetID: Authenticate
+User -> BankIDNetID: Interacts\nwith\nNetID/BankID\nclient
+
+BankIDNetID --> IdP: Authentication
+Browser <-- IdP: SAML Authentication Response
+Browser -> Webcert: SAML Ticket
+Webcert -> Webcert: Authorize
+Webcert --> Browser: Requested resource
+@enduml

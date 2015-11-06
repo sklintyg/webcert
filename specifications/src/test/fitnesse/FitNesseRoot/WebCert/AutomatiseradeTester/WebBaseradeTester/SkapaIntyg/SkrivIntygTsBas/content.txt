@@ -28,7 +28,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | säkerställ att | har sparat |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att| intyg sparat visas |
+| säkerställ att| meddelande intyget komplett visas |
 
 !3 Ta bort utkastet
 

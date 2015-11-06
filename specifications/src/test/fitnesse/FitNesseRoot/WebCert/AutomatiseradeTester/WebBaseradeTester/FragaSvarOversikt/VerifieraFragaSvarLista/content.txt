@@ -14,7 +14,7 @@ Testet beskriver fallet när en användare visar Frågor och Svar översikten. I
 !3 Verifiera att det går att visa innehållet i frågan i listan med ohanterade frågor
 
 !| skript | SvaraOchFraga |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | säkerställ att |lista med ohanterade fragor visas |
 | säkerställ att |personnummer syns for fraga | $internReferens1 |
 

@@ -126,10 +126,7 @@ public class UserApiController extends AbstractApiController {
     public Response godkannAvtal() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
-            Avtal avtal = avtalService.getLatestAvtal();
-            monitoringService.logConsentGiven(user.getPersonId(), user.getHsaId(), avtal.getAvtalVersion(), avtal.getVersionDatum());
-
-            avtalService.approveLatestAvtal(user.getHsaId());
+            avtalService.approveLatestAvtal(user.getHsaId(), user.getPersonId());
             user.setPrivatLakareAvtalGodkand(true);
         }
         return Response.ok().build();

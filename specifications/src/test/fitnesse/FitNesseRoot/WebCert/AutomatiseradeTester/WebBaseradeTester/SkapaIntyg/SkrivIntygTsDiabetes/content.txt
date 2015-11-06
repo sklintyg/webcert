@@ -31,7 +31,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | säkerställ att | har sparat |
 
 | skript | !-SkrivIntyg-! |
-| intyg sparat visas |
+| meddelande intyget komplett visas |
 
 !3 Ta bort utkastet
 

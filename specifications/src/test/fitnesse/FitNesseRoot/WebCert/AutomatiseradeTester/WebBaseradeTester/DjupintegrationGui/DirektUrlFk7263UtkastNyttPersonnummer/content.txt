@@ -14,6 +14,9 @@
 | skript | !-SokSkrivIntyg-! |
 | sok skriv intyg sidan visas |
 
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
 !3 Visa utkastet via integrationslänken
 
 | skript | !-IntegrationMedJournalsystem-! |

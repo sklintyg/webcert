@@ -114,7 +114,7 @@
                   </td>
                   <td>
                     <button ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
-                            class="btn btn-info" wc-authority feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
+                            class="btn btn-info" wc-authority="PRIVILEGE_KOPIERA_INTYG" feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
                             title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
                             ng-click="copyIntyg(cert)" id="copyBtn-{{cert.intygId}}">
                       Kopiera

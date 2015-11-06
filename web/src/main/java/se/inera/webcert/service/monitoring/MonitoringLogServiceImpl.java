@@ -1,6 +1,23 @@
+/**
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of statistik (https://github.com/sklintyg/statistik).
+ *
+ * statistik is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * statistik is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.webcert.service.monitoring;
 
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,11 +51,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logUserLogout(String userHsaId, String authScheme) {
         logEvent(MonitoringEvent.USER_LOGOUT, userHsaId, authScheme);
-    }
-
-    @Override
-    public void logConsentGiven(String id, String hsaId, int version, LocalDateTime date) {
-        logEvent(MonitoringEvent.CONSENT_GIVEN, HashUtility.hash(id), hsaId, version, date);
     }
 
     @Override
@@ -147,13 +159,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, HashUtility.hash(userId), avtalVersion);
+    public void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion) {
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, HashUtility.hash(personId), avtalVersion);
     }
 
     @Override
-    public void logNotificationSent(String unitId, String hanType) {
-        logEvent(MonitoringEvent.NOTIFICATION_SENT, unitId, hanType);
+    public void logNotificationSent(String hanType, String unitId) {
+        logEvent(MonitoringEvent.NOTIFICATION_SENT, hanType, unitId);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -169,7 +181,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
         USER_LOGIN("Login user '{}' using scheme '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
-        CONSENT_GIVEN("Consent given by user '{}', hsaId '{}', version '{}', date '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
@@ -191,8 +202,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
-        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}"),
-        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' ");
+        PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
+        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'");
 
         private String msg;
 

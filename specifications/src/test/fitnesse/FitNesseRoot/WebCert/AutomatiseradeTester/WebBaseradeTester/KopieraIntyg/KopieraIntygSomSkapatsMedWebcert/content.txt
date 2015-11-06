@@ -20,7 +20,7 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 | säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| säkerställ att | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 
 
 !3 Logga in

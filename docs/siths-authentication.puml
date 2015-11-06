@@ -1,0 +1,32 @@
+@startuml
+actor User
+User -> Browser: I want to login
+Browser -> Webcert: Login request
+Webcert --> Browser: Redirect to Säkerhetstjänsten
+
+Browser -> Säkerhetstjänsten: SAML Authentication Request
+Säkerhetstjänsten --> Browser: (asks browser to start NetID plugin)
+Browser -\ NetIDPlugin: Start NetID plugin
+
+User -\ NetIDPlugin: Insert SITHS-card
+NetIDPlugin -> Säkerhetstjänsten: Init authentication
+Säkerhetstjänsten --> NetIDPlugin: Prompt for password
+User -> NetIDPlugin: Enter passcode
+
+NetIDPlugin --> Säkerhetstjänsten: Authenticate
+
+Säkerhetstjänsten -> HSA: Hämtar medarbetaruppdrag
+HSA --> Säkerhetstjänsten: Svarar med medarbetaruppdrag
+Säkerhetstjänsten -> Browser: Visa HTML för val av medarb. uppdr
+User -> Browser: Väljer medarbetaruppdrag
+Browser -> Säkerhetstjänsten: Medarb. uppdr. valt
+
+Browser <-- Säkerhetstjänsten: SAML Authentication Response
+Browser -> Webcert: SAML Ticket
+Webcert -> Webcert: Parse SAML ticket
+Webcert -> HSA:
+HSA --> Webcert: HSA-information
+Webcert <-> Webcert: Skapar session
+Webcert --> Browser: Requested resource
+User -> Browser: Börjar arbeta
+@enduml

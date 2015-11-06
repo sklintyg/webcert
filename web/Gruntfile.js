@@ -49,7 +49,7 @@ module.exports = function(grunt) {
         csslint: {
             webcert: {
                 options: {
-                    csslintrc: '../target/build-tools/csslint/.csslintrc',
+                    csslintrc: 'target/build-tools/csslint/.csslintrc',
                     force: true
                 },
                 src: [SRC_DIR + '../**/*.css']
@@ -64,12 +64,12 @@ module.exports = function(grunt) {
         },
 
         jshint: {
+			options: {
+				jshintrc: 'target/build-tools/jshint/.jshintrc',
+				force: false,
+				ignores: ['**/templates.js', '**/*.min.js', '**/vendor/*.js']
+			},
             webcert: {
-                options: {
-                    jshintrc: '../target/build-tools/jshint/.jshintrc',
-                    force: false,
-                    ignores: ['**/templates.js', '**/*.min.js', '**/vendor/*.js']
-                },
                 src: ['Gruntfile.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js']
             }
         },

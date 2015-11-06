@@ -1,6 +1,4 @@
 package se.inera.webcert.spec.web.ts_bas
-
-import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 
 class ValideringTsBas {
@@ -11,18 +9,24 @@ class ValideringTsBas {
         }
     }
 
-    boolean intygSparatVisas() {
+    boolean meddelandeIntygetKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            waitFor {
+                page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            }
+            result = page.intygetSparatOchKomplettMeddelande?.isDisplayed()
         }
         result
     }
 
-    boolean intygEjKomplettVisas() {
+    boolean meddelandeIntygetEjKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            waitFor {
+                page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
+            result = page.intygetSparatOchEjKomplettMeddelande?.isDisplayed()
         }
         result
     }

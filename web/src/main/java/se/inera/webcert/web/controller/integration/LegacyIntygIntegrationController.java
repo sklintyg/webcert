@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -39,8 +38,6 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
 
     private String urlFragmentTemplate;
 
-
-
     @Override
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
@@ -50,10 +47,8 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
      * Fetches a certificate from IT and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param uriInfo
      * @param intygId
      *            The id of the certificate to view.
-     * @return
      */
     @GET
     @Path("/{intygId}/questions")
@@ -74,30 +69,19 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
 
-
     // - - - - - Default scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
-        Map<String, Object> urlParams = new HashMap<String, Object>();
+        Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    @Override
-    protected void updateUserRoles(WebCertUser user) {
-        String userRole = UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name();
-
-        if (user.hasRole(UserRole.ROLE_LAKARE.name())) {
-            userRole = UserRole.ROLE_LAKARE_UTHOPP.name();
-        }
-        super.writeUserRoles(userRole);
     }
 
 }

@@ -19,7 +19,7 @@
 | säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| säkerställ att | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 
 !3 Skicka intyget och kontrollera att intyget skickats
 
@@ -27,7 +27,6 @@
 | skicka det visade intyget av typ | fk7263 |
 | skicka status visas |
 | skicka status visas | true | med ratt meddelande | Försäkringskassans system |
-
 
 !3 Lägg till fråga
 
@@ -38,7 +37,7 @@
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
@@ -93,8 +92,6 @@
 | ta bort fraga |
 | frageText |
 | En fråga från Fitnesse% |
-
-
 
 !3 Ta bort utkast
 

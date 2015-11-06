@@ -18,7 +18,7 @@ class SkrivSigneraSkickaIntyg extends Simulation {
 	.repeat(10, "i") {
 		feed(testpersonnummer)
 		.exec(http("Dashboard")
-					.get("/views/dashboard/unhandled-qa.html")
+					.get("/web/dashboard#/unhandled-qa.html")
 					.headers(Headers.default)
 		)
 		.pause(2 seconds)
@@ -35,7 +35,8 @@ class SkrivSigneraSkickaIntyg extends Simulation {
 			.post("/api/utkast/fk7263")
 			.headers(Headers.json)
 			.body(StringBody("""{"intygType":"fk7263","patientPersonnummer":"${personNr}","patientFornamn":"test","patientEfternamn":"test"}"""))
-			.check(bodyString.saveAs("intyg"))
+			//.check(bodyString.saveAs("intyg"))
+			.check(jsonPath("$.intygsId").saveAs("intyg"))
 		)
 		.pause(100 milliseconds)
 		.exec(http("Get draft certificate")

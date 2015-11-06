@@ -1,10 +1,27 @@
+/**
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of statistik (https://github.com/sklintyg/statistik).
+ *
+ * statistik is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * statistik is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.webcert.service.monitoring;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertThat;
 
-import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +51,6 @@ public class MonitoringLogServiceImplTest {
     private static final String RECIPIENT = "RECIPIENT";
     private static final String AUTH_SCHEME = "AUTH_SCHEME";
     private static final String REASON = "REASON";
-    private static final String USER_ID = "USER_ID";
     private static final Integer AVTAL_VERSION = 98;
     private static final String HAN_TYPE = "HAN_TYPE";
     private static final Personnummer PERSON_NUMMER = new Personnummer("PERSON_NUMMER");
@@ -45,7 +61,7 @@ public class MonitoringLogServiceImplTest {
     private static final String AMNE = "AMNE";
     private static final String UNIT_HSA_ID = "UNIT_HSA_ID";
     private static final String USER_HSA_ID = "USER_HSA_ID";
-    private static final int VERSION = 1;
+    private static final String PERSON_ID = "PERSON_ID";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -161,15 +177,15 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogNotificationSent() {
-        logService.logNotificationSent(ENHET, HAN_TYPE);
-        verifyLog(Level.INFO, "NOTIFICATION_SENT Sent notification of type 'ENHET' to unit 'HAN_TYPE' ");
+        logService.logNotificationSent(HAN_TYPE, ENHET);
+        verifyLog(Level.INFO, "NOTIFICATION_SENT Sent notification of type 'HAN_TYPE' to unit 'ENHET'");
     }
 
     @Test
     public void shouldLogPrivatePractitionerTermsApproved() {
-        logService.logPrivatePractitionerTermsApproved(USER_ID, AVTAL_VERSION);
+        logService.logPrivatePractitionerTermsApproved(HSA_ID, PERSON_ID, AVTAL_VERSION);
         verifyLog(Level.INFO,
-                "PP_TERMS_ACCEPTED User 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361' accepted private practitioner terms of version 98");
+                "PP_TERMS_ACCEPTED User 'HSA_ID', personId 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' accepted private practitioner terms of version '98'");
     }
 
     @Test
@@ -210,13 +226,6 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUserLogout() {
         logService.logUserLogout(HSA_ID, AUTH_SCHEME);
         verifyLog(Level.INFO, "USER_LOGOUT Logout user 'HSA_ID' using scheme 'AUTH_SCHEME'");
-    }
-
-    @Test
-    public void shouldLogConsentGiven() {
-        LocalDateTime DATE = new LocalDateTime(2016, 10, 19, 14, 0, 0);
-        logService.logConsentGiven(USER_ID, HSA_ID, VERSION, DATE );
-        verifyLog(Level.INFO, "CONSENT_GIVEN Consent given by user 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361', hsaId 'HSA_ID', version '1', date '2016-10-19T14:00:00.000'");
     }
 
     @Test

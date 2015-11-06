@@ -14,7 +14,7 @@ Testet beskriver fallet när en användare har fått svar på sin fråga utanfö
 !3 Verifiera att det går att markera den som hantera och ohanterad
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| ga till fragor och svar |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |

@@ -11,21 +11,30 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.google.common.collect.ImmutableMap;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.webcert.common.Constants;
 import se.inera.webcert.exception.PermanentException;
 import se.inera.webcert.exception.TemporaryException;
 
+import com.google.common.collect.ImmutableMap;
+
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
+@BootstrapWith(CamelTestContextBootstrapper.class)
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
 @MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
 public class RouteTest {
 
@@ -34,7 +43,7 @@ public class RouteTest {
     @Autowired
     CamelContext camelContext;
 
-    @Produce(uri = "direct:receiveCertificateTransferEndpoint")
+    @Produce(uri = "direct://receiveCertificateTransferEndpoint")
     private ProducerTemplate producerTemplate;
 
     @EndpointInject(uri = "mock:bean:certificateStoreProcessor")
@@ -58,6 +67,7 @@ public class RouteTest {
     }
 
     @Test
+    @DirtiesContext
     public void testNormalStoreRoute() throws InterruptedException {
         // Given
         storeProcessor.expectedMessageCount(1);
@@ -217,5 +227,4 @@ public class RouteTest {
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
-
 }

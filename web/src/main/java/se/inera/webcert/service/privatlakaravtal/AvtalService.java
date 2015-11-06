@@ -22,8 +22,9 @@ public interface AvtalService {
     /**
      * Stores approval for the specicfied user for the currently latest avtal.
      * @param userId
+     * @param personId
      */
-    void approveLatestAvtal(String userId);
+    void approveLatestAvtal(String userId, String personId);
 
     /**
      * Removes all approvals of terms for the specified user.

@@ -26,7 +26,7 @@ Om man försöker att komma direkt till en signerat intyg så ska man bli omdirr
 | säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| säkerställ att | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 !3 Nar man forsoka att ga direkt till edit intyg man skulle vara omdirigerat till visa intyg sidan om intyget ar signerat
 
 | skript | !-HanteraUtkast-! |

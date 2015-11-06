@@ -40,8 +40,14 @@ Testar WEBCERT-2011
 | prognos? | recommendations to fk travel? |
 | YES      | NEJ                           |
 
-!3 Ta bort utkastet
+!2 Verifiera värden i signerat intyg
 
-| ta bort utkast |
-| utkastId |
-| $intygsid |
+| skript | !-HanteraUtkast-! |
+| signeraUtkast |
+| visaIntygSidanVisas |
+
+| Verifiera Signerat Fk7263 |
+| smittskydd? | prognos10? | ressattTillArbeteAktuellt? |
+| true        | JA         | false                      |
+
+

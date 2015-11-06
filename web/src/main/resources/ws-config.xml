@@ -38,11 +38,12 @@
         serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
         address="${cgi.funktionstjanster.grp.url}" />
 
-    <!-- GRPT test env TODO wrap in beans profile="wc-security-test -->
+    <!-- GRP API conduit (signering av utkast när inloggad med BanKID-varianterna) -->
     <http:conduit
         name="\{http://funktionstjanster.se/grp/service/v1.0.0/.*.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true"
           Connection="Keep-Alive" />
+
       <http:tlsClientParameters disableCNCheck="true">
         <sec:keyManagers keyPassword="${cgi.grp.ws.key.manager.password}">
           <sec:keyStore file="${cgi.grp.ws.certificate.file}"

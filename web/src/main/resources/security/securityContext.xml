@@ -113,7 +113,8 @@
   <!-- =============================================================== -->
   <beans profile="!wc-security-test">
     <beans profile="dev,wc-security-dev">
-      <security:http entry-point-ref="http403ForbiddenEntryPoint">
+      <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
+        <security:csrf disabled="true"/>
         <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -126,12 +127,13 @@
     </beans>
   </beans>
 
-  <!-- =============================================================== -->
+  <!-- ======================================================================== -->
   <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
-  <!-- =============================================================== -->
+  <!-- ======================================================================== -->
   <beans profile="wc-security-test">
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
+    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" request-matcher="regex">
+      <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -140,7 +142,8 @@
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
 
-    <security:http entry-point-ref="http403ForbiddenEntryPoint">
+    <security:http use-expressions="false"  entry-point-ref="http403ForbiddenEntryPoint">
+      <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -161,13 +164,15 @@
   <!-- =============================================================== -->
   <beans profile="prod,wc-security-prod">
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
+    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" request-matcher="regex">
+      <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache" />
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
-    <security:http entry-point-ref="http403ForbiddenEntryPoint">
+    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
+      <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache" />

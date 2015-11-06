@@ -32,12 +32,12 @@
 | ga till ej signerade intyg |
 | säkerställ att | ej signerade intyg sidan visas |
 
-!3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas (TODO: Ändra till false sen!)
+!3 Expandera sökfiltret och verifiera att filter "Vidarebefordrade" och "Sparat av" visas
 
 | skript | !-HanteraUtkast-! |
 | visa avancerat filter |
-| säkerställ att | filterVidarebefordradVisas |
-| säkerställ att | filterValjLakareVisas |
+| säkerställ att | filter vidarebefordrad visas |
+| säkerställ att | filter sparat av visas |
 
 !3 Verifiera knappen för att vidarebeforda finns i tabellen över ej signerade utkast
 
@@ -45,49 +45,49 @@
 | säkerställ att | vidare befordra knapp visas |
 | säkerställ att | vidarebefordrad checkbox visas |
 
-!3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på och verifiera att förväntade knappar för en landstingsläkare visas (Skicka visas ej eftersom intyget redan är skickat)
+!3 Gå till visa intyg sidan för ett existerande intyg som inloggad läkare har rätt att titta på. Verifiera att förväntade knappar för en landstingsläkare visas (skicka visas ej eftersom intyget redan är skickat)
 
 | skript | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-1 | och typ | fk7263 |
+| säkerställ att | skriv ut knapp visas |
 | säkerställ att | kopiera knapp visas |
 | säkerställ att | makulera knapp visas |
-| säkerställ att | skriv ut knapp visas |
 
 !3 Gå till listsida för Fråga & Svar
 
-!| skript | SvaraOchFraga |
-| ga till svara och fraga |
+!| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | säkerställ att | lista med ohanterade fragor visas |
 
 !3 Kontrollera så filtret visar "Frågor och svar som är" eller "Signerat av" för landstingsläkare
 
-!| skript | SvaraOchFraga |
+!| skript | !-SvaraOchFraga-! |
 | visa avancerat filter |
 | säkerställ att | filter vidarebefordrad visas |
-| säkerställ att | filter valj lakare visas |
+| säkerställ att | filter signerat av visas |
 
 !3 Vidarebefordra-knapp i listan får visas
 
-!| skript | SvaraOchFraga |
+!| skript | !-SvaraOchFraga-! |
 | säkerställ att | vidare befordra knapp visas |
 | säkerställ att | vidarebefordrad checkbox visas |
 
 !3 Gå in på frågan och verifiera att vidarebefordra-knappen är synlig för landstingsläkare
 
-!| skript | SvaraOchFraga |
+!| skript | !-SvaraOchFraga-! |
 | visa fraga | $internReferens1 |
 | säkerställ att | intyg med fraga svar sidan visas |
 | säkerställ att | vidarebefordra knapp inne pa fraga visas |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
 
-!| skript | SvaraOchFraga |
-| ga till svara och fraga |
+!| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | säkerställ att | lista med ohanterade fragor visas |
 
 !3 Gå in på frågan med komplettering på och verifiera att vidarebefordra-knappen är synlig för landstingsläkare
 
-!| skript | SvaraOchFraga |
+!| skript | !-SvaraOchFraga-! |
 | visa fraga | $internReferens2 |
 | säkerställ att | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |

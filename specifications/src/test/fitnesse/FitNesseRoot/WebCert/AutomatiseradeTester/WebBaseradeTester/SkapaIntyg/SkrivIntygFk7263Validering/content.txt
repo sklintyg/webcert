@@ -19,7 +19,7 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 | felaktigt |
 
 | skript | !-SkrivIntyg-! |
-| intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 | säkerställ att | valideringsfel intyg baserat pa visas |
 
 !3 Med korrekt datum ska detta valideringsfel försvinna
@@ -29,7 +29,7 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 | 2014-09-17 |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 | säkerställ att | inga valideringsfel visas |
 
 !3 Om man valt "Visa vad som saknas" på ett tomt intyg ska alla valideringsfel för obligatoriska fält visas
@@ -39,8 +39,8 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 | <empty> |
 
 | skript | !-SkrivIntyg-! |
-| visa vad som saknas |
-| säkerställ att | intyg ej komplett visas |
+| visa vad som saknas  |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
@@ -60,7 +60,7 @@ Sidan skall nu ha scrollats till relevant element. Selenium fixar tyvärr inte a
 
 | skript | !-SkrivIntyg-! |
 | dolj vad som saknas |
-| säkerställ att | intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
@@ -78,7 +78,7 @@ Kontrollera valideringsmeddelanden.
 | a00 | true |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
@@ -87,12 +87,13 @@ Kontrollera valideringsmeddelanden.
 | true                                   | false                         | true                                       | true                                        | true                                 | false                               | false                         | false                                  | false                            |
 
 !3 Fyll blanktecken i sysselsättning, funktionsnedsattning och aktivitetsbegransning
+
 | Populera Fk7263 |
 | nuvarandearbete | arbetsuppgifter | funktionsnedsattning | aktivitetsbegransning | 
-| true | <space> | <space> | <space> |
+| true            | <space>         | <space>              | <space>               |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | intyg ej komplett visas |
+| säkerställ att | meddelande intyget ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
 
@@ -118,7 +119,6 @@ Kontrollera valideringsmeddelanden.
 | funktionsnedsattning |
 | funktionsnedsattning1 |
 
-
 Inga valideringsfel ska vara kvar
 
 | Skriv Intyg |
@@ -126,7 +126,7 @@ Inga valideringsfel ska vara kvar
 | false                                  | false                         | false                                      | false                                       | false                                | false                               | false                         | false                                  | false                            |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | intyg sparat visas |
+| säkerställ att | meddelande intyget komplett visas |
 
 | ta bort utkast |
 | utkastId |

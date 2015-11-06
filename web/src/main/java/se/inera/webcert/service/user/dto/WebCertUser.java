@@ -378,6 +378,10 @@ public class WebCertUser implements UserDetails {
         this.privatLakareAvtalGodkand = privatLakareAvtalGodkand;
     }
 
+    public boolean isRoleUthopp() {
+        return roles.containsValue(UserRole.ROLE_LAKARE_UTHOPP) || roles.containsValue(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP);
+    }
+
     @JsonIgnore
     @Override
     public String toString() {

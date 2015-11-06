@@ -1,7 +1,19 @@
 /* global module, require */
 var baseConfig = require('./karma.conf.js');
 
-var runCoverage = process.env.MAVEN_CMD_LINE_ARGS && process.env.MAVEN_CMD_LINE_ARGS.indexOf('-Dskip-coverage=false')  !== -1;
+var runCoverage = false;
+process.argv.forEach(function(a) {
+    'use strict';
+    if (a.indexOf('--skip-coverage') === 0) {
+        var s = a.split('=');
+        if (s.length === 2) {
+            var value = s[1].trim();
+            if (value === 'false') {
+                runCoverage = true;
+            }
+        }
+    }
+});
 
 module.exports = function(config) {
     'use strict';

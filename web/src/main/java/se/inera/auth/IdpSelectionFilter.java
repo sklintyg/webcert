@@ -45,7 +45,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain) throws ServletException, IOException {
 
         // Check if we're logged in, e.g. have a useful session
-        HttpSession session = req.getSession(false);
+        HttpSession session = req.getSession(true);
 
         if (session != null && hasSessionWithSpringContext(session)) {
 
