@@ -23,10 +23,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-protractor-runner');
     grunt.loadNpmTasks('grunt-protractor-webdriver');
+    grunt.loadNpmTasks('grunt-sass');
+    grunt.loadNpmTasks('grunt-sass-lint');
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
-    //var TEST_RESOURCES_DIR = 'src/test/resources';
 
     var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
         return file.replace(/\/app\//g, SRC_DIR);
@@ -34,24 +35,22 @@ module.exports = function(grunt) {
 
     webcert = [SRC_DIR + 'app.js'].concat(webcert);
 
-//    grunt.log.write(JSON.stringify(webcert));
-
     var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
     var CSS_COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
-    var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
-    var TSDIABETES_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
-    var FK7263_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
+    var TSBAS_SRC_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
+    var TSBAS_DEST_DIR = '/../../intygstyper/ts-bas/target/classes/META-INF/resources/webjars/ts-bas/webcert'; 
+    var TSDIABETES_SRC_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
+    var TSDIABETES_DEST_DIR = '/../../intygstyper/ts-diabetes/target/classes/META-INF/resources/webjars/ts-diabetes/webcert'; 
+    var FK7263_SRC_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
+    var FK7263_DEST_DIR = '/../../intygstyper/fk7263/target/classes/META-INF/resources/webjars/fk7263/webcert'; 
 
     grunt.initConfig({
 
-        csslint: {
-            webcert: {
-                options: {
-                    csslintrc: 'target/build-tools/csslint/.csslintrc',
-                    force: true
-                },
-                src: [SRC_DIR + '../**/*.css']
-            }
+        sasslint: {
+            options: {
+                //configFile: 'config/.sass-lint.yml' //For now we use the .sass-lint.yml that is packaged with sass-lint
+            },
+            target: [SRC_DIR + '**/*.scss']
         },
 
         concat: {
@@ -105,10 +104,17 @@ module.exports = function(grunt) {
 
 
         watch: {
-            //css: {
-            //    files: ['public/src/css/**/*.less'],
-            //    tasks: ['less', 'cssmin']
-            //},
+            //Watch for file changes in these scss-files that
+            //we want to reprocess so that we are able to reload
+            //them for the browser in dev mode,
+            'css': {
+                files: [
+                    __dirname + FK7263_SRC_DIR + '/css/*.scss',
+                    __dirname + TSBAS_SRC_DIR + '/css/*.scss',
+                    __dirname + TSDIABETES_SRC_DIR + '/css/*.scss',
+                ],
+                tasks: ['sass:dev']
+            },
             //js: {
             //    files: ['public/src/js/**/*.js'],
             //    tasks: ['jshint', 'uglify', 'injector', 'wiredep']
@@ -117,12 +123,49 @@ module.exports = function(grunt) {
                 files: [
                         __dirname + '/src/main/webapp/**/*.html',
                         __dirname + COMMON_DIR + '/**/*.html',
-                        __dirname + FK7263_DIR + '/**/*.html',
-                        __dirname + TSBAS_DIR + '/**/*.html',
-                        __dirname + TSDIABETES_DIR + '/**/*.html'
+                        __dirname + FK7263_SRC_DIR + '/**/*.html',
+                        __dirname + TSBAS_SRC_DIR + '/**/*.html',
+                        __dirname + TSDIABETES_SRC_DIR + '/**/*.html'
                 ],
                 tasks: ['ngtemplates']
             }
+        },
+
+        // Compiles Sass to CSS
+        sass: {
+            //intygstyper: {
+                options: {
+                    update: true
+                },
+                dev: {
+                    //Compile all
+                    files: [{
+                        expand: true,
+                        cwd: __dirname + FK7263_SRC_DIR + '/css/',
+                        src: ['*.scss'],
+                        dest: __dirname + FK7263_DEST_DIR + '/css',
+                        ext: '.css'
+                    },
+                    {
+                        expand: true,
+                        cwd: __dirname + TSBAS_SRC_DIR + '/css/',
+                        src: ['*.scss'],
+                        dest: __dirname + TSBAS_DEST_DIR + '/css',
+                        ext: '.css'
+                    },
+                    {
+                        expand: true,
+                        cwd: __dirname + TSDIABETES_SRC_DIR + '/css/',
+                        src: ['*.scss'],
+                        dest: __dirname + TSDIABETES_DEST_DIR + '/css',
+                        ext: '.css'
+                    }]
+                }, 
+                dist: {
+                    //What we do when we build a distribution. Don't include intygstyper here
+
+                }
+           // }
         },
 
         ngtemplates : {
@@ -149,9 +192,9 @@ module.exports = function(grunt) {
                 }
             },
             tsdiabetes: {
-                cwd: __dirname + TSDIABETES_DIR,
+                cwd: __dirname + TSDIABETES_SRC_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + TSDIABETES_DIR + '/templates.js',
+                dest: __dirname + TSDIABETES_SRC_DIR + '/templates.js',
                 options:{
                     module: 'ts-diabetes',
                     url: function(url) {
@@ -160,9 +203,9 @@ module.exports = function(grunt) {
                 }
             },
             tsbas: {
-                cwd: __dirname + TSBAS_DIR,
+                cwd: __dirname + TSBAS_SRC_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + TSBAS_DIR + '/templates.js',
+                dest: __dirname + TSBAS_SRC_DIR + '/templates.js',
                 options:{
                     module: 'ts-bas',
                     url: function(url) {
@@ -171,9 +214,9 @@ module.exports = function(grunt) {
                 }
             },
             fk7263: {
-                cwd: __dirname + FK7263_DIR,
+                cwd: __dirname + FK7263_SRC_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + FK7263_DIR + '/templates.js',
+                dest: __dirname + FK7263_SRC_DIR + '/templates.js',
                 options:{
                     module: 'fk7263',
                     url: function(url) {
@@ -243,17 +286,32 @@ module.exports = function(grunt) {
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/fk7263/webcert',
-                                connect.static(__dirname + FK7263_DIR) // jshint ignore:line
+                                connect.static(__dirname + FK7263_SRC_DIR) // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/fk7263/webcert/css',
+                                connect.static(__dirname + FK7263_DEST_DIR + '/css') //jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/ts-bas/webcert',
-                                connect.static(__dirname + TSBAS_DIR) // jshint ignore:line
+                                connect.static(__dirname + TSBAS_SRC_DIR) // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-bas/webcert/css',
+                                connect.static(__dirname + TSBAS_DEST_DIR + '/css') //jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/ts-diabetes/webcert',
-                                connect.static(__dirname + TSDIABETES_DIR) // jshint ignore:line
+                                connect.static(__dirname + TSDIABETES_SRC_DIR) // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-diabetes/webcert/css',
+                                connect.static(__dirname + TSDIABETES_DEST_DIR + '/css') //jshint ignore:line
                             ));
                         middlewares.push(proxy);
                         return middlewares;
@@ -280,7 +338,9 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify']);
+    /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
+    * that webcert depends on*/
+    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma']);
     grunt.registerTask('e2e', ['protractor_webdriver','protractor']);
