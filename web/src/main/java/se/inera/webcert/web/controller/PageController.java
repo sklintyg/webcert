@@ -108,11 +108,11 @@ public class PageController {
         URI uri = mailLinkService.intygRedirect(typ, intygId);
 
         if (uri == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(uri);
-            return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
     }
 

@@ -152,8 +152,8 @@ public interface LogService {
      * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned
      * by a HTTP request that has manually supplied the job with the original WebCertUser.
      *
-     * @param webCertUser
      * @return A {@link LogUser} instance
      */
     LogUser getLogUser(WebCertUser webCertUser);
+
 }

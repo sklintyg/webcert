@@ -31,7 +31,7 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
  */
 public class DiagnosRepositoryImpl implements DiagnosRepository {
 
-    private RAMDirectory index = new RAMDirectory();
+    private final RAMDirectory index = new RAMDirectory();
     private IndexReader indexReader;
     private IndexSearcher indexSearcher;
 
@@ -78,8 +78,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
     @Override
     public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
         BooleanQuery query = new BooleanQuery();
-        StandardAnalyzer analyzer = new StandardAnalyzer();
-        try {
+        try (StandardAnalyzer analyzer = new StandardAnalyzer()) {
             TokenStream tokenStream = analyzer.tokenStream(DESC, searchString);
             CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
             tokenStream.reset();
@@ -89,14 +88,12 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
             }
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred in lucene index search", e);
-        } finally {
-            analyzer.close();
         }
         return searchDiagnosisByQuery(query, nbrOfResults);
     }
 
     private List<Diagnos> searchDiagnosisByQuery(Query query, int nbrOfResults) {
-        List<Diagnos> matches = new ArrayList<Diagnos>();
+        List<Diagnos> matches = new ArrayList<>();
 
         try {
             if (indexSearcher == null) {

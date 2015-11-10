@@ -2,10 +2,15 @@ package se.inera.auth.eleg;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -154,6 +159,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         Role role = new Role(UserRole.ROLE_LAKARE.name());
         role.setPrivileges(privileges);
 
-        return Arrays.asList(role);
+        return Collections.singletonList(role);
     }
 }

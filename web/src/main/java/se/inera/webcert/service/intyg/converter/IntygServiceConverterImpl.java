@@ -128,9 +128,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
      * Converts a List of @link{Utkast} into a List of @link{IntygItem} by building a base @link{Utlatande}
      * from the stored model in the utkast and applying the applicable fields
      * onto IntygItem instances.
-     *
-     * @param drafts
-     * @return
      */
     @Override
     public List<IntygItem> convertDraftsToListOfIntygItem(List<Utkast> drafts) {
@@ -156,8 +153,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     /**
      * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
      * we return the Name instead of the HSA ID.
-     * @param utkast
-     * @return
      */
     private String resolvedSignedBy(Utkast utkast) {
         if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
@@ -175,8 +170,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
      * <li>If draft has a skickadTillMottagareDatum, a SENT status is added</li>
      * <li>If draft has a aterkalledDatum, a CANCELLED status is added</li>
      * <li>If there is a signature with a signature date, a RECEIVED status is added.</li>
-     * @param draft
-     * @return
      */
     @Override
     public List<se.inera.certificate.model.Status> buildStatusesFromUtkast(Utkast draft) {
@@ -202,9 +195,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
     /**
      * Given the model (e.g. JSON representation of the Intyg stored in the Utkast), build an @{link Utlatande}
-     *
-     * @param utkast
-     * @return
      */
     @Override
     public Utlatande buildUtlatandeFromUtkastModel(Utkast utkast) {
@@ -227,4 +217,5 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         SEND,
         REVOKE;
     }
+
 }

@@ -31,6 +31,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
     @Autowired
     private UtkastRepository utkastRepository;
 
+    @Override
     public NotificationMessage createNotificationMessage(String intygsId, HandelseType handelse) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);

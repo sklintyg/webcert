@@ -215,9 +215,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     /**
      * Creates a PDL log event that a persons draft has been printed.
-     *
-     * @param intygsId
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/loggautskrift")

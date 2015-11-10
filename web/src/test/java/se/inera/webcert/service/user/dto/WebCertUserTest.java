@@ -132,7 +132,7 @@ public class WebCertUserTest {
         wcu.setAuthenticationScheme("AuthScheme");
         wcu.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
 
-        List<Vardgivare> vardgivare = new ArrayList<Vardgivare>();
+        List<Vardgivare> vardgivare = new ArrayList<>();
 
         Vardgivare vg1 = new Vardgivare("VG1", "Vardgivare 1");
 
@@ -175,6 +175,7 @@ public class WebCertUserTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

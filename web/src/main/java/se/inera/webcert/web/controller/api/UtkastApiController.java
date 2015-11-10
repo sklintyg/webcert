@@ -30,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,9 +47,9 @@ public class UtkastApiController extends AbstractApiController {
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE);
 
-    private static final List<UtkastStatus> COMPLETE_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE);
+    private static final List<UtkastStatus> COMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_COMPLETE);
 
-    private static final List<UtkastStatus> INCOMPLETE_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> INCOMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -57,10 +58,6 @@ public class UtkastApiController extends AbstractApiController {
 
     /**
      * Create a new draft.
-     *
-     * @param intygsTyp
-     * @param request
-     * @return
      */
     @POST
     @Path("/{intygsTyp}")
@@ -86,9 +83,6 @@ public class UtkastApiController extends AbstractApiController {
 
     /**
      * Creates a filtered query to get drafts for a specific unit.
-     *
-     * @param filterParameters
-     * @return
      */
     @GET
     @Path("/")
@@ -183,4 +177,5 @@ public class UtkastApiController extends AbstractApiController {
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
     }
+
 }

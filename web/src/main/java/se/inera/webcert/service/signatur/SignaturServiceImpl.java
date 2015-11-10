@@ -78,7 +78,7 @@ public class SignaturServiceImpl implements SignaturService {
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
-        if (ticket != null && ticket.getId().equals(ticketId)) {
+        if ((ticket != null) && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
             return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, 0, null, null, new LocalDateTime());
@@ -140,7 +140,7 @@ public class SignaturServiceImpl implements SignaturService {
     private void validateSigningIdentity(WebCertUser user, String rawSignatur) {
 
         // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
-        if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
+        if (user.isPrivatLakare() && (user.getAuthenticationMethod() == AuthenticationMethod.NET_ID)) {
             String signaturPersonId = asn1Util.parsePersonId(IOUtils.toInputStream(rawSignatur));
 
             if (verifyPersonIdEqual(user, signaturPersonId)) {
@@ -293,11 +293,6 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     /** Update utkast with "senast sparad av" information.
-     *
-     * @param utkast
-     * @param user
-     * @param signeringstid
-     * @return
      */
     private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
         VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
@@ -308,9 +303,7 @@ public class SignaturServiceImpl implements SignaturService {
             InternalModelResponse updatedInternal = moduleApi
                     .updateBeforeSigning(internalModel, UpdateUserUtil.createUserObject(user), signeringstid);
             utkast.setModel(updatedInternal.getInternalModel());
-        } catch (ModuleException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
-        } catch (ModuleNotFoundException e) {
+        } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }
 

@@ -35,6 +35,7 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 
 import javax.jms.Session;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class LogServiceImplTest {
         ReflectionTestUtils.setField(logService, "systemId", "webcert");
         ReflectionTestUtils.setField(logService, "systemName", "WebCert");
 
-        Mockito.when(userService.getUser()).thenReturn(createUser());
+        when(userService.getUser()).thenReturn(createUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
@@ -113,14 +114,14 @@ public class LogServiceImplTest {
         Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
 
         Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
-        vg.setVardenheter(Arrays.asList(ve));
+        vg.setVardenheter(Collections.singletonList(ve));
 
         WebCertUser user = new WebCertUser();
         user.setRoles(getGrantedRole());
         user.setAuthorities(getGrantedPrivileges());
         user.setHsaId("HSAID");
         user.setNamn("Markus Gran");
-        user.setVardgivare(Arrays.asList(vg));
+        user.setVardgivare(Collections.singletonList(vg));
         user.changeValdVardenhet("VARDENHET_ID");
 
         return user;
@@ -137,6 +138,7 @@ public class LogServiceImplTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

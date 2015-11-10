@@ -14,7 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 /**
- * Tests that the {@link se.inera.auth.SavedRequestFactoryImpl} produces correct SavedRequest instances.
+ * Tests that the {@link SavedRequestFactoryImpl} produces correct SavedRequest instances.
  *
  * (The test actually tests the {@link org.springframework.security.web.savedrequest.DefaultSavedRequest} constructor
  * more than anything else)

@@ -17,7 +17,7 @@ public class ASN1UtilTest {
     static final String PERSON_ID = "197309069289";
     static final String HSA_ID = "TSTNMT2321000156-1028";
 
-    private ASN1UtilImpl asn1Util = new ASN1UtilImpl();
+    private final ASN1UtilImpl asn1Util = new ASN1UtilImpl();
 
     @Test
     public void decodePersonIdFromASN1SigData() throws IOException {

@@ -55,6 +55,7 @@ import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,6 @@ public class UtkastServiceImplTest {
     private Utkast utkast;
     private Utkast signedUtkast;
     private HoSPerson hoSPerson;
-    private se.inera.webcert.service.dto.Vardenhet vardenhet;
 
     @Before
     public void setup() {
@@ -119,7 +119,7 @@ public class UtkastServiceImplTest {
         vardgivare.setHsaId("SE234234");
         vardgivare.setNamn("Vårdgivaren");
 
-        vardenhet = new se.inera.webcert.service.dto.Vardenhet();
+        se.inera.webcert.service.dto.Vardenhet vardenhet = new se.inera.webcert.service.dto.Vardenhet();
         vardenhet.setArbetsplatskod("00000");
         vardenhet.setNamn("Vårdenheten");
         vardenhet.setHsaId("SE234897348");
@@ -220,7 +220,7 @@ public class UtkastServiceImplTest {
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
-        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
@@ -255,7 +255,7 @@ public class UtkastServiceImplTest {
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
-        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
@@ -366,7 +366,7 @@ public class UtkastServiceImplTest {
 
         user.setHsaId("hsaId");
         user.setNamn("namn");
-        List<String> tmp = new ArrayList<String>();
+        List<String> tmp = new ArrayList<>();
         tmp.add("Ortoped");
         user.setSpecialiseringar(tmp);
         user.setTitel("Befattning");
@@ -392,6 +392,7 @@ public class UtkastServiceImplTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

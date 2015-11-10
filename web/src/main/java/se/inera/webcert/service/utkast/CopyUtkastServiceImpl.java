@@ -75,7 +75,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 patientDetails = refreshPatientDetails(copyRequest);
             }
 
-            CopyUtkastBuilderResponse builderResponse = null;
+            CopyUtkastBuilderResponse builderResponse;
 
             if (utkastRepository.exists(originalIntygId)) {
                 builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
@@ -100,12 +100,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
 
-        } catch (ModuleException me) {
+        } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 

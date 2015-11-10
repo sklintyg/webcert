@@ -62,12 +62,13 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         return (ie != null);
     }
 
+    @Override
     @Transactional("jpaTransactionManager")
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry) {
 
         IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(orgEnhetsHsaId);
 
-        if (orgEntry != null && orgEntry.compareTo(newEntry) != 0) {
+        if ((orgEntry != null) && (orgEntry.compareTo(newEntry) != 0)) {
             addIfNotExistsIntegreradEnhet(newEntry);
         }
     }

@@ -91,6 +91,7 @@ public class PageControllerTest {
         // convert list to map
         if (doctor) {
             privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+                @Override
                 public String apply(UserPrivilege userPrivilege) {
                     return userPrivilege.name();
                 }

@@ -40,6 +40,7 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
+    @Override
     @Before
     public void setupDefaultAuthorization() {
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true))).thenReturn(true);
@@ -176,6 +177,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

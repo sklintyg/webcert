@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,12 +39,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
@@ -82,6 +77,10 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -139,14 +138,14 @@ public class FragaSvarServiceImplTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFindByEnhetsIdSorting() {
-        List<FragaSvar> unsortedList = new ArrayList<FragaSvar>();
+        List<FragaSvar> unsortedList = new ArrayList<>();
         unsortedList.add(buildFragaSvar(1L, MAY, null));
         unsortedList.add(buildFragaSvar(2L, DECEMBER_YEAR_9999, null));
         unsortedList.add(buildFragaSvar(3L, null, JANUARY));
         unsortedList.add(buildFragaSvar(4L, null, AUGUST));
-        when(fragasvarRepositoryMock.findByEnhetsId(Mockito.any(List.class))).thenReturn(unsortedList);
+        when(fragasvarRepositoryMock.findByEnhetsId(any(List.class))).thenReturn(unsortedList);
 
-        List<FragaSvar> result = service.getFragaSvar(Arrays.asList("123"));
+        List<FragaSvar> result = service.getFragaSvar(Collections.singletonList("123"));
 
         assertEquals(4, result.size());
 
@@ -159,12 +158,12 @@ public class FragaSvarServiceImplTest {
 
     @Test
     public void testFindByIntygSorting() {
-        List<FragaSvar> unsortedList = new ArrayList<FragaSvar>();
+        List<FragaSvar> unsortedList = new ArrayList<>();
         unsortedList.add(buildFragaSvar(1L, MAY, null));
         unsortedList.add(buildFragaSvar(2L, DECEMBER_YEAR_9999, null));
         unsortedList.add(buildFragaSvar(3L, null, JANUARY));
         unsortedList.add(buildFragaSvar(4L, null, AUGUST));
-        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId((Mockito.any(String.class)))).thenReturn(unsortedList);
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId((any(String.class)))).thenReturn(unsortedList);
         when(webCertUserService.getUser()).thenReturn(createUser());
 
         List<FragaSvar> result = service.getFragaSvar("intygsid");
@@ -368,7 +367,7 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSaveFragaWsHTMLError() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveFragaWsHTMLError() throws IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
 
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp())).thenReturn(
@@ -411,7 +410,7 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testSaveSvarOK() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveSvarOK() throws IOException {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
@@ -496,20 +495,20 @@ public class FragaSvarServiceImplTest {
     }
 
     private IntygContentHolder getIntygContentHolder() {
-        List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
+        List<se.inera.certificate.model.Status> status = new ArrayList<>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
         status.add(new se.inera.certificate.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
     }
 
     private IntygContentHolder getUnsentIntygContentHolder() {
-        List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
+        List<se.inera.certificate.model.Status> status = new ArrayList<>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
     }
 
     private IntygContentHolder getRevokedIntygContentHolder() {
-        List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
+        List<se.inera.certificate.model.Status> status = new ArrayList<>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
         status.add(new se.inera.certificate.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         status.add(new se.inera.certificate.model.Status(CertificateState.CANCELLED, "MI", LocalDateTime.now()));
@@ -538,7 +537,7 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSaveSvarWsHTMLError() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveSvarWsHTMLError() throws IOException {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
@@ -821,7 +820,7 @@ public class FragaSvarServiceImplTest {
         WebCertUser webCertUser = createUser();
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
-        List<FragaSvar> queryResults = new ArrayList<FragaSvar>();
+        List<FragaSvar> queryResults = new ArrayList<>();
         queryResults.add(buildFragaSvar(1L, MAY, null));
         queryResults.add(buildFragaSvar(2L, MAY, null));
 
@@ -847,7 +846,7 @@ public class FragaSvarServiceImplTest {
 
         when(webCertUserService.getUser()).thenReturn(createUser());
 
-        List<FragaSvar> queryResults = new ArrayList<FragaSvar>();
+        List<FragaSvar> queryResults = new ArrayList<>();
         queryResults.add(buildFragaSvar(1L, MAY, null));
         queryResults.add(buildFragaSvar(2L, MAY, null));
 
@@ -872,7 +871,7 @@ public class FragaSvarServiceImplTest {
         String enhetsId = "enhet";
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
-        List<Object[]> queryResult = new ArrayList<Object[]>();
+        List<Object[]> queryResult = new ArrayList<>();
         queryResult.add(new Object[] { "HSA-1_ID", "NAMN1" });
         queryResult.add(new Object[] { "HSA-2_ID", "NAMN2" });
         queryResult.add(new Object[] { "HSA-3_ID", "NAMN3" });
@@ -891,7 +890,7 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetNbrOfUnhandledFragaSvarForCareUnits() {
 
-        List<Object[]> queryResult = new ArrayList<Object[]>();
+        List<Object[]> queryResult = new ArrayList<>();
         queryResult.add(new Object[] { "HSA1", 2L });
         queryResult.add(new Object[] { "HSA2", 4L });
 
@@ -928,7 +927,7 @@ public class FragaSvarServiceImplTest {
         Vardgivare vardgivare = new Vardgivare("vardgivare", "Vardgivaren");
         vardgivare.getVardenheter().add(vardenhet);
 
-        user.setVardgivare(Arrays.asList(vardgivare));
+        user.setVardgivare(Collections.singletonList(vardgivare));
         user.setValdVardenhet(vardenhet);
 
         return user;
@@ -945,6 +944,7 @@ public class FragaSvarServiceImplTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

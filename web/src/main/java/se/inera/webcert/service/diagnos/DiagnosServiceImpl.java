@@ -1,6 +1,5 @@
 package se.inera.webcert.service.diagnos;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -114,7 +113,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     private DiagnosResponse findDiagnosisesByCode(String code, Diagnoskodverk codeSystem) {
 
-        List<Diagnos> matches = new ArrayList<Diagnos>();
+        List<Diagnos> matches;
 
         switch (codeSystem) {
         case ICD_10_SE:
@@ -151,7 +150,7 @@ public class DiagnosServiceImpl implements DiagnosService {
             return DiagnosResponse.invalidCode();
         }
 
-        List<Diagnos> matches = new ArrayList<Diagnos>();
+        List<Diagnos> matches;
 
         switch (codeSystem) {
         case ICD_10_SE:
@@ -197,7 +196,12 @@ public class DiagnosServiceImpl implements DiagnosService {
         }
 
         Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
-        List<Diagnos> matches = new ArrayList<Diagnos>();
+        List<Diagnos> matches;
+
+        if (codeSystem == null) {
+            LOG.warn("Code system is null");
+            return DiagnosResponse.invalidCodesystem();
+        }
 
         switch (codeSystem) {
         case ICD_10_SE:
@@ -228,7 +232,6 @@ public class DiagnosServiceImpl implements DiagnosService {
      * Perform a regex validation on the diagnosis code, the code
      * is trimmed before checked.
      *
-     * @param diagnosisCode
      * @return true if the diagnosisCode matches the regexp
      */
     @Override
@@ -251,7 +254,7 @@ public class DiagnosServiceImpl implements DiagnosService {
             return false;
         }
 
-        String regExp = null;
+        String regExp;
 
         switch (codeSystem) {
         case ICD_10_SE:
@@ -280,7 +283,7 @@ public class DiagnosServiceImpl implements DiagnosService {
         Diagnoskodverk codeSystem = Diagnoskodverk.valueOf(codeSystemStr);
 
         if (codeSystem == null) {
-            LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystem);
+            LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystemStr);
             return null;
         }
 

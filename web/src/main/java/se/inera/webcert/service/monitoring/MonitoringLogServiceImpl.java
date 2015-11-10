@@ -205,7 +205,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'");
 
-        private String msg;
+        private final String msg;
 
         MonitoringEvent(String msg) {
             this.msg = msg;

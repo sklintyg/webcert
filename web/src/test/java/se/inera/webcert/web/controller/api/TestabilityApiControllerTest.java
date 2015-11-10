@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
-import se.inera.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
@@ -42,7 +41,7 @@ public class TestabilityApiControllerTest {
     public void testGetUserRoles() throws Exception {
         //Given
         final WebCertUser user = Mockito.mock(WebCertUser.class);
-        final HashMap<String, UserRole> roleHashMap = new HashMap<>();
+        final Map<String, UserRole> roleHashMap = new HashMap<>();
         roleHashMap.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
         Mockito.when(user.getRoles()).thenReturn(roleHashMap);
         Mockito.when(webCertUserService.getUser()).thenReturn(user);

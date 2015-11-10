@@ -22,7 +22,7 @@ public final class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static Comparator<ListIntygEntry> intygEntryDateComparator = new Comparator<ListIntygEntry>() {
+    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR = new Comparator<ListIntygEntry>() {
 
         @Override
         public int compare(ListIntygEntry ie1, ListIntygEntry ie2) {
@@ -31,7 +31,7 @@ public final class IntygDraftsConverter {
 
     };
 
-    private static Comparator<Status> intygStatusComparator = new Comparator<Status>() {
+    private static final Comparator<Status> INTYG_STATUS_COMPARATOR = new Comparator<Status>() {
 
         @Override
         public int compare(Status c1, Status c2) {
@@ -40,7 +40,7 @@ public final class IntygDraftsConverter {
 
     };
 
-    private static Predicate removeArchivedIntygStatusesPredicate = new Predicate() {
+    private static final Predicate REMOVE_ARCHIVED_INTYG_STATUSES_PREDICATE = new Predicate() {
 
         private final List<CertificateState> archivedStatuses = Arrays.asList(CertificateState.DELETED, CertificateState.RESTORED);
 
@@ -62,7 +62,7 @@ public final class IntygDraftsConverter {
 
         LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
-        List<ListIntygEntry> listIntygEntries = new ArrayList<ListIntygEntry>();
+        List<ListIntygEntry> listIntygEntries = new ArrayList<>();
 
         ListIntygEntry intygEntry;
 
@@ -79,7 +79,7 @@ public final class IntygDraftsConverter {
         }
 
         // sort according to signedUpdate date and then reverse so that last is on top.
-        Collections.sort(listIntygEntries, intygEntryDateComparator);
+        Collections.sort(listIntygEntries, INTYG_ENTRY_DATE_COMPARATOR);
         Collections.reverse(listIntygEntries);
 
         return listIntygEntries;
@@ -87,7 +87,7 @@ public final class IntygDraftsConverter {
 
     public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
 
-        List<ListIntygEntry> listIntygEntries = new ArrayList<ListIntygEntry>();
+        List<ListIntygEntry> listIntygEntries = new ArrayList<>();
 
         ListIntygEntry intygEntry;
 
@@ -96,7 +96,7 @@ public final class IntygDraftsConverter {
             listIntygEntries.add(intygEntry);
         }
 
-        Collections.sort(listIntygEntries, intygEntryDateComparator);
+        Collections.sort(listIntygEntries, INTYG_ENTRY_DATE_COMPARATOR);
         Collections.reverse(listIntygEntries);
 
         return listIntygEntries;
@@ -135,17 +135,17 @@ public final class IntygDraftsConverter {
 
     public static CertificateState findLatestStatus(List<Status> intygStatuses) {
 
-        if (intygStatuses == null || intygStatuses.isEmpty()) {
+        if ((intygStatuses == null) || intygStatuses.isEmpty()) {
             return CertificateState.UNHANDLED;
         }
 
-        CollectionUtils.filter(intygStatuses, removeArchivedIntygStatusesPredicate);
+        CollectionUtils.filter(intygStatuses, REMOVE_ARCHIVED_INTYG_STATUSES_PREDICATE);
 
         if (intygStatuses.isEmpty()) {
             return CertificateState.UNHANDLED;
         }
 
-        Status latestStatus = Collections.max(intygStatuses, intygStatusComparator);
+        Status latestStatus = Collections.max(intygStatuses, INTYG_STATUS_COMPARATOR);
         return latestStatus.getType();
     }
 }

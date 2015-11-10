@@ -110,8 +110,6 @@ public class IntygServiceTest {
     private ListCertificatesForCareResponseType listErrorResponse;
 
     private String json;
-    private Utlatande utlatande;
-    private CertificateResponse certificateResponse;
     private VardpersonReferens vardpersonReferens = new VardpersonReferens();
 
     @Mock
@@ -127,10 +125,10 @@ public class IntygServiceTest {
         vardpersonReferens.setNamn(CREATED_BY_NAME);
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
-        utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        Utlatande utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<Status>());
-        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+        CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
     }
 

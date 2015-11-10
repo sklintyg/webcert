@@ -16,7 +16,6 @@ public final class UpdateUserUtil {
     /**
      * Create a user object from WebCertUser.
      * @param user {@link WebCertUser}
-     * @return
      */
     public static HoSPersonal createUserObject(WebCertUser user) {
         SelectableVardenhet valdVardgivare = user.getValdVardgivare();

@@ -106,10 +106,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Issues a request to Intygstjanst to send the signed intyg to a recipient.
-     *
-     * @param intygsId
-     * @param param
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/skicka")
@@ -128,7 +124,6 @@ public class IntygModuleApiController extends AbstractApiController {
      *            The id of the intyg to revoke
      * @param param
      *            A JSON struct containing an optional message
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
@@ -141,4 +136,5 @@ public class IntygModuleApiController extends AbstractApiController {
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
         return Response.ok(revokeResult).build();
     }
+
 }

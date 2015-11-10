@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
@@ -65,7 +65,7 @@ public class IntygDraftsConverterTest {
         String updatedSignedByHsaId = "HSA1234";
         Personnummer patientId = new Personnummer("19121212-1212");
 
-        List<Utkast> utkastList = Arrays.asList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
+        List<Utkast> utkastList = Collections.singletonList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
                 updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
 
         List<ListIntygEntry> res = IntygDraftsConverter.convertUtkastsToListIntygEntries(utkastList);

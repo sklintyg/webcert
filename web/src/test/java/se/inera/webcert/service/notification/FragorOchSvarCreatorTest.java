@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan8() {
 
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -34,7 +35,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan7() {
 
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -46,7 +47,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan10() {
 
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -58,7 +59,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan6() {
 
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -70,7 +71,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan9Answered() {
 
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -82,7 +83,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan9NotAnswered() {
 
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -96,7 +97,7 @@ public class FragorOchSvarCreatorTest {
 
         // 1. Skickar fråga från WC till FK
         // Förväntad statusuppdatering: HAN8 0,0,0,0
-        List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION));
+        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -106,7 +107,7 @@ public class FragorOchSvarCreatorTest {
 
         // 2. FK svarar på frågan
         // Förväntad statusuppdatering: HAN7 0,0,1,0
-        fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.ANSWERED));
+        fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.ANSWERED));
         fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -116,7 +117,7 @@ public class FragorOchSvarCreatorTest {
 
         // 3. Markerar svaret som hanterat
         // Förväntad statusuppdatering: HAN10 0,0,1,1
-        fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED));
+        fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED));
         fos = fsCreator.performCount(fsStatuses);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());

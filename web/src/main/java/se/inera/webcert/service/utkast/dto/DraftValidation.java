@@ -7,7 +7,7 @@ public class DraftValidation {
 
     private DraftValidationStatus status = DraftValidationStatus.VALID;
 
-    private List<DraftValidationMessage> messages = new ArrayList<DraftValidationMessage>();
+    private List<DraftValidationMessage> messages = new ArrayList<>();
 
     public DraftValidation() {
     }

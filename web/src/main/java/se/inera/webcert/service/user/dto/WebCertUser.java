@@ -76,7 +76,7 @@ public class WebCertUser implements UserDetails {
 
     public Set<String> getAktivaFunktioner() {
         if (aktivaFunktioner == null) {
-            aktivaFunktioner = new HashSet<String>();
+            aktivaFunktioner = new HashSet<>();
         }
 
         return aktivaFunktioner;
@@ -123,8 +123,6 @@ public class WebCertUser implements UserDetails {
 
     /**
      * Set the authorities/privileges granted to a user.
-     *
-     * @param authorities
      */
     @Override
     public void setAuthorities(Map<String, UserPrivilege> authorities) {
@@ -232,8 +230,6 @@ public class WebCertUser implements UserDetails {
 
     /**
      * Set the roles granted to a user.
-     *
-     * @param roles
      */
     @Override
     public void setRoles(Map<String, UserRole> roles) {
@@ -336,9 +332,6 @@ public class WebCertUser implements UserDetails {
     /**
      * Returns true if the user's authorities map contains the specified
      * {@link se.inera.webcert.common.security.authority.UserPrivilege}.
-     *
-     * @param privilege
-     * @return
      */
     public boolean hasPrivilege(UserPrivilege privilege) {
         if (authorities == null) {
@@ -390,7 +383,6 @@ public class WebCertUser implements UserDetails {
 
     /**
      * Iterates over all roles and flatmaps distinct intygstyper into a set of strings.
-     * @return
      */
     @JsonIgnore
     public Set<String> getIntygsTyper() {
@@ -405,4 +397,5 @@ public class WebCertUser implements UserDetails {
         }
         return set;
     }
+
 }

@@ -67,7 +67,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     public void run() {
         long startTimeMs = System.currentTimeMillis();
 
-        while (startTimeMs + TIMEOUT > System.currentTimeMillis()) {
+        while ((startTimeMs + TIMEOUT) > System.currentTimeMillis()) {
 
             CollectRequestType req = buildCollectRequest();
             try {
@@ -114,7 +114,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
 
     private String getCollectResponseAttribute(List<Property> attributes) {
         for (Property p : attributes) {
-            if (p.getName().equals("Subject.SerialNumber")) {
+            if ("Subject.SerialNumber".equals(p.getName())) {
                 return p.getValue();
             }
         }

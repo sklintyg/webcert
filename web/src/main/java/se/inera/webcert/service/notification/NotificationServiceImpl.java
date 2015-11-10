@@ -255,14 +255,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     static final class NotificationMessageCreator implements MessageCreator {
 
-        private String value;
-        private String enhetsId;
+        private final String value;
+        private final String enhetsId;
 
         public NotificationMessageCreator(String notificationMessage, String enhetsId) {
             this.value = notificationMessage;
             this.enhetsId = enhetsId;
         }
 
+        @Override
         public Message createMessage(Session session) throws JMSException {
             TextMessage textMessage = session.createTextMessage(this.value);
             // Using JMSXGroupID makes sure that ActiveMQ sends messages destined to the same recipient

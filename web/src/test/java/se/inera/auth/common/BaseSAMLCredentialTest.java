@@ -14,6 +14,7 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -58,7 +59,7 @@ public abstract class BaseSAMLCredentialTest {
     private static XMLObject readSamlDocument(String docPath) throws Exception {
         Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
                 docPath).getInputStream()));
-        org.w3c.dom.Element documentElement = doc.getDocumentElement();
+        Element documentElement = doc.getDocumentElement();
 
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(documentElement);

@@ -166,7 +166,7 @@ public class QuestionResource {
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuestionsByEnhet(@PathParam("enhetsId") String enhetsId) {
-        List<String> enhetsIds = new ArrayList<String>();
+        List<String> enhetsIds = new ArrayList<>();
         enhetsIds.add(enhetsId);
         List<FragaSvar> fragorOchSvar = fragasvarRepository.findByEnhetsId(enhetsIds);
         if (fragorOchSvar != null) {
@@ -190,6 +190,7 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestions() {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
+            @Override
             public Response doInTransaction(TransactionStatus status) {
                 @SuppressWarnings("unchecked")
                 List<FragaSvar> fragorOchSvar = entityManager.createQuery("SELECT f FROM FragaSvar f").getResultList();

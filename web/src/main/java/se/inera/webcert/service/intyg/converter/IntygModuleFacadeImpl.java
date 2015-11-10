@@ -30,6 +30,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
+    @Override
     public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses, boolean isEmployer)
             throws IntygModuleFacadeException {
         try {

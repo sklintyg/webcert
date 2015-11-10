@@ -183,15 +183,13 @@ public class CopyUtkastBuilderImplTest {
         copyRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         copyRequest.setDjupintegrerad(true);
 
-        Person patientDetails = null;
-
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, null);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -209,7 +207,6 @@ public class CopyUtkastBuilderImplTest {
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
-        Person patientDetails = null;
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
@@ -217,7 +214,7 @@ public class CopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, null);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -263,13 +260,12 @@ public class CopyUtkastBuilderImplTest {
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {
-        List<Status> status = new ArrayList<Status>();
+        List<Status> status = new ArrayList<>();
         status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
-        IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
-        return ich;
+        return new IntygContentHolder("<external-json/>", utlatande, status, false);
     }
 
     private Utkast createOriginalUtkast() {

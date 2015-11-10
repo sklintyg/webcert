@@ -11,7 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -203,7 +202,7 @@ public class MailNotificationServiceTest {
         mailStore.setWait(false);
         mailStore.waitForMails(1);
         long endTimestamp = System.currentTimeMillis();
-        assertTrue(endTimestamp - startTimestamp < THRESHOLD);
+        assertTrue((endTimestamp - startTimestamp) < THRESHOLD);
         assertEquals(1, mailStore.getMails().size());
         OutgoingMail mail = mailStore.getMails().get(0);
 

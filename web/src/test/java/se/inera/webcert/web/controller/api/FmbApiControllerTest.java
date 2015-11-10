@@ -102,7 +102,7 @@ public class FmbApiControllerTest {
     @Test
     public void testGetFmbForIcd10HandlesAddsTextForOneRow() throws Exception {
         // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
+        List<Fmb> fmbs = new ArrayList<>();
         String text = "testtext";
         fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, text, "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
@@ -126,7 +126,7 @@ public class FmbApiControllerTest {
     @Test
     public void testGetFmbForIcd10HandlesAddsListOfTextsForSeveralRows() throws Exception {
         // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
+        List<Fmb> fmbs = new ArrayList<>();
         String testtext = "testtext";
         fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, testtext, "1"));
         fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, testtext, "1"));

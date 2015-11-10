@@ -15,6 +15,7 @@ import java.util.List;
  *
  * @author andreaskaltenbach, nikpet
  */
+@SuppressWarnings("FieldMayBeFinal")
 public class SakerhetstjanstAssertion {
 
     // HSA-titel för specificerad person
@@ -55,10 +56,10 @@ public class SakerhetstjanstAssertion {
     // HSA-identitet för valt uppdrag
     public static final String MEDARBETARUPPDRAG_ID = "urn:sambi:names:attribute:assignmentHsaId";
 
-    private List<String> titelKod = new ArrayList<>();
-    private List<String> titel = new ArrayList<>();
+    private final List<String> titelKod = new ArrayList<>();
+    private final List<String> titel = new ArrayList<>();
 
-    private List<String> forskrivarkod = new ArrayList<>();
+    private final List<String> forskrivarkod = new ArrayList<>();
 
     private String hsaId;
 

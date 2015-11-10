@@ -38,15 +38,15 @@ public class SakerhetstjanstAssertionTest {
                 "SakerhetstjanstAssertionTest/saml-assertion-with-enhet.xml").getInputStream()));
         assertionWithEnhet = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
 
-        doc = (Document) StaxUtils.read(new StreamSource(new ClassPathResource(
+        doc = StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-without-enhet.xml").getInputStream()));
         assertionWithoutEnhet = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
 
-        doc = (Document) StaxUtils.read(new StreamSource(new ClassPathResource(
+        doc = StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-with-multiple-titles.xml").getInputStream()));
         assertionWithMultipleTitles = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
 
-        doc = (Document) StaxUtils.read(new StreamSource(new ClassPathResource(
+        doc = StaxUtils.read(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-new.xml").getInputStream()));
         assertionWithNewFormat = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
     }

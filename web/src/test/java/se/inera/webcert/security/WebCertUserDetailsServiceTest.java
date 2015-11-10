@@ -197,7 +197,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleAndPrivilgesWhenUserIsDoctorButHasNotYetASwedishLicense() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
         TitleCode titleCode = new TitleCode("204090", "9100009", getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         setupCallToAuthorizedEnheterForHosPerson();
@@ -218,7 +218,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeIsEmptyObject() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
 
         setupCallToAuthorizedEnheterForHosPerson();
 
@@ -228,14 +228,14 @@ public class WebCertUserDetailsServiceTest {
         when(titleCodeRepository.findByTitleCodeAndGroupPrescriptionCode(anyString(), anyString())).thenReturn(new TitleCode());
 
         // then
-        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        userDetailsService.loadUserBySAML(samlCredential);
     }
 
     @Test
     public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeDoesNotMatch() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-bad-groupPrescriptionCode.xml");
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
 
         setupCallToAuthorizedEnheterForHosPerson();
 
@@ -248,7 +248,7 @@ public class WebCertUserDetailsServiceTest {
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_VARDADMINISTRATOR.name()));
-        assertTrue(webCertUser.getForskrivarkod().equals("0000000"));
+        assertTrue("0000000".equals(webCertUser.getForskrivarkod()));
         assertUserPrivileges(UserRole.ROLE_VARDADMINISTRATOR, webCertUser);
     }
 
@@ -433,9 +433,9 @@ public class WebCertUserDetailsServiceTest {
         setupCallToAuthorizedEnheterForHosPerson();
 
         GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel1",
-                Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
+                Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Collections.singletonList("Läkare"));
         GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
-                Arrays.asList("Psykoterapeut"));
+                Collections.singletonList("Psykoterapeut"));
         List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
 
         // when
@@ -526,13 +526,13 @@ public class WebCertUserDetailsServiceTest {
             type.setTitle(title);
         }
 
-        if (titles != null && titles.size() >0) {
+        if ((titles != null) && (titles.size() > 0)) {
             HsaTitles hsaTitles = new HsaTitles();
             hsaTitles.getHsaTitle().addAll(titles);
             type.setHsaTitles(hsaTitles);
         }
 
-        if (specialities != null && specialities.size() >0) {
+        if ((specialities != null) && (specialities.size() > 0)) {
             SpecialityNames specNames = new SpecialityNames();
             specNames.getSpecialityName().addAll(specialities);
             type.setSpecialityNames(specNames);
@@ -555,7 +555,7 @@ public class WebCertUserDetailsServiceTest {
     private MockHttpServletRequest mockRequestAttributes(String requestURI) {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        if (requestURI != null && requestURI.length() > 0) {
+        if ((requestURI != null) && (requestURI.length() > 0)) {
             request.setRequestURI(requestURI);
         }
 
@@ -579,13 +579,13 @@ public class WebCertUserDetailsServiceTest {
         List<String> specs = Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar", "Reumatologi");
         List<String> titles = Arrays.asList("Läkare", "Psykoterapeut");
 
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
+        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
 
         when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
     }
 
     private void setupCallToWebcertFeatureService() {
-        Set<String> availableFeatures = new TreeSet<String>();
+        Set<String> availableFeatures = new TreeSet<>();
         availableFeatures.add("feature1");
         availableFeatures.add("feature2");
         when(webcertFeatureService.getActiveFeatures()).thenReturn(availableFeatures);
@@ -595,8 +595,8 @@ public class WebCertUserDetailsServiceTest {
     // =====================================================================================
 
     private List<Role> getUserRoles(UserRole userRole) {
-        Role role = null;
-        UserPrivilege[] ups = null;
+        Role role;
+        UserPrivilege[] ups;
 
         List<Privilege> privileges = new ArrayList<>();
 
@@ -637,7 +637,7 @@ public class WebCertUserDetailsServiceTest {
 
         role.setPrivileges(privileges);
 
-        return Arrays.asList(role);
+        return Collections.singletonList(role);
     }
 
     private UserPrivilege[] getUserPrivilegesForUthoppVardadministrator() {

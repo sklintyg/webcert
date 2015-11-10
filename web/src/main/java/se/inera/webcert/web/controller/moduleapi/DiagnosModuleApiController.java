@@ -38,7 +38,6 @@ public class DiagnosModuleApiController extends AbstractApiController {
      *
      * @param parameter
      *            A parameter object.
-     * @return
      */
     @POST
     @Path("/kod/sok")

@@ -52,9 +52,9 @@ public class IntygResource {
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraftsByEnhet(@PathParam("enhetsId") String enhetsId) {
-        List<String> enhetsIds = new ArrayList<String>();
+        List<String> enhetsIds = new ArrayList<>();
         enhetsIds.add(enhetsId);
-        List<UtkastStatus> statuses = new ArrayList<UtkastStatus>();
+        List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
         statuses.add(UtkastStatus.DRAFT_COMPLETE);
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);

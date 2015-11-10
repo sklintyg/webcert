@@ -15,9 +15,6 @@ public interface WebcertFeatureService {
     /**
      * Checks if a Webcert or module feature is active. The name of a module feature
      * needs to be fully qualified with module name.
-     *
-     * @param featureName
-     * @return
      */
     boolean isFeatureActive(String featureName);
 
@@ -26,7 +23,6 @@ public interface WebcertFeatureService {
      *
      * @param feature
      *            The Webcert feature enum
-     * @return
      */
     boolean isFeatureActive(WebcertFeature feature);
 
@@ -37,7 +33,6 @@ public interface WebcertFeatureService {
      *            The module feature name
      * @param moduleName
      *            The name of the module
-     * @return
      */
     boolean isModuleFeatureActive(String moduleFeatureName, String moduleName);
 
@@ -48,16 +43,14 @@ public interface WebcertFeatureService {
      *            The module feature as Enum
      * @param moduleName
      *            The name of the module
-     * @return
      */
     boolean isModuleFeatureActive(ModuleFeature moduleFeature, String moduleName);
 
     /**
      * Returns a Set containing the names of all features, Webcert and module, that are active.
-     *
-     * @return
      */
     Set<String> getActiveFeatures();
 
     void setFeature(String key, String value);
+
 }

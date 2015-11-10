@@ -84,6 +84,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     // - - - - - Public scope - - - - -
 
+    @Override
     public Object loadUserBySAML(SAMLCredential credential) {
 
         if (credential == null) {
@@ -142,7 +143,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         List<GetHsaPersonHsaUserType> hsaPersonInfo;
         try {
             hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
-            if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
+            if ((hsaPersonInfo == null) || hsaPersonInfo.isEmpty()) {
                 LOG.info("Call to web service getHsaPersonInfo did not return any info for user '{}'", hsaId);
             }
 
@@ -241,7 +242,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
      */
     UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
         LOG.debug("  * legitimerade yrkesgrupper");
-        if (legitimeradeYrkesgrupper == null || legitimeradeYrkesgrupper.size() == 0) {
+        if ((legitimeradeYrkesgrupper == null) || (legitimeradeYrkesgrupper.size() == 0)) {
             return null;
         }
 
@@ -265,7 +266,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("  * request URI");
 
         DefaultSavedRequest savedRequest = getRequest();
-        if (savedRequest != null && savedRequest.getRequestURI() != null) {
+        if ((savedRequest != null) && (savedRequest.getRequestURI() != null)) {
             String uri = savedRequest.getRequestURI();
 
             if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
@@ -295,7 +296,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     UserRole lookupUserRoleByBefattningskod(List<String> befattningsKoder) {
         LOG.debug("  * befattningskod");
 
-        if (befattningsKoder == null || befattningsKoder.size() == 0) {
+        if ((befattningsKoder == null) || (befattningsKoder.size() == 0)) {
             return null;
         }
 
@@ -334,7 +335,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("  * befattningskod i kombination med gruppförskrivarkod");
         LOG.debug("    befattningskod = {}, gruppförskrivarkod = {}", befattningsKod, gruppforskrivarKod);
 
-        if (befattningsKod == null || gruppforskrivarKod == null) {
+        if ((befattningsKod == null) || (gruppforskrivarKod == null)) {
             return null;
         }
 
@@ -371,7 +372,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("Assert user has authorization to one or more 'vårdenheter'");
 
         // if user does not have access to any vardgivare, we have to reject authentication
-        if (authorizedVardgivare == null || authorizedVardgivare.isEmpty()) {
+        if ((authorizedVardgivare == null) || authorizedVardgivare.isEmpty()) {
             throw new MissingMedarbetaruppdragException(hsaId);
         }
     }
@@ -476,7 +477,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             }
         }
 
-        return new ArrayList<String>(lygSet);
+        return new ArrayList<>(lygSet);
     }
 
     private List<String> extractSpecialiseringar(List<GetHsaPersonHsaUserType> hsaUserTypes) {
@@ -489,11 +490,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             }
         }
 
-        return new ArrayList<String>(specSet);
+        return new ArrayList<>(specSet);
     }
 
     private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
-        List<String> titlar = new ArrayList<String>();
+        List<String> titlar = new ArrayList<>();
 
         for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
             if (StringUtils.isNotBlank(userType.getTitle())) {

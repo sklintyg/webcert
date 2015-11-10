@@ -62,7 +62,7 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
         AnswerFromFkType answerType = request.getAnswer();
 
         // Verify there is a valid reference ID
-        Long referensId = null;
+        Long referensId;
         try {
             referensId = Long.parseLong(answerType.getVardReferensId());
         } catch (NumberFormatException e) {
@@ -78,7 +78,7 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
     }
 
     private FragaSvar processAnswer(Long referensId, InnehallType answerContents) {
-        long refId = referensId.longValue();
+        long refId = referensId;
         String text = answerContents.getMeddelandeText();
         LocalDateTime ldt = answerContents.getSigneringsTidpunkt();
 

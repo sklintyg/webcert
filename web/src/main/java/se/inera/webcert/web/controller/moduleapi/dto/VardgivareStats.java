@@ -16,7 +16,7 @@ public class VardgivareStats {
     @JsonProperty("id")
     private String hsaId;
 
-    private List<VardenhetStats> vardenheter = new ArrayList<VardenhetStats>();
+    private List<VardenhetStats> vardenheter = new ArrayList<>();
 
     public VardgivareStats(@JsonProperty("namn") String namn, @JsonProperty("id") String hsaId) {
         super();

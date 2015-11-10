@@ -120,7 +120,7 @@ public class StatModuleApiController extends AbstractApiController {
     private List<VardenhetStats> createAndPopulateVardenheterWithStats(List<Vardenhet> vardenheter,
             Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
-        List<VardenhetStats> veStatsList = new ArrayList<VardenhetStats>();
+        List<VardenhetStats> veStatsList = new ArrayList<>();
 
         VardenhetStats veStats;
 
@@ -161,7 +161,7 @@ public class StatModuleApiController extends AbstractApiController {
 
     private static long getSafeStatValueFromMap(String id, Map<String, Long> statsMap) {
         Long statValue = statsMap.get(id);
-        return (statValue != null) ? statValue.longValue() : 0L;
+        return (statValue != null) ? statValue : 0L;
     }
 
 }

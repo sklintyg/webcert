@@ -30,7 +30,7 @@ public final class ConvertToFKTypes {
     private static final String HSAID_ROOT = "1.2.752.129.2.1.4.1";
 
     public static II toII(String root, String ext) {
-        if (root == null || ext == null) {
+        if ((root == null) || (ext == null)) {
             return null;
         }
         II ii = new II();

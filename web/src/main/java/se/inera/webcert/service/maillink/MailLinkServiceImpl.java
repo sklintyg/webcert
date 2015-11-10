@@ -46,7 +46,7 @@ public class MailLinkServiceImpl implements MailLinkService {
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
 
-        Map<String, Object> urlParams = new HashMap<String, Object>();
+        Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, typ);
         urlParams.put(PARAM_CERT_ID, intygId);
         urlParams.put(PARAM_HOSP_NAME, "");

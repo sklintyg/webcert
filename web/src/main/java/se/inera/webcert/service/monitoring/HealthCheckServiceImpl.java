@@ -166,9 +166,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     }
 
     private boolean checkJmsConnection() {
-        Connection connection = null;
         try {
-            connection = connectionFactory.createConnection();
+            Connection connection = connectionFactory.createConnection();
             connection.close();
         } catch (JMSException e) {
             LOG.error("checkJmsConnection failed with exception: " + e.getMessage());
@@ -192,7 +191,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     private void logStatus(String operation, HealthStatus status) {
         String result = status.isOk() ? "OK" : "FAIL";
-        LOG.info("Operation {} completed with result {} in {} ms", new Object[] { operation, result, status.getMeasurement() });
+        LOG.info("Operation {} completed with result {} in {} ms", operation, result, status.getMeasurement());
     }
 
     private HealthStatus createStatusWithTiming(boolean ok, StopWatch stopWatch) {

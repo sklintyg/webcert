@@ -11,7 +11,7 @@ public enum WebcertFeature {
     JS_LOGGNING("jsLoggning"),
     JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript");
 
-    private String name;
+    private final String name;
     private String envName;
 
     WebcertFeature(String name) {

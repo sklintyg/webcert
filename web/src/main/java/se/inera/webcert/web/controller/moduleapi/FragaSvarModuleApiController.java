@@ -86,7 +86,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/stang")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<FragaSvar> closeQAsAsHandled(List<QARequest> qas) {
-        List<FragaSvar> fragaSvars = new ArrayList<FragaSvar>();
+        List<FragaSvar> fragaSvars = new ArrayList<>();
         for (QARequest qa : qas) {
             abortIfFragaSvarNotActive(qa.getIntygsTyp());
             fragaSvars.add(fragaSvarService.closeQuestionAsHandled(qa.getFragaSvarId()));

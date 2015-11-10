@@ -8,7 +8,6 @@ import static se.inera.webcert.service.signatur.dto.SignaturTicket.Status.SIGNER
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 
 public class SignaturTicketTrackerTest {

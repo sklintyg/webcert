@@ -12,58 +12,43 @@ public interface HealthCheckService {
 
     /**
      * Check if the database responds.
-     *
-     * @return
      */
     HealthStatus checkDB();
 
     /**
      * Check if the connection to ActiveMQ is up.
-     *
-     * @return
      */
     HealthStatus checkJMS();
 
     /**
      * Returns the size of the queue in the db that holds signed certificates
      * yet to be registered in the Intygstjanst.
-     *
-     * @return
      */
     HealthStatus checkSignatureQueue();
 
     /**
      * Check if the connection to HSA is up.
-     *
-     * @return
      */
     HealthStatus checkHSA();
 
     /**
      * Returns the applications uptime.
-     *
-     * @return
      */
     HealthStatus checkUptime();
 
     /**
      * Returns the applications uptime in human readable format.
-     *
-     * @return
      */
     String checkUptimeAsString();
 
     /**
      * Check if the connection to Intygstjansten is up.
-     *
-     * @return
      */
     HealthStatus checkIntygstjanst();
 
     /**
      * Checks the number of logged in users.
-     *
-     * @return
      */
     HealthStatus checkNbrOfUsers();
+
 }
