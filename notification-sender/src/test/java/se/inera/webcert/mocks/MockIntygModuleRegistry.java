@@ -107,6 +107,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public String marshall(String jsonString) {
                 return null;
             }
+
+            @Override
+            public String getQuestions(String version) {
+                return null;
+            }
         };
     }
 
