@@ -35,8 +35,10 @@ module.exports = function(grunt) {
 
     webcert = [SRC_DIR + 'app.js'].concat(webcert);
 
-    var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
-    var CSS_COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
+    var COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
+    var COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/webcert';
+    var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
+    var CSS_COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/css';
     var TSBAS_SRC_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
     var TSBAS_DEST_DIR = '/../../intygstyper/ts-bas/target/classes/META-INF/resources/webjars/ts-bas/webcert'; 
     var TSDIABETES_SRC_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
@@ -112,6 +114,8 @@ module.exports = function(grunt) {
                     __dirname + FK7263_SRC_DIR + '/css/*.scss',
                     __dirname + TSBAS_SRC_DIR + '/css/*.scss',
                     __dirname + TSDIABETES_SRC_DIR + '/css/*.scss',
+                    __dirname + CSS_COMMON_SRC_DIR + '/*.scss',
+                    __dirname + COMMON_SRC_DIR + '/css/*.scss',
                 ],
                 tasks: ['sass:dev']
             },
@@ -122,7 +126,7 @@ module.exports = function(grunt) {
             html: {
                 files: [
                         __dirname + '/src/main/webapp/**/*.html',
-                        __dirname + COMMON_DIR + '/**/*.html',
+                        __dirname + COMMON_SRC_DIR + '/**/*.html',
                         __dirname + FK7263_SRC_DIR + '/**/*.html',
                         __dirname + TSBAS_SRC_DIR + '/**/*.html',
                         __dirname + TSDIABETES_SRC_DIR + '/**/*.html'
@@ -133,39 +137,51 @@ module.exports = function(grunt) {
 
         // Compiles Sass to CSS
         sass: {
-            //intygstyper: {
-                options: {
-                    update: true
+            options: {
+                update: true
+            },
+            dev: {
+                //Compile all
+                files: [{
+                    expand: true,
+                    cwd: __dirname + FK7263_SRC_DIR + '/css/',
+                    src: ['*.scss'],
+                    dest: __dirname + FK7263_DEST_DIR + '/css',
+                    ext: '.css'
                 },
-                dev: {
-                    //Compile all
-                    files: [{
-                        expand: true,
-                        cwd: __dirname + FK7263_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + FK7263_DEST_DIR + '/css',
-                        ext: '.css'
-                    },
-                    {
-                        expand: true,
-                        cwd: __dirname + TSBAS_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + TSBAS_DEST_DIR + '/css',
-                        ext: '.css'
-                    },
-                    {
-                        expand: true,
-                        cwd: __dirname + TSDIABETES_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + TSDIABETES_DEST_DIR + '/css',
-                        ext: '.css'
-                    }]
-                }, 
-                dist: {
-                    //What we do when we build a distribution. Don't include intygstyper here
-
-                }
-           // }
+                {
+                    expand: true,
+                    cwd: __dirname + TSBAS_SRC_DIR + '/css/',
+                    src: ['*.scss'],
+                    dest: __dirname + TSBAS_DEST_DIR + '/css',
+                    ext: '.css'
+                },
+                {
+                    expand: true,
+                    cwd: __dirname + TSDIABETES_SRC_DIR + '/css/',
+                    src: ['*.scss'],
+                    dest: __dirname + TSDIABETES_DEST_DIR + '/css',
+                    ext: '.css'
+                },
+                {
+                    expand: true,
+                    cwd: __dirname + COMMON_SRC_DIR + '/css/',
+                    src: ['*.scss'],
+                    dest: __dirname + COMMON_DEST_DIR + '/css',
+                    ext: '.css'
+                },
+                {
+                    expand: true,
+                    cwd: __dirname + CSS_COMMON_SRC_DIR,
+                    src: ['*.scss'],
+                    dest: __dirname + CSS_COMMON_DEST_DIR,
+                    ext: '.css'
+                }]
+            }, 
+            dist: {
+                //What we do when we build a distribution. Don't include intygstyper here or common.
+                //This place is reserved for any scss files within this very project
+            }
         },
 
         ngtemplates : {
@@ -181,9 +197,9 @@ module.exports = function(grunt) {
                 }
             },
             common: {
-                cwd: __dirname + COMMON_DIR,
+                cwd: __dirname + COMMON_SRC_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + COMMON_DIR + '/templates.js',
+                dest: __dirname + COMMON_SRC_DIR + '/templates.js',
                 options:{
                     module: 'common',
                     url: function(url) {
@@ -276,12 +292,17 @@ module.exports = function(grunt) {
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/webcert',
-                                connect.static(__dirname + COMMON_DIR) // jshint ignore:line
+                                connect.static(__dirname + COMMON_SRC_DIR) // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/common/webcert/css',
+                                connect.static(__dirname + COMMON_DEST_DIR + '/css') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/css',
-                                connect.static(__dirname + CSS_COMMON_DIR) // jshint ignore:line
+                                connect.static(__dirname + CSS_COMMON_DEST_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
