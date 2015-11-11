@@ -61,16 +61,10 @@ class HanteraUtkast {
 
     // ------- behaviour
 
-  void raderaUtkast() {
+    void raderaUtkast() {
         Browser.drive {
-            page.radera.click()
-            waitFor {
-                page.doneLoading()
-            }
-            page.konfirmeraRadera.click()
-            waitFor {
-                page.doneLoading()
-            }
+            page.tabortUtkast()
+            page.konfirmeraTabortUtkast()
         }
     }
 
@@ -96,7 +90,7 @@ class HanteraUtkast {
 
     void klickaPaTillbakaKnappen() {
         Browser.drive {
-            page.tillbakaButton.click();
+            page.tillbakaBtn.click();
         }
     }
 
@@ -148,11 +142,8 @@ class HanteraUtkast {
     boolean editeraSidanVisas() {
         boolean result
         Browser.drive {
-            waitFor {
-                result = isAt AbstractEditCertPage
-            }
+            result = isAt AbstractEditCertPage
         }
-        result
     }
 
     boolean editeraFk7263SidanVisas() {

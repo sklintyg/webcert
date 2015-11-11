@@ -3,7 +3,9 @@ package se.inera.webcert.pages.fk7263
 import se.inera.webcert.pages.AbstractViewCertPage
 
 class VisaFk7263Page extends AbstractViewCertPage {
-        
+
+    static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
+
     static content = {
 
         // messages
@@ -140,10 +142,11 @@ class VisaFk7263Page extends AbstractViewCertPage {
         waitFor {
             doneLoading()
             skickaDialogBody.text().contains("Försäkringskassan.")
+            skickaDialogCheck.isDisplayed()
         }
         skickaDialogCheck.click()
         waitFor {
-            doneLoading()
+            skickaDialogSkickaKnapp.isEnabled()
         }
         skickaDialogSkickaKnapp.click()
     }
