@@ -185,7 +185,7 @@ public class ApiScanner {
     }
 
     @SuppressWarnings("unused")
-    public void setBaseathMap(HashMap<String, String> basepathMap) {
+    public void setBasepathMap(HashMap<String, String> basepathMap) {
         this.basepathMap = basepathMap;
     }
 }
