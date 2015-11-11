@@ -94,8 +94,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.info("Start user authentication...");
 
         if (LOG.isDebugEnabled()) {
-            // I dont want read this object every time.
-            // Will do only of we have enabled debugging.
+            // I dont want to read this object every time.
             String str = ToStringBuilder.reflectionToString(credential);
             LOG.debug("SAML credential is:\n{}", str);
         }
@@ -143,7 +142,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         List<GetHsaPersonHsaUserType> hsaPersonInfo;
         try {
             hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
-            if ((hsaPersonInfo == null) || hsaPersonInfo.isEmpty()) {
+            if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
                 LOG.info("Call to web service getHsaPersonInfo did not return any info for user '{}'", hsaId);
             }
 
@@ -157,8 +156,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
 
     protected DefaultSavedRequest getRequest() {
-        LOG.debug("Getting current request from session...");
-
         HttpServletRequest curRequest = getCurrentRequest();
         return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
     }
@@ -191,43 +188,45 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     String lookupUserRole(SAMLCredential credential, List<GetHsaPersonHsaUserType> personInfo) {
         LOG.debug("Looking up user role by:");
 
-        SakerhetstjanstAssertion sa = getAssertion(credential);
+        UserRole userRole = lookupUserRole(getAssertion(credential), personInfo);
+
+        // Vi har en användarroll men kontroller också ifall användaren
+        // kommer in via djupintegration eller uthoppslänk.
+        userRole = lookupUserRoleByRequestURI(userRole);
+
+        return userRole.name();
+    }
+
+    UserRole lookupUserRole(SakerhetstjanstAssertion sa, List<GetHsaPersonHsaUserType> personInfo) {
         UserRole userRole;
 
         // 1. Bestäm användarens roll utefter titel som kommer från SAML.
         //    Titel ska vara detsamma som legitimerade yrkesgrupper.
         userRole = lookupUserRoleByLegitimeradeYrkesgrupper(sa.getTitel());
         if (userRole != null) {
-            return userRole.name();
+            return userRole;
         }
 
         // 2. Bestäm användarens roll utefter legitimerade yrkesgrupper som hämtas från HSA.
         userRole = lookupUserRoleByLegitimeradeYrkesgrupper(extractLegitimeradeYrkesgrupper(personInfo));
         if (userRole != null) {
-            return userRole.name();
+            return userRole;
         }
 
         // 3. Bestäm användarens roll utefter befattningskod som kommer från SAML.
         userRole = lookupUserRoleByBefattningskod(sa.getTitelKod());
         if (userRole != null) {
-            return userRole.name();
+            return userRole;
         }
 
         // 4. Bestäm användarens roll utefter kombinationen befattningskod och gruppförskrivarkod
         userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(sa.getTitelKod(), sa.getForskrivarkod());
         if (userRole != null) {
-            return userRole.name();
+            return userRole;
         }
 
-        // 5. Användaren är en administratör, ta reda på om det är en administratör som
-        //    kommer in via djupintegration eller uthoppslänk
-        userRole = lookupUserRoleByRequestURI(false);
-        if (userRole != null) {
-            return userRole.name();
-        }
-
-        // 6. Användaren är en vårdadministratör inom landstinget som inte är 'djupintegrerad' eller 'uthopp'
-        return UserRole.ROLE_VARDADMINISTRATOR.name();
+        // 6. Användaren är en vårdadministratör inom landstinget
+        return UserRole.ROLE_VARDADMINISTRATOR;
     }
 
     /** Lookup user role by looking into 'legitimerade yrkesgrupper'.
@@ -242,16 +241,11 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
      */
     UserRole lookupUserRoleByLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
         LOG.debug("  * legitimerade yrkesgrupper");
-        if ((legitimeradeYrkesgrupper == null) || (legitimeradeYrkesgrupper.size() == 0)) {
+        if (legitimeradeYrkesgrupper == null || legitimeradeYrkesgrupper.size() == 0) {
             return null;
         }
 
         if (legitimeradeYrkesgrupper.contains(TITLE_LAKARE)) {
-            UserRole userRole = lookupUserRoleByRequestURI(true);
-            if (userRole != null) {
-                return userRole;
-            }
-
             return UserRole.ROLE_LAKARE;
         }
 
@@ -262,50 +256,53 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return null;
     }
 
-    private UserRole lookupUserRoleByRequestURI(boolean isLakare) {
+    private UserRole lookupUserRoleByRequestURI(final UserRole userRole) {
         LOG.debug("  * request URI");
 
+        LOG.debug("    getting current request from session...");
         DefaultSavedRequest savedRequest = getRequest();
-        if ((savedRequest != null) && (savedRequest.getRequestURI() != null)) {
+
+        if (savedRequest != null && savedRequest.getRequestURI() != null) {
             String uri = savedRequest.getRequestURI();
 
             if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
-                if (isLakare) {
-                    // 6a. Användaren är läkare som använder Webcert via djupintegration
+                if (userRole.equals(UserRole.ROLE_LAKARE)) {
+                    // Användaren är läkare som använder Webcert via djupintegration
                     return UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
+                } else if (userRole.equals(UserRole.ROLE_TANDLAKARE)) {
+                    // Användaren är tandläkare som använder Webcert via djupintegration
+                    return UserRole.ROLE_TANDLAKARE_DJUPINTEGRERAD;
                 } else {
-                    // 6b. Användaren är vårdadministratör som använder Webcert via djupintegration
+                    // Användaren är vårdadministratör som använder Webcert via djupintegration
                     return UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD;
                 }
             }
 
             if (uri.matches(REGEXP_REQUESTURI_UTHOPP)) {
-                if (isLakare) {
-                    // 6c. Användaren är läkare som använder Webcert via uthoppslänk.
+                if (userRole.equals(UserRole.ROLE_LAKARE)) {
+                    // Användaren är läkare som använder Webcert via uthoppslänk.
                     return UserRole.ROLE_LAKARE_UTHOPP;
+                } else if (userRole.equals(UserRole.ROLE_TANDLAKARE)) {
+                    // Användaren är tandläkare som använder Webcert via uthoppslänk
+                    return UserRole.ROLE_TANDLAKARE_UTHOPP;
                 } else {
-                    // 6d. Användaren är våradministratör som använder Webcert via uthoppslänk.
+                    // Användaren är våradministratör som använder Webcert via uthoppslänk.
                     return UserRole.ROLE_VARDADMINISTRATOR_UTHOPP;
                 }
             }
         }
 
-        return null;
+        return userRole;
     }
 
     UserRole lookupUserRoleByBefattningskod(List<String> befattningsKoder) {
         LOG.debug("  * befattningskod");
 
-        if ((befattningsKoder == null) || (befattningsKoder.size() == 0)) {
+        if (befattningsKoder == null || befattningsKoder.size() == 0) {
             return null;
         }
 
         if (befattningsKoder.contains(TITLECODE_AT_LAKARE)) {
-            UserRole userRole = lookupUserRoleByRequestURI(true);
-            if (userRole != null) {
-                return userRole;
-            }
-
             return UserRole.ROLE_LAKARE;
         }
 
@@ -318,11 +315,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             for (String gruppforskrivarKod : gruppforskrivarKoder) {
                 UserRole userRole = lookupUserRoleByBefattningskodAndGruppforskrivarkod(befattningskod, gruppforskrivarKod);
                 if (userRole != null) {
-                    UserRole ur = lookupUserRoleByRequestURI(UserRole.ROLE_LAKARE.equals(userRole));
-                    if (ur != null) {
-                        return ur;
-                    }
-
                     return userRole;
                 }
             }
@@ -335,7 +327,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("  * befattningskod i kombination med gruppförskrivarkod");
         LOG.debug("    befattningskod = {}, gruppförskrivarkod = {}", befattningsKod, gruppforskrivarKod);
 
-        if ((befattningsKod == null) || (gruppforskrivarKod == null)) {
+        if (befattningsKod == null || gruppforskrivarKod == null) {
             return null;
         }
 
@@ -372,7 +364,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("Assert user has authorization to one or more 'vårdenheter'");
 
         // if user does not have access to any vardgivare, we have to reject authentication
-        if ((authorizedVardgivare == null) || authorizedVardgivare.isEmpty()) {
+        if (authorizedVardgivare == null || authorizedVardgivare.isEmpty()) {
             throw new MissingMedarbetaruppdragException(hsaId);
         }
     }

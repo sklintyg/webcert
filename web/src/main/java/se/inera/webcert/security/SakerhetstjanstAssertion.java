@@ -94,9 +94,7 @@ public class SakerhetstjanstAssertion {
 
     // - - - - -  Getters and setters - - - - -
 
-    public List<String> getTitel() {
-        return titel;
-    }
+    public List<String> getTitel() { return titel; }
 
     public List<String> getTitelKod() {
         return titelKod;

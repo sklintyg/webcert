@@ -1,4 +1,4 @@
-Testet beskriver fallet när HoS-personal går in på ett signerat FK7263 intyg via djupintegration
+Testet beskriver fallet när en läkare går in på ett signerat FK7263 intyg via djupintegration
 
 !3 Logga in
 
