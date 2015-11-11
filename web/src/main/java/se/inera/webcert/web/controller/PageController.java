@@ -36,6 +36,7 @@ import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.net.URI;
+import java.util.Set;
 
 /**
  * @author marced
@@ -100,7 +101,12 @@ public class PageController {
     }
 
     public void populateUseMinifiedJavaScript(ModelAndView model) {
-        model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
+        final WebCertUser user = webCertUserService.getUser();
+        if (user != null) {
+            model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED));
+        } else {
+            model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
+        }
     }
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)

@@ -9,6 +9,7 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.service.feature.WebcertFeature;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,6 +85,14 @@ public class WebCertUser implements UserDetails {
 
     public void setAktivaFunktioner(Set<String> aktivaFunktioner) {
         this.aktivaFunktioner = aktivaFunktioner;
+    }
+
+    public boolean isFeatureActive(WebcertFeature feature) {
+        if (aktivaFunktioner == null) {
+            return false;
+        }
+        final String featureName = feature.getName();
+        return aktivaFunktioner.contains(featureName);
     }
 
     @JsonIgnore
