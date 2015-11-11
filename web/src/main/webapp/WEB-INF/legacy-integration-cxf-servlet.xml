@@ -32,13 +32,13 @@
   </jaxrs:server>
 
   <bean id="legacyIntygIntegrationController"
-    class="se.inera.webcert.web.controller.integration.LegacyIntygIntegrationController">
+    class="se.inera.webcert.web.controller.legacyintegration.LegacyIntygIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>
 
   <bean id="privatePractitionerFragaSvarIntegrationController"
-      class="se.inera.webcert.web.controller.integration.PrivatePractitionerFragaSvarIntegrationController">
+      class="se.inera.webcert.web.controller.legacyintegration.PrivatePractitionerFragaSvarIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>

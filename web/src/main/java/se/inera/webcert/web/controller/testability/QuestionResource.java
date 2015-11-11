@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.test;
+package se.inera.webcert.web.controller.testability;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,6 +47,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
  * Created by Pehr Assarsson on 9/24/13.
  */
 @Transactional
+@Api(value = "services questions", description = "REST API för testbarhet - Fråga/Svar")
 public class QuestionResource {
 
     @PersistenceContext
@@ -166,7 +168,7 @@ public class QuestionResource {
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuestionsByEnhet(@PathParam("enhetsId") String enhetsId) {
-        List<String> enhetsIds = new ArrayList<>();
+        List<String> enhetsIds = new ArrayList<String>();
         enhetsIds.add(enhetsId);
         List<FragaSvar> fragorOchSvar = fragasvarRepository.findByEnhetsId(enhetsIds);
         if (fragorOchSvar != null) {
@@ -190,7 +192,6 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestions() {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
-            @Override
             public Response doInTransaction(TransactionStatus status) {
                 @SuppressWarnings("unchecked")
                 List<FragaSvar> fragorOchSvar = entityManager.createQuery("SELECT f FROM FragaSvar f").getResultList();

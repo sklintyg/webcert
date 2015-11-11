@@ -13,6 +13,11 @@ import javax.ws.rs.core.Response;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +36,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 @Path("/fmb")
+@Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
 public class FmbApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbApiController.class);
+
+    private static final int OK = 200;
+    private static final int BAD_REQUEST = 400;
 
     @Autowired
     private FmbRepository fmbRepository;
@@ -46,9 +55,14 @@ public class FmbApiController extends AbstractApiController {
     @GET
     @Path("/{icd10}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getFmbForIcd10(@PathParam("icd10") String icd10) {
-        if ((icd10 == null) || icd10.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
+    @ApiOperation(value = "Get FMB data for ICD10 codes", httpMethod = "GET", notes = "Fetch the admin user details", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(code = OK, message = "Given FMB data for icd10 code found", response = FmbResponse.class),
+            @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code the data")
+    })
+    public Response getFmbForIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
+        if (icd10 == null || icd10.isEmpty()) {
+           return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
         }
         final FmbResponse result = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
         if (!dataUpdateCalled && result.getForms().isEmpty() && (fmbRepository.count() == 0)) {

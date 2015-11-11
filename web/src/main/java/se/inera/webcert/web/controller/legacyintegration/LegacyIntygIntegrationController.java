@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.integration;
+package se.inera.webcert.web.controller.legacyintegration;
 
 import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
@@ -10,7 +10,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
@@ -18,30 +20,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.web.controller.integration.BaseIntegrationController;
+import io.swagger.annotations.Api;
 
 /**
- * Created by eriklupander on 2015-10-08.
+ * Controller to enable an external user to access certificates directly from a
+ * link in an external patient care system.
+ *
+ * @author nikpet
  */
-@Path("/pp-certificate")
-public class PrivatePractitionerFragaSvarIntegrationController extends BaseIntegrationController {
+@Path("/certificate")
+@Api(value = "webcert web user certificate (Fråga/Svar uthopp)", description = "REST API för fråga/svar via uthoppslänk, landstingspersonal", produces = MediaType.APPLICATION_JSON)
+public class LegacyIntygIntegrationController extends BaseIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
 
+    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
+
     private String urlFragmentTemplate;
 
-    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
-        this.urlFragmentTemplate = urlFragmentTemplate;
+
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return GRANTED_ROLES;
     }
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
-     * the questions for the cert. Can be used for FK7263 certificates.
+     * the certificate. Can be used for all types of certificates.
      *
+     * @param uriInfo
      * @param intygId
      *            The id of the certificate to view.
+     * @return
      */
     @GET
     @Path("/{intygId}/questions")
@@ -58,24 +73,23 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
+    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
+        this.urlFragmentTemplate = urlFragmentTemplate;
+    }
+
+
     // - - - - - Default scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
-        Map<String, Object> urlParams = new HashMap<>();
+        Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
-        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
+        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
-
-    @Override
-    protected String[] getGrantedRoles() {
-        return new String[]{UserRole.ROLE_PRIVATLAKARE.name()};
-    }
-
 }

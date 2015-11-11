@@ -36,6 +36,7 @@
   <import resource="classpath:/loggtjanst-stub-context.xml" />
   <import resource="classpath:/notification-stub-context.xml"/>
   <import resource="classpath:/webcert-testability-api-context.xml" />
+  <import resource="classpath:/swagger-api-context.xml" />
 
   <cxf:bus>
     <cxf:features>

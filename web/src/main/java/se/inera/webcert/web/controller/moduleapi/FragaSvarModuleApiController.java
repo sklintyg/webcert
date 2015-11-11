@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,10 @@ import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.QARequest;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
+import se.inera.webcert.web.controller.moduleapi.dto.DispatchState;
 
 @Path("/fragasvar")
+@Api(value = "fragasvar", description = "REST API - moduleapi - fragasvar", produces = MediaType.APPLICATION_JSON)
 public class FragaSvarModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarModuleApiController.class);
@@ -55,10 +58,10 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{fragasvarId}/hanterad")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId, Boolean isDispatched) {
+    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId, DispatchState dispatchState) {
         abortIfFragaSvarNotActive(intygsTyp);
-        LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, isDispatched);
-        FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, isDispatched);
+        LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, dispatchState.isDispatched());
+        FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, dispatchState.isDispatched());
         return Response.ok(fragaSvarResponse).build();
     }
 

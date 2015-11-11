@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller.api;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Response;
  * Controller managing module wiring.
  */
 @Path("/modules")
+@Api(value = "modules", description = "REST API för att läsa ut intygsmoduler", produces = MediaType.APPLICATION_JSON)
 public class ModuleApiController extends AbstractApiController {
 
     @Autowired

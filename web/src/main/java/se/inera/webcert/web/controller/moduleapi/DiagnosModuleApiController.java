@@ -7,6 +7,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.DiagnosParameter;
  *
  */
 @Path("/diagnos")
+@Api(value = "diagnos", description = "REST API - moduleapi - diagnos", produces = MediaType.APPLICATION_JSON)
 public class DiagnosModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);

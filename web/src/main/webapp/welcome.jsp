@@ -427,11 +427,21 @@
 
 
             </div>
+          <div class="content row"><hr style="padding-top:16px;"/></div>
+            <div class="content row">
+                <h1>Hjälplänkar</h1>
+                <p class="well">Nedan finns ett antal snabblänkar till hjälpfunktioner för utvecklings- och teständamål.</p>
+                <a href="/version.jsp">Versions- och bygginformation</a><br/>
+                <a href="/healthcheck.jsp">Healthcheck</a><br/>
+                <a href="/swagger-ui/index.html">REST-dokumentation</a><br/>
+            </div>
         </div>
     </div>
 
 
 </form>
+
+
 
 </body>
 </html>

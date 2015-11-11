@@ -11,7 +11,7 @@
     
   <jaxrs:server address="/questions">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.integration.test.QuestionResource" />
+      <bean class="se.inera.webcert.web.controller.testability.QuestionResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -23,7 +23,7 @@
 
   <jaxrs:server address="/logMessages">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.integration.test.LogResource" />
+      <bean class="se.inera.webcert.web.controller.testability.LogResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -35,7 +35,7 @@
 
   <jaxrs:server address="/intyg">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.integration.test.IntygResource" />
+      <bean class="se.inera.webcert.web.controller.testability.IntygResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -47,7 +47,7 @@
 
   <jaxrs:server address="/anvandare">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.integration.test.UserResource" />
+      <bean class="se.inera.webcert.web.controller.testability.UserResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

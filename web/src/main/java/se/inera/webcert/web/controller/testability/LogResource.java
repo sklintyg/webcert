@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.test;
+package se.inera.webcert.web.controller.testability;
 
 import java.util.Enumeration;
 
@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
@@ -22,6 +23,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import se.inera.log.messages.AbstractLogMessage;
 
+@Api(value = "/services/logMessages", description = "REST API för testbarhet - PDL-loggning")
 public class LogResource {
 
     private static final int DEFAULT_TIMEOUT = 1000;

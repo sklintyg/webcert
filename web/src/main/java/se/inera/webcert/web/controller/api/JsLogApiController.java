@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller.api;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Response;
  * Controller that logs messages from JavaScript to the normal log.
  */
 @Path("/jslog")
+@Api(value = "jslog", description = "REST API för loggning från frontend till backend-log", produces = MediaType.APPLICATION_JSON)
 public class JsLogApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);

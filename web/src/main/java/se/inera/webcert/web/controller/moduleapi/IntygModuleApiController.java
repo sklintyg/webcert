@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
  * @author nikpet
  */
 @Path("/intyg")
+@Api(value = "/moduleapi/intyg", description = "REST API - moduleapi - intyg", produces = MediaType.APPLICATION_JSON)
 public class IntygModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);

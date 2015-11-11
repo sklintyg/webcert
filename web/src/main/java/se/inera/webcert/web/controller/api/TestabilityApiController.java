@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
  * Rest interface only used for testing and in dev environments. It seems like it must be in
  * the same Spring context as the rest of the webservices to get access to the security context.
  */
+@Api(value = "testability", description = "REST API för testbarhet av roller", produces = MediaType.APPLICATION_JSON)
 public class TestabilityApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestabilityApiController.class);

@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.test;
+package se.inera.webcert.web.controller.testability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 
 @Transactional
+@Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
 public class IntygResource {
 
     @Autowired
@@ -52,9 +54,9 @@ public class IntygResource {
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraftsByEnhet(@PathParam("enhetsId") String enhetsId) {
-        List<String> enhetsIds = new ArrayList<>();
+        List<String> enhetsIds = new ArrayList<String>();
         enhetsIds.add(enhetsId);
-        List<UtkastStatus> statuses = new ArrayList<>();
+        List<UtkastStatus> statuses = new ArrayList<UtkastStatus>();
         statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
         statuses.add(UtkastStatus.DRAFT_COMPLETE);
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);

@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller.api;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/person")
+@Api(value = "person", description = "REST API för personslagningar", produces = MediaType.APPLICATION_JSON)
 public class PersonApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PersonApiController.class);

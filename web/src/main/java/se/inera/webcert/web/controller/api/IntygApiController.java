@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CopyIntygRequest;
 import se.inera.webcert.web.controller.api.dto.CopyIntygResponse;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
+import se.inera.webcert.web.controller.api.dto.NotifiedState;
 
 /**
  * Controller for the API that serves WebCert.
@@ -51,6 +53,7 @@ import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
  *
  */
 @Path("/intyg")
+@Api(value = "intyg", description = "REST API för intygshantering", produces = MediaType.APPLICATION_JSON)
 public class IntygApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
@@ -58,7 +61,6 @@ public class IntygApiController extends AbstractApiController {
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE);
 
-    // TODO Where to put this stuff?
     private static final String OFFLINE_MODE = "offline_mode";
 
     @Autowired
@@ -191,7 +193,7 @@ public class IntygApiController extends AbstractApiController {
      *
      * @param intygsId
      *            Id of the Intyg
-     * @param notified
+     * @param notifiedState
      *            True or False
      * @return
      *         Response
@@ -201,13 +203,13 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-                                       @PathParam("version") long version, Boolean notified) {
+                                       @PathParam("version") long version, NotifiedState notifiedState) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         Utkast updatedIntyg;
         try {
-            updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, version, notified);
+            updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, version, notifiedState.isNotified());
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());

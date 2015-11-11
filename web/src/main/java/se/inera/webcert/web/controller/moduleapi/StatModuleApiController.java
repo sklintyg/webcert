@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller.moduleapi;
 
+import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import java.util.Map;
  * @author marced
  */
 @Path("/stat")
+@Api(value = "stat", description = "REST API - moduleapi - stat", produces = MediaType.APPLICATION_JSON)
 public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";

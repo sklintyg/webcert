@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller.api;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import java.util.List;
  *
  */
 @Path("/utkast")
+@Api(value = "utkast", description = "REST API för utkasthantering", produces = MediaType.APPLICATION_JSON)
 public class UtkastApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
