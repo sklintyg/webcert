@@ -36,7 +36,6 @@ import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.net.URI;
-import java.util.Set;
 
 /**
  * @author marced
