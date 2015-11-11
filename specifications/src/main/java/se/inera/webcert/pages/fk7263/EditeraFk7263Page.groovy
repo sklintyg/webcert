@@ -5,7 +5,7 @@ import se.inera.webcert.pages.AbstractEditCertPage
 
 class EditeraFk7263Page extends AbstractEditCertPage {
 
-    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() && js.animations.smittskydd.rendered }
+    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() }
 
     static content = {
 
@@ -55,6 +55,9 @@ class EditeraFk7263Page extends AbstractEditCertPage {
     def setSmittskydd(boolean val) {
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
+        waitFor {
+            doneLoading();
+        }
     }
 
 }

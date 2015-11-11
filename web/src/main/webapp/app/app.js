@@ -5,7 +5,6 @@
 
     // --- define test hooks
     window.doneLoading = false;
-    window.dialogDoneLoading = true;
     window.rendered = true;
     window.saving = false;
     window.digest = 0;
@@ -17,14 +16,6 @@
 
     window.setSaving = function(val) {
         window.saving = val;
-    };
-
-    window.getAnimationsState = function(which) {
-        if (which) {
-            return JSON.stringify(window.animations[which], null, 2);
-        } else {
-            return JSON.stringify(window.animations, null, 2);
-        }
     };
     // --- end test hooks
 
@@ -101,34 +92,6 @@
                 });
             }];
             return $delegate;
-        });
-
-        // This decorator will add build number to all html requests
-        // The purpose is to allow the browser to cache templates but only for this build.
-        $provide.decorator('$http', function($delegate, $templateCache) {
-            var $http = $delegate;
-
-            var wrapper = function() {
-                // Apply global changes to arguments, or perform other
-                // nefarious acts.
-                return $http.apply($http, arguments);
-            };
-
-            // $http has convenience methods such as $http.get() that we have
-            // to pass through as well.
-            Object.keys($http).filter(function(key) {
-                return (typeof $http[key] === 'function');
-            }).forEach(function(key) {
-                wrapper[key] = function() {
-
-                    // Apply global changes to arguments, or perform other
-                    // nefarious acts.
-
-                    return $http[key].apply($http, arguments);
-                };
-            });
-
-            return wrapper;
         });
     });
 
