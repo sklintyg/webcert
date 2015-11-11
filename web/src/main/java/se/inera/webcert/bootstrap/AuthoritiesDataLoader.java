@@ -299,7 +299,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
                 UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
-                UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
                 UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
                 UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
                 UserPrivilege.PRIVILEGE_NAVIGERING);
