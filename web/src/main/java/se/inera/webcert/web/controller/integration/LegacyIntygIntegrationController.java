@@ -2,9 +2,9 @@ package se.inera.webcert.web.controller.integration;
 
 import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.webcert.common.security.authority.UserRole;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,11 +14,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.inera.webcert.common.security.authority.UserRole;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -34,7 +32,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
 
-    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
+    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_TANDLAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
 
     private String urlFragmentTemplate;
 
@@ -47,8 +45,10 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
      * Fetches a certificate from IT and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
+     * @param uriInfo
      * @param intygId
      *            The id of the certificate to view.
+     * @return
      */
     @GET
     @Path("/{intygId}/questions")

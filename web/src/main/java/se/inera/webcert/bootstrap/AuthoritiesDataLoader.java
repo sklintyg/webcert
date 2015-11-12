@@ -1,5 +1,7 @@
 package se.inera.webcert.bootstrap;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -172,7 +173,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private Set<Privilege> getPrivilegeList(final List<UserPrivilege> userPrivileges) {
 
-        Set<Privilege> privileges = new HashSet<>();
+        Set<Privilege> privileges = Sets.newHashSetWithExpectedSize(userPrivileges.size());
 
         for (UserPrivilege userPrivilege: userPrivileges) {
             Privilege privilege = privilegeRepository.findByName(userPrivilege.name());
@@ -196,25 +197,25 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
      * Each row in matrix holds; befattningskod, gruppförskrivarkod, roll
      */
     private String[][] getTitleCodesMatrix() {
-        String [][] matrix = {
-            {"204010", "0000000", UserRole.ROLE_LAKARE.name()},
+        return new String [][] {
             {"203090", "9300005", UserRole.ROLE_LAKARE.name()},
             {"203090", "9400003", UserRole.ROLE_LAKARE.name()},
             {"204090", "9100009", UserRole.ROLE_LAKARE.name()}
 
         };
-        return matrix;
     }
 
     private Map<UserRole, List<UserPrivilege>> getUserRolesPrivilegesMap() {
 
-        Map<UserRole, List<UserPrivilege>> map = new HashMap<>();
+        Map<UserRole, List<UserPrivilege>> map = Maps.newHashMapWithExpectedSize(UserRole.values().length);
 
         map.put(UserRole.ROLE_LAKARE, getPrivileges(UserRole.ROLE_LAKARE));
         map.put(UserRole.ROLE_LAKARE_DJUPINTEGRERAD, getPrivileges(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
         map.put(UserRole.ROLE_LAKARE_UTHOPP, getPrivileges(UserRole.ROLE_LAKARE_UTHOPP));
         map.put(UserRole.ROLE_PRIVATLAKARE, getPrivileges(UserRole.ROLE_PRIVATLAKARE));
         map.put(UserRole.ROLE_TANDLAKARE, getPrivileges(UserRole.ROLE_TANDLAKARE));
+        map.put(UserRole.ROLE_TANDLAKARE_DJUPINTEGRERAD, getPrivileges(UserRole.ROLE_TANDLAKARE_DJUPINTEGRERAD));
+        map.put(UserRole.ROLE_TANDLAKARE_UTHOPP, getPrivileges(UserRole.ROLE_TANDLAKARE_UTHOPP));
         map.put(UserRole.ROLE_VARDADMINISTRATOR, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR));
         map.put(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD));
         map.put(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP));
@@ -223,7 +224,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     }
 
     private List<UserPrivilege> getPrivileges(UserRole userRoles) {
-        List<UserPrivilege> userPrivileges = null;
+        List<UserPrivilege> userPrivileges;
 
         switch (userRoles) {
             case ROLE_LAKARE:
@@ -241,6 +242,12 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
             case ROLE_TANDLAKARE:
                 userPrivileges = getTandlakarePrivilegeList();
                 break;
+            case ROLE_TANDLAKARE_DJUPINTEGRERAD:
+                userPrivileges = getDjupintegreradLakarePrivilegeList();
+                break;
+            case ROLE_TANDLAKARE_UTHOPP:
+                userPrivileges = getUthoppsLakarePrivilegeList();
+                break;
             case ROLE_VARDADMINISTRATOR:
                 userPrivileges = getVardadministratorPrivilegeList();
                 break;
@@ -252,14 +259,14 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 break;
             default:
                 // Return empty list if
-                userPrivileges = new ArrayList<UserPrivilege>();
+                userPrivileges = new ArrayList<>(0);
         }
 
         return userPrivileges;
     }
 
     private List<UserPrivilege> getVardadministratorPrivilegeList() {
-        return Arrays.asList(new UserPrivilege[]{
+        return Arrays.asList(
                 UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
@@ -267,23 +274,44 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
                 UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
                 UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
-                UserPrivilege.PRIVILEGE_NAVIGERING});
+                UserPrivilege.PRIVILEGE_NAVIGERING);
     }
 
     private List<UserPrivilege> getUthoppsVardadministratorPrivilegeList() {
-        return Arrays.asList(new UserPrivilege[] {
+        return Arrays.asList(
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
                 UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
                 UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
                 UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
-                UserPrivilege.PRIVILEGE_NAVIGERING });
+                UserPrivilege.PRIVILEGE_NAVIGERING);
     }
 
     private List<UserPrivilege> getDjupintegreradVardadministratorPrivilegeList() {
-        return Arrays.asList(new UserPrivilege[] {
+        return Arrays.asList(
                 UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
-                UserPrivilege.PRIVILEGE_KOPIERA_INTYG });
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG);
+    }
+
+    private List<UserPrivilege> getUthoppsTandlakarePrivilegeList() {
+        return Arrays.asList(
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
+                UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
+                UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
+                UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
+                UserPrivilege.PRIVILEGE_NAVIGERING);
+    }
+
+    private List<UserPrivilege> getDjupintegreradTandlakarePrivilegeList() {
+        return Arrays.asList(
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA);
     }
 
     private List<UserPrivilege> getTandlakarePrivilegeList() {
@@ -291,7 +319,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     }
 
     private List<UserPrivilege> getPrivatLakarePrivilegeList() {
-        return Arrays.asList(new UserPrivilege[] {
+        return Arrays.asList(
                 UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
@@ -299,11 +327,11 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
                 UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
                 UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
-                UserPrivilege.PRIVILEGE_NAVIGERING });
+                UserPrivilege.PRIVILEGE_NAVIGERING);
     }
 
     private List<UserPrivilege> getUthoppsLakarePrivilegeList() {
-        return Arrays.asList(new UserPrivilege[] {
+        return Arrays.asList(
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
@@ -311,16 +339,16 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 UserPrivilege.PRIVILEGE_ATKOMST_ANDRA_ENHETER,
                 UserPrivilege.PRIVILEGE_HANTERA_PERSONUPPGIFTER,
                 UserPrivilege.PRIVILEGE_HANTERA_MAILSVAR,
-                UserPrivilege.PRIVILEGE_NAVIGERING });
+                UserPrivilege.PRIVILEGE_NAVIGERING);
     }
 
     private List<UserPrivilege> getDjupintegreradLakarePrivilegeList() {
-        return Arrays.asList(new UserPrivilege[] {
+        return Arrays.asList(
                 UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
-                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA);
     }
 
     private List<UserPrivilege> getLakarePrivilegeList() {

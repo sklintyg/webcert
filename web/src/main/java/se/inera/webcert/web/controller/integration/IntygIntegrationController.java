@@ -2,9 +2,13 @@ package se.inera.webcert.web.controller.integration;
 
 import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -16,15 +20,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -42,7 +40,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
-    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name() };
+    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_TANDLAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name() };
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
