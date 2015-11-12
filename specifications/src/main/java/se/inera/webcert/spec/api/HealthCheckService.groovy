@@ -9,7 +9,7 @@ class HealthCheckService extends RestClientFixture {
     def endpoint
 
     void execute() {
-        def restClient = createRestClient("${baseUrl}services/")
+        def restClient = createRestClient("${baseUrl}testability/")
         healthCheck = restClient.get(path: "/monitoring/health-check/${endpoint}").data
     }
 

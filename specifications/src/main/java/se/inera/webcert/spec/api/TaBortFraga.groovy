@@ -4,7 +4,7 @@ import se.inera.webcert.spec.util.RestClientFixture
 
 class TaBortFraga extends RestClientFixture {
 
-    private def restClient = createRestClient("${baseUrl}services/")
+    private def restClient = createRestClient("${baseUrl}testability/")
     
     String internReferens
     String externReferens

@@ -93,6 +93,7 @@
       <property name="attributes">
         <map>
           <entry key="healthcheck" value-ref="healthCheckService" />
+          <!-- AvtalService not required anymore? -->
           <entry key="avtalservice" value-ref="avtalService" />
         </map>
       </property>

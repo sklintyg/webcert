@@ -9,7 +9,7 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 class HanteraAnvandarAvtal extends RestClientFixture {
 
-    def restClient = createRestClient("${baseUrl}services/")
+    def restClient = createRestClient("${baseUrl}testability/")
 
     public HanteraAnvandarAvtal() {
         super()

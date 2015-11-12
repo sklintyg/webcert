@@ -13,7 +13,7 @@ class FragorOchSvar extends RestClientFixture {
     def fragaSvar
 
     public void execute() {
-        def restClient = createRestClient("${baseUrl}services/")
+        def restClient = createRestClient("${baseUrl}testability/")
 
         if (internReferens)
             fragaSvar = restClient.get(path: "questions/${internReferens}").data

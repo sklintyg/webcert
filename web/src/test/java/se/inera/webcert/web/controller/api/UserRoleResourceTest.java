@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.web.controller.testability.UserRoleResource;
 
 public class UserRoleResourceTest {
 

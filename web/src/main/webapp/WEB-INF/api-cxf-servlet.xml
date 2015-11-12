@@ -38,6 +38,7 @@
         <bean class="se.inera.webcert.web.controller.api.ModuleApiController" />
         <bean class="se.inera.webcert.web.controller.api.UtkastApiController" />
         <bean class="se.inera.webcert.web.controller.api.FmbApiController" />
+        <bean class="se.inera.webcert.web.controller.api.UserRoleResource" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />
@@ -53,7 +54,7 @@
   <beans profile="dev,testability-api">
     <jaxrs:server address="/testability">
       <jaxrs:serviceBeans>
-        <bean class="se.inera.webcert.web.controller.testability.UserRoleResource" />
+        <bean class="se.inera.webcert.web.controller.api.UserRoleResource" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />

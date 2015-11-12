@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.testability;
+package se.inera.webcert.web.controller.api;
 
 import java.util.Map;
 import java.util.Set;

@@ -44,7 +44,7 @@ class SkapaUtkast extends RestClientFixture {
         return intygId;
     }
 
-    def restClient = createRestClient("${baseUrl}services/")
+    def restClient = createRestClient("${baseUrl}testability/")
 
     def generator = { 
         String alphabet = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join(), int n ->

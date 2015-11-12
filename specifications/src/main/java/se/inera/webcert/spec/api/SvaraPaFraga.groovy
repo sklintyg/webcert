@@ -15,7 +15,7 @@ public class SvaraPaFraga extends RestClientFixture {
     String svarsText
 
     def execute() {
-        def restClient = createRestClient("${baseUrl}services/")
+        def restClient = createRestClient("${baseUrl}testability/")
         def response = restClient.put(
                 path: "questions/svara/${vardgivare}/${enhet}/${internReferens}",
                 body: svarsText,
