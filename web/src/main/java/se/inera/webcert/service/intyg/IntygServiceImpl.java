@@ -391,7 +391,8 @@ public class IntygServiceImpl implements IntygService {
 
     private IntygContentHolder buildIntygContentHolder(String typ, Utkast utkast) {
         Utlatande utlatande = serviceConverter.buildUtlatandeFromUtkastModel(utkast);
-        utlatande.setTyp(typ);
+        //TODO this must be set again
+        //utlatande.setTyp("sjukersattning");
         List<Status> statuses = serviceConverter.buildStatusesFromUtkast(utkast);
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null);
     }
