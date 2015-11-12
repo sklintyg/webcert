@@ -101,11 +101,11 @@ class FragaSvar extends Simulation {
 //			)
 //		.pause(2 seconds)
 		.exec(http("Delete incoming question")
-			.delete("/services/questions/${internReferens-franfk}")
+			.delete("/testability/questions/${internReferens-franfk}")
 			)
 		.pause(200 milliseconds)
 //		.exec(http("Delete sent question")
-//			.delete("/services/questions/${internReferens-tillfk}")
+//			.delete("/testability/questions/${internReferens-tillfk}")
 //			)
 //		.pause(200 milliseconds)
 	}

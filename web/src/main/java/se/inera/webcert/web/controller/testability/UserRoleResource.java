@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.webcert.web.controller.testability;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,10 +25,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
  * Rest interface only used for testing and in dev environments. It seems like it must be in
  * the same Spring context as the rest of the webservices to get access to the security context.
  */
-@Api(value = "testability", description = "REST API för testbarhet av roller", produces = MediaType.APPLICATION_JSON)
-public class TestabilityApiController {
+@Api(value = "user role", description = "REST API för testbarhet av roller", produces = MediaType.APPLICATION_JSON)
+@Path("/roles")
+public class UserRoleResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestabilityApiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserRoleResource.class);
 
     @Autowired
     private WebCertUserService webCertUserService;

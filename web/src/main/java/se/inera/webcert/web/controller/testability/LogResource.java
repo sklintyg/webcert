@@ -23,7 +23,8 @@ import org.springframework.jms.core.JmsTemplate;
 
 import se.inera.log.messages.AbstractLogMessage;
 
-@Api(value = "/services/logMessages", description = "REST API för testbarhet - PDL-loggning")
+@Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")
+@Path("/logMessages")
 public class LogResource {
 
     private static final int DEFAULT_TIMEOUT = 1000;

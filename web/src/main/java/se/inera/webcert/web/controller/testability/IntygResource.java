@@ -28,6 +28,7 @@ import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
+@Path("/intyg")
 public class IntygResource {
 
     @Autowired

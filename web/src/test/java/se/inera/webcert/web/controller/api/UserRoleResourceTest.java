@@ -20,14 +20,15 @@ import org.mockito.MockitoAnnotations;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.web.controller.testability.UserRoleResource;
 
-public class TestabilityApiControllerTest {
+public class UserRoleResourceTest {
 
     @Mock
     private WebCertUserService webCertUserService;
 
     @InjectMocks
-    private TestabilityApiController testabilityApiController;
+    private UserRoleResource userRoleResource;
 
     @Captor
     private ArgumentCaptor<String[]> roleArrCaptor;
@@ -47,7 +48,7 @@ public class TestabilityApiControllerTest {
         Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
         //When
-        final Collection<String> rolesResponse = (Collection<String>) testabilityApiController.getUserRoles().getEntity();
+        final Collection<String> rolesResponse = (Collection<String>) userRoleResource.getUserRoles().getEntity();
 
         //Then
         assertArrayEquals(new String[]{UserRole.ROLE_LAKARE.name()}, rolesResponse.toArray());
@@ -61,7 +62,7 @@ public class TestabilityApiControllerTest {
 
         //When
         final UserRole newRole = UserRole.ROLE_LAKARE_UTHOPP;
-        testabilityApiController.setUserRole(newRole);
+        userRoleResource.setUserRole(newRole);
 
         //Then
         Mockito.verify(webCertUserService, times(1)).updateUserRoles(roleArrCaptor.capture());

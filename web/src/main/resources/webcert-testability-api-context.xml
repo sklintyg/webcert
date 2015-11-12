@@ -1,17 +1,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:jaxrs="http://cxf.apache.org/jaxrs"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
   profile="dev,testability-api">
 
   <!-- REST services for inserting questions and certificate drafts directly 
     into the database for testing purposes -->
     
-  <jaxrs:server address="/questions">
+  <jaxrs:server address="/">
     <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.testability.QuestionResource" />
+      <bean class="se.inera.webcert.web.controller.testability.LogResource" />
+      <bean class="se.inera.webcert.web.controller.testability.IntygResource" />
+      <bean class="se.inera.webcert.web.controller.testability.UserResource" />
+      <bean class="se.inera.webcert.web.controller.testability.UserRoleResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -21,9 +24,10 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
+   <!--
   <jaxrs:server address="/logMessages">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.testability.LogResource" />
+
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -35,7 +39,7 @@
 
   <jaxrs:server address="/intyg">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.testability.IntygResource" />
+
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -47,7 +51,7 @@
 
   <jaxrs:server address="/anvandare">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.testability.UserResource" />
+
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -57,4 +61,16 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
+  <jaxrs:server address="/userrole">
+    <jaxrs:serviceBeans>
+
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider" />
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+   -->
 </beans>

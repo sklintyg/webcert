@@ -48,6 +48,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
  */
 @Transactional
 @Api(value = "services questions", description = "REST API för testbarhet - Fråga/Svar")
+@Path("/questions")
 public class QuestionResource {
 
     @PersistenceContext

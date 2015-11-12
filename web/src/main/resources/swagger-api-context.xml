@@ -40,7 +40,7 @@
             <entry key="monitoring" value="/monitoring/health-check"/>
             <entry key="integration" value="/visa"/>
             <entry key="legacyintegration" value="/webcert/web/user"/>
-            <entry key="testability" value="/services"/>
+            <entry key="testability" value="/testability"/>
           </map>
         </property>
       </bean>

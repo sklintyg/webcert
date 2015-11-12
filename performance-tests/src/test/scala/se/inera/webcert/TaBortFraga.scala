@@ -23,7 +23,7 @@ class TaBortFraga extends Simulation {
 	val scn = scenario("TaBortFraga")
 		.feed(intyg)
 		.exec(http("Delete the question")
-					.delete("/services/questions/extern/FK-${intygsId}")
+					.delete("/testability/questions/extern/FK-${intygsId}")
 			)
 
 	setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))

@@ -172,7 +172,7 @@ public class WebcertRestUtils extends RestClientFixture {
     }
 
     public static String translateExternalToInternalReferens(String externReferens) {
-        def restPath ="/services/questions/extern/${externReferens}/translate"
+        def restPath ="/testability/questions/extern/${externReferens}/translate"
         def response = webcert.get(path : restPath, requestContentType : JSON)
         response.data.internReferens
     }
