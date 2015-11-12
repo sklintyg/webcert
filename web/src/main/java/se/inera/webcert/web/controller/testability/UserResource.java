@@ -7,13 +7,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
+import io.swagger.annotations.Api;
 
 @Transactional
 @Api(value = "services anvandare", description = "REST API för testbarhet - Användare/Privatläkaravtal")
