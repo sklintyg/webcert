@@ -21,6 +21,7 @@
     <jaxrs:serviceBeans>
       <ref bean="legacyIntygIntegrationController" />
       <ref bean="privatePractitionerFragaSvarIntegrationController" />
+      <ref bean="certificateIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -39,6 +40,12 @@
 
   <bean id="privatePractitionerFragaSvarIntegrationController"
       class="se.inera.webcert.web.controller.legacyintegration.PrivatePractitionerFragaSvarIntegrationController">
+    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
+    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
+  </bean>
+
+  <bean id="certificateIntegrationController"
+      class="se.inera.webcert.web.controller.legacyintegration.CertificateIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>
