@@ -56,13 +56,13 @@
     <c:when test="${useMinifiedJavaScript == 'true'}">
       <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.min.js"></script>
       <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-animate.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-cookies.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-sanitize.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-animate.min.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
@@ -71,13 +71,13 @@
     <c:otherwise>
 	  <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
       <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.js"></script>
-      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
-      <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-animate.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-cookies.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-sanitize.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-animate.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>

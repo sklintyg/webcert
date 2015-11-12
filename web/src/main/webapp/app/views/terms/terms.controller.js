@@ -1,7 +1,7 @@
-angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope', '$scope', '$window', '$modal',
+angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope', '$scope', '$window',
         '$sanitize', '$state', '$location',
         'common.AvtalProxy', 'common.UserModel',
-        function($log, $rootScope, $scope, $window, $modal, $sanitize, $state, $location, AvtalProxy, UserModel) {
+        function($log, $rootScope, $scope, $window, $sanitize, $state, $location, AvtalProxy, UserModel) {
             'use strict';
             $scope.terms = {doneLoading:false, avtal:false};
 

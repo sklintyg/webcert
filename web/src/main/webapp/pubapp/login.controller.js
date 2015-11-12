@@ -2,7 +2,7 @@
  * Created by stephenwhite on 31/08/15.
  */
 angular.module('webcert.pub.login', ['ui.bootstrap'])
-    .controller('LoginController', ['$scope', '$sce','$modal', function($scope, $sce, $modal) {
+    .controller('LoginController', ['$scope', '$sce','$uibModal', function($scope, $sce, $uibModal) {
         var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
         var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
         $scope.collapseLoginDesc = true;
@@ -18,7 +18,7 @@ angular.module('webcert.pub.login', ['ui.bootstrap'])
 
         $scope.open = function (which) {
 
-            $scope.modalInstance = $modal.open({
+            $scope.modalInstance = $uibModal.open({
                 templateUrl: which,
                 scope: $scope,
                 size: 'lg'

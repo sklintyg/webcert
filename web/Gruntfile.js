@@ -241,7 +241,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-/*
+
         protractor: {
             options: {
                 configFile: 'node_modules/grunt-protractor-runner/node_modules/protractor/example/conf.js', // Default config file
@@ -269,7 +269,7 @@ module.exports = function(grunt) {
                 // Target-specific file lists and/or options go here.
             }
         },
-*/
+
         connect: {
             server: {
                 options: {

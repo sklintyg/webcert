@@ -58,10 +58,11 @@ class VisaTsDiabetesPage extends AbstractViewCertPage {
         waitFor {
             doneLoading()
             skickaDialogBodyTsDiabetes.text().trim().equals("")
+            skickaDialogCheck.isDisplayed()
         }
         skickaDialogCheck.click()
         waitFor {
-            doneLoading()
+            skickaDialogSkickaKnapp.isEnabled()
         }
         skickaDialogSkickaKnapp.click()
     }

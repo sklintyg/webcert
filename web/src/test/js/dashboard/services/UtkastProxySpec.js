@@ -5,7 +5,7 @@ describe('UtkastProxy', function() {
     var $httpBackend;
     var featureService;
     var dialogService;
-    var $cookieStore;
+    var $cookies;
     var $location;
     var $timeout;
     var $q;
@@ -61,15 +61,15 @@ describe('UtkastProxy', function() {
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', '$cookieStore',
+    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', '$cookies',
         '$q', '$location',
         '$timeout', 'common.messageService', 'common.UserModel',
-        function(_UtkastProxy_, _$httpBackend_, _$cookieStore_,
+        function(_UtkastProxy_, _$httpBackend_, _$cookies_,
             _$q_,
             _$location_, _$timeout_, _messageService_, _UserModel_) {
             UtkastProxy = _UtkastProxy_;
             $httpBackend = _$httpBackend_;
-            $cookieStore = _$cookieStore_;
+            $cookies = _$cookies_;
             $location = _$location_;
             $timeout = _$timeout_;
             $q = _$q_;

@@ -21,7 +21,7 @@
 
 <p class="text-expander" ><a href="#" ng-click="toggleLoginDesc()" ng-bind-html="loginDescText"> </a></p>
 
-<div collapse="collapseLoginDesc" class="collapse well">
+<div uib-collapse="collapseLoginDesc" class="well">
   <h4>SITHS-kort</h4>
 
   <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen (Hälso- och sjukvårdens
