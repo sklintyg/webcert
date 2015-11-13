@@ -266,7 +266,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivilege> getVardadministratorPrivilegeList() {
         return Arrays.asList(
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
@@ -288,7 +287,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivilege> getDjupintegreradVardadministratorPrivilegeList() {
         return Arrays.asList(
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG);
     }
 
@@ -306,7 +304,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivilege> getDjupintegreradTandlakarePrivilegeList() {
         return Arrays.asList(
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
@@ -319,7 +316,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivilege> getPrivatLakarePrivilegeList() {
         return Arrays.asList(
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
@@ -343,7 +339,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivilege> getDjupintegreradLakarePrivilegeList() {
         return Arrays.asList(
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,

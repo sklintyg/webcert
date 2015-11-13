@@ -699,7 +699,6 @@ public class WebCertUserDetailsServiceTest {
 
     private UserPrivilege[] getUserPrivilegesForUthoppVardadministrator() {
         return new UserPrivilege[] {
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
@@ -711,7 +710,6 @@ public class WebCertUserDetailsServiceTest {
 
     private UserPrivilege[] getUserPrivilegesForDjupintegreradVardadministrator() {
         return new UserPrivilege[] {
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG };
     }
 
@@ -729,7 +727,6 @@ public class WebCertUserDetailsServiceTest {
 
     private UserPrivilege[] getUserPrivilegesForDjupintegreradLakare() {
         return new UserPrivilege[] {
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
@@ -750,7 +747,6 @@ public class WebCertUserDetailsServiceTest {
 
     private UserPrivilege[] getUserPrivilegesForDjupintegreradTandlakare() {
         return new UserPrivilege[] {
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
                 UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
@@ -759,7 +755,6 @@ public class WebCertUserDetailsServiceTest {
 
     private UserPrivilege[] getUserPrivilegesForVardadministrator() {
         return new UserPrivilege[] {
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
                 UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
                 UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST };
