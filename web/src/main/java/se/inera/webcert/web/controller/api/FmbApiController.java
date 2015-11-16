@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbType;
 import se.inera.webcert.persistence.fmb.repository.FmbRepository;
@@ -48,11 +47,6 @@ public class FmbApiController extends AbstractApiController {
     @Autowired
     private FmbRepository fmbRepository;
 
-    @Autowired
-    private FmbService fmbService;
-
-    private boolean dataUpdateCalled = false;
-
     @GET
     @Path("/{icd10}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -66,12 +60,6 @@ public class FmbApiController extends AbstractApiController {
            return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
         }
         final FmbResponse result = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
-        if (!dataUpdateCalled && result.getForms().isEmpty() && (fmbRepository.count() == 0)) {
-            fmbService.updateData();
-            final FmbResponse newResult = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
-            dataUpdateCalled = true;
-            return Response.ok(newResult).build();
-        }
         return Response.ok(result).build();
     }
 
