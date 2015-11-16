@@ -117,16 +117,25 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-codegen-plugin</artifactId>
         <version>${cxf.version}</version>
+         <configuration>
+           <fork>true</fork>
+           <additionalJvmArgs>
+             -Djavax.xml.accessExternalSchema=all
+           </additionalJvmArgs>
+         </configuration>
         <executions>
           <execution>
             <id>generate-sources</id>
             <phase>generate-sources</phase>
             <configuration>
+
               <sourceRoot>${basedir}/target/generated/src/main/java</sourceRoot>
+
               <wsdlOptions>
 
                 <wsdlOption>
                   <extraargs>
+
                     <extraarg>-xjc-XhashCode</extraarg>
                     <extraarg>-xjc-Xequals</extraarg>
                     <extraarg>-xjc-XtoString</extraarg>
@@ -148,6 +157,7 @@
                     </extraarg>
                     <extraarg>-validate</extraarg>
                     <extraarg>-verbose</extraarg>
+
                   </extraargs>
                   <wsdl>${schema.path}/wsdl/HsaWsInteraction_3.16.wsdl</wsdl>
                   <wsdlLocation>
@@ -156,12 +166,14 @@
                 </wsdlOption>
 
               </wsdlOptions>
+
             </configuration>
             <goals>
               <goal>wsdl2java</goal>
             </goals>
           </execution>
         </executions>
+
         <dependencies>
           <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>

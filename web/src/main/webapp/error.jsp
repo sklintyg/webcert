@@ -46,7 +46,7 @@
         </div>
         <div class="col-xs-6">
           <c:choose>
-            <c:when test="${param.reason eq \"logout\"}">
+            <c:when test="${param.reason eq 'logout'}">
               <h1><spring:message code="info.loggedout.title" /></h1>
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="info.loggedout.text" />
@@ -54,7 +54,7 @@
               <jsp:include page="login.jsp" />
             </c:when>
 
-            <c:when test="${param.reason eq \"timeout\"}">
+            <c:when test="${param.reason eq 'timeout'}">
               <h1><spring:message code="info.loggedout.title" /></h1>
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="error.sessiontimeout.text" />
@@ -62,14 +62,14 @@
               <jsp:include page="login.jsp" />
             </c:when>
 
-            <c:when test="${param.reason eq \"timeout_integration\"}">
+            <c:when test="${param.reason eq 'timeout_integration'}">
               <h1><spring:message code="info.loggedout.title" /></h1>
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="error.sessiontimeout.integration.text" />
               </div>
             </c:when>
 
-            <c:when test="${param.reason eq \"denied\"}">
+            <c:when test="${param.reason eq 'denied'}">
               <h1><spring:message code="error.noauth.title" /></h1>
               <div id="noAuth" class="alert alert-warning">
                 <spring:message code="error.noauth.text" />
@@ -78,28 +78,28 @@
             </c:when>
 
 
-            <c:when test="${param.reason eq \"login.medarbetaruppdrag\"}">
+            <c:when test="${param.reason eq 'login.medarbetaruppdrag'}">
               <h1><spring:message code="error.login.medarbetaruppdrag.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
                 <spring:message code="error.login.medarbetaruppdrag.text" />
               </div>
             </c:when>
 
-            <c:when test="${param.reason eq \"login.failed\"}">
+            <c:when test="${param.reason eq 'login.failed'}">
               <h1><spring:message code="error.login.failed.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
                 <spring:message code="error.login.failed.text" />
               </div>
             </c:when>
 
-            <c:when test="${param.reason eq \"login.hsaerror\"}">
+            <c:when test="${param.reason eq 'login.hsaerror'}">
               <h1><spring:message code="error.login.hsaerror.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
                 <spring:message code="error.login.hsaerror.text" />
               </div>
             </c:when>
 
-            <c:when test="${param.reason eq \"notfound\"}">
+            <c:when test="${param.reason eq 'notfound'}">
               <h1><spring:message code="error.notfound.title" /></h1>
               <div id="notFound" class="alert alert-danger">
                 <spring:message code="error.notfound.text" />
