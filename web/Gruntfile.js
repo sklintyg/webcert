@@ -115,7 +115,7 @@ module.exports = function(grunt) {
                     __dirname + TSBAS_SRC_DIR + '/css/*.scss',
                     __dirname + TSDIABETES_SRC_DIR + '/css/*.scss',
                     __dirname + CSS_COMMON_SRC_DIR + '/*.scss',
-                    __dirname + COMMON_SRC_DIR + '/css/*.scss',
+                    __dirname + COMMON_SRC_DIR + '/css/*.scss'
                 ],
                 tasks: ['sass:dev']
             },
@@ -244,7 +244,7 @@ module.exports = function(grunt) {
 
         protractor: {
             options: {
-                configFile: 'node_modules/grunt-protractor-runner/node_modules/protractor/example/conf.js', // Default config file
+                configFile: 'src/test/resources/protractor.cli.conf.js', // Target-specific config file
                 keepAlive: true, // If false, the grunt process stops when the test fails.
                 noColor: false, // If true, protractor will not use colors in its output.
                 args: {
@@ -254,10 +254,10 @@ module.exports = function(grunt) {
 
             // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
             your_target: { // jshint ignore:line
-                options: {
-                    configFile: 'src/test/resources/protractor.conf.js', // Target-specific config file
+/*                options: {
+                    configFile: 'src/test/resources/protractor.cli.conf.js', // Target-specific config file
                     args: {} // Target-specific arguments
-                }
+                }*/
             }
         },
 

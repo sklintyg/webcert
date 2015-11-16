@@ -1,13 +1,12 @@
-var WelcomePage = require('../welcome/welcome.page'),
-    SokSkrivPage = require('../sokskriv/sokskriv.page'),
-    UtkastPage = require('../utkast/utkast.page'),
-    IntygPage = require('../intyg/intyg.page'),
+var WelcomePage = require('../page/welcome.page.js'),
+    SokSkrivPage = require('../page/sokskriv.page.js'),
+    UtkastPage = require('../page/utkast.page.js'),
+    IntygPage = require('../page/intyg.page.js'),
 
     welcomePage = new WelcomePage(),
     sokSkrivPage = new SokSkrivPage(),
-    utakstPage = new UtkastPage(),
+    utkastPage = new UtkastPage(),
     intygPage = new IntygPage();
-
 
 describe('Sign Utkast', function() {
 
@@ -37,7 +36,7 @@ describe('Sign Utkast', function() {
         });
 
         it('select fk intyg', function() {
-            sokSkrivPage.selectIntygType(1);
+            sokSkrivPage.selectIntygType('string:fk7263');
             sokSkrivPage.continue();
         });
 
@@ -45,8 +44,8 @@ describe('Sign Utkast', function() {
 
             it('check that smittskydd is displayed', function() {
 
-                utakstPage.whenSmittskyddIsDisplayed().then(function() {
-                    expect(utakstPage.getSmittskyddLabelText()).toContain("Avstängning enligt smittskyddslagen på grund av smitta");
+                utkastPage.whenSmittskyddIsDisplayed().then(function() {
+                    expect(utkastPage.getSmittskyddLabelText()).toContain("Avstängning enligt smittskyddslagen på grund av smitta");
                 });
 
             });
@@ -54,22 +53,21 @@ describe('Sign Utkast', function() {
             describe('fill in fk intyg', function() {
 
                 it('nedsatt form8b', function() {
-                    utakstPage.smittskyddCheckboxClick();
-                    utakstPage.nedsattMed25CheckboxClick();
+                    utkastPage.smittskyddCheckboxClick();
+                    utkastPage.nedsattMed25CheckboxClick();
                 });
 
                 it('resor form 6a', function() {
-                    utakstPage.travelRadioButtonJaClick();
-                    var val = utakstPage.getCheckedTravelRadioButtonValue();
+                    utkastPage.travelRadioButtonJaClick();
+                    var val = utkastPage.getCheckedTravelRadioButtonValue();
                     expect(val).toBe('JA');
-                })
+                });
 
                 it('can sign', function() {
-                    utakstPage.whenSigneraButtonIsEnabled().then(function() {
-                        utakstPage.signeraButtonClick();
+                    utkastPage.whenSigneraButtonIsEnabled().then(function() {
+                        utkastPage.signeraButtonClick();
                         expect(intygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
                     });
-
                 });
             });
         });

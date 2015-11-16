@@ -1,18 +1,18 @@
-var WelcomePage = require('../welcome/welcome.page.js'),
-    SokSkrivPage = require('../sokskriv/sokskriv.page.js'),
-    UtkastPage = require('utkast.page.js'),
-    IntygPage = require('../intyg/intyg.page.js'),
-    WebCertRestClient = require('../utils/webcert.restclient.page.js'),
-    fkIntyg = require('../data/fkIntyg.json'),
+var WelcomePage = require('../page/welcome.page.js'),
+    SokSkrivPage = require('../page/sokskriv.page.js');
+//    UtkastPage = require('utkast.page.js'),
+//    IntygPage = require('../intyg/intyg.page.js')
+var WebCertRestClient = require('../utils/webcert.restclient.js');
+var fkIntyg = require('../data/utkast.fk7263.create.json');
 
-    welcomePage = new WelcomePage(),
-    sokSkrivPage = new SokSkrivPage(),
-    utakstPage = new UtkastPage(),
-    intygPage = new IntygPage(),
-    webCertRestClient = new WebCertRestClient();
+var welcomePage = new WelcomePage(),
+    sokSkrivPage = new SokSkrivPage();
+//    utkastPage = new UtkastPage(),
+//    intygPage = new IntygPage();
 
+//var webCertRestClient = new WebCertRestClient();
 
-xdescribe('Create utkast', function() {
+describe('Create utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
@@ -29,24 +29,25 @@ xdescribe('Create utkast', function() {
         });
 
         it('and make sure the correct doctor is logged in', function() {
-            expect(sokSkrivPage.getDoctorText()).toContain("Åsa Andersson");
+            expect(sokSkrivPage.getDoctorText()).toContain('Åsa Andersson');
         });
     });
 
-    describe('create fk', function(){
+    xdescribe('create fk', function(){
 
         var utkasts = [];
 
-        it('create utkast', function(){
+        xit('create utkast', function(){
 
             fkIntyg.id = 'intyg-pro-1';
             fkIntyg.patientPersonnummer = '191212121212';
             fkIntyg.grundData.patient.personId = '191212121212';
-
+console.log('dude');
             webCertRestClient.createUtkast('fk7263', fkIntyg).then(function(utkast){
                 utkasts.push(utkast);
+                console.log('dudecomplete');
             });
-
+            console.log('dude2');
         });
 
         it('fill in person number and select', function() {
@@ -54,7 +55,7 @@ xdescribe('Create utkast', function() {
         });
 
         it('verify that the created utkast is in the list', function() {
-            sokSkrivPage.selectIntygType(1);
+            sokSkrivPage.selectIntygType('string:fk7263');
             sokSkrivPage.continue();
         });
 
