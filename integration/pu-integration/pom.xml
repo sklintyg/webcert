@@ -106,6 +106,12 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-codegen-plugin</artifactId>
         <version>${cxf.version}</version>
+        <configuration>
+          <fork>true</fork>
+          <additionalJvmArgs>
+            -Djavax.xml.accessExternalSchema=all
+          </additionalJvmArgs>
+        </configuration>
         <executions>
           <execution>
             <id>generate-sources</id>
