@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
@@ -30,6 +32,9 @@ public class TestabilityApiController {
 
     @Autowired
     private WebCertUserService webCertUserService;
+
+    @Autowired
+    private FmbService fmbService;
 
     @GET
     @Path("/userrole")
@@ -54,6 +59,22 @@ public class TestabilityApiController {
     @JsonPropertyDescription("Set the roles for user in session")
     public Response setUserRole(@PathParam("role") UserRole newRole) {
         webCertUserService.updateUserRoles(new String[]{newRole.name()});
+        return Response.ok().build();
+    }
+
+    /**
+     * Populate FMB data using the configured endpoint. Using a GET to update data might
+     * not be recommended. However, it is a very convenient way to populate FMB data from
+     * the browser without waiting for the automatic population that happens once each
+     * day. It is also the only way I could figure out to invoke it from the browser
+     * session in the Fitnesse tests.
+     */
+    @GET
+    @Path("/updatefmbdata")
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonPropertyDescription("Update FMB data")
+    public Response setUserRole() {
+        fmbService.updateData();
         return Response.ok().build();
     }
 

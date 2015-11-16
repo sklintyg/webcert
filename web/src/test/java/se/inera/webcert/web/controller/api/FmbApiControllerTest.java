@@ -36,9 +36,6 @@ public class FmbApiControllerTest {
     @Mock
     private FmbRepository fmbRepository;
 
-    @Mock
-    private FmbService fmbService;
-
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -69,7 +66,7 @@ public class FmbApiControllerTest {
     }
 
     @Test
-    public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData() throws Exception {
+    public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrect() throws Exception {
         // Given
         Mockito.doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
@@ -78,25 +75,6 @@ public class FmbApiControllerTest {
 
         // Then
         assertEquals(0, response.getForms().size());
-        Mockito.verify(fmbService, times(1)).updateData();
-    }
-
-    @Test
-    public void testGetFmbForIcd10OnlyUpdateFmbDataOnce() throws Exception {
-        // Given
-        Mockito.doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
-
-        // When
-        controller.getFmbForIcd10("A10").getEntity();
-        controller.getFmbForIcd10("A10").getEntity();
-        controller.getFmbForIcd10("A10").getEntity();
-        controller.getFmbForIcd10("A10").getEntity();
-        controller.getFmbForIcd10("A10").getEntity();
-        controller.getFmbForIcd10("A10").getEntity();
-        controller.getFmbForIcd10("A10").getEntity();
-
-        // Then
-        Mockito.verify(fmbService, times(1)).updateData();
     }
 
     @Test
