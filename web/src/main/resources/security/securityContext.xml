@@ -29,8 +29,10 @@
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/saml2/web/**"/>
   <security:http security="none" pattern="/services/**"/>
+
   <security:http security="none" pattern="/testability/**"/>
   <security:http security="none" pattern="/monitoring/**"/>
+
   <security:http security="none" pattern="/favicon.ico"/>
   
   <!-- Logger for SAML messages and events -->
@@ -108,6 +110,7 @@
     <!-- For non-production, allow unsecured access to swagger paths for REST doc purposes -->
     <security:http security="none" pattern="/services/swagger/**"/>
     <security:http security="none" pattern="/swagger-ui/**"/>
+
   </beans>
 
   <!-- =============================================================== -->
@@ -511,5 +514,6 @@
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
       <property name="defaultTargetUrl" value="/error.jsp?reason=logout"/>
     </bean>
+
   </beans>
 </beans>

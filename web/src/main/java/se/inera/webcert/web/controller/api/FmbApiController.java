@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.context.annotation.Profile;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbType;

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.webcert.web.controller.authtestability;
 
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
  * the same Spring context as the rest of the webservices to get access to the security context.
  */
 @Api(value = "user role", description = "REST API för testbarhet av roller", produces = MediaType.APPLICATION_JSON)
-@Path("/roles")
+@Path("/")
 public class UserRoleResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserRoleResource.class);
