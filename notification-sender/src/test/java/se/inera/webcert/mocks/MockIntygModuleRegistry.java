@@ -2,6 +2,7 @@ package se.inera.webcert.mocks;
 
 import org.joda.time.LocalDateTime;
 import se.inera.certificate.model.Status;
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModule;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
@@ -112,6 +113,12 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public String getQuestions(String version) {
                 return null;
             }
+
+            @Override
+            public Class<? extends Utlatande> getImplementationClass() {
+                return null;
+            }
+
         };
     }
 

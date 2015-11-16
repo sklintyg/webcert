@@ -1,7 +1,9 @@
 package se.inera.webcert.service.intyg.converter;
 
 import java.io.IOException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -9,8 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
+import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
@@ -23,8 +29,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
@@ -33,6 +38,9 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
     @Override
     public List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source) {
@@ -209,8 +217,9 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     @Override
     public Utlatande buildUtlatandeFromUtkastModel(Utkast utkast) {
         try {
-            return objectMapper.readValue(utkast.getModel(), Utlatande.class);
-        } catch (IOException e) {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            return objectMapper.readValue(utkast.getModel(), moduleApi.getImplementationClass());
+        } catch (IOException | ModuleNotFoundException e) {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
