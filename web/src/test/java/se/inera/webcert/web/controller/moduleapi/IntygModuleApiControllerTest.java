@@ -75,7 +75,6 @@ public class IntygModuleApiControllerTest {
         status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
     }
 
-    @Ignore
     @Test
     public void testGetCertificatePdf() throws Exception {
 
