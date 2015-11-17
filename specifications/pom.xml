@@ -343,7 +343,7 @@
                 <configuration>
                   <target unless="maven.test.skip">
                     <echo message="Starting FitNesse auto..." taskname="fitnesse"/>
-                    <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true">
+                    <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true" failonerror="true">
                       <arg line="-p ${fitnesse.port}"/>
                       <arg line="-d ${fitnesse.working}"/>
                       <arg line="-b fitnesse-results.xml"/>
