@@ -3,7 +3,7 @@ module.exports = function(config) {
     'use strict';
 
     var SRC_DIR = 'src/main/webapp/app/';
-    var TEST_DIR = 'src/test/js/';
+    var TEST_DIR = SRC_DIR;
     var WEBJAR_DIR = 'target/webjardependencies/';
 
     config.set({
@@ -34,7 +34,7 @@ module.exports = function(config) {
             TEST_DIR + 'utils/*.js',
 
             { pattern: SRC_DIR + '**/*.js' },
-            { pattern: TEST_DIR + '**/*Spec.js' }
+            { pattern: TEST_DIR + '**/*.spec.js' }
         ],
 
         exclude: [ SRC_DIR + 'app.js', SRC_DIR + 'app.min.js', SRC_DIR + '/js/app.js', SRC_DIR + '/js/app.min.js' ],
