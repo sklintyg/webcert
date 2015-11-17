@@ -11,21 +11,21 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>4.1.0-b29</version>
+  <version>0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
 
   <properties>
     <!-- Common -->
-    <common.version>2.5.0-b41</common.version>
+    <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.5.0]</common.version.range>
 
     <!-- TEMP -->
     <!--<ehcache.version>2.10.0</ehcache.version>-->
 
     <!-- Intygstyper -->
-    <intygstyper.version>2.5.0-b21</intygstyper.version>
+    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
     <intygstyper.version.range>(,2.5.0]</intygstyper.version.range>
 
     <!-- Schemas -->
