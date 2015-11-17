@@ -13,6 +13,17 @@
       "postnummer" : "12345",
       "postort" : "Testhult",
       "arbetsplatskod" : ""
+    },
+    {
+      "@class" : "se.inera.webcert.hsa.model.Vardenhet",
+      "id" : "TSTNMT2321000156-1039",
+      "namn" : "NMT vg1 ve2",
+      "epost" : "enhet2@webcert.invalid.se",
+      "telefonnummer" : "0101112131415",
+      "postadress" : "NMT gata 2",
+      "postnummer" : "12345",
+      "postort" : "Testhult",
+      "arbetsplatskod" : ""
     }
   ]
 }

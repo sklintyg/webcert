@@ -1,0 +1,14 @@
+{
+    "hsaId": "TSTNMT2321000156-103F",
+	"forNamn": "Leonie",
+	"efterNamn": "Koehl",
+    "uppdrag":[
+    	{
+    		"vardgivare": "TSTNMT2321000156-1002",
+    		"enhet": "TSTNMT2321000156-1039",
+            "andamal":["Vård och behandling"]
+    	}
+    ],
+	"befattningsKod": "203090",
+	"forskrivarKod": "9300005"
+}

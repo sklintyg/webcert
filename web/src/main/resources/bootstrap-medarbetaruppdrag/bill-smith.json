@@ -1,0 +1,14 @@
+{
+	"hsaId": "TSTNMT2321000156-103G",
+	"forNamn": "Bill",
+	"efterNamn": "Smith",
+	"uppdrag": [
+		{
+			"vardgivare": "TSTNMT2321000156-1002",
+			"enhet": "TSTNMT2321000156-1039",
+			"andamal": [
+				"Vård och behandling"
+			]
+		}
+	]
+}

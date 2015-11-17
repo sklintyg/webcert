@@ -22,7 +22,7 @@ public class SakerhetstjanstAssertion {
     public static final String TITEL_ATTRIBUTE = "urn:sambi:names:attribute:title";
 
     // Personens befattningskod
-    private static final String TITEL_KOD_ATTRIBUTE = "urn:sambi:names:attribute:titleCode";
+    public static final String TITEL_KOD_ATTRIBUTE = "urn:sambi:names:attribute:titleCode";
 
     // Förskrivarkod och gruppförskrivarkod för specificerad person
     // Om användaren är en legitimerad läkare så kommer förskrivarkoden i attributetet.
@@ -42,13 +42,13 @@ public class SakerhetstjanstAssertion {
     public static final String ENHET_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careUnitHsaId";
 
     // Namn på den vårdenhet aktuellt uppdrag tillhör
-    private static final String ENHET_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careUnitName";
+    public static final String ENHET_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careUnitName";
 
     // HSA-identitet på den vårdgivare aktuellt uppdrag tillhör
-    private static final String VARDGIVARE_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careProviderHsaId";
+    public static final String VARDGIVARE_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careProviderHsaId";
 
     // Namn på den vårdgivare aktuellt uppdrag tillhör
-    private static final String VARDGIVARE_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careProviderName";
+    public static final String VARDGIVARE_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careProviderName";
 
     // Syfte med aktuell uppdrag
     public static final String MEDARBETARUPPDRAG_TYPE = "urn:sambi:names:attribute:commissionPurpose";
