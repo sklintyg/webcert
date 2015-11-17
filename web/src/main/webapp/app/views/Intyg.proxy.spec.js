@@ -34,7 +34,6 @@ describe('IntygProxy', function() {
         $provide.value('common.dialogService', dialogService);
         $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
         $provide.value('common.User', User);
-        $provide.value('common.CertificateService', {});
         $provide.value('common.messageService', {});
 
         //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});

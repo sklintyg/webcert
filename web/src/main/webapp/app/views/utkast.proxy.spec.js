@@ -52,7 +52,6 @@ describe('UtkastProxy', function() {
         statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
         $provide.value('common.statService', statService);
         $provide.value('common.User', User);
-        $provide.value('common.CertificateService', {});
         $provide.value('common.messageService', {});
         $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
             hasIntygsTyp: function() {return true;} });
