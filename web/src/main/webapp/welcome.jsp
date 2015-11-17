@@ -317,7 +317,7 @@
                 "efternamn" : "Tandläkare",
                 "hsaId" : "tore-tandlakare",
                 "enhetId" : "tandenheten-1",
-                "tandLakare" : true,
+                "tandlakare" : true,
                 "forskrivarKod": "6745341"
             },
 
@@ -337,7 +337,7 @@
               "efternamn" : "Ericsson",
               "hsaId" : "TSTNMT2321000156-103B",
               "enhetId" : "TSTNMT2321000156-1039",
-              "tandLakare" : true
+              "tandlakare" : true
             },
 
             // Läkare inom EU/ESS/Schweiz som ska finnas i demo-miljö och därmed i test-HSA
