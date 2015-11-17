@@ -19,6 +19,14 @@ public class HsaPerson {
 
     private List<String> legitimeradeYrkesgrupper = new ArrayList<String>();
 
+    private String befattningsKod;
+
+    private String forskrivarKod;
+
+
+    // ~ Constructors
+    // ~ =====================================================================================
+
     public HsaPerson() {
         super();
     }
@@ -29,6 +37,10 @@ public class HsaPerson {
         this.forNamn = forNamn;
         this.efterNamn = efterNamn;
     }
+
+
+    // ~ Getters and setters
+    // ~ =====================================================================================
 
     public String getHsaId() {
         return hsaId;
@@ -84,6 +96,22 @@ public class HsaPerson {
 
     public void setLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
         this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
+    }
+
+    public String getBefattningsKod() {
+        return befattningsKod;
+    }
+
+    public void setBefattningsKod(String befattningsKod) {
+        this.befattningsKod = befattningsKod;
+    }
+
+    public String getForskrivarKod() {
+        return forskrivarKod;
+    }
+
+    public void setForskrivarKod(String forskrivarKod) {
+        this.forskrivarKod = forskrivarKod;
     }
 
 }
