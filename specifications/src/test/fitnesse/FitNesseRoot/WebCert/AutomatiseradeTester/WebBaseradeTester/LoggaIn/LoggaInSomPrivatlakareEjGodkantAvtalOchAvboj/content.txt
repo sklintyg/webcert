@@ -1,3 +1,5 @@
+Ignorerad i väntan på WEBCERT-2202
+
 !3 Logga in som privatläkare som ej har godkänt webcert avtal, men som är godkänd privatläkare (i stubbe). Avböj avtalet.
 
 !4 Stäng och öppna browsern för att explicit rensa sessionen

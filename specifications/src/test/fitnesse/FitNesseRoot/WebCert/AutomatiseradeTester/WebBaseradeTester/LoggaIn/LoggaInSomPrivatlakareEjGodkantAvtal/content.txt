@@ -1,3 +1,5 @@
+Ignorerad i väntan på WEBCERT-2202
+
 !3 Stäng och öppna browsern specifikt för att rensa sessionen
 
 | skript | Browser |

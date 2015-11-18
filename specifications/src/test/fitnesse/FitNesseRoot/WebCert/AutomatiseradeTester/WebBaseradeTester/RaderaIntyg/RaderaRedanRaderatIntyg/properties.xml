@@ -4,6 +4,7 @@
 <Files>true</Files>
 <Help>Radera redan raderat utkast</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

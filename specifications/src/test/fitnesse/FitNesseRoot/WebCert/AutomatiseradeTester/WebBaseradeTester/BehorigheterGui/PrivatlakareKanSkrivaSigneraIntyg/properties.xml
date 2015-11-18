@@ -4,6 +4,7 @@
 <Files>true</Files>
 <Help>Privatläkare kan skriva och signera intyg</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

@@ -1,5 +1,7 @@
 !contents -R2 -g -p -f -h
 
+Ignorerad i väntan på WEBCERT-2202
+
 |skapa utkast|
 |intygId|intygTyp|patientPersonnummer|patientFornamn|patientEfternamn|hsaId|namn|enhetId|komplett| respons? |
 |webcert-fitnesse-tabort-1|fk7263|${person1.personnummer}|Test|Testorsson|IFV1239877878-104B|Läkarnamn|IFV1239877878-1042|ja| 200 |

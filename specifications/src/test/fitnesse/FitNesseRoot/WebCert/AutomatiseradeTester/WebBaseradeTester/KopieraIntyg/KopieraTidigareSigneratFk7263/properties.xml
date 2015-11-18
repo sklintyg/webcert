@@ -4,6 +4,7 @@
 <Files>true</Files>
 <Help>Kopiera ett signerat fk-intyg och få ett nytt utkast baserat på det.</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>
