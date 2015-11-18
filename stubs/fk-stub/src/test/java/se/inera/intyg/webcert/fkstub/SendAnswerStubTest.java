@@ -1,4 +1,4 @@
-package se.inera.webcert.fkstub;
+package se.inera.intyg.webcert.fkstub;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,9 +14,9 @@ import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
@@ -26,19 +26,19 @@ import iso.v21090.dt.v1.II;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendQuestionStubTest {
+public class SendAnswerStubTest {
 
-    private static final String SEND_QUESTION_STUB_ADDRESS = "SendQuestionStub";
+    public static final String SEND_ANSWER_STUB_ADDRESS = "SendAnswerStub";
 
     @Mock
     private QuestionAnswerStore store;
 
     @InjectMocks
-    private SendQuestionStub stub = new SendQuestionStub();
+    private SendAnswerStub stub = new SendAnswerStub();
 
     @Test
     public void answerRequestWithoutAddressIsRejected() {
-        SendMedicalCertificateQuestionResponseType answer = stub.sendMedicalCertificateQuestion(null, null);
+        SendMedicalCertificateAnswerResponseType answer = stub.sendMedicalCertificateAnswer(null, null);
         assertEquals(ResultCodeEnum.ERROR, answer.getResult().getResultCode());
     }
 
@@ -46,38 +46,43 @@ public class SendQuestionStubTest {
     public void answerRequestWrongAddressIsRejected() {
         AttributedURIType address = new AttributedURIType();
         address.setValue("WrongAddress");
-        SendMedicalCertificateQuestionResponseType answer = stub.sendMedicalCertificateQuestion(address, null);
+        SendMedicalCertificateAnswerResponseType answer = stub.sendMedicalCertificateAnswer(address, null);
         assertEquals(ResultCodeEnum.ERROR, answer.getResult().getResultCode());
     }
 
     @Test
     public void answerIsAccepted() {
         AttributedURIType address = new AttributedURIType();
-        address.setValue(SEND_QUESTION_STUB_ADDRESS);
-        SendMedicalCertificateQuestionType parameters = createQuestion("Message");
-        SendMedicalCertificateQuestionResponseType answer = stub.sendMedicalCertificateQuestion(address, parameters);
+        address.setValue(SEND_ANSWER_STUB_ADDRESS);
+        SendMedicalCertificateAnswerType parameters = createAnswer("Message");
+        SendMedicalCertificateAnswerResponseType answer = stub.sendMedicalCertificateAnswer(address, parameters);
         assertEquals(answer.getResult().getErrorText(), ResultCodeEnum.OK, answer.getResult().getResultCode());
     }
 
     @Test
     public void answerWithMessageErrorGeneratesError() {
         AttributedURIType address = new AttributedURIType();
-        address.setValue(SEND_QUESTION_STUB_ADDRESS);
-        SendMedicalCertificateQuestionType parameters = createQuestion("Error");
-        SendMedicalCertificateQuestionResponseType answer = stub.sendMedicalCertificateQuestion(address, parameters);
+        address.setValue(SEND_ANSWER_STUB_ADDRESS);
+        SendMedicalCertificateAnswerType parameters = createAnswer("Error");
+        SendMedicalCertificateAnswerResponseType answer = stub.sendMedicalCertificateAnswer(address, parameters);
         assertEquals(ResultCodeEnum.ERROR, answer.getResult().getResultCode());
     }
 
-    private SendMedicalCertificateQuestionType createQuestion(String message) {
-        SendMedicalCertificateQuestionType parameters = new SendMedicalCertificateQuestionType();
-        QuestionToFkType questionType = new QuestionToFkType();
-        questionType.setAmne(Amnetyp.OVRIGT);
+    private SendMedicalCertificateAnswerType createAnswer(String message) {
+        SendMedicalCertificateAnswerType parameters = new SendMedicalCertificateAnswerType();
+        AnswerToFkType answerType = new AnswerToFkType();
+        answerType.setFkReferensId("fkReferensId");
+        answerType.setAmne(Amnetyp.OVRIGT);
+        InnehallType fraga = new InnehallType();
+        fraga.setMeddelandeText("fraga");
+        fraga.setSigneringsTidpunkt(LocalDateTime.now());
+        answerType.setFraga(fraga);
         InnehallType svar = new InnehallType();
         svar.setMeddelandeText(message);
         svar.setSigneringsTidpunkt(LocalDateTime.now());
-        questionType.setFraga(svar);
-        questionType.setVardReferensId("vardRef");
-        questionType.setAvsantTidpunkt(LocalDateTime.now());
+        answerType.setSvar(svar);
+        answerType.setVardReferensId("vardRef");
+        answerType.setAvsantTidpunkt(LocalDateTime.now());
         LakarutlatandeEnkelType lakarutlatande = new LakarutlatandeEnkelType();
         lakarutlatande.setLakarutlatandeId("id");
         lakarutlatande.setSigneringsTidpunkt(LocalDateTime.now());
@@ -88,7 +93,7 @@ public class SendQuestionStubTest {
         patient.setPersonId(id);
         patient.setFullstandigtNamn("namn");
         lakarutlatande.setPatient(patient);
-        questionType.setLakarutlatande(lakarutlatande);
+        answerType.setLakarutlatande(lakarutlatande);
         VardAdresseringsType vardAdress = new VardAdresseringsType();
         HosPersonalType hosPersonal = new HosPersonalType();
         II hosId = new II();
@@ -111,8 +116,8 @@ public class SendQuestionStubTest {
         enhet.setVardgivare(vardgivare);
         hosPersonal.setEnhet(enhet);
         vardAdress.setHosPersonal(hosPersonal);
-        questionType.setAdressVard(vardAdress);
-        parameters.setQuestion(questionType);
+        answerType.setAdressVard(vardAdress);
+        parameters.setAnswer(answerType);
         return parameters;
     }
 }

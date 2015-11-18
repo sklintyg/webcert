@@ -1,4 +1,4 @@
-package se.inera.webcert.fkstub.validation;
+package se.inera.intyg.webcert.fkstub.validation;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.fkstub;
+package se.inera.intyg.webcert.fkstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
@@ -8,8 +8,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswe
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.webcert.fkstub.validation.SendMedicalCertificateAnswerValidator;
-import se.inera.webcert.fkstub.validation.ValidationException;
+import se.inera.intyg.webcert.fkstub.validation.SendMedicalCertificateAnswerValidator;
+import se.inera.intyg.webcert.fkstub.validation.ValidationException;
 
 
 /**

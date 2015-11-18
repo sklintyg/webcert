@@ -1,4 +1,4 @@
-package se.inera.webcert.fkstub.validation;
+package se.inera.intyg.webcert.fkstub.validation;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;

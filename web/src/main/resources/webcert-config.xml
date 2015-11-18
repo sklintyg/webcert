@@ -32,6 +32,7 @@
   <context:annotation-config />
   
   <context:component-scan base-package="se.inera.webcert" />
+  <context:component-scan base-package="se.inera.intyg.webcert.fkstub" />
 
 
   <beans>
