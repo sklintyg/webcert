@@ -16,8 +16,7 @@ describe('Generate fk utkast', function() {
             console.log('Login OK');
         });
 
-        restUtil.deleteAllUtkast().then(function(response){
-        });
+        restUtil.deleteAllUtkast().then(function(response){});
 
         var intygsId = null;
         fkIntyg.patientPersonnummer = '191212121212';
