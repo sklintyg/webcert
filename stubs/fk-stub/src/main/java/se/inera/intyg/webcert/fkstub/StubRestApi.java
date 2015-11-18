@@ -1,4 +1,4 @@
-package se.inera.webcert.fkstub;
+package se.inera.intyg.webcert.fkstub;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

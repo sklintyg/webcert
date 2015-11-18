@@ -1,4 +1,4 @@
-package se.inera.webcert.fkstub;
+package se.inera.intyg.webcert.fkstub;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
