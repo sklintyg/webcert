@@ -1,7 +1,7 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-var SokSkrivPage = function() {
+var SokSkrivIntygPage = function() {
     'use strict';
 
     var doctor = element(by.css('.logged-in')),
@@ -36,4 +36,4 @@ var SokSkrivPage = function() {
     };
 };
 
-module.exports = SokSkrivPage;
+module.exports = SokSkrivIntygPage;

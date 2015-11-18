@@ -33,8 +33,9 @@ module.exports = function(config) {
             TEST_DIR + 'app-test.js',
             TEST_DIR + 'utils/*.js',
 
-            { pattern: SRC_DIR + '**/*.js' },
-            { pattern: TEST_DIR + '**/*.spec.js' }
+            { pattern: SRC_DIR + '**/app.test.js' },
+            { pattern: SRC_DIR + '**/views/**/*.js' },
+            { pattern: TEST_DIR + '**/views/**/*.spec.js' }
         ],
 
         exclude: [ SRC_DIR + 'app.js', SRC_DIR + 'app.min.js', SRC_DIR + '/js/app.js', SRC_DIR + '/js/app.min.js' ],

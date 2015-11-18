@@ -6,7 +6,6 @@ var IntygPage = function() {
 
     var viewCertAndQa = element(by.id('viewCertAndQA'));
 
-
     this.get = function() {
         browser.get('http://www.angularjs.org');
     };

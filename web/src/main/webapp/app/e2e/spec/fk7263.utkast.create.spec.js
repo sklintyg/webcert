@@ -1,14 +1,15 @@
-var WelcomePage = require('../page/welcome.page.js'),
-    SokSkrivPage = require('../page/sokskriv.page.js'),
-    UtkastPage = require('../page/utkast.page.js'),
-    IntygPage = require('../page/intyg.page.js'),
+var pages = require('pages');
+var WelcomePage = require(pages.welcome),
+    SokSkrivIntygPage = require(pages.app.views.sokSkrivIntyg),
+    UtkastPage = require(pages.app.e2e.pageExternal.utkast),
+    IntygPage = require(pages.app.e2e.pageExternal.intyg);
 
-    welcomePage = new WelcomePage(),
-    sokSkrivPage = new SokSkrivPage(),
+var welcomePage = new WelcomePage(),
+    sokSkrivIntygPage = new SokSkrivIntygPage(),
     utkastPage = new UtkastPage(),
     intygPage = new IntygPage();
 
-describe('Sign Utkast', function() {
+xdescribe('Create and Sign FK utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
@@ -17,7 +18,6 @@ describe('Sign Utkast', function() {
             // login id IFV1239877878-104B_IFV1239877878-1042
             var id = 'IFV1239877878-104B_IFV1239877878-1042';
             welcomePage.login(id);
-
         });
 
         it('wait for dashboard', function() {
@@ -25,19 +25,19 @@ describe('Sign Utkast', function() {
         });
 
         it('and make sure the correct doctor is logged in', function() {
-            expect(sokSkrivPage.getDoctorText()).toContain("Åsa Andersson");
+            expect(sokSkrivIntygPage.getDoctorText()).toContain("Åsa Andersson");
         });
     });
 
     describe('create fk', function(){
 
         it('fill in person number and select', function() {
-            sokSkrivPage.selectPersonnummer('191212121212');
+            sokSkrivIntygPage.selectPersonnummer('191212121212');
         });
 
         it('select fk intyg', function() {
-            sokSkrivPage.selectIntygType('string:fk7263');
-            sokSkrivPage.continue();
+            sokSkrivIntygPage.selectIntygType('string:fk7263');
+            sokSkrivIntygPage.continue();
         });
 
         describe('interact with utkast', function() {
