@@ -21,8 +21,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-protractor-runner');
-    grunt.loadNpmTasks('grunt-protractor-webdriver');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-sass-lint');
 
@@ -242,34 +240,6 @@ module.exports = function(grunt) {
             }
         },
 
-        protractor: {
-            options: {
-                configFile: 'src/test/resources/protractor.cli.conf.js', // Target-specific config file
-                keepAlive: true, // If false, the grunt process stops when the test fails.
-                noColor: false, // If true, protractor will not use colors in its output.
-                args: {
-                    // Arguments passed to the command
-                }
-            },
-
-            // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
-            your_target: { // jshint ignore:line
-/*                options: {
-                    configFile: 'src/test/resources/protractor.cli.conf.js', // Target-specific config file
-                    args: {} // Target-specific arguments
-                }*/
-            }
-        },
-
-        protractor_webdriver: { // jshint ignore:line
-            options: {
-                // Task-specific options go here.
-            },
-            your_target: { // jshint ignore:line
-                // Target-specific file lists and/or options go here.
-            }
-        },
-
         connect: {
             server: {
                 options: {
@@ -364,7 +334,6 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma']);
-    grunt.registerTask('e2e', ['protractor_webdriver','protractor']);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
 };

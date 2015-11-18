@@ -1,15 +1,15 @@
 var pages = require('pages');
 var WelcomePage = require(pages.welcome),
     SokSkrivIntygPage = require(pages.app.views.sokSkrivIntyg),
-    UtkastPage = require(pages.app.e2e.pageExternal.utkast),
-    IntygPage = require(pages.app.e2e.pageExternal.intyg);
+    UtkastPage = require(pages.intygpages.utkast),
+    IntygPage = require(pages.intygpages.intyg);
 
 var welcomePage = new WelcomePage(),
     sokSkrivIntygPage = new SokSkrivIntygPage(),
     utkastPage = new UtkastPage(),
     intygPage = new IntygPage();
 
-xdescribe('Create and Sign FK utkast', function() {
+describe('Create and Sign FK utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {

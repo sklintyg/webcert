@@ -11,8 +11,8 @@
  **/
 
 exports.config = {
-    seleniumAddress: 'http://localhost:4444/wd/hub',
-    specs: ['../../**/e2e/**/*.spec.js'],
+    //seleniumAddress: 'http://localhost:4444/wd/hub',
+    specs: ['./spec/*.spec.js'],
     baseUrl: 'http://localhost:9088/',
     //rootElement:'html',
     // If chromeOnly is true, we dont need to stand the selenium server.
@@ -25,6 +25,12 @@ exports.config = {
         //'browserName': 'phantomjs'
     },
     rootElement:'html',
+    jasmineNodeOpts: {
+        onComplete: null,
+        isVerbose: true,
+        showColors: true,
+        includeStackTrace: false
+    },
     onPrepare: function() {
         // implicit and page load timeouts
         //browser.manage().timeouts().pageLoadTimeout(40000);
