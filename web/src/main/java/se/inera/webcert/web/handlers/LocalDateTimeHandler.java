@@ -16,11 +16,6 @@ public class LocalDateTimeHandler implements javax.ws.rs.ext.ParamConverterProvi
     // Use the same parser as we do in CustomObjectMapper.
     static final DateTimeFormatter PARSER = ISODateTimeFormat.localDateOptionalTimeParser();
 
-//    @Override
-//    public LocalDateTime fromString(String str) {
-//        return PARSER.parseLocalDateTime(str);
-//    }
-
     @Override
     public <T> ParamConverter<T> getConverter(Class<T> aClass, Type type, Annotation[] annotations) {
         if (type.equals(LocalDateTime.class)) {
