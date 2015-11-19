@@ -4,7 +4,6 @@
 <Files>true</Files>
 <Help>Logga in som privatläkare och avböj avtal</Help>
 <Properties>true</Properties>
-<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

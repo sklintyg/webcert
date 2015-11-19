@@ -1,5 +1,3 @@
-Ignorerad i väntan på WEBCERT-2202
-
 !3 Ta bort eventuella kvarlämnade frågor
 
 |Ta bort fraga|

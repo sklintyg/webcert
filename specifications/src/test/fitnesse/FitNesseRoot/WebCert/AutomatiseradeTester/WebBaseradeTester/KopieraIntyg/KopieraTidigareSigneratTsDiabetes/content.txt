@@ -1,5 +1,3 @@
-Ignorerad i väntan på WEBCERT-2202
-
 Detta test ska visa på att man kan kopiera ett signerat ts-bas-intyg och få ett nytt utkast baserat på det.
 
 !3 Logga in
