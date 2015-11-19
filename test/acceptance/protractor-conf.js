@@ -31,7 +31,7 @@ exports.config = {
         global.expect = chai.expect;
 
         // Testdata lib
-        global.testdata = require("./features/lib/testdata.js");
+        global.testdata = require("../lib/testdata.js");
 
 
     },
