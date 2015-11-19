@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub;
+package se.inera.intyg.webcert.intygstjanststub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

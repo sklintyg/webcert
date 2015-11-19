@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub;
+package se.inera.intyg.webcert.intygstjanststub;
 
 import java.util.List;
 import java.util.Map;

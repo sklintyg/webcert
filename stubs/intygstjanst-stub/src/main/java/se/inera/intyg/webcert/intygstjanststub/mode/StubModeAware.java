@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Inherited
 @Documented
-public @interface StubLatencyAware {
+public @interface StubModeAware {
 }

@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
 
   <beans profile="dev,wc-all-stubs,wc-it-stub">
-    <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.webcert.intygstjanststub.GetCertificateForCareResponderStub"/>
-    <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
-    <jaxws:endpoint address="/revoke-medical-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RevokeMedicalCertificateResponderStub"/>
-    <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.webcert.intygstjanststub.SendCertificateToRecipientResponderStub"/>
-    <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>
-    <jaxws:endpoint address="/register-ts-bas-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RegisterTSBasResponderStub"/>
-    <jaxws:endpoint address="/register-ts-diabetes-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RegisterTSDiabetesResponderStub"/>
+    <context:component-scan base-package="se.inera.intyg.webcert.intygstjanststub" />
 
-    <bean id="intygstjanstStubBootstrapBean" class="se.inera.webcert.intygstjanststub.BootstrapBean"/>
+    <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.intyg.webcert.intygstjanststub.GetCertificateForCareResponderStub"/>
+    <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.intyg.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
+    <jaxws:endpoint address="/revoke-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RevokeMedicalCertificateResponderStub"/>
+    <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.intyg.webcert.intygstjanststub.SendCertificateToRecipientResponderStub"/>
+    <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>
+    <jaxws:endpoint address="/register-ts-bas-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSBasResponderStub"/>
+    <jaxws:endpoint address="/register-ts-diabetes-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSDiabetesResponderStub"/>
+
+    <bean id="intygstjanstStubBootstrapBean" class="se.inera.intyg.webcert.intygstjanststub.BootstrapBean"/>
 
     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
       <property name="proxyTargetClass" value="true"/>
@@ -22,6 +25,8 @@
   </beans>
 
   <beans profile="dev,testability-api">
+    <context:component-scan base-package="se.inera.intyg.webcert.intygstjanststub" />
+
     <jaxrs:server address="/intygstjanst-stub">
       <jaxrs:serviceBeans>
         <ref bean="intygstjanstStubRestApi"/>
@@ -34,7 +39,7 @@
       </jaxrs:extensionMappings>
     </jaxrs:server>
   
-    <bean id="intygstjanstStubRestApi" class="se.inera.webcert.intygstjanststub.StubRestApi"/>
+    <bean id="intygstjanstStubRestApi" class="se.inera.intyg.webcert.intygstjanststub.StubRestApi"/>
   </beans>
 
 </beans>

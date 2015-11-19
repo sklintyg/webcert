@@ -1,14 +1,14 @@
-package se.inera.webcert.intygstjanststub;
+package se.inera.intyg.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponderInterface;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponseType;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType;
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasResponderInterface;
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasResponseType;
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasType;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;
 import se.inera.intygstjanster.ts.services.v1.ResultatTyp;
-import se.inera.webcert.intygstjanststub.mode.StubModeAware;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
@@ -19,14 +19,14 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 /**
  * Created by eriklupander on 2015-06-10.
  */
-public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesResponderInterface {
+public class RegisterTSBasResponderStub implements RegisterTSBasResponderInterface {
 
     @Autowired
     private IntygStore intygStore;
 
     @Override
     @StubModeAware
-    public RegisterTSDiabetesResponseType registerTSDiabetes(String logicalAddress, RegisterTSDiabetesType parameters) {
+    public RegisterTSBasResponseType registerTSBas(String logicalAddress, RegisterTSBasType parameters) {
 
         GetCertificateForCareResponseType req = new GetCertificateForCareResponseType();
         Utlatande cert = new Utlatande();
@@ -48,16 +48,17 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         CertificateMetaType certificateMetaType = buildStubInternalMeta(parameters);
         req.setMeta(certificateMetaType);
 
+
         intygStore.addIntyg(req);
 
-        RegisterTSDiabetesResponseType resp = new RegisterTSDiabetesResponseType();
+        RegisterTSBasResponseType resp = new RegisterTSBasResponseType();
         ResultatTyp resultatTyp = new ResultatTyp();
         resultatTyp.setResultCode(ResultCodeType.OK);
         resp.setResultat(resultatTyp);
         return resp;
     }
 
-    private CertificateMetaType buildStubInternalMeta(RegisterTSDiabetesType parameters) {
+    private CertificateMetaType buildStubInternalMeta(RegisterTSBasType parameters) {
         CertificateMetaType meta = new CertificateMetaType();
         meta.setCertificateId(parameters.getIntyg().getIntygsId());
         meta.setCertificateType(parameters.getIntyg().getIntygsTyp());

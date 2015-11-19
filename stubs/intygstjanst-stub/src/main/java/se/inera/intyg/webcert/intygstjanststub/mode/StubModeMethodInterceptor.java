@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 import javax.xml.ws.WebServiceException;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Intercepts calls to methods (typically annotated with @StubModeAware)
- * and throws a WebServiceException if the stub is set to operate in {@link se.inera.webcert.intygstjanststub.mode.StubMode#OFFLINE}
+ * and throws a WebServiceException if the stub is set to operate in {@link se.inera.intyg.webcert.intygstjanststub.mode.StubMode#OFFLINE}
  *
  * Created by erikl on 15-04-09.
  */

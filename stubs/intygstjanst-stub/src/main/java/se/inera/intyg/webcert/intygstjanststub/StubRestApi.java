@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub;
+package se.inera.intyg.webcert.intygstjanststub;
 
 import java.util.Collection;
 
@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.webcert.intygstjanststub.mode.StubMode;
-import se.inera.webcert.intygstjanststub.mode.StubModeSingleton;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubMode;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubModeSingleton;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
