@@ -11,7 +11,7 @@
   
   <beans profile="dev,wc-all-stubs,wc-loggtjanst-stub">
     <jaxws:endpoint address="/store-log-stub"
-      implementor="se.inera.webcert.loggtjanststub.StoreLogStubResponder" />
+      implementor="se.inera.intyg.webcert.loggtjanststub.StoreLogStubResponder" />
   </beans>
   
   <beans profile="dev,testability-api">
@@ -26,7 +26,7 @@
         <entry key="json" value="application/json" />
       </jaxrs:extensionMappings>
     </jaxrs:server>
-    <bean id="loggtjanstStubRestApi" class="se.inera.webcert.loggtjanststub.LoggtjanstStubRestApi" />
+    <bean id="loggtjanstStubRestApi" class="se.inera.intyg.webcert.loggtjanststub.LoggtjanstStubRestApi" />
   
     <bean id="jacksonJsonProvider"
       class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">

@@ -1,4 +1,4 @@
-package se.inera.webcert.notificationstub;
+package se.inera.intyg.webcert.notificationstub;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,7 +37,7 @@ public class NotificationStoreImpl implements NotificationStore {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.notificationstub.NotificationStore#put(java.lang.String,
+     * @see se.inera.intyg.webcert.notificationstub.NotificationStore#put(java.lang.String,
      * se.inera.certificate.clinicalprocess
      * .healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType)
      */
@@ -95,7 +95,7 @@ public class NotificationStoreImpl implements NotificationStore {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.notificationstub.NotificationStore#getNotifications()
+     * @see se.inera.intyg.webcert.notificationstub.NotificationStore#getNotifications()
      */
     @Override
     public Collection<CertificateStatusUpdateForCareType> getNotifications() {
@@ -105,7 +105,7 @@ public class NotificationStoreImpl implements NotificationStore {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.notificationstub.NotificationStore#clear()
+     * @see se.inera.intyg.webcert.notificationstub.NotificationStore#clear()
      */
     @Override
     public void clear() {

@@ -1,4 +1,4 @@
-package se.inera.webcert.loggtjanststub;
+package se.inera.intyg.webcert.loggtjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;

@@ -1,4 +1,4 @@
-package se.inera.webcert.loggtjanststub;
+package se.inera.intyg.webcert.loggtjanststub;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

@@ -1,4 +1,4 @@
-package se.inera.webcert.mailstub;
+package se.inera.intyg.webcert.mailstub;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

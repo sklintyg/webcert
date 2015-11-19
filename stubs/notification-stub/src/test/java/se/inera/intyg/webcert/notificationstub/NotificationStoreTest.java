@@ -1,4 +1,4 @@
-package se.inera.webcert.notificationstub;
+package se.inera.intyg.webcert.notificationstub;
 
 import static org.junit.Assert.assertEquals;
 

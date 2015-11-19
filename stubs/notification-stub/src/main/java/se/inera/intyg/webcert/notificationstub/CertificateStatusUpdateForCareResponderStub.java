@@ -1,4 +1,4 @@
-package se.inera.webcert.notificationstub;
+package se.inera.intyg.webcert.notificationstub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

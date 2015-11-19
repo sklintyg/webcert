@@ -1,4 +1,4 @@
-package se.inera.webcert.mailstub;
+package se.inera.intyg.webcert.mailstub;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

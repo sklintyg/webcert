@@ -1,4 +1,4 @@
-package se.inera.webcert.notificationstub;
+package se.inera.intyg.webcert.notificationstub;
 
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 

@@ -7,14 +7,14 @@
     >
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub,testability-api">
-    <bean id="notificationStore" class="se.inera.webcert.notificationstub.NotificationStoreImpl">
+    <bean id="notificationStore" class="se.inera.intyg.webcert.notificationstub.NotificationStoreImpl">
       <constructor-arg type="int" value="100" />
     </bean>  
   </beans>
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub">
     <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
-    <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notificationstub.CertificateStatusUpdateForCareResponderStub" />
+    <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.intyg.webcert.notificationstub.CertificateStatusUpdateForCareResponderStub" />
   </beans>
   
   <beans profile="dev,testability-api">  
@@ -29,7 +29,7 @@
         <entry key="json" value="application/json"/>
       </jaxrs:extensionMappings>
     </jaxrs:server>
-    <bean id="notificationStubRestApi" class="se.inera.webcert.notificationstub.NotificationStubRestApi"/>
+    <bean id="notificationStubRestApi" class="se.inera.intyg.webcert.notificationstub.NotificationStubRestApi"/>
   </beans>
 
 </beans>
