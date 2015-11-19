@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

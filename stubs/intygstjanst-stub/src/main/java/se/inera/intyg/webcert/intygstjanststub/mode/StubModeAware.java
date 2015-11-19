@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub;
+package se.inera.intyg.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,7 +8,7 @@ import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.Regist
 import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;
 import se.inera.intygstjanster.ts.services.v1.ResultatTyp;
-import se.inera.webcert.intygstjanststub.mode.StubModeAware;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;

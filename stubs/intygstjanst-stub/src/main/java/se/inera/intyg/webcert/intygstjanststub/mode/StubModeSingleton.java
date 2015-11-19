@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 /**
  * GoF-style JVM singleton for keeping track of the current @{StubMode} of the stub.

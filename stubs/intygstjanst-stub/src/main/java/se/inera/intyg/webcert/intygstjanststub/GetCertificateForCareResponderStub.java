@@ -1,12 +1,12 @@
-package se.inera.webcert.intygstjanststub;
+package se.inera.intyg.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.webcert.intygstjanststub.mode.StubLatencyAware;
-import se.inera.webcert.intygstjanststub.mode.StubModeAware;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;

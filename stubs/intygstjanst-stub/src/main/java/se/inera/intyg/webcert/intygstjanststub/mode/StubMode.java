@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 /**
  * Created by erikl on 15-04-09.

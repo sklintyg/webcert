@@ -1,4 +1,4 @@
-package se.inera.webcert.intygstjanststub.mode;
+package se.inera.intyg.webcert.intygstjanststub.mode;
 
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Pointcut;
