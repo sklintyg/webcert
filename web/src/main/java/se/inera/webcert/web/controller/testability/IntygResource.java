@@ -38,7 +38,8 @@ public class IntygResource {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllDrafts() {
-        utkastRepository.deleteAllInBatch();
+        // Need deleteAll here, deleteAllInBatch doesn't apply cascade delete
+        utkastRepository.deleteAll();
         return Response.ok().build();
     }
 
