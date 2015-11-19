@@ -10,6 +10,42 @@ public final class NgClientSideScripts {
     private NgClientSideScripts() { }
 
     /**
+     * Tests whether angular.getTestability is present on a page. Retries
+     * in case the page is just loading slowly.
+     *
+     * Asynchronous.
+     *
+     * @param {number} attempts Number of times to retry.
+     * @param {function} asyncCallback callback
+     */
+    public static final String TEST_FOR_ANGULAR_TESTABILITY =
+            "var asyncCallback = arguments[1];\n"
+                    + "var attempts = arguments[0];\n"
+                    + "  var callback = function(args) {\n"
+                    + "    setTimeout(function() {\n"
+                    + "      asyncCallback(args);\n"
+                    + "    }, 0);\n"
+                    + "  };\n"
+                    + "  var check = function(n) {\n"
+                    + "    try {\n"
+                    + "      if (window.angular && window.angular.getTestability) {\n"
+                    + "        callback([true, null]);\n"
+                    + "      } else if (n < 1) {\n"
+                    + "        if (window.angular) {\n"
+                    + "          callback([false, 'angular never provided getTestability']);\n"
+                    + "        } else {\n"
+                    + "          callback([false, 'retries looking for angular exceeded']);\n"
+                    + "        }\n"
+                    + "      } else {\n"
+                    + "        window.setTimeout(function() {check(n - 1);}, 500);\n"
+                    + "      }\n"
+                    + "    } catch (e) {\n"
+                    + "      callback([false, e]);\n"
+                    + "    }\n"
+                    + "  };\n"
+                    + "  check(attempts);";
+
+    /**
      * Waits (asynchronously) until Angular has finished rendering and has
      * no outstanding $http calls before continuing.
      *
@@ -57,11 +93,11 @@ public final class NgClientSideScripts {
                     + "  };\n"
                     + "  var check = function(n) {\n"
                     + "    try {\n"
-                    + "      if (window.angular && window.angular.getTestability) {\n"
+                    + "      if (window.angular && window.angular.resumeBootstrap) {\n"
                     + "        callback([true, null]);\n"
                     + "      } else if (n < 1) {\n"
                     + "        if (window.angular) {\n"
-                    + "          callback([false, 'angular never provided getTestability']);\n"
+                    + "          callback([false, 'angular never provided resumeBootstrap']);\n"
                     + "        } else {\n"
                     + "          callback([false, 'retries looking for angular exceeded']);\n"
                     + "        }\n"

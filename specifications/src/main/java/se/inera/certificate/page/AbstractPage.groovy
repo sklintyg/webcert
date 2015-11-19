@@ -1,10 +1,15 @@
 package se.inera.certificate.page
 
+import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
 import se.inera.certificate.spec.Browser
 import geb.Page
 
 import java.util.concurrent.TimeUnit
+
+import static org.openqa.selenium.By.id
 
 abstract class AbstractPage extends Page {
 
@@ -13,6 +18,7 @@ abstract class AbstractPage extends Page {
     }
 
     static boolean doneLoading() {
+        waitForAngularBootstrap();
         waitForAngularRequestsToFinish();
         true
     }
@@ -41,6 +47,13 @@ abstract class AbstractPage extends Page {
             result = jse.executeAsyncScript(script);
         }
         return result;
+    }
+
+    static protected void waitForAngularBootstrap(String root) {
+        Object result = waitForJavascriptCallback(NgClientSideScripts.TEST_FOR_ANGULAR_TESTABILITY, 10);
+        if (!result[0]) {
+            throw new RuntimeException(result[1].toString());
+        }
     }
 
     static protected void waitForAngularRequestsToFinish(String root) {
