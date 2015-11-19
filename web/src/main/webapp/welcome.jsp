@@ -18,8 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-         trimDirectiveWhitespaces="true" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
@@ -37,14 +36,16 @@
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
 
-    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
-
     <style type="text/css">
         textarea {
             font-family: Consolas, Lucida Console, monospace;
             font-size: 0.7em;
         }
+        .envButtons { margin-right: 0.6em; }
+        .envButtons input { margin-right: 0.2em; }
     </style>
+
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.min.js"></script>
 
     <script type="text/javascript">
         //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar
@@ -136,8 +137,7 @@
                 "efternamn": "Persson",
                 "hsaId": "IFV1239877878-104L",
                 "enhetId": "IFV1239877878-104D",
-                "lakare": false,
-                "forskrivarKod": "2481632"
+                "lakare": false
             },
 
             // AT Läkare Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
@@ -150,7 +150,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            // Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
+            // Vårdadministratör Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
             {
                 "fornamn": "Lena",
                 "efternamn": "Karlsson",
@@ -160,7 +160,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Markus Gran Testanvändare  @ VårdEnhet1A
+            // Markus Gran Testanvändare @ VårdEnhet1A
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -170,7 +170,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Markus Gran Testanvändare  @ VårdEnhet2A
+            // Markus Gran Testanvändare @ VårdEnhet2A
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -179,7 +179,7 @@
                 "lakare" : true,
                 "forskrivarKod": "2481632"
             },
-            //Markus Gran Testanvändare  @ VårdEnhetA
+            // Markus Gran Testanvändare @ VårdEnhetA
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -189,7 +189,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Läkare med flera enheter & mottagningar
+            // Läkare med flera enheter & mottagningar
             {
                 "fornamn" : "Eva",
                 "efternamn" : "Holgersson",
@@ -199,7 +199,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Läkare med massor av enheter & mottagningar
+            // Läkare med massor av enheter & mottagningar
             {
                 "fornamn" : "Staffan",
                 "efternamn" : "Stafett",
@@ -209,7 +209,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Läkare för test av djupintegration
+            // Läkare för test av djupintegration
             {
                 "fornamn" : "Journa",
                 "efternamn" : "La System",
@@ -228,7 +228,8 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Admin personal med flera enheter & mottagningar
+
+            // Admin personal med flera enheter & mottagningar
             {
                 "fornamn" : "Adam",
                 "efternamn" : "Admin",
@@ -238,7 +239,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Admin personal med 3 enheter och mottagningar
+            // Admin personal med 3 enheter och mottagningar
             {
                 "fornamn" : "Adamo",
                 "efternamn" : "Admin",
@@ -248,7 +249,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //Admin personal med 3 enheter och mottagningar
+            // Admin personal med 3 enheter och mottagningar
             {
                 "fornamn" : "Adamo",
                 "efternamn" : "Admin",
@@ -267,7 +268,7 @@
                 "forskrivarKod": "2481632"
             },
 
-            //FitNesse Admin personal med 1 enhet
+            // FitNesse Admin personal med 1 enhet
             {
                 "fornamn" : "fit",
                 "efternamn" : "nesse",
@@ -316,10 +317,11 @@
                 "efternamn" : "Tandläkare",
                 "hsaId" : "tore-tandlakare",
                 "enhetId" : "tandenheten-1",
-                "tandLakare" : true,
+                "tandlakare" : true,
                 "forskrivarKod": "6745341"
             },
 
+            // NMT testperson
             {
                 "fornamn": "Åsa",
                 "efternamn": "Svensson",
@@ -327,6 +329,48 @@
                 "enhetId": "TSTNMT2321000156-1003",
                 "lakare": true,
                 "forskrivarKod": "2481632"
+            },
+
+            // Tandläkare som ska finnas i demo-miljö och därmed i test-HSA
+            {
+              "fornamn" : "Louise",
+              "efternamn" : "Ericsson",
+              "hsaId" : "TSTNMT2321000156-103B",
+              "enhetId" : "TSTNMT2321000156-1039",
+              "tandlakare" : true
+            },
+
+            // Läkare inom EU/ESS/Schweiz som ska finnas i demo-miljö och därmed i test-HSA
+            {
+                "fornamn": "Leonie",
+                "efternamn": "Koehl",
+                "hsaId": "TSTNMT2321000156-103F",
+                "enhetId": "TSTNMT2321000156-1039",
+                "lakare" : true,
+                "forskrivarKod": "9300005",
+                "befattningsKod": "203090"
+            },
+
+            // Läkare utom EU/ESS/Schweiz som ska finnas i demo-miljö och därmed i test-HSA
+            {
+                "fornamn": "Bill",
+                "efternamn": "Smith",
+                "hsaId": "TSTNMT2321000156-103G ",
+                "enhetId": "TSTNMT2321000156-1039",
+                "lakare" : true,
+                "forskrivarKod": "9400003",
+                "befattningsKod": "203090"
+            },
+
+            // Vikarierande examinerad läkare som ska finnas i demo-miljö och därmed i test-HSA
+            {
+                "fornamn": "Martin",
+                "efternamn": "Johansson",
+                "hsaId": "TSTNMT2321000156-103H",
+                "enhetId": "TSTNMT2321000156-1039",
+                "lakare" : true,
+                "forskrivarKod": "9100009",
+                "befattningsKod": "204090"
             }
         ];
 
@@ -334,7 +378,7 @@
             var jsonEl = document.getElementById("userJson");
             var jsonElView = document.getElementById("userJsonDisplay");
             var selector = document.getElementById("jsonSelect");
-            //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+
             jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
             jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
         };
@@ -349,20 +393,76 @@
 
         angular.module('WcWelcomeApp.controllers', []).
             controller('welcomeController', function($scope) {
-              $scope.loginModel = loginArr;
-              $scope.selectedIndex = 0;
-              $scope.$watch('selectedIndex', function(newSelected, oldVal) {
-                var jsonEl = angular.element( document.querySelector( '#userJson' ) );
-                var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
-                var selector = angular.element( document.querySelector( '#jsonSelect' ) );
-                //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+                $scope.loginModel = loginArr;
+                $scope.selectedIndex = '0';
+                $scope.$watch('selectedIndex', function(newSelected, oldVal) {
+                  var jsonEl = angular.element( document.querySelector( '#userJson' ) );
+                  var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
+                  var selector = angular.element( document.querySelector( '#jsonSelect' ) );
 
-                var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
-                jsonElView.text( loginJson );
-                jsonEl.text( escape( loginJson ) );
-              });
+                  var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
+                  jsonElView.text( loginJson );
+                  jsonEl.text( escape( loginJson ) );
+                });
 
-            });
+                $scope.environment = {
+                  name: 'all'
+                };
+
+                $scope.whichEnv = function(env) {
+                  if ($scope.environment.name === 'all') {
+                    return true;
+                  }
+                  if ($scope.environment.name === 'dev' && env === 'dev') {
+                    return true;
+                  }
+                  if ($scope.environment.name === 'demo' && env === 'demo') {
+                    return true;
+                  }
+
+                  return false;
+                };
+
+                $scope.data = {
+                  repeatSelect: null,
+                  availableOptions: [
+                    {id:0,  hsaId: 'IFV1239877878-1049_IFV1239877878-1042',       env: 'dev',  name: 'Jan Nilsson - WebCert Enhet 1 (Läkare / Vård och Behandling + Admin)'},
+                    {id:1,  hsaId: 'IFV1239877878-104B_IFV1239877878-1042',       env: 'dev',  name: 'Åsa Andersson - WebCert Enhet 1 (Läkare / Vård och Behandling)'},
+                    {id:2,  hsaId: 'IFV1239877878-104B_IFV1239877878-1045',       env: 'dev',  name: 'Åsa Andersson - WebCert Enhet 2 + 2UE (Läkare / Vård och Behandling)'},
+                    {id:3,  hsaId: 'IFV1239877878-104B_IFV1239877878-1046',       env: 'dev',  name: 'Åsa Andersson - WebCert Enhet 2 - Underenhet 1 (Läkare / Vård och Behandling)'},
+                    {id:4,  hsaId: 'IFV1239877878-104B_IFV1239877878-104C',       env: 'dev',  name: 'Åsa Andersson - WebCert Enhet 2 - Underenhet 2  (Läkare / Vård och Behandling)'},
+                    {id:5,  hsaId: 'IFV1239877878-104B_IFV1239877878-104D',       env: 'dev',  name: 'Åsa Andersson - WebCert Enhet 3 (Läkare+Vårdadmin)'},
+                    {id:6,  hsaId: 'IFV1239877878-104K_IFV1239877878-1045',       env: 'dev',  name: 'Lars Andersson - WebCert Enhet 2 + 2UE (Läkare / Vård och Behandling)'},
+                    {id:7,  hsaId: 'IFV1239877878-104K_IFV1239877878-104D',       env: 'dev',  name: 'Lars Andersson - WebCert Enhet 3 (Läkare / Vård och Behandling)'},
+                    {id:8,  hsaId: 'IFV1239877878-104L_IFV1239877878-104D',       env: 'dev',  name: 'Anna Persson - WebCert Enhet 3 (Statistik)'},
+                    {id:9,  hsaId: 'IFV1239877878-104M_IFV1239877878-1045',       env: 'dev',  name: 'Anders Larsson WebCert Enhet 2 + 2UE (AT Läkare / Vård och Behandling)'},
+                    {id:10, hsaId: 'IFV1239877878-104N_IFV1239877878-1045',       env: 'dev',  name: 'Lena Karlsson - WebCert Enhet 2 + 2UE (Vårdadmin / Vård och Behandling)'},
+                    {id:11, hsaId: 'TST5565594230-106J_IFV1239877878-103F',       env: 'dev',  name: 'Markus Gran (Läkare / VårdEnhet1A)'},
+                    {id:12, hsaId: 'TST5565594230-106J_IFV1239877878-103H',       env: 'dev',  name: 'Markus Gran (Läkare / VårdEnhet2A)'},
+                    {id:13, hsaId: 'TST5565594230-106J_IFV1239877878-103D',       env: 'dev',  name: 'Markus Gran (Läkare / VårdEnhetA)'},
+                    {id:14, hsaId: 'eva_centrum-vast',                            env: 'dev',  name: 'Eva Holgersson (Läkare / Centrum Väst)'},
+                    {id:15, hsaId: 'staffan',                                     env: 'dev',  name: 'Staffan Stafett (Läkare / Centrum Väst, Linköping, Norrköping)'},
+                    {id:16, hsaId: 'SE4815162344-1B02_SE4815162344-1A03',         env: 'dev',  name: 'Journa La System (Läkare, djupintegration / WebCert-Integration Enhet 2)'},
+                    {id:17, hsaId: 'SE4815162344-1B01_SE4815162344-1A02',         env: 'dev',  name: 'Ivar Integration (Läkare, djupintegration / WebCert-Integration Enhet 1)'},
+                    {id:18, hsaId: 'adam_centrum-vast',                           env: 'dev',  name: 'Adam Admin (Vårdadmin / Centrum Väst)'},
+                    {id:19, hsaId: 'adamo_centrum-vast',                          env: 'dev',  name: 'Adamo Admin (Vårdadmin / Centrum Väst)'},
+                    {id:20, hsaId: 'adamo_centrum-ost',                           env: 'dev',  name: 'Adamo Admin (Vårdadmin / Centrum Öst)'},
+                    {id:21, hsaId: 'fitnesse-admin1',                             env: 'dev',  name: 'Fitnesse Admin (Vårdadmin / Vardenhet Fitnesse 1)'},
+                    {id:22, hsaId: 'fitnesse-admin2',                             env: 'dev',  name: 'Fitnesse Admin-1 (Vårdadmin / Vardenhet Fitnesse 2)'},
+                    {id:23, hsaId: 'hansolo_centrum-norr',                        env: 'dev',  name: 'Han Solo (Vårdadmin / Centrum Norr)'},
+                    {id:24, hsaId: 'perpersson_anestesikliniken',                 env: 'dev',  name: 'Per Persson (Läkare / Anestesikliniken)'},
+                    {id:25, hsaId: 'private-practitioner-1',                      env: 'dev',  name: 'Tolvan Privatläkarsson (Privatläkare, godkänd)'},
+                    {id:26, hsaId: 'private-practitioner-2',                      env: 'dev',  name: 'Nina Greger (Privatläkare, ej godkänd)'},
+                    {id:27, hsaId: 'tore-tandlakare',                             env: 'dev',  name: 'Tore Tandläkare (Tandläkare)'},
+                    {id:28, hsaId: 'TSTNMT2321000156-100L_TSTNMT2321000156-1003', env: 'demo', name: 'Åsa Svensson (NMT variabel testperson)'},
+                    {id:29, hsaId: 'TSTNMT2321000156-100B_TSTNMT2321000156-1039', env: 'demo', name: 'Louise Ericsson (Tandläkare / Vård och Behandling)'},
+                    {id:30, hsaId: 'TSTNMT2321000156-100F_TSTNMT2321000156-1039', env: 'demo', name: 'Leonie Koehl (Läkare inom EU/ESS/Schweiz / Vård och Behandling)'},
+                    {id:31, hsaId: 'TSTNMT2321000156-100G_TSTNMT2321000156-1039', env: 'demo', name: 'Bill Smith (Läkare utom EU/ESS/Schweiz / Vård och Behandling)'},
+                    {id:32, hsaId: 'TSTNMT2321000156-100H_TSTNMT2321000156-1039', env: 'demo', name: 'Martin Johansson (Vikarierande examinerad läkare / Vård och Behandling)'}
+                  ]
+                };
+
+         });
     </script>
 </head>
 <body ng-controller="welcomeController">
@@ -378,54 +478,36 @@
                     omvandlas till inloggad userContext</p>
 
                 <div class="form-group col-xs-8">
-
                     <h4>Mallar</h4>
-                    <select id="jsonSelect" name="jsonSelect" ng-model="selectedIndex" size="15" style="width: 100%" class="form-control">
-                        <option value="0" id="IFV1239877878-1049_IFV1239877878-1042" selected>Jan Nilsson - WebCert Enhet 1 (Läkare)(Vård och Behandling + Admin)</option>
-                        <option value="1" id="IFV1239877878-104B_IFV1239877878-1042">Åsa Andersson - WebCert Enhet 1 (Läkare)(Vård och Behandling)</option>
-                        <option value="2" id="IFV1239877878-104B_IFV1239877878-1045">Åsa Andersson - WebCert Enhet 2 + 2UE (Läkare)(Vård och Behandling)</option>
-                        <option value="3" id="IFV1239877878-104B_IFV1239877878-1046">Åsa Andersson - WebCert Enhet 2 - Underenhet 1 (Läkare)(Vård och Behandling)</option>
-                        <option value="4" id="IFV1239877878-104B_IFV1239877878-104C">Åsa Andersson - WebCert Enhet 2 - Underenhet 2  (Läkare)(Vård och Behandling)</option>
-                        <option value="5" id="IFV1239877878-104B_IFV1239877878-104D">Åsa Andersson - WebCert Enhet 3 (Läkare)(Admin)</option>
-                        <option value="6" id="IFV1239877878-104K_IFV1239877878-1045">Lars Andersson - WebCert Enhet 2 + 2UE (Läkare)(Vård och Behandling)</option>
-                        <option value="7" id="IFV1239877878-104K_IFV1239877878-104D">Lars Andersson - WebCert Enhet 3 (Läkare)(Vård och Behandling)</option>
-                        <option value="8" id="IFV1239877878-104L_IFV1239877878-104D">Anna Persson - WebCert Enhet 3 (Statistik)</option>
-                        <option value="9" id="IFV1239877878-104M_IFV1239877878-1045">Anders Larsson WebCert Enhet 2 + 2UE (AT Läkare)(Vård och Behandling)</option>
-                        <option value="10" id="IFV1239877878-104N_IFV1239877878-1045">Lena Karlsson - WebCert Enhet 2 + 2UE (Vård och Behandling)</option>
-                        <option value="11" id="TST5565594230-106J_IFV1239877878-103F">Markus Gran (Läkare VårdEnhet1A)</option>
-                        <option value="12" id="TST5565594230-106J_IFV1239877878-103H">Markus Gran (Läkare VårdEnhet2A)</option>
-                        <option value="13" id="TST5565594230-106J_IFV1239877878-103D">Markus Gran (Läkare VårdEnhetA)</option>
-                        <option value="14" id="eva_centrum-vast">Eva Holgersson (Läkare Centrum Väst)</option>
-                        <option value="15">Staffan Stafett (Läkare Centrum Väst, Linköping, Norrköping)</option>
-                        <option value="16" id ="SE4815162344-1B02_SE4815162344-1A03">Journa La System (Läkare WebCert-Integration Enhet 2)</option>
-                        <option value="17" id="SE4815162344-1B01_SE4815162344-1A02">Ivar Integration (Läkare WebCert-Integration Enhet 1)</option>
-                        <option value="18" id="adam_centrum-vast">Adam Admin (Administratör Centrum Väst)</option>
-                        <option value="19" id="adamo_centrum-vast">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="20" id="adamo_centrum-ost">Adamo Admin (Administratör Centrum Öst)</option>
-                        <option value="21" id="fitnesse-admin1">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
-                        <option value="22" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
-                        <option value="23" id="hansolo_centrum-norr">Han Solo (Administratör, Centrum Norr)</option>
-                        <option value="24" id="perpersson_anestesikliniken">Per Persson (Läkare Anestesikliniken)</option>
-                        <option value="25" id="private-practitioner-1">Tolvan Privatläkarsson (Test Privatläkare, godkänd)</option>
-                        <option value="26" id="private-practitioner-2">Nina Greger (Test Privatläkare, ej godkänd)</option>
-                        <option value="27" id="tore-tandlakare">Tore Tandläkare (Test Tandläkare)</option>
-                        <option value="28" id="TSTNMT2321000156-100L-TSTNMT2321000156-1003">Åsa Svensson (NMT variabel testperson)</option>
+                    <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control" style="width: 100%">
+                      <option ng-repeat="option in data.availableOptions" ng-if="whichEnv(option.env)" id="{{option.hsaId}}" value="{{option.id}}">{{option.name}}</option>
                     </select>
-                    <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
-                           style="margin-top: 20px;width: 100%">
-
+                    <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary" style="margin-top: 20px; width: 100%">
                 </div>
 
                 <div class="form-group col-xs-4">
-                    <p>
-                    <h4>Inloggningsprofil</h4>
-                    <input type="hidden" id="userJson" name="userjson"/>
-                    <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
-                              style="height: 200px;width: 100%;">
-                    </textarea>
+                    <div>
+                        <h4>Miljö</h4>
+                        <span class="envButtons"><input type="radio" ng-model="environment.name" value="all" />All</span>
+                        <span class="envButtons"><input type="radio" ng-model="environment.name" value="dev" />Dev</span>
+                        <span class="envButtons"><input type="radio" ng-model="environment.name" value="demo" />Demo</span>
+                    </div>
+                    <div style="padding-top: 0.6em;">
+                        <h4>Inloggningsprofil</h4>
+                        <input type="hidden" id="userJson" name="userjson"/>
+                        <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control" style="height: 200px; width: 100%;">
+                        </textarea>
+                    </div>
                 </div>
 
-
+            </div>
+          <div class="content row"><hr style="padding-top:16px;"/></div>
+            <div class="content row">
+                <h1>Hjälplänkar</h1>
+                <p class="well">Nedan finns ett antal snabblänkar till hjälpfunktioner för utvecklings- och teständamål.</p>
+                <a href="/version.jsp" target="_blank">Versions- och bygginformation</a><br/>
+                <a href="/healthcheck.jsp" target="_blank">Healthcheck</a><br/>
+                <a href="/swagger-ui/index.html" target="_blank">REST-dokumentation</a><br/>
             </div>
         </div>
     </div>

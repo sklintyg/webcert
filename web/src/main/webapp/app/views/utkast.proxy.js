@@ -1,8 +1,8 @@
 angular.module('webcert').factory('webcert.UtkastProxy',
-    [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore',
+    [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.statService',
         'common.UserModel',
-        function($q, $http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, User, dialogService,
+        function($q, $http, $stateParams, $log, $location, $window, $timeout, User, dialogService,
             featureService, messageService, statService, UserModel) {
             'use strict';
 

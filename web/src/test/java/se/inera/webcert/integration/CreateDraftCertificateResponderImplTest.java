@@ -37,7 +37,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -82,7 +82,7 @@ public class CreateDraftCertificateResponderImplTest {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();
-        List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+        List<MiuInformationType> miuList = Collections.singletonList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         Vardgivare vardgivare = createVardgivare();
         Vardenhet vardenhet = createVardenhet(vardgivare);
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);

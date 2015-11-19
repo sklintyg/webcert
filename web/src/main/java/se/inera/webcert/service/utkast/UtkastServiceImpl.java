@@ -370,10 +370,8 @@ public class UtkastServiceImpl implements UtkastService {
 
             draftValidation = convertToDraftValidation(validateDraftResponse);
 
-        } catch (ModuleException me) {
+        } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        } catch (ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
         return draftValidation;
@@ -460,10 +458,8 @@ public class UtkastServiceImpl implements UtkastService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             InternalModelResponse draftResponse = moduleApi.createNewInternal(draftRequest);
             modelAsJson = draftResponse.getInternalModel();
-        } catch (ModuleException me) {
+        } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        } catch (ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
         LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
@@ -578,9 +574,7 @@ public class UtkastServiceImpl implements UtkastService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             InternalModelResponse updatedInternal = moduleApi.updateBeforeSave(internalModel, hosPerson);
             utkast.setModel(updatedInternal.getInternalModel());
-        } catch (ModuleException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
-        } catch (ModuleNotFoundException e) {
+        } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }
     }

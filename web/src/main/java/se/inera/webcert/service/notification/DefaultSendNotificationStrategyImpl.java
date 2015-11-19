@@ -1,6 +1,6 @@
 package se.inera.webcert.service.notification;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,11 +24,12 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     @Autowired
     private UtkastRepository utkastRepository;
 
-    private List<String> allowedIntygsTyper = Arrays.asList("fk7263");
+    private final List<String> allowedIntygsTyper = Collections.singletonList("fk7263");
 
     /* (non-Javadoc)
      * @see se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForIntyg(java.lang.String)
      */
+    @Override
     public Utkast decideNotificationForIntyg(String intygsId) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);

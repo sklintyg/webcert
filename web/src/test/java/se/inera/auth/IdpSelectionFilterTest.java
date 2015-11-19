@@ -1,6 +1,20 @@
 package se.inera.auth;
 
-import org.junit.Before;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.contains;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -8,21 +22,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+
 import se.inera.auth.common.AuthConstants;
 import se.inera.webcert.service.user.dto.WebCertUser;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Enumeration;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by eriklupander on 2015-10-14.
@@ -30,8 +33,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class IdpSelectionFilterTest {
 
-    private static final java.lang.String DEFAULT_QA_PATH = "/webcert/web/user/certificate/id/questions";
-    private static final java.lang.String PP_QA_PATH = "/webcert/web/user/pp-certificate/id/questions";
+    private static final String DEFAULT_QA_PATH = "/webcert/web/user/certificate/id/questions";
+    private static final String PP_QA_PATH = "/webcert/web/user/pp-certificate/id/questions";
 
 
     @Mock

@@ -18,7 +18,6 @@ public interface DiagnosService {
      *            The code to search for.
      * @param codeSystem
      *            A String representing the code system to which the code belongs.
-     * @return
      */
     DiagnosResponse getDiagnosisByCode(String code, String codeSystem);
 
@@ -29,7 +28,6 @@ public interface DiagnosService {
      *            The code to search for.
      * @param codeSystem
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
-     * @retur
      */
     DiagnosResponse getDiagnosisByCode(String code, Diagnoskodverk codeSystem);
 
@@ -42,7 +40,6 @@ public interface DiagnosService {
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
      * @param nbrOfResults
      *            The number of results to return, must be larger than 0.
-     * @return
      */
     DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystem, int nbrOfResults);
 
@@ -55,7 +52,6 @@ public interface DiagnosService {
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
      * @param nbrOfResults
      *            The number of results to return, must be larger than 0.
-     * @return
      */
     DiagnosResponse searchDiagnosisByDescription(String searchString, String codeSystem, int nbrOfResults);
 

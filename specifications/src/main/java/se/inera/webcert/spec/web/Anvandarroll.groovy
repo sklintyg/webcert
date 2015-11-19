@@ -6,7 +6,7 @@ class Anvandarroll {
 
     def ändraTill(String role) {
         Browser.drive {
-            go System.getProperty("webcert.baseUrl") + "api/testability/userrole/${role}"
+            go System.getProperty("webcert.baseUrl") + "authtestability/roles/userrole/${role}"
             getDriver().navigate().back()
         }
     }

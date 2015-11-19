@@ -73,7 +73,7 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
 
         AuthenticateRequestType authRequest = buildAuthRequest(personId, draftHash);
 
-        OrderResponseType orderResponse = null;
+        OrderResponseType orderResponse;
         try {
             orderResponse = grpService.authenticate(authRequest);
         } catch (GrpFault grpFault) {

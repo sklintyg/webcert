@@ -28,7 +28,6 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
      */
     @Override
     public ResultValidator validate(Utlatande utlatande) {
-
         ResultValidator errors = ResultValidator.newInstance();
 
         validateTypAvUtlatande(utlatande.getTypAvUtlatande(), errors);
@@ -39,7 +38,6 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     public void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ResultValidator errors) {
-
         String intygsTyp = typAvUtlatandeType.getCode();
 
         if (!moduleRegistry.moduleExists(intygsTyp)) {
@@ -48,18 +46,16 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validatePatient(Patient patient, ResultValidator errors) {
-
         if (StringUtils.isBlank(patient.getEfternamn())) {
             errors.addError("efternamn is required");
         }
 
-        if (patient.getFornamn() == null || patient.getFornamn().isEmpty()) {
+        if ((patient.getFornamn() == null) || patient.getFornamn().isEmpty()) {
             errors.addError("At least one fornamn is required");
         }
     }
 
     private void validateSkapadAv(HosPersonal skapadAv, ResultValidator errors) {
-
         if (StringUtils.isBlank(skapadAv.getFullstandigtNamn())) {
             errors.addError("Physicians full name is required");
         }
@@ -68,14 +64,11 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validateEnhet(Enhet enhet, ResultValidator errors) {
-
         if (enhet == null) {
             errors.addError("Enhet is missing");
-        }
-
-        if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
+        } else if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
             errors.addError("enhetsnamn is required");
         }
-
     }
+
 }

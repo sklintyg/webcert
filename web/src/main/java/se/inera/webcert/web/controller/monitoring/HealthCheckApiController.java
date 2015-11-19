@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.service.monitoring.HealthCheckService;
@@ -18,6 +19,7 @@ import se.inera.webcert.web.controller.AbstractApiController;
  * @author nikpet
  *
  */
+@Api(value = "monitoring", description = "REST API för monitorering/healthcheck", produces = MediaType.APPLICATION_XML)
 public class HealthCheckApiController extends AbstractApiController {
 
     @Autowired

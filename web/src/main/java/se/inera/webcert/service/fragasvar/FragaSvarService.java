@@ -39,10 +39,6 @@ public interface FragaSvarService {
 
     /**
      * Set the dispatch state for the specified {@link FragaSvar} entity.
-     *
-     * @param frageSvarId
-     * @param isDispatched
-     * @return
      */
     FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched);
 
@@ -51,7 +47,6 @@ public interface FragaSvarService {
      * A FragaSvar is set as handled.
      * Sets the status of a FragaSvar as "closed"
      *
-     * @param frageSvarId
      * @return the FragaSvar-object that has been closed
      */
     FragaSvar closeQuestionAsHandled(Long frageSvarId);
@@ -68,9 +63,6 @@ public interface FragaSvarService {
      * A FragaSvar is set as unhandled.
      * If it has an answer, the status is set to "ANSWERED"
      * If it doesn't have an answer, the status is set to "PENDING_EXTERNAL_ACTION"
-     *
-     * @param frageSvarId
-     * @return
      */
     FragaSvar openQuestionAsUnhandled(Long frageSvarId);
 
@@ -91,9 +83,6 @@ public interface FragaSvarService {
 
     /**
      * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care unit as key.
-     *
-     * @param vardenheterIds
-     * @return
      */
     Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds);
 

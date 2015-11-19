@@ -17,7 +17,7 @@ public class SignaturTicketTracker {
 
     private static final Logger LOG = LoggerFactory.getLogger(SignaturTicketTracker.class);
 
-    private Map<String, SignaturTicket> ticketMap = new HashMap<>();
+    private final Map<String, SignaturTicket> ticketMap = new HashMap<>();
 
     public synchronized SignaturTicket getTicket(String ticketId) {
         prune();

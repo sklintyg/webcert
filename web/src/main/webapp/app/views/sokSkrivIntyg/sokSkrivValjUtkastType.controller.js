@@ -1,7 +1,7 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$window', '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'common.IntygService',
+    [ '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel', 'common.PatientModel',
-        function($window, $filter, $location, $log, $scope, $cookieStore, $stateParams, CommonIntygService,
+        function($window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
             IntygProxy, UtkastProxy, IntygCopyRequestModel, PatientModel) {
             'use strict';
 

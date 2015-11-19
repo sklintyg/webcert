@@ -97,9 +97,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     /**
      * Method checks if invoking person, i.e the health care personal,
      * is entitled to look at the information.
-     *
-     * @param utlatandeType
-     * @return
      */
     private MiuInformationType checkMIU(Utlatande utlatandeType) {
 
@@ -121,10 +118,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     /**
      * The response sent back to caller when an error is raised.
-     *
-     * @param errorMsg
-     * @param errorType
-     * @return
      */
     private CreateDraftCertificateResponseType createErrorResponse(String errorMsg, ErrorIdType errorType) {
         ResultType result = ResultTypeUtil.errorResult(errorType, errorMsg);
@@ -136,9 +129,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     /**
      * Builds a specific MIU error response.
-     *
-     * @param utlatandeType
-     * @return
      */
     private CreateDraftCertificateResponseType createMIUErrorResponse(Utlatande utlatandeType) {
 
@@ -153,9 +143,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     /**
      * Builds a specific validation error response.
-     *
-     * @param resultsValidator
-     * @return
      */
     private CreateDraftCertificateResponseType createValidationErrorResponse(ResultValidator resultsValidator) {
         String errMsgs = resultsValidator.getErrorMessagesAsString();
@@ -165,9 +152,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     /**
      * The response sent back to caller when creating a certificate draft succeeded.
-     *
-     * @param nyttUtkastsId
-     * @return
      */
     private CreateDraftCertificateResponseType createSuccessResponse(String nyttUtkastsId) {
         ResultType result = ResultTypeUtil.okResult();
@@ -198,4 +182,5 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
         }
     }
+
 }

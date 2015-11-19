@@ -31,6 +31,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,14 +62,12 @@ public class StatModuleApiControllerTest {
 
     private Map<String, Long> intygStatsMap;
 
-    private Vardgivare vg;
-
     private Vardenhet ve1, ve2, ve3, ve4;
 
     @Before
     public void setupDataAndExpectations() {
 
-        fragaSvarStatsMap = new HashMap<String, Long>();
+        fragaSvarStatsMap = new HashMap<>();
 
         fragaSvarStatsMap.put("VE1", 2L);
         fragaSvarStatsMap.put("VE1M1", 3L);
@@ -76,7 +75,7 @@ public class StatModuleApiControllerTest {
         fragaSvarStatsMap.put("VE2", 2L);
         fragaSvarStatsMap.put("VE3", 1L);
 
-        intygStatsMap = new HashMap<String, Long>();
+        intygStatsMap = new HashMap<>();
 
         intygStatsMap.put("VE1M1", 1L);
         intygStatsMap.put("VE1M2", 2L);
@@ -98,10 +97,10 @@ public class StatModuleApiControllerTest {
 
         ve4 = new Vardenhet("VE4", "Vardenhet4");
 
-        vg = new Vardgivare("VG1", "Vardgivaren");
+        Vardgivare vg = new Vardgivare("VG1", "Vardgivaren");
         vg.setVardenheter(Arrays.asList(ve1, ve2, ve3, ve4));
 
-        mockUser.setVardgivare(Arrays.asList(vg));
+        mockUser.setVardgivare(Collections.singletonList(vg));
         mockUser.setValdVardgivare(vg);
 
         when(webCertUserService.getUser()).thenReturn(mockUser);
@@ -247,6 +246,7 @@ public class StatModuleApiControllerTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

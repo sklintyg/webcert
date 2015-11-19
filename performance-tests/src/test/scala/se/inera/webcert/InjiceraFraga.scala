@@ -23,7 +23,7 @@ class InjiceraFraga extends Simulation {
 	val scn = scenario("InjiceraFraga")
 		.feed(intyg)
 		.exec(http("Inject a question")
-					.post("/services/questions")
+					.post("/testability/questions")
 					.headers(headers_json)
 					.body(StringBody("""{"amne":"OVRIGT",
  "externReferens":"FK-${intygsId}",

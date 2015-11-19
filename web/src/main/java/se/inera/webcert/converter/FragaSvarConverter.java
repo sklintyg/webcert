@@ -140,9 +140,6 @@ public class FragaSvarConverter {
 
     /**
      * Extract / Convert from {@link Utlatande} to {@link IntygsReferens}.
-     *
-     * @param utlatande
-     * @return
      */
     public static IntygsReferens convertToIntygsReferens(Utlatande utlatande) {
         IntygsReferens intygsReferens = new IntygsReferens();

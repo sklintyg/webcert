@@ -1,10 +1,10 @@
 package se.inera.webcert.common.security.authority;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Created by Magnus Ekstrand on 27/08/15.
@@ -19,7 +19,9 @@ public enum UserRole {
     ROLE_LAKARE_DJUPINTEGRERAD ("Läkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
     ROLE_LAKARE_UTHOPP ("Läkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
     ROLE_PRIVATLAKARE ("Privatläkare", "fk7263", "ts-bas", "ts-diabetes", "sjukpenning", "sjukersattning"),
-    ROLE_TANDLAKARE ("Tandläkare", "fk7263");
+    ROLE_TANDLAKARE ("Tandläkare", "fk7263"),
+    ROLE_TANDLAKARE_DJUPINTEGRERAD ("Tandläkare", "fk7263"),
+    ROLE_TANDLAKARE_UTHOPP ("Tandläkare", "fk7263");
 
     private String text;
     private Set<String> authorizedIntygsTyper;

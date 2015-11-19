@@ -43,10 +43,10 @@ public class WebcertFeatureServiceTest {
     @InjectMocks
     private WebcertFeatureServiceImpl featureService;
 
-    private Map<String, Boolean> module1Features = new HashMap<String, Boolean>();
+    private Map<String, Boolean> module1Features = new HashMap<>();
     private ModuleEntryPoint module1EntryPoint = mock(ModuleEntryPoint.class);
 
-    private Map<String, Boolean> module2Features = new HashMap<String, Boolean>();
+    private Map<String, Boolean> module2Features = new HashMap<>();
     private ModuleEntryPoint module2EntryPoint = mock(ModuleEntryPoint.class);
 
     @Before

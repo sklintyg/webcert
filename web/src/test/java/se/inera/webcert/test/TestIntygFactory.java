@@ -29,7 +29,7 @@ public final class TestIntygFactory {
 
     public static List<IntygItem> createListWithIntygItems() {
 
-        List<IntygItem> list = new ArrayList<IntygItem>();
+        List<IntygItem> list = new ArrayList<>();
 
         list.add(createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23")));
         list.add(createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")));
@@ -60,7 +60,7 @@ public final class TestIntygFactory {
 
     public static List<Utkast> createListWithUtkast() {
 
-        List<Utkast> list = new ArrayList<Utkast>();
+        List<Utkast> list = new ArrayList<>();
 
         list.add(createUtkast("2", LocalDateTime.parse("2014-01-01T10:00:00")));
         list.add(createUtkast("1", LocalDateTime.parse("2014-01-01T08:00:00")));

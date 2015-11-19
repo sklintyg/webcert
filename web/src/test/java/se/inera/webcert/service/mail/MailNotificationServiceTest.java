@@ -11,7 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -21,8 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.stub.HsaServiceStub;
-import se.inera.webcert.mailstub.MailStore;
-import se.inera.webcert.mailstub.OutgoingMail;
+import se.inera.intyg.webcert.mailstub.MailStore;
+import se.inera.intyg.webcert.mailstub.OutgoingMail;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
@@ -203,7 +202,7 @@ public class MailNotificationServiceTest {
         mailStore.setWait(false);
         mailStore.waitForMails(1);
         long endTimestamp = System.currentTimeMillis();
-        assertTrue(endTimestamp - startTimestamp < THRESHOLD);
+        assertTrue((endTimestamp - startTimestamp) < THRESHOLD);
         assertEquals(1, mailStore.getMails().size());
         OutgoingMail mail = mailStore.getMails().get(0);
 

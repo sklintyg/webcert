@@ -18,6 +18,7 @@ public class GrpCollectPollerFactoryImpl implements GrpCollectPollerFactory, App
 
     private ApplicationContext applicationContext;
 
+    @Override
     public GrpCollectPoller getInstance() {
         return applicationContext.getBean("grpCollectPoller", GrpCollectPoller.class);
     }

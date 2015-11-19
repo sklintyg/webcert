@@ -67,7 +67,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     private static final String INTYG_ID = "123";
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
-    private static final java.lang.String SAMPLE_XML = "<xml></xml>";
+    private static final String SAMPLE_XML = "<xml></xml>";
 
     @Mock
     private FragaSvarRepository fragaSvarRepository;
@@ -101,6 +101,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
+    @Override
     @Before
     public void setupDefaultAuthorization() {
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true))).thenReturn(true);
@@ -299,6 +300,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

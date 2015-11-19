@@ -25,9 +25,9 @@
 
   <!-- Intercept JavaMailSender calls and put outgoing mails into MailStore -->
   <aop:aspectj-autoproxy/>
-  <bean class="se.inera.webcert.mailstub.JavaMailSenderAroundAdvice"/>
+  <bean class="se.inera.intyg.webcert.mailstub.JavaMailSenderAroundAdvice"/>
   <bean class="org.springframework.mail.javamail.JavaMailSenderImpl"/>
-  <bean class="se.inera.webcert.mailstub.MailStore"/>
+  <bean class="se.inera.intyg.webcert.mailstub.MailStore"/>
 
   <!-- HSA Stub -->
   <bean class="se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>

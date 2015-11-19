@@ -18,6 +18,7 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl.Operat
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class IntygServiceConverterTest {
@@ -57,7 +58,7 @@ public class IntygServiceConverterTest {
     public void testConcatPatientName() {
 
         List<String> fNames = Arrays.asList("Adam", "Bertil", "Cesar");
-        List<String> mNames = Arrays.asList("Davidsson");
+        List<String> mNames = Collections.singletonList("Davidsson");
         String lName = "Eriksson";
 
         String name = converter.concatPatientName(fNames, mNames, lName);
@@ -69,7 +70,7 @@ public class IntygServiceConverterTest {
     public void testConcatPatientNameWithSomeNamesBlank() {
 
         List<String> fNames = Arrays.asList("Adam", "", "Bertil");
-        List<String> mNames = Arrays.asList(" ");
+        List<String> mNames = Collections.singletonList(" ");
         String lName = "Eriksson";
 
         String name = converter.concatPatientName(fNames, mNames, lName);

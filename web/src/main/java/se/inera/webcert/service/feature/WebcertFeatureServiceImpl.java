@@ -45,7 +45,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     @Qualifier("webcertFeatures")
     private Properties features;
 
-    private Map<String, Boolean> featuresMap = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> featuresMap = new HashMap<>();
 
     private Environment env;
 
@@ -63,8 +63,6 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /**
      * Inits the featuresMap with all Webcert features set to FALSE.
-     *
-     * @param featuresMap
      */
     public void initWebcertFeatures(Map<String, Boolean> featuresMap) {
 
@@ -74,7 +72,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             // the env name can be different to the enum name which is used in the gui.
             // as a result we can normalise the env names ... or translate them to the correct enum name.
             // I think we should normalise but this could be a bigger job, so translation will have to do.
-            if (feature.getEnvName() != null && env.containsProperty(feature.getEnvName())) {
+            if ((feature.getEnvName() != null) && env.containsProperty(feature.getEnvName())) {
                 features.setProperty(feature.getName(), env.getProperty(feature.getEnvName()));
             }
             featuresMap.put(feature.getName(), Boolean.FALSE);
@@ -85,8 +83,6 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * Inits the featuresMap with module features. The features are collected from the modules
      * using the ModuleEntryPoint of the module. The names of the module feature is then qualified
      * using the id of the module.
-     *
-     * @param featuresMap
      */
     public void initModuleFeatures(Map<String, Boolean> featuresMap) {
 
@@ -100,7 +96,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             moduleId = mep.getModuleId();
             moduleMap = mep.getModuleFeatures();
 
-            if (moduleMap == null || moduleMap.isEmpty()) {
+            if ((moduleMap == null) || moduleMap.isEmpty()) {
                 LOG.warn("Module {} did not expose any features! All features this of module will be disabled!", moduleId);
                 moduleMap = Collections.emptyMap();
             }
@@ -108,7 +104,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             String key;
             String moduleFeatureName;
             String moduleName;
-            Boolean moduleFeatureState = Boolean.FALSE;
+            Boolean moduleFeatureState;
 
             for (ModuleFeature moduleFeature : ModuleFeature.values()) {
                 moduleFeatureName = moduleFeature.getName();
@@ -123,9 +119,6 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     /**
      * Reads the supplied properties and updates the state of the feature in the featuresMap.
-     *
-     * @param featureProps
-     * @param featuresMap
      */
     public void processWebcertAndModuleFeatureProperties(Properties featureProps, Map<String, Boolean> featuresMap) {
 
@@ -153,6 +146,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(se.inera.webcert.service.feature.
      * WebcertFeature)
      */
+    @Override
     public boolean isFeatureActive(WebcertFeature feature) {
         return isFeatureActive(feature.getName());
     }
@@ -165,7 +159,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     @Override
     public boolean isFeatureActive(String featureName) {
         Boolean featureState = featuresMap.get(featureName);
-        return (featureState != null) ? featureState.booleanValue() : false;
+        return (featureState != null) && featureState;
     }
 
     /*
@@ -175,6 +169,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.certificate.modules.support
      * .feature.ModuleFeature, java.lang.String)
      */
+    @Override
     public boolean isModuleFeatureActive(ModuleFeature moduleFeature, String moduleName) {
         return isModuleFeatureActive(moduleFeature.getName(), moduleName);
     }
@@ -185,11 +180,12 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(java.lang.String,
      * java.lang.String)
      */
+    @Override
     public boolean isModuleFeatureActive(String moduleFeatureName, String moduleName) {
         if (isFeatureActive(moduleFeatureName)) {
             String key = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, DOT_SEP);
             Boolean moduleFeatureState = featuresMap.get(key);
-            return (moduleFeatureState != null) ? moduleFeatureState.booleanValue() : false;
+            return (moduleFeatureState != null) && moduleFeatureState;
         }
         return false;
     }
@@ -201,7 +197,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      */
     @Override
     public Set<String> getActiveFeatures() {
-        Set<String> activeFeatures = new TreeSet<String>();
+        Set<String> activeFeatures = new TreeSet<>();
 
         for (Entry<String, Boolean> feature : featuresMap.entrySet()) {
             if (feature.getValue().equals(Boolean.TRUE)) {

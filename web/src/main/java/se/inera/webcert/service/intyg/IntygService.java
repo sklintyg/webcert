@@ -19,10 +19,6 @@ public interface IntygService {
      *
      * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
      * an attempt to find an utkast stored in Webcert will be performed.
-     *
-     * @param intygId
-     * @param typ
-     * @return
      */
     IntygContentHolder fetchIntygData(String intygId, String typ);
 
@@ -41,40 +37,23 @@ public interface IntygService {
     /**
      * Returns a given certificate as PDF.
      *
-     * @param intygId
-     * @param typ
      * @param isEmployer
      *            Indicates if the certificate should be for the employer.
-     * @return
      */
     IntygPdf fetchIntygAsPdf(String intygId, String typ, boolean isEmployer);
 
     /**
      * Registers a given certificate in the Intygstjanst.
-     *
-     * @param utkast
-     * @return
      */
     IntygServiceResult storeIntyg(Utkast utkast);
 
     /**
      * Instructs Intygstjanst to deliver the given certifiate to an external recipient.
-     *
-     * @param intygId
-     * @param typ
-     * @param mottagare
-     * @param hasPatientConsent
-     * @return
      */
     IntygServiceResult sendIntyg(String intygId, String typ, String mottagare, boolean hasPatientConsent);
 
     /**
      * Instructs Intygstjanst to revoke the given certificate.
-     *
-     * @param intygId
-     * @param intygTyp
-     * @param revokeMessage
-     * @return
      */
     IntygServiceResult revokeIntyg(String intygId, String intygTyp, String revokeMessage);
 

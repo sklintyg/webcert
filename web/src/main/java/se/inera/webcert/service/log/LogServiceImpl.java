@@ -223,6 +223,7 @@ public class LogServiceImpl implements LogService {
             this.logMsg = log;
         }
 
+        @Override
         public Message createMessage(Session session) throws JMSException {
             return session.createObjectMessage(logMsg);
         }

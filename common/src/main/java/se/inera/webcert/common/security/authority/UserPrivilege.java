@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UserPrivilege {
 
-    PRIVILEGE_SKRIVA_INTYG ("Skriva intyg"),
     PRIVILEGE_SIGNERA_INTYG ("Signera intyg"),
     PRIVILEGE_MAKULERA_INTYG ("Makulera intyg"),
     PRIVILEGE_KOPIERA_INTYG ("Kopiera intyg"),

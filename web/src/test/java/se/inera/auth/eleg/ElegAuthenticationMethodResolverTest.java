@@ -22,11 +22,11 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 @RunWith(MockitoJUnitRunner.class)
 public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest {
 
-    private static final java.lang.String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
-    private static final java.lang.String BANK_ID_LOGIN_METHOD = "ccp10";
-    private static final java.lang.String NET_ID_LOGIN_METHOD = "ccp8";
-    private static final java.lang.String INDETERMINATE_LOGIN_METHOD = "";
-    private static final java.lang.String UNKNOWN_LOGIN_METHOD = "ccp7";
+    private static final String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
+    private static final String BANK_ID_LOGIN_METHOD = "ccp10";
+    private static final String NET_ID_LOGIN_METHOD = "ccp8";
+    private static final String INDETERMINATE_LOGIN_METHOD = "";
+    private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
 
     @Mock
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;

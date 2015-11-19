@@ -20,6 +20,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
  *
  */
 @Path("/utkast")
+@Api(value = "utkast", description = "REST API - moduleapi - utkast", produces = MediaType.APPLICATION_JSON)
 public class UtkastModuleApiController extends AbstractApiController {
 
     public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
@@ -215,9 +217,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     /**
      * Creates a PDL log event that a persons draft has been printed.
-     *
-     * @param intygsId
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/loggautskrift")

@@ -343,12 +343,12 @@
                 <configuration>
                   <target unless="maven.test.skip">
                     <echo message="Starting FitNesse auto..." taskname="fitnesse"/>
-                    <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true">
+                    <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true" failonerror="true">
                       <arg line="-p ${fitnesse.port}"/>
                       <arg line="-d ${fitnesse.working}"/>
                       <arg line="-b fitnesse-results.xml"/>
                       <arg value="-c"/>
-                      <arg value="WebCert.AutomatiseradeTester?suite&amp;format=xml&amp;runTestsMatchingAllTags=${runtags}"/>
+                      <arg value="WebCert.AutomatiseradeTester?suite&amp;format=xml&amp;includehtml&amp;runTestsMatchingAllTags=${runtags}"/>
                       <jvmarg value="-Dwebcert.web.baseUrl=${webcert.web.baseUrl}"/>
                       <jvmarg value="-Dwebcert.baseUrl=${webcert.baseUrl}"/>
                       <jvmarg value="-Dlogsender.baseUrl=${logsender.baseUrl}"/>

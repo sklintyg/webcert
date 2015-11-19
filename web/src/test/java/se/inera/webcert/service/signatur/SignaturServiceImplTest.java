@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.persistence.OptimisticLockException;
 
-import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-
-import org.springframework.core.io.ClassPathResource;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -58,6 +53,9 @@ import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
@@ -408,6 +406,7 @@ public class SignaturServiceImplTest {
         // convert list to map
         if (doctor) {
             privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+                @Override
                 public String apply(UserPrivilege userPrivilege) {
                     return userPrivilege.name();
                 }

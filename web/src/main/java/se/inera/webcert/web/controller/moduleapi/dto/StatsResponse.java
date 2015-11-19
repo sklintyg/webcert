@@ -22,7 +22,7 @@ public class StatsResponse {
     private long totalNbrOfUnsignedDraftsOnSelected = 0;
 
     @JsonProperty("vardgivare")
-    private List<VardgivareStats> vardgivare = new ArrayList<VardgivareStats>();
+    private List<VardgivareStats> vardgivare = new ArrayList<>();
 
     public StatsResponse() {
 

@@ -155,6 +155,7 @@ public class GrpCollectPollerTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }

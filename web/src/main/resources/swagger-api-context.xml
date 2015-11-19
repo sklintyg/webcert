@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2015 Inera AB (http://www.inera.se) This file is part
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+  Inera Certificate Web is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published
+  by the Free Software Foundation, either version 3 of the License, or (at
+  your option) any later version. Inera Certificate Web is distributed in the
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details. You should have received
+  a copy of the GNU Affero General Public License along with this program.
+  If not, see <http://www.gnu.org/licenses/>. -->
+<beans profile="!prod" xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging/>
+    </cxf:features>
+  </cxf:bus>
+
+  <context:annotation-config/>
+
+  <context:component-scan base-package="se.inera.webcert.web.controller.swagger"/>
+
+  <jaxrs:server address="/swagger">
+    <jaxrs:serviceBeans>
+      <bean class="se.inera.webcert.web.controller.swagger.ApiScanner">
+
+        <!-- key   == sub-package of se.inera.webcert.web.controller, also used as path param for the /services/swagger/{api} -->
+        <!-- value == base path of the service. Used to get the correct basepath when calling services from swagger-ui. -->
+        <property name="basepathMap">
+          <map>
+            <entry key="api" value="/api"/>
+            <entry key="moduleapi" value="/moduleapi"/>
+            <entry key="monitoring" value="/monitoring/health-check"/>
+            <entry key="integration" value="/visa"/>
+            <entry key="legacyintegration" value="/webcert/web/user"/>
+            <entry key="testability" value="/testability"/>
+            <entry key="authtestability" value="/authtestability/roles"/>
+          </map>
+        </property>
+      </bean>
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider"/>
+      <ref bean="webcertRestExceptionHandler"/>
+      <ref bean="localDateTimeHandler"/>
+    </jaxrs:providers>
+
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json"/>
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
+</beans>
+
+
+
+
+
+

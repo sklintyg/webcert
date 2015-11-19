@@ -9,8 +9,7 @@ import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDR
 import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
-
-import java.util.ArrayList;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_KOD_ATTRIBUTE;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
@@ -24,9 +23,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+
+import java.util.ArrayList;
 
 /**
  * @author andreaskaltenbach
@@ -55,6 +55,10 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
         return FakeAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
+    public void setUserDetails(SAMLUserDetailsService userDetails) {
+        this.userDetails = userDetails;
+    }
+
     private SAMLCredential createSamlCredential(FakeAuthenticationToken token) {
         FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
 
@@ -65,29 +69,34 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);
 
-        attributeStatement.getAttributes().add(createAttribute(HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId()));
-        attributeStatement.getAttributes().add(createAttribute(FORNAMN_ATTRIBUTE, fakeCredentials.getFornamn()));
-        attributeStatement.getAttributes().add(
-                createAttribute(MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getEfternamn()));
-        attributeStatement.getAttributes().add(createAttribute(ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId()));
-        attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_TYPE, Medarbetaruppdrag.VARD_OCH_BEHANDLING));
-        attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_ID, fakeCredentials.getEnhetId()));
-        attributeStatement.getAttributes().add(createAttribute(FORSKRIVARKOD_ATTRIBUTE, fakeCredentials.getForskrivarKod()));
+        addAttribute(attributeStatement, HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId());
+        addAttribute(attributeStatement, FORNAMN_ATTRIBUTE, fakeCredentials.getFornamn());
+        addAttribute(attributeStatement, MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getEfternamn());
+        addAttribute(attributeStatement, ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId());
+        addAttribute(attributeStatement, MEDARBETARUPPDRAG_TYPE, Medarbetaruppdrag.VARD_OCH_BEHANDLING);
+        addAttribute(attributeStatement, MEDARBETARUPPDRAG_ID, fakeCredentials.getEnhetId());
+        addAttribute(attributeStatement, FORSKRIVARKOD_ATTRIBUTE, fakeCredentials.getForskrivarKod());
 
         if (fakeCredentials.isLakare()) {
-            attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));
+            addAttribute(attributeStatement, TITEL_ATTRIBUTE, "Läkare");
         }
-        if (fakeCredentials.isTandLakare()) {
-            attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Tandläkare"));
+        if (fakeCredentials.isTandlakare()) {
+            addAttribute(attributeStatement, TITEL_ATTRIBUTE, "Tandläkare");
         }
+
+        addAttribute(attributeStatement, TITEL_KOD_ATTRIBUTE, fakeCredentials.getBefattningsKod());
 
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());
         return new SAMLCredential(nameId, assertion, "fake-idp", "webcert");
     }
 
+    private void addAttribute(AttributeStatement attributeStatement, String attributeName, String attributeValue) {
+        if (attributeName == null || attributeValue == null) {
+            return;
+        }
 
-    public void setUserDetails(SAMLUserDetailsService userDetails) {
-        this.userDetails = userDetails;
+        attributeStatement.getAttributes().add(createAttribute(attributeName, attributeValue));
     }
+
 }

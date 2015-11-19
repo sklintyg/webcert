@@ -11,7 +11,7 @@ public class SaveDraftResponse {
 
     private DraftValidationStatus status;
 
-    private List<SaveDraftValidationMessage> messages = new ArrayList<SaveDraftValidationMessage>();
+    private List<SaveDraftValidationMessage> messages = new ArrayList<>();
 
     public SaveDraftResponse(long version, DraftValidationStatus status) {
         this.version = version;

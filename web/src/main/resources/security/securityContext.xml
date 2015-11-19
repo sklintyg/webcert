@@ -29,7 +29,10 @@
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/saml2/web/**"/>
   <security:http security="none" pattern="/services/**"/>
+
+  <security:http security="none" pattern="/testability/**"/>
   <security:http security="none" pattern="/monitoring/**"/>
+
   <security:http security="none" pattern="/favicon.ico"/>
   
   <!-- Logger for SAML messages and events -->
@@ -103,6 +106,11 @@
         if they are co-deployed with Webcert as the root application -->
     <security:http security="none" pattern="/notification-sender/**"/>
     <security:http security="none" pattern="/log-sender/**"/>
+
+    <!-- For non-production, allow unsecured access to swagger paths for REST doc purposes -->
+    <security:http security="none" pattern="/services/swagger/**"/>
+    <security:http security="none" pattern="/swagger-ui/**"/>
+
   </beans>
 
   <!-- =============================================================== -->
@@ -181,6 +189,14 @@
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
     </security:authentication-manager>
+
+    <!-- Make sure swagger is unavailable in prod -->
+    <security:http use-expressions="true">
+      <security:intercept-url pattern="/swagger-ui/**"
+          access="denyAll"/>
+      <security:intercept-url pattern="/services/swagger/**"
+          access="denyAll"/>
+    </security:http>
   </beans>
 
 
@@ -498,5 +514,6 @@
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
       <property name="defaultTargetUrl" value="/error.jsp?reason=logout"/>
     </bean>
+
   </beans>
 </beans>

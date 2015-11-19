@@ -51,7 +51,7 @@ public class ASN1StreamParser {
                 int b = unsignByte(bais);
                 buffer.add(b);
 
-                if (buffer.size() == marker.length && match(buffer, marker)) {
+                if ((buffer.size() == marker.length) && match(buffer, marker)) {
                     // Extract val
                     return readValue(dataLength, bais);
                 }
@@ -91,7 +91,7 @@ public class ASN1StreamParser {
                 int b = unsignByte(bais);
                 buffer.add(b);
 
-                if (buffer.size() == marker.length && match(buffer, marker)) {
+                if ((buffer.size() == marker.length) && match(buffer, marker)) {
 
                     int lengthOctet = unsignByte(bais);
                     int contentLength = determineContentLength(lengthOctet, bais);
@@ -162,7 +162,7 @@ public class ASN1StreamParser {
 
         private static final long serialVersionUID = 507838301817733410L;
 
-        private int limit;
+        private final int limit;
 
         public LimitedQueue(int limit) {
             this.limit = limit;

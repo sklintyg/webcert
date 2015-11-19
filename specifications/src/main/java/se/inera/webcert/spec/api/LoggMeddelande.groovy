@@ -9,7 +9,7 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 class LoggMeddelande extends RestClientFixture {
 
-    def restClient = createRestClient("${baseUrl}services/")
+    def restClient = createRestClient("${baseUrl}testability/")
 
     
     private def logMessage

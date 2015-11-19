@@ -47,8 +47,6 @@ public class SendNotificationStrategyTest {
     @InjectMocks
     private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
 
-    private Utkast utkast1, utkast2, utkast3;
-
     @Before
     public void setupIntegreradeEnheter() {
         when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_1)).thenReturn(Boolean.TRUE);
@@ -58,9 +56,9 @@ public class SendNotificationStrategyTest {
 
     @Before
     public void setupUtkastRepository() {
-        this.utkast1 = createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1);
-        this.utkast2 = createUtkast(INTYG_ID_2, INTYG_FK, ENHET_2);
-        this.utkast3 = createUtkast(INTYG_ID_3, INTYG_TS, ENHET_3);
+        Utkast utkast1 = createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1);
+        Utkast utkast2 = createUtkast(INTYG_ID_2, INTYG_FK, ENHET_2);
+        Utkast utkast3 = createUtkast(INTYG_ID_3, INTYG_TS, ENHET_3);
         when(mockUtkastRepository.findOne(INTYG_ID_1)).thenReturn(utkast1);
         when(mockUtkastRepository.findOne(INTYG_ID_2)).thenReturn(utkast2);
         when(mockUtkastRepository.findOne(INTYG_ID_3)).thenReturn(utkast3);

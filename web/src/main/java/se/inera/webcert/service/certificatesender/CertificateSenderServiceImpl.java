@@ -57,10 +57,10 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
     static final class StoreCertificateMessageCreator implements MessageCreator {
 
-        private String intygsId;
-        private String body;
-        private String intygsTyp;
-        private String logicalAddress;
+        private final String intygsId;
+        private final String body;
+        private final String intygsTyp;
+        private final String logicalAddress;
 
         public StoreCertificateMessageCreator(String intygsId, String body, String intygsTyp, String logicalAddress) {
             this.intygsId = intygsId;
@@ -69,6 +69,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             this.logicalAddress = logicalAddress;
         }
 
+        @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(this.body);
             message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
@@ -81,10 +82,10 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
     static final class SendCertificateMessageCreator implements MessageCreator {
 
-        private String intygsId;
-        private Personnummer personId;
-        private String recipientId;
-        private String logicalAddress;
+        private final String intygsId;
+        private final Personnummer personId;
+        private final String recipientId;
+        private final String logicalAddress;
 
         public SendCertificateMessageCreator(String intygsId, Personnummer personId, String recipientId, String logicalAddress) {
             this.intygsId = intygsId;
@@ -93,6 +94,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             this.logicalAddress = logicalAddress;
         }
 
+        @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage();
             message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);

@@ -27,7 +27,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | valj ny fraga |
 | säkerställ att | ny fraga formular visas |
 | säkerställ att inte | skicka fraga knapp aktiverad |
-| skicka fraga | En fråga från Fitnesse 1 | med amne | 1 |
+| skicka fraga | En fråga från Fitnesse 1 | med amne | ARBETSTIDSFORLAGGNING |
 | säkerställ att | fragan ar skickad till fk meddelande visas |
 | säkerställ att inte | ny fraga formular visas |
 | säkerställ att | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
@@ -42,15 +42,15 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 
 | skript | !-SvaraOchFraga-! |
 | valj ny fraga |
-| skicka fraga | En fråga från Fitnesse 2 | med amne | 2 |
+| skicka fraga | En fråga från Fitnesse 2 | med amne | AVSTAMNINGSMOTE |
 | säkerställ att| fraga med text | En fråga från Fitnesse 2 | visas  i listan med ohanterade fragor |
 | säkerställ att | fragan ar skickad till fk meddelande visas |
 | valj ny fraga |
-| skicka fraga | En fråga från Fitnesse 3 | med amne | 3 |
+| skicka fraga | En fråga från Fitnesse 3 | med amne | KONTAKT |
 | säkerställ att| fraga med text | En fråga från Fitnesse 3 | visas  i listan med ohanterade fragor |
 | säkerställ att | fragan ar skickad till fk meddelande visas |
 | valj ny fraga |
-| skicka fraga | En fråga från Fitnesse 4 | med amne | 4 |
+| skicka fraga | En fråga från Fitnesse 4 | med amne | OVRIGT |
 | säkerställ att | fraga med text | En fråga från Fitnesse 4 | visas  i listan med ohanterade fragor |
 | säkerställ att | fragan ar skickad till fk meddelande visas |
 

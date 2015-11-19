@@ -5,7 +5,7 @@ public enum FrageStallare {
     FORSAKRINGSKASSAN("FK"),
     WEBCERT("WC");
 
-    private String kod;
+    private final String kod;
 
     FrageStallare(String kod) {
         this.kod = kod;

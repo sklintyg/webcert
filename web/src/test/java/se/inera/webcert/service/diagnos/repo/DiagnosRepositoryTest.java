@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -32,7 +32,7 @@ public class DiagnosRepositoryTest {
 
     @Before
     public void setup() {
-        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(Arrays.asList(FILE_1));
+        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(Collections.singletonList(FILE_1));
         assertEquals(100, repoImpl.nbrOfDiagosis());
         this.repo = repoImpl;
     }
@@ -117,7 +117,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithFragmentThree() {
-
         String codeFragment = "A08";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(9, res.size());
@@ -125,7 +124,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithFragmentFour() {
-
         String codeFragment = "A083";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(4, res.size());
@@ -133,7 +131,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithFragmentFourAndDot() {
-
         String codeFragment = "A08.3";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(4, res.size());
@@ -141,7 +138,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithFullCode() {
-
         String codeFragment = "A083B";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(1, res.size());
@@ -149,7 +145,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithFullCodeAndDot() {
-
         String codeFragment = "A08.3B";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(1, res.size());
@@ -157,7 +152,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithNonExistingFragment() {
-
         String codeFragment = "X01";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
@@ -166,7 +160,6 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithNoInput() {
-
         String codeFragment = "";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
@@ -175,8 +168,7 @@ public class DiagnosRepositoryTest {
 
     @Test
     public void testSearchingWithNull() {
-
-        String codeFragment = null;
+        final String codeFragment = null;
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
         assertTrue(res.isEmpty());

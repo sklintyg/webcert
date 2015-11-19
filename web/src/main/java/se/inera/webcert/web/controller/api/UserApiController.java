@@ -1,8 +1,7 @@
 package se.inera.webcert.web.controller.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,7 @@ import se.inera.webcert.web.controller.api.dto.WebUserFeaturesRequest;
  *
  */
 @Path("/anvandare")
+@Api(value = "anvandare", description = "REST API för användarhantering", produces = MediaType.APPLICATION_JSON)
 public class UserApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
@@ -67,22 +68,18 @@ public class UserApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
         WebCertUser user = getWebCertUserService().getUser();
-        List<String> mutFeatures = new ArrayList<>(user.getAktivaFunktioner());
+        Set<String> mutFeatures = new HashSet<>(user.getAktivaFunktioner());
         updateFeatures(webUserFeaturesRequest.isJsLoggning(), WebcertFeature.JS_LOGGNING.getName(), mutFeatures);
         updateFeatures(webUserFeaturesRequest.isJsMinified(), WebcertFeature.JS_MINIFIED.getName(), mutFeatures);
-        user.setAktivaFunktioner(new TreeSet<String>(mutFeatures));
-        return Response.ok(user.getAktivaFunktioner()).build();
+        user.setAktivaFunktioner(mutFeatures);
+        return Response.ok(mutFeatures).build();
     }
 
-    private void updateFeatures(boolean feature, String name, List<String>features) {
+    private void updateFeatures(boolean feature, String name, Set<String>features) {
         if (feature) {
-            if (features.indexOf(name) < 0) {
-                features.add(name);
-                featureService.setFeature(name, "true");
-            }
+            features.add(name);
         } else {
             features.remove(name);
-            featureService.setFeature(name, "false");
         }
     }
 

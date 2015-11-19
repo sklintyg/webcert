@@ -242,13 +242,13 @@ class SkrivIntyg {
         result
     }
 
-    int sjukskrivningsperiod() {
+    String sjukskrivningsperiod() {
         def result
         Browser.drive {
             waitFor {
                 at EditeraFk7263Page
             }
-            result = page.arbetsformaga.period.text().toInteger()
+            result = page.arbetsformaga.period.text()
         }
         return result
     }

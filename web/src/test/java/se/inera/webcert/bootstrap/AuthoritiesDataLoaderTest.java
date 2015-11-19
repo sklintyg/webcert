@@ -1,18 +1,17 @@
 package se.inera.webcert.bootstrap;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.Collection;
-import java.util.HashSet;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.event.ContextRefreshedEvent;
-
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
@@ -21,6 +20,9 @@ import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.PrivilegeRepository;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * The AuthoritiesDataLoader is not very well suited for unit-testing, given that it has a single entry-point and then
@@ -52,7 +54,7 @@ public class AuthoritiesDataLoaderTest {
     @Mock
     private Role roleLakare;
 
-    @org.junit.Before
+    @Before
     public void init() {
         roleLakare = new Role();
         roleLakare.setId(1L);
@@ -84,7 +86,7 @@ public class AuthoritiesDataLoaderTest {
         testee.onApplicationEvent(contextRefreshedEvent);
         verify(privilegeRepository, times(UserPrivilege.values().length)).save(any(Privilege.class));
         verify(roleRepository, times(UserRole.values().length)).save(any(Role.class));
-        verify(titleCodeRepository, times(4)).save(any(TitleCode.class));
+        verify(titleCodeRepository, times(3)).save(any(TitleCode.class));
     }
 
     @Test
@@ -102,7 +104,7 @@ public class AuthoritiesDataLoaderTest {
         testee.onApplicationEvent(contextRefreshedEvent);
 
         verify(privilegeRepository, times(UserPrivilege.values().length)).save(any(Privilege.class));
-        verify(roleRepository, times(8)).save(any(Role.class));
-        verify(titleCodeRepository, times(4)).save(any(TitleCode.class));
+        verify(roleRepository, times(10)).save(any(Role.class));
+        verify(titleCodeRepository, times(3)).save(any(TitleCode.class));
     }
 }

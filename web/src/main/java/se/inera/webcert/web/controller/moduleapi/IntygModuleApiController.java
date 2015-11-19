@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
  * @author nikpet
  */
 @Path("/intyg")
+@Api(value = "/moduleapi/intyg", description = "REST API - moduleapi - intyg", produces = MediaType.APPLICATION_JSON)
 public class IntygModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);
@@ -106,10 +108,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Issues a request to Intygstjanst to send the signed intyg to a recipient.
-     *
-     * @param intygsId
-     * @param param
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/skicka")
@@ -128,7 +126,6 @@ public class IntygModuleApiController extends AbstractApiController {
      *            The id of the intyg to revoke
      * @param param
      *            A JSON struct containing an optional message
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
@@ -141,4 +138,5 @@ public class IntygModuleApiController extends AbstractApiController {
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
         return Response.ok(revokeResult).build();
     }
+
 }

@@ -9,6 +9,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Arbetsförmågan varierar beroende på arbetsförhållanden och arbetsuppgifter, men är sällan helt nedsatt. Vägledande rekommendation är partiell sjukskrivning i upp till 2 månader. Det är viktigt att de symtom som nedsätter arbetsförmågan beskrivs i det medicinska underlaget.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -23,7 +24,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</displayName>
-        <originalText>O26.9:Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -36,6 +36,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Uppgift saknas</sjukskrivningstidText>
     <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -48,9 +49,8 @@
           <kod>
             <code>lindrig</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>255604002</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -61,7 +61,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
-        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -74,6 +73,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Uppgift saknas</sjukskrivningstidText>
     <sjukskrivningsgrad>Deltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -86,9 +86,8 @@
           <kod>
             <code>medelsvår</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>6736007</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -99,7 +98,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
-        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -112,6 +110,9 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Flertalet gravida kvinnor med bäckensmärtor och framför allt med ryggsmärtor förutsätts ha en mer eller mindre bibehållen arbetsförmåga.
+      Sjukskrivning kan vara motiverad vid uttalade eller svåra bäckensmärtor, i synnerhet om de förvärras av arbetet och om behandlingen inte resulterat i en påtaglig förbättring av smärtan och därmed arbetsförmågan. Halv sjukskrivning är normen – dock rekommenderas hel sjukskrivning om belastningssmärtorna är så uttalade att kvinnan måste använda kryckor eller rullstol. Gör en ny bedömning efter 4–6 veckors behandling för att undersöka behandlingseffekten och det fortsatta behovet av sjukskrivning.
+      Sjukskrivning för lumbala ryggsmärtor är oftast inte motiverad (utöver eventuell egen sjukanmälan upp till 1 vecka). Vid akuta ryggsmärtor (lumbago) kan sjukskrivning ändå vara motiverad under en begränsad tid, i första hand upp till 2 veckor.</textuelltUnderlag>
     <sjukskrivningstidText>Fram till förlossningen</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -124,9 +125,8 @@
           <kod>
             <code>svår</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>24484000</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -137,7 +137,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
-        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -150,6 +149,9 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>I akutskede efter knädistorsionsskada kan arbetsförmågan vara nedsatt i alla former av arbeten i upp till 10 dagar.
+      Efter artroskopisk meniskoperation görs bedömningen i relation till patientens arbetskrav. I yrken som inte belastar knäna är arbetsförmågan som regel opåverkad. I yrken med knäbelastning kan partiell eller i enstaka fall heltidssjukskrivning vara aktuell i upp till 8 veckor. Om patienten även har broskförändringar blir rehabiliteringstiden ofta förlängd.
+      Efter operation av korsbandsskada är arbetsförmågan ofta nedsatt i upp till 4 månader beroende på arbetsbelastning.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 10 dagar</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>10</value>
@@ -167,7 +169,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
-        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -180,6 +181,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -198,7 +200,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -207,9 +208,8 @@
           <kod>
             <code>84877006</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>artroskopi av knä med operation av menisk</displayName>
-            <originalText/>
           </kod>
         </utfordAtgard>
       </urvalUtfordAtgard>
@@ -220,7 +220,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
-        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -233,6 +232,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -251,7 +251,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -260,9 +259,8 @@
           <kod>
             <code>84877006</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>artroskopi av knä med operation av menisk</displayName>
-            <originalText/>
           </kod>
         </utfordAtgard>
       </urvalUtfordAtgard>
@@ -273,7 +271,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
-        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -286,6 +283,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 12 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>12</value>
@@ -302,9 +300,8 @@
           <kod>
             <code>22591001</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>degeneration av brosk och/eller menisk i knä</displayName>
-            <originalText/>
           </kod>
         </komplicerandeFaktor>
       </urvalKomplicerandeFaktor>
@@ -313,9 +310,8 @@
           <kod>
             <code>84877006</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>artroskopi av knä med operation av menisk</displayName>
-            <originalText/>
           </kod>
         </utfordAtgard>
       </urvalUtfordAtgard>
@@ -326,7 +322,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
-        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -339,6 +334,9 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>I akutskede efter knädistorsionsskada kan arbetsförmågan vara nedsatt i alla former av arbeten i upp till 10 dagar.
+      Efter artroskopisk meniskoperation görs bedömningen i relation till patientens arbetskrav. I yrken som inte belastar knäna är arbetsförmågan som regel opåverkad. I yrken med knäbelastning kan partiell eller i enstaka fall heltidssjukskrivning vara aktuell i upp till 8 veckor. Om patienten även har broskförändringar blir rehabiliteringstiden ofta förlängd.
+      Efter operation av korsbandsskada är arbetsförmågan ofta nedsatt i upp till 4 månader beroende på arbetsbelastning.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 4 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>4</value>
@@ -355,9 +353,8 @@
           <kod>
             <code>35926005</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>operation av korsband i knä</displayName>
-            <originalText/>
           </kod>
         </utfordAtgard>
       </urvalUtfordAtgard>
@@ -368,7 +365,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>S83.5</displayName>
-        <originalText>S83.5</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -381,6 +377,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 4 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>4</value>
@@ -397,9 +394,8 @@
           <kod>
             <code>35926005</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>operation av korsband i knä</displayName>
-            <originalText/>
           </kod>
         </utfordAtgard>
       </urvalUtfordAtgard>
@@ -410,7 +406,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>S83.5</displayName>
-        <originalText>S83.5</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -423,6 +418,9 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>I akutskede efter knädistorsionsskada kan arbetsförmågan vara nedsatt i alla former av arbeten i upp till 10 dagar.
+      Efter artroskopisk meniskoperation görs bedömningen i relation till patientens arbetskrav. I yrken som inte belastar knäna är arbetsförmågan som regel opåverkad. I yrken med knäbelastning kan partiell eller i enstaka fall heltidssjukskrivning vara aktuell i upp till 8 veckor. Om patienten även har broskförändringar blir rehabiliteringstiden ofta förlängd.
+      Efter operation av korsbandsskada är arbetsförmågan ofta nedsatt i upp till 4 månader beroende på arbetsbelastning.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -440,7 +438,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>S83.6</displayName>
-        <originalText>S83.6</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -453,6 +450,10 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid arbeten som inte belastar knä- eller höftleder i någon större omfattning är arbetsförmågan normalt inte nedsatt, oavsett artrosens svårighet.
+      Vid försämringsperioder, lätta eller medelsvåra artrosbesvär och vid arbete som innebär hög belastning (som tunga eller upprepande lyft), kan arbetsförmågan vara helt nedsatt i upp till 3 veckor.
+      Vid svåra artrosbesvär och belastande arbete kan deltidssjukskrivning bli aktuellt i avvaktan på åtgärder.
+      Efter artroplastik (byte av led) kan arbetsförmågan vara nedsatt i upp till 8 veckor i lätta arbeten som inte belastar leden och i upp till 4 månader vid måttligt tunga arbeten.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -469,7 +470,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -478,9 +478,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -491,7 +490,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -504,6 +502,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -524,7 +523,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Måttlig belastning på höfleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -533,9 +531,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -546,7 +543,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -559,6 +555,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -579,7 +576,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -588,9 +584,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -601,7 +596,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -614,6 +608,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -634,7 +629,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -643,9 +637,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -656,7 +649,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -669,6 +661,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -689,7 +682,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Måttlig belastning på höfleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -698,9 +690,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -711,7 +702,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -724,6 +714,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 12 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>12</value>
@@ -744,7 +735,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -753,9 +743,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -766,7 +755,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -779,6 +767,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>upp till
       eller fram till operation</sjukskrivningstidText>
     <sjukskrivningstid>
@@ -800,7 +789,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -809,9 +797,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -822,7 +809,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -835,6 +821,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>upp till
       eller fram till operation</sjukskrivningstidText>
     <sjukskrivningstid>
@@ -856,7 +843,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Måttlig belastning på höfleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -865,9 +851,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -878,7 +863,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -891,6 +875,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>upp till
       eller fram till operation</sjukskrivningstidText>
     <sjukskrivningstid>
@@ -912,7 +897,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -921,9 +905,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -934,7 +917,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -947,6 +929,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -967,7 +950,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -976,9 +958,8 @@
           <kod>
             <code>397956004</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>artroplastik med protes i höft</displayName>
-            <originalText/>
           </kod>
         </planeradAtgard>
       </urvalPlaneradAtgard>
@@ -989,7 +970,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1002,6 +982,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 4 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>4</value>
@@ -1022,7 +1003,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Måttlig belastning på höfleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1031,9 +1011,8 @@
           <kod>
             <code>397956004</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>artroplastik med protes i höft</displayName>
-            <originalText/>
           </kod>
         </planeradAtgard>
       </urvalPlaneradAtgard>
@@ -1044,7 +1023,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1057,6 +1035,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -1077,7 +1056,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1086,9 +1064,8 @@
           <kod>
             <code>397956004</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>artroplastik med protes i höft</displayName>
-            <originalText/>
           </kod>
         </planeradAtgard>
       </urvalPlaneradAtgard>
@@ -1099,7 +1076,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Höftledsartros</displayName>
-        <originalText>M16:Höftledsartros</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1112,6 +1088,11 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt mindre krävande arbete behövs i regel ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).
+      Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt krävande arbete kan deltids- eller heltidssjukskrivning bli aktuell under relativt lång tid, ofta i mer än 3 månader. Diskutera ändrade arbetsuppgifter.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt mindre krävande arbete krävs ofta sjukskrivning i upp till 3 månader. Överväg deltidssjukskrivning. Den insatta medicinska behandlingen kan utvärderas först efter cirka 3 månader.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt krävande arbete krävs sjukskrivning ofta i mer än 3 månader, ibland i upp till 6 månader. Svårt sjuka patienter kan även efter över ett års sjukfrånvaro återgå i arbete vid behandling med biologiska läkemedel. Diskutera ändrade arbetsuppgifter.
+      Sjukgymnastik och intensiv träning eller rehabilitering är en mycket viktig del av behandlingen och en del patienter kan behöva sjukskrivning för förebyggande behandling.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -1133,7 +1114,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1142,9 +1122,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1155,7 +1134,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
-        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1168,6 +1146,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -1186,7 +1165,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1195,9 +1173,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1208,7 +1185,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
-        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1221,6 +1197,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -1246,7 +1223,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1255,9 +1231,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1268,7 +1243,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
-        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1281,6 +1255,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -1299,7 +1274,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1308,9 +1282,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1321,7 +1294,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
-        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1334,6 +1306,11 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt mindre krävande arbete behövs i regel ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).
+      Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt krävande arbete kan deltids- eller heltidssjukskrivning bli aktuell under relativt lång tid, ofta i mer än 3 månader. Diskutera ändrade arbetsuppgifter.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt mindre krävande arbete krävs ofta sjukskrivning i upp till 3 månader. Överväg deltidssjukskrivning. Den insatta medicinska behandlingen kan utvärderas först efter cirka 3 månader.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt krävande arbete krävs sjukskrivning ofta i mer än 3 månader, ibland i upp till 6 månader. Svårt sjuka patienter kan även efter över ett års sjukfrånvaro återgå i arbete vid behandling med biologiska läkemedel. Diskutera ändrade arbetsuppgifter.
+      Sjukgymnastik och intensiv träning eller rehabilitering är en mycket viktig del av behandlingen och en del patienter kan behöva sjukskrivning för förebyggande behandling.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -1355,7 +1332,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1364,9 +1340,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1377,7 +1352,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M46</displayName>
-        <originalText>M46</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1390,6 +1364,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -1408,7 +1383,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1417,9 +1391,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1430,7 +1403,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M46</displayName>
-        <originalText>M46</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1443,6 +1415,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Initalt upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -1468,7 +1441,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning på  höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1477,9 +1449,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1490,7 +1461,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M46</displayName>
-        <originalText>M46</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1503,6 +1473,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -1521,7 +1492,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning på höftleder</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -1530,9 +1500,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1543,7 +1512,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M46</displayName>
-        <originalText>M46</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1556,6 +1524,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1572,9 +1541,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1585,7 +1553,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Lätta graviditetskräkningar</displayName>
-        <originalText>O21.0:Lätta graviditetskräkningar</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1598,6 +1565,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Besvärens styrka och arbetsuppgifternas art bestämmer arbetsförmågan. Vid uttalade besvär är arbetsförmågan oftast helt nedsatt, vid lättare besvär brukar det räcka med 25–50 procents sjukskrivning. Normalt kan sjukskrivningstiden, för de flesta arbeten, ligga på upp till 2 månader.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1614,9 +1582,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1627,7 +1594,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Lätta graviditetskräkningar</displayName>
-        <originalText>O21.0:Lätta graviditetskräkningar</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1640,6 +1606,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Besvärens styrka och arbetsuppgifternas art bestämmer arbetsförmågan. Vid uttalade besvär är arbetsförmågan oftast helt nedsatt, vid lättare besvär brukar det räcka med 25–50 procents sjukskrivning. Normalt kan sjukskrivningstiden, för de flesta arbeten, ligga på upp till 2 månader.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1656,9 +1623,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1669,7 +1635,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>O21.2</displayName>
-        <originalText>O21.2</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1682,6 +1647,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1698,9 +1664,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1711,7 +1676,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>O21.2</displayName>
-        <originalText>O21.2</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1724,6 +1688,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Besvärens styrka och arbetsuppgifternas art bestämmer arbetsförmågan. Vid uttalade besvär är arbetsförmågan oftast helt nedsatt, vid lättare besvär brukar det räcka med 25–50 procents sjukskrivning. Normalt kan sjukskrivningstiden, för de flesta arbeten, ligga på upp till 2 månader.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1740,9 +1705,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1753,7 +1717,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>O21.8</displayName>
-        <originalText>O21.8</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1766,6 +1729,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1782,9 +1746,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1795,7 +1758,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>O21.8</displayName>
-        <originalText>O21.8</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1808,6 +1770,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Besvärens styrka och arbetsuppgifternas art bestämmer arbetsförmågan. Vid uttalade besvär är arbetsförmågan oftast helt nedsatt, vid lättare besvär brukar det räcka med 25–50 procents sjukskrivning. Normalt kan sjukskrivningstiden, för de flesta arbeten, ligga på upp till 2 månader.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1824,9 +1787,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1837,7 +1799,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>O21.9</displayName>
-        <originalText>O21.9</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1850,6 +1811,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1866,9 +1828,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1879,7 +1840,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>O21.9</displayName>
-        <originalText>O21.9</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1892,6 +1852,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Besvärens styrka och arbetsuppgifternas art bestämmer arbetsförmågan. Vid uttalade besvär är arbetsförmågan oftast helt nedsatt, vid lättare besvär brukar det räcka med 25–50 procents sjukskrivning. Normalt kan sjukskrivningstiden, för de flesta arbeten, ligga på upp till 2 månader.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 8 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>8</value>
@@ -1906,7 +1867,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Graviditetskräkningar med ämnesomsättning rubbning</displayName>
-        <originalText>O21.1:Graviditetskräkningar med ämnesomsättning rubbning</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1919,7 +1879,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
-    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <textuelltUnderlag>Om det inte föreligger cervixpåverkan eller särskilda riskfaktorer i anamnesen räcker det oftast med lugnande besked eller deltidssjukskrivning. Sjukskrivningstiden bör i första hand planeras för 2 – 3 veckor och därefter en ny bedömning. Vid mer hotande tillstånd kan det krävas hel sjukskrivning.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -1932,9 +1892,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1945,7 +1904,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Förvärkar och hotande förtidsbörd</displayName>
-        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -1958,7 +1916,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
-    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -1975,9 +1933,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -1988,7 +1945,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Förvärkar och hotande förtidsbörd</displayName>
-        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2001,7 +1957,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
-    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Fram till förlossning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -2014,9 +1970,8 @@
           <kod>
             <code>28976200</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>Cervixpåverkan</displayName>
-            <originalText/>
           </kod>
         </komplicerandeFaktor>
       </urvalKomplicerandeFaktor>
@@ -2025,9 +1980,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2038,7 +1992,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Förvärkar och hotande förtidsbörd</displayName>
-        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2051,7 +2004,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
-    <textuelltUnderlag>Vid regelbundna och smärtsamma sammandragningar under andra halvan av graviditeten kan det vara svårt att avgöra om symtomen är allvarliga eller del av en helt normal graviditet. Förutom anamnes (patientens egen beskrivning av sjukdomshistorien) har man i dag god hjälp av att bedöma livmoderhalsens längd med vaginalt ultraljud. Tidigare belastning i form av för tidiga födslar eller missfall komplicerar diagnosen. Besvären ökar också med multiparitet (då kvinnan genomgått fler än 4–5 graviditeter).</textuelltUnderlag>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Fram till förlossning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -2066,7 +2019,6 @@
             <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
             <codeSystemName>ICD-10-SE</codeSystemName>
             <displayName>Flerbördsgraviditet</displayName>
-            <originalText/>
           </kod>
         </samsjuklighet>
       </urvalSamsjuklighet>
@@ -2077,7 +2029,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Förvärkar och hotande förtidsbörd</displayName>
-        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2090,6 +2041,9 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid arbeten med små krav på förmågan att förflytta sig är arbetsförmågan inte nedsatt.
+      Vid arbeten med mycket gående och stående kan arbetsförmågan vara nedsatt i upp till 2 veckor. I vissa fall kan partiell sjukskrivning under ytterligare 2 veckor behövas.
+      Vid kroniska besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -2104,7 +2058,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2115,7 +2068,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Akillestendinit</displayName>
-        <originalText>M76.6:Akillestendinit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2128,6 +2080,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -2146,7 +2099,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2155,9 +2107,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2168,7 +2119,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Akillestendinit</displayName>
-        <originalText>M76.6:Akillestendinit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2181,6 +2131,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -2199,7 +2150,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Måttlig belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2210,7 +2160,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Akillestendinit</displayName>
-        <originalText>M76.6:Akillestendinit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2223,6 +2172,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2241,7 +2191,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2250,9 +2199,8 @@
           <kod>
             <code>tbd1</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>utdraget förlopp</displayName>
-            <originalText/>
           </kod>
         </sjukdomsforlopp>
       </urvalSjukdomsforlopp>
@@ -2263,7 +2211,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Akillestendinit</displayName>
-        <originalText>M76.6:Akillestendinit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2276,6 +2223,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 4 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>4</value>
@@ -2292,9 +2240,8 @@
           <kod>
             <code>tbd2</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>Övervikt</displayName>
-            <originalText/>
           </kod>
         </komplicerandeFaktor>
       </urvalKomplicerandeFaktor>
@@ -2305,7 +2252,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Akillestendinit</displayName>
-        <originalText>M76.6:Akillestendinit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2318,6 +2264,8 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid sittande arbete, och i arbeten med enbart mindre krav på rörelseförmåga, är arbetsförmågan inte nedsatt förutom under första veckan då det är olämpligt att ha benet hängande nedåt på grund av risken för ökad svullnad, smärta och trombos.
+      Vid arbeten med stora krav på rörelseförmåga kan arbetsförmågan vara nedsatt under hela behandlingstiden i gips eller ortos, samt under ytterligare ett par veckor – totalt i upp till 14 veckor.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -2336,7 +2284,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2347,7 +2294,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Skada på akillessena</displayName>
-        <originalText>S86.0:Skada på akillessena</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2360,6 +2306,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 14 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>14</value>
@@ -2378,7 +2325,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2389,7 +2335,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Skada på akillessena</displayName>
-        <originalText>S86.0:Skada på akillessena</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2402,6 +2347,8 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid sittande arbete, och i arbeten med enbart mindre krav på rörelseförmåga, är arbetsförmågan inte nedsatt förutom under första veckan då det är olämpligt att ha benet hängande nedåt på grund av risken för ökad svullnad, smärta och trombos.
+      Vid arbeten med stora krav på rörelseförmåga kan arbetsförmågan vara nedsatt under hela behandlingstiden i gips eller ortos, samt under ytterligare ett par veckor – totalt i upp till 14 veckor.</textuelltUnderlag>
     <sjukskrivningstidText>Upp till 2 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>2</value>
@@ -2420,7 +2367,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2431,7 +2377,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Skada på stora vadmuskeln</displayName>
-        <originalText>S86.1:Skada på stora vadmuskeln</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2444,6 +2389,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 10 veckor</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>10</value>
@@ -2462,7 +2408,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2473,7 +2418,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Skada på stora vadmuskeln</displayName>
-        <originalText>S86.1:Skada på stora vadmuskeln</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2486,6 +2430,11 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt mindre krävande arbete behövs i regel ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).
+      Vid små besvär och låg sjukdomsaktivitet samt fysiskt krävande arbete kan deltids- eller heltidssjukskrivning bli aktuell under relativt lång tid, ofta i mer än 3 månader. Diskutera ändrade arbetsuppgifter.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt mindre krävande arbete krävs ofta sjukskrivning i upp till 3 månader. Överväg deltidssjukskrivning. Den insatta medicinska behandlingen kan utvärderas först efter cirka 3 månader.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt krävande arbete krävs som regel sjukskrivning ofta i mer än 3 månader, ibland i upp till 6 månader. Svårt sjuka patienter kan även efter över ett års sjukfrånvaro återgå i arbete vid behandling med biologiska läkemedel. Diskutera ändrade arbetsuppgifter.
+      Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumatikersjukhus eller specialanläggning med mera.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -2500,7 +2449,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2509,9 +2457,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2522,7 +2469,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
-        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2535,6 +2481,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2553,7 +2500,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2562,9 +2508,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2575,7 +2520,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
-        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2588,6 +2532,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2606,7 +2551,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2615,9 +2559,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2628,7 +2571,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
-        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2641,6 +2583,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -2659,7 +2602,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2668,9 +2610,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2681,7 +2622,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
-        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2694,6 +2634,11 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid mindre besvär eller låg sjukdomsaktivitet samt fysiskt mindre krävande arbete behövs i regel ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).
+      Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt krävande arbete kan deltids- eller heltidssjukskrivning bli aktuell, ofta i mer än 3 månader. Diskutera ändrade arbetsuppgifter.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt mindre krävande arbete krävs ofta sjukskrivning i upp till 3 månader. Överväg deltidssjukskrivning. Den insatta medicinska behandlingen kan utvärderas först efter cirka 3 månader.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt krävande arbete krävs sjukskrivning ofta i mer än 3 månader, ibland upp till 6 månader. Svårt sjuka patienter kan även efter över ett års sjukfrånvaro återgå i arbete vid behandling med biologiska läkemedel. Diskutera ändrade arbetsuppgifter.
+      Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumatikersjukhus eller specialanläggning med mera.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -2715,7 +2660,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2724,9 +2668,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2737,7 +2680,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>seropositiv reumatoid artrit</displayName>
-        <originalText>M05:seropositiv reumatoid artrit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2750,6 +2692,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2775,7 +2718,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2784,9 +2726,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2797,7 +2738,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>seropositiv reumatoid artrit</displayName>
-        <originalText>M05:seropositiv reumatoid artrit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2810,6 +2750,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2835,7 +2776,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2844,9 +2784,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2857,7 +2796,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>seropositiv reumatoid artrit</displayName>
-        <originalText>M05:seropositiv reumatoid artrit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2870,6 +2808,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2895,7 +2834,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2904,9 +2842,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2917,7 +2854,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>seropositiv reumatoid artrit</displayName>
-        <originalText>M05:seropositiv reumatoid artrit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2930,6 +2866,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -2955,7 +2892,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -2964,9 +2900,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -2977,7 +2912,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>seropositiv reumatoid artrit</displayName>
-        <originalText>M05:seropositiv reumatoid artrit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -2990,6 +2924,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -3015,7 +2950,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3024,9 +2958,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3037,7 +2970,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>seropositiv reumatoid artrit</displayName>
-        <originalText>M05:seropositiv reumatoid artrit</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -3050,6 +2982,11 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag>Vid mindre besvär eller låg sjukdomsaktivitet samt fysiskt mindre krävande arbete behövs i regel ingen sjukskrivning (utöver eventuell egen sjukanmälan upp till 1 vecka).
+      Vid mindre besvär och låg sjukdomsaktivitet samt fysiskt krävande arbete kan deltids- eller heltidssjukskrivning bli aktuell, ofta i mer än 3 månader. Diskutera ändrade arbetsuppgifter.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt mindre krävande arbete krävs ofta sjukskrivning i upp till 3 månader. Överväg deltidssjukskrivning. Den insatta medicinska behandlingen kan utvärderas först efter cirka 3 månader.
+      Vid stora besvär och hög sjukdomsaktivitet samt fysiskt krävande arbete krävs sjukskrivning ofta i mer än 3 månader, ibland upp till 6 månader. Svårt sjuka patienter kan även efter över ett års sjukfrånvaro återgå i arbete vid behandling med biologiska läkemedel. Diskutera ändrade arbetsuppgifter.
+      Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumatikersjukhus eller specialanläggning med mera.</textuelltUnderlag>
     <sjukskrivningstidText>Ingen sjukskrivning</sjukskrivningstidText>
     <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
     <senastAndrad>20151012</senastAndrad>
@@ -3071,7 +3008,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3080,9 +3016,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3093,7 +3028,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M06</displayName>
-        <originalText>M06</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -3106,6 +3040,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -3131,7 +3066,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3140,9 +3074,8 @@
           <kod>
             <code>255604002</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>lindrig</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3153,7 +3086,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M06</displayName>
-        <originalText>M06</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -3166,6 +3098,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -3191,7 +3124,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3200,9 +3132,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3213,7 +3144,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M06</displayName>
-        <originalText>M06</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -3226,6 +3156,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -3251,7 +3182,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3260,9 +3190,8 @@
           <kod>
             <code>6736007</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>medelsvår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3273,7 +3202,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M06</displayName>
-        <originalText>M06</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -3286,6 +3214,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 3 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>3</value>
@@ -3311,7 +3240,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Lätt belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3320,9 +3248,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3333,7 +3260,6 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M06</displayName>
-        <originalText>M06</originalText>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
@@ -3346,6 +3272,7 @@
       <start>20151012</start>
     </giltighetstid>
     <version>1</version>
+    <textuelltUnderlag></textuelltUnderlag>
     <sjukskrivningstidText>Upp till 6 månader</sjukskrivningstidText>
     <sjukskrivningstid>
       <value>6</value>
@@ -3371,7 +3298,6 @@
             <codeSystem>Saknas</codeSystem>
             <codeSystemName>Arbetsbeslastning</codeSystemName>
             <displayName>Hög belastning</displayName>
-            <originalText/>
           </kod>
         </arbetsbelastning>
       </urvalArbetsbelastning>
@@ -3380,9 +3306,8 @@
           <kod>
             <code>24484000</code>
             <codeSystem>1.2.752.116.2.1.1</codeSystem>
-            <codeSystemName>Snomed-CT-SE</codeSystemName>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
             <displayName>svår</displayName>
-            <originalText/>
           </kod>
         </svarighetsgrad>
       </urvalSvarighetsgrad>
@@ -3393,12 +3318,137 @@
         <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
         <codeSystemName>ICD-10-SE</codeSystemName>
         <displayName>M06</displayName>
-        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+  </ns2:beslutsunderlag>
+  <ns2:beslutsunderlag>
+    <underlagsId>
+      <root>OID</root>
+      <extension>B.99</extension>
+    </underlagsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <version>1</version>
+    <textuelltUnderlag>Vid akuta astmaanfall, infektioner eller försvårade symtom med behov av ny behandlingsstrategi kan arbetsförmågan tillfälligt vara nedsatt i upp till 1 vecka.</textuelltUnderlag>
+    <sjukskrivningstidText>Upp till 1 vecka</sjukskrivningstidText>
+    <sjukskrivningstid>
+      <value>1</value>
+      <unit>wk</unit>
+    </sjukskrivningstid>
+    <sjukskrivningsgrad>Heltid</sjukskrivningsgrad>
+    <senastAndrad>20151012</senastAndrad>
+    <villkor>
+      <urvalKomplicerandeFaktor>
+        <komplicerandeFaktor>
+          <kod>
+            <code>tbd10</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>Akut astmaanfall</displayName>
+          </kod>
+        </komplicerandeFaktor>
+        <komplicerandeFaktor>
+          <kod>
+            <code>tbd11</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>infektion</displayName>
+          </kod>
+        </komplicerandeFaktor>
+        <komplicerandeFaktor>
+          <kod>
+            <code>dbd12</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>andra försvårande symptom</displayName>
+          </kod>
+        </komplicerandeFaktor>
+      </urvalKomplicerandeFaktor>
+      <urvalPlaneradAtgard>
+        <planeradAtgard>
+          <kod>
+            <code>tbd13</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>hosta</displayName>
+          </kod>
+        </planeradAtgard>
+        <planeradAtgard>
+          <kod>
+            <code>tbd14</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>nysa</displayName>
+          </kod>
+        </planeradAtgard>
+      </urvalPlaneradAtgard>
+      <urvalPagaendeAtgard>
+        <pagaendeAtgard>
+          <kod>
+            <code>tbd13</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>hosta</displayName>
+          </kod>
+        </pagaendeAtgard>
+        <pagaendeAtgard>
+          <kod>
+            <code>tbd14</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>nysa</displayName>
+          </kod>
+        </pagaendeAtgard>
+      </urvalPagaendeAtgard>
+      <urvalSamsjuklighet>
+        <samsjuklighet>
+          <kod>
+            <code>J44.0</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <displayName>Kroniskt obstruktiv lungsjukdom med akut nedre luftvägsinfektion</displayName>
+          </kod>
+        </samsjuklighet>
+        <samsjuklighet>
+          <kod>
+            <code>J14.9</code>
+            <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+            <codeSystemName>ICD-10-SE</codeSystemName>
+            <displayName>Pneumoni orsakad av Haemophilus influenzae</displayName>
+          </kod>
+        </samsjuklighet>
+      </urvalSamsjuklighet>
+      <urvalUtfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>tbd13</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>hosta</displayName>
+          </kod>
+        </utfordAtgard>
+        <utfordAtgard>
+          <kod>
+            <code>tbd14</code>
+            <codeSystem>1.2.752.116.2.1.1</codeSystem>
+            <codeSystemName>Snomed CT-SE</codeSystemName>
+            <displayName>nysa</displayName>
+          </kod>
+        </utfordAtgard>
+      </urvalUtfordAtgard>
+    </villkor>
+    <huvuddiagnos>
+      <kod>
+        <code>J46</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akut svår astma</displayName>
       </kod>
     </huvuddiagnos>
   </ns2:beslutsunderlag>
   <ns2:version>
-    <senasteVersionsuppdatering>20151020</senasteVersionsuppdatering>
-    <senateAndring>20151020</senateAndring>
+    <senasteVersionsuppdatering>20151105</senasteVersionsuppdatering>
+    <senateAndring>20151105</senateAndring>
   </ns2:version>
 </ns2:GetFmbResponse>

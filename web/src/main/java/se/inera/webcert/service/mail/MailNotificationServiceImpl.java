@@ -250,6 +250,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                     return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
                 }
             }
+            LOG.error("Failed to lookup privatepractitioner with HSA Id '" + hsaId + "'");
         } catch (Exception e) {
             LOG.error("Failed to contact ppService to get HSA Id '" + hsaId + "'", e);
         }

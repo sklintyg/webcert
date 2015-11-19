@@ -50,6 +50,7 @@ public class ASN1UtilImpl implements ASN1Util {
      * @throws
      *      IllegalArgumentException if no serialNumber (e.g. personnummer) could be parsed from the signature.
      */
+    @Override
     public String parsePersonId(InputStream asn1Signature) {
         try {
             byte[] value = new ASN1StreamParser().parse(asn1Signature, X520_SERIAL_MARKER_BYTE_SEQ, PERSON_ID_LENGTH);
@@ -73,9 +74,6 @@ public class ASN1UtilImpl implements ASN1Util {
      *
      * Should be present in the X520 DN serial field, but since length of the hsaId is indeterminate, we must use
      * the ASN.1 length bits to determine how many bytes to read after the marker.
-     *
-     * @param asn1Signature
-     * @return
      */
     @Override
     public String parseHsaId(InputStream asn1Signature) {

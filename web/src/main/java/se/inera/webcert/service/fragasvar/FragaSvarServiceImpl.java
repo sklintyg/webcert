@@ -87,7 +87,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
-    private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
+    private static final FragaSvarSenasteHandelseDatumComparator SENASTE_HANDELSE_DATUM_COMPARATOR = new FragaSvarSenasteHandelseDatumComparator();
 
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
@@ -127,11 +127,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         validateAcceptsQuestions(fragaSvar);
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
-                (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
                 fragaSvar.getExternReferens(),
                 fragaSvar.getInternReferens(),
                 fragaSvar.getVardAktorHsaId(),
-                (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
+                ((fragaSvar.getAmne() == null) ? null : fragaSvar.getAmne().toString()));
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -160,9 +160,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         monitoringService.logAnswerReceived(fragaSvar.getExternReferens(),
                 fragaSvar.getInternReferens(),
-                (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
                 fragaSvar.getVardAktorHsaId(),
-                (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
+                ((fragaSvar.getAmne() == null) ? null : fragaSvar.getAmne().toString()));
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -177,7 +177,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             // property and not a direct entity persisted
             // proerty in which case we could have used an order by in the
             // query.
-            Collections.sort(result, senasteHandelseDatumComparator);
+            Collections.sort(result, SENASTE_HANDELSE_DATUM_COMPARATOR);
         }
         return result;
     }
@@ -206,7 +206,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // We do the sorting in code, since we need to sort on a derived
         // property and not a direct entity persisted
         // property in which case we could have used an order by in the query.
-        Collections.sort(fragaSvarList, senasteHandelseDatumComparator);
+        Collections.sort(fragaSvarList, SENASTE_HANDELSE_DATUM_COMPARATOR);
         return fragaSvarList;
     }
 
@@ -283,9 +283,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         monitoringService.logAnswerSent(saved.getExternReferens(),
                 saved.getInternReferens(),
-                (saved.getIntygsReferens() == null ? null : saved.getIntygsReferens().getIntygsId()),
+                ((saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId()),
                 saved.getVardAktorHsaId(),
-                (saved.getAmne() == null ? null : saved.getAmne().toString()));
+                ((saved.getAmne() == null) ? null : saved.getAmne().toString()));
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
@@ -376,9 +376,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         monitoringService.logQuestionSent(fraga.getExternReferens(),
                 fraga.getInternReferens(),
-                (fraga.getIntygsReferens() == null ? null : fraga.getIntygsReferens().getIntygsId()),
+                ((fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId()),
                 fraga.getVardAktorHsaId(),
-                (fraga.getAmne() == null ? null : fraga.getAmne().toString()));
+                ((fraga.getAmne() == null) ? null : fraga.getAmne().toString()));
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
@@ -423,7 +423,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<FragaSvar> list = fragaSvarRepository.findByIntygsReferensIntygsId(intygsId);
         ListIterator<FragaSvar> iterator = list.listIterator();
 
-        List<FragaSvar> al = new ArrayList<FragaSvar>();
+        List<FragaSvar> al = new ArrayList<>();
 
         while (iterator.hasNext()) {
             FragaSvar fragaSvar = iterator.next();
@@ -517,11 +517,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
     }
 
+    @Override
     public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
 
         Map<String, Long> resultsMap = new HashMap<>();
 
-        if (vardenheterIds == null || vardenheterIds.isEmpty()) {
+        if ((vardenheterIds == null) || vardenheterIds.isEmpty()) {
             LOGGER.warn("No ids for Vardenheter was supplied");
             return resultsMap;
         }
@@ -587,8 +588,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         filter.setReplyLatest(params.getReplyLatest());
         filter.setVidarebefordrad(params.getVidarebefordrad());
 
-        filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
-        filter.setStartFrom(params.getStartFrom() == null ? Integer.valueOf(0) : params.getStartFrom());
+        filter.setPageSize((params.getPageSize() == null) ? DEFAULT_PAGE_SIZE : params.getPageSize());
+        filter.setStartFrom((params.getStartFrom() == null) ? Integer.valueOf(0) : params.getStartFrom());
 
         return filter;
     }

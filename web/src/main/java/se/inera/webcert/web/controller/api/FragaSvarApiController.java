@@ -9,6 +9,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.web.controller.AbstractApiController;
 
 @Path("/fragasvar")
+@Api(value = "fragasvar", description = "REST API för fråga/svar", produces = MediaType.APPLICATION_JSON)
 public class FragaSvarApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarApiController.class);

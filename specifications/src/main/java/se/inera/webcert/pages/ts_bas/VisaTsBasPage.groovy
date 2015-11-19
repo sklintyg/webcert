@@ -75,10 +75,11 @@ class VisaTsBasPage extends AbstractViewCertPage {
         waitFor {
             doneLoading()
             skickaDialogBodyTsBas.text().trim().equals("")
+            skickaDialogCheck.isDisplayed()
         }
         skickaDialogCheck.click()
         waitFor {
-            doneLoading()
+            skickaDialogSkickaKnapp.isEnabled()
         }
         skickaDialogSkickaKnapp.click()
     }

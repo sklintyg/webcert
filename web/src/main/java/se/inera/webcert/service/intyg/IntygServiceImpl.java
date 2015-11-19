@@ -306,7 +306,7 @@ public class IntygServiceImpl implements IntygService {
         String intygsTyp = intyg.getTyp();
 
         try {
-            LOG.debug("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
+            LOG.debug("Sending intyg {} of type {} to recipient {}", intygsId, intygsTyp, recipient);
 
             // Ask the certificateSenderService to post a 'send' message onto the queue.
             certificateSenderService.sendCertificate(intygsId, intyg.getGrundData().getPatient().getPersonId(), recipient);
@@ -408,9 +408,6 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
-     *
-     * @param intyg
-     * @return
      */
     private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg) {
         String intygsId = intyg.getId();
@@ -464,4 +461,5 @@ public class IntygServiceImpl implements IntygService {
             utkastRepository.save(utkast);
         }
     }
+
 }

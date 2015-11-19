@@ -55,7 +55,7 @@ public class HoSPerson {
 
     public List<String> getSpecialiseringar() {
         if (specialiseringar == null) {
-            specialiseringar = new ArrayList<String>();
+            specialiseringar = new ArrayList<>();
         }
         return specialiseringar;
     }

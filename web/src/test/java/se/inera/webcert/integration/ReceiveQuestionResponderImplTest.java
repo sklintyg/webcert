@@ -72,7 +72,7 @@ public class ReceiveQuestionResponderImplTest {
                 Object[] args = invocation.getArguments();
                 FragaSvar fragaSvar = (FragaSvar) args[0];
                 fragaSvar.setInternReferens(1L);
-                return (FragaSvar) fragaSvar;
+                return fragaSvar;
             }
         });
     }

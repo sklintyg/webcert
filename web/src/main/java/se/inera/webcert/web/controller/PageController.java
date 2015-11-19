@@ -100,7 +100,12 @@ public class PageController {
     }
 
     public void populateUseMinifiedJavaScript(ModelAndView model) {
-        model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
+        final WebCertUser user = webCertUserService.getUser();
+        if (user != null) {
+            model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED));
+        } else {
+            model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
+        }
     }
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
@@ -108,11 +113,11 @@ public class PageController {
         URI uri = mailLinkService.intygRedirect(typ, intygId);
 
         if (uri == null) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(uri);
-            return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
     }
 

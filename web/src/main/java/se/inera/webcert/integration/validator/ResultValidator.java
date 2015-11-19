@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ResultValidator {
 
-    private List<String> errors = new ArrayList<String>();
+    private final List<String> errors = new ArrayList<>();
 
     public static ResultValidator newInstance() {
         return new ResultValidator();

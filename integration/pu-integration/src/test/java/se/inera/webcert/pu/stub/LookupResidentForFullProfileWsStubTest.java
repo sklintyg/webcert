@@ -53,16 +53,6 @@ public class LookupResidentForFullProfileWsStubTest {
         fail();
     }
 
-    @Test
-    @Ignore
-    public void wrongPersonIdFormatReturnsError() {
-        LookupResidentForFullProfileType parameters = defaultRequest();
-        parameters.getPersonId().clear();
-        parameters.getPersonId().add("1212121212");
-        ws.lookupResidentForFullProfile("address", parameters);
-        fail("How do we generate an ResultCode error?");
-    }
-
     @Test (expected = IllegalArgumentException.class)
     public void noLookupSpecificationThrowsException() {
         LookupResidentForFullProfileType parameters = defaultRequest();

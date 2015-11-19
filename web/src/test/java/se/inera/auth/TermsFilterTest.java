@@ -1,7 +1,11 @@
 package se.inera.auth;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
 import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
@@ -27,8 +31,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
 
-import se.inera.auth.common.AuthConstants;
-import se.inera.auth.common.UnifiedUserDetailsService;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
@@ -151,6 +153,7 @@ public class TermsFilterTest {
 
         // convert list to map
         Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            @Override
             public String apply(UserPrivilege userPrivilege) {
                 return userPrivilege.name();
             }
