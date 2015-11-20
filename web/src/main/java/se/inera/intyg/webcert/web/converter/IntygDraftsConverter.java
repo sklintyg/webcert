@@ -17,12 +17,13 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
+@SuppressWarnings("ALL")
 public final class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
-            .compareTo(ie1.getLastUpdatedSigned());
+    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC =
+            (ie1, ie2) -> ie2.getLastUpdatedSigned().compareTo(ie1.getLastUpdatedSigned());
 
     private static final Comparator<Status> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTimestamp().compareTo(c2.getTimestamp());
 
@@ -36,25 +37,21 @@ public final class IntygDraftsConverter {
 
         LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
-        List<ListIntygEntry> listIntygEntries = Stream.concat(
+        return Stream.concat(
                 intygList.stream()
-                        .map(cert -> convertIntygItemToListIntygEntry(cert)),
+                        .map(IntygDraftsConverter::convertIntygItemToListIntygEntry),
                 utkastList.stream()
-                        .map(utkast -> convertUtkastToListIntygEntry(utkast)))
+                        .map(IntygDraftsConverter::convertUtkastToListIntygEntry))
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
-
-        return listIntygEntries;
     }
 
     public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
 
-        List<ListIntygEntry> listIntygEntries = utkastList.stream()
-                .map(cert -> convertUtkastToListIntygEntry(cert))
+        return utkastList.stream()
+                .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
-
-        return listIntygEntries;
     }
 
     public static ListIntygEntry convertUtkastToListIntygEntry(Utkast utkast) {
