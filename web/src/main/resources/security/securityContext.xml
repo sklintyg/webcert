@@ -42,13 +42,13 @@
   </bean>
 
   <!-- Real logins should use the unified user details service facade -->
-  <bean id="unifiedUserDetailsService" class="se.inera.auth.common.UnifiedUserDetailsService" />
+  <bean id="unifiedUserDetailsService" class="se.inera.intyg.webcert.web.auth.common.UnifiedUserDetailsService" />
 
   <!-- These two should only be accessed directly by fake login authentication providers -->
-  <bean id="userDetailsService" class="se.inera.webcert.security.WebCertUserDetailsService"/>
-  <bean id="elegWebCertUserDetailsService" class="se.inera.auth.eleg.ElegWebCertUserDetailsService"/>
-  <bean id="elegAuthenticationAttributeHelper" class="se.inera.auth.eleg.ElegAuthenticationAttributeHelperImpl" />
-  <bean id="elegAuthenticationMethodResolver" class="se.inera.auth.eleg.ElegAuthenticationMethodResolverImpl" />
+  <bean id="userDetailsService" class="se.inera.intyg.webcert.web.security.WebCertUserDetailsService"/>
+  <bean id="elegWebCertUserDetailsService" class="se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService"/>
+  <bean id="elegAuthenticationAttributeHelper" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationAttributeHelperImpl" />
+  <bean id="elegAuthenticationMethodResolver" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolverImpl" />
 
 
   <!-- Initialization of OpenSAML library-->
@@ -66,18 +66,18 @@
         class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
     <property name="exceptionMappings">
       <props>
-        <prop key="se.inera.auth.exceptions.MissingMedarbetaruppdragException">
+        <prop key="se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException">
           /error.jsp?reason=login.medarbetaruppdrag
         </prop>
         <prop key="org.springframework.security.authentication.BadCredentialsException">
           /error.jsp?reason=login.failed
         </prop>
-        <prop key="se.inera.auth.exceptions.HsaServiceException">
+        <prop key="se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException">
           /error.jsp?reason=login.hsaerror
         </prop>
 
         <!-- Privatläkare specific exception handling here. Not PP-registered, not accepted WC terms etc. -->
-        <prop key="se.inera.auth.exceptions.PrivatePractitionerAuthorizationException">
+        <prop key="se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException">
           ${privatepractitioner.portal.registration.url}
         </prop>
 
@@ -90,7 +90,7 @@
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
   <!-- SessionRegistry is needed for keeping track of authenticated sessions (i.e users), this impl performs audit logging of login and logouts. -->
-  <bean id="loggingSessionRegistry" class="se.inera.auth.WebcertLoggingSessionRegistryImpl" />
+  <bean id="loggingSessionRegistry" class="se.inera.intyg.webcert.web.auth.WebcertLoggingSessionRegistryImpl" />
   
   <!-- Session authentication strategy that registers authenticated sessions with the session registry -->
   <bean id="registerSessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
@@ -201,7 +201,7 @@
 
 
   <beans profile="dev,wc-security-dev,wc-security-test">
-    <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
+    <bean id="fakeAuthFilter" class="se.inera.intyg.webcert.web.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
@@ -212,11 +212,11 @@
       <property name="defaultTargetUrl" value="/web/start"/>
     </bean>
     <bean id="fakeAuthenticationProvider"
-        class="se.inera.auth.FakeAuthenticationProvider">
+        class="se.inera.intyg.webcert.web.auth.FakeAuthenticationProvider">
       <property name="userDetails" ref="userDetailsService"/>
     </bean>
     <bean id="fakeElegAuthenticationProvider"
-        class="se.inera.auth.eleg.FakeElegAuthenticationProvider">
+        class="se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationProvider">
       <property name="elegWebCertUserDetailsService" ref="elegWebCertUserDetailsService"/>
     </bean>
   </beans>
@@ -413,7 +413,7 @@
 
     <!-- TODO Determine if these are necessary in Webcert 4.0 since we aren't fetching metadata over http(s)
     FUNGERAR BRA med NetID (privatläkare) och BankID (privatläkare). Behöver testas med Siths också
-    <bean id="httpClientFactory" class="se.inera.auth.HttpClientFactory"/>
+    <bean id="httpClientFactory" class="se.inera.intyg.webcert.web.auth.HttpClientFactory"/>
     <bean id="httpClient" factory-bean="httpClientFactory" factory-method="createInstance"/>
      -->
 

@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.security.core.context.SecurityContextHolder"%><%@ page import="se.inera.webcert.service.user.dto.WebCertUser"%><%@ page language="java" contentType="text/javascript; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ page import="org.springframework.security.core.context.SecurityContextHolder"%><%@ page import="se.inera.intyg.webcert.web.service.user.dto.WebCertUser"%><%@ page language="java" contentType="text/javascript; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 

@@ -31,7 +31,7 @@
   </jaxrs:server>
 
   <bean id="intygIntegrationController"
-    class="se.inera.webcert.web.controller.integration.IntygIntegrationController">
+    class="se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlIntygFragmentTemplate" value="${certificate.view.url.intyg.integration.template}" />
     <property name="urlUtkastFragmentTemplate" value="${certificate.view.url.utkast.integration.template}" />

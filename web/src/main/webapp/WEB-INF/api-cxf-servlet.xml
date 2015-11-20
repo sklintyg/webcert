@@ -26,18 +26,18 @@
 
     <context:annotation-config />
 
-    <context:component-scan base-package="se.inera.webcert.web.controller.api" />
+    <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.api" />
 
     <jaxrs:server address="/">
       <jaxrs:serviceBeans>
-        <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
-        <bean class="se.inera.webcert.web.controller.api.IntygApiController" />
-        <bean class="se.inera.webcert.web.controller.api.JsLogApiController" />
-        <bean class="se.inera.webcert.web.controller.api.PersonApiController" />
-        <bean class="se.inera.webcert.web.controller.api.UserApiController" />
-        <bean class="se.inera.webcert.web.controller.api.ModuleApiController" />
-        <bean class="se.inera.webcert.web.controller.api.UtkastApiController" />
-        <bean class="se.inera.webcert.web.controller.api.FmbApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.FragaSvarApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.IntygApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.PersonApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.UserApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.ModuleApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.UtkastApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />
@@ -54,7 +54,7 @@
   <beans profile="dev,testability-api">
     <jaxrs:server address="/testability">
       <jaxrs:serviceBeans>
-        <bean class="se.inera.webcert.web.controller.testability.UserRoleResource" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserRoleResource" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />

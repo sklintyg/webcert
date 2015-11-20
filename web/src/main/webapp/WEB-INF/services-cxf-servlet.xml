@@ -45,7 +45,7 @@
   </cxf:bus>
   
   <!-- ws endpoints -->
-  <jaxws:endpoint address="/create-draft-certificate/v1.0" implementor="se.inera.webcert.integration.CreateDraftCertificateResponderImpl">
+  <jaxws:endpoint address="/create-draft-certificate/v1.0" implementor="se.inera.intyg.webcert.web.integration.CreateDraftCertificateResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
@@ -54,7 +54,7 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
   
-  <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.webcert.integration.ReceiveQuestionResponderImpl">
+  <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.intyg.webcert.web.integration.ReceiveQuestionResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
@@ -63,7 +63,7 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 
-  <jaxws:endpoint address="/receive-answer/v1.0" implementor="se.inera.webcert.integration.ReceiveAnswerResponderImpl">
+  <jaxws:endpoint address="/receive-answer/v1.0" implementor="se.inera.intyg.webcert.web.integration.ReceiveAnswerResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
@@ -72,7 +72,7 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 
-  <jaxws:endpoint address="/get-private-practitioner-terms/v1.0" implementor="se.inera.webcert.integration.GetPrivatePractitionerTermsResponderImpl">
+  <jaxws:endpoint address="/get-private-practitioner-terms/v1.0" implementor="se.inera.intyg.webcert.web.integration.GetPrivatePractitionerTermsResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
           class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
