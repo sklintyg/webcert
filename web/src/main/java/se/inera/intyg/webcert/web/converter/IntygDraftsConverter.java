@@ -1,13 +1,12 @@
 package se.inera.intyg.webcert.web.converter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,37 +21,12 @@ public final class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR = new Comparator<ListIntygEntry>() {
+    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
+            .compareTo(ie1.getLastUpdatedSigned());
 
-        @Override
-        public int compare(ListIntygEntry ie1, ListIntygEntry ie2) {
-            return ie1.getLastUpdatedSigned().compareTo(ie2.getLastUpdatedSigned());
-        }
+    private static final Comparator<Status> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTimestamp().compareTo(c2.getTimestamp());
 
-    };
-
-    private static final Comparator<Status> INTYG_STATUS_COMPARATOR = new Comparator<Status>() {
-
-        @Override
-        public int compare(Status c1, Status c2) {
-            return c1.getTimestamp().compareTo(c2.getTimestamp());
-        }
-
-    };
-
-    private static final Predicate REMOVE_ARCHIVED_INTYG_STATUSES_PREDICATE = new Predicate() {
-
-        private final List<CertificateState> archivedStatuses = Arrays.asList(CertificateState.DELETED, CertificateState.RESTORED);
-
-        @Override
-        public boolean evaluate(Object obj) {
-            if (obj instanceof Status) {
-                Status intygStatus = (Status) obj;
-                return !archivedStatuses.contains(intygStatus.getType());
-            }
-            return false;
-        }
-    };
+    private static final List<CertificateState> archivedStatuses = Arrays.asList(CertificateState.DELETED, CertificateState.RESTORED);
 
     private IntygDraftsConverter() {
 
@@ -62,42 +36,23 @@ public final class IntygDraftsConverter {
 
         LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
-        List<ListIntygEntry> listIntygEntries = new ArrayList<>();
-
-        ListIntygEntry intygEntry;
-
-        // add all signed intyg
-        for (IntygItem cert : intygList) {
-            intygEntry = convertIntygItemToListIntygEntry(cert);
-            listIntygEntries.add(intygEntry);
-        }
-
-        // add alldrafts
-        for (Utkast intyg : utkastList) {
-            intygEntry = convertUtkastToListIntygEntry(intyg);
-            listIntygEntries.add(intygEntry);
-        }
-
-        // sort according to signedUpdate date and then reverse so that last is on top.
-        Collections.sort(listIntygEntries, INTYG_ENTRY_DATE_COMPARATOR);
-        Collections.reverse(listIntygEntries);
+        List<ListIntygEntry> listIntygEntries = Stream.concat(
+                intygList.stream()
+                        .map(cert -> convertIntygItemToListIntygEntry(cert)),
+                utkastList.stream()
+                        .map(utkast -> convertUtkastToListIntygEntry(utkast)))
+                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+                .collect(Collectors.toList());
 
         return listIntygEntries;
     }
 
     public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
 
-        List<ListIntygEntry> listIntygEntries = new ArrayList<>();
-
-        ListIntygEntry intygEntry;
-
-        for (Utkast cert : utkastList) {
-            intygEntry = convertUtkastToListIntygEntry(cert);
-            listIntygEntries.add(intygEntry);
-        }
-
-        Collections.sort(listIntygEntries, INTYG_ENTRY_DATE_COMPARATOR);
-        Collections.reverse(listIntygEntries);
+        List<ListIntygEntry> listIntygEntries = utkastList.stream()
+                .map(cert -> convertUtkastToListIntygEntry(cert))
+                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+                .collect(Collectors.toList());
 
         return listIntygEntries;
     }
@@ -139,13 +94,14 @@ public final class IntygDraftsConverter {
             return CertificateState.UNHANDLED;
         }
 
-        CollectionUtils.filter(intygStatuses, REMOVE_ARCHIVED_INTYG_STATUSES_PREDICATE);
+        Optional<Status> status = intygStatuses.stream()
+                .filter(s -> !archivedStatuses.contains(s.getType()))
+                .max(INTYG_STATUS_COMPARATOR);
 
-        if (intygStatuses.isEmpty()) {
+        if (status.isPresent()) {
+            return status.get().getType();
+        } else {
             return CertificateState.UNHANDLED;
         }
-
-        Status latestStatus = Collections.max(intygStatuses, INTYG_STATUS_COMPARATOR);
-        return latestStatus.getType();
     }
 }
