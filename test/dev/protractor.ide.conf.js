@@ -29,7 +29,7 @@ exports.config = {
         onComplete: null,
         isVerbose: true,
         showColors: true,
-        includeStackTrace: false
+        includeStackTrace: true
     },
     onPrepare: function() {
         // implicit and page load timeouts
