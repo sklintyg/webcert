@@ -9,7 +9,7 @@ var welcomePage = new WelcomePage(),
     utkastPage = new UtkastPage(),
     intygPage = new IntygPage();
 
-xdescribe('Create and Sign FK utkast', function() {
+describe('Create and Sign FK utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
