@@ -1,24 +1,27 @@
+/*global
+browser
+*/
+'use strict';
 
 module.exports = function() {
 
     this.Given(/^jag loggar in$/, function(callback) {
-        console.log("Loggar in som " + "Jan Nilsson" + "..")
+        console.log('Loggar in som ' + 'Jan Nilsson' + '..');
         // Gå till welcome.jsp
         browser.get(browser.baseUrl + '/welcome.jsp');
 
         // Välj användare
-        // element(by.cssContainingText('option', anvandarnamn)).click();
         element(by.id('loginBtn')).click();
         callback();
     });
 
     this.Then(/^vill jag vara inloggad$/, function(callback) {
-        expect(element(by.id('wcHeader')).getText()).to.eventually.contain("Logga ut").and.notify(callback);
+        expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
     this.Given(/^att jag är inloggad som läkare "([^"]*)"$/, function(anvandarnamn, callback) {
-        console.log("Loggar in som " + anvandarnamn + "..")
-        
+        console.log('Loggar in som ' + anvandarnamn + '..');
+
         // Gå till welcome.jsp
         browser.get(browser.baseUrl + '/welcome.jsp');
 
@@ -34,7 +37,7 @@ module.exports = function() {
         element(by.id('skapapersonnummerfortsatt')).click();
 
         // Patinetuppgifter visas
-        patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'))
+        var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
         expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);
 
     });
@@ -52,10 +55,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
-        intygVyLaddad = element(by.id('intyg-vy-laddad'));
+        var intygVyLaddad = element(by.id('intyg-vy-laddad'));
         expect(intygVyLaddad.getText()).to.eventually.contain(statustext).and.notify(callback);
     });
-
-
-
-}
+};

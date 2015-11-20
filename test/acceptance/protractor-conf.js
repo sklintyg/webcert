@@ -1,3 +1,5 @@
+'use strict';
+
 exports.config = {
     baseUrl: 'https://webcert.ip30.nordicmedtest.sjunet.org',
     allScriptsTimeout: 30000,
@@ -26,13 +28,13 @@ exports.config = {
 
         //https://github.com/domenic/chai-as-promised/
         global.chaiAsPromised = require('chai-as-promised');
-        global.chai.use(chaiAsPromised);
+        global.chai.use(global.chaiAsPromised);
 
-        global.expect = chai.expect;
+        global.expect = global.chai.expect;
 
         // Testdata lib
         global.testdata = require('../lib/testdata/testdata.js');
 
 
-    },
-}
+    }
+};
