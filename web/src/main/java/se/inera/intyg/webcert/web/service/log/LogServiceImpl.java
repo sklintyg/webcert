@@ -219,7 +219,7 @@ public class LogServiceImpl implements LogService {
     private static final class MC implements MessageCreator {
         private final AbstractLogMessage logMsg;
 
-        public MC(AbstractLogMessage log) {
+        private MC(AbstractLogMessage log) {
             this.logMsg = log;
         }
 

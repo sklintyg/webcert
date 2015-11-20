@@ -158,13 +158,13 @@ public class ASN1StreamParser {
      *
      * @param <E>
      */
-    private class LimitedQueue<E> extends LinkedList<E> {
+    private final class LimitedQueue<E> extends LinkedList<E> {
 
         private static final long serialVersionUID = 507838301817733410L;
 
         private final int limit;
 
-        public LimitedQueue(int limit) {
+        private LimitedQueue(int limit) {
             this.limit = limit;
         }
 

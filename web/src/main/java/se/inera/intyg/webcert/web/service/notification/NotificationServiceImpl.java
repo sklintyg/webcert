@@ -258,7 +258,7 @@ public class NotificationServiceImpl implements NotificationService {
         private final String value;
         private final String enhetsId;
 
-        public NotificationMessageCreator(String notificationMessage, String enhetsId) {
+        private NotificationMessageCreator(String notificationMessage, String enhetsId) {
             this.value = notificationMessage;
             this.enhetsId = enhetsId;
         }

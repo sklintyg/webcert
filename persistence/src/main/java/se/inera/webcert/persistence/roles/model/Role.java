@@ -34,7 +34,7 @@ public class Role {
     private String text;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "ROLLER_RATTIGHETER", joinColumns = @JoinColumn(name = "ROLL_ID", referencedColumnName = "ID") , inverseJoinColumns = @JoinColumn(name = "RATTIGHET_ID", referencedColumnName = "ID"))
+    @JoinTable(name = "ROLLER_RATTIGHETER", joinColumns = @JoinColumn(name = "ROLL_ID", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "RATTIGHET_ID", referencedColumnName = "ID"))
     private Collection<Privilege> privileges = new HashSet<>();
 
     public Role() {

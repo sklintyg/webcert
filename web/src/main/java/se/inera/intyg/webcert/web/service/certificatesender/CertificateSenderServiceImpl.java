@@ -62,7 +62,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String intygsTyp;
         private final String logicalAddress;
 
-        public StoreCertificateMessageCreator(String intygsId, String body, String intygsTyp, String logicalAddress) {
+        private StoreCertificateMessageCreator(String intygsId, String body, String intygsTyp, String logicalAddress) {
             this.intygsId = intygsId;
             this.body = body;
             this.intygsTyp = intygsTyp;
@@ -87,7 +87,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String recipientId;
         private final String logicalAddress;
 
-        public SendCertificateMessageCreator(String intygsId, Personnummer personId, String recipientId, String logicalAddress) {
+        private SendCertificateMessageCreator(String intygsId, Personnummer personId, String recipientId, String logicalAddress) {
             this.intygsId = intygsId;
             this.personId = personId;
             this.recipientId = recipientId;
@@ -113,7 +113,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String xmlBody;
         private final String logicalAddress;
 
-        public RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress) {
+        private RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress) {
             this.intygsId = intygsId;
             this.xmlBody = xmlBody;
             this.logicalAddress = logicalAddress;
