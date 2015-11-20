@@ -1,0 +1,22 @@
+{
+    "name": "e2e-test",
+    "version": "0.0.1",
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-cli": "^0.1.13",
+        "grunt-protractor-runner": "^2.1.0",
+        "grunt-protractor-webdriver": "^0.2.5",
+        "protractor": "^2.5.1",
+        "request": "^2.65.0",
+        "chai": "^1.9.1",
+        "chai-as-promised": "^4.1.1",
+        "cucumber": "^0.4.2",
+        "grunt-ng-annotate": "^0.3.0",
+        "time-grunt": "^0.3.1"
+    },
+    "engine": "node >= 4.2.1",
+    "scripts": {
+        "install": "node node_modules/protractor/bin/webdriver-manager update"
+    }
+}
