@@ -1,4 +1,4 @@
-package se.inera.webcert.service.mail;
+package se.inera.intyg.webcert.web.service.mail;
 
 public class MailNotificationEnhet {
 

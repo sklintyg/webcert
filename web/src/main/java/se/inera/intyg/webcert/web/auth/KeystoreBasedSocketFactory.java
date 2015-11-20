@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;

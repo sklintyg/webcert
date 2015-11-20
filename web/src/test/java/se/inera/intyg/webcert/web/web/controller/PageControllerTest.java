@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller;
+package se.inera.intyg.webcert.web.web.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -14,10 +14,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.servlet.ModelAndView;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
-package se.inera.webcert.web.controller.moduleapi.dto;
+package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 
 public class SignaturTicketResponse {
     private final String id;

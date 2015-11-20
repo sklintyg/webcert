@@ -1,24 +1,24 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.converter.IntygDraftsConverter;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.webcert.service.dto.Lakare;
-import se.inera.webcert.service.dto.Patient;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
-import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
-import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.dto.Patient;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -103,7 +103,7 @@ public class UtkastApiController extends AbstractApiController {
     /**
      * Returns a list of doctors that have one or more unsigned utkast.
      *
-     * @return a list of {@link se.inera.webcert.service.dto.Lakare} objects.
+     * @return a list of {@link se.inera.intyg.webcert.web.service.dto.Lakare} objects.
      */
     @GET
     @Path("/lakare")

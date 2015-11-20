@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.webcert.service.monitoring;
+package se.inera.intyg.webcert.web.service.monitoring;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 

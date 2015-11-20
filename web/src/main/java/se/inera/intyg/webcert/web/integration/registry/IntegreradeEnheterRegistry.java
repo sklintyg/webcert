@@ -1,6 +1,6 @@
-package se.inera.webcert.integration.registry;
+package se.inera.intyg.webcert.web.integration.registry;
 
-import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 
 public interface IntegreradeEnheterRegistry {
 

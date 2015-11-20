@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
 
-import se.inera.auth.common.BaseSAMLCredentialTest;
+import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 
 /**

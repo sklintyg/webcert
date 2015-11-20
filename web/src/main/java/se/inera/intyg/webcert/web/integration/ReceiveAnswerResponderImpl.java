@@ -1,4 +1,4 @@
-package se.inera.webcert.integration;
+package se.inera.intyg.webcert.web.integration;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
@@ -14,13 +14,13 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatean
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.webcert.integration.validator.QuestionAnswerValidator;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.service.mail.MailNotificationService;
-import se.inera.webcert.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 import java.util.List;
 

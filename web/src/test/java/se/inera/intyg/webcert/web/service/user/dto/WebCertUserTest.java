@@ -1,4 +1,4 @@
-package se.inera.webcert.service.user.dto;
+package se.inera.intyg.webcert.web.service.user.dto;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;

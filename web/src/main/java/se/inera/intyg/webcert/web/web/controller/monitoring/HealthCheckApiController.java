@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.monitoring;
+package se.inera.intyg.webcert.web.web.controller.monitoring;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -9,9 +9,9 @@ import javax.ws.rs.core.Response;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.service.monitoring.HealthCheckService;
-import se.inera.webcert.service.monitoring.dto.HealthStatus;
-import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
+import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 /**
  * RESTinterface for checking the general health status of the application.

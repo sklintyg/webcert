@@ -1,11 +1,11 @@
-package se.inera.webcert.service.signatur;
+package se.inera.intyg.webcert.web.service.signatur;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 
 import java.util.HashMap;
 import java.util.Iterator;

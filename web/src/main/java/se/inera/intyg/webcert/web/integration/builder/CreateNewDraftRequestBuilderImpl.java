@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.builder;
+package se.inera.intyg.webcert.web.integration.builder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
@@ -30,7 +30,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
         utkastsRequest.setIntygType(utlatande.getTypAvUtlatande().getCode());
 
-        se.inera.webcert.service.dto.Patient patient = createPatient(utlatande.getPatient());
+        se.inera.intyg.webcert.web.service.dto.Patient patient = createPatient(utlatande.getPatient());
         utkastsRequest.setPatient(patient);
 
         Vardenhet vardenhet = createVardenhetFromMIU(miuOnUnit);
@@ -70,8 +70,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         return hoSPerson;
     }
 
-    private se.inera.webcert.service.dto.Patient createPatient(Patient patientType) {
-        se.inera.webcert.service.dto.Patient patient = new se.inera.webcert.service.dto.Patient();
+    private se.inera.intyg.webcert.web.service.dto.Patient createPatient(Patient patientType) {
+        se.inera.intyg.webcert.web.service.dto.Patient patient = new se.inera.intyg.webcert.web.service.dto.Patient();
         patient.setPersonnummer(new Personnummer(patientType.getPersonId().getExtension()));
         patient.setFornamn(joinNames(patientType.getFornamn()));
         patient.setMellannamn(joinNames(patientType.getMellannamn()));

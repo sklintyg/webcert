@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.config;
+package se.inera.intyg.webcert.web.service.intyg.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

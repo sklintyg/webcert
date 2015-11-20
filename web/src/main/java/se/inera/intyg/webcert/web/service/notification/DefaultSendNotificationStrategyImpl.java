@@ -1,4 +1,4 @@
-package se.inera.webcert.service.notification;
+package se.inera.intyg.webcert.web.service.notification;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -27,7 +27,7 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     private final List<String> allowedIntygsTyper = Collections.singletonList("fk7263");
 
     /* (non-Javadoc)
-     * @see se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForIntyg(java.lang.String)
+     * @see se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy#decideNotificationForIntyg(java.lang.String)
      */
     @Override
     public Utkast decideNotificationForIntyg(String intygsId) {
@@ -45,7 +45,7 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForIntyg(se.inera.webcert.
+     * @see se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy#decideNotificationForIntyg(se.inera.intyg.webcert.web.
      * persistence.utkast.model.Utkast)
      */
     @Override
@@ -68,7 +68,7 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.SendNotificationStrategy#decideNotificationForFragaSvar(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy#decideNotificationForFragaSvar(se.inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override

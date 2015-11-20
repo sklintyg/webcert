@@ -1,4 +1,4 @@
-package se.inera.webcert.service.maillink;
+package se.inera.intyg.webcert.web.service.maillink;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

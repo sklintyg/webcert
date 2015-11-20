@@ -1,4 +1,4 @@
-package se.inera.webcert.service.certificatesender;
+package se.inera.intyg.webcert.web.service.certificatesender;
 
 /**
  * Created by eriklupander on 2015-05-20.

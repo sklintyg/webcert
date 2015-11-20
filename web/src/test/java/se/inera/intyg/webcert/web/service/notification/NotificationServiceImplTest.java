@@ -1,4 +1,4 @@
-package se.inera.webcert.service.notification;
+package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,7 +33,7 @@ import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.

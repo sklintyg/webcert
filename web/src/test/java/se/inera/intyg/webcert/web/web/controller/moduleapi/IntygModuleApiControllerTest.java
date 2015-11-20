@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -26,10 +26,10 @@ import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**
  * @author andreaskaltenbach

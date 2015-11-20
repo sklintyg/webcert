@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast.util;
+package se.inera.intyg.webcert.web.service.utkast.util;
 
 import java.util.UUID;
 

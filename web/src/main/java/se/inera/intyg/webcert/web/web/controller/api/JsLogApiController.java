@@ -1,9 +1,9 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

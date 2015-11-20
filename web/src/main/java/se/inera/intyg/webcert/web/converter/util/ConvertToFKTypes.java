@@ -1,4 +1,4 @@
-package se.inera.webcert.converter.util;
+package se.inera.intyg.webcert.web.converter.util;
 
 import org.joda.time.LocalDateTime;
 

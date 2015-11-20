@@ -1,4 +1,4 @@
-package se.inera.webcert.service.feature;
+package se.inera.intyg.webcert.web.service.feature;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;

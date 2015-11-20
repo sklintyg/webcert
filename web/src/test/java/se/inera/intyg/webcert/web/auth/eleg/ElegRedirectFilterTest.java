@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;

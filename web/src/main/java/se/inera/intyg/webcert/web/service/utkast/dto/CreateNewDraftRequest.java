@@ -1,9 +1,9 @@
-package se.inera.webcert.service.utkast.dto;
+package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Patient;
-import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Patient;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 
 public class CreateNewDraftRequest {
 

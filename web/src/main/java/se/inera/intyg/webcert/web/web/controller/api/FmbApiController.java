@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbType;
 import se.inera.webcert.persistence.fmb.repository.FmbRepository;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.FmbContent;
-import se.inera.webcert.web.controller.api.dto.FmbForm;
-import se.inera.webcert.web.controller.api.dto.FmbFormName;
-import se.inera.webcert.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;

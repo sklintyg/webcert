@@ -1,4 +1,4 @@
-package se.inera.webcert.service.certificatesender;
+package se.inera.intyg.webcert.web.service.certificatesender;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;

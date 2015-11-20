@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.PersonuppgifterResponse;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.decorator;
+package se.inera.intyg.webcert.web.service.intyg.decorator;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -15,7 +15,7 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 
 import java.util.ArrayList;
 

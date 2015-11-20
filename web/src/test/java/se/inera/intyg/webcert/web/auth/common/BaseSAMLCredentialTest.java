@@ -1,4 +1,4 @@
-package se.inera.auth.common;
+package se.inera.intyg.webcert.web.auth.common;
 
 import static org.mockito.Mockito.mock;
 

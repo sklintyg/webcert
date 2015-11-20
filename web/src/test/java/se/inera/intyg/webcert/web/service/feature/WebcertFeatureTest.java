@@ -1,4 +1,4 @@
-package se.inera.webcert.service.feature;
+package se.inera.intyg.webcert.web.service.feature;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;

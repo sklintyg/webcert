@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
-import se.inera.webcert.web.controller.moduleapi.dto.VardenhetStats;
-import se.inera.webcert.web.controller.moduleapi.dto.VardgivareStats;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardenhetStats;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardgivareStats;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.modules;
+package se.inera.intyg.webcert.web.service.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import se.inera.certificate.common.enumerations.Diagnoskodverk;
 import se.inera.certificate.modules.service.WebcertModuleService;
-import se.inera.webcert.service.diagnos.DiagnosService;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponseType;
+import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 
 /**
  * Exposes services to be used by modules.

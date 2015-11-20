@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast.dto;
+package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
 

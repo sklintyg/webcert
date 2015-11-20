@@ -1,4 +1,4 @@
-package se.inera.webcert.service.notification;
+package se.inera.intyg.webcert.web.service.notification;
 
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.converter;
+package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 import java.util.List;
 

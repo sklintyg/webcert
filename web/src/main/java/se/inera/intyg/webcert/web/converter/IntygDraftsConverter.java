@@ -1,4 +1,4 @@
-package se.inera.webcert.converter;
+package se.inera.intyg.webcert.web.converter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.web.controller.api.dto.IntygSource;
-import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 public final class IntygDraftsConverter {
 

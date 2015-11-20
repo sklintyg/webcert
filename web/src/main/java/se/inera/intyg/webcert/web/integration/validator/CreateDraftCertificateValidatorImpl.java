@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.validator;
+package se.inera.intyg.webcert.web.integration.validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.integration.validator.CreateDraftCertificateValidator#validate(se.inera.certificate.clinicalprocess
+     * se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator#validate(se.inera.certificate.clinicalprocess
      * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
      */
     @Override

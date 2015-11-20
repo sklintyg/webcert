@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos.repo;
+package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 
-import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
  * Map-based repository holding diagnosises.
@@ -53,7 +53,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.diagnos.model.DiagnosRepository#searchDiagnosisByCode(java.lang.String)
+     * @see se.inera.intyg.webcert.web.service.diagnos.model.DiagnosRepository#searchDiagnosisByCode(java.lang.String)
      */
     @Override
     public List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults) {

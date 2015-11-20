@@ -1,6 +1,6 @@
-package se.inera.webcert.service.signatur.grp.factory;
+package se.inera.intyg.webcert.web.service.signatur.grp.factory;
 
-import se.inera.webcert.service.signatur.grp.GrpCollectPoller;
+import se.inera.intyg.webcert.web.service.signatur.grp.GrpCollectPoller;
 
 /**
  * Created by eriklupander on 2015-08-25.

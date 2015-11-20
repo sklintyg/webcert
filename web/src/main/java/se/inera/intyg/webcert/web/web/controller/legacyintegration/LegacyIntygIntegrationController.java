@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.legacyintegration;
+package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
@@ -6,7 +6,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.web.controller.integration.BaseIntegrationController;
+import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

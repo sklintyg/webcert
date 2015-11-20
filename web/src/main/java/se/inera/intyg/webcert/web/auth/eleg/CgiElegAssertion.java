@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import java.util.ArrayList;
 import java.util.List;

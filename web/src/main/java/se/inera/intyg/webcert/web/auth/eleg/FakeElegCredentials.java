@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 /**
  * Fake container for approx. CGI SAML ticket attributes.

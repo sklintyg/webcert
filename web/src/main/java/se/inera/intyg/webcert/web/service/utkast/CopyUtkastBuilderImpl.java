@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -23,15 +23,15 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.service.util.UpdateUserUtil;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @Component
 public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
@@ -53,7 +53,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
     private UtkastRepository utkastRepository;
 
     /* (non-Javadoc)
-     * @see se.inera.webcert.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
@@ -109,7 +109,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
     }
 
     /* (non-Javadoc)
-     * @see se.inera.webcert.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)

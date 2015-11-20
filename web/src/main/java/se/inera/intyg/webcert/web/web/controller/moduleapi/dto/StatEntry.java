@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi.dto;
+package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
 /**
  * Simple DTO for statistics for number of unsigned certificates and unhandled questions.

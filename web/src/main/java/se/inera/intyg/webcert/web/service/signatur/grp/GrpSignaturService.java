@@ -1,6 +1,6 @@
-package se.inera.webcert.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.signatur.grp;
 
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 
 /**
  * Created by eriklupander on 2015-08-21.

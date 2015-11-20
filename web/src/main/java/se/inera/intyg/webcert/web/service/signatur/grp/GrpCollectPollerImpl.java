@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.signatur.grp;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ import se.funktionstjanster.grp.v1.CollectResponseType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.Property;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.signatur.SignaturService;
-import se.inera.webcert.service.signatur.SignaturTicketTracker;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.signatur.SignaturService;
+import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 
 /**
  * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single

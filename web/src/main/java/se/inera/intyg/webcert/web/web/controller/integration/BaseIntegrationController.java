@@ -1,13 +1,13 @@
-package se.inera.webcert.web.controller.integration;
+package se.inera.intyg.webcert.web.web.controller.integration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.security.AuthoritiesAssertion;
-import se.inera.webcert.security.AuthoritiesException;
-import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.security.AuthoritiesAssertion;
+import se.inera.intyg.webcert.web.security.AuthoritiesException;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**
  * Base class for deep-integration and uthopp controllers.

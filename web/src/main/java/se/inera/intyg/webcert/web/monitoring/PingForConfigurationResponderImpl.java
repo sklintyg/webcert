@@ -1,4 +1,4 @@
-package se.inera.webcert.monitoring;
+package se.inera.intyg.webcert.web.monitoring;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import se.inera.webcert.service.monitoring.HealthCheckService;
-import se.inera.webcert.service.monitoring.dto.HealthStatus;
+import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
+import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.ConfigurationType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;

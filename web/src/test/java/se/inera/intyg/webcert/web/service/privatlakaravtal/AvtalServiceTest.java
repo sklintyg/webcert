@@ -1,4 +1,4 @@
-package se.inera.webcert.service.privatlakaravtal;
+package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,7 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /**
  * Created by eriklupander on 2015-08-05.

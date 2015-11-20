@@ -1,4 +1,4 @@
-package se.inera.webcert.service.mail;
+package se.inera.intyg.webcert.web.service.mail;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,8 +25,8 @@ import se.inera.intyg.webcert.mailstub.OutgoingMail;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * @author andreaskaltenbach

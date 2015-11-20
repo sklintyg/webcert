@@ -1,11 +1,11 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import se.inera.auth.common.BaseSAMLCredentialTest;
+import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
 /**
  * @author eriklupander

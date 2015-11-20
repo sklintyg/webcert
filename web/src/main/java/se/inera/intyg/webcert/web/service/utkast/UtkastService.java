@@ -1,12 +1,12 @@
-package se.inera.webcert.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.webcert.service.dto.Lakare;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.utkast.dto.DraftValidation;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 
 import java.util.List;
 import java.util.Map;

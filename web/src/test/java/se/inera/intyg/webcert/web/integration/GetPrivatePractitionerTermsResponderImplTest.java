@@ -1,4 +1,4 @@
-package se.inera.webcert.integration;
+package se.inera.intyg.webcert.web.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.webcert.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsType;
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEnum;

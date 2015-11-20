@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.service.diagnos.DiagnosService;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.DiagnosParameter;
+import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
 
 /**
  * Controller exposing diagnosis services to be used by modules.

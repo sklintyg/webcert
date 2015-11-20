@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -15,8 +15,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import se.inera.auth.eleg.FakeElegAuthenticationToken;
-import se.inera.auth.eleg.FakeElegCredentials;
+import se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationToken;
+import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 
 /**
  * @author andreaskaltenbach

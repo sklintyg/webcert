@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.dto;
+package se.inera.intyg.webcert.web.service.intyg.dto;
 
 import java.util.ArrayList;
 import java.util.List;

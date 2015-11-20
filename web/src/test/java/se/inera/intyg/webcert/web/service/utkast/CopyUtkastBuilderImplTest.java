@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,18 +33,18 @@ import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastBuilderImplTest {

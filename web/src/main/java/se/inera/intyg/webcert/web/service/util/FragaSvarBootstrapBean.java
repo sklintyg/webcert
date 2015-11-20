@@ -1,4 +1,4 @@
-package se.inera.webcert.service.util;
+package se.inera.intyg.webcert.web.service.util;
 
 import java.io.IOException;
 import java.util.Arrays;

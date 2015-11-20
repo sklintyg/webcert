@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.protocol.Protocol;

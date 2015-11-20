@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 

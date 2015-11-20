@@ -1,4 +1,4 @@
-package se.inera.auth.common;
+package se.inera.intyg.webcert.web.auth.common;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -9,8 +9,8 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
-import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;

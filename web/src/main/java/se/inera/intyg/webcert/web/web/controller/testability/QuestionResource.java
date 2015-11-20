@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.testability;
+package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,10 +37,9 @@ import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
-
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
 /**
  * Bean for inserting questions directly into the database.
  * <p/>

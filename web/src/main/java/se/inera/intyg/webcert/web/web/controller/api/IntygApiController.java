@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,27 +24,27 @@ import org.springframework.dao.OptimisticLockingFailureException;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.utkast.CopyUtkastService;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.CopyIntygRequest;
-import se.inera.webcert.web.controller.api.dto.CopyIntygResponse;
-import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
-import se.inera.webcert.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
 
 /**
  * Controller for the API that serves WebCert.

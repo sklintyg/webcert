@@ -1,4 +1,4 @@
-package se.inera.webcert.service.log;
+package se.inera.intyg.webcert.web.service.log;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -26,10 +26,10 @@ import se.inera.log.messages.IntygSignMessage;
 import se.inera.log.messages.IntygUpdateMessage;
 import se.inera.log.messages.Patient;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.log.dto.LogUser;
-import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.

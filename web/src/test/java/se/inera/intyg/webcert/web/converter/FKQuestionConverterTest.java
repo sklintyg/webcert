@@ -1,4 +1,4 @@
-package se.inera.webcert.converter;
+package se.inera.intyg.webcert.web.converter;
 
 import static org.junit.Assert.assertEquals;
 

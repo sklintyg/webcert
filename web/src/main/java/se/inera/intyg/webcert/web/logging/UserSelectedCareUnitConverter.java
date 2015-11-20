@@ -1,10 +1,10 @@
-package se.inera.webcert.logging;
+package se.inera.intyg.webcert.web.logging;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import se.inera.webcert.hsa.model.SelectableVardenhet;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 

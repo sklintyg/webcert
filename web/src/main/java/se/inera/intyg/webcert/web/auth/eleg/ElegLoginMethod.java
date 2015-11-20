@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 /**
  * Defines enumerations for a number of known  (and undocumented)

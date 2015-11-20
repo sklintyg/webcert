@@ -1,4 +1,4 @@
-package se.inera.webcert.service.certificatesender;
+package se.inera.intyg.webcert.web.service.certificatesender;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 

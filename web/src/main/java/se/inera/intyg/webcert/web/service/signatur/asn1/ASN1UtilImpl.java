@@ -1,8 +1,8 @@
-package se.inera.webcert.service.signatur.asn1;
+package se.inera.intyg.webcert.web.service.signatur.asn1;
 
-import static se.inera.webcert.service.signatur.asn1.ASN1Type.SEQUENCE;
-import static se.inera.webcert.service.signatur.asn1.ASN1Type.OBJECT_IDENTIFIER;
-import static se.inera.webcert.service.signatur.asn1.ASN1Type.PRINTABLE_STRING;
+import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.SEQUENCE;
+import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.OBJECT_IDENTIFIER;
+import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.PRINTABLE_STRING;
 
 import java.io.IOException;
 import java.io.InputStream;

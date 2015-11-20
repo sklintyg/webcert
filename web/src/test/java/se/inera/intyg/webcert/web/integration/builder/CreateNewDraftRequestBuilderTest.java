@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.builder;
+package se.inera.intyg.webcert.web.integration.builder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +22,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {

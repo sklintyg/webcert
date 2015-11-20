@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos.dto;
+package se.inera.intyg.webcert.web.service.diagnos.dto;
 
 public enum DiagnosResponseType {
 

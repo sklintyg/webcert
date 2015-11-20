@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.integration;
+package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.legacyintegration;
+package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;

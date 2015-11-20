@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.registry.dto;
+package se.inera.intyg.webcert.web.integration.registry.dto;
 
 public class IntegreradEnhetEntry implements Comparable<IntegreradEnhetEntry> {
 

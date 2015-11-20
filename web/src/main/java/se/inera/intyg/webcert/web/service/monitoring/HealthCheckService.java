@@ -1,6 +1,6 @@
-package se.inera.webcert.service.monitoring;
+package se.inera.intyg.webcert.web.service.monitoring;
 
-import se.inera.webcert.service.monitoring.dto.HealthStatus;
+import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 
 /**
  * Service for checking the health of the application.

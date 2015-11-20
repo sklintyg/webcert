@@ -1,4 +1,4 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import se.inera.webcert.hsa.model.AuthenticationMethod;
 /**
  * Helper service for determining the login method based on the "LoginMethod" SAML attribute.
  *
- * See {@link se.inera.auth.eleg.ElegLoginMethod} for known LoginMethod codes.
+ * See {@link se.inera.intyg.webcert.web.auth.eleg.ElegLoginMethod} for known LoginMethod codes.
  *
  * Created by eriklupander on 2015-08-24.
  */

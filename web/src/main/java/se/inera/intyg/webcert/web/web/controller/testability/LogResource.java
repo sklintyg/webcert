@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.testability;
+package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.util.Enumeration;
 

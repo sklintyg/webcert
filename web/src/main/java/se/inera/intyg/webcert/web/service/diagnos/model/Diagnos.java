@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos.model;
+package se.inera.intyg.webcert.web.service.diagnos.model;
 
 public class Diagnos implements Comparable<Diagnos> {
 

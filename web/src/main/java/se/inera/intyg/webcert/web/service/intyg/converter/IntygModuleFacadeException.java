@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.converter;
+package se.inera.intyg.webcert.web.service.intyg.converter;
 
 public class IntygModuleFacadeException extends Exception {
 

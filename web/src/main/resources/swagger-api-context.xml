@@ -25,13 +25,13 @@
 
   <context:annotation-config/>
 
-  <context:component-scan base-package="se.inera.webcert.web.controller.swagger"/>
+  <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.swagger"/>
 
   <jaxrs:server address="/swagger">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.swagger.ApiScanner">
+      <bean class="se.inera.intyg.webcert.web.web.controller.swagger.ApiScanner">
 
-        <!-- key   == sub-package of se.inera.webcert.web.controller, also used as path param for the /services/swagger/{api} -->
+        <!-- key   == sub-package of se.inera.intyg.webcert.web.web.controller, also used as path param for the /services/swagger/{api} -->
         <!-- value == base path of the service. Used to get the correct basepath when calling services from swagger-ui. -->
         <property name="basepathMap">
           <map>

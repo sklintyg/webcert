@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.intyg.webcert.web.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.Before;
@@ -33,8 +33,8 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
-import se.inera.auth.exceptions.HsaServiceException;
-import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
@@ -49,9 +49,9 @@ import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
-import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.xml.transform.stream.StreamSource;
 import java.util.ArrayList;

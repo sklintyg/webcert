@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,18 +39,18 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
-import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
@@ -115,11 +115,11 @@ public class UtkastServiceImplTest {
         hoSPerson.setBefattning("Befattning");
         hoSPerson.getSpecialiseringar().add("Ortoped");
 
-        se.inera.webcert.service.dto.Vardgivare vardgivare = new se.inera.webcert.service.dto.Vardgivare();
+        se.inera.intyg.webcert.web.service.dto.Vardgivare vardgivare = new se.inera.intyg.webcert.web.service.dto.Vardgivare();
         vardgivare.setHsaId("SE234234");
         vardgivare.setNamn("Vårdgivaren");
 
-        se.inera.webcert.service.dto.Vardenhet vardenhet = new se.inera.webcert.service.dto.Vardenhet();
+        se.inera.intyg.webcert.web.service.dto.Vardenhet vardenhet = new se.inera.intyg.webcert.web.service.dto.Vardenhet();
         vardenhet.setArbetsplatskod("00000");
         vardenhet.setNamn("Vårdenheten");
         vardenhet.setHsaId("SE234897348");

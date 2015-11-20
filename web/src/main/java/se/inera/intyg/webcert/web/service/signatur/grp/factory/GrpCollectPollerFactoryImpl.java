@@ -1,11 +1,11 @@
-package se.inera.webcert.service.signatur.grp.factory;
+package se.inera.intyg.webcert.web.service.signatur.grp.factory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import se.inera.webcert.service.signatur.grp.GrpCollectPoller;
+import se.inera.intyg.webcert.web.service.signatur.grp.GrpCollectPoller;
 
 /**
  * Created by eriklupander on 2015-08-25.

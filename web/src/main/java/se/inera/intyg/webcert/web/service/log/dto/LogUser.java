@@ -1,4 +1,4 @@
-package se.inera.webcert.service.log.dto;
+package se.inera.intyg.webcert.web.service.log.dto;
 
 
 public class LogUser {

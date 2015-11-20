@@ -1,4 +1,4 @@
-package se.inera.auth.common;
+package se.inera.intyg.webcert.web.auth.common;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;

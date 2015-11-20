@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.any;
@@ -24,8 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 
-import se.inera.auth.common.AuthConstants;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2015-10-14.

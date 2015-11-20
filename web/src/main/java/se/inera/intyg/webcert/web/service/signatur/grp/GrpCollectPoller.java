@@ -1,6 +1,6 @@
-package se.inera.webcert.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.signatur.grp;
 
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2015-08-25.

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.authtestability;
+package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import java.util.Map;
 import java.util.Set;
@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 

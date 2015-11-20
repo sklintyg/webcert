@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller;
+package se.inera.intyg.webcert.web.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,13 @@ import org.springframework.util.Assert;
 
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AbstractVardenhet;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
-import se.inera.webcert.service.exception.FeatureNotAvailableException;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.exception.FeatureNotAvailableException;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public abstract class AbstractApiController {
 

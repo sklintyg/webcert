@@ -1,4 +1,4 @@
-package se.inera.webcert.service.exception;
+package se.inera.intyg.webcert.web.service.exception;
 
 public class FeatureNotAvailableException extends RuntimeException {
 

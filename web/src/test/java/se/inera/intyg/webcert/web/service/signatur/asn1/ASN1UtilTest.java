@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur.asn1;
+package se.inera.intyg.webcert.web.service.signatur.asn1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.validator;
+package se.inera.intyg.webcert.web.integration.validator;
 
 import iso.v21090.dt.v1.II;
 import org.apache.commons.lang.StringUtils;

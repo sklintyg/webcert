@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos;
+package se.inera.intyg.webcert.web.service.diagnos;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import se.inera.certificate.common.enumerations.Diagnoskodverk;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
-import se.inera.webcert.service.diagnos.model.Diagnos;
-import se.inera.webcert.service.diagnos.repo.DiagnosRepository;
-import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepository;
+import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory;
 
 /**
  * Implementation of DiagnosService. Supplies services for getting a diagnosis by code
@@ -137,7 +137,7 @@ public class DiagnosServiceImpl implements DiagnosService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
+     * @see se.inera.intyg.webcert.web.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
     public DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystemStr, int nbrOfResults) {
@@ -180,7 +180,7 @@ public class DiagnosServiceImpl implements DiagnosService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
+     * @see se.inera.intyg.webcert.web.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
     public DiagnosResponse searchDiagnosisByDescription(String searchString, String codeSystemStr, int nbrOfResults) {

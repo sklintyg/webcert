@@ -1,10 +1,10 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.saml.SAMLCredential;
-import se.inera.webcert.security.SakerhetstjanstAssertion;
-import se.inera.auth.common.BaseSAMLCredentialTest;
+import se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion;
+import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
 import static org.junit.Assert.assertEquals;
 

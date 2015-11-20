@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos.repo;
+package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")

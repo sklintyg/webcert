@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur;
+package se.inera.intyg.webcert.web.service.signatur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,19 +40,19 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.log.dto.LogUser;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.signatur.asn1.ASN1Util;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.util.ReflectionUtils;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Util;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.util.ReflectionUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;

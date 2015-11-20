@@ -1,8 +1,8 @@
-package se.inera.webcert.service.diagnos.dto;
+package se.inera.intyg.webcert.web.service.diagnos.dto;
 
 import java.util.List;
 
-import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 public class DiagnosResponse {
 

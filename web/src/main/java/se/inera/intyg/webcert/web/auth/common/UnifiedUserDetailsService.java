@@ -1,4 +1,4 @@
-package se.inera.auth.common;
+package se.inera.intyg.webcert.web.auth.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -6,11 +6,11 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
 
-import se.inera.webcert.security.WebCertUserDetailsService;
-import se.inera.auth.eleg.ElegWebCertUserDetailsService;
+import se.inera.intyg.webcert.web.security.WebCertUserDetailsService;
+import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
-import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
-import static se.inera.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
 
 /**
  * Created by eriklupander on 2015-08-12.

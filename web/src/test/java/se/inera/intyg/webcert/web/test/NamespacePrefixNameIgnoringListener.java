@@ -1,4 +1,4 @@
-package se.inera.webcert.test;
+package se.inera.intyg.webcert.web.test;
 
 import static org.custommonkey.xmlunit.DifferenceConstants.NAMESPACE_PREFIX_ID;
 

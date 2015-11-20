@@ -1,4 +1,4 @@
-package se.inera.webcert.service.monitoring;
+package se.inera.intyg.webcert.web.service.monitoring;
 
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;

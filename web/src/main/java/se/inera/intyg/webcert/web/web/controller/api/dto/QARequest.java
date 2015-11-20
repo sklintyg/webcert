@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 /**
  * Created by stephenwhite on 18/02/15.

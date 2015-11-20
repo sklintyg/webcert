@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.intyg.webcert.web.security;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;

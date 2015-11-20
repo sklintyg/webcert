@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.intyg.webcert.web.security;
 
 import org.springframework.security.core.AuthenticationException;
 

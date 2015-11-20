@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -18,9 +18,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.web.controller.authtestability.UserRoleResource;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.authtestability.UserRoleResource;
 
 public class UserRoleResourceTest {
 

@@ -1,14 +1,14 @@
-package se.inera.webcert.service.signatur;
+package se.inera.intyg.webcert.web.service.signatur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static se.inera.webcert.service.signatur.dto.SignaturTicket.Status.BEARBETAR;
-import static se.inera.webcert.service.signatur.dto.SignaturTicket.Status.SIGNERAD;
+import static se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket.Status.BEARBETAR;
+import static se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket.Status.SIGNERAD;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 
 public class SignaturTicketTrackerTest {
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur.dto;
+package se.inera.intyg.webcert.web.service.signatur.dto;
 
 import org.joda.time.LocalDateTime;
 

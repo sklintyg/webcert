@@ -1,4 +1,4 @@
-package se.inera.webcert.bootstrap;
+package se.inera.intyg.webcert.web.bootstrap;
 
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;

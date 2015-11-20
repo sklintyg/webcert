@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
@@ -18,14 +26,6 @@ import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -56,7 +56,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.utkast.CopyUtkastService#createCopy(se.inera.webcert.service.utkast.dto.
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.dto.
      * CreateNewDraftCopyRequest)
      */
     @Override

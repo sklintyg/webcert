@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.validator;
+package se.inera.intyg.webcert.web.integration.validator;
 
 import org.apache.commons.lang.StringUtils;
 

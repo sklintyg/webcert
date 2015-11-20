@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur;
+package se.inera.intyg.webcert.web.service.signatur;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -31,17 +31,17 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.signatur.asn1.ASN1Util;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.util.UpdateUserUtil;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Util;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {

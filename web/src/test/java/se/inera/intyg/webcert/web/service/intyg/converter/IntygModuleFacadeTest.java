@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.converter;
+package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +21,7 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,14 +20,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl;
-import se.inera.webcert.service.privatlakaravtal.AvtalService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
-import se.inera.webcert.web.controller.api.dto.WebUserFeaturesRequest;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;
+import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
 /**
  * Controller for accessing the users security context.

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.handlers;
+package se.inera.intyg.webcert.web.web.handlers;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;

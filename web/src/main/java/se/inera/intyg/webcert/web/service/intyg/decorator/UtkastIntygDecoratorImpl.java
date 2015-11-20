@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.decorator;
+package se.inera.intyg.webcert.web.service.intyg.decorator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

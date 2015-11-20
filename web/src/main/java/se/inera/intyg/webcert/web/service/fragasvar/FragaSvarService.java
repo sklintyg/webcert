@@ -1,11 +1,11 @@
-package se.inera.webcert.service.fragasvar;
+package se.inera.intyg.webcert.web.service.fragasvar;
 
 import org.joda.time.LocalDateTime;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.service.dto.Lakare;
-import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
-import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 
 import java.util.List;
 import java.util.Map;

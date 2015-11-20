@@ -1,4 +1,4 @@
-package se.inera.webcert.test;
+package se.inera.intyg.webcert.web.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +12,8 @@ import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
 
 /**
  * Util for building test data.

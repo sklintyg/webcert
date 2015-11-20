@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.converter;
+package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.certificate
+     * se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.certificate
      * .model.Utlatande)
      */
     @Override

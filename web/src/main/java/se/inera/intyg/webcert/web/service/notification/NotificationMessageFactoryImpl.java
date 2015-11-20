@@ -1,4 +1,4 @@
-package se.inera.webcert.service.notification;
+package se.inera.intyg.webcert.web.service.notification;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +46,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.webcert.
+     * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
      * persistence.utkast.model.Utkast, se.inera.certificate.modules.support.api.notification.HandelseType)
      */
     @Override
@@ -73,7 +73,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.webcert.
+     * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
      * persistence.fragasvar.model.FragaSvar, se.inera.certificate.modules.support.api.notification.HandelseType)
      */
     @Override

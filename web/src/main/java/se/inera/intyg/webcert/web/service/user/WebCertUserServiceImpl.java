@@ -1,4 +1,4 @@
-package se.inera.webcert.service.user;
+package se.inera.intyg.webcert.web.service.user;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -13,9 +13,9 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
-import se.inera.webcert.security.AuthoritiesException;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.security.AuthoritiesException;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;

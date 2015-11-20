@@ -1,4 +1,4 @@
-package se.inera.webcert.service.fragasvar.dto;
+package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
 import java.util.List;
 

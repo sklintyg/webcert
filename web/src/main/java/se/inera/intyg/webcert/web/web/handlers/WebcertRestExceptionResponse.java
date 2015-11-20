@@ -1,4 +1,4 @@
-package se.inera.webcert.web.handlers;
+package se.inera.intyg.webcert.web.web.handlers;
 
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 

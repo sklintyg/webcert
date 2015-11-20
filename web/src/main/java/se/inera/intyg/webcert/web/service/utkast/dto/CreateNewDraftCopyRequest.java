@@ -1,9 +1,9 @@
-package se.inera.webcert.service.utkast.dto;
+package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import org.apache.commons.lang3.StringUtils;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 
 public class CreateNewDraftCopyRequest {
 

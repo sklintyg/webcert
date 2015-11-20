@@ -1,6 +1,6 @@
-package se.inera.webcert.security;
+package se.inera.intyg.webcert.web.security;
 
-import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,9 +16,9 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import se.inera.auth.common.BaseWebCertUserDetailsService;
-import se.inera.auth.exceptions.HsaServiceException;
-import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
+import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
@@ -30,8 +30,8 @@ import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.model.TitleCode;
 import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

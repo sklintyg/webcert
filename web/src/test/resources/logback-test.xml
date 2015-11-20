@@ -3,7 +3,7 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
         <param name="Pattern" value="%date{ISO8601} %session %user %selectedCareUnit - %msg%n" />
       </layout>
     </encoder>
@@ -15,8 +15,7 @@
 
   <logger name="org.apache.cxf.services" level="error" />
 
-  <logger name="se.inera.auth" level="debug" />
-  <logger name="se.inera.webcert" level="debug" />
+  <logger name="se.inera.intyg.webcert.web" level="debug" />
   <logger name="se.inera.certificate.modules" level="debug" />
 
   <root>

@@ -1,4 +1,4 @@
-package se.inera.webcert.integration;
+package se.inera.intyg.webcert.web.integration;
 
 import java.util.List;
 
@@ -17,16 +17,16 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.webcert.hsa.services.HsaPersonService;
-import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
-import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
-import se.inera.webcert.integration.validator.ResultValidator;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
+import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg;
+package se.inera.intyg.webcert.web.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -47,16 +47,16 @@ import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.webcert.service.intyg.dto.IntygServiceResult;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.signatur.SignaturTicketTracker;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.util.ReflectionUtils;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.util.ReflectionUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {

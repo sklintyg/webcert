@@ -1,8 +1,8 @@
-package se.inera.webcert.service.log;
+package se.inera.intyg.webcert.web.service.log;
 
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
 /**
  * Service for logging user actions according to PDL requirements.

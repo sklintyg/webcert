@@ -1,4 +1,4 @@
-package se.inera.webcert.service.notification;
+package se.inera.intyg.webcert.web.service.notification;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -20,7 +20,7 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,7 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftCreated(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftCreated(se.inera.intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -74,7 +74,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftSigned(se.inera.webcert.
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftSigned(se.inera.intyg.webcert.web.
      * persistence.utkast.model.Utkast)
      */
     @Override
@@ -86,7 +86,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftChanged(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftChanged(se.inera.intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -98,7 +98,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftDeleted(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftDeleted(se.inera.intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -109,7 +109,7 @@ public class NotificationServiceImpl implements NotificationService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.notification.NewNotificationService#sendNotificationForIntygSent(se.inera.webcert.
+     * @see se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForIntygSent(se.inera.intyg.webcert.web.
      * persistence.utkast.model.Utkast)
      */
     @Override
@@ -121,7 +121,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForIntygRevoked(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForIntygRevoked(se.inera.intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -133,7 +133,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
@@ -145,7 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
@@ -157,7 +157,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
@@ -169,7 +169,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
@@ -181,7 +181,7 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.user.dto;
+package se.inera.intyg.webcert.web.service.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,7 +9,7 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 
 import java.util.ArrayList;
 import java.util.Collections;

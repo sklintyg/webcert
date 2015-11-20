@@ -1,4 +1,4 @@
-package se.inera.webcert.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,28 +32,28 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Lakare;
-import se.inera.webcert.service.dto.Patient;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.dto.Patient;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.log.dto.LogUser;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.util.UpdateUserUtil;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.utkast.dto.DraftValidation;
-import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
-import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -378,7 +378,7 @@ public class UtkastServiceImpl implements UtkastService {
         draftValidation.setStatus(DraftValidationStatus.INVALID);
 
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
-            draftValidation.addMessage(new se.inera.webcert.service.utkast.dto.DraftValidationMessage(
+            draftValidation.addMessage(new se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage(
                     validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage()));
         }
 

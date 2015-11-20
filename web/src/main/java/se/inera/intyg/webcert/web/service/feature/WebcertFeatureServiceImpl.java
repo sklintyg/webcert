@@ -1,4 +1,4 @@
-package se.inera.webcert.service.feature;
+package se.inera.intyg.webcert.web.service.feature;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -143,7 +143,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(se.inera.webcert.service.feature.
+     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isFeatureActive(se.inera.intyg.webcert.web.service.feature.
      * WebcertFeature)
      */
     @Override
@@ -154,7 +154,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(java.lang.String)
+     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isFeatureActive(java.lang.String)
      */
     @Override
     public boolean isFeatureActive(String featureName) {
@@ -166,7 +166,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.certificate.modules.support
+     * se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.certificate.modules.support
      * .feature.ModuleFeature, java.lang.String)
      */
     @Override
@@ -177,7 +177,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.feature.WebcertFeatureService#isModuleFeatureActive(java.lang.String,
+     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(java.lang.String,
      * java.lang.String)
      */
     @Override
@@ -193,7 +193,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.feature.WebcertFeatureService#getActiveFeatures()
+     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#getActiveFeatures()
      */
     @Override
     public Set<String> getActiveFeatures() {

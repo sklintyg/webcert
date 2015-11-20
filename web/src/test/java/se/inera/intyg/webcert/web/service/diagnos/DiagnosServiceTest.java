@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos;
+package se.inera.intyg.webcert.web.service.diagnos;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,8 +12,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import se.inera.certificate.common.enumerations.Diagnoskodverk;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponseType;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:/DiagnosService/DiagnosServiceTest-context.xml")

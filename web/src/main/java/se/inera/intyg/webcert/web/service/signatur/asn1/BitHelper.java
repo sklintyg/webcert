@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur.asn1;
+package se.inera.intyg.webcert.web.service.signatur.asn1;
 
 /**
  * Convenience helper for checking if a given bit is set on a byte, or unsetting a bit at a given position.

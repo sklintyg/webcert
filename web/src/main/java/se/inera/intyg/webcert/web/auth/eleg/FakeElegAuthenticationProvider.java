@@ -1,6 +1,6 @@
-package se.inera.auth.eleg;
+package se.inera.intyg.webcert.web.auth.eleg;
 
-import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
 import java.util.ArrayList;
 
@@ -17,7 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 
-import se.inera.auth.common.BaseFakeAuthenticationProvider;
+import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 
 /**
  * AuthenticationProvider for fake logged in private practitioners.

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.swagger;
+package se.inera.intyg.webcert.web.web.controller.swagger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +48,7 @@ import io.swagger.models.Swagger;
 public class ApiScanner {
 
     private static final String SWAGGER_TOKEN = "swagger";
-    private static final String BASE_REST_PACKAGE_NAME = "se.inera.webcert.web.controller.";
+    private static final String BASE_REST_PACKAGE_NAME = "se.inera.intyg.webcert.web.web.controller.";
 
     @Context
     private ServletContext context;

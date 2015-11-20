@@ -1,4 +1,4 @@
-package se.inera.webcert.logging;
+package se.inera.intyg.webcert.web.logging;
 
 import ch.qos.logback.classic.PatternLayout;
 

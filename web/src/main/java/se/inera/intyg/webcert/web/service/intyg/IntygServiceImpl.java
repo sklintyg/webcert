@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg;
+package se.inera.intyg.webcert.web.service.intyg;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,28 +28,28 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.certificatesender.CertificateSenderException;
-import se.inera.webcert.service.certificatesender.CertificateSenderService;
+import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
+import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.service.fragasvar.dto.FrageStallare;
-import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
-import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
-import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
-import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
-import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygServiceResult;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
+import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
@@ -241,7 +241,7 @@ public class IntygServiceImpl implements IntygService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
+     * @see se.inera.intyg.webcert.web.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
     @Override
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {

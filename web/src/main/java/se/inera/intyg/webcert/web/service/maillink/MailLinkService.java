@@ -1,4 +1,4 @@
-package se.inera.webcert.service.maillink;
+package se.inera.intyg.webcert.web.service.maillink;
 
 import java.net.URI;
 

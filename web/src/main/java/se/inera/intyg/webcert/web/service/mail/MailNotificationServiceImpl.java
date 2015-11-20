@@ -1,4 +1,4 @@
-package se.inera.webcert.service.mail;
+package se.inera.intyg.webcert.web.service.mail;
 
 import java.util.Locale;
 
@@ -22,8 +22,8 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 

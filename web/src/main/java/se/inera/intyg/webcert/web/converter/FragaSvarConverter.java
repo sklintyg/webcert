@@ -1,4 +1,4 @@
-package se.inera.webcert.converter;
+package se.inera.intyg.webcert.web.converter;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;

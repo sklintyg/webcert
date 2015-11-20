@@ -1,7 +1,7 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
-import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
-import static se.inera.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import java.io.IOException;
 
@@ -18,8 +18,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import se.inera.auth.common.AuthConstants;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * This class is used to make IDP selection automatic for uthoppslänkar and djupintegratinslänkar for non-authenticated

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos.repo;
+package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
  * Factory responsible for creating the DiagnosRepository out of supplied code files.

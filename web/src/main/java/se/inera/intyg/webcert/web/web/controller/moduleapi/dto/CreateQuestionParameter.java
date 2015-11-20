@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi.dto;
+package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg;
+package se.inera.intyg.webcert.web.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
@@ -14,7 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceStoreTest extends AbstractIntygServiceTest {

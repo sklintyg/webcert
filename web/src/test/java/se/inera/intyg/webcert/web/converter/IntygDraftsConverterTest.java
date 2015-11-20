@@ -1,4 +1,4 @@
-package se.inera.webcert.converter;
+package se.inera.intyg.webcert.web.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,9 +17,9 @@ import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.test.TestIntygFactory;
-import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.test.TestIntygFactory;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 public class IntygDraftsConverterTest {
 

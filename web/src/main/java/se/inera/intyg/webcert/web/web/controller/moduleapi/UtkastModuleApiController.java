@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -20,31 +20,31 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.signatur.SignaturService;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftValidationStatus;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
 import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.signatur.SignaturService;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.signatur.grp.GrpSignaturService;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.service.utkast.dto.DraftValidation;
-import se.inera.webcert.service.utkast.dto.DraftValidationMessage;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.DraftHolder;
-import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
-import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
-import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
+import io.swagger.annotations.Api;
 
 /**
  * Controller for module interaction with drafts.

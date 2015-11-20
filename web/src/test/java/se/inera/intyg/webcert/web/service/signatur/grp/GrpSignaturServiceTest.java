@@ -1,4 +1,4 @@
-package se.inera.webcert.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.signatur.grp;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -25,12 +25,12 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.signatur.SignaturService;
-import se.inera.webcert.service.signatur.SignaturTicketTracker;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.signatur.grp.factory.GrpCollectPollerFactory;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.signatur.SignaturService;
+import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.grp.factory.GrpCollectPollerFactory;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
-package se.inera.webcert.service.diagnos;
+package se.inera.intyg.webcert.web.service.diagnos;
 
 import se.inera.certificate.common.enumerations.Diagnoskodverk;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 
 /**
  * Supplies services related to diagnosises.

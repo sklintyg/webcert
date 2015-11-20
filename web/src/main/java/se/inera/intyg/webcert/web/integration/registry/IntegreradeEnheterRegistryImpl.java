@@ -1,4 +1,4 @@
-package se.inera.webcert.integration.registry;
+package se.inera.intyg.webcert.web.integration.registry;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 
@@ -23,7 +23,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * (non-Javadoc)
      *
      * @see
-     * se.inera.webcert.service.integration.IntegreradeEnheterService#addIfNotExistsIntegreradEnhet(se.inera.webcert
+     * se.inera.intyg.webcert.web.service.integration.IntegreradeEnheterService#addIfNotExistsIntegreradEnhet(se.inera.intyg.webcert.web
      * .service.integration.dto.IntegreradEnhetEntry)
      */
     @Override
@@ -53,7 +53,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
+     * @see se.inera.intyg.webcert.web.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)

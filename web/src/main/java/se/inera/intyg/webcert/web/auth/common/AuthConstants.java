@@ -1,4 +1,4 @@
-package se.inera.auth.common;
+package se.inera.intyg.webcert.web.auth.common;
 
 /**
  * Defines some constant strings related to Security, SAML or other auth mechanisms.

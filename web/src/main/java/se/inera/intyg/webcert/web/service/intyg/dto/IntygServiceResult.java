@@ -1,4 +1,4 @@
-package se.inera.webcert.service.intyg.dto;
+package se.inera.intyg.webcert.web.service.intyg.dto;
 
 public enum IntygServiceResult {
     OK,

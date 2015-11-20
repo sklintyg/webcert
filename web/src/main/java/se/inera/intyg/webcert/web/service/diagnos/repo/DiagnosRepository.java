@@ -1,6 +1,6 @@
-package se.inera.webcert.service.diagnos.repo;
+package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 import java.io.IOException;
 import java.util.List;

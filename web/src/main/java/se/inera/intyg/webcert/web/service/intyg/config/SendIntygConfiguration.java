@@ -1,8 +1,8 @@
-package se.inera.webcert.service.intyg.config;
+package se.inera.intyg.webcert.web.service.intyg.config;
 
 import java.text.MessageFormat;
 
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

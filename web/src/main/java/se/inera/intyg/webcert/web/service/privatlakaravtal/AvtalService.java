@@ -1,4 +1,4 @@
-package se.inera.webcert.service.privatlakaravtal;
+package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
 

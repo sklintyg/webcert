@@ -1,4 +1,4 @@
-package se.inera.webcert.service.log;
+package se.inera.intyg.webcert.web.service.log;
 
 import static org.joda.time.LocalDateTime.now;
 import static org.junit.Assert.assertEquals;
@@ -29,9 +29,9 @@ import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.jms.Session;
 import java.util.Arrays;

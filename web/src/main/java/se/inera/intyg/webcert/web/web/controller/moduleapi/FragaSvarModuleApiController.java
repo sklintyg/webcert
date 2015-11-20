@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.QARequest;
-import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
-import se.inera.webcert.web.controller.moduleapi.dto.DispatchState;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
 
 @Path("/fragasvar")
 @Api(value = "fragasvar", description = "REST API - moduleapi - fragasvar", produces = MediaType.APPLICATION_JSON)

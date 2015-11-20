@@ -1,15 +1,15 @@
-package se.inera.auth;
+package se.inera.intyg.webcert.web.auth;
 
-import static se.inera.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_KOD_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
+import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.TITEL_KOD_ATTRIBUTE;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
@@ -23,7 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-import se.inera.auth.common.BaseFakeAuthenticationProvider;
+import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 
 import java.util.ArrayList;

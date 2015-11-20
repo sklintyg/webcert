@@ -1,4 +1,4 @@
-package se.inera.webcert.service.fragasvar;
+package se.inera.intyg.webcert.web.service.fragasvar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,9 +33,9 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.converter.FKAnswerConverter;
-import se.inera.webcert.converter.FKQuestionConverter;
-import se.inera.webcert.converter.FragaSvarConverter;
+import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
+import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
+import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -44,20 +44,20 @@ import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.fragasvar.repository.VantarPa;
-import se.inera.webcert.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.service.fragasvar.dto.FrageStallare;
-import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
-import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
 
 /**
  * @author andreaskaltenbach

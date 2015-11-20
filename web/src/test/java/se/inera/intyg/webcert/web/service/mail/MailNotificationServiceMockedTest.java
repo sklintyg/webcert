@@ -1,4 +1,4 @@
-package se.inera.webcert.service.mail;
+package se.inera.intyg.webcert.web.service.mail;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -26,7 +26,7 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceMockedTest {

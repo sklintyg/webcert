@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import org.apache.commons.lang3.StringUtils;
 import se.inera.certificate.modules.support.api.dto.Personnummer;

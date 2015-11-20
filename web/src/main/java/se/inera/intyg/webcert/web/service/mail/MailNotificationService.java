@@ -1,4 +1,4 @@
-package se.inera.webcert.service.mail;
+package se.inera.intyg.webcert.web.service.mail;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
