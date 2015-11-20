@@ -1,5 +1,5 @@
 exports.config = {
-    baseUrl: 'https://webcert.ip20.nordicmedtest.sjunet.org',
+    baseUrl: 'https://webcert.ip30.nordicmedtest.sjunet.org',
     allScriptsTimeout: 30000,
     seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
     framework: 'cucumber',

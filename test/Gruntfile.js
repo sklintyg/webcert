@@ -11,7 +11,7 @@ module.exports = function(grunt) {
 
         protractor: {
             options: {
-                configFile: './protractor.cli.conf.js', // Target-specific config file
+                configFile: '../node_modules/protractor/referenceConf.js',
                 keepAlive: true, // If false, the grunt process stops when the test fails.
                 noColor: false, // If true, protractor will not use colors in its output.
                 args: {
@@ -20,20 +20,25 @@ module.exports = function(grunt) {
             },
 
             // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
-            your_target: { // jshint ignore:line
-/*                options: {
-                    configFile: 'src/test/resources/protractor.cli.conf.js', // Target-specific config file
+            dev: {
+                options: {
+                    configFile: './dev/protractor.cli.conf.js',
                     args: {} // Target-specific arguments
-                }*/
-            }
+                }
+            },
+            acc: {
+                options: {
+                    configFile: './acceptance/protractor-conf.js',
+                    args: {} // Target-specific arguments
+                }
+            },
+
+            
         },
 
         protractor_webdriver: { // jshint ignore:line
             options: {
                 // Task-specific options go here.
-            },
-            your_target: { // jshint ignore:line
-                // Target-specific file lists and/or options go here.
             }
         }
 
@@ -41,5 +46,6 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
     * that webcert depends on*/
-    grunt.registerTask('default', ['protractor_webdriver','protractor']);
+    grunt.registerTask('acc', ['protractor_webdriver','protractor:acc']);
+    grunt.registerTask('default', ['protractor_webdriver','protractor:dev']);
 };
