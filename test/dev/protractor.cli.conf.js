@@ -12,7 +12,7 @@
 
 exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub',
-    specs: ['../../web/**/e2e/**/*.spec.js'],
+    specs: ['./spec/*.spec.js'],
     baseUrl: 'http://localhost:9088/',
     //rootElement:'html',
     // If chromeOnly is true, we dont need to stand the selenium server.
@@ -36,6 +36,8 @@ exports.config = {
          * which you might want to do if you're testing behaviour during $http or $timeout (e.g., a "loading" message),
          * or testing non-Angular sites or pages, such as a separate login page.
          */
+        global.testdata = require('../lib/testdata/testdata.js');
+        global.pages = require('./../lib/pages.js');
         browser.ignoreSynchronization = false;
     }
 }

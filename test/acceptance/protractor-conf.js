@@ -16,10 +16,10 @@ exports.config = {
     cucumberOpts: {
         require: 'features/steps/*_steps.js',
         format: 'pretty',
-        tags: ["@dev"]
+        tags: ['@dev']
     },
     onPrepare: function() {
-        // global.myVariable = "test";
+        // global.myVariable = 'test';
 
         //http://chaijs.com/
         global.chai = require('chai');
@@ -31,7 +31,7 @@ exports.config = {
         global.expect = chai.expect;
 
         // Testdata lib
-        global.testdata = require("../lib/testdata.js");
+        global.testdata = require('../lib/testdata/testdata.js');
 
 
     },

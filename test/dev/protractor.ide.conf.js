@@ -39,9 +39,12 @@ exports.config = {
         // for non-angular page
         /**
          * This makes protractor not wait for Angular promises, such as those from $http or $timeout to resolve,
-         * which you might want to do if you're testing behaviour during $http or $timeout (e.g., a "loading" message),
+         * which you might want to do if you're testing behaviour during $http or $timeout (e.g., a 'loading' message),
          * or testing non-Angular sites or pages, such as a separate login page.
          */
+
+        global.testdata = require('../lib/testdata/testdata.js');
+        global.pages = require('./../lib/pages.js');
         browser.ignoreSynchronization = false;
     }
-}
+};

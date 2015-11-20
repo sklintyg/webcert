@@ -28,9 +28,5 @@
         "karma-junit-reporter": "^0.2.2",
         "karma-mocha-reporter": "^0.3.1",
         "karma-phantomjs-launcher": "^0.1.4",
-        "grunt-protractor-runner": "^2.1.0",
-        "grunt-protractor-webdriver": "^0.2.5",
-        "protractor": "^2.5.1",
-        "request": "^2.65.0"
     }
 }

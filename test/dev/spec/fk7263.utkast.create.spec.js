@@ -1,4 +1,4 @@
-var pages = require('pages');
+//var pages = require('pages');
 var WelcomePage = require(pages.welcome),
     SokSkrivIntygPage = require(pages.app.views.sokSkrivIntyg),
     UtkastPage = require(pages.intygpages.utkast),
@@ -9,7 +9,7 @@ var welcomePage = new WelcomePage(),
     utkastPage = new UtkastPage(),
     intygPage = new IntygPage();
 
-describe('Create and Sign FK utkast', function() {
+xdescribe('Create and Sign FK utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
@@ -34,7 +34,7 @@ describe('Create and Sign FK utkast', function() {
         it('fill in person number and select', function() {
             sokSkrivIntygPage.selectPersonnummer('191212121212');
         });
-
+//
         it('select fk intyg', function() {
             sokSkrivIntygPage.selectIntygType('string:fk7263');
             sokSkrivIntygPage.continue();

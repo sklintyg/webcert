@@ -1,9 +1,7 @@
 {
-  "name": "e2e-dev",
+  "name": "e2e-test",
   "version": "0.0.1",
-  "dependencies": {
-    "load-grunt-parent-tasks": "^0.1.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
@@ -17,4 +15,5 @@
     "grunt-ng-annotate": "^0.3.0",
     "time-grunt": "^0.3.1"
   }
+    "engine" : "node >= 4.2.1"
 }
