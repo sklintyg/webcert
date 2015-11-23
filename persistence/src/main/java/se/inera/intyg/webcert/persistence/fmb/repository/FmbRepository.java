@@ -1,12 +1,12 @@
-package se.inera.webcert.persistence.fmb.repository;
+package se.inera.intyg.webcert.persistence.fmb.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import se.inera.webcert.persistence.fmb.model.Fmb;
-import se.inera.webcert.persistence.fmb.model.FmbCallType;
-import se.inera.webcert.persistence.fmb.model.FmbType;
+import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 
 public interface FmbRepository extends JpaRepository<Fmb, Long> {
 

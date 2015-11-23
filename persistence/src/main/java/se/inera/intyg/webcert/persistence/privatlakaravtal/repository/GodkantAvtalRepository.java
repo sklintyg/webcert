@@ -1,8 +1,8 @@
-package se.inera.webcert.persistence.privatlakaravtal.repository;
+package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import se.inera.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
 /**
  * Created by eriklupander on 2015-08-05.

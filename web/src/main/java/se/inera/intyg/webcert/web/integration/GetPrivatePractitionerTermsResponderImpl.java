@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerterms.v1.rivtabp21.GetPrivatePractitionerTermsResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsResponseType;

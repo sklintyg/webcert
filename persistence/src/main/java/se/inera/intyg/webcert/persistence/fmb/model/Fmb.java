@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.fmb.model;
+package se.inera.intyg.webcert.persistence.fmb.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

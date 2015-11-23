@@ -1,10 +1,10 @@
-package se.inera.webcert.persistence.utkast.repository;
+package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastFilteredRepositoryCustom {

@@ -1,12 +1,12 @@
-package se.inera.webcert.persistence.fragasvar.repository.util;
+package se.inera.intyg.webcert.persistence.fragasvar.repository.util;
 
 import org.joda.time.LocalDateTime;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.privatlakaravtal.model;
+package se.inera.intyg.webcert.persistence.privatlakaravtal.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

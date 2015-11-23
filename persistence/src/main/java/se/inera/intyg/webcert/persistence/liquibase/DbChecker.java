@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.liquibase;
+package se.inera.intyg.webcert.persistence.liquibase;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {

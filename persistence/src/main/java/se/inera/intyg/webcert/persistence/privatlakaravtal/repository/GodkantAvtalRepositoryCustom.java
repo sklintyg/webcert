@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.privatlakaravtal.repository;
+package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import org.springframework.transaction.annotation.Transactional;
 

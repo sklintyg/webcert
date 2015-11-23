@@ -10,8 +10,8 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
-import se.inera.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 import io.swagger.annotations.Api;
 
 @Transactional

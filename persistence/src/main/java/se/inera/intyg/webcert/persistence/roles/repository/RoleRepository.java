@@ -1,8 +1,8 @@
-package se.inera.webcert.persistence.roles.repository;
+package se.inera.intyg.webcert.persistence.roles.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
 
 /**
  *

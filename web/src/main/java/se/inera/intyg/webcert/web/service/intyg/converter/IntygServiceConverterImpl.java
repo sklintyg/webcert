@@ -17,7 +17,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.converter.ClinicalProcessCertificateMetaTypeConverter;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;

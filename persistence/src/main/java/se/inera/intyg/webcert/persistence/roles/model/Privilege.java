@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.roles.model;
+package se.inera.intyg.webcert.persistence.roles.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

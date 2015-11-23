@@ -11,7 +11,7 @@
 
   <logger name="org.hibernate" level="info" />
 
-  <logger name="se.inera.webcert.persistence" level="debug" />
+  <logger name="se.inera.intyg.webcert.persistence" level="debug" />
 
   <root>
     <level value="error" />

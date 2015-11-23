@@ -1,8 +1,8 @@
-package se.inera.webcert.persistence.utkast.repository;
+package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import se.inera.webcert.persistence.utkast.model.ScheduleratJobb;
+import se.inera.intyg.webcert.persistence.utkast.model.ScheduleratJobb;
 
 public interface ScheduleratJobbRepository extends CrudRepository<ScheduleratJobb, String> {
 }

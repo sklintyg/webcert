@@ -15,9 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.persistence.fmb.model.Fmb;
-import se.inera.webcert.persistence.fmb.model.FmbType;
-import se.inera.webcert.persistence.fmb.repository.FmbRepository;
+import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
+import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;

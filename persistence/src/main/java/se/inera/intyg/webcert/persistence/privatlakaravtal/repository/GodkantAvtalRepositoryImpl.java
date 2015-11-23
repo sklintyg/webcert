@@ -1,9 +1,9 @@
-package se.inera.webcert.persistence.privatlakaravtal.repository;
+package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;

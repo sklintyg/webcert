@@ -1,8 +1,8 @@
 package se.inera.intyg.webcert.web.service.fragasvar;
 
 import org.joda.time.LocalDateTime;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;

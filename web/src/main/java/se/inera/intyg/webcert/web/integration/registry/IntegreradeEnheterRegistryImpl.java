@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.webcert.persistence.integreradenhet.model.IntegreradEnhet;
-import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 
 @Service
 public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistry {

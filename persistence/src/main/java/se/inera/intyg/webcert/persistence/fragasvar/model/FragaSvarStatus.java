@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.fragasvar.model;
+package se.inera.intyg.webcert.persistence.fragasvar.model;
 
 public class FragaSvarStatus {
 

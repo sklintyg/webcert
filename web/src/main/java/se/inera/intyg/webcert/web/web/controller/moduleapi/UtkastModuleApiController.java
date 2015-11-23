@@ -41,7 +41,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import io.swagger.annotations.Api;

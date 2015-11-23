@@ -19,10 +19,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
-import se.inera.webcert.persistence.fmb.model.Fmb;
-import se.inera.webcert.persistence.fmb.model.FmbCallType;
-import se.inera.webcert.persistence.fmb.model.FmbType;
-import se.inera.webcert.persistence.fmb.repository.FmbRepository;
+import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
+import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;

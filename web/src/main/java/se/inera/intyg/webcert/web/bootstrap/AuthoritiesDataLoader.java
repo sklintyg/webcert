@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.roles.model.Privilege;
-import se.inera.webcert.persistence.roles.model.Role;
-import se.inera.webcert.persistence.roles.model.TitleCode;
-import se.inera.webcert.persistence.roles.repository.PrivilegeRepository;
-import se.inera.webcert.persistence.roles.repository.RoleRepository;
-import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
+import se.inera.intyg.webcert.persistence.roles.model.Privilege;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
+import se.inera.intyg.webcert.persistence.roles.repository.PrivilegeRepository;
+import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
+import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;

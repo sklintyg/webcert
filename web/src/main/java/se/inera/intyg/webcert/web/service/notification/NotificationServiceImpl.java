@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;

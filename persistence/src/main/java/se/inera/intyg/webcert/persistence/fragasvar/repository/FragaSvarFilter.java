@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.fragasvar.repository;
+package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import java.util.ArrayList;
 import java.util.List;

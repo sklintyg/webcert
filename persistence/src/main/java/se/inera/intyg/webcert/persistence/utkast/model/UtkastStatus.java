@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.utkast.model;
+package se.inera.intyg.webcert.persistence.utkast.model;
 
 /**
  * Possible statuses for a Utkast entity in Webcert.

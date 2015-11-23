@@ -22,9 +22,9 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.stub.HsaServiceStub;
 import se.inera.intyg.webcert.mailstub.MailStore;
 import se.inera.intyg.webcert.mailstub.OutgoingMail;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 

@@ -1,6 +1,6 @@
-package se.inera.webcert.persistence.fragasvar.repository;
+package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package se.inera.webcert.persistence.legacy.repository;
+package se.inera.intyg.webcert.persistence.legacy.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import se.inera.webcert.persistence.legacy.model.MigreratMedcertIntyg;
+import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 
 /**
  * Repository for migrated Medcert certificate entities.

@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.privatlakaravtal.repository;
+package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,7 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /**
  * Created by eriklupander on 2015-08-05.

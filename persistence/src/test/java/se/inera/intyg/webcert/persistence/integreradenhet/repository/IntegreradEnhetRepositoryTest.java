@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.integreradenhet.repository;
+package se.inera.intyg.webcert.persistence.integreradenhet.repository;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })

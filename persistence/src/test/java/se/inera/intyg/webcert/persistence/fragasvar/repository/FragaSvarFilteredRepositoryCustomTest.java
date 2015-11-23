@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.fragasvar.repository;
+package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,11 +16,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus;
-import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
 
 /**
  * Test for filtering FragaSvar.

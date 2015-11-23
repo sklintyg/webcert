@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.utkast.repository;
+package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import java.util.List;
 import java.util.Set;
@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 @Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {

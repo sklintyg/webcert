@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.legacy.model;
+package se.inera.intyg.webcert.persistence.legacy.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

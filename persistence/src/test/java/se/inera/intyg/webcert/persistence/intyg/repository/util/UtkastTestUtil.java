@@ -1,12 +1,12 @@
-package se.inera.webcert.persistence.intyg.repository.util;
+package se.inera.intyg.webcert.persistence.intyg.repository.util;
 
 import org.joda.time.LocalDateTime;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.persistence.utkast.model.Signatur;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 
 import java.util.UUID;
 

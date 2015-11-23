@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.notification;
 
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 /**
  * Service that notifies a unit care of incoming changes.

@@ -6,9 +6,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.roles.model.Privilege;
-import se.inera.webcert.persistence.roles.model.Role;
-import se.inera.webcert.persistence.roles.repository.RoleRepository;
+import se.inera.intyg.webcert.persistence.roles.model.Privilege;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 

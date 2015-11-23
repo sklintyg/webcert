@@ -23,9 +23,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;

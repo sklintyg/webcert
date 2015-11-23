@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.legacy.repository;
+package se.inera.intyg.webcert.persistence.legacy.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.persistence.legacy.model.MigreratMedcertIntyg;
+import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })

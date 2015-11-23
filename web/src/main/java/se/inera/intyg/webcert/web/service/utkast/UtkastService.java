@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;

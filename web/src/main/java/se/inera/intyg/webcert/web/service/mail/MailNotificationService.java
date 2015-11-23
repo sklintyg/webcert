@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.service.mail;
 
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
  * @author andreaskaltenbach

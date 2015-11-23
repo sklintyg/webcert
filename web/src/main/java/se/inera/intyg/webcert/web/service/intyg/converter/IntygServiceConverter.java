@@ -3,7 +3,7 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 

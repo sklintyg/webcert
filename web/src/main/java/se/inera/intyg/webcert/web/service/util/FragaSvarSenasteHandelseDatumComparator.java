@@ -2,7 +2,7 @@ package se.inera.intyg.webcert.web.service.util;
 
 import java.util.Comparator;
 
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
  * Compare senasteHandelseDatum (latest first) for two FragaSvar entities in a null safe manner.

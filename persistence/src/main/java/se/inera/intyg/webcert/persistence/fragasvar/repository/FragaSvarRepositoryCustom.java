@@ -1,18 +1,18 @@
-package se.inera.webcert.persistence.fragasvar.repository;
+package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 
 public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCustom {
 
     /**
      * Should return a list of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with {@link se.inera.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
+     * supplied list of id's. Is also discards any entity with {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
      *
      * @param enhetsIds
      * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
@@ -23,7 +23,7 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
 
     /**
      * Should return a count of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with {@link se.inera.webcert.persistence.fragasvar.model.Status.CLOSED}.
+     * supplied list of id's. Is also discards any entity with {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}.
      *
      * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities
      * @return A count of {@link FragaSvar} matching the search criteria.
@@ -55,7 +55,7 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      * @param intygsId
      * @return
      */
-    @Query("SELECT NEW se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.frageStallare, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    @Query("SELECT NEW se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.frageStallare, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
     List<FragaSvarStatus> findFragaSvarStatusesForIntyg(@Param("intygsId") String intygsId);
 
     /**

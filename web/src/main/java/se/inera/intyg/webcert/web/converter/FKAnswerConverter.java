@@ -3,8 +3,8 @@ package se.inera.intyg.webcert.web.converter;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.intyg.webcert.web.converter.util.ConvertToFKTypes;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 
 
 /**
