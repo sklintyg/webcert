@@ -31,7 +31,7 @@ public class FmbResource {
     @Path("/updatefmbdata")
     @Produces(MediaType.APPLICATION_JSON)
     @JsonPropertyDescription("Update FMB data")
-    public Response setUserRole() {
+    public Response updateFmbData() {
         fmbService.updateData();
         return Response.ok().build();
     }
