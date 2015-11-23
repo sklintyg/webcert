@@ -2,7 +2,7 @@
 
 |Journalsystem skapar utkast|
 |personId|fornamn|efternamn|hsaId|enhetsId|typAvUtlatande|utkastId?|resultat?|
-|${person1.personnummer}|Test|Testorson|IFV1239877878-104B|IFV1239877878-1042|fk7263|$utkastId=|OK|
+|${person1.personnummer}|Test|Testorson|SE4815162344-1B02|SE4815162344-1A03|fk7263|$utkastId=|OK|
 
 !3 Ta bort utkastet
 | ta bort utkast |
@@ -15,10 +15,10 @@
 
 |Journalsystem skapar utkast|
 |personId|fornamn|efternamn|hsaId|enhetsId|resultat?|
-|${person1.personnummer}|Test|Testorson|IFV1239877878-104B|IFV1239877878-104D|=~/VALIDATION_ERROR/|
+|${person1.personnummer}|Test|Testorson|SE4815162344-1B02|IFV1239877878-104D|=~/VALIDATION_ERROR/|
 
 !3 Okänd intygstyp
 
 |Journalsystem skapar utkast|
 |personId|fornamn|efternamn|hsaId|enhetsId|typAvUtlatande|resultat?|
-|${person1.personnummer}|Test|Testorson|IFV1239877878-104B|IFV1239877878-1042|okänd|=~/VALIDATION_ERROR/|
+|${person1.personnummer}|Test|Testorson|SE4815162344-1B02|SE4815162344-1A03|okänd|=~/VALIDATION_ERROR/|
