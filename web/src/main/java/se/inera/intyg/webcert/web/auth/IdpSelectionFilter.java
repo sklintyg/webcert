@@ -64,14 +64,22 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
 
         // Finally, send redirect to explicit login path for the appropriate IDP depending on the requestURI
         String requestURI = req.getRequestURI();
-        if (requestURI.contains("/webcert/web/user/certificate/")) {
+        if (isAuthenticateWithSiths(requestURI)) {
              resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp=" + sithsIdp);
         }
-        if (requestURI.contains("/webcert/web/user/pp-certificate/")) {
+        if (isAuthenticateWithEleg(requestURI)) {
             resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_ELEG + "?idp=" + elegIdp);
         }
         // We never continue down the filter chain if we've come this far...
    }
+
+    private boolean isAuthenticateWithEleg(String requestURI) {
+        return requestURI.contains("/webcert/web/user/pp-certificate/");
+    }
+
+    private boolean isAuthenticateWithSiths(String requestURI) {
+        return requestURI.contains("/webcert/web/user/certificate/") || requestURI.contains("/webcert/web/user/basic-certificate/");
+    }
 
     private Authentication extractAuthentication(HttpSession session) {
         return ((SecurityContext) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication();
