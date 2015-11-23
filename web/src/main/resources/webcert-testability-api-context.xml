@@ -10,11 +10,11 @@
     
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.testability.QuestionResource" />
-      <bean class="se.inera.webcert.web.controller.testability.LogResource" />
-      <bean class="se.inera.webcert.web.controller.testability.IntygResource" />
-      <bean class="se.inera.webcert.web.controller.testability.UserResource" />
-      <bean class="se.inera.webcert.web.controller.testability.FmbResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.QuestionResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.LogResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntygResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.FmbResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

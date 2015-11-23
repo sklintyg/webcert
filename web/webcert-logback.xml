@@ -10,7 +10,7 @@
       <onMismatch>ACCEPT</onMismatch>
     </filter>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
         <param name="Pattern" value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
       </layout>
     </encoder>
@@ -29,7 +29,7 @@
       </fileNamePattern>
     </rollingPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
         <param name="Pattern" value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
       </layout>
     </encoder>
@@ -48,7 +48,7 @@
       </fileNamePattern>
     </rollingPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
         <param name="Pattern" value="%date{ISO8601} %-5level %logger{10} %session - %msg%n" />
       </layout>
     </encoder>
@@ -67,7 +67,7 @@
       </fileNamePattern>
     </rollingPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+      <layout class="se.inera.intyg.webcert.web.logging.PatternLayoutWithUserContext">
         <param name="Pattern" value="%date{ISO8601} %session %user %selectedCareUnit - %msg%n" />
       </layout>
     </encoder>
@@ -80,9 +80,9 @@
 
   <logger name="org.apache.cxf.services" level="error" />
 
-  <logger name="se.inera.auth" level="info" />
+  <logger name="se.inera.intyg.webcert.web.auth" level="info" />
 
-  <logger name="se.inera.webcert" level="debug" />
+  <logger name="se.inera.intyg.webcert" level="debug" />
 
   <logger name="se.inera.certificate.modules.fk7263" level="debug" />
 
@@ -97,10 +97,10 @@
   <logger name="se.inera.webcert.notifications" level="debug" />
 
   <!-- Log service for monitoring and audit information -->
-  <logger name="se.inera.webcert.service.monitoring.MonitoringLogService" level="info" />
+  <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info" />
 
   <!-- Log service for logging JavaScript exceptions from GUI, set to debug or off -->
-  <logger name="se.inera.webcert.web.controller.api.JsLogApiController" level="debug" />
+  <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="debug" />
 
   <root>
     <level value="error" />

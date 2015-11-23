@@ -21,7 +21,7 @@
 
   <context:annotation-config/>
   <context:property-placeholder location="classpath:MailNotificationServiceTest/test.properties" ignore-unresolvable="false" ignore-resource-not-found="false" />
-  <context:component-scan base-package="se.inera.webcert.service.mail"/>
+  <context:component-scan base-package="se.inera.intyg.webcert.web.service.mail"/>
 
   <!-- Intercept JavaMailSender calls and put outgoing mails into MailStore -->
   <aop:aspectj-autoproxy/>
@@ -34,10 +34,10 @@
   <bean class="se.inera.webcert.hsa.stub.HsaWebServiceStub"/>
   <bean class="se.inera.webcert.hsa.stub.HsaServiceStub"/>
   
-  <bean class="se.inera.webcert.service.monitoring.MonitoringLogServiceImpl" />
+  <bean class="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl" />
 
   <bean class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.webcert.service.user.WebCertUserService" />
+    <constructor-arg value="se.inera.intyg.webcert.web.service.user.WebCertUserService" />
   </bean>
 
   <bean id="ppService" class="org.mockito.Mockito" factory-method="mock">

@@ -17,6 +17,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="diagnosRepositoryFactory" class="se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory" />
+  <bean id="diagnosRepositoryFactory" class="se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory" />
 
 </beans>

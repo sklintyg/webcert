@@ -216,10 +216,10 @@ public class LogSender {
 
     }
 
-    private class JmsToLogSender implements SessionCallback<Boolean> {
+    private final class JmsToLogSender implements SessionCallback<Boolean> {
         private final int chunk;
 
-        public JmsToLogSender(int chunk) {
+        private JmsToLogSender(int chunk) {
             this.chunk = chunk;
         }
 

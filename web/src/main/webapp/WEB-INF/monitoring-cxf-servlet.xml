@@ -22,7 +22,7 @@
     </cxf:features>
   </cxf:bus>
 
-  <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.monitoring.PingForConfigurationResponderImpl" />
+  <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.intyg.webcert.web.monitoring.PingForConfigurationResponderImpl" />
 
   <jaxrs:server address="/health-check">
     <jaxrs:serviceBeans>
@@ -30,6 +30,6 @@
     </jaxrs:serviceBeans>
   </jaxrs:server>
   
-  <bean id="healthCheckApiController" class="se.inera.webcert.web.controller.monitoring.HealthCheckApiController" />
+  <bean id="healthCheckApiController" class="se.inera.intyg.webcert.web.web.controller.monitoring.HealthCheckApiController" />
 
 </beans>

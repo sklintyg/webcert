@@ -33,15 +33,15 @@
 
   <context:annotation-config />
   
-  <context:component-scan base-package="se.inera.webcert.web.controller.moduleapi" />
+  <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.moduleapi" />
   
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.moduleapi.IntygModuleApiController" />
-      <bean class="se.inera.webcert.web.controller.moduleapi.FragaSvarModuleApiController" />
-      <bean class="se.inera.webcert.web.controller.moduleapi.StatModuleApiController" />
-      <bean class="se.inera.webcert.web.controller.moduleapi.DiagnosModuleApiController" />
-      <bean class="se.inera.webcert.web.controller.moduleapi.UtkastModuleApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.FragaSvarModuleApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.StatModuleApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.DiagnosModuleApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

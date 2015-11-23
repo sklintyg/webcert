@@ -18,8 +18,8 @@
     </constructor-arg>
   </bean>
 
-  <bean id="diagnosService" class="se.inera.webcert.service.diagnos.DiagnosServiceImpl" />
+  <bean id="diagnosService" class="se.inera.intyg.webcert.web.service.diagnos.DiagnosServiceImpl" />
 
-  <bean id="diagnosRepositoryFactory" class="se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory" />
+  <bean id="diagnosRepositoryFactory" class="se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory" />
 
 </beans>

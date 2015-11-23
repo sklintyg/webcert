@@ -21,7 +21,7 @@
   <mvc:annotation-driven/>
   <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
   <context:annotation-config/>
-  <context:component-scan base-package="se.inera.webcert.web.controller"/>
+  <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller"/>
 
   <beans>
     <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
