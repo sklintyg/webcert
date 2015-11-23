@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -215,11 +216,14 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         }
     }
 
-    /**
-     * Since this class is @Spy injected at unit test level we need to manually set the ObjectMapper.
-     */
+    @VisibleForTesting
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @VisibleForTesting
+    public void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
+        this.moduleRegistry = moduleRegistry;
     }
 
     public enum Operation {

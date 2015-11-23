@@ -8,11 +8,7 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +37,9 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
-import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.fk7263.model.internal.Utlatande;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
@@ -53,7 +51,6 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
@@ -97,10 +94,16 @@ public class IntygServiceTest {
     private UtkastIntygDecorator utkastIntygDecorator;
 
     @Spy
-    private IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
+    private IntygServiceConverterImpl serviceConverter = new IntygServiceConverterImpl();
 
     @Mock
     private LogService logservice;
+    
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    ModuleApi moduleApi;
 
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
@@ -165,8 +168,11 @@ public class IntygServiceTest {
     }
 
     @Before
-    public void setupObjectMapperForIntygServiceConverter() {
-        ((IntygServiceConverterImpl) serviceConverter).setObjectMapper(new CustomObjectMapper());
+    public void IntygServiceConverter() throws Exception {
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        doReturn(Utlatande.class).when(moduleApi).getImplementationClass();
+        serviceConverter.setObjectMapper(new CustomObjectMapper());
+        serviceConverter.setModuleRegistry(moduleRegistry);
     }
 
     @Test

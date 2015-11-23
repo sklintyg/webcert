@@ -3,6 +3,7 @@ package se.inera.webcert.service.intyg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -18,7 +19,9 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
-import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.fk7263.model.internal.Utlatande;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
@@ -77,11 +80,17 @@ public abstract class AbstractIntygServiceTest {
 
     // Here we test the real converter
     @Spy
-    protected IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
+    protected IntygServiceConverterImpl serviceConverter = new IntygServiceConverterImpl();
 
     // Here we use the real config manager
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
+
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    ModuleApi moduleApi;
 
     @InjectMocks
     protected SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
@@ -117,8 +126,11 @@ public abstract class AbstractIntygServiceTest {
     }
 
     @Before
-    public void setupObjectMapperForConverter() {
-        // TODO Ask around, must be a cleaner way to inject stuff into a spied object?
-        ((IntygServiceConverterImpl) serviceConverter).setObjectMapper(new CustomObjectMapper());
+    public void setupConverter() throws Exception {
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        doReturn(Utlatande.class).when(moduleApi).getImplementationClass();
+        serviceConverter.setObjectMapper(new CustomObjectMapper());
+        serviceConverter.setModuleRegistry(moduleRegistry);
     }
+
 }

@@ -42,7 +42,7 @@ import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
-import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.fk7263.model.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;

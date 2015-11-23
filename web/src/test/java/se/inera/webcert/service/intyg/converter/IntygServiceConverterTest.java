@@ -4,13 +4,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.fk7263.model.internal.Utlatande;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -21,9 +30,23 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@RunWith(MockitoJUnitRunner.class)
 public class IntygServiceConverterTest {
 
     private IntygServiceConverterImpl converter = new IntygServiceConverterImpl();
+
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    ModuleApi moduleApi;
+
+    @Before
+    public void setup() throws Exception {
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        doReturn(Utlatande.class).when(moduleApi).getImplementationClass();
+        converter.setModuleRegistry(moduleRegistry);
+    }
 
 
     @Test
