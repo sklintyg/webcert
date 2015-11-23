@@ -26,7 +26,7 @@
 
     <!-- Verifies that the database is in the correct state, will not run if the wc-init-db profiles is used -->
   <beans profile="!wc-init-db">
-    <bean id="liquibaseDbChecker" class="se.inera.webcert.persistance.liquibase.DbChecker">
+    <bean id="liquibaseDbChecker" class="se.inera.webcert.persistence.liquibase.DbChecker">
       <constructor-arg ref="dataSource" />
       <constructor-arg value="changelog/changelog.xml" />
     </bean>
