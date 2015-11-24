@@ -23,9 +23,9 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
@@ -47,7 +47,7 @@ public class MailNotificationServiceImplTest {
     private PPService ppService;
 
     @Mock
-    private WebCertUserService webCertUserService;
+    private UtkastRepository utkastRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -206,9 +206,7 @@ public class MailNotificationServiceImplTest {
     @Test
     public void testIntygsUrlUthopp() throws Exception {
         //Given
-        final WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(user.isRoleUthopp()).thenReturn(true);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(null);
         final FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.setIntygsReferens(new IntygsReferens());
@@ -223,9 +221,8 @@ public class MailNotificationServiceImplTest {
     @Test
     public void testIntygsUrlLandsting() throws Exception {
         //Given
-        final WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(user.isRoleUthopp()).thenReturn(false);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+        Utkast utkast = new Utkast();
+        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         final FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.setIntygsReferens(new IntygsReferens());
@@ -240,9 +237,8 @@ public class MailNotificationServiceImplTest {
     @Test
     public void testIntygsUrlPp() throws Exception {
         //Given
-        final WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(user.isRoleUthopp()).thenReturn(false);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+        Utkast utkast = new Utkast();
+        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         final FragaSvar fragaSvar = new FragaSvar();
         final Vardperson vardperson = new Vardperson();
         vardperson.setEnhetsId(MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");

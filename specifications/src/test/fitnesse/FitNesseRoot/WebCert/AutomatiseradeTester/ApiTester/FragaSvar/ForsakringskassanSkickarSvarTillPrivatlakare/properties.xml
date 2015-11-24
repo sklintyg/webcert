@@ -4,7 +4,6 @@
 <Files>true</Files>
 <Help>Försäkringskassan skickar svar till privatläkare</Help>
 <Properties>true</Properties>
-<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

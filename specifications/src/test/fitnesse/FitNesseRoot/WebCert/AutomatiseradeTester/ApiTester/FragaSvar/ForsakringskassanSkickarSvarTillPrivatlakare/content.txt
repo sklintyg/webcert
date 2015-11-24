@@ -1,5 +1,3 @@
-Ignorerad i väntan på WEBCERT-2206
-
 Testar WEBCERT-2006
 
 !3 Givet en fråga som initierades av vården

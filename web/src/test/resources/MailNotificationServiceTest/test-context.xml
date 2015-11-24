@@ -19,6 +19,10 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
+  <bean id="utkastRepository" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository" />
+  </bean>
+
   <context:annotation-config/>
   <context:property-placeholder location="classpath:MailNotificationServiceTest/test.properties" ignore-unresolvable="false" ignore-resource-not-found="false" />
   <context:component-scan base-package="se.inera.intyg.webcert.web.service.mail"/>
