@@ -355,7 +355,7 @@
             {
                 "fornamn": "Bill",
                 "efternamn": "Smith",
-                "hsaId": "TSTNMT2321000156-103G ",
+                "hsaId": "TSTNMT2321000156-103G",
                 "enhetId": "TSTNMT2321000156-1039",
                 "lakare" : true,
                 "forskrivarKod": "9400003",
