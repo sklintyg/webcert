@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,8 +27,6 @@ import se.inera.webcert.mailstub.OutgoingMail;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.webcert.service.user.WebCertUserService;
-import se.inera.webcert.service.user.dto.WebCertUser;
 
 /**
  * @author andreaskaltenbach
@@ -53,17 +52,11 @@ public class MailNotificationServiceTest {
     @Autowired
     private HsaServiceStub hsaStub;
 
-    @Autowired
-    private WebCertUserService webCertUserServiceMock;
-
     @PostConstruct
     public void setupTestlandVardgivare() throws IOException {
         Vardgivare vardgivare = new CustomObjectMapper().readValue(new ClassPathResource(
                 "MailNotificationServiceTest/landstinget-testland.json").getFile(), Vardgivare.class);
         hsaStub.getVardgivare().add(vardgivare);
-        final WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(user.isRoleUthopp()).thenReturn(true);
-        Mockito.when(webCertUserServiceMock.getUser()).thenReturn(user);
     }
 
     @Test

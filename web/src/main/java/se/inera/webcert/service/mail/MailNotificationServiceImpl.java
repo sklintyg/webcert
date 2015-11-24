@@ -22,8 +22,8 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.user.WebCertUserService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
@@ -35,8 +35,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
 
-    private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "certificate";
-    private static final String QA_NOTIFICATION_LANDSTING_PATH_SEGMENT = "basic-certificate";
+    private static final String QA_NOTIFICATION_UTHOPP_PATH_SEGMENT = "certificate";
+    private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "basic-certificate";
     private static final String QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
 
     private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan";
@@ -73,7 +73,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private String ppLogicalAddress;
 
     @Autowired
-    private WebCertUserService webCertUserService;
+    private UtkastRepository utkastRepository;
 
     private void logError(String type, FragaSvar fragaSvar, Exception e) {
         Long id = fragaSvar.getInternReferens();
@@ -258,19 +258,21 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Override
     public String intygsUrl(FragaSvar fragaSvar) {
-        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/" + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId()) + "/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
+        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/" + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getIntygsReferens().getIntygsId()) + "/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
         LOG.debug("Intygsurl: " + url);
         return url;
     }
 
-    private String resolvePathSegment(String enhetsId) {
+    private String resolvePathSegment(String enhetsId, String intygsId) {
         if (isPrivatePractitionerEnhet(enhetsId)) {
             return QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT;
         }
-        if (webCertUserService != null && webCertUserService.getUser() != null && webCertUserService.getUser().isRoleUthopp()) {
-            return QA_NOTIFICATION_DEFAULT_PATH_SEGMENT;
+        // We can't check the WebcertUser role since there is no logged in user here
+        // Assume that the receiving user should have UTHOPP role if the certificate was not registered through webcert
+        if (utkastRepository.findOne(intygsId) == null) {
+            return QA_NOTIFICATION_UTHOPP_PATH_SEGMENT;
         }
-        return QA_NOTIFICATION_LANDSTING_PATH_SEGMENT;
+        return QA_NOTIFICATION_DEFAULT_PATH_SEGMENT;
     }
 
 }
