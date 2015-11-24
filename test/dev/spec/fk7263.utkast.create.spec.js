@@ -1,4 +1,7 @@
-//var pages = require('pages');
+/*globals pages */
+/*globals describe,it,browser */
+'use strict';
+
 var WelcomePage = require(pages.welcome),
     SokSkrivIntygPage = require(pages.app.views.sokSkrivIntyg),
     UtkastPage = require(pages.intygpages.utkast),
@@ -9,7 +12,7 @@ var welcomePage = new WelcomePage(),
     utkastPage = new UtkastPage(),
     intygPage = new IntygPage();
 
-describe('Create and Sign FK utkast', function() {
+xdescribe('Create and Sign FK utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
@@ -25,7 +28,7 @@ describe('Create and Sign FK utkast', function() {
         });
 
         it('and make sure the correct doctor is logged in', function() {
-            expect(sokSkrivIntygPage.getDoctorText()).toContain("Åsa Andersson");
+            expect(sokSkrivIntygPage.getDoctorText()).toContain('Åsa Andersson');
         });
     });
 
@@ -45,7 +48,7 @@ describe('Create and Sign FK utkast', function() {
             it('check that smittskydd is displayed', function() {
 
                 utkastPage.whenSmittskyddIsDisplayed().then(function() {
-                    expect(utkastPage.getSmittskyddLabelText()).toContain("Avstängning enligt smittskyddslagen på grund av smitta");
+                    expect(utkastPage.getSmittskyddLabelText()).toContain('Avstängning enligt smittskyddslagen på grund av smitta');
                 });
 
             });

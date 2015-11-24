@@ -22,7 +22,7 @@ module.exports = function(grunt) {
             // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
             dev: {
                 options: {
-                    configFile: './dev/protractor.cli.conf.js',
+                    configFile: './dev/protractor.conf.js',
                     args: {} // Target-specific arguments
                 }
             },
@@ -31,9 +31,7 @@ module.exports = function(grunt) {
                     configFile: './acceptance/protractor-conf.js',
                     args: {} // Target-specific arguments
                 }
-            },
-
-            
+            }
         },
 
         protractor_webdriver: { // jshint ignore:line

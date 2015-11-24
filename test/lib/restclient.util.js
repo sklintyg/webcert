@@ -8,13 +8,19 @@ var request = request.defaults({
     jar: jar
 });
 
-function post(options) {
+function post(options, baseUrl) {
     var defer = protractor.promise.defer();
-    options.url = browser.baseUrl + options.url;
+    if(!baseUrl) {
+        baseUrl = browser.baseUrl;
+    }
+    options.url = baseUrl + options.url;
     console.log(options.method, options.url);
     request(options, function(error, message) {
         if (error || message.statusCode >= 400) {
-            console.log('Request error:', error, message.statusCode, message.statusMessage/*, body*/);
+            console.log('Request error:', error);
+            if(message) {
+                console.log('Error message:', message.statusCode, message.statusMessage/*, body*/);
+            }
             defer.reject({
                 error: error,
                 message: message
@@ -27,7 +33,7 @@ function post(options) {
     return defer.promise;
 }
 
-function _run(options, json) {
+function _run(options, json, baseUrl) {
     options.json = json ? json === 'json' : true;
 
     if(options.json) {
@@ -43,7 +49,7 @@ function _run(options, json) {
     }
 
     return browser.controlFlow().execute(function() {
-        return post(options);
+        return post(options, baseUrl);
     });
 }
 

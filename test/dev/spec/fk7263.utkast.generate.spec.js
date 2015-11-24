@@ -1,7 +1,7 @@
 var restUtil = require('../../lib/rest.util.js'),
     fkIntyg = require('../../lib/testdata/utkast.fk7263.generate.json');
 
-describe('Generate fk utkast', function() {
+xdescribe('Generate fk utkast', function() {
 
     it('should generate an fk7263 utkast', function() {
         // login with doctor Jan Nilsson

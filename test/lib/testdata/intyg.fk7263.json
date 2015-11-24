@@ -1,0 +1,88 @@
+{"id": "80832895-5a9c-450a-bd74-08af43750788",
+    "typ": "fk7263",
+    "grundData": {
+        "signeringsdatum": "2011-01-26T00:00:00.000",
+        "skapadAv": {
+            "personId": "Personal HSA-ID",
+            "fullstandigtNamn": "En Läkare",
+            "vardenhet": {
+                "enhetsid": "VardenhetY",
+                "enhetsnamn": "Kir mott",
+                "postadress": "Lasarettsvägen 13",
+                "postnummer": "85150",
+                "postort": "Sundsvall",
+                "telefonnummer": "060-1818000",
+                "vardgivare": {
+                    "vardgivarid": "VardgivarId",
+                    "vardgivarnamn": "Landstinget Norrland"
+                },
+                "arbetsplatsKod": "123456789011"
+            }
+        },
+        "patient": {
+            "personId": "19121212-1212",
+            "fullstandigtNamn": "Test Testorsson",
+            "efternamn": "Test Testorsson"
+        }
+    },
+    "giltighet":{
+        "from" :"2011-01-26",
+        "tom" :"2011-05-31"
+    },
+
+    "avstangningSmittskydd":false,
+
+    "undersokningAvPatienten" : "2011-01-26",
+    "telefonkontaktMedPatienten" : "2011-01-12",
+    "journaluppgifter" : "2010-01-14",
+    "kommentar" : "Prognosen att återgå till arbete är svår att bedömma förrän utredningen är genomförd.",
+
+    "rekommendationKontaktForetagshalsovarden" : true,
+    "rekommendationKontaktArbetsformedlingen" : true,
+    "rekommendationOvrigt" : "När skadan förbättrats rekommenderas muskeluppbyggande sjukgymnastik",
+    "rekommendationOvrigtCheck" : true,
+    "atgardInomSjukvarden" : "Utreds om operation är nödvändig",
+    "annanAtgard" : "Patienten ansvarar för att armen hålls i stillhet",
+    "rehabilitering" : "rehabiliteringGarInteAttBedoma",
+
+    "ressattTillArbeteEjAktuellt" : true,
+    "kontaktMedFk" : true,
+
+    "sjukdomsforlopp" : "Patienten klämde höger överarm vid olycka i hemmet. Problemen har pågått en längre tid.",
+
+    "diagnosKod" : "S47",
+    "diagnosBeskrivning1": "Klämskada på skuldra och överarm",
+    "diagnosKod2" : "Z233",
+    "diagnosBeskrivning2" : "Vaccination avseende pest",
+    "diagnosKod3" : "Z600",
+    "diagnosBeskrivning3" : "Problem med anpassning till övergångar i livscykeln",
+    "diagnosBeskrivning": "Här förtydligar vi våra diagnoser ytterligare och skriver litegrann för att göra saker tydligare för andra som ska läsa på tex Försäkringskassan.",
+    "samsjuklighet" : true,
+
+    "nuvarandeArbete":true,
+    "nuvarandeArbetsuppgifter":"Dirigent. Dirigerar en större orkester på deltid",
+
+    "funktionsnedsattning" : "Kraftigt nedsatt rörlighet i överarmen pga skadan. Böj- och sträckförmågan är mycket dålig. Smärtar vid rörelse vilket ger att patienten inte kan använda armen särkilt mycket.",
+    "aktivitetsbegransning" : "Patienten bör/kan inte använda armen förrän skadan läkt. Skadan förvärras vid för tidigt påtvingad belastning. Patienten kan inte lyfta armen utan den ska hållas riktad nedåt och i fast läge så mycket som möjligt under tiden för läkning.",
+    "prognosBedomning" : "arbetsformagaPrognosGarInteAttBedoma",
+    "arbetsformagaPrognos" : "Skadan har förvärrats vid varje tillfälle patienten använt armen. Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg. Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.",
+
+    "nedsattMed25":{
+        "from" :"2011-04-01",
+        "tom" :"2011-05-31"
+    },
+    "nedsattMed50":{
+        "from" :"2011-03-07",
+        "tom" :"2011-03-31"
+    },
+    "nedsattMed75":{
+        "from" :"2011-02-14",
+        "tom" :"2011-03-06"
+    },
+    "nedsattMed100":{
+        "from" :"2011-01-26",
+        "tom" :"2011-02-13"
+    },
+    "arbetsloshet" : true,
+    "foraldrarledighet" : true
+}
