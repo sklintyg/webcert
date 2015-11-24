@@ -1,4 +1,4 @@
-package se.inera.webcert.common.hsa;
+package se.inera.intyg.webcert.common.common.hsa;
 
 public enum HSABefattning {
 

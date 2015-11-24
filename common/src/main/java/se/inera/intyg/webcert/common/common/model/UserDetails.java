@@ -1,11 +1,11 @@
-package se.inera.webcert.common.model;
+package se.inera.intyg.webcert.common.common.model;
 
 /**
  * Created by Magnus Ekstrand on 27/08/15.
  */
 
-import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
+import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 
 import java.io.Serializable;
 import java.util.Map;

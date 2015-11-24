@@ -1,4 +1,4 @@
-package se.inera.webcert.common.security.authority;
+package se.inera.intyg.webcert.common.common.security.authority;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

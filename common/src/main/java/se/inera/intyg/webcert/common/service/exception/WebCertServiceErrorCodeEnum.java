@@ -1,4 +1,4 @@
-package se.inera.webcert.service.exception;
+package se.inera.intyg.webcert.common.service.exception;
 
 public enum WebCertServiceErrorCodeEnum {
 

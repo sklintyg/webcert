@@ -1,4 +1,4 @@
-package se.inera.webcert.client;
+package se.inera.intyg.webcert.common.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,8 +19,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.client.converter.RevokeRequestConverter;
-import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
 /**
  * Created by eriklupander on 2015-06-04.

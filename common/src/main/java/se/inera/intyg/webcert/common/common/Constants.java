@@ -1,4 +1,4 @@
-package se.inera.webcert.common;
+package se.inera.intyg.webcert.common.common;
 
 /**
  * Defines a number of global constants in Webcert, e.g. constants that may be used across several subprojects.

@@ -1,4 +1,4 @@
-package se.inera.webcert.client.converter;
+package se.inera.intyg.webcert.common.client.converter;
 
 import javax.xml.bind.JAXBException;
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.client;
+package se.inera.intyg.webcert.common.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

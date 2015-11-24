@@ -1,4 +1,4 @@
-package se.inera.webcert.client;
+package se.inera.intyg.webcert.common.client;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 

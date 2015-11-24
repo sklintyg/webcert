@@ -1,4 +1,4 @@
-package se.inera.webcert.common.security.authority;
+package se.inera.intyg.webcert.common.common.security.authority;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;

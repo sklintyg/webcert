@@ -1,4 +1,4 @@
-package se.inera.webcert.client;
+package se.inera.intyg.webcert.common.client;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 

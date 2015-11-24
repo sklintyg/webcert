@@ -1,4 +1,4 @@
-package se.inera.webcert.client.converter;
+package se.inera.intyg.webcert.common.client.converter;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;

@@ -1,4 +1,4 @@
-package se.inera.webcert.service.exception;
+package se.inera.intyg.webcert.common.service.exception;
 
 /**
  * Runtime exception used to signal internal errors.
