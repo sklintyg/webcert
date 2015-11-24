@@ -13,7 +13,7 @@
 
   <context:annotation-config />
 
-  <context:component-scan base-package="se.inera.logsender" />
+  <context:component-scan base-package="se.inera.intyg.webcert.logsender" />
 
   <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory" />

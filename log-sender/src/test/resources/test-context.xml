@@ -18,7 +18,7 @@
         http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd
         http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.9.0.xsd">
 
-  <context:component-scan base-package="se.inera.logsender" />
+  <context:component-scan base-package="se.inera.intyg.webcert.logsender" />
 
   <context:property-placeholder location="classpath:test.properties"
     order="0" ignore-resource-not-found="true" />

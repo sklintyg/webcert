@@ -1,4 +1,4 @@
-package se.inera.logsender;
+package se.inera.intyg.webcert.logsender;
 
 import static org.custommonkey.xmlunit.DifferenceConstants.NAMESPACE_PREFIX_ID;
 import static org.custommonkey.xmlunit.DifferenceConstants.TEXT_VALUE_ID;
