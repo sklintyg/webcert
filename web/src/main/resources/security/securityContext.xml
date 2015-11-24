@@ -270,6 +270,7 @@
           <property name="includeScoping" value="false"/>
           <property name="authnContexts">
             <list>
+              <!-- Important: In the custom WebcertSAMLEntryPoint we mutate these for the authnRequests due to SSO problems -->
               <value>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</value>
               <value>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</value>
             </list>

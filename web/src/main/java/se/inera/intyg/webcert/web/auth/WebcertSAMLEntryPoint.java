@@ -13,14 +13,19 @@ import org.springframework.security.saml.websso.WebSSOProfileOptions;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
+ * Custom SAMLEntryPoint for Webcert that overrides the generation of AuthnContexts based on metadata alias:
+ *
+ * For SITHS (defaultAlias), we only supply the {@link AuthConstants#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT}
+ *
+ * For ELEG  (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated
+ * identity is validated against the IdP to access another system in the same federation.
+ *
  * Created by eriklupander on 2015-11-24.
  */
 public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
 
     /**
-     * Method is supposed to populate preferences used to construct the SAML message. Method can be overridden to provide
-     * logic appropriate for given application. In case defaultOptions object was set it will be used as basis for construction
-     * and request specific values will be update (idp field).
+     * Override from superclass, see class comment for details.
      *
      * @param context   containing local entity
      * @param exception exception causing invocation of this entry point (can be null)
@@ -33,10 +38,10 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
         if (defaultOptions != null) {
             ssoProfileOptions = defaultOptions.clone();
 
-            if (context.getLocalExtendedMetadata().getAlias().equals("eleg")) {
-                ssoProfileOptions.setAuthnContexts(buildSoftwarePki());
-            } else if (context.getLocalExtendedMetadata().getAlias().equals("defaultAlias")) {
-                ssoProfileOptions.setAuthnContexts(buildTlsClient());
+            if (context.getLocalExtendedMetadata().getAlias().equals(AuthConstants.ALIAS_ELEG)) {
+                ssoProfileOptions.setAuthnContexts(new HashSet<>());
+            } else if (context.getLocalExtendedMetadata().getAlias().equals(AuthConstants.ALIAS_SITHS)) {
+                ssoProfileOptions.setAuthnContexts(buildTlsClientAuthContexts());
             }
         } else {
             ssoProfileOptions = new WebSSOProfileOptions();
@@ -45,13 +50,7 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
         return ssoProfileOptions;
     }
 
-    private Collection<String> buildSoftwarePki() {
-        Set<String> set = new HashSet<>();
-        set.add(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI);
-        return set;
-    }
-
-    private Collection<String> buildTlsClient() {
+    private Collection<String> buildTlsClientAuthContexts() {
         Set<String> set = new HashSet<>();
         set.add(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT);
         return set;
