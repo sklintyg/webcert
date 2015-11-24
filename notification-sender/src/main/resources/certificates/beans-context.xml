@@ -3,10 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="certificateStoreProcessor" class="se.inera.webcert.certificatesender.services.CertificateStoreProcessor"/>
+  <bean id="certificateStoreProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateStoreProcessor"/>
 
-  <bean id="certificateSendProcessor" class="se.inera.webcert.certificatesender.services.CertificateSendProcessor"/>
+  <bean id="certificateSendProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateSendProcessor"/>
 
-  <bean id="certificateRevokeProcessor" class="se.inera.webcert.certificatesender.services.CertificateRevokeProcessor"/>
+  <bean id="certificateRevokeProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateRevokeProcessor"/>
 
 </beans>

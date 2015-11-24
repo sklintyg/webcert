@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services;
+package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import javax.xml.ws.WebServiceException;
 
@@ -12,8 +12,8 @@ import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.common.Constants;
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 
 /**
  * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages,

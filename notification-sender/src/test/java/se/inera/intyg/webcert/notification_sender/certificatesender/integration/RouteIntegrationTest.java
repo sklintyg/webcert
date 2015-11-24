@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.integration;
+package se.inera.intyg.webcert.notification_sender.certificatesender.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
 
@@ -33,7 +33,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
+import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 import se.inera.webcert.common.Constants;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)

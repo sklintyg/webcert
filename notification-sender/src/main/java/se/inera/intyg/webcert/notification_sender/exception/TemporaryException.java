@@ -1,4 +1,4 @@
-package se.inera.webcert.exception;
+package se.inera.intyg.webcert.notification_sender.exception;
 
 public class TemporaryException extends Exception {
     private static final long serialVersionUID = -8184379033317261358L;

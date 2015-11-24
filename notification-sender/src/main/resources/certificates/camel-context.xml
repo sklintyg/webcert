@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-  <bean id="certificateRouteBuilder" class="se.inera.webcert.certificatesender.routes.CertificateRouteBuilder"/>
+  <bean id="certificateRouteBuilder" class="se.inera.intyg.webcert.notification_sender.certificatesender.routes.CertificateRouteBuilder"/>
 
   <camel:camelContext id="webcertCertificateSender">
 

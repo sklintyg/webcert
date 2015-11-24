@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.route;
+package se.inera.intyg.webcert.notification_sender.notifications.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.junit.Assert.assertTrue;
@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
 

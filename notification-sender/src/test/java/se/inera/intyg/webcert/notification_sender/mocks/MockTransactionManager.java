@@ -1,4 +1,4 @@
-package se.inera.webcert.mocks;
+package se.inera.intyg.webcert.notification_sender.mocks;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;

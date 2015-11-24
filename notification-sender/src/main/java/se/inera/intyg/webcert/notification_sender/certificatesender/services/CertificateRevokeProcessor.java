@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services;
+package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.inera.webcert.common.Constants;
 import se.inera.webcert.client.RevokeCertificateServiceClient;
 

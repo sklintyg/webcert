@@ -1,4 +1,4 @@
-package se.inera.webcert.mocks;
+package se.inera.intyg.webcert.notification_sender.mocks;
 
 import org.joda.time.LocalDateTime;
 import se.inera.certificate.model.Status;

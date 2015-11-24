@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.route;
+package se.inera.intyg.webcert.notification_sender.certificatesender.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
@@ -26,8 +26,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.webcert.common.Constants;
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 
 import com.google.common.collect.ImmutableMap;
 

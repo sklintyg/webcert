@@ -1,4 +1,4 @@
-package se.inera.webcert.mocks;
+package se.inera.intyg.webcert.notification_sender.mocks;
 
 import java.util.ArrayList;
 import java.util.List;

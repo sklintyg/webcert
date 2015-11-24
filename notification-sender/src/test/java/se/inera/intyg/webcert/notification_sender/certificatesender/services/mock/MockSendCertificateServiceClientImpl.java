@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services.mock;
+package se.inera.intyg.webcert.notification_sender.certificatesender.services.mock;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

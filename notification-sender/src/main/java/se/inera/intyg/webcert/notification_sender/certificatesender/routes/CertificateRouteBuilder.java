@@ -1,11 +1,11 @@
-package se.inera.webcert.certificatesender.routes;
+package se.inera.intyg.webcert.notification_sender.certificatesender.routes;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.inera.webcert.common.Constants;
 
 public class CertificateRouteBuilder extends SpringRouteBuilder {

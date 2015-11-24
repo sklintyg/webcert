@@ -1,13 +1,13 @@
-package se.inera.webcert.notifications.services;
+package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
-import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;

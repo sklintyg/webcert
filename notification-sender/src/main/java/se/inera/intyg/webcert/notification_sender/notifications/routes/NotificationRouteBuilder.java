@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.routes;
+package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.spring.SpringRouteBuilder;
@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.webcert.common.Constants;
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);

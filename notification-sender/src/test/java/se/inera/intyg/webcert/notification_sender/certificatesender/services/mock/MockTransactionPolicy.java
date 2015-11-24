@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services.mock;
+package se.inera.intyg.webcert.notification_sender.certificatesender.services.mock;
 
 import org.apache.camel.Processor;
 import org.apache.camel.model.ProcessorDefinition;

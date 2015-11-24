@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services.mock;
+package se.inera.intyg.webcert.notification_sender.certificatesender.services.mock;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.webcert.client.RevokeCertificateServiceClient;

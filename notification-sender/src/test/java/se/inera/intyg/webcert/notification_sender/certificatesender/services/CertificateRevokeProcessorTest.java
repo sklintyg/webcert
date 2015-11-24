@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services;
+package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -17,8 +17,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.exception.PermanentException;
-import se.inera.webcert.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.inera.webcert.client.RevokeCertificateServiceClient;
 import se.inera.webcert.common.Constants;
 

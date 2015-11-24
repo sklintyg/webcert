@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.services;
+package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import org.apache.camel.Message;
 import org.slf4j.Logger;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
-import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
 
 import com.google.common.annotations.VisibleForTesting;
 

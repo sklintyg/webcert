@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.routes;
+package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
 public final class RouteHeaders {
 
