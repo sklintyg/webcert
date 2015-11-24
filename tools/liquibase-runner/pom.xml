@@ -25,7 +25,7 @@
       <artifactId>liquibase-core</artifactId>
     </dependency>
 
-    <!-- Persistance project contains changelog -->
+    <!-- Persistence project contains changelog -->
     <dependency>
       <groupId>se.inera.intyg.webcert</groupId>
       <artifactId>webcert-persistence</artifactId>

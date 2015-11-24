@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 import java.util.List;
 

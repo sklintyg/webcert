@@ -7,7 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.ObjectFactory;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

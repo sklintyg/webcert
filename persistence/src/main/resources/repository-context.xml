@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <!-- Import persistence profiles -->
   <import resource="classpath:env/*-persistence-config.xml" />
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 
-  <jpa:repositories base-package="se.inera.webcert.persistence" transaction-manager-ref="jpaTransactionManager"/>
+  <jpa:repositories base-package="se.inera.intyg.webcert.persistence" transaction-manager-ref="jpaTransactionManager"/>
 
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory" />
@@ -26,10 +26,14 @@
 
     <!-- Verifies that the database is in the correct state, will not run if the wc-init-db profiles is used -->
   <beans profile="!wc-init-db">
-    <bean id="liquibaseDbChecker" class="se.inera.webcert.persistance.liquibase.DbChecker">
+    <bean id="liquibaseDbChecker" class="se.inera.intyg.webcert.persistence.liquibase.DbChecker">
       <constructor-arg ref="dataSource" />
       <constructor-arg value="changelog/changelog.xml" />
     </bean>
+  </beans>
+
+  <beans>
+    <context:component-scan base-package="se.inera.intyg.webcert.persistence" />
   </beans>
 
 </beans>

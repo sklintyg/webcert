@@ -14,12 +14,12 @@ import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.

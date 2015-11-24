@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;

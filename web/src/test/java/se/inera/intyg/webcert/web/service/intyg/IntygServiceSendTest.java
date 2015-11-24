@@ -32,7 +32,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetore
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

@@ -23,7 +23,7 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;

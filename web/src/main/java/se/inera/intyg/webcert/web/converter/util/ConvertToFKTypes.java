@@ -12,9 +12,9 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import iso.v21090.dt.v1.II;
 
 /**

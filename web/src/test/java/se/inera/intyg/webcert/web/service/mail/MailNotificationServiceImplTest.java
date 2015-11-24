@@ -20,9 +20,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

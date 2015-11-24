@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 public class CreateQuestionParameter {
     private Amne amne;

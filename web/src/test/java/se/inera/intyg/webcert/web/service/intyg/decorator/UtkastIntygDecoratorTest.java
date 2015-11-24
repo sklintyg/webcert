@@ -11,10 +11,10 @@ import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 
 import java.util.ArrayList;

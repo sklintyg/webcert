@@ -23,9 +23,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @RunWith(MockitoJUnitRunner.class)

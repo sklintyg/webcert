@@ -15,9 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
-import se.inera.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /**

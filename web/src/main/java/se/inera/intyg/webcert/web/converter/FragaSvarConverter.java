@@ -11,12 +11,12 @@ import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringT
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
 import java.util.ArrayList;
 import java.util.List;

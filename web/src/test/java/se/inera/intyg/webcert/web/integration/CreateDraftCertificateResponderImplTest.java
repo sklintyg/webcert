@@ -19,9 +19,9 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;

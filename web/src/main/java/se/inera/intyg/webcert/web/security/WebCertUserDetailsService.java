@@ -27,9 +27,9 @@ import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
-import se.inera.webcert.persistence.roles.model.Role;
-import se.inera.webcert.persistence.roles.model.TitleCode;
-import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
+import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 

@@ -27,7 +27,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;

@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;

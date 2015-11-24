@@ -19,9 +19,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.roles.model.Role;
-import se.inera.webcert.persistence.roles.model.TitleCode;
-import se.inera.webcert.persistence.roles.repository.TitleCodeRepository;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
+import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LookupUserRoleTest {

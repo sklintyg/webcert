@@ -32,9 +32,9 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizati
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
-import se.inera.webcert.persistence.roles.model.Privilege;
-import se.inera.webcert.persistence.roles.model.Role;
-import se.inera.webcert.persistence.roles.repository.RoleRepository;
+import se.inera.intyg.webcert.persistence.roles.model.Privilege;
+import se.inera.intyg.webcert.persistence.roles.model.Role;
+import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;

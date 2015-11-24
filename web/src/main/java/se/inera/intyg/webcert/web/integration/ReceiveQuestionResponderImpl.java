@@ -14,8 +14,8 @@ import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.Resu
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
