@@ -1,4 +1,4 @@
-package se.inera.log.messages;
+package se.inera.intyg.webcert.logmessages;
 
 import java.io.Serializable;
 import java.util.UUID;

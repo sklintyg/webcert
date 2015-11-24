@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import se.inera.log.messages.AbstractLogMessage;
+import se.inera.intyg.webcert.logmessages.AbstractLogMessage;
 
 public class LogResource {
 

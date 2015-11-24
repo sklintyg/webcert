@@ -3,7 +3,7 @@ package se.inera.webcert.spec.util
 import se.inera.certificate.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.certificate.spec.util.jms.DestinationFixture
 import se.inera.certificate.spec.util.jms.JMSUtils
-import se.inera.log.messages.IntygReadMessage
+import se.inera.intyg.webcert.logmessages.IntygReadMessage
 
 import javax.jms.*
 
