@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.web.handlers;
 
-import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 
 public class WebcertRestExceptionResponse {
 
