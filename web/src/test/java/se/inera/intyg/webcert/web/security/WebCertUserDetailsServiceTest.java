@@ -38,8 +38,8 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragExcept
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
-import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
+import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;

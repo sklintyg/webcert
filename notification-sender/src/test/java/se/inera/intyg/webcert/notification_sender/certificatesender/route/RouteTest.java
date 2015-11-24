@@ -25,7 +25,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import se.inera.webcert.common.Constants;
+import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
 import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 

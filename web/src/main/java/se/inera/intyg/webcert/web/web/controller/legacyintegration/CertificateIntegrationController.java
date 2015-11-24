@@ -4,7 +4,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
 import io.swagger.annotations.Api;
-import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 
 /**
  * Controller to enable a landsting user to access certificates directly from a link.

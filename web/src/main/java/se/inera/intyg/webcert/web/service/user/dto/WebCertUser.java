@@ -3,9 +3,9 @@ package se.inera.intyg.webcert.web.service.user.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.webcert.common.model.UserDetails;
-import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.common.model.UserDetails;
+import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
+import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_TANDLAKARE;
+import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_LAKARE;
+import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
+import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
+import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_TANDLAKARE;
 
 /**
  * @author andreaskaltenbach
@@ -340,7 +340,7 @@ public class WebCertUser implements UserDetails {
 
     /**
      * Returns true if the user's authorities map contains the specified
-     * {@link se.inera.webcert.common.security.authority.UserPrivilege}.
+     * {@link se.inera.intyg.webcert.common.common.security.authority.UserPrivilege}.
      */
     public boolean hasPrivilege(UserPrivilege privilege) {
         if (authorities == null) {

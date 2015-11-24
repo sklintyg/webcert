@@ -15,7 +15,7 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.common.Constants;
+import se.inera.intyg.webcert.common.common.Constants;
 
 /**
  * Created by eriklupander on 2015-05-20.

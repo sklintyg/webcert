@@ -18,7 +18,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 import io.swagger.annotations.Api;
 

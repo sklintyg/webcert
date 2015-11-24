@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.webcert.client.SendCertificateServiceClient;
-import se.inera.webcert.common.Constants;
+import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
+import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
 import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;

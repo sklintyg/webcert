@@ -3,8 +3,8 @@ package se.inera.intyg.webcert.web.web.handlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.webcert.web.service.exception.FeatureNotAvailableException;
-import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

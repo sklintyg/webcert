@@ -5,7 +5,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.common.Constants;
+import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {

@@ -50,7 +50,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;

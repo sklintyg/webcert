@@ -11,7 +11,7 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.common.Constants;
+import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
 import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 

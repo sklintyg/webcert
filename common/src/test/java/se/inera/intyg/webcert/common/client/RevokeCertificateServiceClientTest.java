@@ -36,7 +36,6 @@ public class RevokeCertificateServiceClientTest {
     @Mock
     RevokeRequestConverter revokeRequestConverter;
 
-
     @InjectMocks
     RevokeCertificateServiceClientImpl testee = new RevokeCertificateServiceClientImpl();
 

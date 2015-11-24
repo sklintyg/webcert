@@ -31,8 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import se.inera.webcert.common.security.authority.UserPrivilege;
-import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
+import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
