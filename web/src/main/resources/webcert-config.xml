@@ -13,6 +13,7 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+  <import resource="classpath:/webcert-common-config.xml" />
   <import resource="classpath:/repository-context.xml" />
   <import resource="security/securityContext.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
