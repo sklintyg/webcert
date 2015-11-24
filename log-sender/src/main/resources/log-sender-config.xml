@@ -16,7 +16,7 @@
 
   <import resource="classpath:loggtjanst-stub-context.xml"/>
 
-  <bean id="logSender" class="se.inera.logsender.LogSender"/>
+  <bean id="logSender" class="se.inera.intyg.webcert.logsender.LogSender"/>
 
   <task:scheduled-tasks>
     <task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="${logsender.deliveryIntervalInMilliseconds}"/>

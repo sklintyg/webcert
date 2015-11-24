@@ -1,4 +1,4 @@
-package se.inera.logsender;
+package se.inera.intyg.webcert.logsender;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.Patient;
-import se.inera.logsender.exception.LoggtjanstExecutionException;
+import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;

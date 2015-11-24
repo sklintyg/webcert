@@ -1,4 +1,4 @@
-package se.inera.logsender.integration.test;
+package se.inera.intyg.webcert.logsender.integration.test;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

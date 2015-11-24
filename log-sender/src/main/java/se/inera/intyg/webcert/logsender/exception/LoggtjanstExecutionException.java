@@ -1,4 +1,4 @@
-package se.inera.logsender.exception;
+package se.inera.intyg.webcert.logsender.exception;
 
 /**
  * @author andreaskaltenbach
