@@ -6,11 +6,11 @@ import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import se.inera.certificate.modules.registry.IntygModuleRegistry;
-import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
-import se.inera.certificate.modules.support.api.notification.HandelseType;
-import se.inera.certificate.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
 

@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import se.inera.certificate.modules.support.feature.ModuleFeaturesFactory;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeaturesFactory;
 
 import java.io.IOException;
 import java.util.Map;

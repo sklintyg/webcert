@@ -2,8 +2,8 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import org.joda.time.LocalDateTime;
 
-import se.inera.certificate.validate.PersonnummerValidator;
-import se.inera.certificate.validate.SamordningsnummerValidator;
+import se.inera.intyg.common.support.validate.PersonnummerValidator;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;

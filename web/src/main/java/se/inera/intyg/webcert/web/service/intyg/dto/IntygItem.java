@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import se.inera.certificate.model.Status;
+import se.inera.intyg.common.support.model.Status;
 
 public class IntygItem {
 

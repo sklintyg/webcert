@@ -24,9 +24,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
-import se.inera.certificate.modules.support.api.notification.HandelseType;
-import se.inera.certificate.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.notification_sender.mocks.CertificateStatusUpdateForCareResponderStub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -20,9 +20,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import se.inera.certificate.modules.registry.IntygModuleRegistry;
-import se.inera.certificate.modules.support.ModuleEntryPoint;
-import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 
 /**
  * Service that keeps track of active features of Webcert and installed modules.
@@ -166,7 +166,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.certificate.modules.support
+     * se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.intyg.common.support.modules.support
      * .feature.ModuleFeature, java.lang.String)
      */
     @Override

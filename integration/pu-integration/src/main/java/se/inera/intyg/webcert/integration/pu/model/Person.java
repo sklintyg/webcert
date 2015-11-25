@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.integration.pu.model;
 
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class Person {
     private final Personnummer personnummer;

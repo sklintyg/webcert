@@ -8,16 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.model.common.internal.GrundData;
-import se.inera.certificate.modules.registry.IntygModuleRegistry;
-import se.inera.certificate.modules.registry.ModuleNotFoundException;
-import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.CreateDraftCopyHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.certificate.modules.support.api.dto.ValidationStatus;
-import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -69,7 +69,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
-        se.inera.certificate.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
+        se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
         builderResponse.setOrginalEnhetsId(vardenhet.getEnhetsid());
         builderResponse.setOrginalEnhetsNamn(vardenhet.getEnhetsnamn());
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
@@ -95,7 +95,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
         } else {
-            se.inera.certificate.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData().getPatient();
+            se.inera.intyg.common.support.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData().getPatient();
             populatePatientDetailsFromPatient(utkast, patient);
         }
 
@@ -169,24 +169,24 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         LOG.debug("Created id '{}' for the new copy", newDraftCopyId);
 
         Vardgivare reqVardgivare = copyRequest.getVardenhet().getVardgivare();
-        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(
+        se.inera.intyg.common.support.modules.support.api.dto.Vardgivare vardgivare = new se.inera.intyg.common.support.modules.support.api.dto.Vardgivare(
                 reqVardgivare.getHsaId(), reqVardgivare.getNamn());
 
         Vardenhet reqVardenhet = copyRequest.getVardenhet();
-        se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
+        se.inera.intyg.common.support.modules.support.api.dto.Vardenhet vardenhet = new se.inera.intyg.common.support.modules.support.api.dto.Vardenhet(
                 reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
                 reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(),
                 reqVardenhet.getArbetsplatskod(), vardgivare);
 
         HoSPerson reqHosPerson = copyRequest.getHosPerson();
-        se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.certificate.modules.support.api.dto.HoSPersonal(
+        se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal(
                 reqHosPerson.getHsaId(),
                 reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
 
         CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, hosPerson);
 
         if (person != null) {
-            se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(
+            se.inera.intyg.common.support.modules.support.api.dto.Patient patient = new se.inera.intyg.common.support.modules.support.api.dto.Patient(
                     person.getFornamn(),
                     person.getMellannamn(), person.getEfternamn(), person.getPersonnummer(), person.getPostadress(), person.getPostnummer(),
                     person.getPostort());
@@ -233,7 +233,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         utkast.setPatientEfternamn(person.getEfternamn());
     }
 
-    private void populatePatientDetailsFromPatient(Utkast utkast, se.inera.certificate.model.common.internal.Patient patient) {
+    private void populatePatientDetailsFromPatient(Utkast utkast, se.inera.intyg.common.support.model.common.internal.Patient patient) {
         utkast.setPatientPersonnummer(patient.getPersonId());
 
         utkast.setPatientFornamn(patient.getFornamn());

@@ -16,7 +16,7 @@
   <logger name="org.apache.cxf.services" level="error" />
 
   <logger name="se.inera.intyg.webcert.web" level="debug" />
-  <logger name="se.inera.certificate.modules" level="debug" />
+  <logger name="se.inera.intyg.common.support.modules" level="debug" />
 
   <root>
     <level value="error" />

@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.service.diagnos;
 
-import se.inera.certificate.common.enumerations.Diagnoskodverk;
+import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 
 /**

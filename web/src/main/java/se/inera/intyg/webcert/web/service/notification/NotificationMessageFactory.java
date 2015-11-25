@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.notification;
 
-import se.inera.certificate.modules.support.api.notification.HandelseType;
-import se.inera.certificate.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 

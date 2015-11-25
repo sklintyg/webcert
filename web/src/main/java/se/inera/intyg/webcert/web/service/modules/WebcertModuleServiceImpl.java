@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.common.enumerations.Diagnoskodverk;
-import se.inera.certificate.modules.service.WebcertModuleService;
+import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
+import se.inera.intyg.common.support.modules.service.WebcertModuleService;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -27,7 +27,7 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.certificate.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String, int)
+     * @see se.inera.intyg.common.support.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String, int)
      */
     @Override
     public boolean validateDiagnosisCode(String codeFragment, String codeSystemStr) {

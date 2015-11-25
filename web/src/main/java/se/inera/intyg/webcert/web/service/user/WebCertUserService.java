@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.security.AuthoritiesException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;

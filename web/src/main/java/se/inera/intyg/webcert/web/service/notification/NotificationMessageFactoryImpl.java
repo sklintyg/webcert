@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
-import se.inera.certificate.modules.support.api.notification.HandelseType;
-import se.inera.certificate.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -47,7 +47,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
      * (non-Javadoc)
      *
      * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
-     * persistence.utkast.model.Utkast, se.inera.certificate.modules.support.api.notification.HandelseType)
+     * persistence.utkast.model.Utkast, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
      */
     @Override
     public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse) {
@@ -74,7 +74,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
      * (non-Javadoc)
      *
      * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
-     * persistence.fragasvar.model.FragaSvar, se.inera.certificate.modules.support.api.notification.HandelseType)
+     * persistence.fragasvar.model.FragaSvar, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
      */
     @Override
     public NotificationMessage createNotificationMessage(FragaSvar fragaSvar, HandelseType handelse) {

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 /**
  * Service that writes messages to the monitoring log.

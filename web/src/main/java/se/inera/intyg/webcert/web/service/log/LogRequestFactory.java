@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.service.log;
 
-import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 

@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import org.apache.commons.lang3.StringUtils;
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 

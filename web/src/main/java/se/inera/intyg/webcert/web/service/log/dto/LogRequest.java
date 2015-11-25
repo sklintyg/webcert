@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.log.dto;
 
-import se.inera.certificate.common.util.StringUtil;
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.common.util.StringUtil;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class LogRequest {
 

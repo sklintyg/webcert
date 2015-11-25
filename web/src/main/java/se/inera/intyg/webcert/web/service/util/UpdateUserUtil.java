@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.service.util;
 
-import se.inera.certificate.modules.support.api.dto.HoSPersonal;
-import se.inera.certificate.modules.support.api.dto.Vardenhet;
+import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
+import se.inera.intyg.common.support.modules.support.api.dto.Vardenhet;
 import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -19,11 +19,11 @@ public final class UpdateUserUtil {
      */
     public static HoSPersonal createUserObject(WebCertUser user) {
         SelectableVardenhet valdVardgivare = user.getValdVardgivare();
-        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(
+        se.inera.intyg.common.support.modules.support.api.dto.Vardgivare vardgivare = new se.inera.intyg.common.support.modules.support.api.dto.Vardgivare(
                 valdVardgivare.getId(), valdVardgivare.getNamn());
 
         AbstractVardenhet valdVardenhet = (AbstractVardenhet) user.getValdVardenhet();
-        Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
+        Vardenhet vardenhet = new se.inera.intyg.common.support.modules.support.api.dto.Vardenhet(
                 valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(),
                 valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
 

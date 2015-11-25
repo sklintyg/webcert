@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.population.residentmaster.v1.JaNejTYPE;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
 import se.inera.population.residentmaster.v1.NamnTYPE;

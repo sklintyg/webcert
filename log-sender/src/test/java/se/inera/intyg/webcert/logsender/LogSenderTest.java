@@ -44,7 +44,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Node;
 
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.logmessages.AbstractLogMessage;
 import se.inera.intyg.webcert.logmessages.Enhet;
 import se.inera.intyg.webcert.logmessages.IntygPrintMessage;

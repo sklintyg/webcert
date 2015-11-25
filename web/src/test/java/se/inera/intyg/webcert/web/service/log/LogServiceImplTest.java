@@ -21,7 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.logmessages.ActivityPurpose;
 import se.inera.intyg.webcert.logmessages.ActivityType;
 import se.inera.intyg.webcert.logmessages.IntygReadMessage;

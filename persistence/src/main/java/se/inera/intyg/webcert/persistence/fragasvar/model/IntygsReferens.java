@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 @Embeddable
 public class IntygsReferens {

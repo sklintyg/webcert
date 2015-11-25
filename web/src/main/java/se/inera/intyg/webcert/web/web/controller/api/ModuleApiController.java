@@ -2,7 +2,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 import javax.ws.rs.GET;

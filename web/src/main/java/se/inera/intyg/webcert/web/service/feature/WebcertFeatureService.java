@@ -2,7 +2,7 @@ package se.inera.intyg.webcert.web.service.feature;
 
 import java.util.Set;
 
-import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 
 /**
  * Service which keeps track of what features are active in Webcert and installed modules.

@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -20,7 +20,7 @@ public interface IntygServiceConverter {
 
     RevokeType buildRevokeTypeFromUtlatande(Utlatande utlatande, String revokeMessage);
 
-    List<se.inera.certificate.model.Status> buildStatusesFromUtkast(Utkast draft);
+    List<se.inera.intyg.common.support.model.Status> buildStatusesFromUtkast(Utkast draft);
 
     Utlatande buildUtlatandeFromUtkastModel(Utkast utkast);
 }

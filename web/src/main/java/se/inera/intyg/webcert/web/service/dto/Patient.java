@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.service.dto;
 
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class Patient {
 

@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 
 public class SaveDraftValidationMessage {
 

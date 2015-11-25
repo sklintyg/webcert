@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
+import static se.inera.intyg.common.support.common.enumerations.CertificateTypes.FK7263;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;

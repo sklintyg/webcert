@@ -3,7 +3,7 @@ package se.inera.webcert.hsa.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.certificate.common.util.StringUtil;
+import se.inera.intyg.common.support.common.util.StringUtil;
 import se.riv.infrastructure.directory.employee.getemployee.v1.rivtabp21.GetEmployeeResponderInterface;
 import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeResponseType;
 import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeType;

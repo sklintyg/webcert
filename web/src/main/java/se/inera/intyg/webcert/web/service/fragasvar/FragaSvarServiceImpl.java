@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.model.CertificateState;
-import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -622,9 +622,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return (booleanObj != null) && booleanObj;
     }
 
-    private boolean isCertificateSentToFK(List<se.inera.certificate.model.Status> statuses) {
+    private boolean isCertificateSentToFK(List<se.inera.intyg.common.support.model.Status> statuses) {
         if (statuses != null) {
-            for (se.inera.certificate.model.Status status : statuses) {
+            for (se.inera.intyg.common.support.model.Status status : statuses) {
                 if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }

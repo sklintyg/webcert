@@ -13,7 +13,7 @@
 
   <bean id="notificationMessageDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat">
     <constructor-arg ref="customObjectMapper"/>
-    <constructor-arg value="se.inera.certificate.modules.support.api.notification.NotificationMessage"/>
+    <constructor-arg value="se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage"/>
   </bean>
 
   <bean id="jaxbMessageDataFormat" class="org.apache.camel.converter.jaxb.JaxbDataFormat">

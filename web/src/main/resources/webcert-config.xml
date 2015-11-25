@@ -74,7 +74,7 @@
       location="classpath:webcert-notification-route-params.properties, classpath:webcert-certificate-route-params.properties, classpath:default.properties, classpath:version.properties"
       order="2" ignore-resource-not-found="false" />
 
-    <bean id="moduleRegistry" class="se.inera.certificate.modules.registry.IntygModuleRegistryImpl">
+    <bean id="moduleRegistry" class="se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl">
       <property name="origin" value="WEBCERT" />
     </bean>
 

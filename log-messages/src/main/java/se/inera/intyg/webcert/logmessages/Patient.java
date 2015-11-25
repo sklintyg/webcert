@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.logmessages;
 
-import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 import java.io.Serializable;
 
