@@ -22,7 +22,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
@@ -53,7 +53,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
     private UtkastRepository utkastRepository;
 
     /* (non-Javadoc)
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
@@ -109,7 +109,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
     }
 
     /* (non-Javadoc)
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)

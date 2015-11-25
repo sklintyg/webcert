@@ -16,9 +16,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.pu.model.PersonSvar;
-import se.inera.webcert.pu.services.PUService;
+import se.inera.intyg.webcert.integration.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.inera.intyg.webcert.integration.pu.services.PUService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;
 

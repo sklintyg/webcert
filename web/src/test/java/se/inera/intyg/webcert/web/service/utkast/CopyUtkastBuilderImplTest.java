@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;

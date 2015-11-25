@@ -1,4 +1,4 @@
-package se.inera.webcert.pu.stub;
+package se.inera.intyg.webcert.integration.pu.stub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

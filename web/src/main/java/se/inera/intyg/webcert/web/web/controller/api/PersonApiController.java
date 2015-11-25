@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
-import se.inera.webcert.pu.model.PersonSvar;
-import se.inera.webcert.pu.services.PUService;
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.inera.intyg.webcert.integration.pu.services.PUService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;

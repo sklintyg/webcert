@@ -1,4 +1,4 @@
-package se.inera.webcert.pu.services;
+package se.inera.intyg.webcert.integration.pu.services;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -18,8 +18,8 @@ import se.inera.population.residentmaster.v1.SvenskAdressTYPE;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
-import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.pu.model.PersonSvar;
+import se.inera.intyg.webcert.integration.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -36,7 +36,7 @@ public class PUServiceImpl implements PUService {
     @Override
     @Cacheable(value = "personCache",
                key = "#personId",
-               unless = "#result.status == T(se.inera.webcert.pu.model.PersonSvar$Status).ERROR")
+               unless = "#result.status == T(se.inera.intyg.webcert.integration.pu.model.PersonSvar$Status).ERROR")
     public PersonSvar getPerson(Personnummer personId) {
 
         LOG.debug("Looking up person '{}'", personId.getPnrHash());

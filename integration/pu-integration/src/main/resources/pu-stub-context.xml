@@ -6,8 +6,8 @@
                            http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
        profile="dev,wc-all-stubs,wc-pu-stub">
 
-  <jaxws:endpoint address="/pu" implementor="se.inera.webcert.pu.stub.LookupResidentForFullProfileWsStub"/>
+  <jaxws:endpoint address="/pu" implementor="se.inera.intyg.webcert.integration.pu.stub.LookupResidentForFullProfileWsStub"/>
 
-    <bean class="se.inera.webcert.pu.stub.PUBootstrapBean" lazy-init="false"/>
-    <bean class="se.inera.webcert.pu.stub.ResidentStore"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.stub.PUBootstrapBean" lazy-init="false"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.stub.ResidentStore"/>
 </beans>

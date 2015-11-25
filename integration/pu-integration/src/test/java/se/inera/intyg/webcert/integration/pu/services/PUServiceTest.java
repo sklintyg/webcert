@@ -1,4 +1,4 @@
-package se.inera.webcert.pu.services;
+package se.inera.intyg.webcert.integration.pu.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -27,8 +27,8 @@ import se.inera.population.residentmaster.v1.LookupResidentForFullProfileRespond
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
-import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.pu.model.PersonSvar;
+import se.inera.intyg.webcert.integration.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:PUServiceTest/test-context.xml")

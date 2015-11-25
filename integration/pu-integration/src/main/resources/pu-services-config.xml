@@ -25,7 +25,7 @@
     address="${putjanst.endpoint.url}">
   </jaxws:client>
 
-  <bean id="puService" class="se.inera.webcert.pu.services.PUServiceImpl" />
+  <bean id="puService" class="se.inera.intyg.webcert.integration.pu.services.PUServiceImpl" />
 
   <beans profile="!dev">
     <http:conduit
