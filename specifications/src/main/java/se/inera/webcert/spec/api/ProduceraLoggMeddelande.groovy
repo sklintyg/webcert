@@ -4,7 +4,7 @@ import static groovyx.net.http.ContentType.JSON
 
 import org.joda.time.LocalDateTime
 
-import se.inera.certificate.integration.json.CustomObjectMapper
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
 import se.inera.intyg.webcert.logmessages.Enhet
 import se.inera.intyg.webcert.logmessages.IntygCreateMessage
 import se.inera.intyg.webcert.logmessages.IntygDeleteMessage

@@ -10,7 +10,7 @@ import static org.junit.matchers.JUnitMatchers.containsString;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 public class IntygServiceConfigurationManagerTest {
 

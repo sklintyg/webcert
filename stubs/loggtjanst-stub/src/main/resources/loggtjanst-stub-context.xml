@@ -31,7 +31,7 @@
     <bean id="jacksonJsonProvider"
       class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
       <property name="mapper">
-        <bean class="se.inera.certificate.integration.json.CustomObjectMapper" />
+        <bean class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper" />
       </property>
     </bean>
   </beans>
