@@ -1,4 +1,4 @@
-package se.inera.webcert.pu.stub;
+package se.inera.intyg.webcert.integration.pu.stub;
 
 import java.io.IOException;
 import java.util.Arrays;

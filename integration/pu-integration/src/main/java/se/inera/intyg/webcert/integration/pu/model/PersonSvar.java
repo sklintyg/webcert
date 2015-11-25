@@ -1,4 +1,4 @@
-package se.inera.webcert.pu.model;
+package se.inera.intyg.webcert.integration.pu.model;
 
 public class PersonSvar {
 

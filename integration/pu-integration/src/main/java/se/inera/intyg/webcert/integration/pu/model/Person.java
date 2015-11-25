@@ -1,4 +1,4 @@
-package se.inera.webcert.pu.model;
+package se.inera.intyg.webcert.integration.pu.model;
 
 import se.inera.certificate.modules.support.api.dto.Personnummer;
 

@@ -21,9 +21,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.pu.model.PersonSvar;
-import se.inera.webcert.pu.services.PUService;
+import se.inera.intyg.webcert.integration.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.inera.intyg.webcert.integration.pu.services.PUService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 

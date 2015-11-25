@@ -17,12 +17,12 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-    <bean class="se.inera.webcert.pu.stub.PUBootstrapBean"/>
-    <bean class="se.inera.webcert.pu.stub.ResidentStore"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.stub.PUBootstrapBean"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.stub.ResidentStore"/>
 
-    <bean class="se.inera.webcert.pu.services.PUServiceImpl"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.services.PUServiceImpl"/>
 
-    <bean class="se.inera.webcert.pu.stub.LookupResidentForFullProfileWsStub"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.stub.LookupResidentForFullProfileWsStub"/>
 
     <import resource="../../classes/pu-cache-config.xml" />
 
