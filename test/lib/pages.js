@@ -7,8 +7,8 @@ var intygPath = __dirname + '/../intygpages/'; // should be webapp
 
 var paths = {
     'intygpages': {
-        'utkast': intygPath + 'fk.utkast.page.js',
-        'intyg': intygPath + 'fk.intyg.page.js'
+        'fkUtkast': intygPath + 'fk.utkast.page.js',
+        'fkIntyg': intygPath + 'fk.intyg.page.js'
     },
     'welcome': appPath + 'welcome.page.js',
     'app': {

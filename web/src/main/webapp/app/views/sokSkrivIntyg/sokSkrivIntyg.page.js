@@ -1,39 +1,32 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-var SokSkrivIntygPage = function() {
-    'use strict';
+'use strict';
 
-    var doctor = element(by.css('.logged-in')),
-        personnummer = element(by.id('pnr')),
-        pnButton = element(by.id('skapapersonnummerfortsatt')),
-        intygTypeSelector = element(by.id('intygType')),
-        intygTypeButton = element(by.id('intygTypeFortsatt'));
+var doctor = element(by.css('.logged-in')),
+    personnummer = element(by.id('pnr')),
+    pnButton = element(by.id('skapapersonnummerfortsatt')),
+    intygTypeSelector = element(by.id('intygType')),
+    intygTypeButton = element(by.id('intygTypeFortsatt'));
 
-    this.get = function() {
+module.exports = {
+    get: function() {
         browser.get('web/dashboard#/create/choose-cert-type/index');
-    };
-
-    this.getDoctorText = function() {
+    },
+    getDoctorText: function() {
         return doctor.getText();
-    };
-
-    this.setPersonnummer = function(pn){
+    },
+    setPersonnummer: function(pn) {
         personnummer.sendKeys(pn);
-    };
-
-    this.selectPersonnummer = function(pn){
+    },
+    selectPersonnummer: function(pn) {
         this.setPersonnummer(pn);
         pnButton.click();
-    };
-
-    this.selectIntygType = function(index){
+    },
+    selectIntygType: function(index) {
         intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
-    };
-
-    this.continue = function(){
+    },
+    continueToUtkast: function() {
         intygTypeButton.click();
-    };
+    }
 };
-
-module.exports = SokSkrivIntygPage;

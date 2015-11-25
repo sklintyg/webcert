@@ -1,7 +1,7 @@
 var restUtil = require('../../lib/rest.util.js'),
     fkIntyg = require('../../lib/testdata/utkast.fk7263.generate.json');
 
-xdescribe('Generate fk utkast', function() {
+describe('Generate fk utkast', function() {
 
     it('should generate an fk7263 utkast', function() {
         // login with doctor Jan Nilsson
@@ -16,7 +16,7 @@ xdescribe('Generate fk utkast', function() {
             console.log('Login OK');
         });
 
-        restUtil.deleteAllUtkast().then(function(response){});
+        restUtil.deleteAllUtkast();//.then(function(response){});
 
         var intygsId = null;
         fkIntyg.patientPersonnummer = '191212121212';

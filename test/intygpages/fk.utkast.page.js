@@ -1,56 +1,53 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-var UtkastPage = function() {
-    'use strict';
+'use strict';
 
-    var smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]')),
-        smittskyddCheckbox = element(by.id('smittskydd')),
+var at = element(by.id('edit-fk7263')),
+    smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]')),
+    smittskyddCheckbox = element(by.id('smittskydd')),
 
-        nedsattMed25Checkbox = element(by.id('nedsattMed25')),
+    nedsattMed25Checkbox = element(by.id('nedsattMed25')),
 
-        signeraButton = element(by.id('signera-utkast-button')),
+    signeraButton = element(by.id('signera-utkast-button')),
 
-        travelRadioButtonJa = element(by.id('rekommendationRessatt')),
-        travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked'));
+    travelRadioButtonJa = element(by.id('rekommendationRessatt')),
+    travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked')),
 
+    capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
 
-    this.get = function() {
-        browser.get('http://www.angularjs.org');
-    };
-
-    this.whenSmittskyddIsDisplayed = function() {
+module.exports = {
+    get: function(intygId) {
+        browser.get('/web/dashboard#/fk7263/edit/' + intygId);
+    },
+    at: function() {
+        return at.isDisplayed();
+    },
+    whenSmittskyddIsDisplayed: function() {
         return browser.wait(smittskyddLabel.isDisplayed());
-    };
-
-    this.getSmittskyddLabelText = function(){
+    },
+    getSmittskyddLabelText: function(){
         return smittskyddLabel.getText();
-    };
-
-    this.smittskyddCheckboxClick = function(){
+    },
+    smittskyddCheckboxClick: function(){
         smittskyddCheckbox.click();
-    };
-
-    this.nedsattMed25CheckboxClick = function(){
+    },
+    nedsattMed25CheckboxClick: function(){
         nedsattMed25Checkbox.click();
-    };
-
-    this.travelRadioButtonJaClick = function(){
+    },
+    travelRadioButtonJaClick: function(){
         travelRadioButtonJa.click();
-    };
-
-    this.getCheckedTravelRadioButtonValue = function(){
+    },
+    getCheckedTravelRadioButtonValue: function(){
         return travelRadioGroupChecked.getAttribute('value');
-    };
-
-    this.whenSigneraButtonIsEnabled = function(){
+    },
+    whenSigneraButtonIsEnabled: function(){
         return browser.wait(signeraButton.isEnabled());
-    };
-
-    this.signeraButtonClick = function(){
+    },
+    signeraButtonClick: function(){
         signeraButton.click();
-    };
-
+    },
+    capacityForWorkForecastText: function(){
+        return capacityForWorkForecastText;
+    }
 };
-
-module.exports = UtkastPage;

@@ -1,18 +1,23 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-var IntygPage = function() {
-    'use strict';
+'use strict';
 
-    var viewCertAndQa = element(by.id('viewCertAndQA'));
+var viewCertAndQa = element(by.id('viewCertAndQA')),
+    copyBtn = element(by.id('copyBtn')),
+    dialogCopyBtn = element(by.id('button1copy-dialog'));
 
-    this.get = function() {
-        browser.get('http://www.angularjs.org');
-    };
-
-    this.viewCertAndQaIsDisplayed = function(){
+module.exports = {
+    get: function(intygId) {
+        browser.get('/web/dashboard#/intyg/fk7263/' + intygId);
+    },
+    viewCertAndQaIsDisplayed: function(){
         return viewCertAndQa.isDisplayed();
-    };
+    },
+    copy: function(){
+        copyBtn.click();
+    },
+    copyDialogConfirm: function() {
+        dialogCopyBtn.click();
+    }
 };
-
-module.exports = IntygPage;

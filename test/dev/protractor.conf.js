@@ -52,9 +52,10 @@ exports.config = {
          * which you might want to do if you're testing behaviour during $http or $timeout (e.g., a 'loading' message),
          * or testing non-Angular sites or pages, such as a separate login page.
          */
+        browser.ignoreSynchronization = false;
 
         global.testdata = require('../lib/testdata/testdata.js');
+        global.intygTemplates = require('./../lib/testdata/intygTemplates.js');
         global.pages = require('./../lib/pages.js');
-        browser.ignoreSynchronization = false;
     }
 };
