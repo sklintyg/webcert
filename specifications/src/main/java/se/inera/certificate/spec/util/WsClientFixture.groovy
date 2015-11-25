@@ -20,7 +20,7 @@ import org.apache.cxf.transport.http.HTTPConduit
 import org.w3.wsaddressing10.AttributedURIType
 
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType
-import se.inera.certificate.integration.json.CustomObjectMapper
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum
 
 class WsClientFixture {
