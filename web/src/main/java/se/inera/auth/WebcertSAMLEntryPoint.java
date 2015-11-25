@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.auth;
+package se.inera.auth;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,8 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
-
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
+import se.inera.auth.common.AuthConstants;
 
 /**
  * Custom SAMLEntryPoint for Webcert that overrides the generation of AuthnContexts based on metadata alias:
@@ -39,7 +38,7 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
             ssoProfileOptions = defaultOptions.clone();
 
             if (context.getLocalExtendedMetadata().getAlias().equals(AuthConstants.ALIAS_ELEG)) {
-                ssoProfileOptions.setAuthnContexts(new HashSet<>());
+                ssoProfileOptions.setAuthnContexts(new HashSet<String>());
             } else if (context.getLocalExtendedMetadata().getAlias().equals(AuthConstants.ALIAS_SITHS)) {
                 ssoProfileOptions.setAuthnContexts(buildTlsClientAuthContexts());
             }
