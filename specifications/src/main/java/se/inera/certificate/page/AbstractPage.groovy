@@ -50,7 +50,10 @@ abstract class AbstractPage extends Page {
     }
 
     static protected void waitForAngularBootstrap(String root) {
-        Object result = waitForJavascriptCallback(NgClientSideScripts.TEST_FOR_ANGULAR_TESTABILITY, 10);
+        if (root == null) {
+            root = "body"
+        }
+        Object result = waitForJavascriptCallback(NgClientSideScripts.TEST_FOR_ANGULAR_TESTABILITY, root, 10);
         if (!result[0]) {
             throw new RuntimeException(result[1].toString());
         }

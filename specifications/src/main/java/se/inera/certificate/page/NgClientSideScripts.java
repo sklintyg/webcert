@@ -15,32 +15,40 @@ public final class NgClientSideScripts {
      *
      * Asynchronous.
      *
+     * @param {string} The selector housing an ng-app
      * @param {number} attempts Number of times to retry.
      * @param {function} asyncCallback callback
      */
     public static final String TEST_FOR_ANGULAR_TESTABILITY =
-            "var asyncCallback = arguments[1];\n"
-                    + "var attempts = arguments[0];\n"
+            "var asyncCallback = arguments[2];\n"
+                    + "var rootSelector = arguments[0];\n"
+                    + "var attempts = arguments[1];\n"
+                    + "var el = document.querySelector(rootSelector);\n"
                     + "  var callback = function(args) {\n"
                     + "    setTimeout(function() {\n"
                     + "      asyncCallback(args);\n"
                     + "    }, 0);\n"
                     + "  };\n"
                     + "  var check = function(n) {\n"
+                    + "    var exception = null;\n"
                     + "    try {\n"
-                    + "      if (window.angular && window.angular.getTestability) {\n"
+                    + "      if (window.angular && window.angular.getTestability && window.angular.getTestability(el)) {\n"
                     + "        callback([true, null]);\n"
-                    + "      } else if (n < 1) {\n"
-                    + "        if (window.angular) {\n"
-                    + "          callback([false, 'angular never provided getTestability']);\n"
-                    + "        } else {\n"
-                    + "          callback([false, 'retries looking for angular exceeded']);\n"
-                    + "        }\n"
-                    + "      } else {\n"
-                    + "        window.setTimeout(function() {check(n - 1);}, 500);\n"
+                    + "        return;"
                     + "      }\n"
                     + "    } catch (e) {\n"
-                    + "      callback([false, e]);\n"
+                    + "      exception = e;\n"
+                    + "    }\n"
+                    + "    if (n < 1) {\n"
+                    + "      if (exception) {\n"
+                    + "        callback([false, exception]);\n"
+                    + "      } else if (window.angular) {\n"
+                    + "        callback([false, 'angular never provided getTestability']);\n"
+                    + "      } else {\n"
+                    + "        callback([false, 'retries looking for angular exceeded']);\n"
+                    + "      }\n"
+                    + "    } else {\n"
+                    + "      window.setTimeout(function() {check(n - 1);}, 500);\n"
                     + "    }\n"
                     + "  };\n"
                     + "  check(attempts);";
