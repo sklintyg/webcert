@@ -35,6 +35,7 @@
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
     <rivta-decisionsupport.version>1.0.RC4.0</rivta-decisionsupport.version>
+    <rivta-population-residentmaster.version>1.1.3.0</rivta-population-residentmaster.version>
 
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
     <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
@@ -246,6 +247,11 @@
         <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
         <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
         <version>${rivta-decisionsupport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.population.residentmaster</groupId>
+        <artifactId>population-residentmaster-schemas</artifactId>
+        <version>${rivta-population-residentmaster.version}</version>
       </dependency>
 
       <!-- Intyg Schemas -->

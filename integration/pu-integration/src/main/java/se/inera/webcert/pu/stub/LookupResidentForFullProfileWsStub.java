@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
+import se.riv.population.residentmaster.types.v1.ResidentType;
 
-import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
-import se.inera.population.residentmaster.v1.ResidentType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 
 public class LookupResidentForFullProfileWsStub implements LookupResidentForFullProfileResponderInterface {
 

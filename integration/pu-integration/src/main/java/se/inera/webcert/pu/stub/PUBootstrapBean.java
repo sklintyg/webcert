@@ -13,7 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import se.inera.population.residentmaster.v1.ResidentType;
+import se.riv.population.residentmaster.types.v1.ResidentType;
 
 public class PUBootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(PUBootstrapBean.class);
