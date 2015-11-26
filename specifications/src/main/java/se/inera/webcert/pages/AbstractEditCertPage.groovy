@@ -1,11 +1,16 @@
 package se.inera.webcert.pages
 
 import geb.Module
+import geb.Page
 import se.inera.certificate.spec.Browser
 
 class AbstractEditCertPage extends AbstractLoggedInPage {
     
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
+
+    void onLoad(Page previousPage) {
+        js.eval("window.onbeforeunload = null;");
+    }
 
     static content = {
         namnOchPersonnummer(required: false) { $("#patientNamnPersonnummer") }
