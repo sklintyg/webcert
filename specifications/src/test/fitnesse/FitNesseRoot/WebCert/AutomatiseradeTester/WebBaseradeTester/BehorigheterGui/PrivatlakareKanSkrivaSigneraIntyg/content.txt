@@ -1,3 +1,5 @@
+Ignorerad i väntan på WEBCERT-2230
+
 !3 Logga in som privatläkare som är godkänd privatläkare (i stubbe) och testa olika scenarier där vissa GUI element skall eller inte skall synas
 
 !3 Skapa ett intyg som privatläkaren kan se
