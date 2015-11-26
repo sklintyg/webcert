@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.inera.certificate.logging.LogMarkers;
+import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.ifv.hsawsresponder.v3.AddressType;
 import se.inera.ifv.hsawsresponder.v3.AttributeListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValueListType;

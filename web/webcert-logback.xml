@@ -4,7 +4,7 @@
   <jmxConfigurator />
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <filter class="se.inera.certificate.logging.MarkerFilter">
+    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
       <markers>Monitoring, HSA</markers>
       <onMatch>DENY</onMatch>
       <onMismatch>ACCEPT</onMismatch>
@@ -18,7 +18,7 @@
 
   <!--Daily rolling file appender -->
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="se.inera.certificate.logging.MarkerFilter">
+    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
       <markers>Monitoring, HSA</markers>
       <onMatch>DENY</onMatch>
       <onMismatch>ACCEPT</onMismatch>
@@ -37,7 +37,7 @@
 
   <!--Daily rolling file appender for logging HSA faults -->
   <appender name="HSA" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="se.inera.certificate.logging.MarkerFilter">
+    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
       <marker>HSA</marker>
       <onMatch>ACCEPT</onMatch>
       <onMismatch>DENY</onMismatch>
@@ -56,7 +56,7 @@
 
   <!--Daily rolling file appender for logging monitoring events -->
   <appender name="MONITORING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="se.inera.certificate.logging.MarkerFilter">
+    <filter class="se.inera.intyg.common.util.logging.MarkerFilter">
       <marker>Monitoring</marker>
       <onMatch>ACCEPT</onMatch>
       <onMismatch>DENY</onMismatch>
