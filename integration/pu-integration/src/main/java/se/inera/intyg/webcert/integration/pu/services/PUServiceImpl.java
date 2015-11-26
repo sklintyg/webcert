@@ -10,16 +10,16 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.population.residentmaster.v1.JaNejTYPE;
-import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
-import se.inera.population.residentmaster.v1.NamnTYPE;
-import se.inera.population.residentmaster.v1.ResidentType;
-import se.inera.population.residentmaster.v1.SvenskAdressTYPE;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
+import se.riv.population.residentmaster.types.v1.JaNejTYPE;
+import se.riv.population.residentmaster.types.v1.NamnTYPE;
+import se.riv.population.residentmaster.types.v1.ResidentType;
+import se.riv.population.residentmaster.types.v1.SvenskAdressTYPE;
 
 import com.google.common.annotations.VisibleForTesting;
 

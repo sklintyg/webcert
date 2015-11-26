@@ -1,9 +1,9 @@
 package se.inera.intyg.webcert.integration.pu.stub;
 
+import se.riv.population.residentmaster.types.v1.ResidentType;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import se.inera.population.residentmaster.v1.ResidentType;
 
 public class ResidentStore {
 

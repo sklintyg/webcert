@@ -4,19 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
-import se.inera.population.residentmaster.v1.PersonpostTYPE;
-import se.inera.population.residentmaster.v1.ResidentType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
+import se.riv.population.residentmaster.types.v1.PersonpostTYPE;
+import se.riv.population.residentmaster.types.v1.ResidentType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LookupResidentForFullProfileWsStubTest {

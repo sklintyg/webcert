@@ -23,12 +23,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:PUServiceTest/test-context.xml")
@@ -99,8 +99,15 @@ public class PUServiceTest {
         parameters.setLookUpSpecification(new LookUpSpecificationType());
         parameters.getPersonId().add("191212121212");
 
+        LookupResidentForFullProfileType parameters2 = new LookupResidentForFullProfileType();
+        parameters2.setLookUpSpecification(new LookUpSpecificationType());
+        parameters2.getPersonId().add("191212121212");
+
+        System.err.println("Are they equal: " + parameters.equals(parameters2));
+
         LookupResidentForFullProfileResponseType response = residentService.lookupResidentForFullProfile(logicalAddress, parameters);
         LookupResidentForFullProfileResponderInterface mockResidentService = mock(LookupResidentForFullProfileResponderInterface.class);
+
         when(mockResidentService.lookupResidentForFullProfile(logicalAddress, parameters)).thenReturn(response);
         ReflectionTestUtils.setField(((Advised) service).getTargetSource().getTarget(), "service", mockResidentService);
 
@@ -187,7 +194,6 @@ public class PUServiceTest {
         assertEquals("12345", person.getPostnummer());
         assertEquals("Småmåla", person.getPostort());
 
-        ReflectionTestUtils.setField(((Advised)service).getTargetSource().getTarget(), "service", residentService);
+        ReflectionTestUtils.setField(((Advised) service).getTargetSource().getTarget(), "service", residentService);
     }
-
 }
