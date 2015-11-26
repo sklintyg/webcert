@@ -549,7 +549,8 @@
             common.version,
             intygstyper.version,
             intyg-privatepractitioner.version,
-            intyg-privatepractitioner-terms.version
+            intyg-privatepractitioner-terms.version,
+            cgi-funktionstjanster-grp.version
           </includeProperties>
           <properties>
             <property>
@@ -567,6 +568,10 @@
             <property>
               <name>intyg-privatepractitioner-terms.version</name>
               <version>${intyg-privatepractitioner-terms.version.range}</version>
+            </property>
+            <property>
+              <name>cgi-funktionstjanster-grp.version</name>
+              <version>${cgi-funktionstjanster-grp.version.range}</version>
             </property>
           </properties>
         </configuration>
