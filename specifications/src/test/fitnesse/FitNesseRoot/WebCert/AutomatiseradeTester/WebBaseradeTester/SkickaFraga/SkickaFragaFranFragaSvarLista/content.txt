@@ -1,5 +1,3 @@
-Ignorerad i väntan på WEBCERT-2207
-
 Testet beskriver fallet när en användare skickar en ny fråga till försäkringskassan genom att gå in på ett intyg via en befintlig fråga.
 
 !3 Logga in

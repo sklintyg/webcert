@@ -96,7 +96,7 @@ class SvaraOchFraga {
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         boolean result
         Browser.drive {
-            waitFor {
+            waitFor(20.0) {
                 result = page.unhandledQAPanelWithText(text)?.isDisplayed()
             }
         }
@@ -114,7 +114,7 @@ class SvaraOchFraga {
     boolean fragaVisasIListanMedHanteradeFragor(String id) {
         boolean result
         Browser.drive {
-            waitFor {
+            waitFor(20.0) {
                 result = page.handledQAPanel(id)?.isDisplayed()
             }
         }
