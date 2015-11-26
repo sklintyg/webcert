@@ -1,4 +1,7 @@
 !contents -R2 -g -p -f -h
+
+Ignorerad i väntan på WEBCERT-2231
+
 Testet beskriver fallet när en användare lämna fråga svar lista med ej hanterad svar och klicka på hantera knappen
 
 !3 Givet test-intyg i Intygstjänsten

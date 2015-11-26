@@ -4,6 +4,7 @@
 <Files>true</Files>
 <Help>Klick på hantera-knappen</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>
