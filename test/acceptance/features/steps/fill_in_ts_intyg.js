@@ -1,15 +1,13 @@
 /*global
-browser, testdata
+testdata, intyg, browser
 */
 'use strict';
 
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält enligt mall för ett Diabetes\-MIN\-intyg$/, function(callback) {
-        var intyg = testdata.getRandomTsDiabetesIntyg();
+        global.intyg = testdata.getRandomTsDiabetesIntyg();
 
-
-
-        browser.ignoreSynchronization = true;
+        // browser.ignoreSynchronization = true;
         // Intyget avser
         fillInKorkortstyper(intyg.korkortstyper);
 
@@ -28,8 +26,7 @@ module.exports = function() {
         //Bedömning
         fillInBedomning(intyg.bedomning);
 
-
-        browser.ignoreSynchronization = false;
+        // browser.ignoreSynchronization = false;
 
         callback();
     });
@@ -37,11 +34,27 @@ module.exports = function() {
 
 
 function fillInKorkortstyper(typer) {
-    console.log('Anger körkortstyper: ');
-    typer.forEach(function(typ) {
-        process.stdout.write(typ + '..');
-        element.all(by.cssContainingText('label.checkbox', typ)).first().click();
+    console.log('Anger körkortstyper: '+ typer.toString());
+    // typer.forEach(function(typ) {
+    //     process.stdout.write(typ + '..');
+
+    // hittar flera på text körkortstyp A
+    element(by.id('intygetAvserForm')).all(by.css('label.checkbox')).filter(function(elem) {
+        //Return the element or elements
+        return elem.getText().then(function(text) {
+            //Match the text
+            return (typer.indexOf(text)>=0);
+        });
+    }).then(function(filteredElements) {
+        //filteredElements is the list of filtered elements
+
+        for (var i = 0; i < filteredElements.length; i++) {
+            filteredElements[i].click();
+            //Do something
+        }
+        // filteredElements[0].click();
     });
+    // });
     console.log('');
 }
 
@@ -78,7 +91,7 @@ function fillInAllmant(allmantObj) {
 
 function fillInHypoglykemier(hypoglykemierObj, korkortstyper) {
 
-    console.log('Anger hypoglykemier:' + hypoglykemierObj);
+    console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
 
     // a)
     if (hypoglykemierObj.a === 'Ja') {

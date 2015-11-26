@@ -1,7 +1,7 @@
 # language: sv
 
 @smoke @webcert @ts @diabetes-min
-Egenskap: Kontrollera att det gåt att skapa diabetes--MIN intyg för transportstyrelsen
+Egenskap: Kontrollera att det går att skapa diabetes--MIN intyg för transportstyrelsen
 
 Bakgrund: Jag befinner mig på webcerts förstasida
     Givet att jag är inloggad som läkare "Jan Nilsson"
@@ -13,6 +13,7 @@ Scenario: Skapa och signera ett diabetesintyg-MIN till transportstyrelsen
     Och jag fyller i alla nödvändiga fält enligt mall för ett Diabetes-MIN-intyg
     Och signerar intyget
     Så ska intygets status vara "Intyget är signerat"
+    Och jag ska se den data jag angett för intyget
 
 # Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
 #     Givet att ett intyg är skapat

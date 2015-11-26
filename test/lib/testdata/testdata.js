@@ -3,8 +3,8 @@
 
 module.exports = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
-    korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
-    identitetStyrktGenom: ['ID-kort *', 'Företagskort eller tjänstekort **', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§ ***', 'Pass ****'],
+    korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
+    identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
     diabetestyp: ['Typ 1', 'Typ 2'],
     diabetesbehandlingtyper: ['Endast kost', 'Tabletter', 'Insulin'],
 

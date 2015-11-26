@@ -1,10 +1,18 @@
+/*global
+browser
+*/
 'use strict';
 
 exports.config = {
     baseUrl: 'https://webcert.ip30.nordicmedtest.sjunet.org',
     allScriptsTimeout: 30000,
     seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
-    framework: 'cucumber',
+    framework: 'custom',
+    timeout : 100000,
+    defaultTimeoutInterval: 30000,
+
+  // path relative to the current config file
+  frameworkPath: require.resolve('protractor-cucumber-framework'),
     specs: [
         'features/*.feature'
     ],
@@ -35,6 +43,7 @@ exports.config = {
         // Testdata lib
         global.testdata = require('../lib/testdata/testdata.js');
 
+        browser.ignoreSynchronization = false;
 
     }
 };
