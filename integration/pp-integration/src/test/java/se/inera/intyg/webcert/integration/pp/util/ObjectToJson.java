@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.integration.pp.util;
 
-import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -48,7 +48,6 @@ var wcMessages = {
 
         //certificate types
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
-        'certificatetypes.rli.typename': 'Intyg vid avbeställd resa',
         'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
         'certificatetypes.sjukpenning.typename': 'Läkarintyg',
@@ -60,7 +59,6 @@ var wcMessages = {
         'certificatetypes.fk7263.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukpenning. Av intyget ska det framgå hur sjukdomen påverkar patientens arbetsförmåga och hur länge patienten behöver vara sjukskriven.',
         'certificatetypes.sjukpenning.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukpenning.',
         'certificatetypes.sjukersattning.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukersättning.',
-        'certificatetypes.rli.helptext': 'Här ska det ligga en text om intyg vid avbeställd resa',
 
         //about texts
         'about.cookies': '<h3>Om kakor (cookies)</h3><p>Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som lagras på din dator och som innehåller information. Denna webbplats använder så kallade sessionskakor. Sessionskakor lagras temporärt i din dators minne under tiden du är inne på en webbsida. Sessionskakor försvinner när du stänger din webbläsare. Ingen personlig information om dig sparas vid användning av sessionskakor.</p><p>Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares säkerhetsinställningar. Du kan även ställa in webbläsaren så att du får en varning varje gång webbplatsen försöker sätta en kaka på din dator.</p><p><strong>Observera!</strong> Om du stänger av kakor i din webbläsare kan du inte logga in i Webcert.</p><p>Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens webbplats.</p><p><a href="http://www.pts.se/sv/Privat/Internet/Integritet1/Fragor-och-svar-om-kakor-for-anvandare/" target="_blank">Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a></p>',

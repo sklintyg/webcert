@@ -9,13 +9,13 @@
 
   <context:annotation-config/>
 
-  <context:component-scan base-package="se.inera.webcert.notifications"/>
+  <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.notifications"/>
 
   <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
   <import resource="mock-test-service-context.xml"/>
   <import resource="../integration-test-broker-context.xml"/>
 
-  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.mocks.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.intyg.webcert.notification_sender.mocks.CertificateStatusUpdateForCareResponderStub"/>
 
 </beans>

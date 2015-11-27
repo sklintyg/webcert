@@ -3,10 +3,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
   
-  <bean id="mockIntygModuleRegistry" class="se.inera.webcert.mocks.MockIntygModuleRegistry" />
+  <bean id="mockIntygModuleRegistry" class="se.inera.intyg.webcert.notification_sender.mocks.MockIntygModuleRegistry" />
 
-  <bean id="mockSendCertificateServiceClient" class="se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl" />
+  <bean id="mockSendCertificateServiceClient" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl" />
 
-  <bean id="mockRevokeCertificateServiceClient" class="se.inera.webcert.certificatesender.services.mock.MockRevokeCertificateServiceClientImpl" />
+  <bean id="mockRevokeCertificateServiceClient" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockRevokeCertificateServiceClientImpl" />
 
 </beans>

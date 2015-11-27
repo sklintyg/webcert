@@ -1,7 +1,5 @@
 package se.inera.webcert.spec.api
 
-import se.inera.certificate.integration.json.CustomObjectMapper
-import se.inera.log.messages.AbstractLogMessage
 import se.inera.webcert.spec.util.RestClientFixture
 
 /**

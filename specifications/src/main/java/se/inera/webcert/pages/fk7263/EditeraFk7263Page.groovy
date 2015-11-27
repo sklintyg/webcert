@@ -5,7 +5,16 @@ import se.inera.webcert.pages.AbstractEditCertPage
 
 class EditeraFk7263Page extends AbstractEditCertPage {
 
-    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() }
+    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() && disableOnbeforeunload() }
+
+    /**
+     * For some reason, the "onLoad" method in AbstractEditCertPage is not enough to disable
+     * "onbeforeunload" for all fk7263 tests. This method is a workaround for that to solve WEBCERT-2233.
+     */
+    def disableOnbeforeunload() {
+        js.eval("window.onbeforeunload = null;");
+        return true;
+    }
 
     static content = {
 

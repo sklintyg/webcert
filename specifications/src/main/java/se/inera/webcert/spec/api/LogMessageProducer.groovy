@@ -4,7 +4,7 @@ import org.joda.time.LocalDateTime
 import se.inera.certificate.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.certificate.spec.util.jms.JMSUtils
 import se.inera.certificate.spec.util.jms.Producer
-import se.inera.log.messages.IntygReadMessage
+import se.inera.intyg.webcert.logmessages.IntygReadMessage
 
 import javax.jms.Connection
 import javax.jms.Message

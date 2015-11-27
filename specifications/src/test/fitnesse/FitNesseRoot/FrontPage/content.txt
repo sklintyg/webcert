@@ -8,6 +8,8 @@ Våra testspecifikationer. Gör alla förändringar här.
 !3 Hjälpspecifikationer
 Används för att köra våra specifikationer i olika lägen. Behöver normalt sett inte ändras.
 
+ * WebCert.AutomatiseradeTester.ApiTester
+
  * AllBrowsers
   * ChromeSuite
   * FirefoxSuite

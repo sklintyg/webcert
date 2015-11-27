@@ -14,6 +14,6 @@
 
   <context:annotation-config/>
 
-  <context:component-scan base-package="se.inera.webcert.certificatesender"/>
+  <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.certificatesender"/>
 
 </beans>

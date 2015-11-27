@@ -20,7 +20,7 @@
 
   <jaxrs:server address="/roles">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.authtestability.UserRoleResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.authtestability.UserRoleResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

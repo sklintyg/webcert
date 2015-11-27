@@ -30,7 +30,7 @@
   <beans profile="dev,testability-api">
     <jaxrs:server address="/logMessages">
       <jaxrs:serviceBeans>
-        <bean class="se.inera.logsender.integration.test.LogResource" />
+        <bean class="se.inera.intyg.webcert.logsender.integration.test.LogResource" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />

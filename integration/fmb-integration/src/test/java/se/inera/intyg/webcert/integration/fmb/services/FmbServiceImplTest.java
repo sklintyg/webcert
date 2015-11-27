@@ -18,10 +18,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import se.inera.webcert.persistence.fmb.model.Fmb;
-import se.inera.webcert.persistence.fmb.model.FmbCallType;
-import se.inera.webcert.persistence.fmb.model.FmbType;
-import se.inera.webcert.persistence.fmb.repository.FmbRepository;
+import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
+import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponderInterface;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponseType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationType;

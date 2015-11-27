@@ -3,17 +3,17 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="notificationTransformer" class="se.inera.webcert.notifications.services.NotificationTransformer"/>
+  <bean id="notificationTransformer" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer"/>
 
-  <bean id="notificationWSClient" class="se.inera.webcert.notifications.services.NotificationWSClient"></bean>
+  <bean id="notificationWSClient" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationWSClient"></bean>
 
-  <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.NotificationRouteBuilder"/>
+  <bean id="processNotificationRequestRouteBuilder" class="se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder"/>
 
-  <bean id="customObjectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+  <bean id="customObjectMapper" class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper"/>
 
   <bean id="notificationMessageDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat">
     <constructor-arg ref="customObjectMapper"/>
-    <constructor-arg value="se.inera.certificate.modules.support.api.notification.NotificationMessage"/>
+    <constructor-arg value="se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage"/>
   </bean>
 
   <bean id="jaxbMessageDataFormat" class="org.apache.camel.converter.jaxb.JaxbDataFormat">

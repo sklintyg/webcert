@@ -15,9 +15,9 @@
 
   <logger name="org.apache.xbean" level="warn"/>
 
-  <logger name="se.inera.webcert.notifications" level="debug"/>
+  <logger name="se.inera.intyg.webcert.notification_sender.notifications" level="debug"/>
 
-  <logger name="se.inera.webcert.notifications.resend" level="error"/>
+  <logger name="se.inera.intyg.webcert.notification_sender.notifications.resend" level="error"/>
 
   <root>
     <level value="debug"/>

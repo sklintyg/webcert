@@ -16,7 +16,7 @@
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+    <bean class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper"/>
 
     <bean class="se.inera.intyg.webcert.integration.pp.stub.PPBootstrapBean"/>
     <bean class="se.inera.intyg.webcert.integration.pp.stub.HoSPersonStub"/>

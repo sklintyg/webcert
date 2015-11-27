@@ -11,10 +11,10 @@
   <context:property-placeholder
       location="classpath:certificates/unit-test.properties" order="1" ignore-resource-not-found="false" />
 
-  <bean id="transactionManager" class="se.inera.webcert.mocks.MockTransactionManager"/>
+  <bean id="transactionManager" class="se.inera.intyg.webcert.notification_sender.mocks.MockTransactionManager"/>
 
   <context:annotation-config/>
 
-  <context:component-scan base-package="se.inera.webcert.certificatesender"/>
+  <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.certificatesender"/>
 
 </beans>

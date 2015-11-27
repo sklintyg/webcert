@@ -13,6 +13,7 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+  <import resource="classpath:/webcert-common-config.xml" />
   <import resource="classpath:/repository-context.xml" />
   <import resource="security/securityContext.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
@@ -32,8 +33,10 @@
   <context:annotation-config />
   
   <context:component-scan base-package="se.inera.webcert" />
+  <context:component-scan base-package="se.inera.intyg.webcert.web">
+    <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
+  </context:component-scan>
   <context:component-scan base-package="se.inera.intyg.webcert.fkstub" />
-
 
   <beans>
     <!-- All config files must be present in other modes than dev -->
@@ -55,8 +58,8 @@
   
   <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
-    <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean" />
-    <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.webcert.service.util.IntegreradeEnheterBootstrapBean" />
+    <bean id="FragaSvarBootstrapBean" class="se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean" />
+    <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean" />
   </beans>
 
   <beans profile="!dev">
@@ -71,7 +74,7 @@
       location="classpath:webcert-notification-route-params.properties, classpath:webcert-certificate-route-params.properties, classpath:default.properties, classpath:version.properties"
       order="2" ignore-resource-not-found="false" />
 
-    <bean id="moduleRegistry" class="se.inera.certificate.modules.registry.IntygModuleRegistryImpl">
+    <bean id="moduleRegistry" class="se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl">
       <property name="origin" value="WEBCERT" />
     </bean>
 
@@ -86,7 +89,7 @@
       </property>
     </bean>
 
-    <bean id="avtalService" class="se.inera.webcert.service.privatlakaravtal.AvtalServiceImpl"/>
+    <bean id="avtalService" class="se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalServiceImpl"/>
 
     <!-- Exposes healthCheckService for use in health-check.jsp -->
     <bean
@@ -100,34 +103,34 @@
       </property>
     </bean>
 
-    <bean id="savedRequestFactory" class="se.inera.auth.SavedRequestFactoryImpl"/>
+    <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>
 
-    <bean id="idpSelectionFilter" class="se.inera.auth.IdpSelectionFilter">
+    <bean id="idpSelectionFilter" class="se.inera.intyg.webcert.web.auth.IdpSelectionFilter">
         <property name="savedRequestFactory" ref="savedRequestFactory"/>
     </bean>
 
     <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
-    <bean id="termsFilter" class="se.inera.auth.TermsFilter"/>
+    <bean id="termsFilter" class="se.inera.intyg.webcert.web.auth.TermsFilter"/>
 
     <!-- Eleg login redirect filter for easier URL handling in PP -->
-    <bean id="elegRedirectFilter" class="se.inera.auth.eleg.ElegRedirectFilter" />
+    <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />
 
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
-      class="se.inera.certificate.integration.json.CustomObjectMapper" />
+      class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper" />
 
     <bean id="jacksonJsonProvider"
       class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
       <property name="mapper">
-        <bean class="se.inera.certificate.integration.json.CustomObjectMapper" />
+        <bean class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper" />
       </property>
     </bean>
 
     <!-- Handlers for REST services -->
     <bean id="webcertRestExceptionHandler"
-      class="se.inera.webcert.web.handlers.WebcertRestExceptionHandler" />
+      class="se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler" />
 
-    <bean id="localDateTimeHandler" class="se.inera.webcert.web.handlers.LocalDateTimeHandler" />
+    <bean id="localDateTimeHandler" class="se.inera.intyg.webcert.web.web.handlers.LocalDateTimeHandler" />
 
     <!-- Thread pool for BankID GRP collect tasks. TODO tweak properties -->
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

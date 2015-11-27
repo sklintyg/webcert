@@ -2,6 +2,7 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
   version="3.0">
 
+
   <display-name>Inera WebCert Web Application</display-name>
 
   <context-param>
@@ -15,7 +16,7 @@
 
   <!-- Listener for external logback configuration file -->
   <listener>
-    <listener-class>se.inera.certificate.logging.LogbackConfiguratorContextListener</listener-class>
+    <listener-class>se.inera.intyg.common.util.logging.LogbackConfiguratorContextListener</listener-class>
   </listener>
   
   <!-- Start spring context -->
@@ -183,7 +184,7 @@
 
   <filter>
     <filter-name>sessionTimeoutFilter</filter-name>
-    <filter-class>se.inera.auth.SessionTimeoutFilter</filter-class>
+    <filter-class>se.inera.intyg.webcert.web.auth.SessionTimeoutFilter</filter-class>
     <init-param>
       <param-name>ignoredUrl</param-name>
       <param-value>/moduleapi/stat</param-value>

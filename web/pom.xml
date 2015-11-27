@@ -21,6 +21,7 @@
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <sonar.javascript.lcov.reportPath>target/karma_coverage/lcov.info</sonar.javascript.lcov.reportPath>
     <sonar.exclusions>**/templates.js,**/vendor/*,**/app.min.js</sonar.exclusions>
+    <skip.integration.tests>true</skip.integration.tests>
   </properties>
 
   <dependencies>
@@ -187,10 +188,6 @@
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>respond</artifactId>
-    </dependency>
 
     <!-- AOP -->
     <dependency>
@@ -223,10 +220,11 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>jstl</groupId>
-      <artifactId>jstl</artifactId>
-      <scope>provided</scope>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>apache-jstl</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
@@ -380,6 +378,18 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.jayway.restassured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>2.7.0</version><!--TODO: move versioning to common-pom -->
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.restassured</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>2.7.0</version><!--TODO: move versioning to common-pom -->
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -405,7 +415,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <packagingExcludes>**/*.spec.js,**/*.test.js,**/karma*.conf.js,**/karma*.conf.ci.js</packagingExcludes>
+          <packagingExcludes>**/*.page.js,**/*.spec.js,**/*.test.js,**/karma*.conf.js,**/karma*.conf.ci.js</packagingExcludes>
         </configuration>
       </plugin>
       <plugin>
@@ -427,6 +437,27 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
+        <executions>
+          <!-- integration tests execution to start/deploy/stop jetty at right phase to work with failsafe -->
+          <execution>
+            <id>start-jetty</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <configuration>
+              <!-- We don't want to start jetty if wer'e not running integration tests-->
+              <skip>${skip.integration.tests}</skip>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-jetty</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <webAppConfig>
             <contextPath>/</contextPath>
@@ -466,6 +497,8 @@
               <value>${project.basedir}/webcert-logback.xml</value>
             </systemProperty>
           </systemProperties>
+          <stopKey>stop</stopKey>
+          <stopPort>9099</stopPort>
         </configuration>
         <dependencies>
           <dependency>
@@ -622,11 +655,46 @@
               <goal>karma</goal>
             </goals>
             <configuration>
-              <karmaConfPath>${project.basedir}/src/main/resources/karma.conf.ci.js --skip-coverage=${skip-coverage}</karmaConfPath>
+              <karmaConfPath>${project.basedir}/src/main/resources/karma.conf.ci.js --skip-coverage=${skip-coverage}
+              </karmaConfPath>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <!-- Run unit tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Always exclude integration tests when unit tests are run -->
+          <excludes>
+            <exclude>**/IT*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- Runs integration tests (unless skip.integration.tests=true) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.19</version><!--TODO: move versioning to common-pom -->
+        <executions>
+          <execution>
+            <id>integration-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <skipTests>${skip.integration.tests}</skipTests>
+              <systemPropertyVariables>
+                <integration.tests.baseUrl>http://localhost:9088/</integration.tests.baseUrl>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -666,6 +734,15 @@
       </build>
     </profile>
 
+    <!-- integration-test profile that overrides project default test execution flags.
+      This will also trigger the startup of jetty in preparation of integration-test execution.
+      -->
+    <profile>
+      <id>integration-test</id>
+      <properties>
+        <skip.integration.tests>false</skip.integration.tests>
+      </properties>
+    </profile>
   </profiles>
 
 </project>
