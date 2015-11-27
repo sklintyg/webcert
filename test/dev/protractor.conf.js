@@ -21,7 +21,7 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance.
     capabilities: {
-        'browserName': 'firefox'//'chrome'
+        'browserName': 'firefox' // possible values: firefox, chrome, internet explorer
         //'browserName': 'phantomjs'
     },
     rootElement:'html',
