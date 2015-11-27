@@ -37,7 +37,7 @@
     <rivta-decisionsupport.version>1.0.RC4.0</rivta-decisionsupport.version>
 
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
-    <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
+    <intyg-insuranceprocess.version>2.0.0</intyg-insuranceprocess.version>
     <intyg-transportstyrelsen.version>1.0.0</intyg-transportstyrelsen.version>
     <intyg-privatepractitioner.version>1.0.0</intyg-privatepractitioner.version>
     <intyg-privatepractitioner-terms.version>1.0.0</intyg-privatepractitioner-terms.version>
