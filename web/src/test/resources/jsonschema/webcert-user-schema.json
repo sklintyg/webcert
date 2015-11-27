@@ -1,0 +1,263 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title" : "Webcertuser transport model",
+  "description" : "Defines the transport model of an authenticated webcert user model, e.g returned by /api/anvandare",
+  "id": "/",
+  "type": "object",
+  "properties": {
+    "privatLakareAvtalGodkand": {
+      "id": "privatLakareAvtalGodkand",
+      "type": "boolean"
+    },
+    "hsaId": {
+      "id": "hsaId",
+      "type": "string"
+    },
+    "namn": {
+      "id": "namn",
+      "type": "string"
+    },
+    "titel": {
+      "id": "titel",
+      "type": "string"
+    },
+    "forskrivarkod": {
+      "id": "forskrivarkod",
+      "type": "string"
+    },
+    "authenticationScheme": {
+      "id": "authenticationScheme",
+      "type": "string"
+    },
+    "vardgivare": {
+      "id": "vardgivare",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "id": "auto-generated-schema-451"
+      },
+      "additionalItems": false
+    },
+    "specialiseringar": {
+      "id": "specialiseringar",
+      "type": "array",
+      "minItems": 0,
+      "items": {},
+      "additionalItems": false
+    },
+    "legitimeradeYrkesgrupper": {
+      "id": "legitimeradeYrkesgrupper",
+      "type": "array",
+      "minItems": 0,
+      "items": {},
+      "additionalItems": false
+    },
+    "aktivaFunktioner": {
+      "id": "aktivaFunktioner",
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "id": "auto-generated-schema-824"
+      },
+      "additionalItems": false
+    },
+    "valdVardenhet": {
+      "id": "valdVardenhet",
+      "type": "object",
+      "properties": {
+        "@class": {
+          "id": "@class",
+          "type": "string"
+        },
+        "id": {
+          "id": "id",
+          "type": "string"
+        },
+        "namn": {
+          "id": "namn",
+          "type": "string"
+        },
+        "epost": {
+          "id": "epost",
+          "type": "string"
+        },
+        "postadress": {
+          "id": "postadress",
+          "type": "string"
+        },
+        "postnummer": {
+          "id": "postnummer",
+          "type": "string"
+        },
+        "postort": {
+          "id": "postort",
+          "type": "string"
+        },
+        "telefonnummer": {
+          "id": "telefonnummer",
+          "type": "string"
+        },
+        "arbetsplatskod": {
+          "id": "arbetsplatskod",
+          "type": "string"
+        },
+        "mottagningar": {
+          "id": "mottagningar",
+          "type": "array",
+          "items": {},
+          "additionalItems": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "valdVardgivare": {
+      "id": "valdVardgivare",
+      "type": "object",
+      "properties": {
+        "@class": {
+          "id": "@class",
+          "type": "string"
+        },
+        "id": {
+          "id": "id",
+          "type": "string"
+        },
+        "namn": {
+          "id": "namn",
+          "type": "string"
+        },
+        "vardenheter": {
+          "id": "vardenheter",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "id": "auto-generated-schema-148"
+          },
+          "additionalItems": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "roles": {
+      "id": "roles",
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true
+    },
+    "authorities": {
+      "id": "authorities",
+      "type": "object",
+      "properties": {
+        "PRIVILEGE_MAKULERA_INTYG": {
+          "id": "PRIVILEGE_MAKULERA_INTYG",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_SIGNERA_INTYG": {
+          "id": "PRIVILEGE_SIGNERA_INTYG",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA": {
+          "id": "PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR": {
+          "id": "PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_ATKOMST_ANDRA_ENHETER": {
+          "id": "PRIVILEGE_ATKOMST_ANDRA_ENHETER",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_KOPIERA_INTYG": {
+          "id": "PRIVILEGE_KOPIERA_INTYG",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_NAVIGERING": {
+          "id": "PRIVILEGE_NAVIGERING",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_FILTRERA_PA_LAKARE": {
+          "id": "PRIVILEGE_FILTRERA_PA_LAKARE",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_VIDAREBEFORDRA_UTKAST": {
+          "id": "PRIVILEGE_VIDAREBEFORDRA_UTKAST",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_HANTERA_PERSONUPPGIFTER": {
+          "id": "PRIVILEGE_HANTERA_PERSONUPPGIFTER",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "PRIVILEGE_HANTERA_MAILSVAR": {
+          "id": "PRIVILEGE_HANTERA_MAILSVAR",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "authenticationMethod": {
+      "id": "authenticationMethod",
+      "type": "string"
+    },
+    "lakare": {
+      "id": "lakare",
+      "type": "boolean"
+    },
+    "roleUthopp": {
+      "id": "roleUthopp",
+      "type": "boolean"
+    },
+    "privatLakare": {
+      "id": "privatLakare",
+      "type": "boolean"
+    },
+    "totaltAntalVardenheter": {
+      "id": "totaltAntalVardenheter",
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "privatLakareAvtalGodkand",
+    "hsaId",
+    "namn",
+    "titel",
+    "forskrivarkod",
+    "authenticationScheme",
+    "vardgivare",
+    "specialiseringar",
+    "legitimeradeYrkesgrupper",
+    "aktivaFunktioner",
+    "valdVardenhet",
+    "valdVardgivare",
+    "roles",
+    "authorities",
+    "authenticationMethod",
+    "lakare",
+    "roleUthopp",
+    "privatLakare",
+    "totaltAntalVardenheter"
+  ]
+}
