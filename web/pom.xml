@@ -22,7 +22,6 @@
     <sonar.javascript.lcov.reportPath>target/karma_coverage/lcov.info</sonar.javascript.lcov.reportPath>
     <sonar.exclusions>**/templates.js,**/vendor/*,**/app.min.js</sonar.exclusions>
     <skip.integration.tests>true</skip.integration.tests>
-    <skip.unit.tests>false</skip.unit.tests>
   </properties>
 
   <dependencies>
@@ -637,18 +636,16 @@
             <configuration>
               <karmaConfPath>${project.basedir}/src/main/resources/karma.conf.ci.js --skip-coverage=${skip-coverage}
               </karmaConfPath>
-              <skipTests>${skip.unit.tests}</skipTests>
             </configuration>
           </execution>
         </executions>
       </plugin>
-      <!-- Run unit tests (unless skip.unit.tests=true) -->
+      <!-- Run unit tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>${skip.unit.tests}</skipTests>
-          <!-- Excludes integration tests when unit tests are run -->
+          <!-- Always exclude integration tests when unit tests are run -->
           <excludes>
             <exclude>**/IT*.java</exclude>
           </excludes>
@@ -723,7 +720,6 @@
       <id>integration-test</id>
       <properties>
         <skip.integration.tests>false</skip.integration.tests>
-        <skip.unit.tests>true</skip.unit.tests>
       </properties>
     </profile>
   </profiles>
