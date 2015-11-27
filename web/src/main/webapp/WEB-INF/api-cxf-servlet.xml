@@ -29,6 +29,11 @@
     <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.api" />
 
     <jaxrs:server address="/">
+      <jaxrs:properties>
+        <!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
+        that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
+        <entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
+      </jaxrs:properties>
       <jaxrs:serviceBeans>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.FragaSvarApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.IntygApiController" />
