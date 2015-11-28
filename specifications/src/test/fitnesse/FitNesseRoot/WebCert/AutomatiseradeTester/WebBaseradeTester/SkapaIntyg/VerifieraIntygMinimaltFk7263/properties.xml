@@ -4,6 +4,7 @@
 <Files>true</Files>
 <Help>Verifiera minimalt FK7263-intyg</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>
