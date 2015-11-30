@@ -1,6 +1,6 @@
 package se.inera.webcert.spec.util
 
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC

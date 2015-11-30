@@ -9,7 +9,7 @@ import static com.jayway.awaitility.Awaitility.await
  *
  * @author andreaskaltenbach
  */
-class RestClientFixture extends se.inera.certificate.spec.util.RestClientFixture {
+class RestClientFixture extends se.inera.intyg.common.specifications.spec.util.RestClientFixture {
 
     String baseUrl = System.getProperty("webcert.baseUrl")
     String logSenderBaseUrl = System.getProperty("logsender.baseUrl")

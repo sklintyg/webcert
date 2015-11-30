@@ -2,7 +2,7 @@ package se.inera.webcert.pages
 
 import geb.Module
 import geb.Page
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 
 class AbstractEditCertPage extends AbstractLoggedInPage {
     

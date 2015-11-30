@@ -1,6 +1,6 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 
 class VisaIntygPage extends AbstractViewCertPage {
 

@@ -1,9 +1,9 @@
 package se.inera.webcert.spec.api
 
 import org.joda.time.LocalDateTime
-import se.inera.certificate.spec.util.jms.ActiveMQConnectionFixture
-import se.inera.certificate.spec.util.jms.JMSUtils
-import se.inera.certificate.spec.util.jms.Producer
+import se.inera.intyg.common.specifications.spec.util.jms.ActiveMQConnectionFixture
+import se.inera.intyg.common.specifications.spec.util.jms.JMSUtils
+import se.inera.intyg.common.specifications.spec.util.jms.Producer
 import se.inera.intyg.webcert.logmessages.IntygReadMessage
 
 import javax.jms.Connection

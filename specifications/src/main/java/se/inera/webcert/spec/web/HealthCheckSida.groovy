@@ -1,6 +1,6 @@
 package se.inera.webcert.spec.web
 
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.HealthCheckPage
 
 class HealthCheckSida {

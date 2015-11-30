@@ -2,8 +2,8 @@
 | Import |
 | se.inera.webcert.spec |
 | se.inera.webcert.spec.util |
-| se.inera.certificate.spec |
-| se.inera.certificate.spec.util |
+| se.inera.intyg.common.specifications.spec |
+| se.inera.intyg.common.specifications.spec.util |
 
 !| Config |
 | property | value |

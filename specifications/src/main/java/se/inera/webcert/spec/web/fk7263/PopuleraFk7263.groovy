@@ -4,9 +4,9 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
-import se.inera.certificate.page.AbstractPage
+import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 
 class PopuleraFk7263 {
 

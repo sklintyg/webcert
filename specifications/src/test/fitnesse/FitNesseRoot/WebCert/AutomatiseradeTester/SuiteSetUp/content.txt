@@ -8,9 +8,9 @@
 | se.inera.webcert.spec.web.ts_bas |
 | se.inera.webcert.spec.web.ts_diabetes |
 | se.inera.webcert.spec.util |
-| se.inera.certificate.spec |
-| se.inera.certificate.spec.util |
-| se.inera.certificate.spec.util.jms |
+| se.inera.intyg.common.specifications.spec |
+| se.inera.intyg.common.specifications.spec.util |
+| se.inera.intyg.common.specifications.spec.util.jms |
 | se.inera.webcert.spec.certificate_sender |
 | se.inera.webcert.spec.notification_sender |
 | se.inera.webcert.spec.pp_terms |

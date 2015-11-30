@@ -1,5 +1,5 @@
 package se.inera.webcert.spec.web
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 

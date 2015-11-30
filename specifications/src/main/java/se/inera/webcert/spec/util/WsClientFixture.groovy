@@ -1,6 +1,6 @@
 package se.inera.webcert.spec.util
 
-class WsClientFixture extends se.inera.certificate.spec.util.WsClientFixture {
+class WsClientFixture extends se.inera.intyg.common.specifications.spec.util.WsClientFixture {
 
 	private final static String LOGICAL_ADDRESS = "5565594230"
 

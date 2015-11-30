@@ -1,7 +1,7 @@
 package se.inera.webcert.pages.ts_diabetes
 
 import geb.Module
-import se.inera.certificate.page.AbstractPage
+import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.VardenhetModule
 

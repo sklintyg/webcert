@@ -4,7 +4,7 @@ import java.sql.Timestamp
 
 import org.joda.time.LocalDateTime
 
-import se.inera.certificate.spec.util.sql.SQLFixture
+import se.inera.intyg.common.specifications.spec.util.sql.SQLFixture
 
 class Omsandning extends SQLFixture {
     

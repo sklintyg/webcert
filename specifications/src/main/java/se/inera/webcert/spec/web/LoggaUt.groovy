@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.web
 
-import se.inera.certificate.page.AbstractPage
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.AccessDeniedPage
 import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.UnhandledQAPage

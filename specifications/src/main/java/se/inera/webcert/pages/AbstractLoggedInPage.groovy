@@ -1,7 +1,7 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.common.specifications.spec.Browser
 
 class AbstractLoggedInPage extends AbstractPage {
 
