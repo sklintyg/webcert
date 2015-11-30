@@ -1,9 +1,9 @@
-package se.inera.certificate.spec
+package se.inera.intyg.common.specifications.spec
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.springframework.core.io.ClassPathResource
-import se.inera.certificate.spec.util.RestClientFixture
+import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
 

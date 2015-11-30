@@ -1,6 +1,6 @@
-package se.inera.certificate.spec
+package se.inera.intyg.common.specifications.spec
 
-import se.inera.certificate.spec.util.WsClientFixture
+import se.inera.intyg.common.specifications.spec.util.WsClientFixture
 import se.inera.intyg.insuranceprocess.healthreporting.setconsent.rivtabp20.v1.SetConsentResponderInterface
 import se.inera.intyg.insuranceprocess.healthreporting.setconsentresponder.v1.SetConsentRequestType
 import se.inera.intyg.insuranceprocess.healthreporting.setconsentresponder.v1.SetConsentResponseType

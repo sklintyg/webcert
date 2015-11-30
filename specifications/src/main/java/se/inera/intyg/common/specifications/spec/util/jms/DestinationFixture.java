@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util.jms;
+package se.inera.intyg.common.specifications.spec.util.jms;
 
 import java.util.HashMap;
 import java.util.Map;

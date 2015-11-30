@@ -1,10 +1,10 @@
-package se.inera.certificate.spec
+package se.inera.intyg.common.specifications.spec
 
 import geb.driver.CachingDriverFactory
 
 import org.openqa.selenium.Cookie
 
-import se.inera.certificate.page.AbstractPage
+import se.inera.intyg.common.specifications.page.AbstractPage
 
 public class Browser {
 

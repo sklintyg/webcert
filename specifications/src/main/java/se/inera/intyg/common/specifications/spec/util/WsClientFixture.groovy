@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util
+package se.inera.intyg.common.specifications.spec.util
 
 import java.security.KeyStore
 import java.security.cert.X509Certificate

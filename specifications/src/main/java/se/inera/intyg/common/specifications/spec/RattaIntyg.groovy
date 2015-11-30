@@ -1,8 +1,8 @@
-package se.inera.certificate.spec
+package se.inera.intyg.common.specifications.spec
 
 import iso.v21090.dt.v1.II
 import org.joda.time.LocalDateTime
-import se.inera.certificate.spec.util.WsClientFixture
+import se.inera.intyg.common.specifications.spec.util.WsClientFixture
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface

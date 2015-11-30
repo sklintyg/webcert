@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util
+package se.inera.intyg.common.specifications.spec.util
 
 import groovyx.net.http.RESTClient
 

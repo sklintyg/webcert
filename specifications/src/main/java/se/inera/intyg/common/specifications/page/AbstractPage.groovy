@@ -1,10 +1,10 @@
-package se.inera.certificate.page
+package se.inera.intyg.common.specifications.page
 
 import org.openqa.selenium.By
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
-import se.inera.certificate.spec.Browser
+import se.inera.intyg.common.specifications.spec.Browser
 import geb.Page
 
 import java.util.concurrent.TimeUnit

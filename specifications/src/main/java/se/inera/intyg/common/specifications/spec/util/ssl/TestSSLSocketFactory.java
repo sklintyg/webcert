@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util.ssl;
+package se.inera.intyg.common.specifications.spec.util.ssl;
 
 import java.io.IOException;
 import java.net.Socket;

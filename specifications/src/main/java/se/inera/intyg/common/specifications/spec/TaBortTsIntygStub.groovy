@@ -1,6 +1,6 @@
-package se.inera.certificate.spec
+package se.inera.intyg.common.specifications.spec
 
-import se.inera.certificate.spec.util.RestClientFixture
+import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 public class TaBortTsIntygStub extends RestClientFixture {
 

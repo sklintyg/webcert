@@ -1,4 +1,4 @@
-package se.inera.certificate.page;
+package se.inera.intyg.common.specifications.page;
 
 /**
  * Javascript scripts to perform against AngularJs sites when using Selenium

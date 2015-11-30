@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util.jms
+package se.inera.intyg.common.specifications.spec.util.jms
 
 import javax.jms.Connection
 import javax.jms.Destination
@@ -6,7 +6,7 @@ import javax.jms.Message
 import javax.jms.MessageProducer
 import javax.jms.Session
 
-import se.inera.certificate.spec.util.FitnesseHelper
+import se.inera.intyg.common.specifications.spec.util.FitnesseHelper
 
 class Producer {
 

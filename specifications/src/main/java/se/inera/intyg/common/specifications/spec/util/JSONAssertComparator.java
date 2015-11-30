@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util;
+package se.inera.intyg.common.specifications.spec.util;
 
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;

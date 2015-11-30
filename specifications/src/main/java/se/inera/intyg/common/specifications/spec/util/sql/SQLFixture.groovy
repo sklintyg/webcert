@@ -1,10 +1,10 @@
-package se.inera.certificate.spec.util.sql
+package se.inera.intyg.common.specifications.spec.util.sql
 
 import groovy.sql.Sql
 
 import org.apache.commons.dbcp2.BasicDataSource
 
-import se.inera.certificate.spec.util.FitnesseHelper
+import se.inera.intyg.common.specifications.spec.util.FitnesseHelper
 
 class SQLFixture {
 

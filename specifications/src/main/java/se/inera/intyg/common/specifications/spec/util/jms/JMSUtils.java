@@ -1,4 +1,4 @@
-package se.inera.certificate.spec.util.jms;
+package se.inera.intyg.common.specifications.spec.util.jms;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

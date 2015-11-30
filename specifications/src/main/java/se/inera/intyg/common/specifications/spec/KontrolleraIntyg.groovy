@@ -1,7 +1,7 @@
-package se.inera.certificate.spec
+package se.inera.intyg.common.specifications.spec
 
 import static groovyx.net.http.ContentType.JSON
-import se.inera.certificate.spec.util.RestClientFixture
+import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 /**
  * Läs upp ett intyg via intygsId, för att verifiera vårdEnhet, vårdGivare och wireTap-status.
