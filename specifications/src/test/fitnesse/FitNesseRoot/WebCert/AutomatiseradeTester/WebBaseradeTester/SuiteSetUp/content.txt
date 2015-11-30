@@ -28,6 +28,7 @@
 | intyg-fit-9 |
 | intyg-fit-annan-enhet |
 | intyg-fit-vardadmin |
+| intyg-fit-priv-1 |
 
 !3 Ta bort eventuella kvarvarande omsändningar
 TODO Rensa ActiveMQ?
