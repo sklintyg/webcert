@@ -2,13 +2,13 @@
 
 /**
  * Setup :
- * npm install
- * <webcert/web/> : ./node_modules/protractor/bin/webdriver-manager update
+ * <webcert/test/> : npm install
  *
  * To run tests :
- * <webcert/web/> : grunt e2e
+ * <webcert/test/> : grunt
  *
  **/
+var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
@@ -21,8 +21,12 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance.
     capabilities: {
-        'browserName': 'firefox' // possible values: firefox, chrome, internet explorer
-        //'browserName': 'phantomjs'
+        'browserName': 'chrome' // possible values: phantomjs, firefox, chrome
+
+        // IE11
+        /*'browserName': 'internet explorer',
+        'platform': 'ANY',
+        'version': '11'*/
     },
     rootElement:'html',
     framework: 'jasmine',
@@ -30,16 +34,16 @@ exports.config = {
         // If true, print colors to the terminal.
         showColors: true,
         // Default time to wait in ms before a test fails.
-        defaultTimeoutInterval: 30000,
+        defaultTimeoutInterval: 30000
         // Function called to print jasmine results.
         //print: function() {},
         // If set, only execute specs whose names match the pattern, which is
         // internally compiled to a RegExp.
         //grep: 'pattern',
         // Inverts 'grep' matches
-        isVerbose: true,
-        includeStackTrace: true
         //invertGrep: false
+        //isVerbose: true, // jasmine 1.3 only
+        //includeStackTrace: true // jasmine 1.3 only
     },
     onPrepare: function() {
         // implicit and page load timeouts
@@ -57,5 +61,12 @@ exports.config = {
         global.testdata = require('../lib/testdata/testdata.js');
         global.intygTemplates = require('./../lib/testdata/intygTemplates.js');
         global.pages = require('./../lib/pages.js');
+
+        jasmine.getEnv().addReporter(
+            new HtmlScreenshotReporter({
+                dest: 'screenshots',
+                filename: 'dev-report.html'
+            })
+        );
     }
 };

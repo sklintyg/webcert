@@ -25,3 +25,4 @@ web/src/main/webapp/app/templates.js
 web/src/test/js/coverage/
 web/src/test/coverage/
 web/src/main/webapp/app.min.js
+test/screenshots/
