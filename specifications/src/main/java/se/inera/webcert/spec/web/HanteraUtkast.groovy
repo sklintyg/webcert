@@ -11,8 +11,9 @@ import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import se.inera.webcert.spec.util.WebcertRestUtils
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class HanteraUtkast {
+class HanteraUtkast extends ExceptionHandlingFixture {
 
     void gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {

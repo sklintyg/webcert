@@ -1,7 +1,9 @@
 package se.inera.webcert.spec.web.ts_bas
-import se.inera.intyg.common.specifications.spec.Browser
 
-class ValideringTsBas {
+import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+
+class ValideringTsBas extends ExceptionHandlingFixture {
 
     boolean sparaUtkast() {
         Browser.drive {

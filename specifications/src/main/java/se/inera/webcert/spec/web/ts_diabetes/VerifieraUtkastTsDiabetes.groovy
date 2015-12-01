@@ -2,8 +2,9 @@ package se.inera.webcert.spec.web.ts_diabetes
 
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class VerifieraUtkastTsDiabetes {
+class VerifieraUtkastTsDiabetes extends ExceptionHandlingFixture {
     String postadress() {
         def result
         Browser.drive {

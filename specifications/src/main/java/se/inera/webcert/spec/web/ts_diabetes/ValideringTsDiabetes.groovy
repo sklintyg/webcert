@@ -1,7 +1,9 @@
 package se.inera.webcert.spec.web.ts_diabetes
-import se.inera.intyg.common.specifications.spec.Browser
 
-class ValideringTsDiabetes {
+import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+
+class ValideringTsDiabetes extends ExceptionHandlingFixture {
 
     boolean sparaUtkast() {
         Browser.drive {

@@ -6,8 +6,9 @@ import se.inera.webcert.pages.OmWebcertFAQPage
 import se.inera.webcert.pages.OmWebcertIntygPage
 import se.inera.webcert.pages.OmWebcertPage
 import se.inera.webcert.pages.OmWebcertSupportPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class OmWebcert {
+class OmWebcert extends ExceptionHandlingFixture {
 
     def gaTillOmWebcert() {
         Browser.drive {

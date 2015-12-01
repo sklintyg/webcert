@@ -2,8 +2,9 @@ package se.inera.webcert.spec.web
 
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.VisaIntygPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class VisaIntyg {
+class VisaIntyg extends ExceptionHandlingFixture {
 
     def visaIntygMedIdOchTyp(String id, String intygstyp) {
         Browser.drive {

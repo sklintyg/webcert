@@ -8,8 +8,9 @@ import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
 import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
 import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class SkrivIntyg {
+class SkrivIntyg extends ExceptionHandlingFixture {
 
     def intygsid
 

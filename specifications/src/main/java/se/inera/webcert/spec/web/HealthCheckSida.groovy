@@ -2,8 +2,9 @@ package se.inera.webcert.spec.web
 
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.HealthCheckPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class HealthCheckSida {
+class HealthCheckSida extends ExceptionHandlingFixture {
 
     private String databasTid
     private String databasStatus

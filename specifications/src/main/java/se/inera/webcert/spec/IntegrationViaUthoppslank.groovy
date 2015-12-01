@@ -2,8 +2,9 @@ package se.inera.webcert.spec
 
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.VisaFragaSvarPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class IntegrationViaUthoppslank {
+class IntegrationViaUthoppslank extends ExceptionHandlingFixture {
 
     boolean exists(content) {
         content

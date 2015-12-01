@@ -3,11 +3,12 @@ import geb.Browser
 import se.inera.webcert.pages.PrivatlakarAvtalPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.WelcomePage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
 /**
  * Created by eriklupander on 2015-08-19.
  */
-class HanteraAvtal {
+class HanteraAvtal extends ExceptionHandlingFixture {
 
 
     boolean avtalsidaVisas() {

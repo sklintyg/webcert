@@ -3,8 +3,9 @@ import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.VisaFragaSvarPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class SvaraOchFraga {
+class SvaraOchFraga extends ExceptionHandlingFixture {
 
     void gaTillFragorOchSvar() {
         Browser.drive {

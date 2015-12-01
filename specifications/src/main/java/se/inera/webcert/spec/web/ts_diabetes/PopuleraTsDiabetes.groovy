@@ -2,8 +2,9 @@ package se.inera.webcert.spec.web.ts_diabetes
 
 import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class PopuleraTsDiabetes {
+class PopuleraTsDiabetes extends ExceptionHandlingFixture {
 
     String postadress
     String postnummer

@@ -3,8 +3,9 @@ package se.inera.webcert.spec.web.ts_bas
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import org.codehaus.groovy.runtime.StackTraceUtils
 import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class VerifieraSigneratTsBas {
+class VerifieraSigneratTsBas extends ExceptionHandlingFixture {
 
     public VerifieraSigneratTsBas() {
 

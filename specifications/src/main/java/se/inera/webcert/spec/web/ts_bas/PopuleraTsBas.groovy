@@ -2,8 +2,9 @@ package se.inera.webcert.spec.web.ts_bas
 
 import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
 import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class PopuleraTsBas {
+class PopuleraTsBas extends ExceptionHandlingFixture {
 
     String postadress
     String postnummer

@@ -6,8 +6,9 @@ import se.inera.webcert.pages.AccessDeniedPage
 import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.WelcomePage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class LoggaUt {
+class LoggaUt extends ExceptionHandlingFixture {
 
     boolean accessDeniedSidanVisas() {
         Browser.drive {

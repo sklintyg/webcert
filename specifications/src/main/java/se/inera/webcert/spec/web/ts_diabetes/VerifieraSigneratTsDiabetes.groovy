@@ -2,8 +2,9 @@ package se.inera.webcert.spec.web.ts_diabetes
 
 import org.codehaus.groovy.runtime.StackTraceUtils
 import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class VerifieraSigneratTsDiabetes {
+class VerifieraSigneratTsDiabetes extends ExceptionHandlingFixture {
 
     public VerifieraSigneratTsDiabetes() {
 

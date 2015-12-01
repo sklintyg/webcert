@@ -2,8 +2,9 @@ package se.inera.webcert.spec
 
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.*
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class HeaderMenu {
+class HeaderMenu extends ExceptionHandlingFixture {
 
     def klickaPaFragaSvar() {
         Browser.drive {

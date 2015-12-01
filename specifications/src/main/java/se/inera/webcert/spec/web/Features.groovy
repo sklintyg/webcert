@@ -5,8 +5,9 @@ import se.inera.webcert.pages.AccessDeniedPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.UnsignedIntygPage
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class Features {
+class Features extends ExceptionHandlingFixture {
 
     void gaTillSvaraOchFraga() {
         Browser.drive {

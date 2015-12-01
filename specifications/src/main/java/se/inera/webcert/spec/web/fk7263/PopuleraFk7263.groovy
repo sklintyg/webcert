@@ -7,8 +7,9 @@ import org.openqa.selenium.Keys
 import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
 import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class PopuleraFk7263 {
+class PopuleraFk7263 extends ExceptionHandlingFixture {
 
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
 

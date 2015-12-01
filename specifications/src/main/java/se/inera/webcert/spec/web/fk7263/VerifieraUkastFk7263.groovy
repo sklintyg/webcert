@@ -4,8 +4,9 @@ import org.codehaus.groovy.runtime.StackTraceUtils
 
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.webcert.pages.fk7263.EditeraFk7263Page
+import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
 
-class VerifieraUtkastFk7263 {
+class VerifieraUtkastFk7263 extends ExceptionHandlingFixture {
     public VerifieraUtkastFk7263() {
     }
 
