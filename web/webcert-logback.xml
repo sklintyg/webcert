@@ -84,11 +84,11 @@
 
   <logger name="se.inera.intyg.webcert" level="debug" />
 
-  <logger name="se.inera.certificate.modules.fk7263" level="debug" />
+  <logger name="se.inera.intyg.intygstyper.fk7263" level="debug" />
 
-  <logger name="se.inera.certificate.modules.ts_bas" level="info" />
+  <logger name="se.inera.intyg.intygstyper.ts_bas" level="info" />
 
-  <logger name="se.inera.certificate.modules.ts_diabetes" level="info" />
+  <logger name="se.inera.intyg.intygstyper.ts_diabetes" level="info" />
 
   <logger name="org.apache.camel" level="error" />
 
