@@ -7,11 +7,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-protractor-runner');
     grunt.loadNpmTasks('grunt-protractor-webdriver');
 
+    var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
 
         protractor: {
             options: {
-                configFile: './protractor.cli.conf.js', // Target-specific config file
+                //configFile: './protractor.cli.conf.js', // Target-specific config file
                 keepAlive: false, // If false, the grunt process stops when the test fails.
                 noColor: false, // If true, protractor will not use colors in its output.
                 args: {
@@ -23,7 +24,9 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     configFile: './dev/protractor.conf.js',
-                    args: {} // Target-specific arguments
+                    args: {
+                        'suite': devSuite
+                    } // Target-specific arguments
                 }
             },
             acc: {
@@ -42,8 +45,6 @@ module.exports = function(grunt) {
 
     });
 
-    /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
-    * that webcert depends on*/
     grunt.registerTask('acc', ['protractor_webdriver','protractor:acc']);
     grunt.registerTask('default', ['protractor_webdriver','protractor:dev']);
 };
