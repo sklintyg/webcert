@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType
@@ -10,7 +10,7 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande
-import se.inera.webcert.spec.util.WsClientFixtureNyaKontraktet
+import se.inera.intyg.webcert.specifications.spec.util.WsClientFixtureNyaKontraktet
 
 /**
  * @author andreaskaltenbach

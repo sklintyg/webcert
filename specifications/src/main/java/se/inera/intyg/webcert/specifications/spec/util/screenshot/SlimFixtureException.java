@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.util.screenshot;
+package se.inera.intyg.webcert.specifications.spec.util.screenshot;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 

@@ -1,12 +1,12 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.OmWebcertCookiesPage
-import se.inera.webcert.pages.OmWebcertFAQPage
-import se.inera.webcert.pages.OmWebcertIntygPage
-import se.inera.webcert.pages.OmWebcertPage
-import se.inera.webcert.pages.OmWebcertSupportPage
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.OmWebcertCookiesPage
+import se.inera.intyg.webcert.specifications.pages.OmWebcertFAQPage
+import se.inera.intyg.webcert.specifications.pages.OmWebcertIntygPage
+import se.inera.intyg.webcert.specifications.pages.OmWebcertPage
+import se.inera.intyg.webcert.specifications.pages.OmWebcertSupportPage
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class OmWebcert extends ExceptionHandlingFixture {
 

@@ -1,8 +1,8 @@
-package se.inera.webcert.spec.web.ts_diabetes
+package se.inera.intyg.webcert.specifications.spec.web.ts_diabetes
 
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class VerifieraUtkastTsDiabetes extends ExceptionHandlingFixture {
     String postadress() {

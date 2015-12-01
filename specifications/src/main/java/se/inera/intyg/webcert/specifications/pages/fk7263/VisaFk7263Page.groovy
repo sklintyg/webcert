@@ -1,6 +1,6 @@
-package se.inera.webcert.pages.fk7263
+package se.inera.intyg.webcert.specifications.pages.fk7263
 
-import se.inera.webcert.pages.AbstractViewCertPage
+import se.inera.intyg.webcert.specifications.pages.AbstractViewCertPage
 
 class VisaFk7263Page extends AbstractViewCertPage {
 

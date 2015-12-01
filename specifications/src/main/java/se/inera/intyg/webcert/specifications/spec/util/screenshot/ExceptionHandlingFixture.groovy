@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.util.screenshot
+package se.inera.intyg.webcert.specifications.spec.util.screenshot
 
 import fitnesse.slim.fixtureInteraction.FixtureInteraction
 import fitnesse.slim.fixtureInteraction.InteractionAwareFixture

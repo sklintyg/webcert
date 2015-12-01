@@ -1,9 +1,9 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.UnhandledQAPage
-import se.inera.webcert.pages.VisaFragaSvarPage
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.SokSkrivaIntygPage
+import se.inera.intyg.webcert.specifications.pages.UnhandledQAPage
+import se.inera.intyg.webcert.specifications.pages.VisaFragaSvarPage
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class SvaraOchFraga extends ExceptionHandlingFixture {
 

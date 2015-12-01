@@ -1,6 +1,6 @@
 !****> Global Setup... 
 |Import|
-|se.inera.webcert.spec|
+|se.inera.intyg.webcert.specifications.spec|
 |se.inera.intyg.common.specifications.spec|
 |se.inera.intyg.common.specifications.spec.util|
 |se.inera.intyg.common.specifications.spec.util.jms|

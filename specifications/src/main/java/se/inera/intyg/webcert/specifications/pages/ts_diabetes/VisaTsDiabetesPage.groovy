@@ -1,5 +1,5 @@
-package se.inera.webcert.pages.ts_diabetes
-import se.inera.webcert.pages.AbstractViewCertPage
+package se.inera.intyg.webcert.specifications.pages.ts_diabetes
+import se.inera.intyg.webcert.specifications.pages.AbstractViewCertPage
 
 class VisaTsDiabetesPage extends AbstractViewCertPage {
 

@@ -1,7 +1,7 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
 import groovyx.net.http.HttpResponseException
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 class FeatureUtkast extends RestClientFixture{
 

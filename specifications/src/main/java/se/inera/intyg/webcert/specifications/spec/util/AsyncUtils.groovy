@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.util
+package se.inera.intyg.webcert.specifications.spec.util
 
 import groovyx.net.http.HttpResponseDecorator
 import org.slf4j.Logger

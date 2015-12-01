@@ -1,8 +1,8 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.fk7263.EditeraFk7263Page
-import se.inera.webcert.pages.fk7263.VisaFk7263Page
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
+import se.inera.intyg.webcert.specifications.pages.fk7263.VisaFk7263Page
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
 

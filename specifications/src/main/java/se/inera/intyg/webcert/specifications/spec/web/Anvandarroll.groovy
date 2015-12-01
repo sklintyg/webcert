@@ -1,7 +1,7 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class Anvandarroll extends ExceptionHandlingFixture {
 

@@ -1,11 +1,11 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 import org.springframework.core.io.ClassPathResource
 
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 import static groovyx.net.http.ContentType.JSON
 
 public class StallFraga extends RestClientFixture {

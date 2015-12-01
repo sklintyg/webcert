@@ -1,6 +1,6 @@
-package se.inera.webcert.spec.notification_sender
-import se.inera.webcert.spec.util.RestClientFixture
-import se.inera.webcert.spec.util.WebcertRestUtils
+package se.inera.intyg.webcert.specifications.spec.notification_sender
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
 
 class VerifieraNotifiering {
 

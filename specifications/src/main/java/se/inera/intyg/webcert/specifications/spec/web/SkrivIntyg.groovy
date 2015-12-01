@@ -1,14 +1,14 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 import org.openqa.selenium.Keys
 import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.AbstractEditCertPage
-import se.inera.webcert.pages.SokSkrivValjIntygTypPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.fk7263.EditeraFk7263Page
-import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
-import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.AbstractEditCertPage
+import se.inera.intyg.webcert.specifications.pages.SokSkrivValjIntygTypPage
+import se.inera.intyg.webcert.specifications.pages.SokSkrivaIntygPage
+import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
+import se.inera.intyg.webcert.specifications.pages.ts_bas.EditeraTsBasPage
+import se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class SkrivIntyg extends ExceptionHandlingFixture {
 

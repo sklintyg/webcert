@@ -1,4 +1,4 @@
-package se.inera.webcert.pages
+package se.inera.intyg.webcert.specifications.pages
 
 import geb.Browser
 import geb.Page

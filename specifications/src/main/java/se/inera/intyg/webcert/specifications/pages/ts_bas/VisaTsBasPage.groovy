@@ -1,5 +1,5 @@
-package se.inera.webcert.pages.ts_bas
-import se.inera.webcert.pages.AbstractViewCertPage
+package se.inera.intyg.webcert.specifications.pages.ts_bas
+import se.inera.intyg.webcert.specifications.pages.AbstractViewCertPage
 
 class VisaTsBasPage extends AbstractViewCertPage {
 

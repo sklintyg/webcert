@@ -1,10 +1,10 @@
-package se.inera.webcert.spec.notification_sender
+package se.inera.intyg.webcert.specifications.spec.notification_sender
 
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.ContentType.URLENC
-import static se.inera.webcert.spec.util.WebcertRestUtils.*
-import se.inera.webcert.spec.util.WebcertRestUtils
+import static se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils.*
+import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
 
 class MakuleraIntyg {
 

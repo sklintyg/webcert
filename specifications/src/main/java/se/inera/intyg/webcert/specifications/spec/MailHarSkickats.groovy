@@ -1,7 +1,7 @@
-package se.inera.webcert.spec
+package se.inera.intyg.webcert.specifications.spec
 
 import se.inera.intyg.webcert.mailstub.OutgoingMail
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 class MailHarSkickats extends RestClientFixture {
 

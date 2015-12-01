@@ -1,8 +1,8 @@
-package se.inera.webcert.spec
+package se.inera.intyg.webcert.specifications.spec
 
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.VisaFragaSvarPage
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.VisaFragaSvarPage
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class IntegrationViaUthoppslank extends ExceptionHandlingFixture {
 

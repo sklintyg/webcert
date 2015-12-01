@@ -1,9 +1,9 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
 import groovy.json.JsonOutput
 import se.inera.webcert.hsa.model.Mottagning
 import se.inera.webcert.hsa.model.Vardenhet
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
 

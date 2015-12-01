@@ -1,5 +1,5 @@
-package se.inera.webcert.spec.api
-import se.inera.webcert.spec.util.RestClientFixture
+package se.inera.intyg.webcert.specifications.spec.api
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 import static groovyx.net.http.ContentType.URLENC
 
 class FakeInloggningDjupIntegration extends RestClientFixture {

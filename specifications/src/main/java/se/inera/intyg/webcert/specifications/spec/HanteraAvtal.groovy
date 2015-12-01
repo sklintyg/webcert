@@ -1,9 +1,9 @@
-package se.inera.webcert.spec
+package se.inera.intyg.webcert.specifications.spec
 import geb.Browser
-import se.inera.webcert.pages.PrivatlakarAvtalPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.WelcomePage
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.PrivatlakarAvtalPage
+import se.inera.intyg.webcert.specifications.pages.SokSkrivaIntygPage
+import se.inera.intyg.webcert.specifications.pages.WelcomePage
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 /**
  * Created by eriklupander on 2015-08-19.

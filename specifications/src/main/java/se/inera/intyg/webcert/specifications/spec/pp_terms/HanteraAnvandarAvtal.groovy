@@ -1,6 +1,6 @@
-package se.inera.webcert.spec.pp_terms
+package se.inera.intyg.webcert.specifications.spec.pp_terms
 
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 /**
  * Fixture to manipulate user agreements

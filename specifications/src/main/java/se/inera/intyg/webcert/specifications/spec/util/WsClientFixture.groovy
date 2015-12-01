@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.util
+package se.inera.intyg.webcert.specifications.spec.util
 
 class WsClientFixture extends se.inera.intyg.common.specifications.spec.util.WsClientFixture {
 

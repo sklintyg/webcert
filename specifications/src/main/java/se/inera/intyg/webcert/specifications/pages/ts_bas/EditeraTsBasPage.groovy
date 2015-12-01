@@ -1,9 +1,9 @@
-package se.inera.webcert.pages.ts_bas
+package se.inera.intyg.webcert.specifications.pages.ts_bas
 
 import geb.Module
 import se.inera.intyg.common.specifications.page.AbstractPage
-import se.inera.webcert.pages.AbstractEditCertPage
-import se.inera.webcert.pages.VardenhetModule
+import se.inera.intyg.webcert.specifications.pages.AbstractEditCertPage
+import se.inera.intyg.webcert.specifications.pages.VardenhetModule
 
 class EditeraTsBasPage extends AbstractEditCertPage {
 

@@ -1,17 +1,17 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.AbstractEditCertPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.UnsignedIntygPage
-import se.inera.webcert.pages.VisaFragaSvarPage
-import se.inera.webcert.pages.fk7263.EditeraFk7263Page
-import se.inera.webcert.pages.fk7263.VisaFk7263Page
-import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
-import se.inera.webcert.pages.ts_bas.VisaTsBasPage
-import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
-import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
-import se.inera.webcert.spec.util.WebcertRestUtils
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.AbstractEditCertPage
+import se.inera.intyg.webcert.specifications.pages.SokSkrivaIntygPage
+import se.inera.intyg.webcert.specifications.pages.UnsignedIntygPage
+import se.inera.intyg.webcert.specifications.pages.VisaFragaSvarPage
+import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
+import se.inera.intyg.webcert.specifications.pages.fk7263.VisaFk7263Page
+import se.inera.intyg.webcert.specifications.pages.ts_bas.EditeraTsBasPage
+import se.inera.intyg.webcert.specifications.pages.ts_bas.VisaTsBasPage
+import se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
+import se.inera.intyg.webcert.specifications.pages.ts_diabetes.VisaTsDiabetesPage
+import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class HanteraUtkast extends ExceptionHandlingFixture {
 
@@ -329,7 +329,7 @@ class HanteraUtkast extends ExceptionHandlingFixture {
         def result
         Browser.drive {
             waitFor {
-                at se.inera.webcert.pages.ts_bas.EditeraTsBasPage
+                at se.inera.intyg.webcert.specifications.pages.ts_bas.EditeraTsBasPage
             }
             result = page.bedomning.behorighetGroup
         }
@@ -356,7 +356,7 @@ class HanteraUtkast extends ExceptionHandlingFixture {
         def result
         Browser.drive {
             waitFor {
-                at se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
+                at se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
             }
             result = page.bedomning.behorighetGroup
         }

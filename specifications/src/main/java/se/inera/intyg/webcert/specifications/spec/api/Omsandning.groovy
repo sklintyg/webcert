@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
 import java.sql.Timestamp
 

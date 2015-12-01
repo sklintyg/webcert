@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.util
+package se.inera.intyg.webcert.specifications.spec.util
 
 import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit

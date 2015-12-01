@@ -1,15 +1,15 @@
-package se.inera.webcert.spec.web
+package se.inera.intyg.webcert.specifications.spec.web
 
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.pages.*
-import se.inera.webcert.pages.fk7263.EditeraFk7263Page
-import se.inera.webcert.pages.fk7263.VisaFk7263Page
-import se.inera.webcert.pages.ts_bas.EditeraTsBasPage
-import se.inera.webcert.pages.ts_bas.VisaTsBasPage
-import se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
-import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
-import se.inera.webcert.spec.util.WebcertRestUtils
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.pages.*
+import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
+import se.inera.intyg.webcert.specifications.pages.fk7263.VisaFk7263Page
+import se.inera.intyg.webcert.specifications.pages.ts_bas.EditeraTsBasPage
+import se.inera.intyg.webcert.specifications.pages.ts_bas.VisaTsBasPage
+import se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
+import se.inera.intyg.webcert.specifications.pages.ts_diabetes.VisaTsDiabetesPage
+import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class SokSkrivIntyg extends ExceptionHandlingFixture {
 
@@ -41,11 +41,11 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         Browser.drive {
             waitFor {
                 if (typ == "fk7263") {
-                    at se.inera.webcert.pages.fk7263.VisaFk7263Page
+                    at se.inera.intyg.webcert.specifications.pages.fk7263.VisaFk7263Page
                 } else if (typ == "ts-bas") {
-                    at se.inera.webcert.pages.ts_bas.VisaTsBasPage
+                    at se.inera.intyg.webcert.specifications.pages.ts_bas.VisaTsBasPage
                 } else if (typ == "ts-diabetes") {
-                    at se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+                    at se.inera.intyg.webcert.specifications.pages.ts_diabetes.VisaTsDiabetesPage
                 }
             }
             page.sendWithValidation()
@@ -374,7 +374,7 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
     boolean visaEditIntygSidanVisas() {
         Browser.drive {
             waitFor {
-                at se.inera.webcert.pages.fk7263.EditeraFk7263Page
+                at se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
             }
             intygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
         }

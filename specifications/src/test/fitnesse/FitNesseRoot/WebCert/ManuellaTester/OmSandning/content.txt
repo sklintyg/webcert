@@ -1,4 +1,4 @@
-!|se.inera.webcert.spec.Omsandning|
+!|se.inera.intyg.webcert.specifications.spec.Omsandning|
 |id|intygsId|operation|
 | 2 | 4d580ac2-2886-4764-96f1-1b38a24c8550 | SEND_INTYG |
 | 3 | 77beefcb-fbe2-4723-b0dc-b1d1089453f1 | SEND_INTYG |

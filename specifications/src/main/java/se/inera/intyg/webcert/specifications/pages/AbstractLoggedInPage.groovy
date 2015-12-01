@@ -1,4 +1,4 @@
-package se.inera.webcert.pages
+package se.inera.intyg.webcert.specifications.pages
 
 import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.intyg.common.specifications.spec.Browser

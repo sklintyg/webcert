@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
 import static groovyx.net.http.ContentType.JSON
 
@@ -15,7 +15,7 @@ import se.inera.intyg.webcert.logmessages.IntygSendMessage
 import se.inera.intyg.webcert.logmessages.IntygSignMessage
 import se.inera.intyg.webcert.logmessages.IntygUpdateMessage
 import se.inera.intyg.webcert.logmessages.Patient
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 /**
  * @author andreaskaltenbach

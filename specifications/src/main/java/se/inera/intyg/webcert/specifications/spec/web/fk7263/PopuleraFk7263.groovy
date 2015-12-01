@@ -1,13 +1,13 @@
-package se.inera.webcert.spec.web.fk7263
+package se.inera.intyg.webcert.specifications.spec.web.fk7263
 
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
 import se.inera.intyg.common.specifications.page.AbstractPage
-import se.inera.webcert.pages.fk7263.EditeraFk7263Page
+import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
 import se.inera.intyg.common.specifications.spec.Browser
-import se.inera.webcert.spec.util.screenshot.ExceptionHandlingFixture
+import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class PopuleraFk7263 extends ExceptionHandlingFixture {
 

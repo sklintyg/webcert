@@ -1,19 +1,19 @@
 | Import|
-| se.inera.webcert.pages |
-| se.inera.webcert.pages.fk7263 |
-| se.inera.webcert.spec |
-| se.inera.webcert.spec.api |
-| se.inera.webcert.spec.web |
-| se.inera.webcert.spec.web.fk7263 |
-| se.inera.webcert.spec.web.ts_bas |
-| se.inera.webcert.spec.web.ts_diabetes |
-| se.inera.webcert.spec.util |
+| se.inera.intyg.webcert.specifications.pages |
+| se.inera.intyg.webcert.specifications.pages.fk7263 |
+| se.inera.intyg.webcert.specifications.spec |
+| se.inera.intyg.webcert.specifications.spec.api |
+| se.inera.intyg.webcert.specifications.spec.web |
+| se.inera.intyg.webcert.specifications.spec.web.fk7263 |
+| se.inera.intyg.webcert.specifications.spec.web.ts_bas |
+| se.inera.intyg.webcert.specifications.spec.web.ts_diabetes |
+| se.inera.intyg.webcert.specifications.spec.util |
 | se.inera.intyg.common.specifications.spec |
 | se.inera.intyg.common.specifications.spec.util |
 | se.inera.intyg.common.specifications.spec.util.jms |
-| se.inera.webcert.spec.certificate_sender |
-| se.inera.webcert.spec.notification_sender |
-| se.inera.webcert.spec.pp_terms |
+| se.inera.intyg.webcert.specifications.spec.certificate_sender |
+| se.inera.intyg.webcert.specifications.spec.notification_sender |
+| se.inera.intyg.webcert.specifications.spec.pp_terms |
 
 !| Config |
 | property | value |

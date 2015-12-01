@@ -1,8 +1,8 @@
-package se.inera.webcert.spec.certificate_sender
+package se.inera.intyg.webcert.specifications.spec.certificate_sender
 
-import se.inera.webcert.spec.util.AsyncUtils
-import se.inera.webcert.spec.util.AsyncUtilsITStub
-import se.inera.webcert.spec.util.WebcertRestUtils
+import se.inera.intyg.webcert.specifications.spec.util.AsyncUtils
+import se.inera.intyg.webcert.specifications.spec.util.AsyncUtilsITStub
+import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
 
 /**
  * Specifically used for asserting that messages sent asynchronously from Webcert has (or has not) been processed

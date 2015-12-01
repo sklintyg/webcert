@@ -1,7 +1,7 @@
-package se.inera.webcert.spec.pp_terms
+package se.inera.intyg.webcert.specifications.spec.pp_terms
 
 import org.joda.time.LocalDateTime
-import se.inera.webcert.spec.util.WsClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.WsClientFixture
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerterms.v1.rivtabp21.GetPrivatePractitionerTermsResponderInterface
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsType
 
