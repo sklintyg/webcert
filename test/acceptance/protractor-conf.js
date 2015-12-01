@@ -6,7 +6,7 @@ browser
 exports.config = {
     baseUrl: 'https://webcert.ip30.nordicmedtest.sjunet.org',
     allScriptsTimeout: 30000,
-    seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
+    // seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
     framework: 'custom',
     timeout : 100000,
     defaultTimeoutInterval: 30000,
@@ -24,13 +24,11 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-        require: 'features/steps/*_steps.js',
-        format: 'pretty',
-        tags: ['@dev']
-    },
+    format: ['protractor.json', 'pretty'],
+    require: ['features/steps/**/*.js', 'features/support/**/*.js'],
+    // tags:['@dev']
+  },
     onPrepare: function() {
-        // global.myVariable = 'test';
-
         //http://chaijs.com/
         global.chai = require('chai');
 
@@ -44,6 +42,9 @@ exports.config = {
         global.testdata = require('../lib/testdata/testdata.js');
 
         browser.ignoreSynchronization = false;
+
+        //Minaintyg länk, bör flyttas
+        global.minaintygBaseUrl = 'https://mvk.ip30.nordicmedtest.sjunet.org';
 
     }
 };

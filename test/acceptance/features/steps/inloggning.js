@@ -49,12 +49,12 @@ module.exports = function() {
     });
 
     this.Given(/^signerar intyget$/, {
-        timeout: 100 * 1000
+        timeout: 100 * 2000
     }, function(callback) {
         // expect(element(by.id('signera-utkast-button')).isPresent()).toBe(true);
         var EC = protractor.ExpectedConditions;
         // Waits for the element with id 'abc' to be clickable.
-        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 10000);
+        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 20000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
 

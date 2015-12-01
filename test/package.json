@@ -12,7 +12,7 @@
     "grunt-protractor-runner": "^2.1.0",
     "grunt-protractor-webdriver": "^0.2.5",
     "protractor": "^3.0.0",
-    "protractor-cucumber-framework": "^0.2.3",
+    "protractor-cucumber-framework": "^0.3.0",
     "protractor-jasmine2-screenshot-reporter": "^0.1.7",
     "request": "^2.65.0",
     "time-grunt": "^0.3.1"
