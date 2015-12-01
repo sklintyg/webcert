@@ -1,5 +1,5 @@
 /*global
-browser, intyg,protractor
+browser, intyg
 */
 'use strict';
 
@@ -8,7 +8,8 @@ module.exports = function() {
     
     this.Given(/^och går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
     	qaTable.all(by.cssContainingText('tr',intygstyp)).each(function(el, index) {
-		  // Will print 0 First, 1 Second, 2 Third.
+		  
+          //Leta efter intyg med status och klicka på visa-knapp
 		  el.getText().then(function (text) {
 		  		if(text.indexOf(status) > -1){
 		  			el.element(by.cssContainingText('button','Visa')).click();

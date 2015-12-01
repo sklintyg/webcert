@@ -5,16 +5,6 @@ browser, intyg,protractor
 
 module.exports = function() {
 
-    // this.Given(/^jag loggar in$/, function(callback) {
-    //     console.log('Loggar in som ' + 'Jan Nilsson' + '..');
-    //     // Gå till welcome.jsp
-    //     browser.get(browser.baseUrl + '/welcome.jsp');
-
-    //     // Välj användare
-    //     element(by.id('loginBtn')).click();
-    //     callback();
-    // });
-
     this.Then(/^vill jag vara inloggad$/, function(callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });

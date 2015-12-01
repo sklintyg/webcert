@@ -25,7 +25,7 @@ exports.config = {
     },
     cucumberOpts: {
     format: ['protractor.json', 'pretty'],
-    require: ['features/steps/**/*.js', 'features/support/**/*.js'],
+    require: ['features/steps/**/*.js', 'features/support/**/*.js']
     // tags:['@dev']
   },
     onPrepare: function() {
