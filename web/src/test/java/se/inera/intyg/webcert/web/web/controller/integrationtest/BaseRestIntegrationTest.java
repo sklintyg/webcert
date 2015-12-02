@@ -60,10 +60,10 @@ public abstract class BaseRestIntegrationTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        Response response = given().redirects().follow(false).log().all().contentType(ContentType.URLENC)
+        Response response = given().contentType(ContentType.URLENC).and().redirects().follow(false).and()
                 .formParam(USER_JSON_FORM_PARAMETER, credentialsJson).expect()
                 .statusCode(HttpServletResponse.SC_FOUND).when()
-                .post(FAKE_LOGIN_URI).then().log().all().extract().response();
+                .post(FAKE_LOGIN_URI).then().extract().response();
 
         assertNotNull(response.sessionId());
         return response.sessionId();
