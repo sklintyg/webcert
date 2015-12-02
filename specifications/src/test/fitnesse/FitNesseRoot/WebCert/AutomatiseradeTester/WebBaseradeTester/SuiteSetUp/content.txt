@@ -33,6 +33,11 @@
 !3 Ta bort eventuella kvarvarande omsändningar
 TODO Rensa ActiveMQ?
 
+!3 Ta bort eventuella överflödiga integrerade vårdenheter
+| ta bort integrerad vardenhet |
+| hsaId |
+| IFV1239877878-1042 |
+
 !3 Givet test-intyg i Intygstjänsten
 
 | Intyg |
