@@ -1,10 +1,11 @@
 {
 	"dev": {
-        "INTYGTJANST_URL":"http://localhost:8080/inera-certificate/resources/"
+		"WEBCERT_URL":"http://localhost:9089/",
+        "INTYGTJANST_URL":"http://localhost:8080/inera-certificate"
     },
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.se",
-        "INTYGTJANST_URL": "none"
+        "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate"
     }
 }

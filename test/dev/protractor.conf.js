@@ -12,7 +12,7 @@ var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
-    baseUrl: 'http://localhost:9089/',
+    baseUrl: process.env.WEBCERT_URL,
     //rootElement:'html',
 
     specs: ['./spec/*.spec.js'],
@@ -31,7 +31,7 @@ exports.config = {
         //browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // IE11
-        browserName: 'internet explorer',
+        browserName: 'firefox',
         platform: 'ANY',
         version: '11',
 

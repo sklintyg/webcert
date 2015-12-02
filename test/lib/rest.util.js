@@ -34,20 +34,20 @@ module.exports = {
             method: 'POST',
             body: createJson
         };
-        return restClient.run(options, 'json', process.env.INTYGTJANST_URL);
+        return restClient.run(options, 'json', process.env.INTYGTJANST_URL + '/resources/');
     },
     deleteAllIntyg: function() {
         var options = {
             url: 'certificate/',
             method: 'DELETE'
         };
-        return restClient.run(options, 'json', process.env.INTYGTJANST_URL);
+        return restClient.run(options, 'json', process.env.INTYGTJANST_URL + '/resources/');
     },
     deleteIntyg: function(id) {
         var options = {
             url: 'certificate/' + id,
             method: 'DELETE'
         };
-        return restClient.run(options, 'json', process.env.INTYGTJANST_URL);
+        return restClient.run(options, 'json', process.env.INTYGTJANST_URL + '/resources/');
     }
 };
