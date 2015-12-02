@@ -3,7 +3,7 @@
  */
 'use strict';
 var restClient = require('./restClient.util.js');
-var restConfig = require('./restConfig.json');
+var envConfig = require('./envConfig.json');
 
 module.exports = {
     login: function(userJson) {
@@ -35,20 +35,20 @@ module.exports = {
             method: 'POST',
             body: createJson
         };
-        return restClient.run(options, 'json', restConfig.intygstjanstBaseurl);
+        return restClient.run(options, 'json', envConfig.intygstjanstBaseurl);
     },
     deleteAllIntyg: function() {
         var options = {
             url: 'certificate/',
             method: 'DELETE'
         };
-        return restClient.run(options, 'json', restConfig.intygstjanstBaseurl);
+        return restClient.run(options, 'json', envConfig.intygstjanstBaseurl);
     },
     deleteIntyg: function(id) {
         var options = {
             url: 'certificate/' + id,
             method: 'DELETE'
         };
-        return restClient.run(options, 'json', restConfig.intygstjanstBaseurl);
+        return restClient.run(options, 'json', envConfig.intygstjanstBaseurl);
     }
 };
