@@ -6,9 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 import java.util.ArrayList;
 import java.util.Arrays;

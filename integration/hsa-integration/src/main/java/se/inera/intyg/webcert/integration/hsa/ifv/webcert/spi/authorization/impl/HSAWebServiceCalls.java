@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package se.inera.ifv.webcert.spi.authorization.impl;
+package se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -17,8 +17,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HSAPersonServiceTest2 {

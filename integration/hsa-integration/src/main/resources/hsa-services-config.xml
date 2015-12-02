@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
                 address="${hsa.ws.services.url}">
   </jaxws:client>
 
-  <bean id="wsCalls" class="se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls">
+  <bean id="wsCalls" class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls">
     <property name="hsaLogicalAddress" value="${hsa.ws.service.logicaladdress}"/>
   </bean>
 

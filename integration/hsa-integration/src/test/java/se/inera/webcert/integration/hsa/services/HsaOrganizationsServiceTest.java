@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -22,11 +22,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.stub.HsaServiceStub;
-import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.stub.HsaServiceStub;
+import se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;

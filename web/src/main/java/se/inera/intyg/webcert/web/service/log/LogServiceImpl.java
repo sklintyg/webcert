@@ -25,7 +25,7 @@ import se.inera.intyg.webcert.logmessages.IntygSendMessage;
 import se.inera.intyg.webcert.logmessages.IntygSignMessage;
 import se.inera.intyg.webcert.logmessages.IntygUpdateMessage;
 import se.inera.intyg.webcert.logmessages.Patient;
-import se.inera.webcert.hsa.model.SelectableVardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;

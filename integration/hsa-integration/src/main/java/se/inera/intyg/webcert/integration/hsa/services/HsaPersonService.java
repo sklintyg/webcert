@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;

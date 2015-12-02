@@ -20,9 +20,9 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizati
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.webcert.hsa.model.AuthenticationMethod;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

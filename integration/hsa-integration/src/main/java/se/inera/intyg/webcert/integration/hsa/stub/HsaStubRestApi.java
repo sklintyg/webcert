@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.stub;
+package se.inera.intyg.webcert.integration.hsa.stub;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 /**
  * @author johannesc

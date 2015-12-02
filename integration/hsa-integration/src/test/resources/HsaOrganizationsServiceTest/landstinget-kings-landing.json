@@ -1,10 +1,10 @@
 {
-    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
+    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardgivare",
     "id" : "kings-landing",
     "namn" : "King's Landing",
     "vardenheter" : [
         {
-            "@class" : "se.inera.webcert.hsa.model.Vardenhet",
+            "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "red-keep",
             "namn" : "Vårdcentrum Red Keep"
         }

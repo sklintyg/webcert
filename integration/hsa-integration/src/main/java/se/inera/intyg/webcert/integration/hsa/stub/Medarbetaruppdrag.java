@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.stub;
+package se.inera.intyg.webcert.integration.hsa.stub;
 
 import static java.util.Arrays.asList;
 import java.util.List;

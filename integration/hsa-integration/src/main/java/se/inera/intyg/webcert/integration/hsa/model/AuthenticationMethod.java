@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.model;
+package se.inera.intyg.webcert.integration.hsa.model;
 
 /**
  * Created by eriklupander on 2015-08-21.

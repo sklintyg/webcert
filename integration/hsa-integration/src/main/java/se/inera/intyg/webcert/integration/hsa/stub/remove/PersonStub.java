@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.stub.remove;
+package se.inera.intyg.webcert.integration.hsa.stub.remove;
 
 import java.util.ArrayList;
 import java.util.List;

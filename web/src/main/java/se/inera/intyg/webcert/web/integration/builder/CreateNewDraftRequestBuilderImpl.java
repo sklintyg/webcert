@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
-import se.inera.webcert.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
@@ -43,7 +43,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private Vardenhet createVardenhetFromMIU(MiuInformationType miu) {
 
-        se.inera.webcert.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getCareUnitHsaIdentity());
+        se.inera.intyg.webcert.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getCareUnitHsaIdentity());
 
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setNamn(hsaVardenhet.getNamn());

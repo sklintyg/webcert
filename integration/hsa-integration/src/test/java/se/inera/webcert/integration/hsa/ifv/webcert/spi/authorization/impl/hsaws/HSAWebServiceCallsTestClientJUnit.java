@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package se.inera.ifv.webcert.spi.authorization.impl.hsaws;
+package se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.hsaws;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 
 
 /**

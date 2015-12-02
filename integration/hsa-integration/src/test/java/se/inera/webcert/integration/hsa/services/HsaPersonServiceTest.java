@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +21,7 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType.UserInformations;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HsaPersonServiceTest {

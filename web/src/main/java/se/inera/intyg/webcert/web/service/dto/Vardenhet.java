@@ -96,7 +96,7 @@ public class Vardenhet {
         this.arbetsplatskod = arbetsplatskod;
     }
 
-    public static Vardenhet create(se.inera.webcert.hsa.model.Vardenhet hsaVardenhet) {
+    public static Vardenhet create(se.inera.intyg.webcert.integration.hsa.model.Vardenhet hsaVardenhet) {
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setHsaId(hsaVardenhet.getId());
         vardenhet.setNamn(hsaVardenhet.getNamn());
@@ -109,7 +109,7 @@ public class Vardenhet {
         return vardenhet;
     }
 
-    public static Vardenhet create(se.inera.webcert.hsa.model.Vardenhet hsaVardenhet, se.inera.webcert.hsa.model.Vardgivare hsaVardgivare) {
+    public static Vardenhet create(se.inera.intyg.webcert.integration.hsa.model.Vardenhet hsaVardenhet, se.inera.intyg.webcert.integration.hsa.model.Vardgivare hsaVardgivare) {
         Vardgivare vardgivare = Vardgivare.create(hsaVardgivare);
         Vardenhet vardenhet = create(hsaVardenhet);
         vardenhet.setVardgivare(vardgivare);

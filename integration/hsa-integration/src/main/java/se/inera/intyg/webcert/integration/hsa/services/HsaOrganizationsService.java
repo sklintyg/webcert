@@ -1,9 +1,9 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import java.util.List;
 
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 /**
  * @author andreaskaltenbach

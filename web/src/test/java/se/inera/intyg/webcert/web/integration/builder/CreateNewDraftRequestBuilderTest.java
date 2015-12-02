@@ -20,8 +20,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
 @RunWith(MockitoJUnitRunner.class)

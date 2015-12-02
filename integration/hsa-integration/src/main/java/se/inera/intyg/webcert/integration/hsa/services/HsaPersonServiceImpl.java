@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -14,8 +14,8 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class HsaPersonServiceImpl implements HsaPersonService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.webcert.hsa.services.HsaPersonService#getHsaPersonInfo(java.lang.String)
+     * @see se.inera.intyg.webcert.integration.hsa.services.HsaPersonService#getHsaPersonInfo(java.lang.String)
      */
     @Override
     public List<GetHsaPersonHsaUserType> getHsaPersonInfo(String personHsaId) {

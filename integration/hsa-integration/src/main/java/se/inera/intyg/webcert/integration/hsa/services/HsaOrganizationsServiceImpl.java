@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -28,12 +28,12 @@ import se.inera.ifv.hsawsresponder.v3.HsawsSimpleLookupType;
 import se.inera.ifv.hsawsresponder.v3.LookupHsaObjectType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.ifv.hsawsresponder.v3.SearchOperatorExact;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.hsa.model.AbstractVardenhet;
-import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag;
 
 import java.util.ArrayList;
 import java.util.Collections;

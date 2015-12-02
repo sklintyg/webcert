@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.stub;
+package se.inera.intyg.webcert.integration.hsa.stub;
 
 public class HsaSpecialicering {
 

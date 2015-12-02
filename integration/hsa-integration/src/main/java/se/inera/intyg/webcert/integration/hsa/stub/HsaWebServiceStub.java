@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.stub;
+package se.inera.intyg.webcert.integration.hsa.stub;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -44,10 +44,10 @@ import se.inera.ifv.hsawsresponder.v3.PingResponseType;
 import se.inera.ifv.hsawsresponder.v3.PingType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsResponseType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsType;
-import se.inera.webcert.hsa.model.AbstractVardenhet;
-import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 import com.google.common.base.Function;
 

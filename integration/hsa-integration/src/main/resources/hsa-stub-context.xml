@@ -8,12 +8,12 @@
                             http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
   <beans profile="dev,wc-all-stubs,wc-hsa-stub,testability-api">
-    <bean id="hsaServiceStub" class="se.inera.webcert.hsa.stub.HsaServiceStub"/>
+    <bean id="hsaServiceStub" class="se.inera.intyg.webcert.integration.hsa.stub.HsaServiceStub"/>
   </beans>
 
   <beans profile="dev,wc-all-stubs,wc-hsa-stub">
-    <jaxws:endpoint address="/hsa" implementor="se.inera.webcert.hsa.stub.HsaWebServiceStub"/>
-    <bean class="se.inera.webcert.hsa.stub.BootstrapBean"/>
+    <jaxws:endpoint address="/hsa" implementor="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>
+    <bean class="se.inera.intyg.webcert.integration.hsa.stub.BootstrapBean"/>
   </beans>
 
   <beans profile="dev,testability-api">
@@ -29,7 +29,7 @@
       </jaxrs:extensionMappings>
     </jaxrs:server>
   
-    <bean id="hsaStubRestApi" class="se.inera.webcert.hsa.stub.HsaStubRestApi"/>
+    <bean id="hsaStubRestApi" class="se.inera.intyg.webcert.integration.hsa.stub.HsaStubRestApi"/>
   </beans>
 
 </beans>

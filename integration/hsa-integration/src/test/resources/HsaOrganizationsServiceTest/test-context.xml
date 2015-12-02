@@ -18,10 +18,10 @@
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.webcert"/>
 
-  <bean class="se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
+  <bean class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
 
-  <bean class="se.inera.webcert.hsa.stub.HsaWebServiceStub"/>
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>
 
-  <bean class="se.inera.webcert.hsa.stub.HsaServiceStub" />
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaServiceStub" />
 
 </beans>

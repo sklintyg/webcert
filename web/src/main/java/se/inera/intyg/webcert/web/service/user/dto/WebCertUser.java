@@ -6,9 +6,9 @@ import se.inera.intyg.common.util.integration.integration.json.CustomObjectMappe
 import se.inera.intyg.webcert.common.common.model.UserDetails;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.webcert.hsa.model.AuthenticationMethod;
-import se.inera.webcert.hsa.model.SelectableVardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 
 import java.util.ArrayList;

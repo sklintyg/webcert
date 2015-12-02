@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.services;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.model;
+package se.inera.intyg.webcert.integration.hsa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

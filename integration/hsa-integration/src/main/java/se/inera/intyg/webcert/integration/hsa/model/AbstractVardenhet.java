@@ -1,4 +1,4 @@
-package se.inera.webcert.hsa.model;
+package se.inera.intyg.webcert.integration.hsa.model;
 
 import java.io.Serializable;
 
