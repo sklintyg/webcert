@@ -1,6 +1,6 @@
-package se.inera.webcert.spec.api
+package se.inera.intyg.webcert.specifications.spec.api
 
-import se.inera.webcert.spec.util.RestClientFixture
+import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 /**
  * Created by eriklupander on 2015-12-02.
