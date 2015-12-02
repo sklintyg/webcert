@@ -10,9 +10,9 @@ exports.config = {
     framework: 'custom',
     timeout : 100000,
     defaultTimeoutInterval: 30000,
-
-  // path relative to the current config file
-  frameworkPath: require.resolve('protractor-cucumber-framework'),
+    
+    // path relative to the current config file
+    frameworkPath: require.resolve('protractor-cucumber-framework'),
     specs: [
         'features/*.feature'
     ],
@@ -24,24 +24,24 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-    format: ['protractor.json', 'pretty'],
-    require: ['features/steps/**/*.js', 'features/support/**/*.js']
-    // tags:['@dev']
-  },
-    onPrepare: function() {
+        format: ['protractor.json', 'pretty'],
+        require: ['features/steps/**/*.js', 'features/support/**/*.js'],
+        tags: ['@dev']
+    },
+    onPrepare: function () {
         //http://chaijs.com/
         global.chai = require('chai');
-
+        
         //https://github.com/domenic/chai-as-promised/
         global.chaiAsPromised = require('chai-as-promised');
         global.chai.use(global.chaiAsPromised);
-
+        
         global.expect = global.chai.expect;
-
+        
         // Testdata lib
         global.testdata = require('../lib/testdata/testdata.js');
-
+        global.pages = require('./../lib/pages.js');
+        
         browser.ignoreSynchronization = false;
-
     }
 };
