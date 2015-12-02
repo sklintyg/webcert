@@ -87,7 +87,6 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         ejHanteraButton(to: UnhandledQAPage, toWait: true) { $("#button1checkhanterad-dialog-ejhantera") }
         hanteraTillbakaButton { $("#button1checkhanterad-dialog-tillbaka") }
 
-        qaCheckEjHanteradDialog { $("#qa-check-hanterad-dialog") }
         preferenceSkipShowUnhandledDialog(required: false) { $("#preferenceSkipShowUnhandledDialog") }
 
         modalBackdrop(required:false) {$('.modal-backdrop')}
