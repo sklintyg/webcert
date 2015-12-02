@@ -61,28 +61,20 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
-
     @Mock
     private IntygService intygService;
-
     @Mock
     private LogService logService;
-
     @Mock
     private NotificationService notificationService;
-
     @Mock
     private MonitoringLogService monitoringService;
-
     @Mock
     private WebCertUserService webcertUserService;
-
     @Mock
     private IntygModuleRegistry moduleRegistry;
-
     @Mock
     private ModuleApi moduleApi;
-
     @Mock
     private ASN1Util asn1Util;
 

@@ -49,6 +49,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
@@ -62,13 +65,10 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Mock
     private FragaSvarRepository fragaSvarRepository;
-
     @Mock
     private FragaSvarService fragaSvarService;
-
     @Mock
     private RevokeRequestConverter revokeRequestConverter;
-
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
 
