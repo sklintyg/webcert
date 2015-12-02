@@ -119,7 +119,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>se.inera.webcert.tools.AnonymiseraWebCertDatabas</mainClass>
+              <mainClass>se.inera.intyg.webcert.tools.anonymisering.AnonymiseraWebCertDatabas</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

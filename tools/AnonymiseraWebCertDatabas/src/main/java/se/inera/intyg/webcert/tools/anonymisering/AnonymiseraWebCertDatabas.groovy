@@ -1,4 +1,4 @@
-package se.inera.webcert.tools
+package se.inera.intyg.webcert.tools.anonymisering
 
 import groovy.sql.Sql
 import groovyx.gpars.GParsPool
