@@ -36,7 +36,7 @@ import com.google.common.collect.Iterables;
  * @author andreaskaltenbach
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:HsaOrganizationsServiceTest/test-context.xml")
+@ContextConfiguration("/HsaOrganizationsServiceTest/test-context.xml")
 public class HsaOrganizationsServiceTest {
 
     private static final String PERSON_HSA_ID = "Gunilla";
