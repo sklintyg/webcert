@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.web.auth.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -23,24 +22,21 @@ import com.jayway.restassured.response.Response;
  */
 public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
-    private static FakeCredentials defaultLakare = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049", "rest", "testman",
-            "IFV1239877878-1042").lakare(true).build();
-
     @Test
     public void testGetFk7263Utkast() {
 
         // Set up auth precondition
-        RestAssured.sessionId = getAuthSession(defaultLakare);
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         CreateUtkastRequest utkastRequest = createUtkastRequest("fk7263");
 
         Response response = given().request().contentType(ContentType.JSON).body(utkastRequest).expect().statusCode(200).when().post("api/utkast/fk7263").
                 then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-schema.json")).
                 body("intygsTyp", equalTo(utkastRequest.getIntygType())).
-                body("skapadAv.hsaId", equalTo(defaultLakare.getHsaId())).
-                body("enhetsId", equalTo(defaultLakare.getEnhetId())).
+                body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId())).
+                body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId())).
                 body("version", equalTo(0)).
-                body("skapadAv.namn", equalTo(defaultLakare.getFornamn() + " " + defaultLakare.getEfternamn())).extract().response();
+                body("skapadAv.namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn())).extract().response();
 
         //The type-specific model is a serialized json "within" the model property, need to extract that first and assert in a more "manual" fashion.
         JsonPath draft = new JsonPath(response.body().asString());

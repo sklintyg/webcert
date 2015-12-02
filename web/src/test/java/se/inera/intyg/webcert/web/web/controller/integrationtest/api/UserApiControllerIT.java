@@ -6,7 +6,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.junit.Test;
 
-import se.inera.intyg.webcert.web.auth.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import com.jayway.restassured.RestAssured;
@@ -16,30 +15,27 @@ import com.jayway.restassured.RestAssured;
  */
 public class UserApiControllerIT extends BaseRestIntegrationTest {
 
-    private static FakeCredentials defaultLakare = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049", "rest", "testman",
-            "IFV1239877878-1042").lakare(true).build();
-
     @Test
     public void testGetAnvandare() {
 
         // set up auth precondition
-        RestAssured.sessionId = getAuthSession(defaultLakare);
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().expect().statusCode(200).when().get("api/anvandare").
                 then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-schema.json")).
-                body("hsaId", equalTo(defaultLakare.getHsaId())).
-                body("valdVardenhet.id", equalTo(defaultLakare.getEnhetId())).
-                body("namn", equalTo(defaultLakare.getFornamn() + " " + defaultLakare.getEfternamn()));
+                body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId())).
+                body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId())).
+                body("namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn()));
 
         /*
          * One could also use the more verbose old-school unit-test assertionstyle...
          * 
          * JsonPath jsonPath = new JsonPath(response.body().asString());
          * 
-         * assertEquals(defaultLakare.getHsaId(), jsonPath.getString("hsaId"));
-         * assertEquals(defaultLakare.getEnhetId(), jsonPath.getString("valdVardenhet.id"));
-         * assertEquals(defaultLakare.getFornamn() + " " + defaultLakare.getEfternamn(), jsonPath.getString("namn"));
+         * assertEquals(DEFAULT_LAKARE.getHsaId(), jsonPath.getString("hsaId"));
+         * assertEquals(DEFAULT_LAKARE.getEnhetId(), jsonPath.getString("valdVardenhet.id"));
+         * assertEquals(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn(), jsonPath.getString("namn"));
          * //We COULD do more asserts, but a bit problematic since most user properties are actually set by the hsastub
          * //and asserting such values bind this test to stub testdata configuration..
          * 

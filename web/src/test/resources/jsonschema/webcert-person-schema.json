@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "/",
+  "type": "object",
+  "title" : "Webcert Person lookup Rest api response model",
+  "properties": {
+    "person": {
+      "id": "person",
+      "type": "object",
+      "properties": {
+        "personnummer": {
+          "id": "personnummer",
+          "type": "string"
+        },
+        "sekretessmarkering": {
+          "id": "sekretessmarkering",
+          "type": "boolean"
+        },
+        "fornamn": {
+          "id": "fornamn",
+          "type": "string"
+        },
+        "efternamn": {
+          "id": "efternamn",
+          "type": "string"
+        },
+        "postadress": {
+          "id": "postadress",
+          "type": "string"
+        },
+        "postnummer": {
+          "id": "postnummer",
+          "type": "string"
+        },
+        "postort": {
+          "id": "postort",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "personnummer",
+        "sekretessmarkering",
+        "fornamn",
+        "efternamn",
+        "postadress",
+        "postnummer",
+        "postort"
+      ]
+    },
+    "status": {
+      "id": "status",
+      "type": "string",
+      "enum": [
+        "NOT_FOUND",
+        "FOUND",
+        "ERROR"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "person",
+    "status"
+  ]
+}

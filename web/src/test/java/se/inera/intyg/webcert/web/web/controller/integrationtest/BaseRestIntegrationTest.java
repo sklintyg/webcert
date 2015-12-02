@@ -1,13 +1,19 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
 import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.jayway.restassured.path.json.JsonPath;
 import org.junit.Before;
 
 
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.FakeCredentials;
 
@@ -15,10 +21,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
- * 
+ * <p/>
  * Created by marced on 19/11/15.
  */
 public abstract class BaseRestIntegrationTest {
@@ -27,7 +34,12 @@ public abstract class BaseRestIntegrationTest {
     private static final String FAKE_LOGIN_URI = "/fake";
 
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
+    protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049", "rest", "testman",
+            "IFV1239877878-1042").lakare(true).build();
 
+    /**
+     * Common setup for all tests
+     */
     @Before
     public void setup() {
         RestAssured.reset();
@@ -39,9 +51,9 @@ public abstract class BaseRestIntegrationTest {
      * Log in to webcert using the supplied credentials.
      *
      * @param fakeCredentials who to log in as
-     * @return sessionId for the now authorized user
+     * @return sessionId for the now authorized user session
      */
-    public String getAuthSession(FakeCredentials fakeCredentials) {
+    protected String getAuthSession(FakeCredentials fakeCredentials) {
         String credentialsJson;
         try {
             credentialsJson = objectMapper.writeValueAsString(fakeCredentials);
