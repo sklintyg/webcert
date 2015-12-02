@@ -24,7 +24,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         given().expect().statusCode(200).when().get("api/anvandare").
                 then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-schema.json")).
+                body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json")).
                 body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId())).
                 body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId())).
                 body("namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn()));
@@ -55,7 +55,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).and().body(changeRequest).when().post("api/anvandare/andraenhet").
                 then().
                 statusCode(200).
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-schema.json")).
+                body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json")).
                 body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 
@@ -86,7 +86,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).when().get("api/anvandare/latestavtal").
                 then().
                 statusCode(200).
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-schema.json"));
+                body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-response-schema.json"));
     }
 
 }
