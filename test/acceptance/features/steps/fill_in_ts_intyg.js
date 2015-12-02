@@ -4,7 +4,7 @@ testdata, intyg, browser
 'use strict';
 
 module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält enligt mall för ett Diabetes\-MIN\-intyg$/, function(callback) {
+    this.Given(/^jag fyller i alla nödvändiga fält för ett Diabetes\-intyg$/, function (callback) {
         global.intyg = testdata.getRandomTsDiabetesIntyg();
 
         // browser.ignoreSynchronization = true;

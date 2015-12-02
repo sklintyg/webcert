@@ -5,7 +5,7 @@ Egenskap: Kontrollera att webcerts olika funktioner går att använda
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare "Jan Nilsson"
 
-@dev @RegisterMedicalCertificate @mvk
+@RegisterMedicalCertificate @mvk @dev
 Scenario: Skapa och signera ett intyg i webcert
 	När jag väljer patienten "19520617-2339"
 	Och jag går in på  att skapa ett "Läkarintyg FK 7263" intyg

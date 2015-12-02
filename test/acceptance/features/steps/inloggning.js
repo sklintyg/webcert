@@ -13,20 +13,22 @@ module.exports = function () {
         console.log('Loggar in som ' + anvandarnamn + '..');
         global.pages.welcome.get();
         global.pages.welcome.loginByName(anvandarnamn);
-        callback();
+        
+        expect(element(by.id('wcHeader')).getText()).to.eventually.contain(anvandarnamn).and.notify(callback);
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
         global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
-        callback();
+
+        //Patientuppgifter visas
+        var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
+        expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);
     });
 
     this.Given(/^jag går in på  att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
-        browser.ignoreSynchronization = true;
 
         global.pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
         global.pages.app.views.sokSkrivIntyg.continueToUtkast();
-        browser.ignoreSynchronization = false;
         callback();
     });
     
