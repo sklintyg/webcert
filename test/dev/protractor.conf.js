@@ -31,7 +31,7 @@ exports.config = {
         //browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // IE11
-        browserName: 'firefox',
+        browserName: 'internet explorer',
         platform: 'ANY',
         version: '11',
 

@@ -17,7 +17,7 @@ exports.config = {
         'features/*.feature'
     ],
     capabilities: {
-        browserName: 'internet explorer',
+        browserName: 'firefox',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         // 'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
         version: '',
