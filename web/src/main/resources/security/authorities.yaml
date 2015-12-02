@@ -1,0 +1,187 @@
+---
+version: 1.0
+released: 2015-11-18
+changedby: Magnus Ekstrand
+
+# Kända ingångar till systemet
+knownRequestOrigins:
+  - &kro010 NORMAL
+  - &kro020 DJUPINTEGRERAD
+  - &kro030 UTHOPP
+
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+
+# De rättigheter som systemet har
+knownPrivileges:
+  - &kp010 SIGNERA_INTYG
+  - &kp020 MAKULERA_INTYG
+  - &kp030 KOPIERA_INTYG
+  - &kp040 VIDAREBEFORDRA_UTKAST
+  - &kp050 VIDAREBEFORDRA_FRAGASVAR
+  - &kp060 BESVARA_KOMPLETTERINGSFRAGA
+  - &kp070 FILTRERA_PA_LAKARE
+  - &kp080 ATKOMST_ANDRA_ENHETER
+  - &kp090 HANTERA_PERSONUPPGIFTER
+  - &kp100 HANTERA_MAILSVAR
+  - &kp110 NAVIGERING
+
+# De roller som systemet har
+knownRoles:
+  - &kr010 LAKARE
+  - &kr020 PRIVATLAKARE
+  - &kr030 TANDLAKARE
+  - &kr040 VARDADMINISTRATOR
+
+# Rättigheter
+privileges:
+  - &p010
+    name: *kp010
+    desc: Signera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+      - *kro030 # UTHOPP
+  - &p020
+    name: *kp020
+    desc: Makulera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+  - &p030
+    name: *kp030
+    desc: Kopiera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+  - &p040
+    name: *kp040
+    desc: Vidarebefordra utkast
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro030 # UTHOPP
+  - &p050
+    name: *kp050
+    desc: Vidarebefordra frågasvar
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins:
+      - *kro030 # UTHOPP
+  - &p060
+    name: *kp060
+    desc: Besvara fråga om komplettering
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+      - *kro030 # UTHOPP
+  - &p070
+    name: *p070
+    desc: Filtrera på annan läkare
+    intygstyper: # Implicit alla
+    requestOrigins:
+  - &p080
+    name: *kp080
+    desc: Åtkomst andra vårdenheter
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro030 # UTHOPP
+  - &p090
+    name: *kp090
+    desc: Hantera personuppgifter
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro030 # UTHOPP
+  - &p100
+    name: *kp100
+    desc: Hantera notifieringsmail om frågasvar
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro030 # UTHOPP
+  - &p110
+    name: *kp110
+    desc: Navigera i menyer, på logo, via tillbakaknappar
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro030 # UTHOPP
+
+# Roller
+roles:
+  - &r010
+    name: *kr010 # LAKARE
+    desc: Landstingsläkare
+    privileges:
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p040 # VIDAREBEFORDRA_UTKAST
+      - *p050 # VIDAREBEFORDRA_FRAGASVAR
+      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p070 # FILTRERA_PA_LAKARE
+      - *p080 # ATKOMST_ANDRA_ENHETER
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+  - &r020
+    name: *kr020 # PRIVATLAKARE
+    desc: Privatläkare
+    privileges:
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+  - &r030
+    name: *kr030 # TANDLAKARE
+    desc: Tandläkare
+    privileges:
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p040 # VIDAREBEFORDRA_UTKAST
+      - *p050 # VIDAREBEFORDRA_FRAGASVAR
+      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p070 # FILTRERA_PA_LAKARE
+      - *p080 # ATKOMST_ANDRA_ENHETER
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+  - &r040
+    name: *kr040 # VARDADMINISTRATOR
+    desc: Vårdadministratör
+    privileges:
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+
+# Legitimerade yrkesroller
+titles:
+  - title: Läkare
+    role: *r010 # LAKARE
+  - title: Tandläkare
+    role: *r030 # TANDLAKARE
+
+# Kombination befattningskoder och gruppförskrivarkoder
+titleCodes:
+  - titleCode: 204010
+    groupPrescriptionCode:
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9300005
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9400003
+    role: *r010 # LAKARE
+  - titleCode: 204090
+    groupPrescriptionCode: 9100009
+    role: *r010 # LAKARE
+

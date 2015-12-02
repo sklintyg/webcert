@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.auth;
+package se.inera.intyg.webcert.web.auth.fake;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;

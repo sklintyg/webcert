@@ -15,15 +15,16 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManagerImpl;
@@ -37,7 +38,7 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 
-public abstract class AbstractIntygServiceTest {
+public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
     protected static final String CONFIG_AS_JSON = "{config-as-json}";
 

@@ -15,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -23,7 +24,7 @@ import javax.xml.transform.stream.StreamSource;
  *
  * Created by eriklupander on 2015-08-26.
  */
-public abstract class BaseSAMLCredentialTest {
+public abstract class BaseSAMLCredentialTest extends AuthoritiesConfigurationTestSetup {
 
     protected static Assertion assertionPrivatlakare;
     protected static Assertion assertionLandstingslakare;

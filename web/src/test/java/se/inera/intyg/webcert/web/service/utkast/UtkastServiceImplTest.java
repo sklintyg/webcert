@@ -33,6 +33,10 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -61,7 +65,7 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UtkastServiceImplTest {
+public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
@@ -73,25 +77,18 @@ public class UtkastServiceImplTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
-
     @Mock
     private IntygModuleRegistry moduleRegistry;
-
     @Mock
     private LogService logService;
-
     @Mock
     private WebCertUserService userService;
-
     @Mock
     private IntygService intygService;
-
     @Mock
     private NotificationService notificationService;
-
     @Mock
     private MonitoringLogService mockMonitoringService;
-
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
         @Override
@@ -106,6 +103,7 @@ public class UtkastServiceImplTest {
     private Utkast utkast;
     private Utkast signedUtkast;
     private HoSPerson hoSPerson;
+
 
     @Before
     public void setup() {
@@ -360,9 +358,11 @@ public class UtkastServiceImplTest {
     }
 
     private WebCertUser createUser() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         user.setHsaId("hsaId");
         user.setNamn("namn");

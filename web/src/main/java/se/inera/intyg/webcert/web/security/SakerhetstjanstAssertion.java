@@ -5,6 +5,7 @@ import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.impl.XSAnyImpl;
+import org.springframework.security.saml.SAMLCredential;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +91,13 @@ public class SakerhetstjanstAssertion {
             authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
         }
     }
+
+    // - - - - -  Static - - - - -
+
+    public static SakerhetstjanstAssertion getAssertion(SAMLCredential credential) {
+        return new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
+    }
+
 
 
     // - - - - -  Getters and setters - - - - -

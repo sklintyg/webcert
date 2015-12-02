@@ -1,0 +1,100 @@
+---
+version: 1.0
+released: 2015-11-18
+changedby: Magnus Ekstrand
+
+# Kända ingångar till systemet
+knownRequestOrigins:
+  - &kro010 NORMAL
+  - &kro020 DJUPINTEGRATION
+  - &kro030 UTHOPP
+
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+
+# De rättigheter som systemet har
+knownPrivileges:
+  - &kp010 SIGNERA_INTYG
+  - &kp020 MAKULERA_INTYG
+  - &kp030 KOPIERA_INTYG
+
+# De roller som systemet har
+knownRoles:
+  - &kr010 LAKARE
+  - &kr020 PRIVATLAKARE
+  - &kr030 TANDLAKARE
+  - &kr040 VARDADMINISTRATOR
+
+# Rättigheter
+privileges:
+  - &p010
+    name: *kp010
+    desc: Signera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+      - *kro030 # UTHOPP
+  - &p020
+    name: *kp020
+    desc: Makulera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+  - &p030
+    name: *kp030
+    desc: Kopiera intyg
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins:
+      - *kro020 # DJUPINTEGRERAD
+
+# Roller
+roles:
+  - &r010
+    name: *kr010 # LAKARE
+    desc: Landstingsläkare
+    privileges:
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+  - &r020
+    name: *kr020 # PRIVATLAKARE
+    desc: Privatläkare
+    privileges:
+      - *p010 # SIGNERA_INTYG
+  - &r030
+    name: *kr030 # LAKARE
+    desc: Tandläkare
+    privileges:
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+  - &r040
+    name: *kr040 # VARDADMINISTRATOR
+    desc: Vårdadministratör
+    privileges:
+      - *p030 # KOPIERA_INTYG
+
+# Legitimerade yrkesroller
+titles:
+  - title: Läkare
+    role: *r010 # LAKARE
+  - title: Tandläkare
+    role: *r030 # TANDLAKARE
+
+# Kombination befattningskoder och gruppförskrivarkoder
+titleCodes:
+  - titleCode: 204010
+    groupPrescriptionCode:
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9300005
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9400003
+    role: *r010 # LAKARE
+  - titleCode: 204090
+    groupPrescriptionCode: 9100009
+    role: *r010 # LAKARE

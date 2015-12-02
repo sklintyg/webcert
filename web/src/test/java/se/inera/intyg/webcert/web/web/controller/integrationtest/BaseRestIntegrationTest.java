@@ -3,18 +3,15 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest;
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertNotNull;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Before;
-
-
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.web.auth.FakeCredentials;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
+import org.junit.Before;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.

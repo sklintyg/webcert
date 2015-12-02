@@ -10,21 +10,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,12 +27,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -52,8 +34,12 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -64,8 +50,11 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
@@ -76,14 +65,21 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.util.ReflectionUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FragaSvarServiceImplTest {
+public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
 
@@ -94,28 +90,20 @@ public class FragaSvarServiceImplTest {
 
     @Mock
     private FragaSvarRepository fragasvarRepositoryMock;
-
     @Mock
     private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClientMock;
-
     @Mock
     private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClientMock;
-
     @Mock
     private IntygService intygServiceMock;
-
     @Mock
     private WebCertUserService webCertUserService;
-
     @Mock
     private WebcertFeatureService webcertFeatureServiceMock;
-
     @Mock
     private NotificationService notificationServiceMock;
-
     @Mock
     private Logger loggerMock;
-
     @Mock
     private MonitoringLogService monitoringServiceMock;
 
@@ -127,7 +115,7 @@ public class FragaSvarServiceImplTest {
 
     @Before
     public void setUpLoggerFactory() throws Exception {
-        ReflectionUtils.setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOGGER", loggerMock);
+        setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOGGER", loggerMock);
     }
 
     @Before
@@ -916,9 +904,12 @@ public class FragaSvarServiceImplTest {
     }
 
     private WebCertUser createUser() {
+
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setHsaId("testuser");
         user.setNamn("test userman");
 
@@ -931,26 +922,6 @@ public class FragaSvarServiceImplTest {
         user.setValdVardenhet(vardenhet);
 
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

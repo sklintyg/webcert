@@ -4,27 +4,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.security.RequestOrigin;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WebCertUserServiceTest {
+public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     public static final String VARDGIVARE_1 = "VG1";
     public static final String VARDGIVARE_2 = "VG2";
@@ -34,6 +36,8 @@ public class WebCertUserServiceTest {
     public static final String VARDENHET_3 = "VG2VE1";
     public static final String VARDENHET_4 = "VG2VE2";
 
+
+    @InjectMocks
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
 
     @Test
@@ -121,45 +125,22 @@ public class WebCertUserServiceTest {
         user.setValdVardgivare(vg1);
 
         if (fromJS) {
-            user.setRoles(createUserRoles(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
+            user.setRequestOrigin(RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION);
+        } else {
+            user.setRequestOrigin(RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL);
         }
 
         return user;
     }
 
     private WebCertUser createUser() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        return createUserRoles(UserRole.ROLE_LAKARE);
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
-    }
-
-    private Map<String, UserRole> createUserRoles(UserRole... userRoles) {
-        Map<String, UserRole> roles = new HashMap<>();
-
-        for (UserRole userRole : userRoles) {
-            roles.put(userRole.name(), userRole);
-        }
-
-        return roles;
     }
 
 }

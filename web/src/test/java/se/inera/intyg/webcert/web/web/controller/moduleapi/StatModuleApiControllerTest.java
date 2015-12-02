@@ -6,8 +6,6 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +18,10 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
@@ -37,32 +39,26 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StatModuleApiControllerTest {
+public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
 
     private static final int OK = 200;
 
     @Mock
     private WebCertUserService webCertUserService;
-
     @Mock
     private FragaSvarService fragaSvarService;
-
     @Mock
     private UtkastService intygDraftService;
-
     @Captor
     private ArgumentCaptor<List<String>> listCaptor;
-
     @InjectMocks
     private StatModuleApiController statController;
 
     private WebCertUser mockUser;
-
     private Map<String, Long> fragaSvarStatsMap;
-
     private Map<String, Long> intygStatsMap;
-
     private Vardenhet ve1, ve2, ve3, ve4;
+
 
     @Before
     public void setupDataAndExpectations() {
@@ -83,8 +79,9 @@ public class StatModuleApiControllerTest {
 
         mockUser = new WebCertUser();
 
-        mockUser.setRoles(getGrantedRole());
-        mockUser.setAuthorities(getGrantedPrivileges());
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+        mockUser.setRoles(AuthoritiesResolverUtil.toMap(role));
+        mockUser.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         ve1 = new Vardenhet("VE1", "Vardenhet1");
         ve1.getMottagningar().add(new Mottagning("VE1M1", "Mottagning1"));
@@ -233,26 +230,6 @@ public class StatModuleApiControllerTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

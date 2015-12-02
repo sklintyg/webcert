@@ -6,7 +6,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.junit.Test;
 
-import se.inera.intyg.webcert.web.auth.FakeCredentials;
+import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import com.jayway.restassured.RestAssured;

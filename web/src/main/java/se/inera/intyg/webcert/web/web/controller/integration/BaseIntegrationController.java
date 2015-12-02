@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.web.security.AuthoritiesAssertion;
-import se.inera.intyg.webcert.web.security.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**

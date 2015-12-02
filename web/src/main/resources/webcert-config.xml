@@ -52,6 +52,13 @@
     <context:property-placeholder
         properties-ref="defaultProps"
         order="3" ignore-unresolvable="false"/>
+
+    <!-- Read authorites configuration to setup user roles and privileges -->
+    <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader">
+      <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}}" />
+    </bean>
+    <bean id="authoritiesResolver" class="se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver" />
+
   </beans>
   
   <beans profile="dev,wc-init-data">

@@ -8,17 +8,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.intyg.webcert.persistence.roles.model.Privilege;
-import se.inera.intyg.webcert.persistence.roles.model.Role;
-import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
-import se.inera.intyg.webcert.web.security.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.security.RequestOrigin;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +26,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
 
     @Autowired
-    private RoleRepository roleRepository;
-
+    private AuthoritiesResolver authoritiesResolver;
 
     @Override
     public WebCertUser getUser() {
@@ -38,10 +35,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public void assertUserRoles(String[] grantedRoles) throws AuthoritiesException {
-        Map<String, UserRole> userRoles = getUser().getRoles();
+        Map<String, Role> roles = getUser().getRoles();
 
         List<String> gr = Arrays.asList(grantedRoles);
-        for (String role : userRoles.keySet()) {
+        for (String role : roles.keySet()) {
             if (gr.contains(role)) {
                 return;
             }
@@ -49,7 +46,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
         throw new AuthoritiesException(
                 String.format("User does not have a valid role for current request. User's role must be one of [%s] but was [%s]",
-                        StringUtils.join(grantedRoles, ","), StringUtils.join(userRoles.keySet(), ",")));
+                        StringUtils.join(grantedRoles, ","), StringUtils.join(roles.keySet(), ",")));
 
     }
 
@@ -91,26 +88,14 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
-    public void updateUserRoles(String[] userRoles) {
-        Map<String, UserRole> roles = new HashMap<>();
-        Map<String, UserPrivilege> authorities = new HashMap<>();
-
-        for (String userRole : userRoles) {
-            Role role = roleRepository.findByName(userRole);
-            if (role != null) {
-                roles.put(role.getName(), UserRole.valueOf(role.getName()));
-                for (Privilege userAuthority : role.getPrivileges()) {
-                    if (!authorities.containsKey(userAuthority.getName())) {
-                        authorities.put(userAuthority.getName(), UserPrivilege.valueOf(userAuthority.getName()));
-                    }
-                }
-            }
-        }
-
-        getUser().setRoles(roles);
-        getUser().setAuthorities(authorities);
+    public void updateUserRole(String roleName) {
+        updateUserRole(authoritiesResolver.getRole(roleName));
     }
 
+    public void updateUserRole(Role role) {
+        getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
+        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+    }
 
     // - - - - - Package scope - - - - -
 
@@ -119,7 +104,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             return false;
         }
 
-        if (user.hasRole(new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name() })) {
+        String requestOrigin = user.getRequestOrigin();
+            if (requestOrigin.equals(RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION)) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }

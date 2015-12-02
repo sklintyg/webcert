@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.auth;
+package se.inera.intyg.webcert.web.auth.fake;
 
 import java.io.Serializable;
 

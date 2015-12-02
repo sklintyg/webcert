@@ -2,7 +2,6 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +13,17 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -56,6 +56,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Autowired
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
+    @Autowired
+    private AuthoritiesResolver authoritiesResolver;
+
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
 
@@ -86,10 +89,18 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
 
         // Lookup user's role
-        String userRole = lookupUserRole();
+        Role role = lookupUserRole();
 
-        WebCertUser webCertUser = createWebCertUser(hosPerson, userRole, samlCredential);
+        WebCertUser webCertUser = createWebCertUser(hosPerson, role, samlCredential);
         return webCertUser;
+    }
+
+    /*
+     * This method only handles privatläkare for now.
+     * In a future there might be more logic here to decide user role.
+     */
+    Role lookupUserRole() {
+        return authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
 
@@ -103,21 +114,13 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
     }
 
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String userRole, SAMLCredential samlCredential) {
-        return createWebCertUser(hosPerson, getRoleRepository().findByName(userRole), samlCredential);
-    }
-
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
-
-        // Get user's privileges based on his/hers role
-        final Map<String, UserRole> grantedRoles = roleToMap(getRoleAuthority(role));
-        final Map<String, UserPrivilege> grantedPrivileges = getPrivilegeAuthorities(role);
 
         // Create the WebCert user object injection user's privileges
         WebCertUser user = new WebCertUser();
 
-        user.setRoles(grantedRoles);
-        user.setAuthorities(grantedPrivileges);
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());
@@ -201,14 +204,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private HoSPersonType getHosPerson(String personId) {
         return ppService.getPrivatePractitioner(logicalAddress, null, personId);
-    }
-
-    /*
-     * This method only handles privatläkare for now.
-     * In a future there might be more logic here to decide user role.
-     */
-    private String lookupUserRole() {
-        return UserRole.ROLE_PRIVATLAKARE.name();
     }
 
     /**

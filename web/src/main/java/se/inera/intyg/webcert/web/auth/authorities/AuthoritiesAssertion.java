@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.security;
+package se.inera.intyg.webcert.web.auth.authorities;
 
 import org.apache.commons.lang3.StringUtils;
 

@@ -9,12 +9,14 @@ import javax.mail.internet.MimeMessage;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -29,6 +31,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceImplTest {
 
     @InjectMocks
@@ -206,10 +209,11 @@ public class MailNotificationServiceImplTest {
     @Test
     public void testIntygsUrlUthopp() throws Exception {
         //Given
-        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(null);
         final FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.setIntygsReferens(new IntygsReferens());
+
+        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(null);
 
         //When
         final String url = mailNotificationService.intygsUrl(fragaSvar);
@@ -221,11 +225,12 @@ public class MailNotificationServiceImplTest {
     @Test
     public void testIntygsUrlLandsting() throws Exception {
         //Given
-        Utkast utkast = new Utkast();
-        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         final FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.setIntygsReferens(new IntygsReferens());
+
+        Utkast utkast = new Utkast();
+        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
 
         //When
         final String url = mailNotificationService.intygsUrl(fragaSvar);
@@ -237,13 +242,14 @@ public class MailNotificationServiceImplTest {
     @Test
     public void testIntygsUrlPp() throws Exception {
         //Given
-        Utkast utkast = new Utkast();
-        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         final FragaSvar fragaSvar = new FragaSvar();
         final Vardperson vardperson = new Vardperson();
         vardperson.setEnhetsId(MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");
         fragaSvar.setVardperson(vardperson);
         fragaSvar.setIntygsReferens(new IntygsReferens());
+
+        Utkast utkast = new Utkast();
+        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
 
         //When
         final String url = mailNotificationService.intygsUrl(fragaSvar);

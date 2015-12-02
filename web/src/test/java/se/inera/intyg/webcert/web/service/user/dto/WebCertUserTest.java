@@ -1,49 +1,58 @@
 package se.inera.intyg.webcert.web.service.user.dto;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.security.RequestOrigin;
 import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+@RunWith(MockitoJUnitRunner.class)
+public class WebCertUserTest extends AuthoritiesConfigurationTestSetup {
 
-public class WebCertUserTest {
-
+    @InjectMocks
     private WebCertUser wcu;
+
+    @Before
+    public void setup() throws Exception {
+        setupWebCertUser();
+    }
 
     @Test
     public void testGetAsJson() {
         String res = wcu.getAsJson();
         assertNotNull(res);
         assertTrue(res.length() > 0);
-        System.out.println(res);
+        //System.out.println(res);
     }
 
     @Test
     public void testIsLakare() {
         assertTrue(wcu.isLakare());
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR));
+        setUserRole(AuthoritiesConstants.ROLE_ADMIN);
         assertFalse(wcu.isLakare());
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_PRIVATLAKARE));
+        setUserRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
         assertTrue(wcu.isLakare());
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_TANDLAKARE));
+        setUserRole(AuthoritiesConstants.ROLE_TANDLAKARE);
         assertTrue(wcu.isLakare());
     }
 
@@ -114,24 +123,20 @@ public class WebCertUserTest {
         assertEquals(0, res);
     }
 
-    @Before
-    public void setup() {
-        this.wcu = createWebCertUser();
-    }
-
-    private WebCertUser createWebCertUser() {
-
-        WebCertUser wcu = new WebCertUser();
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE));
-        wcu.setAuthorities(getGrantedPrivileges());
-
+    private void setupWebCertUser() {
         wcu.setNamn("A Name");
         wcu.setHsaId("HSA-id");
         wcu.setForskrivarkod("Forskrivarkod");
         wcu.setAuthenticationScheme("AuthScheme");
         wcu.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
 
+        // Setup where user originates from
+        wcu.setRequestOrigin(RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL);
+
+        // Set the user's role
+        setUserRole(AuthoritiesConstants.ROLE_LAKARE);
+
+        // Setup MIU
         List<Vardgivare> vardgivare = new ArrayList<>();
 
         Vardgivare vg1 = new Vardgivare("VG1", "Vardgivare 1");
@@ -157,58 +162,15 @@ public class WebCertUserTest {
         vardgivare.add(vg2);
 
         wcu.setVardgivare(vardgivare);
-
         wcu.setValdVardenhet(vg2ve2m1);
         wcu.setValdVardgivare(vg2);
-
-        return wcu;
     }
 
-    private Map<String, UserRole> getGrantedRole(UserRole role) {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(role.name(), role);
-        return map;
-    }
+    private void setUserRole(String roleName ) {
+        Role role = AUTHORITIES_RESOLVER.getRole(roleName);
 
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
-    }
-
-    @Test
-    public void testIsRoleUthopp() throws Exception {
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_PRIVATLAKARE));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_TANDLAKARE));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE_UTHOPP));
-        assertTrue(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP));
-        assertTrue(wcu.isRoleUthopp());
+        wcu.setRoles(AuthoritiesResolverUtil.toMap(role));
+        wcu.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
     }
 
 }

@@ -1,13 +1,5 @@
 package se.inera.intyg.webcert.web.service.mail;
 
-import java.util.Locale;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.xml.ws.WebServiceException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +8,24 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.web.security.RequestOrigin;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.xml.ws.WebServiceException;
+import java.util.Locale;
 
 /**
  * @author andreaskaltenbach
@@ -74,6 +74,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
 
     private void logError(String type, FragaSvar fragaSvar, Exception e) {
         Long id = fragaSvar.getInternReferens();

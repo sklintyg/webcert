@@ -8,12 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -25,7 +19,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensaml.saml2.core.NameID;
 import org.springframework.security.saml.SAMLCredential;
-
+import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -33,8 +30,6 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.persistence.roles.model.Privilege;
-import se.inera.intyg.webcert.persistence.roles.model.Role;
-import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
@@ -42,6 +37,8 @@ import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
+
+import java.util.HashSet;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -58,10 +55,10 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private PPService ppService;
 
     @Mock
-    private RoleRepository roleRepository;
+    private WebcertFeatureService webcertFeatureService;
 
     @Mock
-    private WebcertFeatureService webcertFeatureService;
+    AuthoritiesResolver authoritiesResolver;
 
     @Mock
     private AvtalService avtalService;
@@ -85,9 +82,11 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Before
     public void setupForSuccess() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
+
+        when(authoritiesResolver.getRole(anyString())).thenReturn(role);
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
-        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles().get(0));
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
     }
@@ -148,17 +147,4 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     }
 
-    private List<Role> buildUserRoles() {
-        List<Privilege> privileges = new ArrayList<>();
-
-        for (UserPrivilege up : UserPrivilege.values()) {
-            Privilege privilege = new Privilege(up.name());
-            privileges.add(privilege);
-        }
-
-        Role role = new Role(UserRole.ROLE_LAKARE.name());
-        role.setPrivileges(privileges);
-
-        return Collections.singletonList(role);
-    }
 }

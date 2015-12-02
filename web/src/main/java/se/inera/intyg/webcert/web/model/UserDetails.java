@@ -1,14 +1,15 @@
-package se.inera.intyg.webcert.common.common.model;
+package se.inera.intyg.webcert.web.model;
 
 /**
  * Created by Magnus Ekstrand on 27/08/15.
  */
 
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.web.auth.authorities.Privilege;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 
 import java.io.Serializable;
 import java.util.Map;
+
 
 /**
  *
@@ -22,12 +23,12 @@ public interface UserDetails extends Serializable {
      *
      * @return the authorities, sorted by natural key (never <code>null</code>)
      */
-    Map<String, UserPrivilege> getAuthorities();
+    Map<String, Privilege> getAuthorities();
 
     /**
      * Set the authorities (privileges) granted to a user.
      */
-    void setAuthorities(Map<String, UserPrivilege> authorities);
+    void setAuthorities(Map<String, Privilege> authorities);
 
     /**
      * Returns the name to authenticate the user. Cannot return <code>null</code>.
@@ -48,11 +49,11 @@ public interface UserDetails extends Serializable {
      *
      * @return the role
      */
-    Map<String, UserRole> getRoles();
+    Map<String, Role> getRoles();
 
     /**
      * Set the roles granted to a user.
      */
-    void setRoles(Map<String, UserRole> roles);
+    void setRoles(Map<String, Role> roles);
 
 }

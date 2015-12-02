@@ -24,7 +24,6 @@ import se.inera.intyg.webcert.mailstub.OutgoingMail;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 /**
  * @author andreaskaltenbach

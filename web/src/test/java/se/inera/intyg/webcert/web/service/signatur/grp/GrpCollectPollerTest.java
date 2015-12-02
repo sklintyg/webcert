@@ -9,8 +9,6 @@ import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
 import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
 import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,21 +24,20 @@ import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.funktionstjanster.grp.v1.Property;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by eriklupander on 2015-08-25.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class GrpCollectPollerTest {
+public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String PERSON_ID = "19121212-1212";
     private static final String TX_ID = "webcert-tx-1";
@@ -137,31 +134,14 @@ public class GrpCollectPollerTest {
     }
 
     private WebCertUser buildWebCertUser() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setPersonId(PERSON_ID);
+
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

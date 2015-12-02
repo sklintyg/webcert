@@ -6,8 +6,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +23,10 @@ import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
@@ -41,7 +43,7 @@ import java.util.Map;
  * Created by eriklupander on 2015-08-25.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class GrpSignaturServiceTest {
+public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String INTYG_ID = "intyg-1";
     private static final long VERSION = 1L;
@@ -164,30 +166,13 @@ public class GrpSignaturServiceTest {
     }
 
     private WebCertUser createUser() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

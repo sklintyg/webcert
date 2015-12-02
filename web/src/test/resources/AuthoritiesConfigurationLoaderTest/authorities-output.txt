@@ -1,0 +1,53 @@
+Version: 1.0
+Released: Wed Nov 18 01:00:00 CET 2015
+Changedby: Magnus Ekstrand
+KnownRoles: [LAKARE, PRIVATLAKARE, TANDLAKARE, VARDADMINISTRATOR]
+KnownPrivileges: [SIGNERA_INTYG, MAKULERA_INTYG, KOPIERA_INTYG]
+KnownIntygstyper: [fk7263, ts-bas, ts-diabetes]
+Privileges: [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]
+Roles: [
+Role { name='LAKARE', desc='Landstingsläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]},
+Role { name='PRIVATLAKARE', desc='Privatläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]}]},
+Role { name='TANDLAKARE', desc='Tandläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]}]},
+Role { name='VARDADMINISTRATOR', desc='Vårdadministratör', privileges [
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]}]
+Titles: [
+Title { title='Läkare', desc='null', role=
+Role { name='LAKARE', desc='Landstingsläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]}},
+Title { title='Tandläkare', desc='null', role=
+Role { name='TANDLAKARE', desc='Tandläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]}]}}]
+TitleCodes: [
+TitleCode { titleCode='204010', groupPrescriptionCode='null', role=
+Role { name='LAKARE', desc='Landstingsläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]}},
+TitleCode { titleCode='203090', groupPrescriptionCode='9300005', role=
+Role { name='LAKARE', desc='Landstingsläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]}},
+TitleCode { titleCode='203090', groupPrescriptionCode='9400003', role=
+Role { name='LAKARE', desc='Landstingsläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]}},
+TitleCode { titleCode='204090', groupPrescriptionCode='9100009', role=
+Role { name='LAKARE', desc='Landstingsläkare', privileges [
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION, UTHOPP]},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper null, requestOrigins [DJUPINTEGRATION]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper [fk7263], requestOrigins [DJUPINTEGRATION]}]}}]

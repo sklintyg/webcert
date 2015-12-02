@@ -9,14 +9,11 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -25,26 +22,24 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.logmessages.ActivityPurpose;
 import se.inera.intyg.webcert.logmessages.ActivityType;
 import se.inera.intyg.webcert.logmessages.IntygReadMessage;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 import javax.jms.Session;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by pehr on 13/11/13.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LogServiceImplTest {
+public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private static final int DELAY = 10;
 
@@ -110,6 +105,7 @@ public class LogServiceImplTest {
     }
 
     private WebCertUser createUser() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
 
@@ -117,34 +113,14 @@ public class LogServiceImplTest {
         vg.setVardenheter(Collections.singletonList(ve));
 
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setHsaId("HSAID");
         user.setNamn("Markus Gran");
         user.setVardgivare(Collections.singletonList(vg));
         user.changeValdVardenhet("VARDENHET_ID");
 
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

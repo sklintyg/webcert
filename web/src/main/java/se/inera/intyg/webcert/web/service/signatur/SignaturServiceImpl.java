@@ -22,15 +22,15 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -42,6 +42,7 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
+
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -115,7 +116,7 @@ public class SignaturServiceImpl implements SignaturService {
     private WebCertUser getWebcertUserForSignering() {
         WebCertUser user = webCertUserService.getUser();
 
-        if (!user.hasPrivilege(UserPrivilege.PRIVILEGE_SIGNERA_INTYG)) {
+        if (!user.hasPrivilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User is not a doctor. Could not sign utkast.");
         }
@@ -197,8 +198,7 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(),
-                user.getAuthenticationScheme());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme());
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
