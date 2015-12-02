@@ -8,6 +8,7 @@
     "cucumber": "^0.9.1",
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
+    "grunt-env": "^0.4.4",
     "grunt-ng-annotate": "^0.3.0",
     "grunt-protractor-runner": "^2.1.0",
     "grunt-protractor-webdriver": "^0.2.5",
@@ -19,6 +20,7 @@
   },
   "engine": "node >= 4.2.1",
   "scripts": {
-    "install": "node node_modules/protractor/bin/webdriver-manager update"
+    "install": "node node_modules/protractor/bin/webdriver-manager update",
+    "install": "./node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update"
   }
 }

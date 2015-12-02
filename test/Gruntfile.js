@@ -3,13 +3,14 @@ require('path');
 
 module.exports = function(grunt) {
     'use strict';
-
+ 
     grunt.loadNpmTasks('grunt-protractor-runner');
     grunt.loadNpmTasks('grunt-protractor-webdriver');
+    grunt.loadNpmTasks('grunt-env');
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
-
+        env: grunt.file.readJSON('./lib/envConfig.json'),
         protractor: {
             options: {
                 //configFile: './protractor.cli.conf.js', // Target-specific config file
@@ -45,6 +46,6 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('acc', ['protractor_webdriver','protractor:acc']);
-    grunt.registerTask('default', ['protractor_webdriver','protractor:dev']);
+    grunt.registerTask('acc', ['env:ip20','protractor_webdriver','protractor:acc']);
+    grunt.registerTask('default', ['env:dev', 'protractor_webdriver','protractor:dev']);
 };
