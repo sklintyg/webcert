@@ -7,11 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.commons.dbcp2.BasicDataSource
 
-import se.inera.certificate.tools.anonymisering.AnonymiseraDatum;
-import se.inera.certificate.tools.anonymisering.AnonymiseraHsaId;
-import se.inera.certificate.tools.anonymisering.AnonymiseraJson;
-import se.inera.certificate.tools.anonymisering.AnonymiseraPersonId;
-import se.inera.certificate.tools.anonymisering.AnonymizeString;
+import se.inera.intyg.common.tools.anonymisering.AnonymiseraDatum;
+import se.inera.intyg.common.tools.anonymisering.AnonymiseraHsaId;
+import se.inera.intyg.common.tools.anonymisering.AnonymiseraJson;
+import se.inera.intyg.common.tools.anonymisering.AnonymiseraPersonId;
+import se.inera.intyg.common.tools.anonymisering.AnonymizeString;
 
 class AnonymiseraWebCertDatabas {
 
