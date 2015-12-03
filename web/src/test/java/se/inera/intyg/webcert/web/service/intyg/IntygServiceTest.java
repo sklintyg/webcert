@@ -166,8 +166,9 @@ public class IntygServiceTest {
     @Before
     public void IntygServiceConverter() throws Exception {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        doReturn(Utlatande.class).when(moduleApi).getImplementationClass();
-        serviceConverter.setObjectMapper(new CustomObjectMapper());
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        Utlatande utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         serviceConverter.setModuleRegistry(moduleRegistry);
     }
 

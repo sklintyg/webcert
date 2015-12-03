@@ -29,16 +29,12 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceConverterImpl.class);
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -209,16 +205,11 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     public Utlatande buildUtlatandeFromUtkastModel(Utkast utkast) {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            return objectMapper.readValue(utkast.getModel(), moduleApi.getImplementationClass());
+            return moduleApi.getUtlatandeFromJson(utkast.getModel());
         } catch (IOException | ModuleNotFoundException e) {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
-    }
-
-    @VisibleForTesting
-    public void setObjectMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
     }
 
     @VisibleForTesting

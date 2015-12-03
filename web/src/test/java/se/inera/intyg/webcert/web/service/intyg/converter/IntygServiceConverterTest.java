@@ -3,6 +3,7 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +44,7 @@ public class IntygServiceConverterTest {
     @Before
     public void setup() throws Exception {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        doReturn(Utlatande.class).when(moduleApi).getImplementationClass();
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Utlatande());
         converter.setModuleRegistry(moduleRegistry);
     }
 
@@ -116,12 +117,11 @@ public class IntygServiceConverterTest {
      */
     @Test(expected = WebCertServiceException.class)
     public void testUtlatandBuiltFromInvalidJson() throws IOException {
-        converter.setObjectMapper(new CustomObjectMapper());
-
         Utkast utkast = new Utkast();
         StringBuilder buf = new StringBuilder();
         buf.append("X").append(createUtlatandeJson());
         utkast.setModel(buf.toString());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenThrow(new IOException());
         converter.buildUtlatandeFromUtkastModel(utkast);
     }
 

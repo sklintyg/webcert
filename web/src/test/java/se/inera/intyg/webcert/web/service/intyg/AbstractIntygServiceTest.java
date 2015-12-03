@@ -100,13 +100,16 @@ public abstract class AbstractIntygServiceTest {
     protected CertificateResponse certificateResponse;
 
     @Before
-    public void setupIntygstjanstResponse() throws Exception {
-
+    public void setupMocks() throws Exception {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        serviceConverter.setModuleRegistry(moduleRegistry);
     }
 
     private CertificateMetaData buildCertificateMetaData() {
@@ -120,14 +123,6 @@ public abstract class AbstractIntygServiceTest {
     @Before
     public void setupDefaultAuthorization() {
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
-    }
-
-    @Before
-    public void setupConverter() throws Exception {
-        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        doReturn(Utlatande.class).when(moduleApi).getImplementationClass();
-        serviceConverter.setObjectMapper(new CustomObjectMapper());
-        serviceConverter.setModuleRegistry(moduleRegistry);
     }
 
 }

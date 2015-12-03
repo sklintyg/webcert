@@ -117,7 +117,7 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             }
 
             @Override
-            public Class<? extends Utlatande> getImplementationClass() {
+            public Utlatande getUtlatandeFromJson(String utlatandeJson) {
                 return null;
             }
 
