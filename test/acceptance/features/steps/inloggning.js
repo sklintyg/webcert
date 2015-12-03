@@ -4,6 +4,7 @@
 'use strict';
 
 module.exports = function () {
+    this.setDefaultTimeout(60 * 1000);
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
@@ -21,7 +22,9 @@ module.exports = function () {
         
     });
 
-    this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
+    this.When(/^jag väljer patienten "([^"]*)"$/, {
+        timeout: 100 * 2000
+    }, function (personnummer, callback) {
         global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas
@@ -29,8 +32,7 @@ module.exports = function () {
         expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);
     });
 
-    this.Given(/^jag går in på  att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
-
+    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
         global.pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
         global.pages.app.views.sokSkrivIntyg.continueToUtkast();
         callback();

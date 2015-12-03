@@ -36,7 +36,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
-        browser.get(process.env.MINAINTYG_URL+'/web/sso?guid=19121212-1212');
+        browser.get(process.env.MINAINTYG_URL+'/web/sso?guid=' + pnr);
         callback();
     });
 

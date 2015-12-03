@@ -5,41 +5,44 @@
 module.exports = function () {
 
     this.Given(/^fyller i alla nödvändiga fält för intyget$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        // 
-        console.log('Fyller i värden för intyget...');
-
         global.pages.intygpages.fkUtkast.smittskyddCheckboxClick();
         global.pages.intygpages.fkUtkast.nedsattMed25CheckboxClick();
-
         callback();
     });
 
-    this.Given(/^signerar "Läkarintyg FK 7263"-intyget$/, {
-        timeout: 100 * 2000
-    }, function (callback) {
+    this.Given(/^signerar "Läkarintyg FK 7263"-intyget$/, function (callback) {
 
         global.pages.intygpages.fkUtkast.whenSigneraButtonIsEnabled().then(function () {
             global.pages.intygpages.fkUtkast.signeraButtonClick();
         });
 
+        //Fånga intygets id
+        if (!global.intyg) {
+            global.intyg = {};
+
+        }
+        global.browser.getCurrentUrl().then(function (text) {
+            global.intyg.id = text.split('/').slice(-1)[0];
+            global.intyg.id = global.intyg.id.replace('?signed', '');
+        });
+
         callback();
     });
 
-    this.Then(/^ska "Läkarintyg FK 7263"-intygets status vara "([^"]*)"$/, {
-        timeout: 100 * 2000
-    }, function (statustext, callback) {
+    this.Then(/^ska "Läkarintyg FK 7263"-intygets status vara "([^"]*)"$/, function (statustext, callback) {
         expect(element(by.id("certificate-is-sent-to-it-message-text")).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
     
-    this.Given(/^jag går till mvk på patienten "([^"]*)"$/, function (arg1, callback) {
+    this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
         // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
 
-    this.Given(/^ska intyget finnas i mvk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
+        var certBox = element(by.id('certificate-#' + global.intyg.id));
+
+        console.log('Verifierar att intyget finns i ... ' + certBox);
+        
+        expect(certBox.element(by.cssContainingText('.ng-binding', 'Inkom till Mina intyg'))
+               .isPresent()).to.eventually.to.equal(true).and.notify(callback);
+        
     });
 
     this.Given(/^att ett intyg är skapat$/, function (callback) {

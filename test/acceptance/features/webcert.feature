@@ -8,13 +8,13 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 @RegisterMedicalCertificate @mvk @dev
 Scenario: Skapa och signera ett intyg i webcert
 	När jag väljer patienten "19520617-2339"
-	Och jag går in på  att skapa ett "Läkarintyg FK 7263" intyg
+	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och fyller i alla nödvändiga fält för intyget
 	Och signerar "Läkarintyg FK 7263"-intyget
 	Så ska "Läkarintyg FK 7263"-intygets status vara "Intyget är signerat"
 
-	När jag går till mvk på patienten "19520617-2339"
-	Så ska intyget finnas i mvk
+	När jag går till Mina intyg för patienten "19520617-2339"
+	Så ska intyget finnas i Mina intyg
 
 @SendMedicalCertificate
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
