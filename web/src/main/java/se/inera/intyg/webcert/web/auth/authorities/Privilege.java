@@ -65,8 +65,8 @@ public class Privilege {
         return "\nPrivilege {"
                 + " name='" + name + '\''
                 + ", desc='" + desc + '\''
-                + ", intygstyper " + intygstyper
-                + ", requestOrigins " + requestOrigins
+                + ", intygstyper= " + intygstyper
+                + ", requestOrigins= " + requestOrigins
                 + "}";
     }
 

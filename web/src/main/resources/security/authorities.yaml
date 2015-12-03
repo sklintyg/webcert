@@ -6,7 +6,7 @@ changedby: Magnus Ekstrand
 # Kända ingångar till systemet
 knownRequestOrigins:
   - &kro010 NORMAL
-  - &kro020 DJUPINTEGRERAD
+  - &kro020 DJUPINTEGRATION
   - &kro030 UTHOPP
 
 # De intygstyper som systemet har
@@ -43,20 +43,20 @@ privileges:
     desc: Signera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
       - *kro030 # UTHOPP
   - &p020
     name: *kp020
     desc: Makulera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
     desc: Kopiera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
   - &p040
     name: *kp040
     desc: Vidarebefordra utkast
@@ -76,7 +76,7 @@ privileges:
     intygstyper:
       - *ki010 # FK7263
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
       - *kro030 # UTHOPP
   - &p070
     name: *p070

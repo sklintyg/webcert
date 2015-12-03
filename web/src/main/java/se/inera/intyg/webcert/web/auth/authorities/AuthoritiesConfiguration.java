@@ -137,6 +137,7 @@ public final class AuthoritiesConfiguration {
                 .append(format("Version: %s\n", version))
                 .append(format("Released: %s\n", released))
                 .append(format("Changedby: %s\n", changedby))
+                .append(format("KnownRequestOrigins: %s\n", knownRequestOrigins))
                 .append(format("KnownRoles: %s\n", knownRoles))
                 .append(format("KnownPrivileges: %s\n", knownPrivileges))
                 .append(format("KnownIntygstyper: %s\n", knownIntygstyper))

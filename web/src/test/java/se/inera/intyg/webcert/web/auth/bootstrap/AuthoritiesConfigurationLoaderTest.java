@@ -35,6 +35,7 @@ import java.util.List;
 public class AuthoritiesConfigurationLoaderTest {
 
     private static final String authoritiesConfigurationFile = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+    //private static final String authoritiesConfigurationFile = "security/authorities.yaml";
     private static final String authoritiesConfigurationOutputFile = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
     @InjectMocks
@@ -74,12 +75,12 @@ public class AuthoritiesConfigurationLoaderTest {
     public void loadConfigurationAndAssertString() {
         AuthoritiesConfiguration configuration = loader.getConfiguration();
 
-        String actual = configuration.toString().replaceAll("\\s","");
+        String actual = configuration.toString().replaceAll("\\s","").trim();
         String expected = "";
 
         try {
             Resource resource = getResource(authoritiesConfigurationOutputFile);
-            expected = new String(Files.readAllBytes(Paths.get(resource.getURI()))).replaceAll("\\s","");
+            expected = new String(Files.readAllBytes(Paths.get(resource.getURI()))).replaceAll("\\s","").trim();
         } catch (IOException e) {
             fail(e.getMessage());
         }

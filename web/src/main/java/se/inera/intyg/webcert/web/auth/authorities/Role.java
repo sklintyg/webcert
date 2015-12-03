@@ -49,7 +49,7 @@ public class Role {
         return "\nRole {"
                 + " name='" + name + '\''
                 + ", desc='" + desc + '\''
-                + ", privileges " + privileges
+                + ", privileges= " + privileges
                 + "}";
     }
 

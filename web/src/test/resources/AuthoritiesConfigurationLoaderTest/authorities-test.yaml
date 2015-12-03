@@ -35,21 +35,21 @@ privileges:
     desc: Signera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
       - *kro030 # UTHOPP
   - &p020
     name: *kp020
     desc: Makulera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
     desc: Kopiera intyg
     intygstyper:
       - *ki010 # FK7263
     requestOrigins:
-      - *kro020 # DJUPINTEGRERAD
+      - *kro020 # DJUPINTEGRATION
 
 # Roller
 roles:

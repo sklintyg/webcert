@@ -201,7 +201,7 @@
 
 
   <beans profile="dev,wc-security-dev,wc-security-test">
-    <bean id="fakeAuthFilter" class="se.inera.intyg.webcert.web.auth.FakeAuthenticationFilter">
+    <bean id="fakeAuthFilter" class="se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
@@ -212,7 +212,7 @@
       <property name="defaultTargetUrl" value="/web/start"/>
     </bean>
     <bean id="fakeAuthenticationProvider"
-        class="se.inera.intyg.webcert.web.auth.FakeAuthenticationProvider">
+        class="se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationProvider">
       <property name="userDetails" ref="userDetailsService"/>
     </bean>
     <bean id="fakeElegAuthenticationProvider"

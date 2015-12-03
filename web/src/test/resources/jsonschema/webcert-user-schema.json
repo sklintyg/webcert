@@ -221,6 +221,10 @@
       "id": "authenticationMethod",
       "type": "string"
     },
+    "requestOrigin": {
+      "id": "requestOrigin",
+      "type": "string"
+    },
     "lakare": {
       "id": "lakare",
       "type": "boolean"
@@ -254,6 +258,7 @@
     "valdVardgivare",
     "roles",
     "authorities",
+    "requestOrigin",
     "authenticationMethod",
     "lakare",
     "roleUthopp",
