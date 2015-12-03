@@ -11,10 +11,14 @@ module.exports = function () {
 
     this.Given(/^att jag är inloggad som läkare "([^"]*)"$/, function (anvandarnamn, callback) {
         console.log('Loggar in som ' + anvandarnamn + '..');
-        global.pages.welcome.get();
-        global.pages.welcome.loginByName(anvandarnamn);
         
+        browser.ignoreSynchronization = true;
+        pages.welcome.get();
+        pages.welcome.loginByName(anvandarnamn);
+        browser.ignoreSynchronization = false;
+        browser.sleep(2000);
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain(anvandarnamn).and.notify(callback);
+        
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
