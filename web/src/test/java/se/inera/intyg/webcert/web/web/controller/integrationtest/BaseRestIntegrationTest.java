@@ -43,8 +43,12 @@ public abstract class BaseRestIntegrationTest {
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
     }
 
+    /**
+     * Common teardown for all tests
+     */
     @After
     public void tearDown() {
+        //Remove all utkast after each test
         given().expect().statusCode(200).when().delete("testability/intyg");
     }
 

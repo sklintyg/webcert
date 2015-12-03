@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Response schema for setting notificationstatus on a utkast",
+  "id": "/",
+  "type": "object",
+  "properties": {
+    "intygId": {
+      "id": "intygId",
+      "type": "string"
+    },
+    "patientId": {
+      "id": "patientId",
+      "type": "string"
+    },
+    "source": {
+      "id": "source",
+      "type": "string"
+    },
+    "intygType": {
+      "id": "intygType",
+      "type": "string"
+    },
+    "status": {
+      "id": "status",
+      "type": "string"
+    },
+    "lastUpdatedSigned": {
+      "id": "lastUpdatedSigned",
+      "type": "string"
+    },
+    "updatedSignedBy": {
+      "id": "updatedSignedBy",
+      "type": "string"
+    },
+    "vidarebefordrad": {
+      "id": "vidarebefordrad",
+      "type": "boolean"
+    },
+    "version": {
+      "id": "version",
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "intygId",
+    "patientId",
+    "source",
+    "intygType",
+    "status",
+    "lastUpdatedSigned",
+    "updatedSignedBy",
+    "vidarebefordrad",
+    "version"
+  ]
+}

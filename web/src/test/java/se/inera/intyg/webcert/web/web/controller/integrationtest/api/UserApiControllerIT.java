@@ -19,7 +19,6 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetAnvandare() {
 
-        // set up auth precondition
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().expect().statusCode(200).when().get("api/anvandare").
@@ -33,7 +32,6 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetAnvandareNotLoggedIn() {
 
-        // set up auth precondition
         RestAssured.sessionId = null;
 
         given().expect().statusCode(403).when().get("api/anvandare");
@@ -47,7 +45,8 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 "IFV1239877878-1042").lakare(true).build();
         RestAssured.sessionId = getAuthSession(user);
 
-        //An improvement of this would be to call hsaStub rest api to add testa data as we want it to aoid "magic" ids and the dependeny to bootstrapped data.
+        //An improvement of this would be to call hsaStub rest api to add testa data as we want it to
+        // avoid "magic" ids and the dependency to bootstrapped data?
         final String vardEnhetToChangeTo = "IFV1239877878-1045";
         ChangeSelectedUnitRequest changeRequest = new ChangeSelectedUnitRequest();
         changeRequest.setId(vardEnhetToChangeTo);
@@ -62,7 +61,6 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGodkannAvtal() {
 
-        // set up auth precondition
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().contentType(ContentType.JSON).when().put("api/anvandare/godkannavtal").then().statusCode(200);
@@ -71,7 +69,6 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testAtertaAvtalGodkannande() {
 
-        // set up auth precondition
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().contentType(ContentType.JSON).when().delete("api/anvandare/privatlakaravtal").then().statusCode(200);
@@ -80,7 +77,6 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testHamtaSenasteAvtal() {
 
-        // set up auth precondition
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().contentType(ContentType.JSON).when().get("api/anvandare/latestavtal").

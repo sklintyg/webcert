@@ -6,6 +6,8 @@ public class Lakare {
 
     private String name;
 
+    public Lakare() { }
+
     public Lakare(String hsaId, String name) {
         this.hsaId = hsaId;
         this.name = name;
