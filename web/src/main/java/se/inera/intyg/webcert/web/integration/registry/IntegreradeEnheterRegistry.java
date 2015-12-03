@@ -9,4 +9,6 @@ public interface IntegreradeEnheterRegistry {
     boolean isEnhetIntegrerad(String enhetHsaId);
 
     void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry);
+
+    void deleteIntegreradEnhet(String hsaId);
 }

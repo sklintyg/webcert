@@ -23,7 +23,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder
 import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.webcert.hsa.model.AuthenticationMethod;
+import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;

@@ -26,7 +26,7 @@ public class Vardgivare {
         this.namn = namn;
     }
 
-    public static Vardgivare create(se.inera.webcert.hsa.model.Vardgivare hsaVardgivare) {
+    public static Vardgivare create(se.inera.intyg.webcert.integration.hsa.model.Vardgivare hsaVardgivare) {
         Vardgivare vardgivare = new Vardgivare();
         vardgivare.setHsaId(hsaVardgivare.getId());
         vardgivare.setNamn(hsaVardgivare.getNamn());

@@ -10,23 +10,26 @@ var doctor = element(by.css('.logged-in')),
     intygTypeButton = element(by.id('intygTypeFortsatt'));
 
 module.exports = {
-    get: function() {
+    get: function () {
         browser.get('web/dashboard#/create/choose-cert-type/index');
     },
-    getDoctorText: function() {
+    getDoctorText: function () {
         return doctor.getText();
     },
-    setPersonnummer: function(pn) {
+    setPersonnummer: function (pn) {
         personnummer.sendKeys(pn);
     },
-    selectPersonnummer: function(pn) {
+    selectPersonnummer: function (pn) {
         this.setPersonnummer(pn);
         pnButton.click();
     },
-    selectIntygType: function(index) {
+    selectIntygType: function (index) {
         intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
     },
-    continueToUtkast: function() {
+    selectIntygTypeByLabel: function (val) {
+        intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
+    },
+    continueToUtkast: function () {
         intygTypeButton.click();
     }
 };

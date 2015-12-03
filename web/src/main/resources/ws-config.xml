@@ -38,6 +38,9 @@
         serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
         address="${cgi.funktionstjanster.grp.url}" />
 
+  </beans>
+
+  <beans profile="!dev,wc-security-test">
     <!-- GRP API conduit (signering av utkast när inloggad med BanKID-varianterna) -->
     <http:conduit
         name="\{http://funktionstjanster.se/grp/service/v1.0.0/.*.http-conduit">
@@ -67,7 +70,6 @@
         </sec:cipherSuitesFilter>
       </http:tlsClientParameters>
     </http:conduit>
-    <!-- GRPT test env -->
   </beans>
 
   <beans profile="!dev">

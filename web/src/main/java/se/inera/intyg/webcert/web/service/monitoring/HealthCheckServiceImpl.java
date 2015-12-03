@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.service.monitoring;
 
 import java.sql.Time;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -17,11 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
@@ -50,6 +52,10 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    @Qualifier("jmsCertificateSenderTemplate")
+    private JmsTemplate jmsCertificateSenderTemplate;
 
     @Autowired
     @Qualifier("jmsFactory")
@@ -103,13 +109,19 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return status;
     }
 
-    // TODO Replace this with something checking the AMQ???
     @Override
     public HealthStatus checkSignatureQueue() {
-
-        LOG.info("Signature-queue check is deprecated, check AMQ state instead. This call will always return 0, true");
-
-        return new HealthStatus(0, true);
+        int queueDepth = jmsCertificateSenderTemplate.browse((session, browser) -> {
+            Enumeration<?> enumeration = browser.getEnumeration();
+            int qd = 0;
+            while (enumeration.hasMoreElements()) {
+                enumeration.nextElement();
+                qd++;
+            }
+            return qd;
+        });
+        LOG.info("Operation checkSignatureQueue completed with queue size {}", queueDepth);
+        return new HealthStatus(queueDepth, true);
     }
 
     @Override

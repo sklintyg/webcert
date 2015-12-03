@@ -2,8 +2,8 @@ package se.inera.intyg.webcert.web.service.util;
 
 import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.Vardenhet;
-import se.inera.webcert.hsa.model.AbstractVardenhet;
-import se.inera.webcert.hsa.model.SelectableVardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;

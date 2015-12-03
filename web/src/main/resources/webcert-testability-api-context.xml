@@ -15,6 +15,7 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntygResource" />
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserResource" />
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.FmbResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntegreradEnhetResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

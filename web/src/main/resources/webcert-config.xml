@@ -32,11 +32,9 @@
 
   <context:annotation-config />
   
-  <context:component-scan base-package="se.inera.webcert" />
   <context:component-scan base-package="se.inera.intyg.webcert.web">
     <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
   </context:component-scan>
-  <context:component-scan base-package="se.inera.intyg.webcert.fkstub" />
 
   <beans>
     <!-- All config files must be present in other modes than dev -->

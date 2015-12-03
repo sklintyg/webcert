@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.security;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
-import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
+import static se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -22,11 +22,11 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragExcept
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.webcert.hsa.model.AuthenticationMethod;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.services.HsaOrganizationsService;
-import se.inera.webcert.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
 import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;

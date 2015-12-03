@@ -24,7 +24,7 @@ import org.springframework.security.providers.ExpiringUsernameAuthenticationToke
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
-import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+import se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag;
 
 import java.util.ArrayList;
 

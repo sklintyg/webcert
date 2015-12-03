@@ -1,3 +1,5 @@
+Testet ignorerat i väntan på WEBCERT-2236
+
 !3 Ladda ett maximalt fk7263
 
 |Intyg|

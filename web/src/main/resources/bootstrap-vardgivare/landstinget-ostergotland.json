@@ -1,44 +1,44 @@
 {
-    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
+    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardgivare",
     "id" : "ostergotland",
     "namn" : "Landstinget Östergötland",
     "vardenheter" : [
         {
-        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
+        	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "linkoping",
             "namn" : "Linköpings Universitetssjukhus",
             "mottagningar" : [
                 {
-                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
+                	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "lkpg-ogon",
                     "namn" : "Ögonmottagningen"
                 },
                 {
-                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
+                	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "lkpg-akuten",
                     "namn" : "Akuten"
                 }
             ]
         },
         {
-        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
+        	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "norrkoping",
             "namn" : "Vrinnevisjukhuset i Norrköping",
             "mottagningar" : [
                 {
-                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
+                	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                   "id" : "nkpg-ogon",
                   "namn" : "Ögonmottagningen"
                 },
                 {
-                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
+                	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                   "id" : "nkpg-akuten",
                   "namn" : "Akuten"
                 }
             ]
         },
         {
-        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
+        	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "motala",
             "namn" : "Vårdcentralen i Motala"
         }

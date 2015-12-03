@@ -1,59 +1,59 @@
 {
-    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
+    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardgivare",
     "id" : "kronoberg",
     "namn" : "Landstinget Kronoberg",
     "vardenheter" : [
         {
-            "@class" : "se.inera.webcert.hsa.model.Vardenhet",
+            "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "anestesikliniken",
             "namn" : "anestesikliniken",
             "mottagningar" : [
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-A",
                     "namn" : "vardavdelning-A"
                 },
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-B",
                     "namn" : "vardavdelning-B"
                 },
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-C",
                     "namn" : "vardavdelning-C"
                 }
             ]
         },
         {
-            "@class" : "se.inera.webcert.hsa.model.Vardenhet",
+            "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "kvinnokliniken",
             "namn" : "kvinnokliniken",
             "mottagningar" : [
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-D",
                     "namn" : "vardavdelning-D"
                 },
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-E",
                     "namn" : "vardavdelning-E"
                 },
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-F",
                     "namn" : "vardavdelning-F"
                 }
             ]
         },
         {
-            "@class" : "se.inera.webcert.hsa.model.Vardenhet",
+            "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
             "id" : "medicinkliniken",
             "namn" : "medicinkliniken",
             "mottagningar" : [
                 {
-                    "@class" : "se.inera.webcert.hsa.model.Mottagning",
+                    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
                     "id" : "vardavdelning-G",
                     "namn" : "vardavdelning-G"
                 }

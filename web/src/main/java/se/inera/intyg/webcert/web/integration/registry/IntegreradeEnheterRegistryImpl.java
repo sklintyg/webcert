@@ -73,6 +73,16 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         }
     }
 
+    @Override
+    @Transactional("jpaTransactionManager")
+    public void deleteIntegreradEnhet(String enhetsHsaId) {
+        IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
+        if (enhet != null) {
+            integreradEnhetRepository.delete(enhet);
+            LOG.debug("IntegreradEnhet {} deleted", enhetsHsaId);
+        }
+    }
+
     private IntegreradEnhetEntry getIntegreradEnhetEntry(String enhetsHsaId) {
 
         IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
