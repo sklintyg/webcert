@@ -11,7 +11,7 @@ Scenario: Skapa och signera ett intyg i webcert
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och fyller i alla nödvändiga fält för intyget
 	Och signerar intyget
-	Så ska "Läkarintyg FK 7263"-intygets status vara "Intyget är signerat"
+	Så ska intygets status vara "Intyget är signerat"
 
 #	När jag går till Mina intyg för patienten "19520617-2339"
 #	Så ska intyget finnas i Mina intyg
@@ -19,9 +19,9 @@ Scenario: Skapa och signera ett intyg i webcert
 @SendMedicalCertificate @minaintyg @dev
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag väljer patienten "19520617-2339"
-#    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
-#	Och jag skickar intyget till "Försäkringskassan"
-#	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
+    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
+	Och jag skickar intyget till "Försäkringskassan"
+	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
 
 #	När jag går till mvk på patienten "19520617-2339"
 #	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
