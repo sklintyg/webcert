@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.auth.authorities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class Privilege {
     public List<String> getRequestOrigins() {
         return requestOrigins;
     }
+
 
     public void setRequestOrigins(List<String> requestOrigins) {
         this.requestOrigins = requestOrigins;

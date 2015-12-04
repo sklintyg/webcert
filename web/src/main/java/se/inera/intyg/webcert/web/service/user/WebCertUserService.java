@@ -18,6 +18,8 @@ public interface WebCertUserService {
 
     void assertUserRoles(String[] grantedRoles) throws AuthoritiesException;
 
+    void assertRequestOrigin(String requestOrigin) throws AuthoritiesException;
+
     void clearEnabledFeaturesOnUser();
 
     void enableFeaturesOnUser(WebcertFeature... featuresToEnable);

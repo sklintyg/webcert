@@ -20,6 +20,7 @@ knownPrivileges:
   - &kp010 SIGNERA_INTYG
   - &kp020 MAKULERA_INTYG
   - &kp030 KOPIERA_INTYG
+  - &kp070 FILTRERA_PA_LAKARE
 
 # De roller som systemet har
 knownRoles:
@@ -50,6 +51,12 @@ privileges:
       - *ki010 # FK7263
     requestOrigins:
       - *kro020 # DJUPINTEGRATION
+  - &p070
+    name: *kp070
+    desc: Filtrera på annan läkare
+    intygstyper: # Implicit alla
+    requestOrigins:
+
 
 # Roller
 roles:

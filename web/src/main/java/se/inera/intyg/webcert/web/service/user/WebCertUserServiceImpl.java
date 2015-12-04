@@ -45,9 +45,21 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
 
         throw new AuthoritiesException(
-                String.format("User does not have a valid role for current request. User's role must be one of [%s] but was [%s]",
+                String.format("User does not have a valid role for current task. User's role must be one of [%s] but was [%s]",
                         StringUtils.join(grantedRoles, ","), StringUtils.join(roles.keySet(), ",")));
 
+    }
+
+    @Override
+    public void assertRequestOrigin(String requestOrigin) throws AuthoritiesException {
+        String origin = getUser().getRequestOrigin();
+        if (origin.equals(requestOrigin)) {
+            return;
+        }
+
+        throw new AuthoritiesException(
+                String.format("User does not have the valid request origin for current task. User's origin must be [%s] but was [%s]",
+                        origin, requestOrigin));
     }
 
     @Override
@@ -105,7 +117,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
 
         String requestOrigin = user.getRequestOrigin();
-            if (requestOrigin.equals(RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION)) {
+        if (requestOrigin.equals(RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION)) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }

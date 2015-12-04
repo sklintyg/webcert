@@ -1,12 +1,15 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static se.inera.intyg.common.support.common.enumerations.CertificateTypes.FK7263;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
+import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -43,7 +46,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
-    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_TANDLAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name() };
+    private static final String[] GRANTED_ROLES = new String[] { ROLE_LAKARE, ROLE_TANDLAKARE, ROLE_ADMIN };
+    private static final String GRANTED_ORIGIN = REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
@@ -55,6 +59,12 @@ public class IntygIntegrationController extends BaseIntegrationController {
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
     }
+
+    @Override
+    protected String getGrantedRequestOrigin() {
+        return GRANTED_ORIGIN;
+    }
+
 
     /**
      * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
@@ -106,6 +116,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
+
 
     // - - - - - Private scope - - - - -
 

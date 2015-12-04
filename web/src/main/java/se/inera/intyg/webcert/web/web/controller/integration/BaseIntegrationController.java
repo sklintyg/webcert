@@ -1,12 +1,19 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertRequestOrigin;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertUserRoles;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**
@@ -14,14 +21,20 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
  *
  * Created by eriklupander on 2015-10-08.
  */
-public abstract class BaseIntegrationController extends AuthoritiesAssertion {
+public abstract class BaseIntegrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationController.class);
 
     private WebCertUserService webCertUserService;
     private String urlBaseTemplate;
 
+    /**
+     * Method should return the granted roles that allows
+     * @return
+     */
     protected abstract String[] getGrantedRoles();
+
+    protected abstract String getGrantedRequestOrigin();
 
     public boolean validateRedirectToIntyg(String intygId) {
         if (StringUtils.isBlank(intygId)) {
@@ -30,7 +43,12 @@ public abstract class BaseIntegrationController extends AuthoritiesAssertion {
         }
 
         try {
-            webCertUserService.assertUserRoles(getGrantedRoles());
+            Map<String, Role> userRoles = webCertUserService.getUser().getRoles();
+            assertUserRoles(getGrantedRoles(), toArray(userRoles));
+
+            String userRequestOrigin = webCertUserService.getUser().getRequestOrigin();
+            assertRequestOrigin(getGrantedRequestOrigin(), userRequestOrigin);
+
         } catch (AuthoritiesException e) {
             LOG.error(e.getMessage());
             return false;
@@ -54,6 +72,14 @@ public abstract class BaseIntegrationController extends AuthoritiesAssertion {
 
     protected WebCertUserService getWebCertUserService() {
         return webCertUserService;
+    }
+
+    private String[] toArray(Map<String, Role> roles) {
+        List<String> list = roles.entrySet().stream()
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        return list.toArray(new String[list.size()]);
     }
 
 }

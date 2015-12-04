@@ -519,11 +519,6 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         fail("Expected exception");
     }
 
-    @Test
-    public void testDjupintegrationRegexp() throws Exception {
-        assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0".matches(WebCertUserDetailsService.REGEXP_REQUESTURI_DJUPINTEGRATION));
-        assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/".matches(WebCertUserDetailsService.REGEXP_REQUESTURI_DJUPINTEGRATION));
-    }
 
     // ~ Private assertion methods
     // =====================================================================================

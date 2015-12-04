@@ -1,6 +1,8 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import static se.inera.intyg.common.support.common.enumerations.CertificateTypes.FK7263;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -18,7 +20,6 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 import io.swagger.annotations.Api;
 
@@ -64,6 +65,18 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
+
+    // - - - - - Protected scope - - - - -
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return new String[] { ROLE_PRIVATLAKARE };
+    }
+
+    @Override
+    protected String getGrantedRequestOrigin() { return REQUEST_ORIGIN_TYPE_NORMAL; }
+
+
     // - - - - - Default scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
@@ -80,11 +93,5 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
     }
 
 
-
-
-    @Override
-    protected String[] getGrantedRoles() {
-        return new String[]{UserRole.ROLE_PRIVATLAKARE.name()};
-    }
 
 }

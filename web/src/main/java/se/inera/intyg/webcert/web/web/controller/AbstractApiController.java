@@ -1,16 +1,12 @@
 package se.inera.intyg.webcert.web.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
@@ -18,6 +14,9 @@ import se.inera.intyg.webcert.web.service.exception.FeatureNotAvailableException
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractApiController {
 
@@ -78,16 +77,27 @@ public abstract class AbstractApiController {
         return webCertUserService;
     }
 
-    protected boolean checkIfUserHasRole(UserRole... userRoles) {
+    protected boolean checkIfUserHasRole(Role... userRoles) {
         Assert.notNull(userRoles);
 
         List<String> list = new ArrayList<>();
-        for (UserRole userRole : userRoles) {
-            list.add(userRole.name());
+        for (Role userRole : userRoles) {
+            list.add(userRole.getName());
         }
 
         WebCertUser webCertUser = webCertUserService.getUser();
         return webCertUser.hasRole(list.toArray(new String[list.size()]));
+    }
+
+    protected boolean checkIfUserHasRequestOrigin(String requestOrigin) {
+        if (requestOrigin == null) {
+            return false;
+        }
+
+        WebCertUser webCertUser = webCertUserService.getUser();
+        String origin = webCertUser.getRequestOrigin();
+
+        return origin.equals(requestOrigin);
     }
 
     protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {

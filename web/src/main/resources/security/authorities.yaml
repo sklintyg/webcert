@@ -79,7 +79,7 @@ privileges:
       - *kro020 # DJUPINTEGRATION
       - *kro030 # UTHOPP
   - &p070
-    name: *p070
+    name: *kp070
     desc: Filtrera på annan läkare
     intygstyper: # Implicit alla
     requestOrigins:

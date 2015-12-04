@@ -1,11 +1,14 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import static se.inera.intyg.common.support.common.enumerations.CertificateTypes.FK7263;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
+import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_UTHOPP;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 import javax.ws.rs.GET;
@@ -31,12 +34,13 @@ import java.util.Map;
 @Api(value = "webcert web user certificate (Fråga/Svar uthopp)", description = "REST API för fråga/svar via uthoppslänk, landstingspersonal", produces = MediaType.APPLICATION_JSON)
 public class LegacyIntygIntegrationController extends BaseIntegrationController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
+
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
 
-    private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
-
-    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_TANDLAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
+    private static final String[] GRANTED_ROLES = new String[] { ROLE_ADMIN, ROLE_LAKARE, ROLE_TANDLAKARE };
+    private static final String GRANTED_ORIGIN = REQUEST_ORIGIN_TYPE_UTHOPP;
 
     private String urlFragmentTemplate;
 
@@ -44,6 +48,12 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
     }
+
+    @Override
+    protected String getGrantedRequestOrigin() {
+        return GRANTED_ORIGIN;
+    }
+
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
@@ -71,7 +81,8 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
 
-    // - - - - - Default scope - - - - -
+
+    // - - - - - Private scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
 

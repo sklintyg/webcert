@@ -36,7 +36,12 @@ public class RequestOrigin {
 
     public String resolveOrigin() {
 
-        String uri = getSavedRequest(httpServletRequest).getRequestURI();
+        DefaultSavedRequest savedRequest = getSavedRequest(httpServletRequest);
+        if (savedRequest == null) {
+            return REQUEST_ORIGIN_TYPE_NORMAL;
+        }
+
+        String uri = savedRequest.getRequestURI();
 
         if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
             return REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
@@ -53,8 +58,6 @@ public class RequestOrigin {
 
     private DefaultSavedRequest getSavedRequest(HttpServletRequest request) {
         DefaultSavedRequest savedRequest = (DefaultSavedRequest) request.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-        Assert.notNull(savedRequest, "No session attribute with name " + SPRING_SECURITY_SAVED_REQUEST_KEY);
-
         return savedRequest;
     }
 }

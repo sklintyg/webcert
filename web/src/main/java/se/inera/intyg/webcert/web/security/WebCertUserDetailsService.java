@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.security;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+//import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+
 import static se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,22 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
-import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -43,17 +43,7 @@ import java.util.TreeSet;
 @Service
 public class WebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
 
-    // ~ Static fields/initializers
-    // =====================================================================================
-
-    public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
-    public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
-
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
-
-
-    // ~ Instance fields
-    // =====================================================================================
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
@@ -155,10 +145,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
 
-    protected DefaultSavedRequest getRequest() {
-        HttpServletRequest curRequest = getCurrentRequest();
-        return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-    }
+//    protected DefaultSavedRequest getRequest() {
+//        HttpServletRequest curRequest = getCurrentRequest();
+//        return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
+//    }
 
 
     // ~ Package scope

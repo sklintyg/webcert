@@ -71,7 +71,6 @@ public class AuthoritiesConfigurationLoader implements InitializingBean {
         try {
             uri = resource.getURI();
             authoritiesConfiguration = loadConfiguration(Paths.get(resource.getURI()));
-            System.err.println(authoritiesConfiguration);
         } catch (IOException ioe) {
            throw new AuthoritiesException(format("Could not load authorities configuration file %s", uri.getPath()), ioe);
         }

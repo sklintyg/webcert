@@ -35,7 +35,6 @@ import java.util.List;
 public class AuthoritiesConfigurationLoaderTest {
 
     private static final String authoritiesConfigurationFile = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
-    //private static final String authoritiesConfigurationFile = "security/authorities.yaml";
     private static final String authoritiesConfigurationOutputFile = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
     @InjectMocks
@@ -56,7 +55,7 @@ public class AuthoritiesConfigurationLoaderTest {
         AuthoritiesConfiguration configuration = loader.getConfiguration();
 
         assertTrue(configuration.getRoles().size() == 4);
-        assertTrue(configuration.getPrivileges().size() == 3);
+        assertTrue(configuration.getPrivileges().size() == 4);
         assertTrue(configuration.getTitles().size() == 2);
         assertTrue(configuration.getTitleCodes().size() == 4);
 

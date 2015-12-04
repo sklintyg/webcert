@@ -3,12 +3,13 @@ Released: Wed Nov 18 01:00:00 CET 2015
 Changedby: Magnus Ekstrand
 KnownRequestOrigins: [NORMAL, DJUPINTEGRATION, UTHOPP]
 KnownRoles: [LAKARE, PRIVATLAKARE, TANDLAKARE, VARDADMINISTRATOR]
-KnownPrivileges: [SIGNERA_INTYG, MAKULERA_INTYG, KOPIERA_INTYG]
+KnownPrivileges: [SIGNERA_INTYG, MAKULERA_INTYG, KOPIERA_INTYG, FILTRERA_PA_LAKARE]
 KnownIntygstyper: [fk7263, ts-bas, ts-diabetes]
 Privileges: [
 Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= null, requestOrigins= [DJUPINTEGRATION, UTHOPP]},
 Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= null, requestOrigins= [DJUPINTEGRATION]},
-Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [fk7263], requestOrigins= [DJUPINTEGRATION]}]
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [fk7263], requestOrigins= [DJUPINTEGRATION]},
+Privilege { name='FILTRERA_PA_LAKARE', desc='Filtrera på annan läkare', intygstyper= null, requestOrigins= null}]
 Roles: [
 Role { name='LAKARE', desc='Landstingsläkare', privileges= [
 Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= null, requestOrigins= [DJUPINTEGRATION, UTHOPP]},

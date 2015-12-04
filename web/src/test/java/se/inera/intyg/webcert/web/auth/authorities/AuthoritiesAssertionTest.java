@@ -1,10 +1,16 @@
 package se.inera.intyg.webcert.web.auth.authorities;
 
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertRequestOrigin;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertUserRoles;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
+import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
+import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 
 /**
  * Created by Magnus Ekstrand on 17/09/15.
@@ -12,24 +18,36 @@ import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 @RunWith(MockitoJUnitRunner.class)
 public class AuthoritiesAssertionTest {
 
-    @InjectMocks
-    private AuthoritiesAssertion authoritiesAssertion = new AuthoritiesAssertion();
-
-
     @Test
     public void whenGrantedRolesContainUserRole() {
-        String[] grantedRoles = new String[] {UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name() };
-        String[] userRoles = new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name() };
+        String[] grantedRoles = new String[] { ROLE_ADMIN, ROLE_LAKARE, ROLE_TANDLAKARE };
+        String[] userRoles = new String[] { ROLE_LAKARE };
 
-        authoritiesAssertion.assertUserRoles(grantedRoles, userRoles);
+        assertUserRoles(grantedRoles, userRoles);
     }
 
     @Test(expected = AuthoritiesException.class)
     public void whenGrantedRolesDoesNotContainUserRole() {
-        String[] grantedRoles = new String[] {UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
-        String[] userRoles = new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name() };
+        String[] grantedRoles = new String[] { ROLE_ADMIN, ROLE_LAKARE };
+        String[] userRoles = new String[] { ROLE_TANDLAKARE };
 
-        authoritiesAssertion.assertUserRoles(grantedRoles, userRoles);
+        assertUserRoles(grantedRoles, userRoles);
+    }
+
+    @Test
+    public void whenGrantedRequestOriginContainUserRequestOrigin() {
+        String grantedOrigin = REQUEST_ORIGIN_TYPE_NORMAL;
+        String userOrigin = REQUEST_ORIGIN_TYPE_NORMAL;
+
+        assertRequestOrigin(grantedOrigin, userOrigin);
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void whenGrantedRequestOriginDoesNotContainUserRequestOrigin() {
+        String grantedOrigin = REQUEST_ORIGIN_TYPE_NORMAL;
+        String userOrigin = REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
+
+        assertRequestOrigin(grantedOrigin, userOrigin);
     }
 
 }
