@@ -19,7 +19,7 @@ exports.config = {
     capabilities: {
         browserName: 'firefox',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
-        // 'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
+        //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
         version: '',
         platform: 'ANY'
     },
@@ -43,5 +43,6 @@ exports.config = {
         global.pages = require('./../lib/pages.js');
         
         browser.ignoreSynchronization = false;
+        browser.baseUrl = process.env.WEBCERT_URL;
     }
 };

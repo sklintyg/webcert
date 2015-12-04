@@ -1,3 +1,5 @@
+/* globals browser */
+
 /**
  * Created by BESA on 2015-11-25.
  */

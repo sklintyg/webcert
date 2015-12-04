@@ -5,7 +5,7 @@ Egenskap: Kontrollera att webcerts olika funktioner går att använda
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare "Jan Nilsson"
 
-@RegisterMedicalCertificate @mvk @dev
+@RegisterMedicalCertificate @mvk 
 Scenario: Skapa och signera ett intyg i webcert
 	När jag väljer patienten "19520617-2339"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
@@ -13,10 +13,10 @@ Scenario: Skapa och signera ett intyg i webcert
 	Och signerar "Läkarintyg FK 7263"-intyget
 	Så ska "Läkarintyg FK 7263"-intygets status vara "Intyget är signerat"
 
-	När jag går till Mina intyg för patienten "19520617-2339"
-	Så ska intyget finnas i Mina intyg
+#	När jag går till Mina intyg för patienten "19520617-2339"
+#	Så ska intyget finnas i Mina intyg
 
-@SendMedicalCertificate
+@SendMedicalCertificate @dev
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	Givet att ett intyg är skapat
 	När jag öppnar intyget
@@ -24,8 +24,8 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	Och jag skickar intyget till Försäkringskassan
 	Så ska intygets status vara "Intyget är signerat och mottaget av Försäkringskassans system."
 
-	När jag går till mvk på patienten "19520617-2339"
-	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
+#	När jag går till mvk på patienten "19520617-2339"
+#	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
 
 @RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg

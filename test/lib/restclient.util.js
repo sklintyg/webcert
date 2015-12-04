@@ -1,3 +1,4 @@
+/* globals protractor, browser */
 'use strict';
 
 var request = require('request');

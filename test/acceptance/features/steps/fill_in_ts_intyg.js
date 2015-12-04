@@ -1,5 +1,5 @@
 /*global
-testdata, intyg, browser
+testdata, intyg
 */
 'use strict';
 

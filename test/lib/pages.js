@@ -1,6 +1,7 @@
 /**
  * Created by BESA on 2015-11-17.
  */
+'use strict';
 
 var appPath = __dirname + '/../../web/src/main/webapp/'; // should be webapp
 var intygPath = __dirname + '/../intygpages/'; // should be webapp

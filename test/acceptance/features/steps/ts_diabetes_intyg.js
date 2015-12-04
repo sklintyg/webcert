@@ -1,7 +1,11 @@
 /*global
-browser, intyg
+browser, intyg, protractor
 */
 'use strict';
+
+function stringStartWith (string, prefix) {
+    return string.slice(0, prefix.length) === prefix;
+}
 
 module.exports = function() {
 	var qaTable = element(by.css('table.table-qa'));
@@ -36,8 +40,21 @@ module.exports = function() {
     });
 
     this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
-        browser.get(process.env.MINAINTYG_URL+'/web/sso?guid=' + pnr);
+        var EC = protractor.ExpectedConditions;
+        var url = process.env.MINAINTYG_URL + '/web/sso?guid=' + pnr;
+
+        var urlChanged = function() {
+            return browser.getCurrentUrl().then(function (currUrl) {
+                return stringStartWith(currUrl, process.env.MINAINTYG_URL + '/web/start');
+            });
+        };
+        
+        var cond = EC.and(urlChanged);
+
+        browser.get(url);
+        browser.wait(cond, 50000);
         callback();
+        
     });
 
     this.Given(/^ska intygets status i mvk visa "([^"]*)"$/, function(status, callback) {

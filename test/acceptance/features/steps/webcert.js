@@ -1,11 +1,13 @@
-/* globals pages, browser, intyg, it, describe */
+/* global pages, browser, protractor */
 
 'use strict';
+
+var EC = protractor.ExpectedConditions;
 
 module.exports = function () {
 
     this.Given(/^fyller i alla nödvändiga fält för intyget$/, function (callback) {
-        global.pages.intygpages.fkUtkast.smittskyddCheckboxClick();
+        pages.intygpages.fkUtkast.smittskyddCheckboxClick();
         global.pages.intygpages.fkUtkast.nedsattMed25CheckboxClick();
         callback();
     });
@@ -21,7 +23,7 @@ module.exports = function () {
             global.intyg = {};
 
         }
-        global.browser.getCurrentUrl().then(function (text) {
+        browser.getCurrentUrl().then(function (text) {
             global.intyg.id = text.split('/').slice(-1)[0];
             global.intyg.id = global.intyg.id.replace('?signed', '');
         });
@@ -30,21 +32,16 @@ module.exports = function () {
     });
 
     this.Then(/^ska "Läkarintyg FK 7263"-intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        expect(element(by.id("certificate-is-sent-to-it-message-text")).getText()).to.eventually.contain(statustext).and.notify(callback);
+        expect(element(by.id('certificate-is-sent-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
     
     this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-
-        var certBox = element(by.id('certificate-#' + global.intyg.id));
-
-        console.log('Verifierar att intyget finns i ... ' + certBox);
-        
-        expect(certBox.element(by.cssContainingText('.ng-binding', 'Inkom till Mina intyg'))
-               .isPresent()).to.eventually.to.equal(true).and.notify(callback);
-        
+        // När "Visa intyget"-knappen syns är vi nöjda här.
+        var id = 'viewCertificateBtn-'+ global.intyg.id;
+        browser.wait(EC.elementToBeClickable(id), 10000);
+        callback();
     });
-
+    
     this.Given(/^att ett intyg är skapat$/, function (callback) {
         // Write code here that turns the phrase above into concrete actions
         callback.pending();
