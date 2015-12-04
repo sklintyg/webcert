@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Response schema for getting list of lakare that have saved utkast items for a given vardenehet",
+  "title": "Response schema for getting list of lakare that has fragasvar items for a given vardenehet",
   "id": "/",
   "type": "array",
   "minItems": 0,

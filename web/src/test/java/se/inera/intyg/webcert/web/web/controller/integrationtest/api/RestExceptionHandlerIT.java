@@ -11,17 +11,16 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
 /**
+ * Verify that the API framework handles Rest framework problems, such as an nonexisting endpoint method in such a
+ * way that our custom exception handler is used and responds with our custom error json response.
+ *
+ * @see se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler
+ * <p/>
  * Created by marced on 01/12/15.
  */
 public class RestExceptionHandlerIT extends BaseRestIntegrationTest {
 
 
-    /**
-     * Verify that the API framework handles Rest framework problems, such as an nonexisting endpoint method in such a
-     * way that our custom exception handler is used and gives a json response.
-     *
-     * @see se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler
-     */
     @Test
     public void testGetNonExistingEndpointMethod() {
 

@@ -58,6 +58,27 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 
+    /**
+     * Verify that trying to change vardEnhet to an invalid one gives an error response.
+     */
+    @Test
+    public void testAndraValdEnhetMedOgiltigEnhetsId() {
+
+        // Log in as user having medarbetaruppdrag at several vardenheter.
+        FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B", "Åsa", "Multi-vardenheter",
+                "IFV1239877878-1042").lakare(true).build();
+        RestAssured.sessionId = getAuthSession(user);
+
+        //An improvement of this would be to call hsaStub rest api to add testa data as we want it to
+        // avoid "magic" ids and the dependency to bootstrapped data?
+        final String vardEnhetToChangeTo = "non-existing-vardenehet-id";
+        ChangeSelectedUnitRequest changeRequest = new ChangeSelectedUnitRequest();
+        changeRequest.setId(vardEnhetToChangeTo);
+
+        given().contentType(ContentType.JSON).and().body(changeRequest).expect().
+                statusCode(400).when().post("api/anvandare/andraenhet");
+    }
+
     @Test
     public void testGodkannAvtal() {
 

@@ -11,6 +11,7 @@ import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonS
 import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
+ * Basic verification of endpoint that looks up patients by personnummer.
  * Created by marced on 01/12/15.
  */
 public class PersonAPIControllerIT extends BaseRestIntegrationTest {

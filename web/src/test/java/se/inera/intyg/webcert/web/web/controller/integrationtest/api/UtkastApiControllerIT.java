@@ -37,7 +37,11 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         testGetUtkast("ts-diabetes");
     }
 
-
+    /**
+     * Generic method that created an utkast of given type and validates basic generic model properties
+     *
+     * @param utkastType The type of utkast to create
+     */
     private void testGetUtkast(String utkastType) {
 
         // Set up auth precondition
@@ -65,6 +69,9 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         assertEquals(utkastRequest.getPatientEfternamn(), model.getString("grundData.patient.efternamn"));
     }
 
+    /**
+     * Verify that a lakare with a saved utkast is returned when querying for that.
+     */
     @Test
     public void testGetLakareWithDraftsByEnheter() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
@@ -81,6 +88,9 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         Assert.assertEquals(DEFAULT_LAKARE.getHsaId(), lakareWithUtkast[0].getHsaId());
     }
 
+    /**
+     * Verify that filtering by enhetId and hsaId returns expected results.
+     */
     @Test
     public void testFilterDraftsForUnit() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);

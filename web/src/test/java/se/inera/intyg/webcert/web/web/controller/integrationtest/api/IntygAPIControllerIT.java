@@ -4,6 +4,7 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import org.junit.Test;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
@@ -22,6 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Basic test suite that verifies that the endpoint (/api/intyg) for generic intygs operations (list drafts/copy/notification status)
+ * are available and reponds according to specification.
+ * <p/>
  * Created by marced on 01/12/15.
  */
 public class IntygAPIControllerIT extends BaseRestIntegrationTest {
@@ -76,6 +80,31 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
                 body("intygsUtkastId", not(isEmptyString())).
                 body("intygsUtkastId", not(equalTo(utkastId))).
                 body("intygsTyp", equalTo("fk7263"));
+    }
+
+    /**
+     * Check that trying to copy utkast with bad input gives error response.
+     */
+    @Test
+    public void testCreateNewUtkastCopyBasedOnExistingUtkastWithInvalidPatientpersonNummer() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(null);
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", utkastId);
+
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).
+                when().post("api/intyg/{intygsTyp}/{intygsId}/kopiera").then().
+                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name())).
+                body("message", not(isEmptyString()));
+
     }
 
     @Test

@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 
 /**
+ * Simple test to verify that the modules-map api andpoint responds according to jsonSchema
+ *
  * Created by marced on 01/12/15.
  */
 public class ModuleAPIControllerIT extends BaseRestIntegrationTest {
