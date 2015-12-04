@@ -18,7 +18,7 @@ Scenario: Skapa och signera ett diabetesintyg till transportstyrelsen
 Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat" 
-    Och jag skickar intyget till "Transportstyrelsen"
+    Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
     # När jag går till Mina intyg för patienten "19121212-1212"

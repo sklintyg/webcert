@@ -24,21 +24,6 @@ module.exports = function() {
 		});
 	});
 
-    this.Given(/^jag skickar intyget till Transportstyrelsen$/, function(callback) {
-
-    	//Fånga intygets id
-    	if (!global.intyg){ global.intyg = {};}
-    	browser.getCurrentUrl().then(function(text){
-    		intyg.id = text.split('/').slice(-1)[0];
-    		console.log('Intygsid: '+intyg.id);
-    	});
-
-        element(by.id('sendBtn')).click();
-        element(by.id('patientSamtycke')).click();
-        element(by.id('button1send-dialog')).click();
-        callback();
-    });
-
     this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
         var EC = protractor.ExpectedConditions;
         var url = process.env.MINAINTYG_URL + '/web/sso?guid=' + pnr;
