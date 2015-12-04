@@ -101,10 +101,16 @@
                 <tr>
                   <th></th>
                   <th></th>
-                  <th title="">Typ av intyg</th>
-                  <th title="">Status</th>
-                  <th title="">Sparat datum</th>
-                  <th title="">Sparat/signerat av</th>
+                  <th title="Typ av intyg.">Typ av intyg</th>
+                  <th title="Visar utkastets/intygets status.
+- Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.
+- Utkast, kan signeras = Utkastet är sparat och kan signeras.
+- Signerat = Intyget är signerat.
+- Skickat = Intyget är signerat och skickat till mottagaren.
+- Mottaget = Intyget är signerat och mottaget av mottagarens system.
+- Makulerat = Intyget är makulerat.">Status</th>
+                  <th title="Datum då utkastet/intyget senast sparades.">Sparat datum</th>
+                  <th title="Person som senast sparade utkastet/intyget alternativt person som signerade intyget.">Sparat/signerat av</th>
                 </tr>
                 <tr ng-repeat="cert in viewState.currentList">
                   <td>
