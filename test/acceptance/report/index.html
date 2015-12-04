@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Testresults</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  </head>
+ 
+  <body>
+ 
+    <!-- 2. Anchor -->
+    <div id="anchor"></div>
+ 
+    <!-- 3. Template -->
+    <script id="tpl" type="text/template">
+    <h3>{{keyword}} {{name}}</h3>
+    <br>
+    {{#each elements}}
+    <b>{{keyword}}</b> {{name}}<br>
+    {{#each steps}}
+     <span class='step'>
+      <b>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
+    </span>
+    {{/each}}
+    {{/each}}
+
+    </script>
+ 
+    <!--4. Handlebars.js slingshot -->
+    <script>
+    //4a.function creation
+    var slingshot = function (tplId, anchor) {
+     $.getJSON('acc_results_sample.json', function(data) {
+        var template = $(tplId).html();
+        var stone = Handlebars.compile(template)(data[0]);
+        $(anchor).append(stone);
+     });
+  };
+    //4b.function firing
+    slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.
+    </script>
+  </body>
+</html>
