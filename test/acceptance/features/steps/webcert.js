@@ -18,11 +18,6 @@ module.exports = function () {
             global.pages.intygpages.fkUtkast.signeraButtonClick();
         });
 
-        //Fånga intygets id
-        if (!global.intyg) {
-            global.intyg = {};
-
-        }
         browser.getCurrentUrl().then(function (text) {
             global.intyg.id = text.split('/').slice(-1)[0];
             global.intyg.id = global.intyg.id.replace('?signed', '');
@@ -31,15 +26,15 @@ module.exports = function () {
         callback();
     });
     
-    this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
-        // När "Visa intyget"-knappen syns är vi nöjda här.
+    // this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
+    //     // När "Visa intyget"-knappen syns är vi nöjda här.
 
-        // TODO / FIXME!
+    //     // TODO / FIXME!
 
-        var id = 'viewCertificateBtn-'+ global.intyg.id;
-        browser.wait(EC.elementToBeClickable(id), 10000);
-        callback();
-    });
+    //     var id = 'viewCertificateBtn-'+ global.intyg.id;
+    //     browser.wait(EC.elementToBeClickable(id), 10000);
+    //     callback();
+    // });
     
 
     this.Given(/^jag öppnar intyget$/, function (callback) {

@@ -21,9 +21,7 @@ module.exports = function () {
         
     });
 
-    this.When(/^jag väljer patienten "([^"]*)"$/, {
-        timeout: 100 * 2000
-    }, function (personnummer, callback) {
+    this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
         global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas
@@ -41,8 +39,7 @@ module.exports = function () {
     this.Given(/^signerar intyget$/, function (callback) {
         // expect(element(by.id('signera-utkast-button')).isPresent()).toBe(true);
         var EC = protractor.ExpectedConditions;
-        // Waits for the element with id 'abc' to be clickable.
-        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 20000);
+        // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 20000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
 
@@ -56,8 +53,6 @@ module.exports = function () {
         else{
             expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
         }
-
-
 
     });
 

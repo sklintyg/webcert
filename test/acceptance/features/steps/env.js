@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function() {
-    this.setDefaultTimeout(60 * 1000);
+    this.setDefaultTimeout(100 * 1000);
 
     //Before scenario
     this.Before(function (scenario) {
@@ -9,7 +9,7 @@ module.exports = function() {
 	});
 
 	//After scenario
-	this.Before(function (scenario) {
+	this.After(function (scenario) {
     	console.log('after');
 	});
 };
