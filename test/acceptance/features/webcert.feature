@@ -16,13 +16,12 @@ Scenario: Skapa och signera ett intyg i webcert
 #	När jag går till Mina intyg för patienten "19520617-2339"
 #	Så ska intyget finnas i Mina intyg
 
-@SendMedicalCertificate @minaintyg 
+@SendMedicalCertificate @minaintyg @dev
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
-	Givet att ett intyg är skapat
-	När jag öppnar intyget
-	Och intyget är signerat
-	Och jag skickar intyget till Försäkringskassan
-	Så ska intygets status vara "Intyget är signerat och mottaget av Försäkringskassans system."
+	När jag väljer patienten "19520617-2339"
+#    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
+#	Och jag skickar intyget till "Försäkringskassan"
+#	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
 
 #	När jag går till mvk på patienten "19520617-2339"
 #	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
@@ -36,14 +35,14 @@ Scenario: Makulera ett skickat intyg
 	Så ska jag få en dialogruta som säger "Kvittens - Återtaget intyg"
 	Så ska intyget visa varningen "Intyget är makulerat"
 
-	När jag går till mvk på patienten "19520617-2339"
-	Så ska intygets status i mvk visa "Makulerat"
+#	När jag går till mvk på patienten "19520617-2339"
+#	Så ska intygets status i mvk visa "Makulerat"
 
 @arkivera @notReady
 Scenario: Arkivera ett intyg i mvk
 	Givet att ett intyg är skapat
 	När jag går till mvk på patienten "19520617-2339"
-	Och jag arkiverar intyget i mvk
-	Så ska intygets inte visas i mvk
+#	Och jag arkiverar intyget i mvk
+#	Så ska intygets inte visas i mvk
 
 

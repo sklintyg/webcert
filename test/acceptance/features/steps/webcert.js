@@ -33,15 +33,14 @@ module.exports = function () {
     
     this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
         // När "Visa intyget"-knappen syns är vi nöjda här.
+
+        // TODO / FIXME!
+
         var id = 'viewCertificateBtn-'+ global.intyg.id;
         browser.wait(EC.elementToBeClickable(id), 10000);
         callback();
     });
     
-    this.Given(/^att ett intyg är skapat$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
 
     this.Given(/^jag öppnar intyget$/, function (callback) {
         // Write code here that turns the phrase above into concrete actions
@@ -49,11 +48,6 @@ module.exports = function () {
     });
 
     this.Given(/^intyget är signerat$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^jag skickar intyget till Försäkringskassan$/, function (callback) {
         // Write code here that turns the phrase above into concrete actions
         callback.pending();
     });

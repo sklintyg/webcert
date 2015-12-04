@@ -10,7 +10,7 @@ function stringStartWith (string, prefix) {
 module.exports = function() {
 	var qaTable = element(by.css('table.table-qa'));
     
-    this.Given(/^och går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
+    this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
     	qaTable.all(by.cssContainingText('tr',intygstyp)).each(function(el, index) {
 		  
           //Leta efter intyg med status och klicka på visa-knapp
