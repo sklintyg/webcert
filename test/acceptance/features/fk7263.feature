@@ -15,7 +15,6 @@ Scenario: Skapa och signera ett intyg i webcert
 
 #	När jag går till Mina intyg för patienten "19520617-2339"
 #	Så ska intyget finnas i Mina intyg
-
 @SendMedicalCertificate @minaintyg 
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag väljer patienten "19520617-2339"
@@ -38,12 +37,4 @@ Scenario: Makulera ett skickat intyg
 
 #	När jag går till mvk på patienten "19520617-2339"
 #	Så ska intygets status i mvk visa "Makulerat"
-
-@arkivera @notReady
-Scenario: Arkivera ett intyg i mvk
-	Givet att ett intyg är skapat
-	När jag går till mvk på patienten "19520617-2339"
-#	Och jag arkiverar intyget i mvk
-#	Så ska intygets inte visas i mvk
-
 

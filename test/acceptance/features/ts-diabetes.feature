@@ -23,22 +23,15 @@ Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
     # När jag går till Mina intyg för patienten "19121212-1212"
     # Så ska intygets status i mvk visa "Mottaget av Transportstyrelsens system"
 
-# @RevokeMedicalCertificate
-# Scenario: Makulera ett skickat intyg
-#     Givet att ett intyg är skapat
-#     När jag öppnar TS Diabetes intyget
-#     Så ska intygets status vara "Intyget är signerat och mottaget av Transportstyrelsens system."
-    
-#     Och jag makulerar intyget
-#     Så ska jag få en dialogruta som säger "Kvittens - Återtaget intyg"
-#     Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
+@RevokeMedicalCertificate @dev
+Scenario: Makulera ett skickat intyg
+	När jag väljer patienten "19121212-1212"
+    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget" 
+    Så ska intygets status vara "Intyget är signerat och mottaget av Transportstyrelsens system"
+	Och jag makulerar intyget
+    Så ska jag få en dialogruta som frågar hur jag vill makulera
+	Så ska jag få en dialogruta som säger "Kvittens - Återtaget intyg"
+	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
 #     När jag går till mvk på patienten "19520727-2252"
 #     Så ska intygets status i mvk visa "Makulerat"
-
-# @minaintyg @arkivera
-# Scenario: Arkivera ett intyg i mvk
-#     Givet att ett intyg är skapat
-#     När jag går till mvk på patienten "19520727-2252"
-#     Och jag arkiverar intyget i mvk
-#     Så ska intygets inte visas i mvk
