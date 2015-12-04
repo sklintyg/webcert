@@ -80,7 +80,7 @@ describe('ViewCertCtrl', function() {
             },
             isFeatureActive: function() { return true; }
         });
-        $provide.value('common.UserModel',getTestUser({ROLE_LAKARE_UTHOPP: 'Läkare - uthopp'}));
+        $provide.value('common.UserModel', getTestUser({LAKARE: 'LAKARE', UTHOPP: 'UTHOPP'}));
     }));
 
     // Get references to the object we want to test from the context.
@@ -324,7 +324,7 @@ describe('ViewCertCtrl', function() {
 
     });
 
-    function getTestUser (role){
+    function getTestUser (role, origin){
         return {
             'hsaId': 'eva',
             'namn': 'Eva Holgersson',
@@ -377,7 +377,8 @@ describe('ViewCertCtrl', function() {
             },
             'roles': role,
             'aktivaFunktioner': ['hanteraFragor', 'hanteraFragor.fk7263'],
-            'totaltAntalVardenheter': 6
+            'totaltAntalVardenheter': 6,
+            'requestOrigin': origin
         };
 
     }
