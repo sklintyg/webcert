@@ -35,28 +35,26 @@ privileges:
     name: *kp010
     desc: Signera intyg
     intygstyper: # Implicit alla
-    requestOrigins:
-      - *kro020 # DJUPINTEGRATION
-      - *kro030 # UTHOPP
+    requestOrigins: # Implicit alla
   - &p020
     name: *kp020
     desc: Makulera intyg
     intygstyper: # Implicit alla
     requestOrigins:
+      - *kro010 # NORMAL
       - *kro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
     desc: Kopiera intyg
     intygstyper:
       - *ki010 # FK7263
-    requestOrigins:
-      - *kro020 # DJUPINTEGRATION
+    requestOrigins: # Implicit alla
   - &p070
     name: *kp070
     desc: Filtrera på annan läkare
     intygstyper: # Implicit alla
     requestOrigins:
-
+      - *kro010 # NORMAL
 
 # Roller
 roles:
