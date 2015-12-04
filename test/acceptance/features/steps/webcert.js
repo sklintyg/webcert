@@ -12,7 +12,7 @@ module.exports = function () {
         callback();
     });
 
-    this.Given(/^signerar "Läkarintyg FK 7263"-intyget$/, function (callback) {
+    this.Given(/^signerar FK7263-intyget$/, function (callback) {
 
         global.pages.intygpages.fkUtkast.whenSigneraButtonIsEnabled().then(function () {
             global.pages.intygpages.fkUtkast.signeraButtonClick();
@@ -29,10 +29,6 @@ module.exports = function () {
         });
 
         callback();
-    });
-
-    this.Then(/^ska "Läkarintyg FK 7263"-intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        expect(element(by.id('certificate-is-sent-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
     
     this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {

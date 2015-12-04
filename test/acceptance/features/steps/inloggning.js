@@ -4,7 +4,6 @@
 'use strict';
 
 module.exports = function () {
-    this.setDefaultTimeout(60 * 1000);
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
@@ -33,14 +32,13 @@ module.exports = function () {
     });
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
-        global.pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
-        global.pages.app.views.sokSkrivIntyg.continueToUtkast();
+        intyg.typ = intygsTyp;
+        pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
+        pages.app.views.sokSkrivIntyg.continueToUtkast();
         callback();
     });
     
-    this.Given(/^signerar intyget$/, {
-        timeout: 100 * 2000
-    }, function (callback) {
+    this.Given(/^signerar intyget$/, function (callback) {
         // expect(element(by.id('signera-utkast-button')).isPresent()).toBe(true);
         var EC = protractor.ExpectedConditions;
         // Waits for the element with id 'abc' to be clickable.
@@ -49,7 +47,18 @@ module.exports = function () {
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
+        
+        //För FK-intyg
+        if(intyg.typ === 'Läkarintyg FK 7263'){
+            expect(element(by.id('certificate-is-sent-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
+        }
+        // För TS-intyg
+        else{
+            expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
+        }
+
+
+
     });
 
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {

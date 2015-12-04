@@ -1,6 +1,6 @@
 # language: sv
 
-@smoke @webcert @ts @diabetes-min
+@smoke @webcert @ts @diabetes-min @dev
 Egenskap: Kontrollera att det går att skapa diabetes-intyg för transportstyrelsen
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -20,8 +20,8 @@ Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
-    När jag går till Mina intyg för patienten "19121212-1212"
-    Så ska intygets status i mvk visa "Mottaget av Transportstyrelsens system"
+    # När jag går till Mina intyg för patienten "19121212-1212"
+    # Så ska intygets status i mvk visa "Mottaget av Transportstyrelsens system"
 
 # @RevokeMedicalCertificate
 # Scenario: Makulera ett skickat intyg
@@ -36,7 +36,7 @@ Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
 #     När jag går till mvk på patienten "19520727-2252"
 #     Så ska intygets status i mvk visa "Makulerat"
 
-# @mvk @arkivera
+# @minaintyg @arkivera
 # Scenario: Arkivera ett intyg i mvk
 #     Givet att ett intyg är skapat
 #     När jag går till mvk på patienten "19520727-2252"

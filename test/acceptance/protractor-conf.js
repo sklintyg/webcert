@@ -24,9 +24,9 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-        format: ['protractor.json', 'pretty'],
+        format: ['json:results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js'],
-        tags: ['@dev']
+        tags: ['~@notReady','@dev']
     },
     onPrepare: function () {
         //http://chaijs.com/
@@ -41,6 +41,7 @@ exports.config = {
         // Testdata lib
         global.testdata = require('../lib/testdata/testdata.js');
         global.pages = require('./../lib/pages.js');
+        global.intyg = {};
         
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
