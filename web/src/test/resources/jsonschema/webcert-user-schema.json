@@ -148,71 +148,71 @@
       "id": "authorities",
       "type": "object",
       "properties": {
-        "PRIVILEGE_MAKULERA_INTYG": {
-          "id": "PRIVILEGE_MAKULERA_INTYG",
+        "MAKULERA_INTYG": {
+          "id": "MAKULERA_INTYG",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_SIGNERA_INTYG": {
-          "id": "PRIVILEGE_SIGNERA_INTYG",
+        "SIGNERA_INTYG": {
+          "id": "SIGNERA_INTYG",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA": {
-          "id": "PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA",
+        "BESVARA_KOMPLETTERINGSFRAGA": {
+          "id": "BESVARA_KOMPLETTERINGSFRAGA",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR": {
-          "id": "PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR",
+        "VIDAREBEFORDRA_FRAGASVAR": {
+          "id": "VIDAREBEFORDRA_FRAGASVAR",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_ATKOMST_ANDRA_ENHETER": {
-          "id": "PRIVILEGE_ATKOMST_ANDRA_ENHETER",
+        "ATKOMST_ANDRA_ENHETER": {
+          "id": "ATKOMST_ANDRA_ENHETER",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_KOPIERA_INTYG": {
-          "id": "PRIVILEGE_KOPIERA_INTYG",
+        "KOPIERA_INTYG": {
+          "id": "KOPIERA_INTYG",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_NAVIGERING": {
-          "id": "PRIVILEGE_NAVIGERING",
+        "NAVIGERING": {
+          "id": "NAVIGERING",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_FILTRERA_PA_LAKARE": {
-          "id": "PRIVILEGE_FILTRERA_PA_LAKARE",
+        "FILTRERA_PA_LAKARE": {
+          "id": "FILTRERA_PA_LAKARE",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_VIDAREBEFORDRA_UTKAST": {
-          "id": "PRIVILEGE_VIDAREBEFORDRA_UTKAST",
+        "VIDAREBEFORDRA_UTKAST": {
+          "id": "VIDAREBEFORDRA_UTKAST",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_HANTERA_PERSONUPPGIFTER": {
-          "id": "PRIVILEGE_HANTERA_PERSONUPPGIFTER",
+        "HANTERA_PERSONUPPGIFTER": {
+          "id": "HANTERA_PERSONUPPGIFTER",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         },
-        "PRIVILEGE_HANTERA_MAILSVAR": {
-          "id": "PRIVILEGE_HANTERA_MAILSVAR",
+        "HANTERA_MAILSVAR": {
+          "id": "HANTERA_MAILSVAR",
           "type": "object",
           "properties": {},
-          "additionalProperties": false
+          "additionalProperties": true
         }
       },
       "additionalProperties": false
@@ -227,10 +227,6 @@
     },
     "lakare": {
       "id": "lakare",
-      "type": "boolean"
-    },
-    "roleUthopp": {
-      "id": "roleUthopp",
       "type": "boolean"
     },
     "privatLakare": {
@@ -261,7 +257,6 @@
     "requestOrigin",
     "authenticationMethod",
     "lakare",
-    "roleUthopp",
     "privatLakare",
     "totaltAntalVardenheter"
   ]
