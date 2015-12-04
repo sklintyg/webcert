@@ -34,6 +34,7 @@ module.exports = function() {
         element(by.id('sendBtn')).click();
         element(by.id('patientSamtycke')).click();
         element(by.id('button1send-dialog')).click();
+        
         callback();
     });
 

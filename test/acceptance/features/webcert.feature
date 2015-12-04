@@ -26,14 +26,15 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 #	När jag går till mvk på patienten "19520617-2339"
 #	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
 
-@RevokeMedicalCertificate @notReady @dev
+@RevokeMedicalCertificate @dev
 Scenario: Makulera ett skickat intyg 
-	Givet att ett intyg är skapat
-	När jag öppnar intyget
-	Och intyget är skickat till försäkringskassan
+	När jag väljer patienten "19520617-2339"
+    Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget" 
+	Så ska intygets status vara "Intyget är signerat och mottaget av Försäkringskassans system."
 	Och jag makulerar intyget
+    Så ska jag få en dialogruta som frågar hur jag vill makulera
 	Så ska jag få en dialogruta som säger "Kvittens - Återtaget intyg"
-	Så ska intyget visa varningen "Intyget är makulerat"
+	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
 #	När jag går till mvk på patienten "19520617-2339"
 #	Så ska intygets status i mvk visa "Makulerat"
