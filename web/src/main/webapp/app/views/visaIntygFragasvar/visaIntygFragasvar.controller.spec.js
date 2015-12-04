@@ -102,7 +102,7 @@ describe('ViewCertCtrl', function() {
             // setup the current location
             $location.url(currentUrl);
 
-            userModel.roles = {ROLE_LAKARE: 'Läkare'};
+            userModel.roles = {LAKARE: 'Läkare'};
             userModel.isLakare = function(){return true;};
             userModel.isLakareUthopp = function(){return false;};
             $stateParams.certificateType = 'fk7263';
