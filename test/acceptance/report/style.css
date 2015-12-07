@@ -4,28 +4,7 @@ a {
  text-decoration:none;
 }
 a:hover { text-decoration : underline; }
-div#anchor { width: 1000px; }
-div#anchor:hover { 
-  padding: 12px; /* padding + border = 16px */
-  border: 4px solid #ddd;
-}
-div {
-  display: block; /* or inline-block */
-  overflow: hidden;
-/*height: 200px; */
-  width: 200px;
-  margin: 3px;
-  padding: 15px; /* padding + border = 16px */
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  text-decoration: none;
-  background: #fff;
-  color: #333;
-}
-div:hover { 
-  padding: 12px; /* padding + border = 16px */
-  border: 4px solid #0084b4;
-}
+
 
 .step{
   padding:10px;
@@ -35,11 +14,29 @@ div:hover {
   background-color: #90EE90;
 }
 .failed{
-  background-color: red;
+  background-color: #FFCCCC;
 }
 .skipped{
   background-color: lightblue;
 }
 .pending{
   background-color: yellow;
+}
+.feature{
+  padding: 5px;
+  border-style: solid;
+  border-width: 1px;
+  max-width:700px;
+  float:left;
+}
+.scenario{
+  padding:5px;
+
+}
+
+.step.Before{
+  display:none;
+}
+.step.After{
+  display:none;
 }

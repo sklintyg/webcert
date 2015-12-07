@@ -24,9 +24,11 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-        format: ['json:acc_results.json', 'pretty'],
+        format: ['json:./acceptance/report/acc_results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js'],
-        tags: ['~@notReady','@dev']
+        tags: ['~@notReady'
+        // ,'@dev'
+        ]
     },
     onPrepare: function () {
         //http://chaijs.com/

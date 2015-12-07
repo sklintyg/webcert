@@ -15,15 +15,21 @@
  
     <!-- 3. Template -->
     <script id="tpl" type="text/template">
-    <h3>{{keyword}} {{name}}</h3>
-    <br>
-    {{#each elements}}
-    <b>{{keyword}}</b> {{name}}<br>
-    {{#each steps}}
-     <span class='step'>
-      <b>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
-    </span>
-    {{/each}}
+    {{#each this}}
+    <div class='feature'>
+      <h3>{{keyword}} {{name}}</h3>
+      <br>
+      {{#each elements}}
+        <div class='scenario'>
+        <b>{{keyword}}</b> {{name}}<br>
+        {{#each steps}}
+         <span class='step {{keyword}}'>
+          <b>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
+        </span>
+        {{/each}}
+      </div>
+      {{/each}}
+    </div>
     {{/each}}
 
     </script>
@@ -32,12 +38,13 @@
     <script>
     //4a.function creation
     var slingshot = function (tplId, anchor) {
-     $.getJSON('acc_results_sample.json', function(data) {
+     $.getJSON('acc_results.json', function(data) {
         var template = $(tplId).html();
-        var stone = Handlebars.compile(template)(data[0]);
+        var stone = Handlebars.compile(template)(data);
         $(anchor).append(stone);
      });
   };
+  
     //4b.function firing
     slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.
     </script>
