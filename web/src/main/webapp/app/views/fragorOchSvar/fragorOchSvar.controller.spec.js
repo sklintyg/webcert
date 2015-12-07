@@ -137,9 +137,9 @@ describe('UnhandledQACtrlSpec', function() {
             $provide.value('$window', $window);
         }]);
 
-        inject(['$rootScope', '$location', '$timeout', '$httpBackend', '$controller', '$cookies', '$document',
+        inject(['$rootScope', '$location', '$timeout', '$httpBackend', '$controller', '$cookies',
             'common.fragaSvarCommonService',
-            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookies_, $document,
+            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookies_,
                 _fragaSvarCommonService_) {
                 $scope = $rootScope.$new();
                 $location = _$location_;
@@ -148,7 +148,6 @@ describe('UnhandledQACtrlSpec', function() {
                 $controller = _$controller_;
                 $cookies = _$cookies_;
                 fragaSvarCommonService = _fragaSvarCommonService_;
-                console.log("$document2: ",$document);
                 controller = $controller('webcert.UnhandledQACtrl', { $scope: $scope });
             }]);
     });
