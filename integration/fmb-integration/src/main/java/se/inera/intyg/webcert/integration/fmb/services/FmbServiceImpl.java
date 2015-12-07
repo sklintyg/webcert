@@ -1,9 +1,5 @@
 package se.inera.intyg.webcert.integration.fmb.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.webcert.persistence.fmb.model.Fmb;
 import se.inera.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.webcert.persistence.fmb.model.FmbType;
@@ -27,16 +22,13 @@ import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponderInterface;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponseType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.BeslutsunderlagType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.DiagnosInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.HuvuddiagnosType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.ICD10SEType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.OvrigFmbInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionerType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -67,9 +59,15 @@ public class FmbServiceImpl implements FmbService {
     @Scheduled(cron = "${fmb.dataupdate.cron}")
     public void updateData() {
         try {
-            LOG.info("FMB data update started");
-            performUpdate();
-            LOG.info("FMB data update done");
+            String skipUpdate = System.getProperty("fmb.skip.update", "false");
+            LOG.info("fmb.skip.update = " + skipUpdate);
+            if (skipUpdate.equalsIgnoreCase("true")) {
+                LOG.info("FMB data update is skipped!");
+            } else {
+                LOG.info("FMB data update started");
+                performUpdate();
+                LOG.info("FMB data update done");
+            }
         } catch (Exception e) {
             LOG.error("Failed to update FMB", e);
         }
