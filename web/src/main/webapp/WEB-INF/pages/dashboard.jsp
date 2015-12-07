@@ -29,8 +29,8 @@
   // Global JS config/constants for this app, to be used by scripts
   var MODULE_CONFIG = {
     BUILD_NUMBER: '<spring:message code="buildNumber" />',
-    PP_HOST: '<spring:eval expression="@webcertProps.getProperty(\'privatepractitioner.portal.registration.url\')" />',
-    DASHBOARD_URL: '<spring:eval expression="@defaultProps.getProperty(\'certificate.view.url.base\')" />'
+    PP_HOST: '<spring:eval expression="@webcertProperties.getProperty(\'privatepractitioner.portal.registration.url\')" />',
+    DASHBOARD_URL: '<spring:eval expression="@webcertProperties.getProperty(\'certificate.view.url.base\')" />'
   }
 </script>
 
