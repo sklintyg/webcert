@@ -52,6 +52,17 @@
     <context:property-placeholder
         properties-ref="defaultProps"
         order="3" ignore-unresolvable="false"/>
+    <!-- Remove when REST-api is used to serve config to frontend! -->
+    <!-- This configuration solves WEBCERT-2249 -->
+    <bean id="webcertProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+      <property name="singleton" value="true" />
+      <property name="properties">
+        <props>
+          <prop key="privatepractitioner.portal.registration.url">${privatepractitioner.portal.registration.url}</prop>
+          <prop key="certificate.view.url.base">${certificate.view.url.base}</prop>
+        </props>
+      </property>
+    </bean>
   </beans>
   
   <beans profile="dev,wc-init-data">
