@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,6 +26,9 @@
         {{#each steps}}
          <span class='step {{keyword}}'>
           <b>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
+          {{#if result.error_message}}
+          <span class='error_message'>{{result.error_message}}</span><br>
+          {{/if}}
         </span>
         {{/each}}
       </div>
@@ -34,7 +38,6 @@
 
     </script>
  
-    <!--4. Handlebars.js slingshot -->
     <script>
     //4a.function creation
     var slingshot = function (tplId, anchor) {
@@ -44,7 +47,7 @@
         $(anchor).append(stone);
      });
   };
-  
+
     //4b.function firing
     slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.
     </script>
