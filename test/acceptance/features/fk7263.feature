@@ -22,8 +22,8 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	Och jag skickar intyget till Försäkringskassan
 	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
 
-#	När jag går till mvk på patienten "19520617-2339"
-#	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
+	När jag går till Mina intyg för patienten "19520617-2339"
+	Så ska intygets status i Mina intyg visa "Mottaget av Försäkringskassans system"
 
 @RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg 
@@ -32,6 +32,6 @@ Scenario: Makulera ett skickat intyg
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
-#	När jag går till mvk på patienten "19520617-2339"
-#	Så ska intygets status i mvk visa "Makulerat"
+	När jag går till Mina intyg för patienten "19520617-2339"
+	Så ska intygets status i Mina intyg visa "Makulerat"
 

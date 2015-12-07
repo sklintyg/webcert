@@ -20,8 +20,8 @@ Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
-    # När jag går till Mina intyg för patienten "19121212-1212"
-    # Så ska intygets status i mvk visa "Mottaget av Transportstyrelsens system"
+    När jag går till Mina intyg för patienten "19121212-1212"
+    Så ska intygets status i Mina intyg visa "Mottaget av Transportstyrelsens system"
 
 @RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg
@@ -30,5 +30,5 @@ Scenario: Makulera ett skickat intyg
     Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
-#     När jag går till mvk på patienten "19520727-2252"
-#     Så ska intygets status i mvk visa "Makulerat"
+    När jag går till Mina intyg för patienten "19520727-2252"
+    Så ska intygets status i Mina intyg visa "Makulerat"
