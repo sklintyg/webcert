@@ -23,7 +23,7 @@ Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
     # När jag går till Mina intyg för patienten "19121212-1212"
     # Så ska intygets status i mvk visa "Mottaget av Transportstyrelsens system"
 
-@RevokeMedicalCertificate @dev
+@RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"

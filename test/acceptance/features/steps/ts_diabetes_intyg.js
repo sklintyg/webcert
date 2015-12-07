@@ -1,5 +1,5 @@
 /*global
-browser, intyg, protractor
+browser, intyg
 */
 'use strict';
 

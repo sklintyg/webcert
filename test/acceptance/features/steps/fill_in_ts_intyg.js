@@ -1,5 +1,5 @@
 /*global
-testdata, intyg
+testdata, intyg, browser
 */
 'use strict';
 
@@ -9,7 +9,7 @@ module.exports = function() {
 
         // browser.ignoreSynchronization = true;
         // Intyget avser
-        fillInKorkortstyper(intyg.korkortstyper);
+        fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm');
 
         // Identiteten är styrkt genom
         fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
@@ -24,22 +24,59 @@ module.exports = function() {
         fillInSynintyg(intyg.synintyg);
 
         //Bedömning
-        fillInBedomning(intyg.bedomning);
+        fillInBedomningDiabetes(intyg.bedomning);
 
         // browser.ignoreSynchronization = false;
 
         callback();
     });
+
+    this.Given(/^jag fyller i alla nödvändiga fält för ett läkarintyg$/, function (callback) {
+        global.intyg = testdata.getRandomTsBasIntyg();
+        global.intyg.typ = 'Transportstyrelsens läkarintyg';
+        
+        // browser.ignoreSynchronization = true;
+        // Intyget avser
+        fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm');
+        // Identiteten är styrkt genom
+        fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+        //Synintyg
+        fillInSynintyg(intyg.synintyg);
+        // Synfunktioner
+
+        browser.ignoreSynchronization = true;
+        fillInSynfunktioner();
+        fillInHorselOchBalanssinne();
+        fillInRorelseorganensFunktioner();
+        fillInHjartOchKarlsjukdomar();
+        fillInDiabetes();
+        fillInHorselOchBalanssinne();
+        fillInNeurologiskaSjukdomar();
+        fillInEpilepsi();
+        fillInNjursjukdomar();
+        fillInDemens();
+        fillInSomnOchVakenhet();
+        fillInAlkoholNarkotikaLakemedel();
+        fillInPsykiska();
+        fillInAdhd();
+        fillInSjukhusvard();
+        fillInOvrigMedicinering();
+        fillInOvrigKommentar();
+        browser.ignoreSynchronization = false;
+        fillInBedomning(intyg.bedomning);
+        callback();
+    });
 };
 
 
-function fillInKorkortstyper(typer) {
+function fillInKorkortstyper(typer, formName) {
     console.log('Anger körkortstyper: '+ typer.toString());
     // typer.forEach(function(typ) {
     //     process.stdout.write(typ + '..');
 
+    browser.ignoreSynchronization = false;
     // hittar flera på text körkortstyp A
-    element(by.id('intygetAvserForm')).all(by.css('label.checkbox')).filter(function(elem) {
+    element(by.id(formName)).all(by.css('label.checkbox')).filter(function(elem) {
         //Return the element or elements
         return elem.getText().then(function(text) {
             //Match the text
@@ -47,7 +84,6 @@ function fillInKorkortstyper(typer) {
         });
     }).then(function(filteredElements) {
         //filteredElements is the list of filtered elements
-
         for (var i = 0; i < filteredElements.length; i++) {
             filteredElements[i].click();
             //Do something
@@ -124,10 +160,6 @@ function fillInHypoglykemier(hypoglykemierObj, korkortstyper) {
             element(by.id('hypogn')).click();
         }
     }
-
-
-
-
 }
 
 function fillInSynintyg(synintygObj) {
@@ -139,7 +171,7 @@ function fillInSynintyg(synintygObj) {
     }
 }
 
-function fillInBedomning(bedomningObj) {
+function fillInBedomningDiabetes(bedomningObj) {
     console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
     var bedomningForm = element(by.id('bedomningForm'));
     bedomningForm.element(by.cssContainingText('label.radio', bedomningObj.stallningstagande)).click();
@@ -152,5 +184,120 @@ function fillInBedomning(bedomningObj) {
             element(by.id('bedomningn')).click();
         }
     }
+}
+
+function fillInBedomning(bedomningObj) {
+    console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
+
+    element(by.id('behorighet_bedomning')).click();
+
+    fillInKorkortstyper(intyg.korkortstyper, 'bedomningForm');
+}
+
+
+function fillInSynfunktioner() {
+    element(by.id('synan')).click();
+    element(by.id('synbn')).click();
+    element(by.id('syncn')).click();
+    element(by.id('syndn')).click();
+    element(by.id('synen')).click();
+
+    element(by.id('synHogerOgaUtanKorrektion')).sendKeys('1,0');
+    element(by.id('synVansterOgaUtanKorrektion')).sendKeys('1,0');
+    element(by.id('synBinokulartUtanKorrektion')).sendKeys('1,0');
+    
+}
+
+function fillInHorselOchBalanssinne() {
+    element(by.id('horselbalansan')).click();
+    element(by.id('horselbalansbn')).click();
 
 }
+
+function fillInRorelseorganensFunktioner() {
+    element(by.id('funktionsnedsattningan')).click();
+    element(by.id('funktionsnedsattningbn')).click();
+}
+
+function fillInHjartOchKarlsjukdomar() {
+    element(by.id('hjartkarlan')).click();
+    element(by.id('hjartkarlbn')).click();
+    element(by.id('hjartkarlcn')).click();
+}
+
+function fillInDiabetes() {
+    element(by.id('diabetesan')).click();
+}
+
+function fillInNeurologiskaSjukdomar() {
+    element(by.id('neurologian')).click();
+}
+
+function fillInEpilepsi() {
+    element(by.id('medvetandestorningan')).click();
+}
+
+function fillInNjursjukdomar() {
+    element(by.id('njuraran')).click();
+}
+
+function fillInDemens() {
+    element(by.id('kognitivtan')).click();
+}
+
+function fillInSomnOchVakenhet() {
+    element.all(by.css('[name="somnvakenheta"]')).then(function (elm) {
+        elm[1].click();
+    });
+}
+
+function fillInAlkoholNarkotikaLakemedel() {
+    element.all(by.css('[name="narkotikalakemedela"]')).then(function (elm) {
+        elm[1].click();
+    });
+    element.all(by.css('[name="narkotikalakemedelb"]')).then(function (elm) {
+        elm[1].click();
+    });
+    element.all(by.css('[name="narkotikalakemedelc"]')).then(function (elm) {
+        elm[1].click();
+    });
+}
+
+function fillInPsykiska() {
+    element.all(by.css('[name="psykiskta"]')).then(function (elm) {
+        elm[1].click();
+    });
+}
+
+function fillInAdhd() {
+    element.all(by.css('[name="utvecklingsstorninga"]')).then(function (elm) {
+        elm[1].click();
+    });
+
+    element.all(by.css('[name="utvecklingsstorningb"]')).then(function (elm) {
+        elm[1].click();
+    });
+}
+
+function fillInSjukhusvard() {
+    element.all(by.css('[name="sjukhusvarda"]')).then(function (elm) {
+        elm[1].click();
+    });
+}
+
+function fillInOvrigMedicinering() {
+    element.all(by.css('[name="medicineringa"]')).then(function (elm) {
+        elm[1].click();
+    });
+}
+
+function fillInOvrigKommentar() {
+    element(by.id('kommentar')).sendKeys('Inget att rapportera');
+}
+
+
+
+
+
+
+

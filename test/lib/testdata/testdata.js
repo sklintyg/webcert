@@ -3,6 +3,7 @@
 
 module.exports = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
+    korkortstyperHogreBehorighet: [ 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi' ],
     korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
     identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
     diabetestyp: ['Typ 1', 'Typ 2'],
@@ -87,6 +88,20 @@ module.exports = {
                 a: 'Ja'
             },
             bedomning: this.getRandomBedomning(randomKorkortstyper)
+        };
+    },
+    getRandomTsBasIntyg: function() {
+        return {
+            korkortstyper: this.korkortstyperHogreBehorighet,
+            identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
+            allmant: {
+                year: Math.floor((Math.random() * 20) + 1980),
+                behandling: this.getRandomBehandling()
+            },
+            synintyg: {
+                a: 'Ja'
+            },
+            bedomning: this.getRandomBedomning(this.korkortstyperHogreBehorighet)
         };
     }
 };

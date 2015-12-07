@@ -25,7 +25,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 #	När jag går till mvk på patienten "19520617-2339"
 #	Så ska intygets status i mvk visa "Mottaget av Försäkringskassans system"
 
-@RevokeMedicalCertificate @dev
+@RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg 
 	När jag väljer patienten "19520617-2339"
     Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
