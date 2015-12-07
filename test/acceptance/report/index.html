@@ -25,10 +25,13 @@
         <b>{{keyword}}</b> {{name}}<br>
         {{#each steps}}
          <span class='step {{keyword}}'>
-          <b>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
+          <b class={{keyword}}>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
           {{#if result.error_message}}
           <span class='error_message'>{{result.error_message}}</span><br>
           {{/if}}
+          {{#each embeddings}}
+            <img src="data:image/png;base64,{{data}}" />
+          {{/each}}
         </span>
         {{/each}}
       </div>

@@ -27,10 +27,9 @@ a:hover { text-decoration : underline; }
   border-style: solid;
   border-width: 1px;
   max-width:700px;
-  float:left;
 }
 .scenario{
-  padding:5px;
+  padding:3px;
 
 }
 
@@ -41,6 +40,9 @@ a:hover { text-decoration : underline; }
 .step.Before{
   display:none;
 }
-.step.After{
+b.After{
   display:none;
+}
+.step.After{
+  /*display:none;*/
 }

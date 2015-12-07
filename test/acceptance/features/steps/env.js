@@ -10,14 +10,18 @@ module.exports = function() {
     });
 
     //After scenario
-    this.After(function(scenario) {
-    	if(scenario.isFailed()){
-    		console.log('scenario failed');
-	        browser.takeScreenshot().then(function(png) {
-	            //var base64Image = new Buffer(png, 'binary').toString('base64');
-	            var decodedImage = new Buffer(png, 'base64').toString('binary');
-	            scenario.attach(decodedImage, 'image/png');
-	        });
-    	}
+    this.After(function(scenario, callback) {
+        if (scenario.isFailed()) {
+            console.log('scenario failed');
+            browser.takeScreenshot().then(function(png) {
+                //var base64Image = new Buffer(png, 'binary').toString('base64');
+                var decodedImage = new Buffer(png, 'base64').toString('binary');
+                scenario.attach(decodedImage, 'image/png', function(err) {
+                    callback(err);
+                });
+            });
+        } else {
+            callback();
+        }
     });
 };
