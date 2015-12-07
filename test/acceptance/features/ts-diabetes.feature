@@ -26,11 +26,8 @@ Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
 @RevokeMedicalCertificate @dev
 Scenario: Makulera ett skickat intyg
 	När jag väljer patienten "19121212-1212"
-    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget" 
-    Så ska intygets status vara "Intyget är signerat och mottaget av Transportstyrelsens system"
-	Och jag makulerar intyget
-    Så ska jag få en dialogruta som frågar hur jag vill makulera
-	Så ska jag få en dialogruta som säger "Kvittens - Återtaget intyg"
+    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"
+    Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
 #     När jag går till mvk på patienten "19520727-2252"

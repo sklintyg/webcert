@@ -38,7 +38,7 @@ module.exports = function () {
     
     this.Given(/^signerar intyget$/, function (callback) {
         // expect(element(by.id('signera-utkast-button')).isPresent()).toBe(true);
-        var EC = protractor.ExpectedConditions;
+        // var EC = protractor.ExpectedConditions;
         // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 20000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
@@ -46,13 +46,13 @@ module.exports = function () {
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
         
         //För FK-intyg
-        if(intyg.typ === 'Läkarintyg FK 7263'){
-            expect(element(by.id('certificate-is-sent-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
-        }
-        // För TS-intyg
-        else{
+        // if(intyg.typ === 'Läkarintyg FK 7263'){
+        //     expect(element(by.css('.alert')).getText()).to.eventually.contain(statustext).and.notify(callback);
+        // }
+        // // För TS-intyg
+        // else{
             expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
-        }
+        // }
 
     });
 

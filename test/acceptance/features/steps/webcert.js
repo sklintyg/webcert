@@ -53,33 +53,16 @@ module.exports = function () {
     });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
-        browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
-        element(by.id('makuleraBtn')).click().then(callback);
+        // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
+        element(by.id('makuleraBtn')).click();
+        element(by.id('button1makulera-dialog')).click();
+        element(by.id('confirmationOkButton')).click()
+        .then(callback);
     });
-
-    this.Given(/^ska jag få en dialogruta som frågar hur jag vill makulera$/, function (callback) {
-        element(by.id('button1makulera-dialog')).click().then(callback);
-    });
-
-   
-    this.Given(/^ska jag få en dialogruta som säger "([^"]*)"$/, function (arg1, callback) {
-        //'Kvittens - Återtaget intyg'
-        element(by.id('confirmationOkButton')).click().then(callback);
-    });
-
+    
     this.Given(/^ska intyget visa varningen "([^"]*)"$/, function (arg1, callback) {
         expect(element(by.id('certificate-is-revoked-message-text')).getText())
             .to.eventually.contain(arg1).and.notify(callback);
-    });
-
-    this.Given(/^jag arkiverar intyget i mvk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^ska intygets inte visas i mvk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
     });
     
 };
