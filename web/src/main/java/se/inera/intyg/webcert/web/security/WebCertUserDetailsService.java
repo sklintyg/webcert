@@ -1,7 +1,16 @@
 package se.inera.intyg.webcert.web.security;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 import static se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -16,10 +25,7 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
-import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
-import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
@@ -30,15 +36,12 @@ import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
 import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
+import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
+import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 /**
  * @author andreaskaltenbach
@@ -136,10 +139,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
-    protected List<GetHsaPersonHsaUserType> getPersonInfo(String hsaId) {
+    protected List<PersonInformationType> getPersonInfo(String hsaId) {
         LOG.debug("Retrieving user information from HSA...");
 
-        List<GetHsaPersonHsaUserType> hsaPersonInfo;
+        List<PersonInformationType> hsaPersonInfo;
         try {
             hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
             if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
@@ -166,7 +169,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("Creating Webcert user object...");
 
         String hsaId = getAssertion(credential).getHsaId();
-        List<GetHsaPersonHsaUserType> personInfo = getPersonInfo(hsaId);
+        List<PersonInformationType> personInfo = getPersonInfo(hsaId);
         List<Vardgivare> authorizedVardgivare = getAuthorizedVardgivare(hsaId);
 
         try {
@@ -185,7 +188,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     }
 
-    String lookupUserRole(SAMLCredential credential, List<GetHsaPersonHsaUserType> personInfo) {
+    String lookupUserRole(SAMLCredential credential, List<PersonInformationType> personInfo) {
         LOG.debug("Looking up user role by:");
 
         UserRole userRole = lookupUserRole(getAssertion(credential), personInfo);
@@ -197,7 +200,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return userRole.name();
     }
 
-    UserRole lookupUserRole(SakerhetstjanstAssertion sa, List<GetHsaPersonHsaUserType> personInfo) {
+    UserRole lookupUserRole(SakerhetstjanstAssertion sa, List<PersonInformationType> personInfo) {
         UserRole userRole;
 
         // 1. Bestäm användarens roll utefter titel som kommer från SAML.
@@ -378,12 +381,12 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
-    private WebCertUser createWebCertUser(String userRole, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<GetHsaPersonHsaUserType> personInfo) {
+    private WebCertUser createWebCertUser(String userRole, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<PersonInformationType> personInfo) {
         Role role = getRoleRepository().findByName(userRole);
         return createWebCertUser(role, credential,  authorizedVardgivare, personInfo);
     }
 
-    private WebCertUser createWebCertUser(Role role, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<GetHsaPersonHsaUserType> personInfo) {
+    private WebCertUser createWebCertUser(Role role, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<PersonInformationType> personInfo) {
         LOG.debug("Decorate/populate user object with additional information");
 
         SakerhetstjanstAssertion sa = getAssertion(credential);
@@ -416,7 +419,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return webcertUser;
     }
 
-    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser, SAMLCredential credential, List<GetHsaPersonHsaUserType> hsaPersonInfo) {
+    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser, SAMLCredential credential, List<PersonInformationType> hsaPersonInfo) {
 
         List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(hsaPersonInfo);
@@ -459,12 +462,12 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("Setting care unit '{}' as default unit on user '{}'", user.getValdVardenhet().getId(), user.getHsaId());
     }
 
-    private List<String> extractLegitimeradeYrkesgrupper(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+    private List<String> extractLegitimeradeYrkesgrupper(List<PersonInformationType> hsaUserTypes) {
         Set<String> lygSet = new TreeSet<>();
 
-        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
-            if (userType.getHsaTitles() != null) {
-                List<String> hsaTitles = userType.getHsaTitles().getHsaTitle();
+        for (PersonInformationType userType : hsaUserTypes) {
+            if (userType.getPaTitle() != null) {
+                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
                 lygSet.addAll(hsaTitles);
             }
         }
@@ -472,12 +475,12 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new ArrayList<>(lygSet);
     }
 
-    private List<String> extractSpecialiseringar(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+    private List<String> extractSpecialiseringar(List<PersonInformationType> hsaUserTypes) {
         Set<String> specSet = new TreeSet<>();
 
-        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
-            if (userType.getSpecialityNames() != null) {
-                List<String> specialityNames = userType.getSpecialityNames().getSpecialityName();
+        for (PersonInformationType userType : hsaUserTypes) {
+            if (userType.getSpecialityName() != null) {
+                List<String> specialityNames = userType.getSpecialityName();
                 specSet.addAll(specialityNames);
             }
         }
@@ -485,10 +488,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new ArrayList<>(specSet);
     }
 
-    private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+    private String extractTitel(List<PersonInformationType> hsaUserTypes) {
         List<String> titlar = new ArrayList<>();
 
-        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
+        for (PersonInformationType userType : hsaUserTypes) {
             if (StringUtils.isNotBlank(userType.getTitle())) {
                 titlar.add(userType.getTitle());
             }

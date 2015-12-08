@@ -18,9 +18,19 @@
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.intyg.webcert"/>
 
-  <bean class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
+  <!-- <bean class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>   -->
 
-  <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
+
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetEmployeeResponderStub" />
+
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitResponderStub" />
+
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetUnitResponderStub" />
+
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitMembersResponderStub" />
+
+  <!-- <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/> -->
 
   <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaServiceStub" />
 

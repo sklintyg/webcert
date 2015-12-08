@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.integration.hsa.services;
 
 import javax.xml.ws.WebServiceException;
 
+import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeResponseType;
 
 /**
@@ -13,7 +14,6 @@ public interface GetEmployeeService {
      * Returnerar information, som kontaktinformation samt legitimerad yrkesgrupp och specialitet, för sökt person.
      * Exakt ett av fälten personHsaId och personalIdentityNumber ska anges.
      *
-     * @param logicalAddress Mottagande systems logiska adress.
      * @param personHsaId Sökt persons HSA-id.
      * @param personalIdentityNumber Sökt persons Person-id (personnummer eller samordningsnummer).
      *
@@ -21,12 +21,12 @@ public interface GetEmployeeService {
      *
      * @throws WebServiceException
      */
-    GetEmployeeResponseType getEmployee(String logicalAddress, String personHsaId, String personalIdentityNumber) throws WebServiceException;
+    GetEmployeeIncludingProtectedPersonResponseType getEmployee(String personHsaId, String personalIdentityNumber) throws WebServiceException;
+
     /**
      * Returnerar information, som kontaktinformation samt legitimerad yrkesgrupp och specialitet, för sökt person.
      * Exakt ett av fälten personHsaId och personalIdentityNumber ska anges.
      *
-     * @param logicalAddress Mottagande systems logiska adress.
      * @param personHsaId Sökt persons HSA-id.
      * @param personalIdentityNumber Sökt persons Person-id (personnummer eller samordningsnummer).
      * @param searchBase Sökbas. Om ingen sökbas anges används c=SE som sökbas.
@@ -35,6 +35,6 @@ public interface GetEmployeeService {
      *
      * @throws WebServiceException
      */
-    GetEmployeeResponseType getEmployee(String logicalAddress, String personHsaId, String personalIdentityNumber, String searchBase) throws WebServiceException;
+    GetEmployeeIncludingProtectedPersonResponseType getEmployee(String personHsaId, String personalIdentityNumber, String searchBase) throws WebServiceException;
 
 }

@@ -18,7 +18,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -37,8 +37,10 @@ public class MailNotificationServiceImplTest {
     @Mock
     private JavaMailSender mailSender;
 
+//    @Mock
+//    private HSAWebServiceCalls hsaClient;
     @Mock
-    private HSAWebServiceCalls hsaClient;
+    private OrganizationUnitService organizationUnitService;
 
     @Mock
     private MonitoringLogService monitoringService;
@@ -79,7 +81,7 @@ public class MailNotificationServiceImplTest {
         }
 
         //Then
-        Mockito.verify(hsaClient, times(1)).callGetHsaunit(anyString());
+        Mockito.verify(organizationUnitService, times(1)).getUnit(anyString());
     }
 
     @Test
@@ -102,7 +104,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
 
         //Then
-        Mockito.verify(hsaClient, times(0)).callGetHsaunit(anyString());
+        Mockito.verify(organizationUnitService, times(0)).getUnit(anyString());
     }
 
     @Test
@@ -149,7 +151,7 @@ public class MailNotificationServiceImplTest {
         }
 
         //Then
-        Mockito.verify(hsaClient, times(1)).callGetHsaunit(anyString());
+        Mockito.verify(organizationUnitService, times(1)).getUnit(anyString());
     }
 
     @Test
@@ -172,7 +174,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
 
         //Then
-        Mockito.verify(hsaClient, times(0)).callGetHsaunit(anyString());
+        Mockito.verify(organizationUnitService, times(0)).getUnit(anyString());
     }
 
     @Test

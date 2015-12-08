@@ -17,13 +17,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
-import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.GetHealthCareUnitResponseType;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
@@ -60,8 +60,11 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Autowired
     private JavaMailSender mailSender;
 
+    //@Autowired
+    //private HSAWebServiceCalls hsaClient;
+
     @Autowired
-    private HSAWebServiceCalls hsaClient;
+    private OrganizationUnitService organizationUnitService;
 
     @Autowired
     private MonitoringLogService monitoringService;
@@ -159,9 +162,12 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private String getParentMailAddress(String mottagningsId) {
-        GetCareUnitResponseType response = hsaClient.callGetCareunit(mottagningsId);
+        // Ändring: Vi nyttjar här getHealthCareUnit för att explicit få mottagningen i ett objekt som inkluderar hsaId
+        //          till föräldern.
+        GetHealthCareUnitResponseType response = organizationUnitService.getHealthCareUnit(mottagningsId);
+       // GetCareUnitResponseType response = hsaClient.callGetCareunit(mottagningsId);
         if (response != null) {
-            MailNotificationEnhet parentEnhet = getHsaUnit(response.getCareUnitHsaIdentity());
+            MailNotificationEnhet parentEnhet = getHsaUnit(response.getHealthCareUnit().getHealthCareUnitHsaId());
             if (parentEnhet != null) {
                 return parentEnhet.getEmail();
             }
@@ -230,11 +236,11 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private MailNotificationEnhet getHsaUnit(String careUnitId) {
         try {
-            GetHsaUnitResponseType response = hsaClient.callGetHsaunit(careUnitId);
-            if (response == null) {
-                throw new IllegalArgumentException("HSA Id " + careUnitId + " does not exist in HSA catalogue.");
+            GetUnitResponseType response = organizationUnitService.getUnit(careUnitId);
+            if (response == null || response.getUnit() == null) {
+                throw new IllegalArgumentException("HSA Id " + careUnitId + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
             }
-            return new MailNotificationEnhet(response.getHsaIdentity(), response.getName(), response.getEmail());
+            return new MailNotificationEnhet(response.getUnit().getUnitHsaId(), response.getUnit().getUnitName(), response.getUnit().getMail());
         } catch (WebServiceException e) {
             LOG.error("Failed to contact HSA to get HSA Id '" + careUnitId + "' : " + e.getMessage());
             return null;

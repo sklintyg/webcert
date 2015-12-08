@@ -21,13 +21,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitResponseType;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceMockedTest {
@@ -35,8 +36,10 @@ public class MailNotificationServiceMockedTest {
     @Mock
     private JavaMailSender mailSender;
 
+//    @Mock
+//    private HSAWebServiceCalls hsaClient;
     @Mock
-    private HSAWebServiceCalls hsaClient;
+    private OrganizationUnitService organizationUnitService;
 
     @Mock
     private MonitoringLogService monitoringService;
@@ -55,10 +58,7 @@ public class MailNotificationServiceMockedTest {
     @Test
     public void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
         doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
-        GetHsaUnitResponseType getHsaUnitResponseType = new GetHsaUnitResponseType();
-        getHsaUnitResponseType.setEmail("test@test.invalid");
-        getHsaUnitResponseType.setHsaIdentity("enhetsid");
-        when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
+        mockOrganizationUnitServiceGetUnit();
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         mailNotificationService.sendMailForIncomingQuestion(fragaSvar("enhetsid"));
     }
@@ -66,12 +66,18 @@ public class MailNotificationServiceMockedTest {
     @Test
     public void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
         doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
-        GetHsaUnitResponseType getHsaUnitResponseType = new GetHsaUnitResponseType();
-        getHsaUnitResponseType.setEmail("test@test.invalid");
-        getHsaUnitResponseType.setHsaIdentity("enhetsid");
-        when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
+        mockOrganizationUnitServiceGetUnit();
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
+    }
+
+    private void mockOrganizationUnitServiceGetUnit() {
+        GetUnitResponseType getHsaUnitResponseType = new GetUnitResponseType();
+        UnitType unit = new UnitType();
+        unit.setMail("test@test.invalid");
+        unit.setUnitHsaId("enhetsid");
+        getHsaUnitResponseType.setUnit(unit);
+        when(organizationUnitService.getUnit(anyString())).thenReturn(getHsaUnitResponseType);
     }
 
     @Test
@@ -79,7 +85,7 @@ public class MailNotificationServiceMockedTest {
         try {
             SOAPFault soapFault = SOAPFactory.newInstance().createFault();
             soapFault.setFaultString("Connection reset");
-            when(hsaClient.callGetHsaunit(anyString())).thenThrow(new SOAPFaultException(soapFault));
+            when(organizationUnitService.getUnit(anyString())).thenThrow(new SOAPFaultException(soapFault));
         } catch (SOAPException e) {
             e.printStackTrace();
         }

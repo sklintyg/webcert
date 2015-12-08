@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
@@ -19,10 +22,7 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
-import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.riv.infrastructure.directory.v1.CommissionType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {
@@ -46,7 +46,7 @@ public class CreateNewDraftRequestBuilderTest {
 
         Utlatande utlatande = createUtlatande();
 
-        MiuInformationType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
+        CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
 
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, miu);
 
@@ -133,15 +133,15 @@ public class CreateNewDraftRequestBuilderTest {
         return utlatande;
     }
 
-    private MiuInformationType createMIU(String personHsaId, String unitHsaId,
+    private CommissionType createMIU(String personHsaId, String unitHsaId,
             LocalDateTime miuEndDate) {
-        MiuInformationType miu = new MiuInformationType();
-        miu.setCareGiver(CAREGIVER_HSAID);
-        miu.setCareGiverName("Landstinget");
-        miu.setCareUnitName("Sjukhuset");
-        miu.setCareUnitHsaIdentity(unitHsaId);
-        miu.setCareUnitEndDate(miuEndDate);
-        miu.setHsaIdentityPerson(personHsaId);
+        CommissionType miu = new CommissionType();
+        miu.setHealthCareProviderHsaId(CAREGIVER_HSAID);
+        miu.setHealthCareProviderName("Landstinget");
+        miu.setHealthCareUnitName("Sjukhuset");
+        miu.setHealthCareUnitHsaId(unitHsaId);
+        miu.setHealthCareUnitEndDate(miuEndDate);
+        miu.setCommissionHsaId(personHsaId);
         return miu;
     }
 }

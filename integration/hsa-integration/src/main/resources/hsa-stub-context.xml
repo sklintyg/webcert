@@ -12,7 +12,15 @@
   </beans>
 
   <beans profile="dev,wc-all-stubs,wc-hsa-stub">
-    <jaxws:endpoint address="/hsa" implementor="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>
+
+    <!-- TODO fix this for the new contracts. Consider if all sub-services (getEmployee, getUnit, getMembers etc should be served through one single common stub like below -->
+    <!-- <jaxws:endpoint address="/hsa" implementor="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>         -->
+    <jaxws:endpoint address="/hsa-authorization" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
+    <jaxws:endpoint address="/hsa-employee" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetEmployeeResponderStub" />
+    <jaxws:endpoint address="/hsa-healthcare" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitResponderStub" />
+    <jaxws:endpoint address="/hsa-healthcareunit-members" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitMembersResponderStub" />
+    <jaxws:endpoint address="/hsa-unit" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetUnitResponderStub" />
+
     <bean class="se.inera.intyg.webcert.integration.hsa.stub.BootstrapBean"/>
   </beans>
 

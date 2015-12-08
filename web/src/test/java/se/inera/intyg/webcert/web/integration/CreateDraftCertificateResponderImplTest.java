@@ -6,22 +6,25 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
+
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -36,9 +39,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-
-import java.util.Collections;
-import java.util.List;
+import se.riv.infrastructure.directory.v1.CommissionType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderImplTest {
@@ -82,7 +83,7 @@ public class CreateDraftCertificateResponderImplTest {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();
-        List<MiuInformationType> miuList = Collections.singletonList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+        List<CommissionType> miuList = Collections.singletonList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         Vardgivare vardgivare = createVardgivare();
         Vardenhet vardenhet = createVardenhet(vardgivare);
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);
@@ -97,7 +98,7 @@ public class CreateDraftCertificateResponderImplTest {
         // When
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(MiuInformationType.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(CommissionType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
@@ -188,15 +189,15 @@ public class CreateDraftCertificateResponderImplTest {
         return certificateType;
     }
 
-    private MiuInformationType createMIU(String personHsaId, String unitHsaId, LocalDateTime miuEndDate) {
+    private CommissionType createMIU(String personHsaId, String unitHsaId, LocalDateTime miuEndDate) {
 
-        MiuInformationType miu = new MiuInformationType();
-        miu.setCareGiver(CAREGIVER_HSAID);
-        miu.setCareGiverName("Landstinget");
-        miu.setCareUnitName("Sjukhuset");
-        miu.setCareUnitHsaIdentity(unitHsaId);
-        miu.setCareUnitEndDate(miuEndDate);
-        miu.setHsaIdentityPerson(personHsaId);
+        CommissionType miu = new CommissionType();
+        miu.setHealthCareProviderHsaId(CAREGIVER_HSAID);
+        miu.setHealthCareProviderName("Landstinget");
+        miu.setHealthCareUnitName("Sjukhuset");
+        miu.setHealthCareUnitHsaId(unitHsaId);
+        miu.setHealthCareUnitEndDate(miuEndDate);
+        miu.setCommissionHsaId(personHsaId);
 
         return miu;
     }

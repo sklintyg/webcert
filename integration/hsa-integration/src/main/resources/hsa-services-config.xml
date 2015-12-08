@@ -32,14 +32,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
 
   <context:component-scan base-package="se.inera.intyg.webcert.integration.hsa"/>
 
+  <!--
   <jaxws:client id="hsaClient" serviceClass="se.inera.ifv.hsaws.v3.HsaWsResponderInterface"
                 address="${hsa.ws.services.url}">
   </jaxws:client>
+  -->
+  <jaxws:client id="getCredentialsForPersonIncludingProtectedPersonResponderInterface"
+      serviceClass="se.riv.infrastructure.directory.authorizationmanagement.v1.GetCredentialsForPersonIncludingProtectedPersonResponderInterface"
+      address="${infrastructure.directory.organization.getcredentialsforpersonincludingprotectedpersonresponderinterface.endpoint.url}" />
 
+  <jaxws:client id="getUnitResponderInterface"
+      serviceClass="se.riv.infrastructure.directory.organization.getunit.v1.rivtabp21.GetUnitResponderInterface"
+      address="${infrastructure.directory.organization.getunit.endpoint.url}" />
+
+  <jaxws:client id="getHealthCareUnitResponderInterface"
+      serviceClass="se.riv.infrastructure.directory.organization.gethealthcareunit.v1.rivtabp21.GetHealthCareUnitResponderInterface"
+      address="${infrastructure.directory.organization.gethealthcareunit.endpoint.url}" />
+
+  <jaxws:client id="getHealthCareUnitMembersResponderInterface"
+      serviceClass="se.riv.infrastructure.directory.organization.gethealthcareunitmembers.v1.rivtabp21.GetHealthCareUnitMembersResponderInterface"
+      address="${infrastructure.directory.organization.gethealthcareunitmembers.endpoint.url}" />
+
+  <jaxws:client id="getEmployeeIncludingProtectedPersonResponderInterface"
+      serviceClass="se.riv.infrastructure.directory.employee.getemployeeincludingprotectedperson.v1.rivtabp21.GetEmployeeIncludingProtectedPersonResponderInterface"
+      address="${infrastructure.directory.employee.getemployee.endpoint.url}" />
+
+  <jaxws:client id="pingForConfigurationResponderInterface"
+      serviceClass="se.riv.itintegration.monitoring.pingforconfiguration.v1.rivtabp21.PingForConfigurationResponderInterface"
+      address="${infrastructure.directory.organization.pingforconfiguration.endpoint.url}" />
+
+  <!--
   <bean id="wsCalls" class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls">
     <property name="hsaLogicalAddress" value="${hsa.ws.service.logicaladdress}"/>
   </bean>
+  -->
 
+  <!-- TODO use NTjP conduit for all used TJKs -->
   <beans profile="!dev">
 
     <http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderInterfacePort.http-conduit">

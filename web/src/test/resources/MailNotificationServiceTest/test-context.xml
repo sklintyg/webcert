@@ -33,9 +33,18 @@
   <bean class="org.springframework.mail.javamail.JavaMailSenderImpl"/>
   <bean class="se.inera.intyg.webcert.mailstub.MailStore"/>
 
-  <!-- HSA Stub -->
+  <!-- HSA Stub
   <bean class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
   <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>
+     -->
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetEmployeeResponderStub" />
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitResponderStub" />
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitMembersResponderStub" />
+  <bean class="se.inera.intyg.webcert.integration.hsa.stub.GetUnitResponderStub" />
+
+
+  <bean class="se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitServiceBean" />
   <bean class="se.inera.intyg.webcert.integration.hsa.stub.HsaServiceStub"/>
   
   <bean class="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl" />

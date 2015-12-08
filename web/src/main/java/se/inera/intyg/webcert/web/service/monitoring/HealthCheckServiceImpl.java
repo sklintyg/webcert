@@ -23,7 +23,8 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
+
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
@@ -47,8 +48,11 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
+    //@Autowired
+    //private HSAWebServiceCalls hsaService;
+
     @Autowired
-    private HSAWebServiceCalls hsaService;
+    private OrganizationUnitService organizationUnitService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -74,8 +78,9 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try {
-            hsaService.callPing();
-            ok = true;
+            se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationResponseType pingResponse = organizationUnitService.ping();
+
+            ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
         } catch (Exception e) {
             ok = false;
         }

@@ -6,6 +6,7 @@ import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 
 /**
+ *
  * @author andreaskaltenbach
  */
 public interface HsaOrganizationsService {

@@ -10,6 +10,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,11 +43,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
-import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
-import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
+
 import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
 import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
@@ -49,18 +55,13 @@ import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
 import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
+import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.xml.transform.stream.StreamSource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import se.riv.infrastructure.directory.v1.PaTitleType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 /**
  * @author andreaskaltenbach
@@ -197,7 +198,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleAndPrivilgesWhenUserIsDoctorButHasNotYetASwedishLicense() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
-        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        List<PersonInformationType> userTypes = Collections.singletonList(buildPersonInformationType(PERSONAL_HSAID, null, null, null));
         TitleCode titleCode = new TitleCode("204090", "9100009", getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
         setupCallToAuthorizedEnheterForHosPerson();
@@ -218,7 +219,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeIsEmptyObject() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
-        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        List<PersonInformationType> userTypes = Collections.singletonList(buildPersonInformationType(PERSONAL_HSAID, null, null, null));
 
         setupCallToAuthorizedEnheterForHosPerson();
 
@@ -235,7 +236,7 @@ public class WebCertUserDetailsServiceTest {
     public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeDoesNotMatch() throws Exception {
         // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-bad-groupPrescriptionCode.xml");
-        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, null, null, null));
+        List<PersonInformationType> userTypes = Collections.singletonList(buildPersonInformationType(PERSONAL_HSAID, null, null, null));
 
         setupCallToAuthorizedEnheterForHosPerson();
 
@@ -469,11 +470,11 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
-        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel1",
+        PersonInformationType userType1 = buildPersonInformationType(PERSONAL_HSAID, "Titel1",
                 Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Collections.singletonList("Läkare"));
-        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
+        PersonInformationType userType2 = buildPersonInformationType(PERSONAL_HSAID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
                 Collections.singletonList("Psykoterapeut"));
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
+        List<PersonInformationType> userTypes = Arrays.asList(userType1, userType2);
 
         // when
         when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
@@ -566,25 +567,32 @@ public class WebCertUserDetailsServiceTest {
     // ~ Private setup methods
     // =====================================================================================
 
-    private GetHsaPersonHsaUserType buildGetHsaPersonHsaUserType(String hsaId, String title, List<String> specialities, List<String> titles) {
+    private PersonInformationType buildPersonInformationType(String hsaId, String title, List<String> specialities, List<String> titles) {
 
-        GetHsaPersonHsaUserType type = new GetHsaPersonHsaUserType();
-        type.setHsaIdentity(hsaId);
+        PersonInformationType type = new PersonInformationType();
+        type.setPersonHsaId(hsaId);
 
         if (title != null) {
             type.setTitle(title);
         }
 
         if ((titles != null) && (titles.size() > 0)) {
-            HsaTitles hsaTitles = new HsaTitles();
-            hsaTitles.getHsaTitle().addAll(titles);
-            type.setHsaTitles(hsaTitles);
+            for (String t : titles) {
+                PaTitleType paTitle = new PaTitleType();
+                paTitle.setPaTitleName(t);
+                type.getPaTitle().add(paTitle);
+            }
+//
+//            HsaTitles hsaTitles = new HsaTitles();
+//            hsaTitles.getHsaTitle().addAll(titles);
+//            type.setHsaTitles(hsaTitles);
         }
 
         if ((specialities != null) && (specialities.size() > 0)) {
-            SpecialityNames specNames = new SpecialityNames();
-            specNames.getSpecialityName().addAll(specialities);
-            type.setSpecialityNames(specNames);
+            type.getSpecialityName().addAll(specialities);
+//            SpecialityNames specNames = new SpecialityNames();
+//            specNames.getSpecialityName().addAll(specialities);
+//            type.setSpecialityNames(specNames);
         }
 
         return type;
@@ -628,7 +636,7 @@ public class WebCertUserDetailsServiceTest {
         List<String> specs = Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar", "Reumatologi");
         List<String> titles = Arrays.asList("Läkare", "Psykoterapeut");
 
-        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
+        List<PersonInformationType> userTypes = Collections.singletonList(buildPersonInformationType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
 
         when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
     }

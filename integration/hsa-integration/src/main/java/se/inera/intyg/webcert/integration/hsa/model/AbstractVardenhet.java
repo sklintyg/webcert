@@ -103,4 +103,20 @@ public abstract class AbstractVardenhet implements SelectableVardenhet, Comparab
     public String toString() {
         return new StringBuilder(getNamn()).append(":").append(getId()).toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractVardenhet)) return false;
+
+        AbstractVardenhet that = (AbstractVardenhet) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
