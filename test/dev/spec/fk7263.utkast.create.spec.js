@@ -4,8 +4,8 @@
 
 var specHelper = helpers.spec;
 var testdataHelper = helpers.testdata;
-var UtkastPage = require(pages.intygpages.fk7263Utkast);
-var IntygPage = require(pages.intygpages.fkIntyg);
+var UtkastPage = pages.intygpages.fk7263Utkast;
+var IntygPage = pages.intygpages.fkIntyg;
 
 describe('Create and Sign FK utkast', function() {
 

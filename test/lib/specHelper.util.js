@@ -2,11 +2,11 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in specs.
  */
-/*globals browser */
+/*globals browser,pages */
 'use strict';
 
-var WelcomePage = require(pages.welcome);
-var SokSkrivIntygPage = require(pages.app.views.sokSkrivIntyg);
+var WelcomePage = pages.welcome;
+var SokSkrivIntygPage = pages.app.views.sokSkrivIntyg;
 
 module.exports = {
     login: function(userOptional) {
@@ -19,7 +19,7 @@ module.exports = {
         SokSkrivIntygPage.selectPersonnummer(patientId);
         SokSkrivIntygPage.selectIntygType('string:'+ intygType);
         SokSkrivIntygPage.continueToUtkast();
-        var UtkastPage = require(pages.intygpages[intygType+'Utkast']);
+        var UtkastPage = pages.intygpages[intygType+'Utkast'];
         expect(UtkastPage.isAt()).toBe(true);
     }
 };

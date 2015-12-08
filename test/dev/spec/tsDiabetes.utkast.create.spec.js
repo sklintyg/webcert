@@ -1,11 +1,11 @@
 /*globals pages */
-/*globals describe,it,helpers,testdata,utkastTextmap */
+/*globals describe,it,helpers,utkastTextmap */
 'use strict';
 
 var specHelper = helpers.spec;
 var testdataHelper = helpers.testdata;
-var tsdUtkastPage = require(pages.intygpages['ts-diabetesUtkast']);
-var tsdIntygPage = require(pages.intygpages.tsDiabetesIntyg);
+var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
+var tsdIntygPage = pages.intygpages.tsDiabetesIntyg;
 
 describe('Create and Sign ts-diabetes utkast', function() {
 

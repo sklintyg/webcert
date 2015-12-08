@@ -10,9 +10,9 @@ var intygPath = __dirname + '/../intygpages/'; // should point to intygpages fol
 module.exports = {
     'intygpages': {
         'fk7263Utkast': require(intygPath + 'fk.utkast.page.js'),
-        'fkIntyg': require(intygPath + 'fk.intyg.page.js')
-        'ts-diabetesUtkast': intygPath + 'tsDiabetes.utkast.page.js',
-        'tsDiabetesIntyg': intygPath + 'tsDiabetes.intyg.page.js'/*,
+        'fkIntyg': require(intygPath + 'fk.intyg.page.js'),
+        'ts-diabetesUtkast': require(intygPath + 'tsDiabetes.utkast.page.js'),
+        'tsDiabetesIntyg': require(intygPath + 'tsDiabetes.intyg.page.js')/*,
         'tsBasUtkast': intygPath + 'tsBas.utkast.page.js',
         'tsBasIntyg': intygPath + 'tsBas.intyg.page.js'*/
     },

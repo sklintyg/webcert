@@ -2,8 +2,8 @@
 'use strict';
 var specHelper = helpers.spec;
 var testdataHelper = helpers.testdata;
-var FkIntygPage = require(pages.intygpages.fkIntyg);
-var FkUtkastPage = require(pages.intygpages.fk7263Utkast);
+var FkIntygPage = pages.intygpages.fkIntyg;
+var FkUtkastPage = pages.intygpages.fk7263Utkast;
 
 describe('Generate fk intyg', function() {
 
