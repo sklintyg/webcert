@@ -6,10 +6,21 @@ var restClient = require('./restClient.util.js');
 
 module.exports = {
     login: function(userJson) {
+
+        // login with doctor Jan Nilsson if noone else is specified
+        var user = userJson || {
+            'fornamn': 'Jan',
+            'efternamn': 'Nilsson',
+            'hsaId': 'IFV1239877878-1049',
+            'enhetId': 'IFV1239877878-1042',
+            'lakare': true,
+            'forskrivarKod': '2481632'
+        };
+
         var options = {
             url: 'fake',
             method: 'POST',
-            body: 'userJsonDisplay=' + JSON.stringify(userJson)
+            body: 'userJsonDisplay=' + JSON.stringify(user)
         };
         return restClient.run(options, 'urlenc');
     },
@@ -24,6 +35,13 @@ module.exports = {
     deleteAllUtkast: function() {
         var options = {
             url: 'testability/intyg',
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
+    deleteUtkast: function(id) {
+        var options = {
+            url: 'testability/intyg/' + id,
             method: 'DELETE'
         };
         return restClient.run(options, 'json');

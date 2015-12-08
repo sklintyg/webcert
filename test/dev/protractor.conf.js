@@ -28,12 +28,12 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance. (ignored if multiCapabilities is used)
     capabilities: {
-        //browserName: 'firefox', // possible values: phantomjs, firefox, chrome
+        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // IE11
-        browserName: 'internet explorer',
+        /*browserName: 'internet explorer',
         platform: 'ANY',
-        version: '11',
+        version: '11',*/
 
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances
@@ -80,8 +80,10 @@ exports.config = {
         browser.ignoreSynchronization = false;
 
         global.testdata = require('../lib/testdata/testdata.js');
+        global.utkastTextmap = require('../lib/testdata/utkastTextmap.js');
         global.intygTemplates = require('./../lib/testdata/intygTemplates.js');
         global.pages = require('./../lib/pages.js');
+        global.helpers = require('./../lib/helpers.js');
 
         jasmine.getEnv().addReporter(
             new HtmlScreenshotReporter({

@@ -1,4 +1,4 @@
-var restUtil = require('../../../lib/rest.util.js'),
+var restUtil = require('../../../lib/util/rest.util.js'),
     fkIntyg = require('../../../lib/testdata/utkast.fk7263.generate.json');
 
 describe('Generate fk utkast', function() {

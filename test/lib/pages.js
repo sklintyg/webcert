@@ -1,15 +1,20 @@
 /**
  * Created by BESA on 2015-11-17.
+ * Holds paths to page files for easy inclusion and intellisense support in specs.
  */
 'use strict';
 
-var appPath = __dirname + '/../../web/src/main/webapp/'; // should be webapp
-var intygPath = __dirname + '/../intygpages/'; // should be webapp
+var appPath = __dirname + '/../../web/src/main/webapp/'; // should point to webapp
+var intygPath = __dirname + '/../intygpages/'; // should point to intygpages folder
 
-var pages = {
+module.exports = {
     'intygpages': {
-        'fkUtkast': require(intygPath + 'fk.utkast.page.js'),
+        'fk7263Utkast': require(intygPath + 'fk.utkast.page.js'),
         'fkIntyg': require(intygPath + 'fk.intyg.page.js')
+        'ts-diabetesUtkast': intygPath + 'tsDiabetes.utkast.page.js',
+        'tsDiabetesIntyg': intygPath + 'tsDiabetes.intyg.page.js'/*,
+        'tsBasUtkast': intygPath + 'tsBas.utkast.page.js',
+        'tsBasIntyg': intygPath + 'tsBas.intyg.page.js'*/
     },
     'welcome': require(appPath + 'welcome.page.js'),
     'app': {
@@ -18,5 +23,3 @@ var pages = {
         }
     }
 };
-
-module.exports = pages;
