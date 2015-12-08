@@ -46,6 +46,6 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('acc', ['env:ip40','protractor_webdriver','protractor:acc']);
+    grunt.registerTask('acc', ['env:build-server','protractor_webdriver','protractor:acc']);
     grunt.registerTask('default', ['env:dev', 'protractor_webdriver','protractor:dev']);
 };

@@ -3,6 +3,16 @@
 		"WEBCERT_URL":"http://localhost:9089/",
         "INTYGTJANST_URL":"http://localhost:8080/inera-certificate"
     },
+    "sim2": {
+        "WEBCERT_URL": "https://webcert.sim2.nordicmedtest.se/",
+        "MINAINTYG_URL": "https://minaintyg.sim2.nordicmedtest.se/",
+        "INTYGTJANST_URL": ""
+    },
+    "build-server": {
+        "WEBCERT_URL": "https://webcert.inera.nordicmedtest.se/",
+        "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se/welcome.jsp",
+        "INTYGTJANST_URL": ""
+    },
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
