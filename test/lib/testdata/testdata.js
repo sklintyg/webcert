@@ -1,18 +1,51 @@
-
 'use strict';
 
 module.exports = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
-    korkortstyperHogreBehorighet: [ 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi' ],
     korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
     identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
     diabetestyp: ['Typ 1', 'Typ 2'],
     diabetesbehandlingtyper: ['Endast kost', 'Tabletter', 'Insulin'],
 
+    // TS-Bas-attribut
+    korkortstyperHogreBehorighet: [ 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi' ],
+    synDonder:                    shuffle(['Ja', 'Nej'])[0],
+    synNedsattBelysning:          shuffle(['Ja', 'Nej'])[0],
+    synOgonsjukdom:               shuffle(['Ja', 'Nej'])[0],
+    synDubbel:                    shuffle(['Ja', 'Nej'])[0],
+    synNystagmus:                 shuffle(['Ja', 'Nej'])[0],
+    horselYrsel:                  shuffle(['Ja', 'Nej'])[0],
+    horselSamtal:                 shuffle(['Ja', 'Nej'])[0],
+    rorOrgNedsattning:            shuffle(['Ja', 'Nej'])[0],
+    rorInUt:                      shuffle(['Ja', 'Nej'])[0],
+    hjartHjarna:                  shuffle(['Ja', 'Nej'])[0],
+    hjartSkada:                   shuffle(['Ja', 'Nej'])[0],
+    hjartRisk:                    shuffle(['Ja', 'Nej'])[0],
+    diabetes:                     shuffle(['Ja', 'Nej'])[0],
+    neurologiska:                 shuffle(['Ja', 'Nej'])[0],
+    epilepsi:                     shuffle(['Ja', 'Nej'])[0],
+    njursjukdom:                  shuffle(['Ja', 'Nej'])[0],
+    demens:                       shuffle(['Ja', 'Nej'])[0],
+    somnVakenhet:                 shuffle(['Ja', 'Nej'])[0],
+    alkoholMissbruk:              shuffle(['Ja', 'Nej'])[0],
+    alkoholVard:                  shuffle(['Ja', 'Nej'])[0],
+    alkoholProvtagning:           shuffle(['Ja', 'Nej'])[0],
+    alkoholLakemedel:             shuffle(['Ja', 'Nej'])[0],
+    psykiskSjukdom:               shuffle(['Ja', 'Nej'])[0],
+    adhdPsykisk:                  shuffle(['Ja', 'Nej'])[0],
+    adhdSyndrom:                  shuffle(['Ja', 'Nej'])[0],
+    sjukhusvard:                  shuffle(['Ja', 'Nej'])[0],
+    ovrigMedicin:                 shuffle(['Ja', 'Nej'])[0],
+    
     getRandomKorkortstyper: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
         return shuffle(this.korkortstyper).slice(0, Math.floor(Math.random() * this.korkortstyper.length));
     },
+    getRandomKorkortstyperHogre: function() {
+        // Shuffla korkortstyper och returnera slumpad längd på array
+        return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length));
+    },
+
     getRandomIdentitetStyrktGenom: function() {
         return shuffle(this.identitetStyrktGenom)[0];
     },
@@ -91,8 +124,9 @@ module.exports = {
         };
     },
     getRandomTsBasIntyg: function() {
+        var randomKorkortstyper = this.getRandomKorkortstyperHogre();
         return {
-            korkortstyper: this.korkortstyperHogreBehorighet,
+            korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
             allmant: {
                 year: Math.floor((Math.random() * 20) + 1980),
@@ -101,7 +135,34 @@ module.exports = {
             synintyg: {
                 a: 'Ja'
             },
-            bedomning: this.getRandomBedomning(this.korkortstyperHogreBehorighet)
+            bedomning: this.getRandomBedomning(randomKorkortstyper),
+            synDonder:                    this.synDonder,                    
+            synNedsattBelysning:          this.synNedsattBelysning,          
+            synOgonsjukdom:               this.synOgonsjukdom,               
+            synDubbel:                    this.synDubbel,                    
+            synNystagmus:                 this.synNystagmus,                 
+            horselYrsel:                  this.horselYrsel,                  
+            horselSamtal:                 this.horselSamtal,                  
+            rorOrgNedsattning:            this.rorOrgNedsattning,            
+            rorOrgInUt:                   this.rorOrgInUt,            
+            hjartHjarna:                  this.hjartHjarna,                  
+            hjartSkada:                   this.hjartSkada,                   
+            hjartRisk:                    this.hjartRisk,                    
+            diabetes:                     this.diabetes,                     
+            neurologiska:                 this.neurologiska,                 
+            epilepsi:                     this.epilepsi,                     
+            njursjukdom:                  this.njursjukdom,                  
+            demens:                       this.demens,                       
+            somnVakenhet:                 this.somnVakenhet,                 
+            alkoholMissbruk:              this.alkoholMissbruk,              
+            alkoholVard:                  this.alkoholVard,                  
+            alkoholProvtagning:           this.alkoholProvtagning,           
+            alkoholLakemedel:             this.alkoholLakemedel,             
+            psykiskSjukdom:               this.psykiskSjukdom,               
+            adhdPsykisk:                  this.adhdPsykisk,                  
+            adhdSyndrom:                  this.adhdSyndrom,                  
+            sjukhusvard:                  this.sjukhusvard,                  
+            ovrigMedicin:                 this.ovrigMedicin
         };
     }
 };

@@ -6,6 +6,7 @@ Egenskap: Kontrollera att det går att skapa intyg för transportstyrelsen
 Bakgrund: Jag befinner mig på webcerts förstasida
     Givet att jag är inloggad som läkare "Jan Nilsson"
 
+@dev 
 Scenario: Skapa och signera ett intyg till transportstyrelsen
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
