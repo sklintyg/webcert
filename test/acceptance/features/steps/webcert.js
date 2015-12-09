@@ -2,9 +2,8 @@
 
 'use strict';
 
-var EC = protractor.ExpectedConditions;
-
 var fkUtkastPage = pages.intygpages.fk7263Utkast;
+var fkIntygPage = pages.intygpages.fkIntyg;
 
 module.exports = function () {
 
@@ -55,10 +54,9 @@ module.exports = function () {
     });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
-        // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
-        element(by.id('makuleraBtn')).click();
-        element(by.id('button1makulera-dialog')).click();
-        element(by.id('confirmationOkButton')).click()
+        fkIntygPage.makulera.btn.click();
+        fkIntygPage.makulera.dialogAterta.click();
+        fkIntygPage.makulera.kvittensOKBtn.click()
         .then(callback);
     });
     
