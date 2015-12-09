@@ -3,7 +3,7 @@ testdata, intyg, browser, pages
 */
 'use strict';
 
-var tsdUtkastPage = pages.intygpages.tsDiabetesUtkast;
+var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
 
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för ett Diabetes\-intyg$/, function (callback) {
@@ -88,67 +88,7 @@ function fillInIdentitetStyrktGenom(idtyp) {
     identitetForm.element(by.cssContainingText('label.radio', idtyp)).click();
 }
 
-function fillInAllmant(allmantObj) {
-    var allmantForm = element(by.id('allmantForm'));
 
-    // Ange år då diagnos ställts
-    console.log('Anger år då diagnos ställts: ' + allmantObj.year);
-    allmantForm.element(by.id('diabetesyear')).sendKeys(allmantObj.year);
-
-    // Ange diabetestyp
-    console.log('Anger diabetestyp:' + allmantObj.typ);
-    allmantForm.element(by.cssContainingText('label.radio', allmantObj.typ)).click();
-
-    // Ange behandlingstyp
-    var typer = allmantObj.behandling.typer;
-    typer.forEach(function(typ) {
-        console.log('Anger behandlingstyp: ' + typ);
-        allmantForm.element(by.cssContainingText('label.checkbox', typ)).click();
-    });
-
-    if (allmantObj.behandling.insulinYear) {
-        console.log('Anger insulin från år: ' + allmantObj.behandling.insulinYear);
-        element(by.id('insulinBehandlingsperiod')).sendKeys(allmantObj.behandling.insulinYear);
-    }
-
-}
-
-function fillInHypoglykemier(hypoglykemierObj, korkortstyper) {
-
-    console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
-
-    // a)
-    if (hypoglykemierObj.a === 'Ja') {
-        element(by.id('hypoay')).click();
-    } else {
-        element(by.id('hypoan')).click();
-    }
-
-    // b)
-    if (hypoglykemierObj.b === 'Ja') {
-        element(by.id('hypoby')).click();
-    } else {
-        element(by.id('hypobn')).click();
-    }
-
-    // f)
-    if (hypoglykemierObj.f) {
-        if (hypoglykemierObj.f === 'Ja') {
-            element(by.id('hypofy')).click();
-        } else {
-            element(by.id('hypofn')).click();
-        }
-    }
-
-    // g)
-    if (hypoglykemierObj.g) {
-        if (hypoglykemierObj.g === 'Ja') {
-            element(by.id('hypogy')).click();
-        } else {
-            element(by.id('hypogn')).click();
-        }
-    }
-}
 
 function fillInSynintyg(synintygObj) {
     // a)
@@ -156,21 +96,6 @@ function fillInSynintyg(synintygObj) {
         element(by.id('synay')).click();
     } else {
         element(by.id('synan')).click();
-    }
-}
-
-function fillInBedomningDiabetes(bedomningObj) {
-    console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
-    var bedomningForm = element(by.id('bedomningForm'));
-    bedomningForm.element(by.cssContainingText('label.radio', bedomningObj.stallningstagande)).click();
-
-    if (bedomningObj.lamplighet) {
-        console.log('Anger lämplighet: ' + bedomningObj.lamplighet);
-        if (bedomningObj.lamplighet === 'Ja') {
-            element(by.id('bedomningy')).click();
-        } else {
-            element(by.id('bedomningn')).click();
-        }
     }
 }
 
@@ -226,7 +151,8 @@ function fillInHorselOchBalanssinne(intyg) {
         element(by.id('horselbalansan')).click();
     }
 
-    if (intyg.korkortstyper.indexOf('D1') > -1) {
+    if (intyg.korkortstyper.indexOf('D1') > -1 ||
+        intyg.korkortstyper.indexOf('D') > -1) {
         if (intyg.horselSamtal === 'Ja') {
             element(by.id('horselbalansby')).click();
         } else {
@@ -243,7 +169,8 @@ function fillInRorelseorganensFunktioner(intyg) {
         element(by.id('funktionsnedsattningan')).click();
     }
     
-    if (intyg.korkortstyper.indexOf('D1') > -1) {
+    if (intyg.korkortstyper.indexOf('D1') > -1 ||
+        intyg.korkortstyper.indexOf('D') > -1) {
         if (intyg.rorOrgInUt === 'Ja') {
             element(by.id('funktionsnedsattningby')).click();
         } else {
