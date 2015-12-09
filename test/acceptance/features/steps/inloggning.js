@@ -73,7 +73,16 @@ module.exports = function () {
         // //Identiteten är styrkt genom
         var idStarktGenom = element(by.id('identitet'));
         console.log('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
-        expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
+
+        
+        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
+            // Specialare eftersom status inte innehåller den punkt som utkastet innehåller.
+            var txt = 'Försäkran enligt 18 kap 4 §';
+            expect(idStarktGenom.getText()).to.eventually.contain(txt).and.notify(callback);
+        } else {
+            expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
+        }
+        
     });
 
 };
