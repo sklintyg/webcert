@@ -1,33 +1,21 @@
 /*global
-testdata, intyg, browser
+testdata, intyg, browser, pages
 */
 'use strict';
+
+var tsdUtkastPage = pages.intygpages.tsDiabetesUtkast;
 
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för ett Diabetes\-intyg$/, function (callback) {
         global.intyg = testdata.getRandomTsDiabetesIntyg();
 
-        // browser.ignoreSynchronization = true;
-        // Intyget avser
-        fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm');
-
-        // Identiteten är styrkt genom
-        fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
-
-        // Allmänt
-        fillInAllmant(intyg.allmant);
-
-        // Hypoglykemier
-        fillInHypoglykemier(intyg.hypoglykemier, intyg.korkortstyper);
-
-        //Synintyg
-        fillInSynintyg(intyg.synintyg);
-
-        //Bedömning
-        fillInBedomningDiabetes(intyg.bedomning);
-
-        // browser.ignoreSynchronization = false;
-
+        tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
+        tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+        tsdUtkastPage.fillInAllmant(intyg.allmant);
+        tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
+        tsdUtkastPage.fillInSynintyg(intyg.synintyg);
+        tsdUtkastPage.fillInBedomning(intyg.bedomning);
+        
         callback();
     });
 

@@ -4,18 +4,20 @@
 
 var EC = protractor.ExpectedConditions;
 
+var fkUtkastPage = pages.intygpages.fk7263Utkast;
+
 module.exports = function () {
 
     this.Given(/^fyller i alla nödvändiga fält för intyget$/, function (callback) {
-        pages.intygpages.fkUtkast.smittskyddCheckboxClick();
-        global.pages.intygpages.fkUtkast.nedsattMed25CheckboxClick();
+        fkUtkastPage.smittskyddCheckboxClick();
+        fkUtkastPage.nedsattMed25CheckboxClick();
         callback();
     });
 
     this.Given(/^signerar FK7263-intyget$/, function (callback) {
 
-        global.pages.intygpages.fkUtkast.whenSigneraButtonIsEnabled().then(function () {
-            global.pages.intygpages.fkUtkast.signeraButtonClick();
+        fkUtkastPage.whenSigneraButtonIsEnabled().then(function () {
+            fkUtkastPage.signeraButtonClick();
         });
 
         browser.getCurrentUrl().then(function (text) {
