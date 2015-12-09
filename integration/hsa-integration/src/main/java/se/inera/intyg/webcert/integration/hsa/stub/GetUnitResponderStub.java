@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.integration.hsa.stub;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
@@ -10,14 +11,11 @@ import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitT
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.infrastructure.directory.v1.AddressType;
 import se.riv.infrastructure.directory.v1.ResultCodeEnum;
-import se.riv.itintegration.monitoring.pingforconfiguration.v1.rivtabp21.PingForConfigurationResponderInterface;
-import se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationResponseType;
-import se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationType;
 
 /**
  * Created by eriklupander on 2015-12-03.
  */
-public class GetUnitResponderStub implements GetUnitResponderInterface, PingForConfigurationResponderInterface {
+public class GetUnitResponderStub implements GetUnitResponderInterface {
 
     @Autowired
     HsaServiceStub hsaServiceStub;
@@ -56,10 +54,5 @@ public class GetUnitResponderStub implements GetUnitResponderInterface, PingForC
         addressType.getAddressLine().add(vardenhet.getPostort());
         unit.setPostalAddress(addressType);
         return unit;
-    }
-
-    @Override
-    public PingForConfigurationResponseType pingForConfiguration(String logicalAddress, PingForConfigurationType parameters) {
-        return new PingForConfigurationResponseType();
     }
 }

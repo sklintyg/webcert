@@ -23,8 +23,6 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
-
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
@@ -51,8 +49,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     //@Autowired
     //private HSAWebServiceCalls hsaService;
 
-    @Autowired
-    private OrganizationUnitService organizationUnitService;
+//    @Autowired
+//    private OrganizationUnitService organizationUnitService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -70,15 +68,56 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
 
     @Autowired
+    @Qualifier("pingForConfigurationResponderInterfaceAuthorizationmanagement")
+    private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceAuthorizationmanagement;
+
+    @Autowired
+    @Qualifier("pingForConfigurationResponderInterfaceEmployee")
+    private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceEmployee;
+
+    @Autowired
+    @Qualifier("pingForConfigurationResponderInterfaceOrganization")
+    private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceOrganization;
+
+    @Value("${infrastructure.directory.authorizationmanagement.logicalAddress}")
+    private String authorizationmanagementLogicalAddress;
+
+    @Value("${infrastructure.directory.employee.logicalAddress}")
+    private String employeeLogicalAddress;
+
+    @Value("${infrastructure.directory.organization.logicalAddress}")
+    private String organizationLogicalAddress;
+
+    @Autowired
     private SessionRegistry sessionRegistry;
 
     @Override
-    public HealthStatus checkHSA() {
+    public HealthStatus checkHsaAuthorizationmanagement() {
         boolean ok;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try {
-            se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationResponseType pingResponse = organizationUnitService.ping();
+            PingForConfigurationResponseType pingResponse =
+                    pingForConfigurationResponderInterfaceAuthorizationmanagement.pingForConfiguration(authorizationmanagementLogicalAddress, buildPingRequest(authorizationmanagementLogicalAddress));
+
+            ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
+        } catch (Exception e) {
+            ok = false;
+        }
+        stopWatch.stop();
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
+        logStatus("getHsaAuthorizationManagementStatus", status);
+        return status;
+    }
+
+    @Override
+    public HealthStatus checkHsaEmployee() {
+        boolean ok;
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        try {
+
+            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceEmployee.pingForConfiguration(employeeLogicalAddress, buildPingRequest(employeeLogicalAddress));
 
             ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
         } catch (Exception e) {
@@ -89,6 +128,32 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         logStatus("getHsaStatus", status);
         return status;
     }
+
+    @Override
+    public HealthStatus checkHsaOrganization() {
+        boolean ok;
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        try {
+            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceOrganization.pingForConfiguration(organizationLogicalAddress, buildPingRequest(organizationLogicalAddress));
+
+            ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
+        } catch (Exception e) {
+            ok = false;
+        }
+        stopWatch.stop();
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
+        logStatus("getHsaStatus", status);
+        return status;
+    }
+
+    private PingForConfigurationType buildPingRequest(String logicalAddress) {
+        PingForConfigurationType param = new PingForConfigurationType();
+        param.setLogicalAddress(logicalAddress);
+        param.setServiceContractNamespace("urn:riv:itintegration:monitoring:PingForConfiguration:1:rivtabp21");
+        return param;
+    }
+
 
     @Override
     @Transactional
@@ -128,6 +193,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         LOG.info("Operation checkSignatureQueue completed with queue size {}", queueDepth);
         return new HealthStatus(queueDepth, true);
     }
+
 
     @Override
     public HealthStatus checkIntygstjanst() {

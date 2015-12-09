@@ -19,12 +19,6 @@
  */
 package se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.hsaws;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-
-
 /**
  * @author Pär Wenåker
  *

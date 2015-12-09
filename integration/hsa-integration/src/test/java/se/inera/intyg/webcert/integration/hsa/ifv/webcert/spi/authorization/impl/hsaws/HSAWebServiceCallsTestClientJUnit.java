@@ -20,14 +20,8 @@
 package se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.hsaws;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import se.inera.intyg.webcert.integration.hsa.client.EmployeeService;
-import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationResponseType;
 
 
 /**
@@ -38,19 +32,19 @@ public class HSAWebServiceCallsTestClientJUnit {
 
     private ApplicationContext ctx;
    // private HSAWebServiceCalls client;
-    private OrganizationUnitService organizationUnitService;
+   //  private OrganizationUnitService organizationUnitService;
 
 
     @Before
     public void init() {
         ctx = new ClassPathXmlApplicationContext(new String[] {"HSAWebServiceCallsTest-applicationContext.xml", "hsa-services-config.xml"});
-        organizationUnitService = (OrganizationUnitService) ctx.getBean("organizationUnitService");
+      //  organizationUnitService = (OrganizationUnitService) ctx.getBean("organizationUnitService");
     }
 
-    @Test
+    // @Test
     public void testHSAPing() throws Exception {
-        PingForConfigurationResponseType ping = organizationUnitService.ping();
-        System.out.println(ping.getPingDateTime());
+       // PingForConfigurationResponseType ping = organizationUnitService.ping();
+       // System.out.println(ping.getPingDateTime());
         //client.callPing();
 
       //  GetHsaUnitResponseType response = client.callGetHsaunit("IFV1239877878-103F");

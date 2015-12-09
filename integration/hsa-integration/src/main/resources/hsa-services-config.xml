@@ -57,8 +57,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
       serviceClass="se.riv.infrastructure.directory.employee.getemployeeincludingprotectedperson.v1.rivtabp21.GetEmployeeIncludingProtectedPersonResponderInterface"
       address="${infrastructure.directory.employee.getemployee.endpoint.url}" />
 
-  <jaxws:client id="pingForConfigurationResponderInterface"
-      serviceClass="se.riv.itintegration.monitoring.pingforconfiguration.v1.rivtabp21.PingForConfigurationResponderInterface"
+  <jaxws:client id="pingForConfigurationResponderInterfaceAuthorizationmanagement"
+      serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
+      address="${infrastructure.directory.authorizationmanagement.pingforconfiguration.endpoint.url}" />
+
+  <jaxws:client id="pingForConfigurationResponderInterfaceEmployee"
+      serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
+      address="${infrastructure.directory.employee.pingforconfiguration.endpoint.url}" />
+
+  <jaxws:client id="pingForConfigurationResponderInterfaceorganization"
+      serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
       address="${infrastructure.directory.organization.pingforconfiguration.endpoint.url}" />
 
   <!--

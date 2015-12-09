@@ -4,8 +4,10 @@ Testet beskriver fallet när ett externt system använder vårt REST API för ö
 | endpoint | status? |
 | ping | =~/OK[0-9]+/ |
 | db | =~/OK[0-9]+/ |
+| hsa-authorizationmanagement | =~/OK[0-9]+/ |
+| hsa-employee | =~/OK[0-9]+/ |
+| hsa-organization | =~/OK[0-9]+/ |
 | jms | =~/OK[0-9]+/ |
-| hsa | =~/OK[0-9]+/ |
 | intygstjanst | =~/OK[0-9]+/ |
 | uptime | =~/OK[0-9]+/ |
 | signature-queue | =~/OK[0-9]+/ |

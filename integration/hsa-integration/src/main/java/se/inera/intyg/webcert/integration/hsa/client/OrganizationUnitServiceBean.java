@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import se.riv.infrastructure.directory.organization.gethealthcareunit.v1.rivtabp21.GetHealthCareUnitResponderInterface;
@@ -16,9 +15,6 @@ import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v
 import se.riv.infrastructure.directory.organization.getunit.v1.rivtabp21.GetUnitResponderInterface;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitResponseType;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitType;
-import se.riv.itintegration.monitoring.pingforconfiguration.v1.rivtabp21.PingForConfigurationResponderInterface;
-import se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationResponseType;
-import se.riv.itintegration.monitoring.pingforconfigurationresponder.v1.PingForConfigurationType;
 
 /**
  * Created by eriklupander on 2015-12-03.
@@ -36,9 +32,6 @@ public class OrganizationUnitServiceBean implements OrganizationUnitService {
 
     @Autowired
     private GetHealthCareUnitMembersResponderInterface getHealthCareUnitMembersResponderInterface;
-
-    @Autowired
-    private PingForConfigurationResponderInterface pingForConfigurationResponderInterface;
 
     @Value("${infrastructure.directory.organization.logicalAddress}")
     private String logicalAddress;
@@ -65,16 +58,6 @@ public class OrganizationUnitServiceBean implements OrganizationUnitService {
         parameters.setHealthCareUnitHsaId(unitHsaId);
         GetHealthCareUnitMembersResponseType response = getHealthCareUnitMembersResponderInterface.getHealthCareUnitMembers(logicalAddress, parameters);
         return response;
-    }
-
-    @Override
-    public PingForConfigurationResponseType ping() {
-        PingForConfigurationType parameters = new PingForConfigurationType();
-        parameters.setLogicalAddress(logicalAddress);
-        parameters.setServiceContractNamespace("urn:riv:itintegration:monitoring:PingForConfiguration:1:rivtabp21");
-        PingForConfigurationResponseType responseType = pingForConfigurationResponderInterface.pingForConfiguration(logicalAddress, parameters);
-        log.info("OrganizationUnitService ping result ts: {}. Version: {}", responseType.getPingDateTime(), responseType.getVersion());
-        return responseType;
     }
 
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                             http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
                             http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
@@ -15,11 +15,15 @@
 
     <!-- TODO fix this for the new contracts. Consider if all sub-services (getEmployee, getUnit, getMembers etc should be served through one single common stub like below -->
     <!-- <jaxws:endpoint address="/hsa" implementor="se.inera.intyg.webcert.integration.hsa.stub.HsaWebServiceStub"/>         -->
-    <jaxws:endpoint address="/hsa-authorization" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
-    <jaxws:endpoint address="/hsa-employee" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetEmployeeResponderStub" />
-    <jaxws:endpoint address="/hsa-healthcare" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitResponderStub" />
-    <jaxws:endpoint address="/hsa-healthcareunit-members" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitMembersResponderStub" />
-    <jaxws:endpoint address="/hsa-unit" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetUnitResponderStub" />
+    <jaxws:endpoint address="/hsa-authorization" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetAuthorizationsForPersonResponderStub"/>
+    <jaxws:endpoint address="/hsa-employee" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetEmployeeResponderStub"/>
+    <jaxws:endpoint address="/hsa-healthcare" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitResponderStub"/>
+    <jaxws:endpoint address="/hsa-healthcareunit-members" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetHealthCareUnitMembersResponderStub"/>
+    <jaxws:endpoint address="/hsa-unit" implementor="se.inera.intyg.webcert.integration.hsa.stub.GetUnitResponderStub"/>
+
+    <jaxws:endpoint address="/hsa-authorizationmanagement-ping" id="pingForConfigurationResponderInterfaceAuthorizationmanagement" name="pingForConfigurationResponderInterfaceAuthorizationmanagement" implementor="se.inera.intyg.webcert.integration.hsa.stub.PingForConfigurationResponderAuthorizationManagementStub"/>
+    <jaxws:endpoint address="/hsa-employee-ping" id="pingForConfigurationResponderInterfaceEmployee" name="pingForConfigurationResponderInterfaceEmployee" implementor="se.inera.intyg.webcert.integration.hsa.stub.PingForConfigurationResponderEmployeeStub"/>
+    <jaxws:endpoint address="/hsa-organization-ping" id="pingForConfigurationResponderInterfaceOrganization" name="pingForConfigurationResponderInterfaceOrganization" implementor="se.inera.intyg.webcert.integration.hsa.stub.PingForConfigurationResponderOrganizationStub"/>
 
     <bean class="se.inera.intyg.webcert.integration.hsa.stub.BootstrapBean"/>
   </beans>
@@ -36,7 +40,7 @@
         <entry key="json" value="application/json"/>
       </jaxrs:extensionMappings>
     </jaxrs:server>
-  
+
     <bean id="hsaStubRestApi" class="se.inera.intyg.webcert.integration.hsa.stub.HsaStubRestApi"/>
   </beans>
 

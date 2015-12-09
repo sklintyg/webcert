@@ -1,22 +1,24 @@
 package se.inera.intyg.webcert.web.monitoring;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.annotation.PostConstruct;
+import javax.jws.WebParam;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.ConfigurationType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
-
-import javax.annotation.PostConstruct;
-import javax.jws.WebParam;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Implements PingForConfiguration and returns various statuses about the health of the application.
@@ -48,7 +50,9 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
         response.setVersion(projectVersion);
 
         HealthStatus db = healthCheck.checkDB();
-        HealthStatus hsa = healthCheck.checkHSA();
+        HealthStatus hsaAuthorizationManagement = healthCheck.checkHsaAuthorizationmanagement();
+        HealthStatus hsaEmployee = healthCheck.checkHsaEmployee();
+        HealthStatus hsaOrganization = healthCheck.checkHsaOrganization();
         HealthStatus jms = healthCheck.checkJMS();
         HealthStatus queueSize = healthCheck.checkSignatureQueue();
         HealthStatus pingIntygstjanst = healthCheck.checkIntygstjanst();
@@ -59,7 +63,9 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
         addConfiguration(response, "buildTime", buildTimeString);
         addConfiguration(response, "systemUptime", DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true));
         addConfiguration(response, "dbStatus", db.isOk() ? "ok" : "error");
-        addConfiguration(response, "hsaStatus", hsa.isOk() ? "ok" : "error");
+        addConfiguration(response, "hsaAuthorizationManagementStatus", hsaAuthorizationManagement.isOk() ? "ok" : "error");
+        addConfiguration(response, "hsaEmployeeStatus", hsaEmployee.isOk() ? "ok" : "error");
+        addConfiguration(response, "hsaOrganizationStatus", hsaOrganization.isOk() ? "ok" : "error");
         addConfiguration(response, "jmsStatus", jms.isOk() ? "ok" : "error");
         addConfiguration(response, "intygstjanst", pingIntygstjanst.isOk() ? "ok" : "no connection");
         addConfiguration(response, "signatureQueueSize", "" + queueSize.getMeasurement());
