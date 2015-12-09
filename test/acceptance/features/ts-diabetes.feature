@@ -30,5 +30,5 @@ Scenario: Makulera ett skickat intyg
     Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
-    När jag går till Mina intyg för patienten "19520727-2252"
+    När jag går till Mina intyg för patienten "19121212-1212"
     Så ska intygets status i Mina intyg visa "Makulerat"

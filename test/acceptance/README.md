@@ -17,3 +17,13 @@ $ npm install
  ```sh
  grunt acc
 ```
+
+### Kör tester på ip20-mijö
+ ```sh
+ grunt acc:ip20
+```
+
+### Kör tester på ip20-mijö som är taggade med @smoke
+ ```sh
+ grunt acc:ip20:@smoke
+```

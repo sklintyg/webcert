@@ -25,9 +25,7 @@ exports.config = {
     },
     cucumberOpts: {
         format: ['json:./acceptance/report/acc_results.json', 'pretty'],
-        require: ['features/steps/**/*.js', 'features/support/**/*.js'],
-        tags: ['~@notReady' /*, '@dev' */
-        ]
+        require: ['features/steps/**/*.js', 'features/support/**/*.js']
     },
     onPrepare: function () {
         //http://chaijs.com/

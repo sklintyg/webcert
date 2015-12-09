@@ -10,6 +10,7 @@ import org.junit.Before;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.FakeCredentials;
+import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,8 +29,10 @@ public abstract class BaseRestIntegrationTest {
 
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
+
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049", "rest", "testman",
             "IFV1239877878-1042").lakare(true).build();
+
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "191212121212";
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -53,7 +56,7 @@ public abstract class BaseRestIntegrationTest {
     }
 
     /**
-     * Log in to webcert using the supplied credentials.
+     * Log in to webcert using the supplied FakeCredentials.
      *
      * @param fakeCredentials who to log in as
      * @return sessionId for the now authorized user session
@@ -62,9 +65,29 @@ public abstract class BaseRestIntegrationTest {
         String credentialsJson;
         try {
             credentialsJson = objectMapper.writeValueAsString(fakeCredentials);
+            return getAuthSession(credentialsJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Log in to webcert as a private practitioner using the supplied FakeElegCredentials.
+     *
+     * @param fakeElegCredentials who to log in as
+     * @return sessionId for the now authorized user session
+     */
+    protected String getAuthSession(FakeElegCredentials fakeElegCredentials) {
+        String credentialsJson;
+        try {
+            credentialsJson = objectMapper.writeValueAsString(fakeElegCredentials);
+            return getAuthSession(credentialsJson);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getAuthSession(String credentialsJson) {
         Response response = given().contentType(ContentType.URLENC).and().redirects().follow(false).and()
                 .formParam(USER_JSON_FORM_PARAMETER, credentialsJson).expect()
                 .statusCode(HttpServletResponse.SC_FOUND).when()
@@ -72,6 +95,16 @@ public abstract class BaseRestIntegrationTest {
 
         assertNotNull(response.sessionId());
         return response.sessionId();
+    }
+
+    /**
+     * Change the role for the current session.
+     * This method required that a session is already established.
+     *
+     * @param newRole
+     */
+    protected void changeRoleTo(String newRole) {
+        given().pathParam("role", newRole).expect().statusCode(200).when().get("authtestability/roles/userrole/{role}");
     }
 
     /**
