@@ -6,6 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare "Jan Nilsson"
 
 @RegisterMedicalCertificate @minaintyg 
+@dev
 Scenario: Skapa och signera ett intyg i webcert
 	När jag väljer patienten "19520617-2339"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
@@ -15,7 +16,7 @@ Scenario: Skapa och signera ett intyg i webcert
 
 #	När jag går till Mina intyg för patienten "19520617-2339"
 #	Så ska intyget finnas i Mina intyg
-@SendMedicalCertificate @minaintyg 
+@dev @SendMedicalCertificate @minaintyg 
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag väljer patienten "19520617-2339"
     Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
@@ -25,7 +26,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag går till Mina intyg för patienten "19520617-2339"
 	Så ska intygets status i Mina intyg visa "Mottaget av Försäkringskassans system"
 
-@dev @RevokeMedicalCertificate
+@RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg 
 	När jag väljer patienten "19520617-2339"
     Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
