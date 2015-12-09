@@ -15,7 +15,7 @@ import se.riv.infrastructure.directory.v1.ResultCodeEnum;
 public class GetEmployeeResponderStub implements GetEmployeeIncludingProtectedPersonResponderInterface {
 
     @Autowired
-    HsaServiceStub hsaServiceStub;
+    private HsaServiceStub hsaServiceStub;
 
     @Override
     public GetEmployeeIncludingProtectedPersonResponseType getEmployeeIncludingProtectedPerson(String logicalAddress, GetEmployeeIncludingProtectedPersonType getEmployeeIncludingProtectedPersonType) {

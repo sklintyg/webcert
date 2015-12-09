@@ -3,7 +3,6 @@ package se.inera.intyg.webcert.integration.hsa.services;
 import javax.xml.ws.WebServiceException;
 
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
-import se.riv.infrastructure.directory.employee.getemployeeresponder.v1.GetEmployeeResponseType;
 
 /**
  * Created by Magnus Ekstrand on 27/05/15.

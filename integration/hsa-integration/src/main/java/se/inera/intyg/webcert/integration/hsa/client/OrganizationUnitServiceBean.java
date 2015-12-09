@@ -22,7 +22,7 @@ import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitT
 @Service
 public class OrganizationUnitServiceBean implements OrganizationUnitService {
 
-    private static final Logger log = LoggerFactory.getLogger(OrganizationUnitServiceBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrganizationUnitServiceBean.class);
 
     @Autowired
     private GetUnitResponderInterface getUnitResponderInterface;

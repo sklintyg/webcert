@@ -106,8 +106,12 @@ public abstract class AbstractVardenhet implements SelectableVardenhet, Comparab
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AbstractVardenhet)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AbstractVardenhet)) {
+            return false;
+        }
 
         AbstractVardenhet that = (AbstractVardenhet) o;
 

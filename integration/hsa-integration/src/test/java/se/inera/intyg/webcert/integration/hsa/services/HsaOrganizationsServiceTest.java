@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.integration.hsa.services;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -256,5 +257,13 @@ public class HsaOrganizationsServiceTest {
         addMedarbetaruppdrag(PERSON_HSA_ID, "vastmanland", asList("enhet-finns-ej"));
         List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertEquals(0, vardgivare.size());
+    }
+
+    @Test
+    public void hamtaVardenhet() {
+        Vardenhet vardenhet = service.getVardenhet(CENTRUM_VAST);
+        assertNotNull(vardenhet);
+        assertEquals(CENTRUM_VAST, vardenhet.getId());
+        assertEquals(2, vardenhet.getMottagningar().size());
     }
 }

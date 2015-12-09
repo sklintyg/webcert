@@ -19,7 +19,7 @@ import se.riv.infrastructure.directory.v1.ResultCodeEnum;
 public class GetHealthCareUnitMembersResponderStub implements GetHealthCareUnitMembersResponderInterface {
 
     @Autowired
-    HsaServiceStub hsaServiceStub;
+    private HsaServiceStub hsaServiceStub;
 
     @Override
     public GetHealthCareUnitMembersResponseType getHealthCareUnitMembers(String logicalAddress, GetHealthCareUnitMembersType parameters) {
