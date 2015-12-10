@@ -50,7 +50,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
 
             var allmant = {
                 year: '2015',
-                typ: utkastTextmap.ts.allmant.typ.typ1,
+                typ: utkastTextmap.ts.diabetes.typ.typ1,
                 behandling: {
                     typer: [utkastTextmap.ts.diabetes.behandling.endastkost,
                         utkastTextmap.ts.diabetes.behandling.insulin],
