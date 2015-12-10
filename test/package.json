@@ -12,6 +12,7 @@
         "grunt-ng-annotate": "^0.3.0",
         "grunt-protractor-runner": "^2.1.0",
         "grunt-protractor-webdriver": "^0.2.5",
+        "http-backend-proxy": "^1.4.3",
         "protractor": "^3.0.0",
         "protractor-cucumber-framework": "^0.3.0",
         "protractor-jasmine2-screenshot-reporter": "^0.1.7",
