@@ -1,5 +1,5 @@
 /**
- * Created by stephenwhite on 09/06/15.
+ * Created by bennysce on 09/12/15.
  */
 /*globals element,by*/
 'use strict';
@@ -176,21 +176,7 @@ var TsDiabetesUtkast = BaseUtkast._extend({
 
         console.log('Anger körkortstyper: ' + bedomningObj.behorigheter.toString());
 
-        // hittar flera på text körkortstyp A
-        this.bedomning.form.all(by.css('label.checkbox')).filter(function(elem) {
-            //Return the element or elements
-            return elem.getText().then(function(text) {
-                //Match the text
-                return (bedomningObj.behorigheter.indexOf(text) >= 0);
-            });
-        }).then(function(filteredElements) {
-            //filteredElements is the list of filtered elements
-
-            for (var i = 0; i < filteredElements.length; i++) {
-                filteredElements[i].sendKeys(protractor.Key.SPACE);
-                //Do something
-            }
-        });
+        helpers.page.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
 
         if (bedomningObj.lamplighet) {
             console.log('Anger lämplighet: ' + bedomningObj.lamplighet);

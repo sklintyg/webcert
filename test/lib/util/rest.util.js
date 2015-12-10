@@ -1,8 +1,14 @@
 /**
  * Created by BESA on 2015-11-17.
  */
+/*globals envConfig*/
 'use strict';
 var restClient = require('./restClient.util.js');
+
+var env = envConfig;
+if(!envConfig) {
+    env = process.env;
+}
 
 module.exports = {
     login: function(userJson) {
@@ -52,20 +58,20 @@ module.exports = {
             method: 'POST',
             body: createJson
         };
-        return restClient.run(options, 'json', process.env.INTYGTJANST_URL + '/resources/');
+        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
     },
     deleteAllIntyg: function() {
         var options = {
             url: 'certificate/',
             method: 'DELETE'
         };
-        return restClient.run(options, 'json', process.env.INTYGTJANST_URL + '/resources/');
+        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
     },
     deleteIntyg: function(id) {
         var options = {
             url: 'certificate/' + id,
             method: 'DELETE'
         };
-        return restClient.run(options, 'json', process.env.INTYGTJANST_URL + '/resources/');
+        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
     }
 };

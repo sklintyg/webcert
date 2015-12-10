@@ -12,9 +12,9 @@ module.exports = {
         'fk7263Utkast': require(intygPath + 'fk.utkast.page.js'),
         'fkIntyg': require(intygPath + 'fk.intyg.page.js'),
         'ts-diabetesUtkast': require(intygPath + 'tsDiabetes.utkast.page.js'),
-        'tsDiabetesIntyg': require(intygPath + 'tsDiabetes.intyg.page.js')/*,
-        'tsBasUtkast': intygPath + 'tsBas.utkast.page.js',
-        'tsBasIntyg': intygPath + 'tsBas.intyg.page.js'*/
+        'tsDiabetesIntyg': require(intygPath + 'tsDiabetes.intyg.page.js'),
+        'ts-basUtkast': require(intygPath + 'tsBas.utkast.page.js'),
+        'tsBasIntyg': require(intygPath + 'tsBas.intyg.page.js')
     },
     'welcome': require(appPath + 'welcome.page.js'),
     'app': {

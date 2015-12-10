@@ -30,7 +30,7 @@ module.exports = {
             forsakranenligt18kap4: 'Försäkran enligt 18 kap. 4§',
             pass: 'Pass'
         },
-        allmant: {
+        diabetes: {
             typ: {
                 typ1: 'Typ 1',
                 typ2: 'Typ 2'

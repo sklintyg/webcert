@@ -1,3 +1,6 @@
+/**
+ * Created by bennysce on 09/06/15.
+ */
 /*globals pages */
 /*globals describe,it,helpers,utkastTextmap */
 'use strict';
@@ -49,8 +52,8 @@ describe('Create and Sign ts-diabetes utkast', function() {
                 year: '2015',
                 typ: utkastTextmap.ts.allmant.typ.typ1,
                 behandling: {
-                    typer: [utkastTextmap.ts.allmant.behandling.endastkost,
-                        utkastTextmap.ts.allmant.behandling.insulin],
+                    typer: [utkastTextmap.ts.diabetes.behandling.endastkost,
+                        utkastTextmap.ts.diabetes.behandling.insulin],
                     insulinYear: '2000'
                 }
             };
@@ -78,6 +81,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
                 behorigheter: ['D'],
                 lamplighet: 'Ja'
             };
+
             tsdUtkastPage.fillInBedomning(bedomning);
         });
 

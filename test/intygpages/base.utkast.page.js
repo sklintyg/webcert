@@ -10,6 +10,10 @@ var BaseUtkast = Class._extend({
     init: function() {
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
+        this.pageHelper = null;
+    },
+    setPageHelper: function(pageHelper) {
+        this.pageHelper = pageHelper;
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);

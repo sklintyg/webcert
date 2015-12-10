@@ -1,3 +1,6 @@
+/**
+ * Created by bennysce on 09/06/15.
+ */
 /* globals browser */
 'use strict';
 

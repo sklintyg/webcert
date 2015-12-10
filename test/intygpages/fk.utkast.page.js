@@ -1,5 +1,5 @@
 /**
- * Created by stephenwhite on 09/06/15.
+ * Created by bennysce on 09/06/15.
  */
 /*globals element,by,browser*/
 'use strict';

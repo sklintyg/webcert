@@ -205,7 +205,7 @@ function fillInDiabetes(intyg) {
         if (intyg.allmant.typ === 'Typ 1') {
             element(by.id('diabetestyp1')).click();
         } else {
-            element(by.id('diabetesty2')).click();
+            element(by.id('diabetestyp2')).click();
         }
 
         // Ange behandlingstyp
