@@ -30,7 +30,14 @@
           <span class='error_message'>{{result.error_message}}</span><br>
           {{/if}}
           {{#each embeddings}}
-            <img src="data:image/png;base64,{{data}}" />
+
+            {{#if_eq this.mime_type "image/png"}}
+              <img src="data:image/png;base64,{{data}}" />
+            {{/if_eq}}
+            {{#if_eq this.mime_type "text/plain"}}
+              <span class='text-attach'>{{atobData}}</span>
+            {{/if_eq}}
+            <br>
           {{/each}}
         </span>
         {{/each}}
@@ -42,6 +49,18 @@
     </script>
  
     <script>
+
+    Handlebars.registerHelper('if_eq', function(a, b, opts) {
+    if(a == b) // Or === depending on your needs
+        return opts.fn(this);
+    else
+        return opts.inverse(this);
+    });
+
+    Handlebars.registerHelper('atobData', function() {
+      return atob(this.data);
+    });
+
     //4a.function creation
     var slingshot = function (tplId, anchor) {
      $.getJSON('acc_results.json', function(data) {
@@ -49,7 +68,11 @@
         var stone = Handlebars.compile(template)(data);
         $(anchor).append(stone);
      });
+
+
   };
+
+
 
     //4b.function firing
     slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.

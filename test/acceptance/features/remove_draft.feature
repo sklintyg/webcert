@@ -15,7 +15,7 @@ Och jag går tillbaka till start
 Och jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
 Och jag går tillbaka till start
 
-@dev @removeDraft
+@removeDraft
 Scenario: Radera ett utkast för läkarintyg fk7263
 När jag väljer patienten "19520617-2339"
   Och jag går in på ett "Läkarintyg FK 7263" med status "Utkast, uppgifter saknas"

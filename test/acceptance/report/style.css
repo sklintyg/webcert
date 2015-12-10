@@ -46,3 +46,8 @@ b.After{
 .step.After{
   /*display:none;*/
 }
+.text-attach{
+  margin-left:30px;
+  font-family: "Courier New", Courier, monospace;
+  background-color: #F0F0F0;
+}

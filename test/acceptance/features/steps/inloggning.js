@@ -1,5 +1,5 @@
 /* globals pages, protractor*/
-/* globals browser, intyg */
+/* globals browser, intyg, scenario, logg */
 
 'use strict';
 
@@ -10,8 +10,7 @@ module.exports = function () {
     });
 
     this.Given(/^att jag är inloggad som läkare "([^"]*)"$/, function (anvandarnamn, callback) {
-        console.log('Loggar in som ' + anvandarnamn + '..');
-        
+        logg('Loggar in som ' + anvandarnamn + '..');
         browser.ignoreSynchronization = true;
         pages.welcome.get();
         pages.welcome.loginByName(anvandarnamn);
@@ -43,7 +42,6 @@ module.exports = function () {
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        console.log(intyg.typ);
         //För FK-intyg
         // if(intyg.typ === 'Läkarintyg FK 7263'){
         //     expect(element(by.id('certificate-is-sent-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
@@ -66,13 +64,13 @@ module.exports = function () {
         });
 
         selectedTypes = selectedTypes.join(', ').toUpperCase();
-        console.log('Kontrollerar att intyget avser körkortstyper:'+selectedTypes);
+        logg('Kontrollerar att intyget avser körkortstyper:'+selectedTypes);
 
         expect(intygetAvser.getText()).to.eventually.contain(selectedTypes);
 
         // //Identiteten är styrkt genom
         var idStarktGenom = element(by.id('identitet'));
-        console.log('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
+        logg('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
 
         
         if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {

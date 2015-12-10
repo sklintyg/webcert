@@ -28,7 +28,7 @@ module.exports = function() {
     	if (!global.intyg){ global.intyg = {};}
     	browser.getCurrentUrl().then(function(text){
     		intyg.id = text.split('/').slice(-1)[0];
-    		console.log('Intygsid: '+intyg.id);
+    		logg('Intygsid: '+intyg.id);
     	});
 
         element(by.id('sendBtn')).click();

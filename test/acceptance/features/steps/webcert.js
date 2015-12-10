@@ -1,4 +1,4 @@
-/* global pages, browser, protractor */
+/* global pages, browser, protractor, logg */
 
 'use strict';
 
@@ -27,31 +27,6 @@ module.exports = function () {
         callback();
     });
 
-    // this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
-    //     // När "Visa intyget"-knappen syns är vi nöjda här.
-
-    //     // TODO / FIXME!
-
-    //     var id = 'viewCertificateBtn-'+ global.intyg.id;
-    //     browser.wait(EC.elementToBeClickable(id), 10000);
-    //     callback();
-    // });
-
-
-    this.Given(/^jag öppnar intyget$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^intyget är signerat$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^intyget är skickat till försäkringskassan$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
         fkIntygPage.makulera.btn.click();
@@ -63,13 +38,11 @@ module.exports = function () {
     this.Given(/^jag raderar utkastet$/, function (callback) {
         // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
         fkIntygPage.radera.knapp.click();
-        fkIntygPage.radera.radera.click();
-        browser.sleep(2000).then(callback);
+        fkIntygPage.radera.radera.click()
+        .then(callback);
     });
 
     this.Given(/^jag går tillbaka till start$/, function (callback) {
-        // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
-        browser.sleep(2000);
         element(by.id('tillbakaButton ')).click()
         .then(callback);
     });

@@ -11,7 +11,7 @@ module.exports = function() {
         //Fånga intygets id
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
-            console.log('Intygsid: ' + intyg.id);
+            logg('Intygsid: ' + intyg.id);
         });
 
         fkIntygPage.skicka.knapp.click();

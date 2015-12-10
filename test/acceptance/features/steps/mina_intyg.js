@@ -1,4 +1,4 @@
-/* globals browser, intyg */
+/* globals browser, intyg, logg */
 
 'use strict';
 
@@ -12,7 +12,7 @@ module.exports = function() {
             // Om samtyckesruta visas
             element(by.id('consentTerms')).isPresent().then(function(result) {
                 if (result) {
-                    console.log('Lämnar samtycke..');
+                    logg('Lämnar samtycke..');
                     element(by.id('giveConsentButton')).click().then(callback);
                 } else {
                     callback();

@@ -1,5 +1,5 @@
 /*global
-testdata, intyg, browser, pages
+testdata, intyg, browser, pages, logg
 */
 'use strict';
 
@@ -58,7 +58,7 @@ module.exports = function() {
 
 
 function fillInKorkortstyper(typer, formName) {
-    console.log('Anger körkortstyper: '+ typer.toString());
+    logg('Anger körkortstyper: '+ typer.toString());
     // typer.forEach(function(typ) {
     //     process.stdout.write(typ + '..');
 
@@ -79,11 +79,11 @@ function fillInKorkortstyper(typer, formName) {
         // filteredElements[0].click();
     });
     // });
-    console.log('');
+    logg('');
 }
 
 function fillInIdentitetStyrktGenom(idtyp) {
-    console.log('Anger identitet styrkt genom ' + idtyp);
+    logg('Anger identitet styrkt genom ' + idtyp);
     var identitetForm = element(by.id('identitetForm'));
     identitetForm.element(by.cssContainingText('label.radio', idtyp)).click();
 }
@@ -100,7 +100,7 @@ function fillInSynintyg(synintygObj) {
 }
 
 function fillInBedomning(bedomningObj) {
-    console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
+    logg('Anger bedömning: ' + bedomningObj.stallningstagande);
 
     element(by.id('behorighet_bedomning')).click();
 
