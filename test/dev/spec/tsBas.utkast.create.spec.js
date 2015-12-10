@@ -10,7 +10,7 @@ var testdataHelper = helpers.testdata;
 var tsdBasUtkastPage = pages.intygpages['ts-basUtkast'];
 var tsdBasIntygPage = pages.intygpages.tsBasIntyg;
 
-fdescribe('Create and Sign ts-diabetes utkast', function() {
+describe('Create and Sign ts-diabetes utkast', function() {
 
     var utkast = null;
 
