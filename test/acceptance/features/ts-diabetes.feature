@@ -14,6 +14,7 @@ Scenario: Skapa och signera ett diabetesintyg till transportstyrelsen
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
+@dev
 Scenario: Skicka ett befintligt diabetesintyg-MIN till Transportstyrelsen
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat" 

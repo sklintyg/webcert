@@ -16,6 +16,10 @@ module.exports = {
         samtyckeCheckbox:element(by.id('patientSamtycke')),
         dialogKnapp:element(by.id('button1send-dialog'))
     },
+    radera: {
+        knapp: element(by.id('ta-bort-utkast')),
+        radera: element(by.id('confirm-draft-delete-button'))
+    },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/fk7263/' + intygId);
     },

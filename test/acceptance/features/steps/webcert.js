@@ -62,9 +62,8 @@ module.exports = function () {
 
     this.Given(/^jag raderar utkastet$/, function (callback) {
         // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
-        element(by.id('ta-bort-utkast')).click();
-        element(by.id('confirm-draft-delete')).click();
-        element(by.id('confirm-draft-delete-button')).click();
+        fkIntygPage.radera.knapp.click();
+        fkIntygPage.radera.radera.click();
         browser.sleep(2000).then(callback);
     });
 
