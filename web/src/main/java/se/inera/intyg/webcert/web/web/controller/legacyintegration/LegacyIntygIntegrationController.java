@@ -4,11 +4,11 @@ import static se.inera.intyg.common.support.common.enumerations.CertificateTypes
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_UTHOPP;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 import javax.ws.rs.GET;
@@ -40,7 +40,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     private static final String PARAM_CERT_ID = "certId";
 
     private static final String[] GRANTED_ROLES = new String[] { ROLE_ADMIN, ROLE_LAKARE, ROLE_TANDLAKARE };
-    private static final String GRANTED_ORIGIN = REQUEST_ORIGIN_TYPE_UTHOPP;
+    private static final String GRANTED_ORIGIN = WebCertUserOriginType.UTHOPP.name();
 
     private String urlFragmentTemplate;
 

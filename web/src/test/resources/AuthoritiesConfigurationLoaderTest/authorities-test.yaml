@@ -17,6 +17,8 @@ knownIntygstyper:
 
 # De rättigheter som systemet har
 knownPrivileges:
+  - &kp000 VISA_INTYG
+  - &kp005 SKRIVA_INTYG
   - &kp010 SIGNERA_INTYG
   - &kp020 MAKULERA_INTYG
   - &kp030 KOPIERA_INTYG
@@ -29,8 +31,34 @@ knownRoles:
   - &kr030 TANDLAKARE
   - &kr040 VARDADMINISTRATOR
 
+# Ingångar
+requestOrigins:
+  - &ro010
+    name: *kro010
+    intygstyper: # Implicit alla
+  - &ro020
+    name: *kro020
+    intygstyper:
+      - *ki010 # FK7263
+  - &ro030
+    name: *kro030
+    intygstyper:
+      - *ki010 # FK7263
+
 # Rättigheter
 privileges:
+  - &p000
+    name: *kp000
+    desc: Visa intyg
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins: # Implicit alla
+  - &p005
+    name: *kp005
+    desc: Skriva intyg
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins: # Implicit alla
   - &p010
     name: *kp010
     desc: Signera intyg
@@ -60,27 +88,35 @@ privileges:
 roles:
   - &r010
     name: *kr010 # LAKARE
-    desc: Landstingsläkare
+    desc: Läkare
     privileges:
+      - *p000 # VISA_INTYG
       - *p010 # SIGNERA_INTYG
       - *p020 # MAKULERA_INTYG
-      - *p030 # KOPIERA_INTYG
+      - <<: *p030 # KOPIERA_INTYG
+        intygstyper:
+          - ts-bas
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
     privileges:
+      - *p000 # VISA_INTYG
       - *p010 # SIGNERA_INTYG
   - &r030
     name: *kr030 # LAKARE
     desc: Tandläkare
     privileges:
+      - *p000 # VISA_INTYG
       - *p010 # SIGNERA_INTYG
       - *p020 # MAKULERA_INTYG
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
     privileges:
-      - *p030 # KOPIERA_INTYG
+      - *p000 # VISA_INTYG
+      - <<: *p030 # KOPIERA_INTYG
+        intygstyper:
+          - ts-diabetes
 
 # Legitimerade yrkesroller
 titles:

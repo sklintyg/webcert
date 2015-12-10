@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConfiguration;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
+import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.authorities.Title;
 import se.inera.intyg.webcert.web.auth.authorities.TitleCode;
@@ -34,6 +35,7 @@ import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class AuthoritiesConfigurationLoaderTest {
 
+    //private static final String authoritiesConfigurationFile = "security/authorities.yaml";
     private static final String authoritiesConfigurationFile = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
     private static final String authoritiesConfigurationOutputFile = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
@@ -54,15 +56,17 @@ public class AuthoritiesConfigurationLoaderTest {
     public void loadConfigurationAndAssertTypeOfObjects() {
         AuthoritiesConfiguration configuration = loader.getConfiguration();
 
+        assertTrue(configuration.getRequestOrigins().size() == 3);
+        assertTrue(configuration.getPrivileges().size() == 6);
         assertTrue(configuration.getRoles().size() == 4);
-        assertTrue(configuration.getPrivileges().size() == 4);
         assertTrue(configuration.getTitles().size() == 2);
         assertTrue(configuration.getTitleCodes().size() == 4);
 
         // Assert that lists are of specific types
         try {
-            List<Role> roles = (List<Role>) configuration.getRoles();
+            List<RequestOrigin> requestOrigins = (List<RequestOrigin>) configuration.getRequestOrigins();
             List<Privilege> privileges = (List<Privilege>) configuration.getPrivileges();
+            List<Role> roles = (List<Role>) configuration.getRoles();
             List<Title> titles = (List<Title>) configuration.getTitles();
             List<TitleCode> titleCodes = (List<TitleCode>) configuration.getTitleCodes();
         } catch (Exception e) {

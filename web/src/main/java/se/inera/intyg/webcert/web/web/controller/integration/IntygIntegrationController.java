@@ -4,7 +4,6 @@ import static se.inera.intyg.common.support.common.enumerations.CertificateTypes
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -47,7 +47,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private static final String[] GRANTED_ROLES = new String[] { ROLE_LAKARE, ROLE_TANDLAKARE, ROLE_ADMIN };
-    private static final String GRANTED_ORIGIN = REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
+    private static final String GRANTED_ORIGIN = WebCertUserOriginType.DJUPINTEGRATION.name();
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;

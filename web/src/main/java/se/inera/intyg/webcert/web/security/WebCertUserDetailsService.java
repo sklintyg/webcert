@@ -145,12 +145,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
 
-//    protected DefaultSavedRequest getRequest() {
-//        HttpServletRequest curRequest = getCurrentRequest();
-//        return (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-//    }
-
-
     // ~ Package scope
     // =====================================================================================
 
@@ -160,13 +154,13 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         String hsaId = getAssertion(credential).getHsaId();
         List<GetHsaPersonHsaUserType> personInfo = getPersonInfo(hsaId);
         List<Vardgivare> authorizedVardgivare = getAuthorizedVardgivare(hsaId);
-        RequestOrigin requestOrigin = new RequestOrigin(getCurrentRequest());
+        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin(getCurrentRequest());
 
         try {
             assertMIU(credential);
             assertAuthorizedVardgivare(hsaId, authorizedVardgivare);
 
-            Role role = authoritiesResolver.resolveRole(credential, requestOrigin);
+            Role role = authoritiesResolver.resolveRole(credential, webCertUserOrigin);
             LOG.debug("User role is set to {}", role);
 
             return createWebCertUser(role, credential, authorizedVardgivare, personInfo);
@@ -216,7 +210,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("Decorate/populate user object with additional information");
 
         SakerhetstjanstAssertion sa = getAssertion(credential);
-        RequestOrigin requestOrigin = new RequestOrigin(getCurrentRequest());
+        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin(getCurrentRequest());
 
         // Create the WebCert user object injection user's privileges
         WebCertUser webcertUser = new WebCertUser();
@@ -236,7 +230,8 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         webcertUser.setAuthenticationScheme(sa.getAuthenticationScheme());
 
         // Set application mode / request origin
-        webcertUser.setRequestOrigin(requestOrigin.resolveOrigin());
+        String requestOrigin = webCertUserOrigin.resolveOrigin();
+        webcertUser.setRequestOrigin(authoritiesResolver.getRequestOrigin(requestOrigin));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser, credential, personInfo);
         decorateWebCertUserWithAvailableFeatures(webcertUser);

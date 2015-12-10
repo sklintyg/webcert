@@ -1,8 +1,7 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL;
-
 import io.swagger.annotations.Api;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
@@ -20,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 public class CertificateIntegrationController extends LegacyIntygIntegrationController {
 
     protected String getGrantedRequestOrigin() {
-        return REQUEST_ORIGIN_TYPE_NORMAL;
+        return WebCertUserOriginType.NORMAL.name();
     }
 
 }

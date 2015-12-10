@@ -1,22 +1,11 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.OptimisticLockException;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -27,6 +16,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -37,8 +28,6 @@ import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -54,6 +43,17 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -163,15 +163,33 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
+        // Get a list of drafts
         List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
-        Iterator<Utkast> i = utkastList.iterator();
+
+        // Get intygstyper from the view privilege
         Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+
+        // If intygstyper is null, user are not granted access to view any intyg.
+        if (intygsTyper == null) {
+            return Collections.emptyList();
+        }
+
+        // If intygstyper is an empty set, user are granted access
+        // to view intyg of any intygstyp, thus no filtering
+        if (intygsTyper.isEmpty()) {
+            return utkastList;
+        }
+
+        // If there are intygstyper in the set, then user is only granted access to
+        // view intyg of intygstyper that are in the set.
+        Iterator<Utkast> i = utkastList.iterator();
         while (i.hasNext()) {
             Utkast utkast = i.next();
             if (!intygsTyper.contains(utkast.getIntygsTyp())) {
                 i.remove();
             }
         }
+
         return utkastList;
     }
 

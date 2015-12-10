@@ -17,6 +17,8 @@ knownIntygstyper:
 
 # De rättigheter som systemet har
 knownPrivileges:
+  - &kp000 VISA_INTYG
+  - &kp005 SKRIVA_INTYG
   - &kp010 SIGNERA_INTYG
   - &kp020 MAKULERA_INTYG
   - &kp030 KOPIERA_INTYG
@@ -36,8 +38,32 @@ knownRoles:
   - &kr030 TANDLAKARE
   - &kr040 VARDADMINISTRATOR
 
+# Ingångar
+requestOrigins:
+  - &ro010
+    name: *kro010
+    intygstyper: # Implicit alla
+  - &ro020
+    name: *kro020
+    intygstyper:
+      - *ki010 # FK7263
+  - &ro030
+    name: *kro030
+    intygstyper:
+      - *ki010 # FK7263
+
 # Rättigheter
 privileges:
+  - &p000
+    name: *kp000
+    desc: Visa intyg
+    intygstyper:
+    requestOrigins: # Implicit alla
+  - &p005
+    name: *kp005
+    desc: Skriva intyg
+    intygstyper:
+    requestOrigins: # Implicit alla
   - &p010
     name: *kp010
     desc: Signera intyg
@@ -117,8 +143,10 @@ privileges:
 roles:
   - &r010
     name: *kr010 # LAKARE
-    desc: Landstingsläkare
+    desc: Läkare
     privileges:
+      - *p000 # VISA_INTYG
+      - *p005 # SKRIVA_INTYG
       - *p010 # SIGNERA_INTYG
       - *p020 # MAKULERA_INTYG
       - *p030 # KOPIERA_INTYG
@@ -134,10 +162,13 @@ roles:
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
     privileges:
+      - *p000 # VISA_INTYG
+      - *p005 # SKRIVA_INTYG
       - *p010 # SIGNERA_INTYG
       - *p020 # MAKULERA_INTYG
       - *p030 # KOPIERA_INTYG
       - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p080 # ATKOMST_ANDRA_ENHETER
       - *p090 # HANTERA_PERSONUPPGIFTER
       - *p100 # HANTERA_MAILSVAR
       - *p110 # NAVIGERING
@@ -145,25 +176,55 @@ roles:
     name: *kr030 # TANDLAKARE
     desc: Tandläkare
     privileges:
-      - *p010 # SIGNERA_INTYG
-      - *p020 # MAKULERA_INTYG
-      - *p030 # KOPIERA_INTYG
-      - *p040 # VIDAREBEFORDRA_UTKAST
-      - *p050 # VIDAREBEFORDRA_FRAGASVAR
-      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
-      - *p070 # FILTRERA_PA_LAKARE
-      - *p080 # ATKOMST_ANDRA_ENHETER
-      - *p090 # HANTERA_PERSONUPPGIFTER
-      - *p100 # HANTERA_MAILSVAR
-      - *p110 # NAVIGERING
+      - <<: *p000 # VISA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p005 # SKRIVA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p010 # SIGNERA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p020 # MAKULERA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p030 # KOPIERA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p040 # VIDAREBEFORDRA_UTKAST
+        intygstyper:
+          - *ki010
+      - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
+        intygstyper:
+          - *ki010
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
+        intygstyper:
+          - *ki010
+      - <<: *p070 # FILTRERA_PA_LAKARE
+        intygstyper:
+          - *ki010
+      - <<: *p080 # ATKOMST_ANDRA_ENHETER
+        intygstyper:
+          - *ki010
+      - <<: *p090 # HANTERA_PERSONUPPGIFTER
+        intygstyper:
+          - *ki010
+      - <<: *p100 # HANTERA_MAILSVAR
+        intygstyper:
+          - *ki010
+      - <<: *p110 # NAVIGERING
+        intygstyper:
+          - *ki010
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
     privileges:
-      - *p010 # SIGNERA_INTYG
-      - *p020 # MAKULERA_INTYG
+      - *p000 # VISA_INTYG
+      - *p005 # SKRIVA_INTYG
       - *p030 # KOPIERA_INTYG
-      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p040 # VIDAREBEFORDRA_UTKAST
+      - *p050 # VIDAREBEFORDRA_FRAGASVAR
+      - *p080 # ATKOMST_ANDRA_ENHETER
       - *p090 # HANTERA_PERSONUPPGIFTER
       - *p100 # HANTERA_MAILSVAR
       - *p110 # NAVIGERING

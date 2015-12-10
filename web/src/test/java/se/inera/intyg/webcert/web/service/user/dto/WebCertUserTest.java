@@ -10,14 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.security.RequestOrigin;
-import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,7 +131,7 @@ public class WebCertUserTest extends AuthoritiesConfigurationTestSetup {
         wcu.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
 
         // Setup where user originates from
-        wcu.setRequestOrigin(RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL);
+        wcu.setRequestOrigin(AUTHORITIES_RESOLVER.getRequestOrigin(WebCertUserOriginType.NORMAL.name()));
 
         // Set the user's role
         setUserRole(AuthoritiesConstants.ROLE_LAKARE);

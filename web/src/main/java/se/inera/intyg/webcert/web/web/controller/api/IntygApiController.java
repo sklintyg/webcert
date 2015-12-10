@@ -1,7 +1,5 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
-
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +12,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
@@ -129,7 +128,7 @@ public class IntygApiController extends AbstractApiController {
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }
 
-        if (checkIfUserHasRequestOrigin(REQUEST_ORIGIN_TYPE_DJUPINTEGRATION)) {
+        if (checkIfUserHasRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name())) {
             LOG.debug("Setting djupintegrerad flag on request to true");
             req.setDjupintegrerad(true);
         }

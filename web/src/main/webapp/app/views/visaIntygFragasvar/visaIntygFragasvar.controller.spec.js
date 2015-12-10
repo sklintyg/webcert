@@ -104,7 +104,7 @@ describe('ViewCertCtrl', function() {
 
             userModel.roles = {LAKARE: 'Läkare'};
             userModel.isLakare = function(){return true;};
-            userModel.isLakareUthopp = function(){return false;};
+            userModel.isUthopp = function(){return false;};
             $stateParams.certificateType = 'fk7263';
 
             $controller = _$controller_;

@@ -1,37 +1,28 @@
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.ws.WebServiceException;
-
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
@@ -50,9 +41,18 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.ws.WebServiceException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -152,8 +152,23 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void filterByIntygTypeForUser(List<IntygItem> fullIntygItemList) {
-        Iterator<IntygItem> i = fullIntygItemList.iterator();
+        // Get intygstyper from the view privilege
         Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+
+        // If intygstyper is null, user are not granted access to view any intyg.
+        if (intygsTyper == null) {
+            fullIntygItemList = Collections.emptyList();
+            return;
+        }
+
+        // If intygstyper is an empty set, user are granted access to view intyg of any intygstyp.
+        if (intygsTyper.isEmpty()) {
+            return;
+        }
+
+        // If there are intygstyper in the set, then user is only granted access to
+        // view intyg of intygstyper that are in the set.
+        Iterator<IntygItem> i = fullIntygItemList.iterator();
         while (i.hasNext()) {
             IntygItem intygItem = i.next();
             if (!intygsTyper.contains(intygItem.getType())) {
@@ -175,7 +190,8 @@ public class IntygServiceImpl implements IntygService {
     private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, webCertUserService.getUser().getIntygsTyper());
+        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, intygsTyper);
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
     }
 
@@ -374,7 +390,7 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        IntygContentHolder intyg = null;
+        IntygContentHolder intyg;
         if (utkast != null) {
             intyg = buildIntygContentHolder(intygTyp, utkast);
         } else {

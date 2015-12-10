@@ -1,9 +1,9 @@
 angular.module('webcert').factory('webcert.UtkastProxy',
     [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
-        'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.statService',
+        'common.User', 'common.dialogService', 'common.authorityService', 'common.featureService', 'common.messageService', 'common.statService',
         'common.UserModel',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, User, dialogService,
-            featureService, messageService, statService, UserModel) {
+            authorityService, featureService, messageService, statService, UserModel) {
             'use strict';
 
             /**
@@ -40,10 +40,24 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                     for (var i = 0; i < data.length; i++) {
                         var m = data[i];
 
+                        var options = {
+                            feature: featureService.features.HANTERA_INTYGSUTKAST,
+                            authority: UserModel.privileges.SKRIVA_INTYG,
+                            requestOrigin: UserModel.user.origin,
+                            intygstyp: m.id};
+
                         // Only add type if feature is active and user has global intygTyp access through their role.
-                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id) && UserModel.hasIntygsTyp(m.id)) {
+                        if (authorityService.isAuthorityActive(options)
+                        ) {
                             types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
                         }
+/*
+                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id)
+                            && UserModel.isAuthorizedForIntygstyp(UserModel.privileges.SKRIVA_INTYG, m.id)
+                            && UserModel.isAuthorizedForOrigin(m.id)) {
+                            types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
+                        }
+*/
                     }
                     onSuccess(types);
                 }).error(function(data, status) {

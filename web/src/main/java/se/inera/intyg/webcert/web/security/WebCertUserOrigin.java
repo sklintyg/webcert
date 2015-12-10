@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by Magnus Ekstrand on 25/11/15.
  */
-public class RequestOrigin {
+public class WebCertUserOrigin {
 
     // ~ Static fields/initializers
     // =====================================================================================
@@ -18,14 +18,9 @@ public class RequestOrigin {
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
     public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
 
-    // These static fields map the authorities configuation's known request origins
-    public static final String REQUEST_ORIGIN_TYPE_NORMAL = "NORMAL";
-    public static final String REQUEST_ORIGIN_TYPE_DJUPINTEGRATION = "DJUPINTEGRATION";
-    public static final String REQUEST_ORIGIN_TYPE_UTHOPP = "UTHOPP";
-
     private HttpServletRequest httpServletRequest;
 
-    public RequestOrigin(HttpServletRequest request) {
+    public WebCertUserOrigin(HttpServletRequest request) {
         Assert.notNull(request, "Request required");
         this.httpServletRequest = request;
     }
@@ -38,18 +33,18 @@ public class RequestOrigin {
 
         DefaultSavedRequest savedRequest = getSavedRequest(httpServletRequest);
         if (savedRequest == null) {
-            return REQUEST_ORIGIN_TYPE_NORMAL;
+            return WebCertUserOriginType.NORMAL.name();
         }
 
         String uri = savedRequest.getRequestURI();
 
         if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
-            return REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
+            return WebCertUserOriginType.DJUPINTEGRATION.name();
         } else if (uri.matches(REGEXP_REQUESTURI_UTHOPP)) {
-            return REQUEST_ORIGIN_TYPE_UTHOPP;
+            return WebCertUserOriginType.UTHOPP.name();
         }
 
-        return REQUEST_ORIGIN_TYPE_NORMAL;
+        return WebCertUserOriginType.NORMAL.name();
     }
 
 

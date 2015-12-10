@@ -27,6 +27,8 @@ public final class AuthoritiesConfiguration {
     @JsonProperty
     private List<String> knownIntygstyper;
     @JsonProperty
+    private List<RequestOrigin> requestOrigins;
+    @JsonProperty
     private List<Privilege> privileges;
     @JsonProperty
     private List<Role> roles;
@@ -95,6 +97,14 @@ public final class AuthoritiesConfiguration {
         this.knownIntygstyper = knownIntygstyper;
     }
 
+    public List<RequestOrigin> getRequestOrigins() {
+        return requestOrigins;
+    }
+
+    public void setRequestOrigins(List<RequestOrigin> requestOrigins) {
+        this.requestOrigins = requestOrigins;
+    }
+
     public List<Privilege> getPrivileges() {
         return privileges;
     }
@@ -141,6 +151,7 @@ public final class AuthoritiesConfiguration {
                 .append(format("KnownRoles: %s\n", knownRoles))
                 .append(format("KnownPrivileges: %s\n", knownPrivileges))
                 .append(format("KnownIntygstyper: %s\n", knownIntygstyper))
+                .append(format("RequestOrigins: %s\n", requestOrigins))
                 .append(format("Privileges: %s\n", privileges))
                 .append(format("Roles: %s\n", roles))
                 .append(format("Titles: %s\n", titles))

@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.web.auth.authorities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +41,11 @@ public class Role {
     }
 
     public void setPrivileges(List<Privilege> privileges) {
-        this.privileges = privileges;
+        if (privileges == null) {
+            this.privileges = Collections.emptyList();
+        } else {
+            this.privileges = privileges;
+        }
     }
 
 

@@ -4,25 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.security.RequestOrigin;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -125,9 +124,9 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setValdVardgivare(vg1);
 
         if (fromJS) {
-            user.setRequestOrigin(RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION);
+            user.setRequestOrigin(AUTHORITIES_RESOLVER.getRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name()));
         } else {
-            user.setRequestOrigin(RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL);
+            user.setRequestOrigin(AUTHORITIES_RESOLVER.getRequestOrigin(WebCertUserOriginType.NORMAL.name()));
         }
 
         return user;

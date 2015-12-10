@@ -5,12 +5,11 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.a
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_NORMAL;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
  * Created by Magnus Ekstrand on 17/09/15.
@@ -36,16 +35,16 @@ public class AuthoritiesAssertionTest {
 
     @Test
     public void whenGrantedRequestOriginContainUserRequestOrigin() {
-        String grantedOrigin = REQUEST_ORIGIN_TYPE_NORMAL;
-        String userOrigin = REQUEST_ORIGIN_TYPE_NORMAL;
+        String grantedOrigin = WebCertUserOriginType.NORMAL.name();
+        String userOrigin = WebCertUserOriginType.NORMAL.name();
 
         assertRequestOrigin(grantedOrigin, userOrigin);
     }
 
     @Test(expected = AuthoritiesException.class)
     public void whenGrantedRequestOriginDoesNotContainUserRequestOrigin() {
-        String grantedOrigin = REQUEST_ORIGIN_TYPE_NORMAL;
-        String userOrigin = REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
+        String grantedOrigin = WebCertUserOriginType.NORMAL.name();
+        String userOrigin = WebCertUserOriginType.DJUPINTEGRATION.name();
 
         assertRequestOrigin(grantedOrigin, userOrigin);
     }

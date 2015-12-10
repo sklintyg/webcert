@@ -10,7 +10,9 @@ import se.inera.intyg.common.util.integration.integration.json.CustomObjectMappe
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
+import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
@@ -21,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -51,7 +54,7 @@ public class WebCertUser implements UserDetails {
     private Map<String, Privilege> authorities;
 
     private AuthenticationMethod authenticationMethod;
-    private String requestOrigin;
+    private RequestOrigin requestOrigin;
 
 
     /** The sole constructor. */
@@ -124,11 +127,11 @@ public class WebCertUser implements UserDetails {
         this.authenticationScheme = authenticationScheme;
     }
 
-    public String getRequestOrigin() {
+    public RequestOrigin getRequestOrigin() {
         return requestOrigin;
     }
 
-    public void setRequestOrigin(String requestOrigin) {
+    public void setRequestOrigin(RequestOrigin requestOrigin) {
         this.requestOrigin = requestOrigin;
     }
 
@@ -366,10 +369,10 @@ public class WebCertUser implements UserDetails {
      * {@link se.inera.intyg.webcert.web.auth.authorities.Privilege}.
      */
     public boolean hasPrivilege(Privilege privilege) {
-        if (authorities == null) {
+        if (privilege == null) {
             return false;
         }
-        return authorities.containsKey(privilege.getName());
+        return hasPrivilege(privilege.getName());
     }
 
     /**
@@ -406,20 +409,49 @@ public class WebCertUser implements UserDetails {
     }
 
     /**
-     * Iterates over all roles and flatmaps distinct intygstyper into a set of strings.
+     * Returns intygstyper attached to privilege VISA_INTYG.
      */
     @JsonIgnore
     public Set<String> getIntygsTyper() {
-        Set<String> set = new HashSet<>();
+        return getIntygsTyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+    }
+
+    /**
+     * Iterates over user's privileges and flatmaps distinct intygstyper into a set of strings.
+     *
+     * If method returns null, the user has not been granted the privilege we provide.
+     * If method returns an empty set, the user has been granted access to all intygstyper.
+     * If method returns an non empty set, the user has been granted access only to the intygstyper in the set.
+     */
+    @JsonIgnore
+    public Set<String> getIntygsTyper(String privilegeName) {
+        // return empty set if no argument is specified
+        if (privilegeName == null || privilegeName.isEmpty()) {
+            return null;
+        }
+
+        if (!hasPrivilege(privilegeName)) {
+            return null;
+        }
+
+        // return empty set if no privileges are present
         if (authorities == null || authorities.isEmpty()) {
+            return null;
+        }
+
+        Set<String> set = new HashSet<>();
+
+        Privilege privilege = authorities.entrySet().stream()
+                .filter(p -> p.getKey().equals(privilegeName))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (privilege.getIntygstyper() == null || privilege.getIntygstyper().isEmpty()) {
             return set;
         }
-        for (Map.Entry<String, Privilege> entry : authorities.entrySet()) {
-            if (entry.getValue() != null) {
-                set.addAll(entry.getValue().getIntygstyper());
-            }
-        }
-        return set;
+
+        return privilege.getIntygstyper().stream().collect(Collectors.toSet());
     }
 
 }

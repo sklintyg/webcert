@@ -6,8 +6,6 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.R
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLECODE_AT_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION;
-import static se.inera.intyg.webcert.web.security.RequestOrigin.REQUEST_ORIGIN_TYPE_UTHOPP;
 
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -20,8 +18,9 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
-import se.inera.intyg.webcert.web.security.RequestOrigin;
 import se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion;
+import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +71,10 @@ public class AuthoritiesResolver {
     // ~ Lambdas
     // ======================================================================================
 
+    private Predicate<RequestOrigin> isRequestOrigin(String name) {
+        return ro -> ro.getName() != null && ro.getName().equalsIgnoreCase(name);
+    }
+
     private Predicate<Role> isRole(String name) {
         return r -> r.getName() != null && r.getName().equalsIgnoreCase(name);
     }
@@ -88,9 +91,9 @@ public class AuthoritiesResolver {
         return tc -> tc.getGroupPrescriptionCode() != null && tc.getGroupPrescriptionCode().equalsIgnoreCase(groupPrescriptionCode);
     }
 
-    private Function<String, Role> fnRole = (name) -> {
-        return getRoles().stream()
-                .filter(isRole(name))
+    private Function<String, RequestOrigin> fnRequestOrigin = (name) -> {
+        return getRequestOrigins().stream()
+                .filter(isRequestOrigin(name))
                 .findFirst()
                 .orElse(null);
     };
@@ -99,6 +102,13 @@ public class AuthoritiesResolver {
         return role.getPrivileges().stream()
                 .filter(p -> p.getRequestOrigins().contains(requestOrigin))
                 .collect(Collectors.toList());
+    };
+
+    private Function<String, Role> fnRole = (name) -> {
+        return getRoles().stream()
+                .filter(isRole(name))
+                .findFirst()
+                .orElse(null);
     };
 
     private Function<String, Title> fnTitle = (title) -> {
@@ -119,9 +129,9 @@ public class AuthoritiesResolver {
     // ~ API
     // ======================================================================================
 
-    public Role resolveRole(SAMLCredential credential, RequestOrigin requestOrigin) {
+    public Role resolveRole(SAMLCredential credential, WebCertUserOrigin webCertUserOrigin) {
         Assert.notNull(credential, "Argument 'credential' cannot be null");
-        Assert.notNull(requestOrigin, "Argument 'requestOrigin' cannot be null");
+        Assert.notNull(webCertUserOrigin, "Argument 'requestOrigin' cannot be null");
 
         SakerhetstjanstAssertion sa = getAssertion(credential.getAuthenticationAssertion());
         List<GetHsaPersonHsaUserType> personInfo = getPersonInfo(sa.getHsaId());
@@ -129,7 +139,7 @@ public class AuthoritiesResolver {
         Role role = lookupUserRole(sa, personInfo);
 
         // Ensure correct privileges
-        role = filterPrivileges(role, requestOrigin);
+        role = filterPrivileges(role, webCertUserOrigin);
 
         return role;
     }
@@ -139,13 +149,18 @@ public class AuthoritiesResolver {
         return fnRole.apply(name);
     }
 
+    public RequestOrigin getRequestOrigin(String name) {
+        return fnRequestOrigin.apply(name);
+    }
+
+
     // ~ Package methods
     // ======================================================================================
 
-    Role filterPrivileges(Role role, RequestOrigin requestOrigin) {
-        String origin = requestOrigin.resolveOrigin();
+    Role filterPrivileges(Role role, WebCertUserOrigin webCertUserOrigin) {
+        String origin = webCertUserOrigin.resolveOrigin();
 
-        if (origin.equals(REQUEST_ORIGIN_TYPE_DJUPINTEGRATION) || origin.equals(REQUEST_ORIGIN_TYPE_UTHOPP)) {
+        if (origin.equals(WebCertUserOriginType.DJUPINTEGRATION.name()) || origin.equals(WebCertUserOriginType.UTHOPP.name())) {
             // filter privileges
             List<Privilege> privileges = fnPrivileges.apply(role, origin);
             // update role
@@ -153,6 +168,22 @@ public class AuthoritiesResolver {
         }
 
         return role;
+    }
+
+    /**
+     * Get loaded request origins.
+     * @return a list with request origins
+     */
+    List<RequestOrigin> getRequestOrigins() {
+        return configurationLoader.getConfiguration().getRequestOrigins();
+    }
+
+    /**
+     * Get loaded privileges.
+     * @return a list with privileges
+     */
+    List<Privilege> getPrivileges() {
+        return configurationLoader.getConfiguration().getPrivileges();
     }
 
     /**

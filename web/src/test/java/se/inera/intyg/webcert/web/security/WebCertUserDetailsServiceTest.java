@@ -95,7 +95,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
 
     private Vardgivare vardgivare;
-    private RequestOrigin requestOrigin;
+    private WebCertUserOrigin webCertUserOrigin;
 
 
     @BeforeClass
@@ -120,7 +120,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -137,7 +137,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("TANDLAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -154,7 +154,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // then
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -171,7 +171,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // then
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -188,7 +188,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // then
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -205,7 +205,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // then
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -222,7 +222,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         //Role expected = AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(null);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(null);
 
         // then
         userDetailsService.loadUserBySAML(samlCredential);
@@ -236,7 +236,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -253,7 +253,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -269,7 +269,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -289,13 +289,13 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(RequestOriginType.DJUPINTEGRATION.name()));
+        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
@@ -310,13 +310,13 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(RequestOriginType.UTHOPP.name()));
+        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.UTHOPP.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
@@ -331,13 +331,13 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("TANDLAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_TANDLAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(RequestOriginType.DJUPINTEGRATION.name()));
+        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_TANDLAKARE, webCertUser);
     }
 
@@ -352,13 +352,13 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("TANDLAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_TANDLAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(RequestOriginType.UTHOPP.name()));
+        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.UTHOPP.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_TANDLAKARE, webCertUser);
     }
 
@@ -373,13 +373,13 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
-        assertTrue(webCertUser.getRequestOrigin().equals(RequestOriginType.DJUPINTEGRATION.name()));
+        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
@@ -394,13 +394,13 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
-        assertTrue(webCertUser.getRequestOrigin().equals(RequestOriginType.UTHOPP.name()));
+        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.UTHOPP.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
@@ -424,7 +424,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -442,7 +442,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
@@ -484,7 +484,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
 
         // when
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(userTypes);
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(RequestOrigin.class))).thenReturn(expected);
+        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);

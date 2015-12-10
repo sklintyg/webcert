@@ -27,6 +27,7 @@ public final class AuthoritiesConstants {
 
     // Known privileges (these privileges are copied from authorities.yaml which is the master authorities configuration)
     // Note: not all privileges are mapped, only the ones actually used in beckend
+    public static final String PRIVILEGE_VISA_INTYG = "VISA_INTYG";
     public static final String PRIVILEGE_SIGNERA_INTYG = "SIGNERA_INTYG";
     public static final String PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA = "BESVARA_KOMPLETTERINGSFRAGA";
 

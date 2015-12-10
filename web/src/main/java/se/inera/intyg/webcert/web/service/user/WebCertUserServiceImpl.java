@@ -11,8 +11,10 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.security.RequestOrigin;
+import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -52,8 +54,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public void assertRequestOrigin(String requestOrigin) throws AuthoritiesException {
-        String origin = getUser().getRequestOrigin();
-        if (origin.equals(requestOrigin)) {
+        RequestOrigin origin = getUser().getRequestOrigin();
+        if (origin.getName().equals(requestOrigin)) {
             return;
         }
 
@@ -116,8 +118,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             return false;
         }
 
-        String requestOrigin = user.getRequestOrigin();
-        if (requestOrigin.equals(RequestOrigin.REQUEST_ORIGIN_TYPE_DJUPINTEGRATION)) {
+        String requestOrigin = user.getRequestOrigin().getName();
+        if (requestOrigin.equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }

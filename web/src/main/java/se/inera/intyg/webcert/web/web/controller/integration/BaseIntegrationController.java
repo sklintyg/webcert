@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
@@ -46,8 +47,8 @@ public abstract class BaseIntegrationController {
             Map<String, Role> userRoles = webCertUserService.getUser().getRoles();
             assertUserRoles(getGrantedRoles(), toArray(userRoles));
 
-            String userRequestOrigin = webCertUserService.getUser().getRequestOrigin();
-            assertRequestOrigin(getGrantedRequestOrigin(), userRequestOrigin);
+            RequestOrigin userRequestOrigin = webCertUserService.getUser().getRequestOrigin();
+            assertRequestOrigin(getGrantedRequestOrigin(), userRequestOrigin.getName());
 
         } catch (AuthoritiesException e) {
             LOG.error(e.getMessage());
