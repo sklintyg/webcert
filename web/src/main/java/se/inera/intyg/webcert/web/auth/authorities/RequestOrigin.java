@@ -46,7 +46,7 @@ public class RequestOrigin {
 
     @Override
     public String toString() {
-        return "\nPrivilege {"
+        return "\nRequestOrigin {"
                 + " name='" + name + '\''
                 + ", intygstyper= " + intygstyper
                 + "}";

@@ -1,16 +1,5 @@
 package se.inera.intyg.webcert.web.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
-
 import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,8 +23,6 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
-import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
-import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
@@ -48,18 +35,21 @@ import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
+import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.xml.transform.stream.StreamSource;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * @author andreaskaltenbach
@@ -110,6 +100,8 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
+        AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
+        userDetailsService.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
     }
 
     @Test
@@ -214,19 +206,6 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeIsEmptyObject() throws Exception {
-        // given
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-lakare-with-titleCode-and-groupPrescriptionCode.xml");
-        setupCallToAuthorizedEnheterForHosPerson();
-
-        // when
-        //Role expected = AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(null);
-
-        // then
-        userDetailsService.loadUserBySAML(samlCredential);
-    }
 
     @Test
     public void assertRoleAndPrivilgesWhenTitleCodeAndGroupPrescriptionCodeDoesNotMatch() throws Exception {
@@ -274,8 +253,8 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
+        assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
+        assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
     @Test
@@ -288,14 +267,19 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         setupCallToAuthorizedEnheterForHosPerson();
 
         // when
-        Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
-        when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
+        //Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
+        //AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
+        //userDetailsService.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
+        //when(authoritiesResolver.resolveRole(any(SAMLCredential.class), any(WebCertUserOrigin.class))).thenReturn(expected);
+        //when(authoritiesResolver.getRequestOrigin (eq("NORMAL"))).thenReturn(AUTHORITIES_RESOLVER.getRequestOrigin("NORMAL"));
+        //when(authoritiesResolver.getRequestOrigin (eq("DJUPINTEGRATION"))).thenReturn(AUTHORITIES_RESOLVER.getRequestOrigin("DJUPINTEGRATION"));
+
 
         // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()));
+        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.DJUPINTEGRATION.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
@@ -316,7 +300,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.UTHOPP.name()));
+        assertEquals(webCertUser.getRequestOrigin().getName(), (WebCertUserOriginType.UTHOPP.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
@@ -337,7 +321,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_TANDLAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()));
+        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.DJUPINTEGRATION.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_TANDLAKARE, webCertUser);
     }
 
@@ -358,7 +342,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_TANDLAKARE));
-        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.UTHOPP.name()));
+        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.UTHOPP.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_TANDLAKARE, webCertUser);
     }
 
@@ -379,7 +363,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
-        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()));
+        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.DJUPINTEGRATION.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
@@ -400,7 +384,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
-        assertTrue(webCertUser.getRequestOrigin().equals(WebCertUserOriginType.UTHOPP.name()));
+        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.UTHOPP.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
@@ -464,7 +448,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSAID);
-        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSAID);
+        verify(hsaPersonService, atLeastOnce()).getHsaPersonInfo(PERSONAL_HSAID);
         verify(webcertFeatureService).getActiveFeatures();
     }
 
@@ -501,7 +485,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSAID);
-        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSAID);
+        verify(hsaPersonService, atLeastOnce()).getHsaPersonInfo(PERSONAL_HSAID);
     }
 
     @Test(expected = HsaServiceException.class)

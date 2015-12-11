@@ -31,6 +31,7 @@ describe('UnsignedCertCtrlSpec', function() {
             utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
             $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
+            $provide.value('common.authorityService', {});
             $provide.value('common.messageService', {});
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
