@@ -2,9 +2,12 @@ package se.inera.intyg.webcert.web.auth.common;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 /**
@@ -51,6 +54,10 @@ public abstract class BaseWebCertUserDetailsService {
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
         webcertUser.setAktivaFunktioner(availableFeatures);
+    }
+
+    protected HttpServletRequest getCurrentRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 
 }
