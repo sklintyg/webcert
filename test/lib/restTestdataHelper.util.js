@@ -8,13 +8,19 @@ var intygTemplates = require('./testdata/intygTemplates.js');
 var intygGenerator = require('./util/intygGenerator.util.js');
 
 module.exports = {
-    createIntygFromTemplate: function(intygTemplate, intygCallback) {
+    createIntygFromTemplate: function(intygTemplate, intygId) {
         restUtil.login();
-        return restUtil.createIntyg(intygGenerator.buildIntyg(intygTemplates[intygTemplate]));
+        var intyg = intygGenerator.buildIntyg(intygTemplates[intygTemplate]);
+        intyg.id = intygId;
+        return restUtil.createIntyg(intyg);
     },
     deleteAllIntyg: function() {
         restUtil.login();
         return restUtil.deleteAllIntyg();
+    },
+    deleteIntyg: function(id) {
+        restUtil.login();
+        return restUtil.deleteIntyg(id);
     },
     createUtkast: function(intygType) {
         restUtil.login();
@@ -24,5 +30,9 @@ module.exports = {
     deleteAllUtkast: function() {
         restUtil.login();
         return restUtil.deleteAllUtkast();
+    },
+    deleteUtkast: function(id) {
+        restUtil.login();
+        return restUtil.deleteUtkast(id);
     }
 };

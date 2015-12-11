@@ -21,5 +21,14 @@ module.exports = {
         SokSkrivIntygPage.continueToUtkast();
         var UtkastPage = pages.intygpages[intygType+'Utkast'];
         expect(UtkastPage.isAt()).toBe(true);
+    },
+    generateTestGuid: function(){
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
     }
 };

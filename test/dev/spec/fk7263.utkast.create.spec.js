@@ -9,6 +9,8 @@ var IntygPage = pages.intygpages.fkIntyg;
 
 describe('Create and Sign FK utkast', function() {
 
+    var utkastId = null;
+
     describe('Login through the welcome page', function() {
         it('with user', function() {
             specHelper.login();
@@ -21,6 +23,11 @@ describe('Create and Sign FK utkast', function() {
         describe('interact with utkast', function() {
 
             it('check that smittskydd is displayed', function() {
+
+                // Save id so it can be removed in cleanup stage.
+                browser.getCurrentUrl().then(function(url) {
+                    utkastId = url.split('/').pop();
+                });
 
                 UtkastPage.whenSmittskyddIsDisplayed().then(function() {
                     expect(UtkastPage.getSmittskyddLabelText()).toContain('Avstängning enligt smittskyddslagen på grund av smitta');
@@ -60,8 +67,8 @@ describe('Create and Sign FK utkast', function() {
 
     describe('remove test intyg', function() {
         it('should clean up all utkast after the test', function() {
-            testdataHelper.deleteAllIntyg();
-            testdataHelper.deleteAllUtkast();
+            testdataHelper.deleteIntyg(utkastId);
+            testdataHelper.deleteUtkast(utkastId);
         });
     });
 

@@ -26,6 +26,7 @@ exports.config = {
 
     suites: {
         testdata: './spec/generateTestData/**/*.spec.js',
+        clean: './spec/cleanTestData/**/*.spec.js',
         app: ['./spec/*.spec.js']
     },
 
