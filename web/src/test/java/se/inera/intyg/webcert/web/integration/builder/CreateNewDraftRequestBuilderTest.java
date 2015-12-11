@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
@@ -23,6 +25,11 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.riv.infrastructure.directory.v1.CommissionType;
+import se.riv.infrastructure.directory.v1.PaTitleType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {
@@ -31,9 +38,16 @@ public class CreateNewDraftRequestBuilderTest {
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
     private static final String CAREGIVER_HSAID = "SE0000112233";
+    public static final String FULLSTANDIGT_NAMN = "Abel Baker";
+    public static final String INVARTES_MEDICIN = "Invärtes medicin";
+    public static final String TITLE_NAME = "Läkare";
+    public static final String ALLMAN_MEDICIN = "Allmänmedicin";
 
     @Mock
     private HsaOrganizationsService orgServiceMock;
+
+    @Mock
+    private HsaPersonService hsaPersonService;
 
     @InjectMocks
     private CreateNewDraftRequestBuilderImpl builder;
@@ -75,6 +89,28 @@ public class CreateNewDraftRequestBuilderTest {
 
     }
 
+    @Test
+    public void testWithHsaBefattningAndSpecialityNames() {
+
+        Vardenhet hsaVardenhet = createHsaVardenhet();
+        when(orgServiceMock.getVardenhet(anyString())).thenReturn(hsaVardenhet);
+        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
+
+        Utlatande utlatande = createUtlatande();
+
+        CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
+
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, miu);
+
+        assertNotNull(res);
+
+        assertNotNull(res.getHosPerson());
+        assertEquals("Läkare", res.getHosPerson().getBefattning());
+        assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiseringar().get(0));
+        assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiseringar().get(1));
+    }
+
+
     private Vardenhet createHsaVardenhet() {
 
         Vardenhet hsaVardenhet = new Vardenhet();
@@ -89,6 +125,20 @@ public class CreateNewDraftRequestBuilderTest {
         return hsaVardenhet;
     }
 
+    private List<PersonInformationType> createHsaPerson() {
+        List<PersonInformationType> pitList = new ArrayList<>();
+        PersonInformationType pit = new PersonInformationType();
+        pit.setPersonHsaId(USER_HSAID);
+        pit.setGivenName(FULLSTANDIGT_NAMN);
+        PaTitleType befattning = new PaTitleType();
+        befattning.setPaTitleName(TITLE_NAME);
+        pit.getPaTitle().add(befattning);
+        pit.getSpecialityName().add(INVARTES_MEDICIN);
+        pit.getSpecialityName().add(ALLMAN_MEDICIN);
+        pitList.add(pit);
+        return pitList;
+    }
+
     private Utlatande createUtlatande() {
 
         Utlatande utlatande = new Utlatande();
@@ -99,13 +149,16 @@ public class CreateNewDraftRequestBuilderTest {
         utlatande.setTypAvUtlatande(utlTyp);
 
         // HoSPerson
-        HosPersonal hosPerson = new HosPersonal();
-        hosPerson.setFullstandigtNamn("Abel Baker");
-
         HsaId userHsaId = new HsaId();
         userHsaId.setExtension(USER_HSAID);
         userHsaId.setRoot("USERHSAID");
+
+        HosPersonal hosPerson = new HosPersonal();
+
         hosPerson.setPersonalId(userHsaId);
+        hosPerson.setFullstandigtNamn(FULLSTANDIGT_NAMN);
+
+
 
         Enhet hosEnhet = new Enhet();
         HsaId unitHsaId = new HsaId();
