@@ -4,7 +4,7 @@
 'use strict';
 
 module.exports = function () {
-
+    var fk7263Utkast = pages.intygpages.fk7263Utkast;
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
@@ -21,6 +21,7 @@ module.exports = function () {
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
+        element(by.id('menu-skrivintyg')).click();
         global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas
@@ -81,6 +82,21 @@ module.exports = function () {
             expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
         }
         
+    });
+    this.Given(/^att jag är inloggad som vårdadministratör$/, function (callback) {
+        var anvandare = 'Lena Karlsson';
+        console.log('Loggar in som ' + anvandare+ '..');
+        
+        browser.ignoreSynchronization = true;
+        pages.welcome.get();
+        pages.welcome.loginByName(anvandare);
+        browser.ignoreSynchronization = false;
+        browser.sleep(2000);
+        expect(element(by.id('wcHeader')).getText()).to.eventually.contain("Vårdadministratör").and.notify(callback);
+    });
+
+    this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
+        expect(fk7263Utkast.signeraButton.isPresent()).to.become(false).and.notify(callback);
     });
 
 };
