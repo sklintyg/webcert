@@ -16,7 +16,6 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
@@ -56,9 +55,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
-
-    @Autowired
-    private AuthoritiesResolver authoritiesResolver;
 
 
     @Override
@@ -102,7 +98,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
      * In a future there might be more logic here to decide user role.
      */
     Role lookupUserRole() {
-        return authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
+        return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
 
@@ -128,7 +124,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         // Set application mode / request origin
-        user.setRequestOrigin(authoritiesResolver.getRequestOrigin(requestOrigin));
+        user.setRequestOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin));
 
         user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());

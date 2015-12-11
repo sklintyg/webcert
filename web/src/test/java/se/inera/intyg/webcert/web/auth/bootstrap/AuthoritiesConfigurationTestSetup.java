@@ -8,7 +8,7 @@ import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
  */
 public class AuthoritiesConfigurationTestSetup {
 
-    protected static final String CONFIGURATION_LOCATION = "security/authorities.yaml";
+    protected static final String CONFIGURATION_LOCATION = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
 
     protected static final AuthoritiesConfigurationLoader CONFIGURATION_LOADER = new AuthoritiesConfigurationLoader(CONFIGURATION_LOCATION);;
     protected static final AuthoritiesResolver AUTHORITIES_RESOLVER = new AuthoritiesResolver();

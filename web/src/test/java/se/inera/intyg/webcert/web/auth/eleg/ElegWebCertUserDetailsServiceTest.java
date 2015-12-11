@@ -7,6 +7,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,11 +19,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensaml.saml2.core.NameID;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.saml.SAMLCredential;
+import org.springframework.security.web.PortResolverImpl;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -34,6 +39,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -48,13 +54,13 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String PERSON_ID = "197705232382";
 
     @Mock
+    private HsaPersonService hsaPersonService;
+
+    @Mock
     private PPService ppService;
 
     @Mock
     private WebcertFeatureService webcertFeatureService;
-
-    @Mock
-    AuthoritiesResolver authoritiesResolver;
 
     @Mock
     private AvtalService avtalService;
@@ -78,9 +84,15 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Before
     public void setupForSuccess() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
+        // Setup a servlet request
+        MockHttpServletRequest request = mockHttpServletRequest("/any/path");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(authoritiesResolver.getRole(anyString())).thenReturn(role);
+        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
+        AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
+        testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
+
+        //when(authoritiesResolver.getRole(anyString())).thenReturn(role);
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
@@ -140,7 +152,20 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         hoSPersonType.setEnhet(vardEnhet);
 
         return hoSPersonType;
-
     }
+
+    private MockHttpServletRequest mockHttpServletRequest(String requestURI) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        if ((requestURI != null) && (requestURI.length() > 0)) {
+            request.setRequestURI(requestURI);
+        }
+
+        SavedRequest savedRequest = new DefaultSavedRequest(request, new PortResolverImpl());
+        request.getSession().setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+
+        return request;
+    }
+
 
 }

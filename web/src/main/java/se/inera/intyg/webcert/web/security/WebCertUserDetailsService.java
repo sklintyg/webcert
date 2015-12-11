@@ -14,15 +14,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
@@ -31,7 +28,6 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragExcept
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -53,21 +49,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     @Autowired
     private MonitoringLogService monitoringLogService;
-
-    @Autowired
-    private AuthoritiesResolver authoritiesResolver;
-
-
-    // ~ Getter and setter
-    // =====================================================================================
-
-    public AuthoritiesResolver getAuthoritiesResolver() {
-        return authoritiesResolver;
-    }
-
-    public void setAuthoritiesResolver(AuthoritiesResolver authoritiesResolver) {
-        this.authoritiesResolver = authoritiesResolver;
-    }
 
 
     // ~ API
@@ -160,7 +141,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             assertMIU(credential);
             assertAuthorizedVardgivare(hsaId, authorizedVardgivare);
 
-            Role role = authoritiesResolver.resolveRole(credential, webCertUserOrigin);
+            Role role = getAuthoritiesResolver().resolveRole(credential, webCertUserOrigin);
             LOG.debug("User role is set to {}", role);
 
             return createWebCertUser(role, credential, authorizedVardgivare, personInfo);
@@ -226,7 +207,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         // Set application mode / request origin
         String requestOrigin = webCertUserOrigin.resolveOrigin();
-        webcertUser.setRequestOrigin(authoritiesResolver.getRequestOrigin(requestOrigin));
+        webcertUser.setRequestOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser, credential, personInfo);
         decorateWebCertUserWithAvailableFeatures(webcertUser);
