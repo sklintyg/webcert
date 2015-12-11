@@ -26,7 +26,7 @@ public class EmployeeServiceBean implements EmployeeService {
     @Autowired
     private GetEmployeeIncludingProtectedPersonResponderInterface getEmployeeIncludingProtectedPersonResponderInterface;
 
-    @Value("${infrastructure.directory.employee.logicalAddress}")
+    @Value("${infrastructure.directory.logicalAddress}")
     private String logicalAddress;
 
     @Override

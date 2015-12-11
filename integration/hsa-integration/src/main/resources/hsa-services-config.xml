@@ -19,24 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sec="http://cxf.apache.org/configuration/security"
     xmlns:http="http://cxf.apache.org/transports/http/configuration"
-    xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:context="http://www.springframework.org/schema/context" xmlns:sec="http://cxf.apache.org/configuration/security"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-        http://cxf.apache.org/configuration/security
-          http://cxf.apache.org/schemas/configuration/security.xsd
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
         http://cxf.apache.org/transports/http/configuration
         http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
   <context:component-scan base-package="se.inera.intyg.webcert.integration.hsa"/>
 
-  <!--
-  <jaxws:client id="hsaClient" serviceClass="se.inera.ifv.hsaws.v3.HsaWsResponderInterface"
-                address="${hsa.ws.services.url}">
-  </jaxws:client>
-  -->
   <jaxws:client id="getCredentialsForPersonIncludingProtectedPersonResponderInterface"
       serviceClass="se.riv.infrastructure.directory.authorizationmanagement.v1.GetCredentialsForPersonIncludingProtectedPersonResponderInterface"
       address="${infrastructure.directory.organization.getcredentialsforpersonincludingprotectedpersonresponderinterface.endpoint.url}" />
@@ -69,43 +61,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
       serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
       address="${infrastructure.directory.organization.pingforconfiguration.endpoint.url}" />
 
-  <!--
-  <bean id="wsCalls" class="se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls">
-    <property name="hsaLogicalAddress" value="${hsa.ws.service.logicaladdress}"/>
-  </bean>
-  -->
-
-  <!-- TODO use NTjP conduit for all used TJKs -->
   <beans profile="!dev">
-
-    <http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderInterfacePort.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
+    <http:conduit
+        name="\{urn:riv:(infrastructure:directory):.*.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true"
+          Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
-        <sec:keyManagers keyPassword="${hsa.ws.key.manager.password}">
-          <sec:keyStore
-                  file="${hsa.ws.certificate.file}"
-                  password="${hsa.ws.certificate.password}"
-                  type="${hsa.ws.certificate.type}"/>
+        <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
+          <sec:keyStore file="${ntjp.ws.certificate.file}"
+              password="${ntjp.ws.certificate.password}" type="${ntjp.ws.certificate.type}" />
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore
-                  file="${hsa.ws.truststore.file}"
-                  password="${hsa.ws.truststore.password}"
-                  type="${hsa.ws.truststore.type}"/>
+          <sec:keyStore file="${ntjp.ws.truststore.file}"
+              password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}" />
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
-          <!--
-            these filters ensure that a ciphersuite with export-suitable or
-            null encryption is used, but exclude anonymous Diffie-Hellman key
-            change as this is vulnerable to man-in-the-middle attacks
-          -->
+          <!-- these filters ensure that a cipher suite with export-suitable
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change
+            as this is vulnerable to man-in-the-middle attacks -->
           <sec:include>.*_EXPORT_.*</sec:include>
           <sec:include>.*_EXPORT1024_.*</sec:include>
-          <sec:include>.*_WITH_AES_256_.*</sec:include>
-          <sec:include>.*_WITH_AES_128_.*</sec:include>
-          <sec:include>.*_WITH_3DES_.*</sec:include>
           <sec:include>.*_WITH_DES_.*</sec:include>
+          <sec:include>.*_WITH_AES_.*</sec:include>
           <sec:include>.*_WITH_NULL_.*</sec:include>
           <sec:exclude>.*_DH_anon_.*</sec:exclude>
         </sec:cipherSuitesFilter>

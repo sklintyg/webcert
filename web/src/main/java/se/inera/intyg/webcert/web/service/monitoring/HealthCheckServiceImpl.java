@@ -32,7 +32,6 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
  * Service for getting the health status of the application.
  *
  * @author npet
- *
  */
 @Service("healthCheckService")
 public class HealthCheckServiceImpl implements HealthCheckService {
@@ -45,12 +44,6 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
-
-    //@Autowired
-    //private HSAWebServiceCalls hsaService;
-
-//    @Autowired
-//    private OrganizationUnitService organizationUnitService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -79,14 +72,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Qualifier("pingForConfigurationResponderInterfaceOrganization")
     private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceOrganization;
 
-    @Value("${infrastructure.directory.authorizationmanagement.logicalAddress}")
-    private String authorizationmanagementLogicalAddress;
-
-    @Value("${infrastructure.directory.employee.logicalAddress}")
-    private String employeeLogicalAddress;
-
-    @Value("${infrastructure.directory.organization.logicalAddress}")
-    private String organizationLogicalAddress;
+    @Value("${infrastructure.directory.logicalAddress}")
+    private String infrastructureDirectoryLogicalAddress;
 
     @Autowired
     private SessionRegistry sessionRegistry;
@@ -98,7 +85,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         stopWatch.start();
         try {
             PingForConfigurationResponseType pingResponse =
-                    pingForConfigurationResponderInterfaceAuthorizationmanagement.pingForConfiguration(authorizationmanagementLogicalAddress, buildPingRequest(authorizationmanagementLogicalAddress));
+                    pingForConfigurationResponderInterfaceAuthorizationmanagement.pingForConfiguration(infrastructureDirectoryLogicalAddress, buildPingRequest(infrastructureDirectoryLogicalAddress));
 
             ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
         } catch (Exception e) {
@@ -117,7 +104,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         stopWatch.start();
         try {
 
-            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceEmployee.pingForConfiguration(employeeLogicalAddress, buildPingRequest(employeeLogicalAddress));
+            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceEmployee.pingForConfiguration(infrastructureDirectoryLogicalAddress, buildPingRequest(infrastructureDirectoryLogicalAddress));
 
             ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
         } catch (Exception e) {
@@ -135,7 +122,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try {
-            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceOrganization.pingForConfiguration(organizationLogicalAddress, buildPingRequest(organizationLogicalAddress));
+            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceOrganization.pingForConfiguration(infrastructureDirectoryLogicalAddress, buildPingRequest(infrastructureDirectoryLogicalAddress));
 
             ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
         } catch (Exception e) {
