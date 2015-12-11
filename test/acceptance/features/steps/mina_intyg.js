@@ -7,7 +7,7 @@ module.exports = function() {
         browser.ignoreSynchronization = true;
         browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
         element(by.id('guid')).sendKeys(pnr);
-        browser.ignoreSynchronization = false;
+        
         element(by.css('input.btn')).click().then(function() {
             // Om samtyckesruta visas
             element(by.id('consentTerms')).isPresent().then(function(result) {
@@ -19,9 +19,6 @@ module.exports = function() {
                 }
             });
         });
-
-
-
     });
 
     this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status, callback) {
