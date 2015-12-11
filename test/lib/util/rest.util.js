@@ -3,7 +3,7 @@
  */
 /*globals*/
 'use strict';
-var restClient = require('./restClient.util.js');
+var restClient = require('./restclient.util.js');
 var lib = require('./../lib.js');
 var env = lib.envConfig;
 
