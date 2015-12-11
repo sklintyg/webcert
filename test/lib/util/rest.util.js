@@ -1,14 +1,11 @@
 /**
  * Created by BESA on 2015-11-17.
  */
-/*globals envConfig*/
+/*globals*/
 'use strict';
 var restClient = require('./restClient.util.js');
-
-var env = envConfig;
-if(!envConfig) {
-    env = process.env;
-}
+var lib = require('./../lib.js');
+var env = lib.envConfig;
 
 module.exports = {
     login: function(userJson) {

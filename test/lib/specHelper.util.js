@@ -4,9 +4,9 @@
  */
 /*globals browser,pages */
 'use strict';
-
-var WelcomePage = pages.welcome;
-var SokSkrivIntygPage = pages.app.views.sokSkrivIntyg;
+var lib = require('./lib.js');
+var WelcomePage = lib.pages.welcome;
+var SokSkrivIntygPage = lib.pages.app.views.sokSkrivIntyg;
 
 module.exports = {
     login: function(userOptional) {
