@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +134,7 @@ public class AuthoritiesResolver {
         Assert.notNull(webCertUserOrigin, "Argument 'requestOrigin' cannot be null");
 
         SakerhetstjanstAssertion sa = getAssertion(credential.getAuthenticationAssertion());
-        List<GetHsaPersonHsaUserType> personInfo = getPersonInfo(sa.getHsaId());
+        List<PersonInformationType> personInfo = getPersonInfo(sa.getHsaId());
 
         Role role = lookupUserRole(sa, personInfo);
 
@@ -218,7 +218,7 @@ public class AuthoritiesResolver {
      *
      * @return the resolved role
      */
-    Role lookupUserRole(SakerhetstjanstAssertion sa, List<GetHsaPersonHsaUserType> userTypes) {
+    Role lookupUserRole(SakerhetstjanstAssertion sa, List<PersonInformationType> userTypes) {
         Role role;
 
         // 1. Bestäm användarens roll utefter titel som kommer från SAML.
@@ -331,15 +331,15 @@ public class AuthoritiesResolver {
     // ~ Private methods
     // ======================================================================================
 
-    private List<String> extractLegitimeradeYrkesgrupper(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+    private List<String> extractLegitimeradeYrkesgrupper(List<PersonInformationType> hsaUserTypes) {
         Set<String> lygSet = new TreeSet<>();
 
-        hsaUserTypes.forEach(userType -> {
-            if (userType.getHsaTitles() != null) {
-                List<String> hsaTitles = userType.getHsaTitles().getHsaTitle();
+        for (PersonInformationType userType : hsaUserTypes) {
+            if (userType.getPaTitle() != null) {
+                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
                 lygSet.addAll(hsaTitles);
             }
-        });
+        }
 
         return new ArrayList<>(lygSet);
     }
@@ -352,13 +352,13 @@ public class AuthoritiesResolver {
         return new SakerhetstjanstAssertion(assertion);
     }
 
-    private List<GetHsaPersonHsaUserType> getPersonInfo(String hsaId) {
+    private List<PersonInformationType> getPersonInfo(String hsaId) {
         LOG.debug("Retrieving user information from HSA...");
 
-        List<GetHsaPersonHsaUserType> hsaPersonInfo;
+        List<PersonInformationType> personInfo;
         try {
-            hsaPersonInfo = hsaPersonService.getHsaPersonInfo(hsaId);
-            if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
+            personInfo = hsaPersonService.getHsaPersonInfo(hsaId);
+            if (personInfo == null || personInfo.isEmpty()) {
                 LOG.info("Call to web service getHsaPersonInfo did not return any info for user '{}'", hsaId);
             }
         } catch (Exception e) {
@@ -366,7 +366,7 @@ public class AuthoritiesResolver {
             throw new HsaServiceException(hsaId, e);
         }
 
-        return hsaPersonInfo;
+        return personInfo;
     }
 
 }
