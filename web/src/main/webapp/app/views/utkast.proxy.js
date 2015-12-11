@@ -42,7 +42,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
 
                         var options = {
                             feature: featureService.features.HANTERA_INTYGSUTKAST,
-                            authority: UserModel.privileges.SKRIVA_INTYG,
+                            //authority: UserModel.privileges.SKRIVA_INTYG,
                             requestOrigin: UserModel.user.origin,
                             intygstyp: m.id};
 
