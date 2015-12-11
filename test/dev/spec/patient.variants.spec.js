@@ -4,8 +4,8 @@
 /*globals afterEach,beforeEach */
 'use strict';
 
-var specHelper = helpers.spec;
-var SokSkrivIntygPage = pages.app.views.sokSkrivIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var SokSkrivIntygPage = wcTestTools.pages.app.views.sokSkrivIntyg;
 
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);

@@ -2,10 +2,10 @@
 /*globals describe,it,helpers */
 'use strict';
 
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var UtkastPage = pages.intygpages.fk7263Utkast;
-var IntygPage = pages.intygpages.fkIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var UtkastPage = wcTestTools.pages.intygpages.fk7263Utkast;
+var IntygPage = wcTestTools.pages.intygpages.fkIntyg;
 
 describe('Create and Sign FK utkast', function() {
 

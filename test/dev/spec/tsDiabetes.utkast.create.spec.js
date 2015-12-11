@@ -5,10 +5,10 @@
 /*globals describe,it,helpers,utkastTextmap */
 'use strict';
 
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
-var tsdIntygPage = pages.intygpages.tsDiabetesIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var tsdUtkastPage = wcTestTools.pages.intygpages['ts-diabetesUtkast'];
+var tsdIntygPage = wcTestTools.pages.intygpages.tsDiabetesIntyg;
 
 describe('Create and Sign ts-diabetes utkast', function() {
 
@@ -43,7 +43,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
             tsdUtkastPage.fillInKorkortstyper(['D']);
 
             // Identiteten är styrkt genom
-            tsdUtkastPage.fillInIdentitetStyrktGenom(utkastTextmap.ts.identitetStyrktGenom.pass);
+            tsdUtkastPage.fillInIdentitetStyrktGenom(wcTestTools.utkastTextmap.ts.identitetStyrktGenom.pass);
         });
 
         it('allmant', function() {
@@ -52,8 +52,8 @@ describe('Create and Sign ts-diabetes utkast', function() {
                 year: '2015',
                 typ: utkastTextmap.ts.diabetes.typ.typ1,
                 behandling: {
-                    typer: [utkastTextmap.ts.diabetes.behandling.endastkost,
-                        utkastTextmap.ts.diabetes.behandling.insulin],
+                    typer: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost,
+                        wcTestTools.utkastTextmap.ts.diabetes.behandling.insulin],
                     insulinYear: '2000'
                 }
             };

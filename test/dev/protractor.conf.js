@@ -10,17 +10,9 @@
  **/
 var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
-var envConfig = null;
-if(process.env.WEBCERT_URL) {
-    envConfig = process.env;
-} else {
-    envConfig = require('./../lib/envConfig.json').dev; // override if not running via grunt ie IDEA.
-}
-
 exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
-    baseUrl: envConfig.WEBCERT_URL,
-    //rootElement:'html',
+    baseUrl: require('./../webcertTestTools/envConfig.json').dev.WEBCERT_URL,
 
     specs: ['./spec/*.spec.js'],
 
@@ -87,13 +79,7 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.envConfig = envConfig;
-        global.testdata = require('../lib/testdata/testdata.js');
-        global.utkastTextmap = require('../lib/testdata/utkastTextmap.js');
-        global.intygTemplates = require('./../lib/testdata/intygTemplates.js');
-        // The order is important. Helpers requires pages.
-        global.pages = require('./../lib/pages.js');
-        global.helpers = require('./../lib/helpers.js');
+        global.wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
 
         jasmine.getEnv().addReporter(
             new HtmlScreenshotReporter({

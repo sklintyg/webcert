@@ -1,7 +1,7 @@
 'use strict';
 
-var restUtil = require('../../../lib/util/rest.util.js');
-var intygGenerator = require('../../../lib/util/intygGenerator.util.js');
+var restUtil = require('../../../webcertTestTools/util/rest.util.js');
+var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
 describe('Generate fk intyg', function() {
 
@@ -17,8 +17,6 @@ describe('Generate fk intyg', function() {
         }).then(function(data) {
             console.log('Login OK');
         });
-
-        restUtil.deleteAllIntyg();//.then(function(response){});
 
         var intygOptions = {
             personnr : '19121212-1212',

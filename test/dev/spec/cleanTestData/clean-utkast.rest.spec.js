@@ -1,6 +1,6 @@
 'use strict';
 
-var testdataHelper = helpers.testdata;
+var testdataHelper = wcTestTools.helpers.testdata;
 
 describe('Clean utkast via rest', function() {
 

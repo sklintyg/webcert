@@ -3,10 +3,10 @@
  */
 /*globals helpers,pages*/
 'use strict';
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var FkIntygPage = pages.intygpages.fkIntyg;
-var FkUtkastPage = pages.intygpages.fk7263Utkast;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var FkIntygPage = wcTestTools.pages.intygpages.fkIntyg;
+var FkUtkastPage = wcTestTools.pages.intygpages.fk7263Utkast;
 
 describe('Generate fk intyg', function() {
 

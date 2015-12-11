@@ -5,10 +5,10 @@
 /*globals pages,describe,it,helpers,utkastTextmap */
 'use strict';
 
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var tsdBasUtkastPage = pages.intygpages['ts-basUtkast'];
-var tsdBasIntygPage = pages.intygpages.tsBasIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var tsdBasUtkastPage = wcTestTools.pages.intygpages['ts-basUtkast'];
+var tsdBasIntygPage = wcTestTools.pages.intygpages.tsBasIntyg;
 
 describe('Create and Sign ts-diabetes utkast', function() {
 
