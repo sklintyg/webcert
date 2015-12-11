@@ -17,7 +17,7 @@ public class AuthorizationManagementServiceImpl implements AuthorizationManageme
     @Autowired
     private GetCredentialsForPersonIncludingProtectedPersonResponderInterface getCredentialsForPersonIncludingProtectedPersonResponderInterface;
 
-    @Value("${infrastructure.directory.authorizationmanagement.logicalAddress}")
+    @Value("${infrastructure.directory.logicalAddress}")
     private String logicalAddress;
 
     @Override

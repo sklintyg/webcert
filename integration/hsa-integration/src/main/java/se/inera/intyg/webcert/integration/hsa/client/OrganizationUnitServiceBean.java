@@ -33,7 +33,7 @@ public class OrganizationUnitServiceBean implements OrganizationUnitService {
     @Autowired
     private GetHealthCareUnitMembersResponderInterface getHealthCareUnitMembersResponderInterface;
 
-    @Value("${infrastructure.directory.organization.logicalAddress}")
+    @Value("${infrastructure.directory.logicalAddress}")
     private String logicalAddress;
 
     @Override

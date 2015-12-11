@@ -4,23 +4,13 @@
 'use strict';
 
 module.exports = function () {
-
+    var fk7263Utkast = pages.intygpages.fk7263Utkast;
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
-    this.Given(/^att jag är inloggad som läkare "([^"]*)"$/, function (anvandarnamn, callback) {
-        logg('Loggar in som ' + anvandarnamn + '..');
-        browser.ignoreSynchronization = true;
-        pages.welcome.get();
-        pages.welcome.loginByName(anvandarnamn);
-        browser.ignoreSynchronization = false;
-        browser.sleep(2000);
-        expect(element(by.id('wcHeader')).getText()).to.eventually.contain(anvandarnamn).and.notify(callback);
-        
-    });
-
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
+        element(by.id('menu-skrivintyg')).click();
         global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas
@@ -42,15 +32,7 @@ module.exports = function () {
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        //För FK-intyg
-        // if(intyg.typ === 'Läkarintyg FK 7263'){
-        //     expect(element(by.id('certificate-is-sent-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
-        // } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-        //     expect(element(by.id('certificate-is-on-sendqueue-to-it-message-text')).getText()).to.eventually.contain(statustext).and.notify(callback);
-        // } else {
         expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
-        //}
-
     });
 
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
@@ -81,6 +63,10 @@ module.exports = function () {
             expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
         }
         
+    });
+
+    this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
+        expect(fk7263Utkast.signeraButton.isPresent()).to.become(false).and.notify(callback);
     });
 
 };
