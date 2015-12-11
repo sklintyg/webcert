@@ -1,4 +1,4 @@
-/* globals browser, intyg, protractor */
+/* globals browser */
 
 /**
  * Created by stephenwhite on 09/06/15.

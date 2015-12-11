@@ -19,14 +19,13 @@ exports.config = {
     capabilities: {
         browserName: 'firefox',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
-        // 'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
+        //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
         version: '',
         platform: 'ANY'
     },
     cucumberOpts: {
-        format: ['protractor.json', 'pretty'],
-        require: ['features/steps/**/*.js', 'features/support/**/*.js'],
-        tags: ['@dev']
+        format: ['json:./acceptance/report/acc_results.json', 'pretty'],
+        require: ['features/steps/**/*.js', 'features/support/**/*.js']
     },
     onPrepare: function () {
         //http://chaijs.com/
@@ -38,10 +37,15 @@ exports.config = {
         
         global.expect = global.chai.expect;
         
-        // Testdata lib
-        global.testdata = require('../lib/testdata/testdata.js');
-        global.pages = require('./../lib/pages.js');
+        //lib
+        
+        var lib = require('./../lib/lib.js');
+        global.testdata = lib.testdata;
+        global.pages = lib.pages;
+        global.intyg = {};
         
         browser.ignoreSynchronization = false;
+        browser.baseUrl = process.env.WEBCERT_URL;
+
     }
 };

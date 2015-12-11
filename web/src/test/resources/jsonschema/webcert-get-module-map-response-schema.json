@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Schema for /modules/map",
+  "id": "/",
+  "type": "array",
+  "minItems": 1,
+  "uniqueItems": true,
+  "additionalItems": true,
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "id": "id",
+        "type": "string"
+      },
+      "label": {
+        "id": "label",
+        "type": "string"
+      },
+      "description": {
+        "id": "description",
+        "type": "string"
+      },
+      "cssPath": {
+        "id": "cssPath",
+        "type": "string"
+      },
+      "scriptPath": {
+        "id": "scriptPath",
+        "type": "string"
+      },
+      "dependencyDefinitionPath": {
+        "id": "dependencyDefinitionPath",
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "label",
+      "description",
+      "cssPath",
+      "scriptPath",
+      "dependencyDefinitionPath"
+    ]
+  }
+}

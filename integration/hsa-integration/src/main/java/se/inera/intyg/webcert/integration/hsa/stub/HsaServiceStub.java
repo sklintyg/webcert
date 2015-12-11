@@ -20,7 +20,7 @@ public class HsaServiceStub {
     private List<Vardgivare> vardgivare = new ArrayList<>();
     private List<Medarbetaruppdrag> medarbetaruppdrag = new ArrayList<>();
 
-    private Map<String, HsaPerson> personMap = new HashMap<String, HsaPerson>();
+    private Map<String, HsaPerson> personMap = new HashMap<>();
 
     public Vardenhet getVardenhet(String hsaIdentity) {
 
@@ -67,6 +67,7 @@ public class HsaServiceStub {
             for (Vardenhet vardenhet : vg.getVardenheter()) {
                 for (Mottagning mottagning : vardenhet.getMottagningar()) {
                     if (mottagning.getId().equals(hsaIdentity)) {
+                        mottagning.setParentHsaId(vardenhet.getId());
                         return mottagning;
                     }
                 }

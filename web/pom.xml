@@ -383,6 +383,11 @@
       <version>2.7.0</version><!--TODO: move versioning to common-pom -->
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>se.rivta.tools</groupId>
+      <artifactId>infrastructure-directory-employee-schemas</artifactId>
+      <version>0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

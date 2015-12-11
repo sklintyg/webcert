@@ -29,8 +29,8 @@
   // Global JS config/constants for this app, to be used by scripts
   var MODULE_CONFIG = {
     BUILD_NUMBER: '<spring:message code="buildNumber" />',
-    PP_HOST: '<spring:eval expression="@webcertProps.getProperty(\'privatepractitioner.portal.registration.url\')" />',
-    DASHBOARD_URL: '<spring:eval expression="@defaultProps.getProperty(\'certificate.view.url.base\')" />'
+    PP_HOST: '<spring:eval expression="@webcertProperties.getProperty(\'privatepractitioner.portal.registration.url\')" />',
+    DASHBOARD_URL: '<spring:eval expression="@webcertProperties.getProperty(\'certificate.view.url.base\')" />'
   }
 </script>
 
@@ -74,6 +74,7 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-cookies.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-mocks.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular-sanitize.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.js"></script>

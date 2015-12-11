@@ -9,6 +9,9 @@ public class QueryIntygResponse {
 
     private List<ListIntygEntry> results = new ArrayList<>();
 
+    public QueryIntygResponse() {
+    }
+
     public QueryIntygResponse(List<ListIntygEntry> results) {
         this.results = results;
     }

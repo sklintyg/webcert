@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Response schema for a fmb query by icd10 code",
+  "id": "/",
+  "type": "object",
+  "properties": {
+    "icd10Code": {
+      "id": "icd10Code",
+      "type": "string"
+    },
+    "forms": {
+      "id": "forms",
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": false,
+      "additionalItems": true,
+      "items": {
+        "id": "3",
+        "type": "object",
+        "properties": {
+          "name": {
+            "id": "name",
+            "type": "string",
+            "enum": [
+              "FORM2",
+              "FORM4",
+              "FORM5",
+              "FORM8B"
+            ]
+          },
+          "content": {
+            "id": "content",
+            "type": "array",
+            "minItems": 0,
+            "uniqueItems": false,
+            "additionalItems": true,
+            "items": {
+              "id": "0",
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "id": "heading",
+                  "type": "string",
+                  "enum": [
+                    "FALT2_SPB",
+                    "FALT2_GENERAL",
+                    "FALT4",
+                    "FALT5",
+                    "FALT8B"
+                  ]
+                },
+                "text": {
+                  "id": "text",
+                  "type": "string"
+                },
+                "list": {
+                  "id": "list",
+                  "type": "array",
+                  "minItems": 0,
+                  "uniqueItems": false,
+                  "additionalItems": true,
+                  "items": {
+                    "id": "2",
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "heading"
+              ]
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "icd10Code",
+    "forms"
+  ]
+}

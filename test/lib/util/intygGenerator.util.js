@@ -2,7 +2,7 @@
  * Created by BESA on 2015-11-23.
  */
 'use strict';
-var fkIntyg = require('./testdata/intyg.fk7263.json');
+var fkIntyg = require('./../testdata/intyg.fk7263.json');
 
 /*
  Options

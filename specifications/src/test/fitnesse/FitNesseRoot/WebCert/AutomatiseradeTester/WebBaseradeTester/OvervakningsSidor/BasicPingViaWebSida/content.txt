@@ -1,5 +1,5 @@
 Testet beskriver övervaknings-information tillgänglig via webb-sidan '''/healthcheck.jsp'''
 
 | health check sida |
-| databas tid? | databas status? | jms tid?     | jms status? | hsa tid?     | hsa status? | intygstjanst tid? | intygstjanst status? | signerings ko? | upptid?            |
-| =~/[0-9]+ms/ | OK              | =~/[0-9]+ms/ | OK          | =~/[0-9]+ms/ | OK          | =~/[0-9]+ms/      | OK                   | =~/[0-9]+ st/  | !-=~/[([0-9]+ minute)|([0-9]+ seconds)]/-! |
+| databas tid? | databas status? | jms tid?     | jms status? | hsa authorizationmanagement tid? | hsa authorizationmanagement status? | hsa employee tid? | hsa employee status? | hsa organization tid? | hsa organization status? | intygstjanst tid? | intygstjanst status? | signerings ko? | upptid?            |
+| =~/[0-9]+ms/ | OK              | =~/[0-9]+ms/ | OK          | =~/[0-9]+ms/                     | OK                                  | =~/[0-9]+ms/      | OK                   | =~/[0-9]+ms/          | OK                        | =~/[0-9]+ms/     | OK                   | =~/[0-9]+ st/  | !-=~/[([0-9]+ minute)|([0-9]+ seconds)]/-! |

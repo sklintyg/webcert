@@ -364,7 +364,6 @@
         };
 
         window.doneLoading = true;
-        window.dialogDoneLoading = true;
         window.rendered = true;
 
         angular.module('WcWelcomeApp', [

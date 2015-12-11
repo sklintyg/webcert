@@ -1,21 +1,31 @@
 {
-	"dev": {
-		"WEBCERT_URL":"http://localhost:9089/",
-        "INTYGTJANST_URL":"http://localhost:8080/inera-certificate"
+    "dev": {
+        "WEBCERT_URL": "http://localhost:9089/",
+        "INTYGTJANST_URL": "http://localhost:8080/inera-certificate"
+    },
+    "sim2": {
+        "WEBCERT_URL": "https://webcert.sim2.nordicmedtest.se/",
+        "MINAINTYG_URL": "https://minaintyg.sim2.nordicmedtest.se/",
+        "INTYGTJANST_URL": ""
+    },
+    "build-server": {
+        "WEBCERT_URL": "https://webcert.inera.nordicmedtest.se/",
+        "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
+        "INTYGTJANST_URL": ""
     },
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
-        "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.se",
+        "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate"
     },
     "ip30": {
         "WEBCERT_URL": "https://webcert.ip30.nordicmedtest.sjunet.org/",
-        "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.se",
+        "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate"
     },
     "ip40": {
         "WEBCERT_URL": "https://webcert.ip40.nordicmedtest.sjunet.org/",
-        "MINAINTYG_URL": "https://minaintyg.ip40.nordicmedtest.se",
+        "MINAINTYG_URL": "https://minaintyg.ip40.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate"
     }
 }

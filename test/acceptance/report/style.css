@@ -1,0 +1,53 @@
+img { width:200px; }
+a {
+ color: #0084b4;
+ text-decoration:none;
+}
+a:hover { text-decoration : underline; }
+
+
+.step{
+  padding:10px;
+}
+
+.passed{
+  background-color: #90EE90;
+}
+.failed{
+  background-color: #FFCCCC;
+}
+.skipped{
+  background-color: lightblue;
+}
+.pending{
+  background-color: yellow;
+}
+.feature{
+  padding: 5px;
+  border-style: solid;
+  border-width: 1px;
+  max-width:700px;
+}
+.scenario{
+  padding:3px;
+
+}
+
+.error_message{
+  font-size:small;
+}
+
+.step.Before{
+  display:none;
+}
+b.After{
+  display:none;
+}
+.step.After{
+  /*display:none;*/
+}
+.text-attach{
+  margin-left:30px;
+  font-family: "Courier New", Courier, monospace;
+  background-color: #F0F0F0;
+}

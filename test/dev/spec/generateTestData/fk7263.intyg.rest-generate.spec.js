@@ -1,7 +1,7 @@
 'use strict';
 
-var restUtil = require('../../../lib/rest.util.js');
-var intygGenerator = require('../../../lib/intygGenerator.util.js');
+var restUtil = require('../../../lib/util/rest.util.js');
+var intygGenerator = require('../../../lib/util/intygGenerator.util.js');
 
 describe('Generate fk intyg', function() {
 

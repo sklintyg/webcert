@@ -1,0 +1,90 @@
+{
+    "kommentar" :  "Kommentarer av det viktiga slaget",
+    "vardkontakt" : {
+        "typ" : "5880005", 
+        "idkontroll" : "PASS"
+    },
+    "intygAvser" : {
+        "korkortstyp" : [
+            {"type": "AM", "selected": true},
+            {"type": "A1", "selected": true},
+            {"type": "A2", "selected": true},
+            {"type": "A", "selected": true},
+            {"type": "B", "selected": true},
+            {"type": "BE", "selected": true},
+            {"type": "TRAKTOR", "selected": true},
+            {"type": "C1", "selected": true},
+            {"type": "C1E", "selected": true},
+            {"type": "C", "selected": true},
+            {"type": "CE", "selected": true},
+            {"type": "D1", "selected": true},
+            {"type": "D1E", "selected": true},
+            {"type": "D", "selected": true},
+            {"type": "DE", "selected": true},
+            {"type": "TAXI", "selected": true}
+        ]
+    },
+    "diabetes" : {
+        "diabetestyp" : "DIABETES_TYP_2",
+        "observationsperiod" : "2012",
+        "endastKost" : true,
+        "tabletter" : true,
+        "insulin" : true,
+        "insulinBehandlingsperiod" : "2012",
+        "annanBehandlingBeskrivning" : "Hypnos"
+    },
+    "hypoglykemier" : {
+        "kunskapOmAtgarder" : true,
+        "teckenNedsattHjarnfunktion" : true,
+        "saknarFormagaKannaVarningstecken" : true, 
+        "allvarligForekomst" : true,
+        "allvarligForekomstBeskrivning" : "Beskrivning",
+        "allvarligForekomstTrafiken" : true, 
+        "allvarligForekomstTrafikBeskrivning" : "Beskrivning",
+        "allvarligForekomstVakenTid" : true,
+        "allvarligForekomstVakenTidObservationstid" : "2012-12-12",
+        "egenkontrollBlodsocker" : true
+    },
+    "syn" : {
+        "separatOgonlakarintyg" : false,
+        "synfaltsprovningUtanAnmarkning" : true,
+        "hoger" : {
+            "utanKorrektion" : 0.0,
+            "medKorrektion" : 0.0
+        },
+           
+        "vanster" : {
+            "utanKorrektion" : 0.0,
+            "medKorrektion" : 0.0
+        },
+        "binokulart" : {
+            "utanKorrektion" : 0.0,
+            "medKorrektion" : 0.0
+        },
+        "diplopi" : true,
+        "synfaltsprovning" : true,
+        "provningOgatsRorlighet" : true
+    },
+    "bedomning" : {
+        "korkortstyp" : [
+            {"type": "AM", "selected": true},
+            {"type": "A1", "selected": true},
+            {"type": "A2", "selected": true},
+            {"type": "A", "selected": true},
+            {"type": "B", "selected": true},
+            {"type": "BE", "selected": true},
+            {"type": "TRAKTOR", "selected": true},
+            {"type": "C1", "selected": true},
+            {"type": "C1E", "selected": true},
+            {"type": "C", "selected": true},
+            {"type": "CE", "selected": true},
+            {"type": "D1", "selected": true},
+            {"type": "D1E", "selected": true},
+            {"type": "D", "selected": true},
+            {"type": "DE", "selected": true},
+            {"type": "TAXI", "selected": true}
+        ],
+        "lakareSpecialKompetens" : "Kronologisk bastuberedning",
+        "lamplighetInnehaBehorighet" : "true"
+    }
+}

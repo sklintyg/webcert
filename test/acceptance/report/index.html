@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Testresults</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  </head>
+ 
+  <body>
+ 
+    <!-- 2. Anchor -->
+    <div id="anchor"></div>
+ 
+    <!-- 3. Template -->
+    <script id="tpl" type="text/template">
+    {{#each this}}
+    <div class='feature'>
+      <h3>{{keyword}} {{name}}</h3>
+      <br>
+      {{#each elements}}
+        <div class='scenario'>
+        <b>{{keyword}}</b> {{name}}<br>
+        {{#each steps}}
+         <span class='step {{keyword}}'>
+          <b class={{keyword}}>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
+          {{#if result.error_message}}
+          <span class='error_message'>{{result.error_message}}</span><br>
+          {{/if}}
+          {{#each embeddings}}
+
+            {{#if_eq this.mime_type "image/png"}}
+              <img src="data:image/png;base64,{{data}}" />
+            {{/if_eq}}
+            {{#if_eq this.mime_type "text/plain"}}
+              <span class='text-attach'>{{atobData}}</span>
+            {{/if_eq}}
+            <br>
+          {{/each}}
+        </span>
+        {{/each}}
+      </div>
+      {{/each}}
+    </div>
+    {{/each}}
+
+    </script>
+ 
+    <script>
+
+    Handlebars.registerHelper('if_eq', function(a, b, opts) {
+    if(a == b) // Or === depending on your needs
+        return opts.fn(this);
+    else
+        return opts.inverse(this);
+    });
+
+    Handlebars.registerHelper('atobData', function() {
+      return atob(this.data);
+    });
+
+    //4a.function creation
+    var slingshot = function (tplId, anchor) {
+     $.getJSON('acc_results.json', function(data) {
+        var template = $(tplId).html();
+        var stone = Handlebars.compile(template)(data);
+        $(anchor).append(stone);
+     });
+
+
+  };
+
+
+
+    //4b.function firing
+    slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.
+    </script>
+  </body>
+</html>

@@ -14,6 +14,7 @@ public class Mottagning extends AbstractVardenhet {
 
     private LocalDateTime start;
     private LocalDateTime end;
+    private String parentHsaId;
 
     public Mottagning() {
         super();
@@ -43,6 +44,14 @@ public class Mottagning extends AbstractVardenhet {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public String getParentHsaId() {
+        return parentHsaId;
+    }
+
+    public void setParentHsaId(String parentHsaId) {
+        this.parentHsaId = parentHsaId;
     }
 
     @Override

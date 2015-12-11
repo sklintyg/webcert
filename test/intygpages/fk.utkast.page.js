@@ -1,53 +1,55 @@
 /**
- * Created by stephenwhite on 09/06/15.
+ * Created by bennysce on 09/06/15.
  */
+/*globals element,by,browser*/
 'use strict';
 
-var at = element(by.id('edit-fk7263')),
-    smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]')),
-    smittskyddCheckbox = element(by.id('smittskydd')),
+var BaseUtkast = require('./base.utkast.page.js');
 
-    nedsattMed25Checkbox = element(by.id('nedsattMed25')),
+var FkUtkast = BaseUtkast._extend({
+    init: function init() {
+        init._super.call(this);
 
-    signeraButton = element(by.id('signera-utkast-button')),
+        this.at = element(by.css('.edit-form'));
+        this.smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]'));
+        this.smittskyddCheckbox = element(by.id('smittskydd'));
 
-    travelRadioButtonJa = element(by.id('rekommendationRessatt')),
-    travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked')),
+        this.nedsattMed25Checkbox = element(by.id('nedsattMed25'));
 
-    capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
+        this.signeraButton = element(by.id('signera-utkast-button'));
 
-module.exports = {
-    get: function(intygId) {
-        browser.get('/web/dashboard#/fk7263/edit/' + intygId);
+        this.travelRadioButtonJa = element(by.id('rekommendationRessatt'));
+        this.travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked'));
+
+        this.capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
     },
-    at: function() {
-        return at.isDisplayed();
+    get: function get(intygId) {
+        get._super.call(this, 'fk7263', intygId);
+    },
+    isAt: function isAt() {
+        return isAt._super.call(this);
     },
     whenSmittskyddIsDisplayed: function() {
-        return browser.wait(smittskyddLabel.isDisplayed());
+        return browser.wait(this.smittskyddLabel.isDisplayed());
     },
-    getSmittskyddLabelText: function(){
-        return smittskyddLabel.getText();
+    getSmittskyddLabelText: function() {
+        return this.smittskyddLabel.getText();
     },
-    smittskyddCheckboxClick: function(){
-        smittskyddCheckbox.click();
+    smittskyddCheckboxClick: function() {
+        this.smittskyddCheckbox.sendKeys(protractor.Key.SPACE);
     },
-    nedsattMed25CheckboxClick: function(){
-        nedsattMed25Checkbox.click();
+    nedsattMed25CheckboxClick: function() {
+        this.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
     },
-    travelRadioButtonJaClick: function(){
-        travelRadioButtonJa.click();
+    travelRadioButtonJaClick: function() {
+        this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE);
     },
-    getCheckedTravelRadioButtonValue: function(){
-        return travelRadioGroupChecked.getAttribute('value');
+    getCheckedTravelRadioButtonValue: function() {
+        return this.travelRadioGroupChecked.getAttribute('value');
     },
-    whenSigneraButtonIsEnabled: function(){
-        return browser.wait(signeraButton.isEnabled());
-    },
-    signeraButtonClick: function(){
-        signeraButton.click();
-    },
-    capacityForWorkForecastText: function(){
-        return capacityForWorkForecastText;
+    getCapacityForWorkForecastText: function() {
+        return this.capacityForWorkForecastText;
     }
-};
+});
+
+module.exports = new FkUtkast();

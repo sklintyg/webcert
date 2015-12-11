@@ -12,6 +12,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -52,15 +62,8 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragExcept
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.xml.transform.stream.StreamSource;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import se.riv.infrastructure.directory.v1.PaTitleType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 /**
  * @author andreaskaltenbach
@@ -396,11 +399,11 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
-        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel1",
+        PersonInformationType userType1 = buildPersonInformationType(PERSONAL_HSAID, "Titel1",
                 Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Collections.singletonList("Läkare"));
-        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSAID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
+        PersonInformationType userType2 = buildPersonInformationType(PERSONAL_HSAID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"),
                 Collections.singletonList("Psykoterapeut"));
-        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
+        List<PersonInformationType> userTypes = Arrays.asList(userType1, userType2);
 
         Role expected = AUTHORITIES_RESOLVER.getRole("LAKARE");
 
@@ -467,25 +470,32 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
     // ~ Private setup methods
     // =====================================================================================
 
-    private GetHsaPersonHsaUserType buildGetHsaPersonHsaUserType(String hsaId, String title, List<String> specialities, List<String> titles) {
+    private PersonInformationType buildPersonInformationType(String hsaId, String title, List<String> specialities, List<String> titles) {
 
-        GetHsaPersonHsaUserType type = new GetHsaPersonHsaUserType();
-        type.setHsaIdentity(hsaId);
+        PersonInformationType type = new PersonInformationType();
+        type.setPersonHsaId(hsaId);
 
         if (title != null) {
             type.setTitle(title);
         }
 
         if ((titles != null) && (titles.size() > 0)) {
-            HsaTitles hsaTitles = new HsaTitles();
-            hsaTitles.getHsaTitle().addAll(titles);
-            type.setHsaTitles(hsaTitles);
+            for (String t : titles) {
+                PaTitleType paTitle = new PaTitleType();
+                paTitle.setPaTitleName(t);
+                type.getPaTitle().add(paTitle);
+            }
+//
+//            HsaTitles hsaTitles = new HsaTitles();
+//            hsaTitles.getHsaTitle().addAll(titles);
+//            type.setHsaTitles(hsaTitles);
         }
 
         if ((specialities != null) && (specialities.size() > 0)) {
-            SpecialityNames specNames = new SpecialityNames();
-            specNames.getSpecialityName().addAll(specialities);
-            type.setSpecialityNames(specNames);
+            type.getSpecialityName().addAll(specialities);
+//            SpecialityNames specNames = new SpecialityNames();
+//            specNames.getSpecialityName().addAll(specialities);
+//            type.setSpecialityNames(specNames);
         }
 
         return type;
@@ -528,7 +538,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         List<String> specs = Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar", "Reumatologi");
         List<String> titles = Arrays.asList("Läkare", "Psykoterapeut");
 
-        List<GetHsaPersonHsaUserType> userTypes = Collections.singletonList(buildGetHsaPersonHsaUserType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
+        List<PersonInformationType> userTypes = Collections.singletonList(buildPersonInformationType(PERSONAL_HSAID, TITLE_HEAD_DOCTOR, specs, titles));
 
         when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSAID)).thenReturn(userTypes);
     }
