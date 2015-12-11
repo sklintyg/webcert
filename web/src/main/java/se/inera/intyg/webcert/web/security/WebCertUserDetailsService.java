@@ -180,11 +180,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new SakerhetstjanstAssertion(assertion);
     }
 
-    HttpServletRequest getCurrentRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    }
-
-
     // ~ Privates scope
     // =====================================================================================
 
