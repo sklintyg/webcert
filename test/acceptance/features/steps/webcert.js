@@ -1,4 +1,4 @@
-/* global pages, browser, protractor, logg */
+/* global pages, browser, protractor, logg, intyg */
 
 'use strict';
 
@@ -29,6 +29,11 @@ module.exports = function () {
 
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-1)[0];
+            intyg.id = intyg.id.replace('?signed', '');
+        });
+
         fkIntygPage.makulera.btn.click();
         fkIntygPage.makulera.dialogAterta.click();
         fkIntygPage.makulera.kvittensOKBtn.click()
@@ -51,12 +56,6 @@ module.exports = function () {
         expect(element(by.id('certificate-is-revoked-message-text')).getText())
             .to.eventually.contain(arg1).and.notify(callback);
     });
-
-    //
-    //   // Write code here that turns the phrase above into concrete actions
-    //   expect(element(by.id('')).getText()).to.eventually.contain(arg1).and.notify(callback);
-    //   callback.pending();
-    // });
 
     this.Given(/^ska intyget "([^"]*)" med status "([^"]*)" inte synas mer$/, function (intyg, status, callback) {
       var qaTable = element(by.css('table.table-qa'));

@@ -1,10 +1,10 @@
 # language: sv
 
-@smoke @webcert @ts @diabetes-min 
+@smoke @webcert @ts @diabetes
 Egenskap: Kontrollera att det går att skapa diabetes-intyg för transportstyrelsen
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-    Givet att jag är inloggad som läkare "Jan Nilsson"
+    Givet att jag är inloggad som läkare
 
 Scenario: Skapa och signera ett diabetesintyg till transportstyrelsen
     När jag väljer patienten "19121212-1212"

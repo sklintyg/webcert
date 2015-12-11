@@ -3,7 +3,7 @@
 Egenskap: Kontrollera att webcerts olika funktioner går att använda
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-	Givet att jag är inloggad som läkare "Jan Nilsson"
+	Givet att jag är inloggad som läkare
 
 @RegisterMedicalCertificate @minaintyg @dev
 Scenario: Skapa och signera ett intyg i webcert
