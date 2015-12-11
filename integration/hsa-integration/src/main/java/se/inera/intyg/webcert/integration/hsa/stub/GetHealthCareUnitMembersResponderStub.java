@@ -23,10 +23,13 @@ public class GetHealthCareUnitMembersResponderStub implements GetHealthCareUnitM
 
     @Override
     public GetHealthCareUnitMembersResponseType getHealthCareUnitMembers(String logicalAddress, GetHealthCareUnitMembersType parameters) {
-        if (parameters.getHealthCareUnitHsaId().endsWith("-finns-ej")) {
-            return null;
-        }
         GetHealthCareUnitMembersResponseType response = new GetHealthCareUnitMembersResponseType();
+        if (parameters.getHealthCareUnitHsaId().endsWith("-finns-ej")) {
+            response.setResultText("Returning ERROR for -finns-ej hsaId");
+            response.setResultCode(ResultCodeEnum.ERROR);
+            return response;
+        }
+
 
         HealthCareUnitMembersType membersType = new HealthCareUnitMembersType();
 

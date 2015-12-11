@@ -22,7 +22,11 @@ public class GetEmployeeResponderStub implements GetEmployeeIncludingProtectedPe
         GetEmployeeIncludingProtectedPersonResponseType response = new GetEmployeeIncludingProtectedPersonResponseType();
         String personHsaId = getEmployeeIncludingProtectedPersonType.getPersonHsaId();
         HsaPerson hsaPerson = hsaServiceStub.getHsaPerson(personHsaId);
-
+        if (hsaPerson == null) {
+            response.setResultText("Null HsaPerson returned by HsaServiceStub.");
+            response.setResultCode(ResultCodeEnum.ERROR);
+            return response;
+        }
 
         PersonInformationType person = new PersonInformationType();
         person.setTitle(hsaPerson.getTitel());

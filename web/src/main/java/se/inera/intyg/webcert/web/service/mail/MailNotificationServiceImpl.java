@@ -26,6 +26,7 @@ import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.v1.ResultCodeEnum;
 
 /**
  * @author andreaskaltenbach
@@ -166,7 +167,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         //          till föräldern.
         GetHealthCareUnitResponseType response = organizationUnitService.getHealthCareUnit(mottagningsId);
        // GetCareUnitResponseType response = hsaClient.callGetCareunit(mottagningsId);
-        if (response != null) {
+        if (response != null && response.getResultCode() != ResultCodeEnum.ERROR) {
             MailNotificationEnhet parentEnhet = getHsaUnit(response.getHealthCareUnit().getHealthCareUnitHsaId());
             if (parentEnhet != null) {
                 return parentEnhet.getEmail();

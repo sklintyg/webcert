@@ -88,34 +88,34 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                         .distinct()
                         .collect(Collectors.toList());
 
+                vardgivare.stream().forEach(vg ->
+                    {
+                        commissions.forEach(ct -> {
+                            if (ct.getHealthCareProviderHsaId().equals(vg.getId()) && isActive(ct.getHealthCareUnitStartDate(), ct.getHealthCareUnitEndDate())) {
+                                Vardenhet vardenhet = new Vardenhet(ct.getHealthCareUnitHsaId(), ct.getHealthCareUnitName());
+                                vardenhet.setStart(ct.getHealthCareUnitStartDate());
+                                vardenhet.setEnd(ct.getHealthCareUnitEndDate());
+                                vardenhet.setArbetsplatskod(credentialInformation.getGroupPrescriptionCode().size() > 0 ? credentialInformation.getGroupPrescriptionCode().get(0) : null);
 
-                for (Vardgivare vg : vardgivare) {
+                                // I don't like this, but we need to do an extra call to infrastructure:directory:organization:getUnit for address related stuff.
+                                updateWithContactInformation(vardenhet, getUnit(vardenhet.getId()));
 
-                    for (CommissionType ct : commissions) {
+                                // Mottagningar
+                                attachMottagningar(vardenhet);
 
-                        if (ct.getHealthCareProviderHsaId().equals(vg.getId()) && isActive(ct.getHealthCareUnitStartDate(), ct.getHealthCareUnitEndDate())) {
-                            Vardenhet vardenhet = new Vardenhet(ct.getHealthCareUnitHsaId(), ct.getHealthCareUnitName());
-                            vardenhet.setStart(ct.getHealthCareUnitStartDate());
-                            vardenhet.setEnd(ct.getHealthCareUnitEndDate());
-                            vardenhet.setArbetsplatskod(credentialInformation.getGroupPrescriptionCode().size() > 0 ? credentialInformation.getGroupPrescriptionCode().get(0) : null);
-
-                            // I don't like this, but we need to do an extra call to infrastructure:directory:organization:getUnit for adress related stuff.
-                            updateWithContactInformation(vardenhet, getUnit(vardenhet.getId()));
-
-                            // Mottagningar
-                            attachMottagningar(vardenhet);
-
-                            if (!vg.getVardenheter().contains(vardenhet)) {
-                                vg.getVardenheter().add(vardenhet);
+                                if (!vg.getVardenheter().contains(vardenhet)) {
+                                    vg.getVardenheter().add(vardenhet);
+                                }
                             }
-                        }
+                        });
+
+                        vg.setVardenheter(vg.getVardenheter().stream()
+                                .sorted((ve1, ve2) -> ve1.getNamn().compareTo(ve2.getNamn()))
+                                .collect(Collectors.toList())
+                        );
+                        vardgivareList.add(vg);
                     }
-                    vg.setVardenheter(vg.getVardenheter().stream()
-                            .sorted((ve1, ve2) -> ve1.getNamn().compareTo(ve2.getNamn()))
-                            .collect(Collectors.toList())
-                    );
-                    vardgivareList.add(vg);
-                }
+                );
             }
 
             return vardgivareList.stream()

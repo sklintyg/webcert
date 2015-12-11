@@ -23,7 +23,9 @@ public class GetHealthCareUnitResponderStub implements GetHealthCareUnitResponde
 
         Mottagning mottagning = hsaServiceStub.getMottagning(parameters.getHealthCareUnitMemberHsaId());
         if (mottagning == null) {
-            return null;
+            responseType.setResultText("HsaServiceStub returned NULL Mottagning for hsaId: '" + parameters.getHealthCareUnitMemberHsaId() + "'");
+            responseType.setResultCode(ResultCodeEnum.ERROR);
+            return responseType;
         }
         HealthCareUnitType member = new HealthCareUnitType();
 
