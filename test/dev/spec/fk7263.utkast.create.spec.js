@@ -7,7 +7,7 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var UtkastPage = wcTestTools.pages.intygpages.fk7263Utkast;
 var IntygPage = wcTestTools.pages.intygpages.fkIntyg;
 
-fdescribe('Create and Sign FK utkast', function() {
+describe('Create and Sign FK utkast', function() {
 
     var utkastId = null;
 
