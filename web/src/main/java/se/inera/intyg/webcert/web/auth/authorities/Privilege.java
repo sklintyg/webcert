@@ -1,9 +1,7 @@
 package se.inera.intyg.webcert.web.auth.authorities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +20,7 @@ public class Privilege {
     private List<String> intygstyper;
 
     @JsonProperty
-    private List<String> requestOrigins;
+    private List<RequestOrigin> requestOrigins;
 
 
     // ~ Getter and setter
@@ -56,11 +54,11 @@ public class Privilege {
         }
     }
 
-    public List<String> getRequestOrigins() {
+    public List<RequestOrigin> getRequestOrigins() {
         return requestOrigins;
     }
 
-    public void setRequestOrigins(List<String> requestOrigins) {
+    public void setRequestOrigins(List<RequestOrigin> requestOrigins) {
         if (requestOrigins == null) {
             this.requestOrigins = Collections.emptyList();
         } else {

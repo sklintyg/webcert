@@ -1,12 +1,5 @@
 package se.inera.intyg.webcert.web.auth.authorities;
 
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLECODE_AT_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_TANDLAKARE;
-
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLECODE_AT_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_TANDLAKARE;
+
+
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion;
-import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +31,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 
 /**
  * Created by Magnus Ekstrand on 20/11/15.
@@ -99,12 +98,6 @@ public class AuthoritiesResolver {
                 .orElse(null);
     };
 
-    private BiFunction<Role, String, List<Privilege>> fnPrivileges = (role, requestOrigin) -> {
-        return role.getPrivileges().stream()
-                .filter(p -> p.getRequestOrigins().contains(requestOrigin))
-                .collect(Collectors.toList());
-    };
-
     private Function<String, Role> fnRole = (name) -> {
         return getRoles().stream()
                 .filter(isRole(name))
@@ -138,11 +131,6 @@ public class AuthoritiesResolver {
         List<PersonInformationType> personInfo = getPersonInfo(sa.getHsaId());
 
         Role role = lookupUserRole(sa, personInfo);
-
-        // Ensure correct privileges
-
-        role = filterPrivileges(role, request);
-
         return role;
     }
 
@@ -158,21 +146,6 @@ public class AuthoritiesResolver {
 
     // ~ Package methods
     // ======================================================================================
-
-    Role filterPrivileges(Role role, HttpServletRequest request) {
-        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin();
-        String origin = webCertUserOrigin.resolveOrigin(request);
-
-        if (origin.equals(WebCertUserOriginType.DJUPINTEGRATION.name()) || origin.equals(WebCertUserOriginType.UTHOPP.name())) {
-            // filter privileges
-            List<Privilege> privileges = fnPrivileges.apply(role, origin);
-            // update role
-            role.setPrivileges(privileges);
-        }
-
-        return role;
-    }
-
     /**
      * Get loaded request origins.
      * @return a list with request origins

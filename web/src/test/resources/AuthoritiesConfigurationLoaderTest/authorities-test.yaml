@@ -69,8 +69,8 @@ privileges:
     desc: Makulera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro020 # DJUPINTEGRATION
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
     desc: Kopiera intyg
@@ -82,7 +82,7 @@ privileges:
     desc: Filtrera på annan läkare
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
+      - *ro010 # NORMAL
 
 # Roller
 roles:

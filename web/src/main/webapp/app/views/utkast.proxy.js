@@ -42,13 +42,12 @@ angular.module('webcert').factory('webcert.UtkastProxy',
 
                         var options = {
                             feature: featureService.features.HANTERA_INTYGSUTKAST,
-                            //authority: UserModel.privileges.SKRIVA_INTYG,
+                            authority: UserModel.privileges.SKRIVA_INTYG,
                             requestOrigin: UserModel.user.origin,
                             intygstyp: m.id};
 
                         // Only add type if feature is active and user has global intygTyp access through their role.
-                        if (authorityService.isAuthorityActive(options)
-                        ) {
+                        if (authorityService.isAuthorityActive(options)) {
                             types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
                         }
 /*

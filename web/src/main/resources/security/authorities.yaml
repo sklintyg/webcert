@@ -74,30 +74,30 @@ privileges:
     desc: Makulera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro020 # DJUPINTEGRATION
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
     desc: Kopiera intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro020 # DJUPINTEGRATION
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
   - &p040
     name: *kp040
     desc: Vidarebefordra utkast
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro030 # UTHOPP
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
   - &p050
     name: *kp050
     desc: Vidarebefordra frågasvar
     intygstyper:
       - *ki010 # FK7263
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro030 # UTHOPP
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
   - &p060
     name: *kp060
     desc: Besvara fråga om komplettering
@@ -109,35 +109,35 @@ privileges:
     desc: Filtrera på annan läkare
     intygstyper: # Implicit alla
     requestOrigins: # Implicit alla
-      - *kro010 # NORMAL
+      - *ro010 # NORMAL
   - &p080
     name: *kp080
     desc: Åtkomst andra vårdenheter
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro030 # UTHOPP
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
   - &p090
     name: *kp090
     desc: Hantera personuppgifter
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro030 # UTHOPP
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
   - &p100
     name: *kp100
     desc: Hantera notifieringsmail om frågasvar
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro030 # UTHOPP
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
   - &p110
     name: *kp110
     desc: Navigera i menyer, på logo, via tillbakaknappar
     intygstyper: # Implicit alla
     requestOrigins:
-      - *kro010 # NORMAL
-      - *kro030 # UTHOPP
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
 
 # Roller
 roles:
