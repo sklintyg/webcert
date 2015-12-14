@@ -26,7 +26,7 @@ var BaseIntyg = Class._extend({
         };
     },
     get: function(intygId) {
-        browser.get('/web/dashboard#/' + this.intygType + '/edit/' + intygId);
+        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
     },
     isAt: function() {
         return this.at.isDisplayed();
