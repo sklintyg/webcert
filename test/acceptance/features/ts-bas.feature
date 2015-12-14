@@ -1,6 +1,6 @@
 # language: sv
 
-@smoke @webcert @ts 
+@smoke @webcert @ts @bas
 Egenskap: Kontrollera att det går att skapa intyg för transportstyrelsen
 
 Bakgrund: Jag befinner mig på webcerts förstasida

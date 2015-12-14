@@ -1,5 +1,5 @@
 # language: sv
-@smoke @webcert
+@smoke @fk7263
 Egenskap: Kontrollera att webcerts olika funktioner går att använda
 
 Bakgrund: Jag befinner mig på webcerts förstasida

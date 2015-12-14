@@ -5,10 +5,10 @@
 /*globals pages,describe,it,helpers,utkastTextmap */
 'use strict';
 
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var tsdBasUtkastPage = pages.intygpages['ts-basUtkast'];
-var tsdBasIntygPage = pages.intygpages.tsBasIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var tsdBasUtkastPage = wcTestTools.pages.intygpages['ts-basUtkast'];
+var tsdBasIntygPage = wcTestTools.pages.intygpages.tsBasIntyg;
 
 describe('Create and Sign ts-diabetes utkast', function() {
 
@@ -51,9 +51,9 @@ describe('Create and Sign ts-diabetes utkast', function() {
             hjartRisk: 'Ja',
             diabetes: {
                 has: true,
-                typ: utkastTextmap.ts.diabetes.typ.typ1,
+                typ: wcTestTools.utkastTextmap.ts.diabetes.typ.typ1,
                 //year: Math.floor((Math.random() * 20) + 1980),
-                behandling: [utkastTextmap.ts.diabetes.behandling.endastkost]
+                behandling: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost]
             },
             neurologiska: 'Ja',
             epilepsi: 'Ja',
@@ -75,7 +75,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
         it('first half', function() {
             browser.ignoreSynchronization = true;
             tsdBasUtkastPage.fillInKorkortstyper(tsBasUtkast.korkortstyper); // Intyget avser
-            tsdBasUtkastPage.fillInIdentitetStyrktGenom(utkastTextmap.ts.identitetStyrktGenom.foretagstjanstekort);
+            tsdBasUtkastPage.fillInIdentitetStyrktGenom(wcTestTools.utkastTextmap.ts.identitetStyrktGenom.foretagstjanstekort);
             tsdBasUtkastPage.fillInSynfunktioner(tsBasUtkast);
             tsdBasUtkastPage.fillInHorselOchBalanssinne(tsBasUtkast);
             tsdBasUtkastPage.fillInRorelseorganensFunktioner(tsBasUtkast);
@@ -115,7 +115,8 @@ describe('Create and Sign ts-diabetes utkast', function() {
 
         describe('remove test intyg', function() {
             it('should clean up all utkast after the test', function() {
-                testdataHelper.deleteAllUtkast();
+                testdataHelper.deleteUtkast(utkast.intygsId);
+                testdataHelper.deleteIntyg(utkast.intygsId);
             });
         });
     });

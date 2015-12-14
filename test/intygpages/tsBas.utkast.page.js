@@ -122,7 +122,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             this.horselBalans.aNo.sendKeys(protractor.Key.SPACE);
         }
 
-        if (helpers.page.hasHogreKorkortsbehorigheter(utkast.korkortstyper)) {
+        if (wcTestTools.helpers.page.hasHogreKorkortsbehorigheter(utkast.korkortstyper)) {
             if (utkast.horselSamtal === 'Ja') {
                 this.horselBalans.bYes.sendKeys(protractor.Key.SPACE);
             } else {
@@ -138,7 +138,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             this.funktionsnedsattning.aNo.sendKeys(protractor.Key.SPACE);
         }
 
-        if (helpers.page.hasHogreKorkortsbehorigheter(utkast.korkortstyper)) {
+        if (wcTestTools.helpers.page.hasHogreKorkortsbehorigheter(utkast.korkortstyper)) {
             if (utkast.rorOrgInUt === 'Ja') {
                 this.funktionsnedsattning.bYes.sendKeys(protractor.Key.SPACE);
             } else {

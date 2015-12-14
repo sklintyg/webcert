@@ -37,15 +37,14 @@ exports.config = {
         
         global.expect = global.chai.expect;
         
-        //lib
-        
-        var lib = require('./../lib/lib.js');
-        global.testdata = lib.testdata;
-        global.pages = lib.pages;
+        var wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+
+        global.testdata = wcTestTools.testdata;
+        global.pages = wcTestTools.pages;
+
         global.intyg = {};
         
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
-
     }
 };

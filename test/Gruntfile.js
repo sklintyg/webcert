@@ -10,7 +10,7 @@ module.exports = function(grunt) {
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
-        env: grunt.file.readJSON('./lib/envConfig.json'),
+        env: grunt.file.readJSON('./webcertTestTools/envConfig.json'),
         protractor: {
             options: {
                 //configFile: './protractor.cli.conf.js', // Target-specific config file

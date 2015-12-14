@@ -3,9 +3,8 @@
  */
 /*globals*/
 'use strict';
-var restClient = require('./restclient.util.js');
-var lib = require('./../lib.js');
-var env = lib.envConfig;
+var restClient = require('./restClient.util.js');
+var env = require('./../environment.js').envConfig;
 
 module.exports = {
     login: function(userJson) {
