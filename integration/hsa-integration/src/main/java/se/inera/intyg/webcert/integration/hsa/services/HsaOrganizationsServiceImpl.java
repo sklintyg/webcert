@@ -205,7 +205,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         }
 
         vardenhet.setPostadress(postaAddress.toString());
-        String lastLine = lines.get(lines.size() - 1);
+        String lastLine = lines != null && lines.size() > 0 ? lines.get(lines.size() - 1) : null;
         final int shortestLengthToIncludeBothPnrAndPostort = 7;
         if (lastLine != null && lastLine.length() > shortestLengthToIncludeBothPnrAndPostort && Character.isDigit(lastLine.charAt(0))) {
             final int startPostort = 6;
