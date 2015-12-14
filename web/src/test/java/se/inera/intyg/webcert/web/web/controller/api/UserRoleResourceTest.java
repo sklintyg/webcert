@@ -17,7 +17,7 @@ import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.authtestability.UserRoleResource;
+import se.inera.intyg.webcert.web.web.controller.testability.UserRoleResource;
 
 import java.util.Collection;
 import java.util.HashMap;

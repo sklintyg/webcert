@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.web.controller.authtestability;
+package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
