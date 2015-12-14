@@ -1,8 +1,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals pages */
-/*globals describe,it,helpers,utkastTextmap */
+/*globals describe,it */
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
@@ -50,7 +49,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
 
             var allmant = {
                 year: '2015',
-                typ: utkastTextmap.ts.diabetes.typ.typ1,
+                typ: wcTestTools.utkastTextmap.ts.diabetes.typ.typ1,
                 behandling: {
                     typer: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost,
                         wcTestTools.utkastTextmap.ts.diabetes.behandling.insulin],
@@ -95,7 +94,8 @@ describe('Create and Sign ts-diabetes utkast', function() {
 
         describe('remove test intyg', function() {
             it('should clean up all utkast after the test', function() {
-                testdataHelper.deleteAllUtkast();
+                testdataHelper.deleteUtkast(utkast.intygsId);
+                testdataHelper.deleteIntyg(utkast.intygsId);
             });
         });
     });

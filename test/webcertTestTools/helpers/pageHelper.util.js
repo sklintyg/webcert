@@ -29,7 +29,7 @@ module.exports = {
             return result;
         }
 
-        var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, testdata.korkortstyperHogreBehorighet);
+        var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, wcTestTools.testdata.korkortstyperHogreBehorighet);
         return foundHogreBehorigheter.length > 0;
     }
 };

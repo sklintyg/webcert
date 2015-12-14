@@ -13,6 +13,7 @@ describe('Create and Sign FK utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('with user', function() {
+            browser.ignoreSynchronization = false;
             specHelper.login();
             specHelper.createUtkastForPatient('191212121212', 'fk7263');
         });

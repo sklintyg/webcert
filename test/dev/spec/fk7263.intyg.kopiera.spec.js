@@ -15,7 +15,6 @@ describe('Generate fk intyg', function() {
     describe('prepare test with intyg', function() {
         it('should generate fk max intyg', function() {
             browser.ignoreSynchronization = false;
-
             testdataHelper.createIntygFromTemplate('fkMax', intygId).then(function(response) {
                 var intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();

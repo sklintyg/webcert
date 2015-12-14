@@ -1,7 +1,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,browser,helpers*/
+/*globals element,by,browser*/
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
@@ -30,7 +30,7 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInKorkortstyper: function(typer) {
         console.log('Anger körkortstyper: '+ typer.toString());
-        helpers.page.clickAll(this.korkortsTyperChecks, typer);
+        wcTestTools.helpers.page.clickAll(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
         console.log('Anger identitet styrkt genom ' + idtyp);
@@ -39,7 +39,7 @@ var BaseTsUtkast = BaseUtkast._extend({
     fillInBedomning: function(bedomningObj) {
         console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
         element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
-        helpers.page.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
+        wcTestTools.helpers.page.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
     },
     fillInOvrigKommentar: function(utkast) {
         this.kommentar.sendKeys(utkast.kommentar);
