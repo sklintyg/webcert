@@ -12,7 +12,6 @@ import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
@@ -54,7 +53,7 @@ public class WebCertUser implements UserDetails {
     private Map<String, Privilege> authorities;
 
     private AuthenticationMethod authenticationMethod;
-    private RequestOrigin requestOrigin;
+    private String origin;
 
 
     /** The sole constructor. */
@@ -127,12 +126,12 @@ public class WebCertUser implements UserDetails {
         this.authenticationScheme = authenticationScheme;
     }
 
-    public RequestOrigin getRequestOrigin() {
-        return requestOrigin;
+    public String getOrigin() {
+        return origin;
     }
 
-    public void setRequestOrigin(RequestOrigin requestOrigin) {
-        this.requestOrigin = requestOrigin;
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     /**

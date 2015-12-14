@@ -208,7 +208,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         // Set application mode / request origin
         String requestOrigin = webCertUserOrigin.resolveOrigin(getCurrentRequest());
-        webcertUser.setRequestOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin));
+        webcertUser.setOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName());
 
         decorateWebCertUserWithAdditionalInfo(webcertUser, credential, personInfo);
         decorateWebCertUserWithAvailableFeatures(webcertUser);

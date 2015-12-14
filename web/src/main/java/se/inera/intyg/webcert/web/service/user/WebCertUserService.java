@@ -16,12 +16,6 @@ public interface WebCertUserService {
      */
     WebCertUser getUser();
 
-    void assertUserRoles(String[] grantedRoles) throws AuthoritiesException;
-
-    void assertRequestOrigin(String requestOrigin) throws AuthoritiesException;
-
-    void clearEnabledFeaturesOnUser();
-
     void enableFeaturesOnUser(WebcertFeature... featuresToEnable);
 
     void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
@@ -31,6 +25,8 @@ public interface WebCertUserService {
     boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation);
 
     boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
+
+    void updateOrigin(String origin);
 
     void updateUserRole(String roleName);
 

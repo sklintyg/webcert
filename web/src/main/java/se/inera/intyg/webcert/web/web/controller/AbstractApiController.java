@@ -96,9 +96,9 @@ public abstract class AbstractApiController {
         }
 
         WebCertUser webCertUser = webCertUserService.getUser();
-        RequestOrigin origin = webCertUser.getRequestOrigin();
+        String origin = webCertUser.getOrigin();
 
-        return origin.getName().equals(requestOrigin);
+        return origin.equals(requestOrigin);
     }
 
     protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {

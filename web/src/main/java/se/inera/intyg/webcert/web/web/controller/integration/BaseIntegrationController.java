@@ -43,8 +43,8 @@ public abstract class BaseIntegrationController {
             Map<String, Role> userRoles = webCertUserService.getUser().getRoles();
             assertUserRoles(getGrantedRoles(), toArray(userRoles));
 
-            RequestOrigin userRequestOrigin = webCertUserService.getUser().getRequestOrigin();
-            assertRequestOrigin(getGrantedRequestOrigin(), userRequestOrigin.getName());
+            String origin = webCertUserService.getUser().getOrigin();
+            assertRequestOrigin(getGrantedRequestOrigin(), origin);
 
         } catch (AuthoritiesException e) {
             LOG.error(e.getMessage());

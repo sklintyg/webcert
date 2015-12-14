@@ -35,42 +35,42 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    @Override
-    public void assertUserRoles(String[] grantedRoles) throws AuthoritiesException {
-        Map<String, Role> roles = getUser().getRoles();
-
-        List<String> gr = Arrays.asList(grantedRoles);
-        for (String role : roles.keySet()) {
-            if (gr.contains(role)) {
-                return;
-            }
-        }
-
-        throw new AuthoritiesException(
-                String.format("User does not have a valid role for current task. User's role must be one of [%s] but was [%s]",
-                        StringUtils.join(grantedRoles, ","), StringUtils.join(roles.keySet(), ",")));
-
-    }
-
-    @Override
-    public void assertRequestOrigin(String requestOrigin) throws AuthoritiesException {
-        RequestOrigin origin = getUser().getRequestOrigin();
-        if (origin.getName().equals(requestOrigin)) {
-            return;
-        }
-
-        throw new AuthoritiesException(
-                String.format("User does not have the valid request origin for current task. User's origin must be [%s] but was [%s]",
-                        origin, requestOrigin));
-    }
-
-    @Override
-    public void clearEnabledFeaturesOnUser() {
-        WebCertUser user = getUser();
-        user.getAktivaFunktioner().clear();
-
-        LOG.debug("Cleared enabled featured on user {}", user.getHsaId());
-    }
+//    @Override
+//    public void assertUserRoles(String[] grantedRoles) throws AuthoritiesException {
+//        Map<String, Role> roles = getUser().getRoles();
+//
+//        List<String> gr = Arrays.asList(grantedRoles);
+//        for (String role : roles.keySet()) {
+//            if (gr.contains(role)) {
+//                return;
+//            }
+//        }
+//
+//        throw new AuthoritiesException(
+//                String.format("User does not have a valid role for current task. User's role must be one of [%s] but was [%s]",
+//                        StringUtils.join(grantedRoles, ","), StringUtils.join(roles.keySet(), ",")));
+//
+//    }
+//
+//    @Override
+//    public void assertRequestOrigin(String requestOrigin) throws AuthoritiesException {
+//        String origin = getUser().getOrigin();
+//        if (origin.equals(requestOrigin)) {
+//            return;
+//        }
+//
+//        throw new AuthoritiesException(
+//                String.format("User does not have the valid request origin for current task. User's origin must be [%s] but was [%s]",
+//                        origin, requestOrigin));
+//    }
+//
+//    @Override
+//    public void clearEnabledFeaturesOnUser() {
+//        WebCertUser user = getUser();
+//        user.getAktivaFunktioner().clear();
+//
+//        LOG.debug("Cleared enabled featured on user {}", user.getHsaId());
+//    }
 
     @Override
     public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
@@ -102,6 +102,11 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
+    public void updateOrigin(String origin) {
+        getUser().setOrigin(origin);
+    }
+
+    @Override
     public void updateUserRole(String roleName) {
         updateUserRole(authoritiesResolver.getRole(roleName));
     }
@@ -118,8 +123,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             return false;
         }
 
-        String requestOrigin = user.getRequestOrigin().getName();
-        if (requestOrigin.equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+        String origin = user.getOrigin();
+        if (origin.equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }

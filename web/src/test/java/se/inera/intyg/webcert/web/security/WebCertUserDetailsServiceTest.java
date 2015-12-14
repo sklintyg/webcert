@@ -243,7 +243,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.DJUPINTEGRATION.name());
+        assertEquals(webCertUser.getOrigin(), WebCertUserOriginType.DJUPINTEGRATION.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
@@ -260,7 +260,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
-        assertEquals(webCertUser.getRequestOrigin().getName(), (WebCertUserOriginType.UTHOPP.name()));
+        assertEquals(webCertUser.getOrigin(), (WebCertUserOriginType.UTHOPP.name()));
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
     }
 
@@ -277,7 +277,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_TANDLAKARE));
-        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.DJUPINTEGRATION.name());
+        assertEquals(webCertUser.getOrigin(), WebCertUserOriginType.DJUPINTEGRATION.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_TANDLAKARE, webCertUser);
     }
 
@@ -294,7 +294,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_TANDLAKARE));
-        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.UTHOPP.name());
+        assertEquals(webCertUser.getOrigin(), WebCertUserOriginType.UTHOPP.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_TANDLAKARE, webCertUser);
     }
 
@@ -311,7 +311,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
-        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.DJUPINTEGRATION.name());
+        assertEquals(webCertUser.getOrigin(), WebCertUserOriginType.DJUPINTEGRATION.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
@@ -328,7 +328,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN));
-        assertEquals(webCertUser.getRequestOrigin().getName(), WebCertUserOriginType.UTHOPP.name());
+        assertEquals(webCertUser.getOrigin(), WebCertUserOriginType.UTHOPP.name());
         assertUserPrivileges(AuthoritiesConstants.ROLE_ADMIN, webCertUser);
     }
 
@@ -480,17 +480,10 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
                 paTitle.setPaTitleName(t);
                 type.getPaTitle().add(paTitle);
             }
-//
-//            HsaTitles hsaTitles = new HsaTitles();
-//            hsaTitles.getHsaTitle().addAll(titles);
-//            type.setHsaTitles(hsaTitles);
         }
 
         if ((specialities != null) && (specialities.size() > 0)) {
             type.getSpecialityName().addAll(specialities);
-//            SpecialityNames specNames = new SpecialityNames();
-//            specNames.getSpecialityName().addAll(specialities);
-//            type.setSpecialityNames(specNames);
         }
 
         return type;
@@ -544,6 +537,5 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         availableFeatures.add("feature2");
         when(webcertFeatureService.getActiveFeatures()).thenReturn(availableFeatures);
     }
-
 
 }

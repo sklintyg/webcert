@@ -124,7 +124,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         // Set application mode / request origin
-        user.setRequestOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin));
+        user.setOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName());
 
         user.setPrivatLakareAvtalGodkand(avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension()));
         user.setHsaId(hosPerson.getHsaId().getExtension());

@@ -124,9 +124,9 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setValdVardgivare(vg1);
 
         if (fromJS) {
-            user.setRequestOrigin(AUTHORITIES_RESOLVER.getRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name()));
+            user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
         } else {
-            user.setRequestOrigin(AUTHORITIES_RESOLVER.getRequestOrigin(WebCertUserOriginType.NORMAL.name()));
+            user.setOrigin(WebCertUserOriginType.NORMAL.name());
         }
 
         return user;
