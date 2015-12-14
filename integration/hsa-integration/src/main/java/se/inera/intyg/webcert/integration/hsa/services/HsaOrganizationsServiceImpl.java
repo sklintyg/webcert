@@ -57,7 +57,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         UnitType unit = getUnit(careUnitHsaId);
 
-        Vardenhet vardenhet = new Vardenhet(unit.getUnitHsaId(), unit.getPublicName(), unit.getUnitStartDate(), unit.getUnitEndDate());
+        Vardenhet vardenhet = new Vardenhet(unit.getUnitHsaId(), unit.getUnitName(), unit.getUnitStartDate(), unit.getUnitEndDate());
         attachMottagningar(vardenhet);
         updateWithContactInformation(vardenhet, unit);
 
