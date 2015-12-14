@@ -74,17 +74,25 @@ module.exports = function () {
     var mysql = require('mysql');
 
     var connection = mysql.createConnection({
-      host  : "addr"
-      user  : "name"
-      password  : "passwd"
-      database  : "dbName"
+      host  : "10.1.0.66",
+      user  : "nmt_test",
+      password  : "Saetter01",
+      database  : "webcert_ip40"
     });
     connection.connect();
-    // TODO:: Göra så att man kan använda "pers_nummer" som variabel i querryn
-    // TODO:: anpassa vilken databas man kör mot beroende på vilken webcert man kör mot ( dvs.webcert_ip20, webcert_ip30, webcert_ip40 )
-    connection.query("SELECT * FROM webcert_ip20.INTYG WHERE webcert_ip20.INTYG.PATIENT_PERSONNUMMER = "19971019-2387" AND webcert_ip20.INTYG.STATUS = "DRAFT_INCOMPLETE";")
-    // SELECT * FROM webcert_ip20.INTYG WHERE webcert_ip20.INTYG.PATIENT_PERSONNUMMER = "19971019-2387" AND webcert_ip20.INTYG.STATUS = "DRAFT_INCOMPLETE";
-  callback();
+    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.PATIENT_PERSONNUMMER = \""+pers_nummer+"\" AND webcert_ip40.INTYG.STATUS = \"DRAFT_INCOMPLETE\";", function(err, rows, fields) {
+      if(rows != null)
+        expect(rows[0].Counter).should.equal('0').then(callback);
+    //     if(rows[0].Counter == '0'){
+    //       callback();
+    //     }
+    //   else if (rows[0].Counter != '0')
+    //     callback.fail();
+    // }
+    // else
+    //   throw err;
+  });
+    connection.end();
 });
 
 };
