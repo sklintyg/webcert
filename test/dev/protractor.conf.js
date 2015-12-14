@@ -28,12 +28,14 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance. (ignored if multiCapabilities is used)
     capabilities: {
-        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // IE11
         /*browserName: 'internet explorer',
         platform: 'ANY',
         version: '11',*/
+
+        // Any other browser
+        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances
