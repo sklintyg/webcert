@@ -1,4 +1,4 @@
-img { width:200px; }
+
 a {
  color: #0084b4;
  text-decoration:none;
@@ -31,6 +31,13 @@ a:hover { text-decoration : underline; }
 .scenario{
   padding:3px;
 
+}
+.bigger {
+/*    height: 600px;*/
+    max-width: 1000px !important;
+}
+img{
+  max-width:200px;
 }
 
 .error_message{

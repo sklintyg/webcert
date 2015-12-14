@@ -33,6 +33,7 @@
 
             {{#if_eq this.mime_type "image/png"}}
               <img src="data:image/png;base64,{{data}}" />
+
             {{/if_eq}}
             {{#if_eq this.mime_type "text/plain"}}
               <span class='text-attach'>{{atobData}}</span>
@@ -67,6 +68,12 @@
         var template = $(tplId).html();
         var stone = Handlebars.compile(template)(data);
         $(anchor).append(stone);
+
+      $('img').click(function() {
+        $(this).toggleClass('bigger');
+      });
+
+
      });
 
 

@@ -37,7 +37,11 @@ exports.config = {
         
         global.expect = global.chai.expect;
         
-        global.wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+        var wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+
+        global.testdata = wcTestTools.testdata;
+        global.pages = wcTestTools.pages;
+
         global.intyg = {};
         
         browser.ignoreSynchronization = false;
