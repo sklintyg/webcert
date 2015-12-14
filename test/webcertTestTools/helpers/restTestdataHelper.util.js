@@ -10,8 +10,9 @@ var intygGenerator = require('./../util/intygGenerator.util.js');
 module.exports = {
     createIntygFromTemplate: function(intygTemplateName, intygId) {
         restUtil.login();
-        var intyg = intygGenerator.buildIntyg(intygTemplates[intygTemplateName]);
-        intyg.id = intygId;
+        var template = intygTemplates[intygTemplateName];
+        template.intygId = intygId;
+        var intyg = intygGenerator.buildIntyg(template);
         return restUtil.createIntyg(intyg);
     },
     deleteAllIntyg: function() {
