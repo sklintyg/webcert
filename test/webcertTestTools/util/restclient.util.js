@@ -6,7 +6,8 @@ var request = require('request');
 // cookie jar
 var jar = request.jar();
 var request = request.defaults({
-    jar: jar
+    jar: jar,
+    strictSSL: false
 });
 
 function post(options, baseUrl) {

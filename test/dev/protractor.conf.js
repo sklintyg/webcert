@@ -12,7 +12,7 @@ var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
-    baseUrl: require('./../webcertTestTools/envConfig.json').dev.WEBCERT_URL,
+    baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
     specs: ['./spec/*.spec.js'],
 
@@ -81,9 +81,16 @@ exports.config = {
 
         global.wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
 
+        var reporters = require('jasmine-reporters');
+        jasmine.getEnv().addReporter(
+            new reporters.JUnitXmlReporter({
+                savePath:'dev/report/',
+                filePrefix: 'junit',
+                consolidateAll:true}));
+
         jasmine.getEnv().addReporter(
             new HtmlScreenshotReporter({
-                dest: 'screenshots',
+                dest: 'dev/report/html',
                 filename: 'dev-report.html'
             })
         );

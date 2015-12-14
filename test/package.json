@@ -10,7 +10,7 @@
         "grunt-cli": "^0.1.13",
         "grunt-env": "^0.4.4",
         "grunt-ng-annotate": "^0.3.0",
-        "grunt-protractor-runner": "^2.1.0",
+        "grunt-protractor-runner": "^3.0.0",
         "grunt-protractor-webdriver": "^0.2.5",
         "http-backend-proxy": "^1.4.3",
         "protractor": "^3.0.0",
@@ -19,7 +19,8 @@
         "request": "^2.65.0",
         "time-grunt": "^0.3.1",
         "jclass": "^1.1.9",
-	"mysql": "^2.5.4"
+        "jasmine-reporters": "^2.0.7",
+    	"mysql": "^2.5.4"
     },
     "engine": "node >= 4.2.1",
     "scripts": {
