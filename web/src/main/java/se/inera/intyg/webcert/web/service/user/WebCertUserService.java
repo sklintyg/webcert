@@ -1,9 +1,8 @@
 package se.inera.intyg.webcert.web.service.user;
 
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
 

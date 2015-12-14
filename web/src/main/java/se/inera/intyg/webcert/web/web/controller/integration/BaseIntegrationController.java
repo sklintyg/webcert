@@ -1,21 +1,19 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertRequestOrigin;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertUserRoles;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertRequestOrigin;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertUserRoles;
 
 /**
  * Base class for deep-integration and uthopp controllers.
@@ -68,7 +66,7 @@ public abstract class BaseIntegrationController {
     // ========================================================================================
 
     /**
-     * Method should return the granted roles that allows
+     * Method should return the granted roles that allows.
      * @return
      */
     protected abstract String[] getGrantedRoles();
