@@ -18,7 +18,8 @@
         "protractor-jasmine2-screenshot-reporter": "^0.1.7",
         "request": "^2.65.0",
         "time-grunt": "^0.3.1",
-        "jclass": "^1.1.9"
+        "jclass": "^1.1.9",
+	"mysql": "^2.5.4"
     },
     "engine": "node >= 4.2.1",
     "scripts": {

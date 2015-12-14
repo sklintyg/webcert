@@ -48,7 +48,7 @@ module.exports = function () {
     });
 
     this.Given(/^jag går tillbaka till start$/, function (callback) {
-        element(by.id('tillbakaButton ')).click()
+        element(by.id('tillbakaButton')).click()
         .then(callback);
     });
 
@@ -65,10 +65,26 @@ module.exports = function () {
               return (text.indexOf(status) > -1);
           });
       }).then(function(filteredElements) {
-          // filteredElements[1].element(by.cssContainingText('button', 'Kopiera')).click();
           expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
           callback();
       });
   });
+
+  this.Given(/^kollar i databasen att "([^"]*)" är borttagen$/, function (pers_nummer, callback) {
+    var mysql = require('mysql');
+
+    var connection = mysql.createConnection({
+      host  : "addr"
+      user  : "name"
+      password  : "passwd"
+      database  : "dbName"
+    });
+    connection.connect();
+    // TODO:: Göra så att man kan använda "pers_nummer" som variabel i querryn
+    // TODO:: anpassa vilken databas man kör mot beroende på vilken webcert man kör mot ( dvs.webcert_ip20, webcert_ip30, webcert_ip40 )
+    connection.query("SELECT * FROM webcert_ip20.INTYG WHERE webcert_ip20.INTYG.PATIENT_PERSONNUMMER = "19971019-2387" AND webcert_ip20.INTYG.STATUS = "DRAFT_INCOMPLETE";")
+    // SELECT * FROM webcert_ip20.INTYG WHERE webcert_ip20.INTYG.PATIENT_PERSONNUMMER = "19971019-2387" AND webcert_ip20.INTYG.STATUS = "DRAFT_INCOMPLETE";
+  callback();
+});
 
 };
