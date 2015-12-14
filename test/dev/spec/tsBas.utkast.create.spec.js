@@ -109,7 +109,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
             browser.ignoreSynchronization = false;
             tsdBasUtkastPage.whenSigneraButtonIsEnabled().then(function() {
                 tsdBasUtkastPage.signeraButtonClick();
-                expect(tsdBasIntygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
+                expect(tsdBasIntygPage.isAt()).toBeTruthy();
             });
         });
 

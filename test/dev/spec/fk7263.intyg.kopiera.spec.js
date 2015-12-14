@@ -38,8 +38,8 @@ describe('Generate fk intyg', function() {
         });
 
         it('should copy intyg and view resulting utkast', function() {
-            FkIntygPage.copy();
-            FkIntygPage.copyDialogConfirm();
+            FkIntygPage.copyBtn().click();
+            FkIntygPage.copyDialogConfirmBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
         });
 
@@ -59,7 +59,7 @@ describe('Generate fk intyg', function() {
             browser.ignoreSynchronization = false;
             FkUtkastPage.whenSigneraButtonIsEnabled().then(function() {
                 FkUtkastPage.signeraButtonClick();
-                expect(FkIntygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
+                expect(FkIntygPage.isAt()).toBeTruthy();
             });
         });
     });

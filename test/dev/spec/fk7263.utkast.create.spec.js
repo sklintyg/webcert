@@ -7,7 +7,7 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var UtkastPage = wcTestTools.pages.intygpages.fk7263Utkast;
 var IntygPage = wcTestTools.pages.intygpages.fkIntyg;
 
-describe('Create and Sign FK utkast', function() {
+fdescribe('Create and Sign FK utkast', function() {
 
     var utkastId = null;
 
@@ -59,7 +59,7 @@ describe('Create and Sign FK utkast', function() {
 
                     UtkastPage.whenSigneraButtonIsEnabled().then(function() {
                         UtkastPage.signeraButtonClick();
-                        expect(IntygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
+                        expect(IntygPage.isAt()).toBeTruthy();
                     });
                 });
             });

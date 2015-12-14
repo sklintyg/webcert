@@ -11,9 +11,10 @@ var BaseUtkast = Class._extend({
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
         this.pageHelper = null;
-    },
-    setPageHelper: function(pageHelper) {
-        this.pageHelper = pageHelper;
+        this.radera = {
+            knapp: element(by.id('ta-bort-utkast')),
+            radera: element(by.id('confirm-draft-delete-button'))
+        };
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);

@@ -92,8 +92,8 @@ exports.config = {
 
         jasmine.getEnv().addReporter(
             new HtmlScreenshotReporter({
-                dest: 'dev/report/html',
-                filename: 'dev-report.html'
+                dest: 'dev/report',
+                filename: 'index.html'
             })
         );
     }
