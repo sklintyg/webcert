@@ -19,6 +19,7 @@ import com.jayway.restassured.RestAssured;
  * responds according to json-schemas.
  */
 public class FragaSvarApiControllerIT extends BaseRestIntegrationTest {
+
     protected static FakeCredentials LAKARE_MED_FRAGASVAR = new FakeCredentials.FakeCredentialsBuilder("eva", "Eva", "Holgersson",
             "centrum-vast").lakare(true).build();
 

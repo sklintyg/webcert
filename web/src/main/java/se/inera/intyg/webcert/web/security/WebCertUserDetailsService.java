@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -135,13 +136,13 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         String hsaId = getAssertion(credential).getHsaId();
         List<PersonInformationType> personInfo = getPersonInfo(hsaId);
         List<Vardgivare> authorizedVardgivare = getAuthorizedVardgivare(hsaId);
-        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin(getCurrentRequest());
 
         try {
             assertMIU(credential);
             assertAuthorizedVardgivare(hsaId, authorizedVardgivare);
 
-            Role role = getAuthoritiesResolver().resolveRole(credential, webCertUserOrigin);
+            HttpServletRequest request = getCurrentRequest();
+            Role role = getAuthoritiesResolver().resolveRole(credential, request);
             LOG.debug("User role is set to {}", role);
 
             return createWebCertUser(role, credential, authorizedVardgivare, personInfo);
@@ -186,7 +187,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         LOG.debug("Decorate/populate user object with additional information");
 
         SakerhetstjanstAssertion sa = getAssertion(credential);
-        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin(getCurrentRequest());
+        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin();
 
         // Create the WebCert user object injection user's privileges
         WebCertUser webcertUser = new WebCertUser();
@@ -206,7 +207,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         webcertUser.setAuthenticationScheme(sa.getAuthenticationScheme());
 
         // Set application mode / request origin
-        String requestOrigin = webCertUserOrigin.resolveOrigin();
+        String requestOrigin = webCertUserOrigin.resolveOrigin(getCurrentRequest());
         webcertUser.setRequestOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser, credential, personInfo);

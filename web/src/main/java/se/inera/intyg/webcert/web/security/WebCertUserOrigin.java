@@ -18,20 +18,18 @@ public class WebCertUserOrigin {
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
     public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
 
-    private HttpServletRequest httpServletRequest;
 
-    public WebCertUserOrigin(HttpServletRequest request) {
-        Assert.notNull(request, "Request required");
-        this.httpServletRequest = request;
+    public WebCertUserOrigin() {
     }
 
 
     // ~ API
     // =====================================================================================
 
-    public String resolveOrigin() {
+    public String resolveOrigin(HttpServletRequest request) {
+        Assert.notNull(request, "Request required");
 
-        DefaultSavedRequest savedRequest = getSavedRequest(httpServletRequest);
+        DefaultSavedRequest savedRequest = getSavedRequest(request);
         if (savedRequest == null) {
             return WebCertUserOriginType.NORMAL.name();
         }

@@ -114,8 +114,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
 
-        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin(getCurrentRequest());
-        String requestOrigin = webCertUserOrigin.resolveOrigin();
+        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin();
+        String requestOrigin = webCertUserOrigin.resolveOrigin(getCurrentRequest());
 
         // Create the WebCert user object injection user's privileges
         WebCertUser user = new WebCertUser();

@@ -22,6 +22,7 @@ import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -129,9 +130,9 @@ public class AuthoritiesResolver {
     // ~ API
     // ======================================================================================
 
-    public Role resolveRole(SAMLCredential credential, WebCertUserOrigin webCertUserOrigin) {
+    public Role resolveRole(SAMLCredential credential, HttpServletRequest request) {
         Assert.notNull(credential, "Argument 'credential' cannot be null");
-        Assert.notNull(webCertUserOrigin, "Argument 'requestOrigin' cannot be null");
+        Assert.notNull(request, "Argument 'request' cannot be null");
 
         SakerhetstjanstAssertion sa = getAssertion(credential.getAuthenticationAssertion());
         List<PersonInformationType> personInfo = getPersonInfo(sa.getHsaId());
@@ -139,7 +140,8 @@ public class AuthoritiesResolver {
         Role role = lookupUserRole(sa, personInfo);
 
         // Ensure correct privileges
-        role = filterPrivileges(role, webCertUserOrigin);
+
+        role = filterPrivileges(role, request);
 
         return role;
     }
@@ -157,8 +159,9 @@ public class AuthoritiesResolver {
     // ~ Package methods
     // ======================================================================================
 
-    Role filterPrivileges(Role role, WebCertUserOrigin webCertUserOrigin) {
-        String origin = webCertUserOrigin.resolveOrigin();
+    Role filterPrivileges(Role role, HttpServletRequest request) {
+        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin();
+        String origin = webCertUserOrigin.resolveOrigin(request);
 
         if (origin.equals(WebCertUserOriginType.DJUPINTEGRATION.name()) || origin.equals(WebCertUserOriginType.UTHOPP.name())) {
             // filter privileges

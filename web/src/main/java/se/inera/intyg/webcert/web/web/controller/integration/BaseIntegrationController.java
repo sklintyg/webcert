@@ -29,13 +29,9 @@ public abstract class BaseIntegrationController {
     private WebCertUserService webCertUserService;
     private String urlBaseTemplate;
 
-    /**
-     * Method should return the granted roles that allows
-     * @return
-     */
-    protected abstract String[] getGrantedRoles();
 
-    protected abstract String getGrantedRequestOrigin();
+    // ~ API
+    // ========================================================================================
 
     public boolean validateRedirectToIntyg(String intygId) {
         if (StringUtils.isBlank(intygId)) {
@@ -62,18 +58,34 @@ public abstract class BaseIntegrationController {
         this.urlBaseTemplate = urlBaseTemplate;
     }
 
-    protected String getUrlBaseTemplate() {
-        return urlBaseTemplate;
-    }
-
     @Autowired
     public void setWebCertUserService(WebCertUserService webCertUserService) {
         this.webCertUserService = webCertUserService;
     }
 
+
+    // ~ Protected
+    // ========================================================================================
+
+    /**
+     * Method should return the granted roles that allows
+     * @return
+     */
+    protected abstract String[] getGrantedRoles();
+
+    protected abstract String getGrantedRequestOrigin();
+
+    protected String getUrlBaseTemplate() {
+        return urlBaseTemplate;
+    }
+
     protected WebCertUserService getWebCertUserService() {
         return webCertUserService;
     }
+
+
+    // ~ Private
+    // ========================================================================================
 
     private String[] toArray(Map<String, Role> roles) {
         List<String> list = roles.entrySet().stream()

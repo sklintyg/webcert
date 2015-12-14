@@ -55,17 +55,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Autowired
     private UtkastRepository utkastRepository;
 
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
-    }
-
-    @Override
-    protected String getGrantedRequestOrigin() {
-        return GRANTED_ORIGIN;
-    }
-
-
     /**
      * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate.
@@ -115,6 +104,19 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
+    }
+
+
+    // - - - - - Protected scope - - - - -
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return GRANTED_ROLES;
+    }
+
+    @Override
+    protected String getGrantedRequestOrigin() {
+        return GRANTED_ORIGIN;
     }
 
 
