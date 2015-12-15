@@ -22,9 +22,33 @@ module.exports = function () {
         intyg.typ = intygsTyp;
         pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
         pages.app.views.sokSkrivIntyg.continueToUtkast();
+
+        browser.getCurrentUrl().then(function(text){
+          intygsid = text.split('/').slice(-1)[0];
+          logg('Intygsid: '+intygsid);
+        });
+
+        // if(intyg.typ === 'Läkarintyg FK 7263'){
+        //   browser.getCurrentUrl().then(function(text){
+        //     intygsid = text.split('/').slice(-1)[0];
+        //     logg('Intygsid: '+intygsid);
+        //   });
+        // }
+        // else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
+        //   browser.getCurrentUrl().then(function(text){
+        //     intygsid = text.split('/').slice(-1)[0];
+        //     logg('Intygsid: '+intygsid);
+        //   });
+        // }
+        // else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
+        //   browser.getCurrentUrl().then(function(text){
+        //     intygsid = text.split('/').slice(-1)[0];
+        //     logg('Intygsid: '+intygsid);
+        //   });
+        // }
         callback();
     });
-    
+
     this.Given(/^signerar intyget$/, function (callback) {
         var EC = protractor.ExpectedConditions;
         browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
@@ -54,7 +78,7 @@ module.exports = function () {
         var idStarktGenom = element(by.id('identitet'));
         logg('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
 
-        
+
         if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
             // Specialare eftersom status inte innehåller den punkt som utkastet innehåller.
             var txt = 'Försäkran enligt 18 kap 4 §';
@@ -62,7 +86,7 @@ module.exports = function () {
         } else {
             expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
         }
-        
+
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {

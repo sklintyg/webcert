@@ -75,14 +75,19 @@ module.exports = function () {
 
     var connection = mysql.createConnection({
       host  : "10.1.0.66",
-      user  : "",
-      password  : "",
+      user  : "nmt_test",
+      password  : process.env.DBPW,
       database  : "webcert_ip40"
     });
     connection.connect();
-    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.PATIENT_PERSONNUMMER = \""+pers_nummer+"\" AND webcert_ip40.INTYG.STATUS = \"DRAFT_INCOMPLETE\";", function(err, rows, fields)
+    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.INTYGS_ID = \""+intygsid+"\";", function(err, rows, fields)
     {
-      expect(rows[0].Counter).to.not.be.undefined.and.to.be.equal(0).and.notify(callback);
+      if(rows!=null){
+      console.log('Amount of rows in database : ' + rows[0].Counter);
+      var count = parseInt(rows[0].Counter);
+      expect(count).to.equal(0);
+      callback();
+    }
   });
     connection.end();
 });

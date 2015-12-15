@@ -10,7 +10,7 @@ exports.config = {
     framework: 'custom',
     timeout : 100000,
     defaultTimeoutInterval: 30000,
-    
+
     // path relative to the current config file
     frameworkPath: require.resolve('protractor-cucumber-framework'),
     specs: [
@@ -30,20 +30,20 @@ exports.config = {
     onPrepare: function () {
         //http://chaijs.com/
         global.chai = require('chai');
-        
+
         //https://github.com/domenic/chai-as-promised/
         global.chaiAsPromised = require('chai-as-promised');
         global.chai.use(global.chaiAsPromised);
-        
+
         global.expect = global.chai.expect;
-        
+
         var wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
 
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
 
         global.intyg = {};
-        
+        global.intygsid = {};
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
     }
