@@ -1,7 +1,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,browser*/
+/*globals element,by,browser, protractor*/
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
@@ -22,6 +22,15 @@ var FkUtkast = BaseUtkast._extend({
         this.travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked'));
 
         this.capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
+        this.minUndersokning = element(by.id('basedOnExamination'));
+        this.diagnosKod = element(by.id('diagnoseCode'));
+        this.funktionsNedsattning = element(by.id('disabilities'));
+        this.aktivitetsBegransning = element(by.id('activityLimitation'));
+        this.nuvarandeArbete = element(by.id('currentWork'));
+        this.faktiskTjanstgoring = element(by.id('capacityForWorkActualWorkingHoursPerWeek'));
+
+        
+        
     },
     get: function get(intygId) {
         get._super.call(this, 'fk7263', intygId);
@@ -49,6 +58,24 @@ var FkUtkast = BaseUtkast._extend({
     },
     getCapacityForWorkForecastText: function() {
         return this.capacityForWorkForecastText;
+    },
+    minUndersokningAvPatClick: function() {
+        this.minUndersokning.sendKeys(protractor.Key.SPACE);
+    },
+    angeDiagnosKod: function angeDiagnosKod(kod) {
+        this.diagnosKod.sendKeys(kod);
+    },
+    angeFunktionsnedsattning : function angeFunktionsnedsattning(txt) {
+        this.funktionsNedsattning.sendKeys(txt);
+    },
+    angeAktivitetsBegransning : function angeAktivitetsBegransning(txt) {
+        this.aktivitetsBegransning.sendKeys(txt);
+    },
+    angeNuvarandeArbete : function angeNuvarandeArbete(txt) {
+        this.nuvarandeArbete.sendKeys(txt);
+    },
+    angeFaktiskTjanstgoring : function angeFaktiskTjanstgoring(txt) {
+        this.faktiskTjanstgoring.sendKeys(txt);
     }
 });
 

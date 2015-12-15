@@ -17,7 +17,7 @@ module.exports = {
             'enhetId': 'IFV1239877878-1042',
             'lakare': true,
             'forskrivarKod': '2481632'
-        };
+        }; 
 
         var options = {
             url: 'fake',
