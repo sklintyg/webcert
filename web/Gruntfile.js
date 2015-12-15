@@ -334,22 +334,22 @@ module.exports = function(grunt) {
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/sjukpenning/webcert',
-                                connect.static(__dirname + SJUKPENNING_SRC_DIR)
+                                connect.static(__dirname + SJUKPENNING_SRC_DIR)//jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/sjukpenning/webcert/css',
-                                connect.static(__dirname + SJUKPENNING_DEST_DIR + '/css')
+                                connect.static(__dirname + SJUKPENNING_DEST_DIR + '/css')//jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/sjukersattning/webcert',
-                                connect.static(__dirname + SJUKERSATTNING_SRC_DIR)
+                                connect.static(__dirname + SJUKERSATTNING_SRC_DIR) //jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/sjukersattning/webcert/css',
-                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/css')
+                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/css')//jshint ignore:line
                             ));
                         middlewares.push(proxy);
                         return middlewares;
