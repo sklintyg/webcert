@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 Scenario: Skapa och signera ett diabetesintyg till transportstyrelsen
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
-    Och jag fyller i alla nödvändiga fält för ett Diabetes-intyg
+    Och jag fyller i alla nödvändiga fält för intyget
     Och signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget

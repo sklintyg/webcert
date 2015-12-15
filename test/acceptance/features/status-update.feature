@@ -1,5 +1,5 @@
 # language: sv
-@soap
+@soap @notReady
 Egenskap: Kontrollera att webcerts hanterar CertificateStatusUpdate korrekt
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.

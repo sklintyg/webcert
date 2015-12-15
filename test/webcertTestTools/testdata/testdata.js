@@ -109,6 +109,7 @@ module.exports = {
     getRandomTsDiabetesIntyg: function() {
         var randomKorkortstyper = this.getRandomKorkortstyper();
         return {
+            typ:'Transportstyrelsens läkarintyg, diabetes',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
             allmant: {
@@ -128,6 +129,7 @@ module.exports = {
     getRandomTsBasIntyg: function() {
         var randomKorkortstyper = this.getRandomKorkortstyperHogre();
         return {
+            typ:'Transportstyrelsens läkarintyg',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
             allmant: {

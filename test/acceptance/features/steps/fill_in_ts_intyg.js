@@ -8,24 +8,11 @@ var tsBasUtkastPage = pages.intygpages['ts-basUtkast'];
 
 
 module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält för ett Diabetes\-intyg$/, function (callback) {
-        global.intyg = testdata.getRandomTsDiabetesIntyg();
-
-        tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
-        tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
-        tsdUtkastPage.fillInAllmant(intyg.allmant);
-        tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
-        tsdUtkastPage.fillInSynintyg(intyg.synintyg);
-        tsdUtkastPage.fillInBedomning(intyg.bedomning);
-        
-        callback();
-    });
 
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function (callback) {
 
         if(intyg.typ === 'Transportstyrelsens läkarintyg'){
             global.intyg = testdata.getRandomTsBasIntyg();
-            global.intyg.typ = 'Transportstyrelsens läkarintyg';
             
             // browser.ignoreSynchronization = true;
             // Intyget avser
@@ -58,6 +45,20 @@ module.exports = function() {
             tsBasUtkastPage.fillInBedomning(intyg.bedomning);
             callback();
         }
+
+        else if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
+            global.intyg = testdata.getRandomTsDiabetesIntyg();
+
+            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
+            tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+            tsdUtkastPage.fillInAllmant(intyg.allmant);
+            tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
+            tsdUtkastPage.fillInSynintyg(intyg.synintyg);
+            tsdUtkastPage.fillInBedomning(intyg.bedomning);
+            
+            callback();
+        }
+
     });
 };
 
