@@ -17,16 +17,22 @@
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
-        "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate"
+        "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate",
+        "DATABASE_NAME" : "webcert_ip20",
+        "DBPW" : "Saetter01"
     },
     "ip30": {
         "WEBCERT_URL": "https://webcert.ip30.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.sjunet.org",
-        "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate"
+        "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate",
+        "DATABASE_NAME" : "webcert_ip30",
+        "DBPW" : "Saetter01"
     },
     "ip40": {
         "WEBCERT_URL": "https://webcert.ip40.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://minaintyg.ip40.nordicmedtest.sjunet.org",
-        "INTYGTJANST_URL": "https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate"
+        "INTYGTJANST_URL": "https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate",
+        "DATABASE_NAME" : "webcert_ip40",
+        "DBPW" : "Saetter01"
     }
 }

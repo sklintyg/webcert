@@ -16,6 +16,7 @@
     "jasmine-reporters": "^2.0.7",
     "jclass": "^1.1.9",
     "mysql": "^2.5.4",
+    "node-soap": "^1.0.0",
     "protractor": "^3.0.0",
     "protractor-cucumber-framework": "^0.3.0",
     "protractor-jasmine2-screenshot-reporter": "^0.1.7",

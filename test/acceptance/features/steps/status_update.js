@@ -43,14 +43,83 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
     return body;
 }
 
+function getDraftWithStatus(personId, intygsId, status) {
+    var mysql = require('mysql');
+
+    var connection = mysql.createConnection({
+        host  : '10.1.0.66',
+        user  : 'nmt_test',
+        password  : process.env.DBPW,
+        database  : process.env.DATABASE_NAME
+    });
+
+    var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+    
+    connection.connect();
+
+    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+        databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
+        databaseTable + '.STATUS="' + status + '" AND ' +
+        databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
+
+    console.log('QUERY: ' + query);
+    
+    var correctStatus = false;
+    connection.query(query,
+                     function(err, rows, fields) {
+                         connection.end();
+                         if (rows[0].Counter !== 0) {
+                             correctStatus = true;
+                         } else {
+                             correctStatus = false;
+                         }
+                     });
+
+    return correctStatus;
+}
+
+function getNumberOfEvents(intygsId, event) {
+    var mysql = require('mysql');
+
+    var connection = mysql.createConnection({
+        host  : '10.1.0.66',
+        user  : 'nmt_test',
+        password  : 'Saetter01',
+        database  : 'webcert_requests'
+    });
+
+    var databaseTable = 'webcert_requests.requests';
+    
+    connection.connect();
+
+    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+        databaseTable + '.handelseKod = "' + event + '" AND ' +
+        databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
+
+    console.log('QUERY: ' + query);
+
+    var counter = 0;
+    
+    connection.query(query,
+                     function(err, rows, fields) {
+                         console.log(err);
+                         console.log(rows);
+                         connection.end();
+                         counter = rows[0].Counter;
+                     });    
+    console.log('COUNTER: ' + counter);
+    return counter;
+}
 
 
 module.exports = function () {
 
     this.Given(/^att vårdsystemet skickat ett intygsutkast$/, function (callback) {
         // Write code here that turns the phrase above into concrete actions
+
+        global.person.id = '19121212-1212';
         
-        var body = getDraftBody('19121212-1212', 'IFV1239877878-1049', 'Jan Nilsson',
+        var body = getDraftBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
                                 'IFV1239877878-1042', 'WebCert Enhet 1');
 
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/create-draft-certificate/v1.0?wsdl';
@@ -118,14 +187,14 @@ module.exports = function () {
         callback();
     });
 
-    this.Given(/^när jag signerar intyget$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\."$/, function (arg1, callback) {
         // Write code here that turns the phrase above into concrete actions
-        callback();
+
+        var correctStatus = getDraftWithStatus(global.person.id,
+                                               global.intyg.id,
+                                               'DRAFT_INCOMPLETE');
+
+        expect(correctStatus).to.be(true).then.notify(callback);
     });
 
     this.Given(/^ska en CreateDraftUpdate skickas till vårdsystemet\.$/, function (callback) {

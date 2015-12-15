@@ -42,6 +42,7 @@ exports.config = {
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
 
+        global.person = {};
         global.intyg = {};
         global.intygsid = {};
         browser.ignoreSynchronization = false;
