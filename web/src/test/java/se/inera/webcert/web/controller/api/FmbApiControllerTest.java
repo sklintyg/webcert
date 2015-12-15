@@ -106,8 +106,8 @@ public class FmbApiControllerTest {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, testtext, "1"));
-        fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, testtext, "1"));
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "1", "1"));
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "2", "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
         // When
@@ -122,9 +122,65 @@ public class FmbApiControllerTest {
             for (FmbContent fmbContent : content) {
                 assertNull(fmbContent.getText());
                 List<String> texts = fmbContent.getList();
+                assertEquals(2, texts.size());
                 for (String text : texts) {
-                    assertEquals(testtext, text);
+                    assertEquals(testtext, text.substring(0, text.length() - 1));
                 }
+            }
+        }
+    }
+
+    @Test
+    public void testGetFmbForIcd10RemovesDuplicateRowsInList() throws Exception {
+        // Given
+        ArrayList<Fmb> fmbs = new ArrayList<>();
+        String testtext = "testtext";
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "a", "1"));
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "b", "1"));
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "a", "1"));
+        Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
+
+        // When
+        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
+
+        // Then
+        assertEquals(FmbFormName.values().length, response.getForms().size());
+
+        List<FmbForm> forms = response.getForms();
+        for (FmbForm form : forms) {
+            List<FmbContent> content = form.getContent();
+            for (FmbContent fmbContent : content) {
+                assertNull(fmbContent.getText());
+                List<String> texts = fmbContent.getList();
+                assertEquals(2, texts.size());
+                for (String text : texts) {
+                    assertEquals(testtext, text.substring(0, text.length() - 1));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testGetFmbForIcd10RemovesDuplicateRowsInText() throws Exception {
+        // Given
+        ArrayList<Fmb> fmbs = new ArrayList<>();
+        String testtext = "testtext";
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext, "1"));
+        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext, "1"));
+        Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
+
+        // When
+        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
+
+        // Then
+        assertEquals(FmbFormName.values().length, response.getForms().size());
+
+        List<FmbForm> forms = response.getForms();
+        for (FmbForm form : forms) {
+            List<FmbContent> content = form.getContent();
+            for (FmbContent fmbContent : content) {
+                assertEquals(testtext, fmbContent.getText());
+                assertNull(fmbContent.getList());
             }
         }
     }
