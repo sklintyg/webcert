@@ -10,6 +10,7 @@ module.exports = {
     sjukintyg: {
         getRandom: function() {
             return {
+                typ:'Läkarintyg FK 7263',
                 smittskydd: true,
                 arbetsformaga: {
                     nedsattMed50: {
