@@ -25,9 +25,7 @@ describe('Patient lookup variants', function() {
         });
 
         beforeEach(function () {
-            browser.addMockModule('httpBackendMock', function () {
-                angular.module('httpBackendMock', ['ngMockE2E']);
-            });
+            specHelper.loadHttpBackendMock();
         });
 
         describe('When patient lookup receives error', function() {

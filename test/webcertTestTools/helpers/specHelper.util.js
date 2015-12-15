@@ -2,7 +2,7 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in specs.
  */
-/*globals browser,pages */
+/*globals browser */
 'use strict';
 
 var pages = require('./../pages.js');
@@ -31,5 +31,26 @@ module.exports = {
         }
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
+    },
+    loadHttpBackendMock: function() {
+        browser.addMockModule('httpBackendMock', function () {
+            function loadScript(urls) {
+                for (var i = 0; i < urls.length; i++) {
+                    var newScript = document.createElement('script');
+                    newScript.type = 'text/javascript';
+                    newScript.src = urls[i];
+                    newScript.async = true;
+                    newScript.defer = false;
+
+                    document.getElementsByTagName('head')[0].appendChild(newScript);
+                }
+            }
+
+            loadScript([
+                '/web/webjars/angularjs/1.4.7/angular-mocks.js'
+            ]);
+
+            angular.module('httpBackendMock', ['ngMockE2E']);
+        });
     }
 };
