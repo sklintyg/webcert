@@ -13,7 +13,7 @@ var BaseUtkast = Class._extend({
         this.pageHelper = null;
         this.radera = {
             knapp: element(by.id('ta-bort-utkast')),
-            radera: element(by.id('confirm-draft-delete-button'))
+            bekrafta: element(by.id('confirm-draft-delete-button'))
         };
     },
     get: function(intygType, intygId) {

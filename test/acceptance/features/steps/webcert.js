@@ -42,8 +42,8 @@ module.exports = function () {
 
     this.Given(/^jag raderar utkastet$/, function (callback) {
         // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
-        fkIntygPage.radera.knapp.click();
-        fkIntygPage.radera.radera.click()
+        fkUtkastPage.radera.knapp.click();
+        fkUtkastPage.radera.bekrafta.click()
         .then(callback);
     });
 
@@ -75,22 +75,14 @@ module.exports = function () {
 
     var connection = mysql.createConnection({
       host  : "10.1.0.66",
-      user  : "nmt_test",
-      password  : "Saetter01",
+      user  : "",
+      password  : "",
       database  : "webcert_ip40"
     });
     connection.connect();
-    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.PATIENT_PERSONNUMMER = \""+pers_nummer+"\" AND webcert_ip40.INTYG.STATUS = \"DRAFT_INCOMPLETE\";", function(err, rows, fields) {
-      if(rows != null)
-        expect(rows[0].Counter).should.equal('0').then(callback);
-    //     if(rows[0].Counter == '0'){
-    //       callback();
-    //     }
-    //   else if (rows[0].Counter != '0')
-    //     callback.fail();
-    // }
-    // else
-    //   throw err;
+    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.PATIENT_PERSONNUMMER = \""+pers_nummer+"\" AND webcert_ip40.INTYG.STATUS = \"DRAFT_INCOMPLETE\";", function(err, rows, fields)
+    {
+      expect(rows[0].Counter).to.not.be.undefined.and.to.be.equal(0).and.notify(callback);
   });
     connection.end();
 });
