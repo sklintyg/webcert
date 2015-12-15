@@ -5,15 +5,15 @@ testdata, intyg, browser, pages, logg
 
 var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
 var tsBasUtkastPage = pages.intygpages['ts-basUtkast'];
-
+var fkUtkastPage = pages.intygpages.fk7263Utkast;
 
 module.exports = function() {
 
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function (callback) {
+    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
 
-        if(intyg.typ === 'Transportstyrelsens läkarintyg'){
+        if (intyg.typ === 'Transportstyrelsens läkarintyg') {
             global.intyg = testdata.getRandomTsBasIntyg();
-            
+
             // browser.ignoreSynchronization = true;
             // Intyget avser
             tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
@@ -40,13 +40,11 @@ module.exports = function() {
             tsBasUtkastPage.fillInSjukhusvard(global.intyg);
 
             tsBasUtkastPage.fillInOvrigMedicinering(global.intyg);
-            
+
             browser.ignoreSynchronization = false;
             tsBasUtkastPage.fillInBedomning(intyg.bedomning);
             callback();
-        }
-
-        else if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
+        } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
             global.intyg = testdata.getRandomTsDiabetesIntyg();
 
             tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
@@ -55,14 +53,12 @@ module.exports = function() {
             tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
             tsdUtkastPage.fillInSynintyg(intyg.synintyg);
             tsdUtkastPage.fillInBedomning(intyg.bedomning);
-            
+
+            callback();
+        } else if (intyg.typ === 'Läkarintyg FK 7263') {
+            fkUtkastPage.smittskyddCheckboxClick();
+            fkUtkastPage.nedsattMed25CheckboxClick();
             callback();
         }
-
     });
 };
-
-
-
-
-

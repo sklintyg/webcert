@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 Scenario: Skapa och signera ett intyg i webcert
 	När jag väljer patienten "19971019-2387"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
-	Och fyller i alla nödvändiga fält för intyget
+	Och jag fyller i alla nödvändiga fält för intyget
 	Och signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 

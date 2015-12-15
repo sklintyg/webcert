@@ -3,8 +3,11 @@
 
 'use strict';
 
+var fk7263Utkast = pages.intygpages.fk7263Utkast;
+
 module.exports = function () {
-    var fk7263Utkast = pages.intygpages.fk7263Utkast;
+    
+
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });

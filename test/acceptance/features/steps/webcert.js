@@ -7,12 +7,6 @@ var fkIntygPage = pages.intygpages.fkIntyg;
 
 module.exports = function () {
 
-    this.Given(/^fyller i alla nödvändiga fält för intyget$/, function (callback) {
-        fkUtkastPage.smittskyddCheckboxClick();
-        fkUtkastPage.nedsattMed25CheckboxClick();
-        callback();
-    });
-
     this.Given(/^signerar FK7263-intyget$/, function (callback) {
 
         fkUtkastPage.whenSigneraButtonIsEnabled().then(function () {
