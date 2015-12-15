@@ -164,7 +164,8 @@ module.exports = {
             adhdPsykisk:                  shuffle(this.adhdPsykisk)[0],                  
             adhdSyndrom:                  shuffle(this.adhdSyndrom)[0],                  
             sjukhusvard:                  shuffle(this.sjukhusvard)[0],                  
-            ovrigMedicin:                 shuffle(this.ovrigMedicin)[0]
+            ovrigMedicin:                 shuffle(this.ovrigMedicin)[0],
+            kommentar:                    'Inget att rapportera'
         };
     }
 };
