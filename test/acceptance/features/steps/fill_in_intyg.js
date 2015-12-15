@@ -56,7 +56,9 @@ module.exports = function() {
 
             callback();
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            fkUtkastPage.smittskyddCheckboxClick();
+
+            global.intyg = testdata.fk.sjukintyg.getRandom();
+            fkUtkastPage.angeSmittskydd(intyg.smittskydd);
             fkUtkastPage.nedsattMed25CheckboxClick();
             callback();
         }

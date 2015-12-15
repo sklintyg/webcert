@@ -1,11 +1,15 @@
 'use strict';
 
+var shuffle = require('./../helpers/testdataHelper.js').shuffle;
+
 module.exports = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
     korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
     identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
     diabetestyp: ['Typ 1', 'Typ 2'],
     diabetesbehandlingtyper: ['Endast kost', 'Tabletter', 'Insulin'],
+
+    // FK7263
 
     // TS-Bas-attribut
     korkortstyperHogreBehorighet: [ 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi' ],
@@ -36,6 +40,8 @@ module.exports = {
     adhdSyndrom:                  ['Ja', 'Nej'],
     sjukhusvard:                  ['Ja', 'Nej'],
     ovrigMedicin:                 ['Ja', 'Nej'],
+
+    fk: require('./fk.js'),
     
     getRandomKorkortstyper: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
@@ -171,13 +177,3 @@ module.exports = {
         };
     }
 };
-
-function shuffle(o) {
-    for (var j, x, i = o.length; i;){
-        j = Math.floor(Math.random() * i);
-        x = o[--i]; 
-        o[i] = o[j]; 
-        o[j] = x;
-    }
-    return o;
-}

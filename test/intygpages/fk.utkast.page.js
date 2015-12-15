@@ -29,6 +29,9 @@ var FkUtkast = BaseUtkast._extend({
         this.nuvarandeArbete = element(by.id('currentWork'));
         this.faktiskTjanstgoring = element(by.id('capacityForWorkActualWorkingHoursPerWeek'));
 
+        this.nedsattMed50 = element(by.id('nedsattMed50'));
+        this.nedsattMed50from = element(by.id('nedsattMed50from'));
+        this.nedsattMed50tom = element(by.id('nedsattMed50tom'));
         
         
     },
@@ -76,6 +79,18 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeFaktiskTjanstgoring : function angeFaktiskTjanstgoring(txt) {
         this.faktiskTjanstgoring.sendKeys(txt);
+    },
+    angeSmittskydd: function(isSmittskydd) {
+        if(isSmittskydd){
+            this.smittskyddCheckboxClick();
+        }
+    },
+    angeArbetsformaga:function(arbetsformaga){
+        if(arbetsformaga.nedsattMed50){
+            this.nedsattMed50.click();
+            this.nedsattMed50from.sendKeys(arbetsformaga.nedsattMed50.from);
+            this.nedsattMed50tom.sendKeys(arbetsformaga.nedsattMed50.tom);
+        }
     }
 });
 
