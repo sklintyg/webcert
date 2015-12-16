@@ -10,7 +10,6 @@ var fkUtkastPage = pages.intygpages.fk7263Utkast;
 module.exports = function() {
 
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
-
         if (intyg.typ === 'Transportstyrelsens läkarintyg') {
             global.intyg = testdata.getRandomTsBasIntyg();
 
@@ -63,4 +62,11 @@ module.exports = function() {
             callback();
         }
     });
+
+    this.Given(/^jag jämför att all data är rätt$/, function(callback) {
+        expect(intyg).to.equal(global.intyg);
+        callback();
+    });
+
+
 };

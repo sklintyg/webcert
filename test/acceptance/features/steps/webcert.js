@@ -65,7 +65,7 @@ module.exports = function () {
   });
 
 
-  this.Given(/^kollar i databasen att intyget är borttaget$/, function (callback) {
+  this.Given(/^kollar jag i databasen att intyget är borttaget$/, function (callback) {
     var mysql = require('mysql');
 
     var connection = mysql.createConnection({
