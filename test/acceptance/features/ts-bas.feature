@@ -16,7 +16,7 @@ Scenario: Skapa och signera ett intyg till transportstyrelsen
     Och jag jämför att all data är rätt
 
 Scenario: Skicka ett signerat bas-intyg till Transportstyrelsen
-När jag väljer patienten "19121212-1212"@removeDraft
+När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
