@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
@@ -133,6 +134,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
         decorateWebCertUserWithSpecialiceringar(hosPerson, user);
         decorateWebCertUserWithVardgivare(hosPerson, user);
+        decorateWebCertUserWithBefattningar(hosPerson, user);
         decorateWebCertUserWithDefaultVardenhet(user);
 
         return user;
@@ -197,6 +199,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             specialiteter.add(st.getNamn());
         }
         webCertUser.setSpecialiseringar(specialiteter);
+    }
+
+    private void decorateWebCertUserWithBefattningar(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        List<String> befattningar = new ArrayList<>();
+        for (BefattningType bt : hosPerson.getBefattning()) {
+            befattningar.add(bt.getNamn());
+        }
+        webCertUser.setBefattningar(befattningar);
     }
 
     private HoSPersonType getHosPerson(String personId) {

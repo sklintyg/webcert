@@ -4,6 +4,7 @@ import static se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag.VARD
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,7 @@ import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
 import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
@@ -423,11 +425,41 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(hsaPersonInfo);
+        List<String> befattningar = extractBefattningar(hsaPersonInfo);
         String titel = extractTitel(hsaPersonInfo);
 
         webcertUser.setSpecialiseringar(specialiseringar);
         webcertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
+        webcertUser.setBefattningar(befattningar);
         webcertUser.setTitel(titel);
+    }
+
+    private List<String> extractBefattningar(List<PersonInformationType> hsaPersonInfo) {
+        Set<String> befattningar = new TreeSet<>();
+
+        for (PersonInformationType userType : hsaPersonInfo) {
+            if (userType.getPaTitle() != null) {
+                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
+                befattningar.addAll(hsaTitles);
+            }
+        }
+
+        return new ArrayList<>(befattningar);
+    }
+
+    /**
+     * Tries to use title attribute
+     */
+    private String extractTitel(List<PersonInformationType> hsaPersonInfo) {
+        Set<String> titleSet = new HashSet<>();
+        for (PersonInformationType pit : hsaPersonInfo) {
+            if (pit.getTitle() != null && pit.getTitle().trim().length() > 0) {
+                titleSet.add(pit.getTitle());
+            } else if (pit.getHealthCareProfessionalLicence() != null && pit.getHealthCareProfessionalLicence().size() > 0) {
+                titleSet.addAll(pit.getHealthCareProfessionalLicence());
+            }
+        }
+        return titleSet.stream().sorted().collect(Collectors.joining(", "));
     }
 
     private void decorateWebCertUserWithAuthenticationMethod(WebCertUser webcertUser, SAMLCredential credential) {
@@ -488,17 +520,17 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new ArrayList<>(specSet);
     }
 
-    private String extractTitel(List<PersonInformationType> hsaUserTypes) {
-        List<String> titlar = new ArrayList<>();
-
-        for (PersonInformationType userType : hsaUserTypes) {
-            if (StringUtils.isNotBlank(userType.getTitle())) {
-                titlar.add(userType.getTitle());
-            }
-        }
-
-        return StringUtils.join(titlar, COMMA);
-    }
+//    private String extractTitel(List<PersonInformationType> hsaUserTypes) {
+//        List<String> titlar = new ArrayList<>();
+//
+//        for (PersonInformationType userType : hsaUserTypes) {
+//            if (StringUtils.isNotBlank(userType.getTitle())) {
+//                titlar.add(userType.getTitle());
+//            }
+//        }
+//
+//        return StringUtils.join(titlar, COMMA);
+//    }
 
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
         Vardgivare firstVardgivare = user.getVardgivare().get(0);

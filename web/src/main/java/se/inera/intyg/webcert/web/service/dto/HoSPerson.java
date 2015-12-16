@@ -66,7 +66,7 @@ public class HoSPerson {
         person.setNamn(user.getNamn());
         person.setForskrivarkod(user.getForskrivarkod());
         person.getSpecialiseringar().addAll(user.getSpecialiseringar());
-        person.setBefattning(user.getTitel());
+        person.setBefattning(user.getBefattningar() != null && user.getBefattningar().size() > 0 ? user.getBefattningar().get(0) : null);
         // TODO Sätt befattning
         return person;
     }
