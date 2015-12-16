@@ -1,0 +1,44 @@
+{
+    "type":"object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "/",
+    "required":true,
+    "properties":{
+        "diagnoser": {
+            "type":"array",
+            "id": "diagnoser",
+            "required":false,
+            "minItems":0,
+            "items":
+                {
+                    "type":"object",
+                    "id": "0",
+                    "required":false,
+                    "properties":{
+                        "beskrivning": {
+                            "type":"string",
+                            "id": "beskrivning",
+                            "required":true
+                        },
+                        "kod": {
+                            "type":"string",
+                            "id": "kod",
+                            "required":true
+                        }
+                    }
+                }
+            
+
+        },
+        "moreResults": {
+            "type":"boolean",
+            "id": "moreResults",
+            "required":true
+        },
+        "resultat": {
+            "type":"string",
+            "id": "resultat",
+            "required":true
+        }
+    }
+}
