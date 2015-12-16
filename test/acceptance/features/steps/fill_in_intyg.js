@@ -1,6 +1,5 @@
 /*global
-testdata, intyg, browser, pages, logg
-*/
+testdata, intyg, browser, pages*/
 'use strict';
 
 var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
@@ -58,7 +57,12 @@ module.exports = function() {
 
             global.intyg = testdata.fk.sjukintyg.getRandom();
             fkUtkastPage.angeSmittskydd(intyg.smittskydd);
-            fkUtkastPage.nedsattMed25CheckboxClick();
+            fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
+            fkUtkastPage.angeDiagnoser(intyg.diagnos);
+            fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
+            fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
+            fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
+            fkUtkastPage.angePrognos(intyg.prognos);
             callback();
         }
     });
