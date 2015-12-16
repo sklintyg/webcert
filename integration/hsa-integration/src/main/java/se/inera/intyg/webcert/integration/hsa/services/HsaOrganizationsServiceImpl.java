@@ -96,7 +96,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                                 Vardenhet vardenhet = new Vardenhet(ct.getHealthCareUnitHsaId(), ct.getHealthCareUnitName());
                                 vardenhet.setStart(ct.getHealthCareUnitStartDate());
                                 vardenhet.setEnd(ct.getHealthCareUnitEndDate());
-                                vardenhet.setArbetsplatskod(credentialInformation.getGroupPrescriptionCode().size() > 0 ? credentialInformation.getGroupPrescriptionCode().get(0) : DEFAULT_ARBETSPLATSKOD);
+                                vardenhet.setArbetsplatskod(credentialInformation.getGroupPrescriptionCode().size() > 0 ? credentialInformation.getGroupPrescriptionCode().get(0) : "");
 
                                 // I don't like this, but we need to do an extra call to infrastructure:directory:organization:getUnit for address related stuff.
                                 updateWithContactInformation(vardenhet, getUnit(vardenhet.getId()));
@@ -160,10 +160,13 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             }
 
             Mottagning mottagning = new Mottagning(member.getHealthCareUnitMemberHsaId(), member.getHealthCareUnitMemberName(), member.getHealthCareUnitMemberStartDate(), member.getHealthCareUnitMemberEndDate());
-            mottagning.setPostadress(member.getHealthCareUnitMemberpostalAddress().getAddressLine()
-                    .stream()
-                    .collect(Collectors.joining(" "))
-            );
+            if (member.getHealthCareUnitMemberpostalAddress() != null && member.getHealthCareUnitMemberpostalAddress().getAddressLine() != null) {
+                mottagning.setPostadress(member.getHealthCareUnitMemberpostalAddress().getAddressLine()
+                        .stream()
+                        .collect(Collectors.joining(" "))
+                );
+            }
+
             mottagning.setPostnummer(member.getHealthCareUnitMemberpostalCode());
             mottagning.setTelefonnummer(member.getHealthCareUnitMemberTelephoneNumber().stream().collect(Collectors.joining(", ")));
             mottagning.setArbetsplatskod(member.getHealthCareUnitMemberPrescriptionCode().size() > 0 ? member.getHealthCareUnitMemberPrescriptionCode().get(0) : DEFAULT_ARBETSPLATSKOD);
@@ -172,7 +175,6 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             LOG.debug("Attached mottagning '{}' to vardenhet '{}'", mottagning.getId(), vardenhet.getId());
         }
         vardenhet.setMottagningar(vardenhet.getMottagningar().stream().sorted().collect(Collectors.toList()));
-
     }
 
 
