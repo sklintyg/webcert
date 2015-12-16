@@ -32,8 +32,8 @@ var FkUtkast = BaseUtkast._extend({
         this.nedsattMed50 = element(by.id('nedsattMed50'));
         this.nedsattMed50from = element(by.id('nedsattMed50from'));
         this.nedsattMed50tom = element(by.id('nedsattMed50tom'));
-        
-        
+
+
     },
     get: function get(intygId) {
         get._super.call(this, 'fk7263', intygId);

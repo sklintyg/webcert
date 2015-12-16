@@ -6,7 +6,7 @@
 var fk7263Utkast = pages.intygpages.fk7263Utkast;
 
 module.exports = function () {
-    
+
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);

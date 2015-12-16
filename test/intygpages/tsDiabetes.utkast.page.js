@@ -5,6 +5,7 @@
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
+var wcTestTools = require('./../webcertTestTools/helpers/pageHelper.util.js');
 
 var TsDiabetesUtkast = BaseUtkast._extend({
     init: function init() {
@@ -176,7 +177,7 @@ var TsDiabetesUtkast = BaseUtkast._extend({
 
         console.log('Anger körkortstyper: ' + bedomningObj.behorigheter.toString());
 
-        wcTestTools.helpers.page.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
+        wcTestTools.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
 
         if (bedomningObj.lamplighet) {
             console.log('Anger lämplighet: ' + bedomningObj.lamplighet);
