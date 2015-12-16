@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
 @Transactional
 @Api(value = "services anvandare", description = "REST API för testbarhet - Användare")
 @Path("/anvandare")
-public class UserResource {
+public class UserAgreementResource {
 
     @Autowired
     private AvtalRepository avtalRepository;
@@ -45,23 +45,6 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response avgodkannAvtal(@PathParam("hsaId") String hsaId) {
         godkantAvtalRepository.removeAllUserApprovments(hsaId);
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path("/origin")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getOrigin() {
-        final WebCertUser user = webCertUserService.getUser();
-        final String currentOrigin = user.getOrigin();
-        return Response.ok(currentOrigin).build();
-    }
-
-    @GET
-    @Path("/origin/{origin}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response setOrigin(@PathParam("origin") String origin) {
-        webCertUserService.updateOrigin(origin);
         return Response.ok().build();
     }
 
