@@ -58,9 +58,8 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         boolean result
         Browser.drive {
             waitFor {
-                doneLoading()
+                result = isAt SokSkrivaIntygPage
             }
-            result = isAt SokSkrivaIntygPage
         }
         result
     }
@@ -69,9 +68,8 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         boolean result
         Browser.drive {
             waitFor {
-                doneLoading()
+                result = isAt SokSkrivFyllINamnPage
             }
-            result = isAt SokSkrivFyllINamnPage
         }
         result
     }

@@ -8,8 +8,8 @@ Också att texten "I de fall patienten har ändrat namn eller adress så uppdate
 | skript | logga in |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
-| skript | Anvandarroll |
-| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+| skript | !-HanteraAnvandare-! |
+| uppdatera origin till | DJUPINTEGRATION |
 
 | skript | sok skriv intyg |
 | säkerställ att | sok skriv intyg sidan visas |

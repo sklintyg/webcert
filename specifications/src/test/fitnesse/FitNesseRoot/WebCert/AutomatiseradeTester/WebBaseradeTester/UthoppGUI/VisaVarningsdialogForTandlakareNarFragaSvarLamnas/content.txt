@@ -12,11 +12,10 @@ när vederbörande väljer att lämna sidan 'Frågor och svar' och gå till 'Ej 
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
-
 !3 Byt roll för att simulera att användare kommer via uthoppslänk
 
-| skript | Anvandarroll |
-| ändra till | ROLE_TANDLAKARE_UTHOPP |
+| skript | !-HanteraAnvandare-! |
+| uppdatera origin till | UTHOPP |
 
 !3 Visa utkastet via uthoppslänk
 
