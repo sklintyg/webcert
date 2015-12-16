@@ -10,12 +10,16 @@ import org.springframework.util.Assert;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -30,43 +34,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-//    @Override
-//    public void assertUserRoles(String[] grantedRoles) throws AuthoritiesException {
-//        Map<String, Role> roles = getUser().getRoles();
-//
-//        List<String> gr = Arrays.asList(grantedRoles);
-//        for (String role : roles.keySet()) {
-//            if (gr.contains(role)) {
-//                return;
-//            }
-//        }
-//
-//        throw new AuthoritiesException(
-//                String.format("User does not have a valid role for current task. User's role must be one of [%s] but was [%s]",
-//                        StringUtils.join(grantedRoles, ","), StringUtils.join(roles.keySet(), ",")));
-//
-//    }
-//
-//    @Override
-//    public void assertRequestOrigin(String requestOrigin) throws AuthoritiesException {
-//        String origin = getUser().getOrigin();
-//        if (origin.equals(requestOrigin)) {
-//            return;
-//        }
-//
-//        throw new AuthoritiesException(
-//                String.format("User does not have the valid request origin for current task. User's origin must be [%s] but was [%s]",
-//                        origin, requestOrigin));
-//    }
-//
-//    @Override
-//    public void clearEnabledFeaturesOnUser() {
-//        WebCertUser user = getUser();
-//        user.getAktivaFunktioner().clear();
-//
-//        LOG.debug("Cleared enabled featured on user {}", user.getHsaId());
-//    }
-
     @Override
     public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
         enableFeatures(getUser(), featuresToEnable);
@@ -78,6 +45,42 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         Assert.notEmpty(modulefeaturesToEnable);
 
         enableModuleFeatures(getUser(), moduleName, modulefeaturesToEnable);
+    }
+
+    /**
+     * Method returns all granted intygstyper for a certain user's privilege.
+     * If user doesn't have a privilege, an empty set is returned.
+     *
+     * Note:
+     * The configuration mindset of privileges is that if there are no
+     * intygstyper attached to a privilege, the privilege is implicitly
+     * valid for all intygstyper. However, this method will return an
+     * explicit list with granted intygstyper in all cases.
+     *
+     * @param privilegeName the privilege name
+     * @return returns a set of granted intygstyper, an empty set means no granted intygstyper for this privilege
+     */
+    @Override
+    public Set<String> getIntygstyper(String privilegeName) {
+        Assert.notNull(privilegeName);
+
+        // If user doesn't have a privilege, return an empty set
+        if (!getUser().hasPrivilege(privilegeName)) {
+            return Collections.emptySet();
+        }
+
+        // User is granted privilege access, get the privilege's intygstyper
+        Privilege privilege = getUser().getAuthorities().get(privilegeName);
+
+        // Return the privilege's intygstyper
+        List<String> intygsTyper = privilege.getIntygstyper();
+        if (intygsTyper == null || intygsTyper.isEmpty()) {
+            // The privilege didn't have any intygstyper
+            // restrictions, return all known intygstyper
+            intygsTyper = authoritiesResolver.getIntygstyper();
+        }
+
+        return intygsTyper.stream().collect(Collectors.toSet());
     }
 
     @Override
@@ -130,13 +133,13 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     void enableFeatures(WebCertUser user, WebcertFeature... featuresToEnable) {
-        LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
+        LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getFeatures(), ", "));
 
         for (WebcertFeature feature : featuresToEnable) {
-            user.getAktivaFunktioner().add(feature.getName());
+            user.getFeatures().add(feature.getName());
         }
 
-        LOG.debug("User {} now has these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
+        LOG.debug("User {} now has these features: {}", user.getHsaId(), StringUtils.join(user.getFeatures(), ", "));
     }
 
     void enableModuleFeatures(WebCertUser user, String moduleName, ModuleFeature... modulefeaturesToEnable) {
@@ -145,13 +148,13 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             String moduleFeatureName = moduleFeature.getName();
             String moduleFeatureStr = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, ".");
 
-            if (!user.hasAktivFunktion(moduleFeatureName)) {
+            if (!user.isFeatureActive(moduleFeatureName)) {
                 LOG.warn("Could not add module feature '{}' to user {} since corresponding webcert feature is not enabled", moduleFeatureStr,
                         user.getHsaId());
                 continue;
             }
 
-            user.getAktivaFunktioner().add(moduleFeatureStr);
+            user.getFeatures().add(moduleFeatureStr);
             LOG.debug("Added module feature {} to user", moduleFeatureStr);
         }
     }

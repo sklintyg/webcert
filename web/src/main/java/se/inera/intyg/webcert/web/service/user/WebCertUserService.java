@@ -5,6 +5,7 @@ import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
+import java.util.Set;
 
 public interface WebCertUserService {
 
@@ -18,6 +19,8 @@ public interface WebCertUserService {
     void enableFeaturesOnUser(WebcertFeature... featuresToEnable);
 
     void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
+
+    Set<String> getIntygstyper(String privilegeName);
 
     boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
 

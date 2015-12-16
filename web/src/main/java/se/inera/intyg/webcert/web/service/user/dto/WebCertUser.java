@@ -6,11 +6,11 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.R
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.util.Assert;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.model.UserDetails;
@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -44,15 +43,15 @@ public class WebCertUser implements UserDetails {
     private List<String> specialiseringar;
     private List<String> legitimeradeYrkesgrupper;
 
-    private Set<String> aktivaFunktioner;
-
     private SelectableVardenhet valdVardenhet;
     private SelectableVardenhet valdVardgivare;
 
+    private AuthenticationMethod authenticationMethod;
+
+    // Fields related to the authority context
+    private Set<String> features;
     private Map<String, Role> roles;
     private Map<String, Privilege> authorities;
-
-    private AuthenticationMethod authenticationMethod;
     private String origin;
 
 
@@ -81,24 +80,24 @@ public class WebCertUser implements UserDetails {
         return false;
     }
 
-    public Set<String> getAktivaFunktioner() {
-        if (aktivaFunktioner == null) {
-            aktivaFunktioner = new HashSet<>();
+    public Set<String> getFeatures() {
+        if (features == null) {
+            features = new HashSet<>();
         }
-
-        return aktivaFunktioner;
+        return features;
     }
 
-    public void setAktivaFunktioner(Set<String> aktivaFunktioner) {
-        this.aktivaFunktioner = aktivaFunktioner;
+    public void setFeatures(Set<String> features) {
+        this.features = features;
+    }
+
+    public boolean isFeatureActive(String featureName) {
+        return features != null && features.contains(featureName);
     }
 
     public boolean isFeatureActive(WebcertFeature feature) {
-        if (aktivaFunktioner == null) {
-            return false;
-        }
-        final String featureName = feature.getName();
-        return aktivaFunktioner.contains(featureName);
+        Assert.notNull(feature);
+        return isFeatureActive(feature.getName());
     }
 
     @JsonIgnore
@@ -311,10 +310,6 @@ public class WebCertUser implements UserDetails {
         this.vardgivare = vardgivare;
     }
 
-    public boolean hasAktivFunktion(String aktivFunktion) {
-        return getAktivaFunktioner().contains(aktivFunktion);
-    }
-
     /**
      * Checks if a user has been granted a specific role.
      *
@@ -364,17 +359,6 @@ public class WebCertUser implements UserDetails {
     }
 
     /**
-     * Returns true if the user's authorities map contains the specified
-     * {@link se.inera.intyg.webcert.web.auth.authorities.Privilege}.
-     */
-    public boolean hasPrivilege(Privilege privilege) {
-        if (privilege == null) {
-            return false;
-        }
-        return hasPrivilege(privilege.getName());
-    }
-
-    /**
      * Determines if the user's roles contains a lakare role or not.
      * <ul>
      * The following roles are considered lakare:
@@ -405,52 +389,6 @@ public class WebCertUser implements UserDetails {
     @Override
     public String toString() {
         return hsaId + " [authScheme=" + authenticationScheme + ", lakare=" + isLakare() + "]";
-    }
-
-    /**
-     * Returns intygstyper attached to privilege VISA_INTYG.
-     */
-    @JsonIgnore
-    public Set<String> getIntygsTyper() {
-        return getIntygsTyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-    }
-
-    /**
-     * Iterates over user's privileges and flatmaps distinct intygstyper into a set of strings.
-     *
-     * If method returns null, the user has not been granted the privilege we provide.
-     * If method returns an empty set, the user has been granted access to all intygstyper.
-     * If method returns an non empty set, the user has been granted access only to the intygstyper in the set.
-     */
-    @JsonIgnore
-    public Set<String> getIntygsTyper(String privilegeName) {
-        // return empty set if no argument is specified
-        if (privilegeName == null || privilegeName.isEmpty()) {
-            return null;
-        }
-
-        if (!hasPrivilege(privilegeName)) {
-            return null;
-        }
-
-        // return empty set if no privileges are present
-        if (authorities == null || authorities.isEmpty()) {
-            return null;
-        }
-
-        Set<String> set = new HashSet<>();
-
-        Privilege privilege = authorities.entrySet().stream()
-                .filter(p -> p.getKey().equals(privilegeName))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElse(null);
-
-        if (privilege.getIntygstyper() == null || privilege.getIntygstyper().isEmpty()) {
-            return set;
-        }
-
-        return privilege.getIntygstyper().stream().collect(Collectors.toSet());
     }
 
 }

@@ -18,9 +18,9 @@
 
   <context:annotation-config />
 
-  <jaxrs:server address="/roles">
+  <jaxrs:server address="/user">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserRoleResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.authtestability.UserResource" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

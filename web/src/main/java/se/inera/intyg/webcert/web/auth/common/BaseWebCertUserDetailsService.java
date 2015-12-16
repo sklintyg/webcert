@@ -65,7 +65,7 @@ public abstract class BaseWebCertUserDetailsService {
 
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
-        webcertUser.setAktivaFunktioner(availableFeatures);
+        webcertUser.setFeatures(availableFeatures);
     }
 
     protected HttpServletRequest getCurrentRequest() {

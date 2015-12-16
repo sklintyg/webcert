@@ -21,6 +21,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -48,7 +49,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -153,16 +153,11 @@ public class IntygServiceImpl implements IntygService {
 
     private void filterByIntygTypeForUser(List<IntygItem> fullIntygItemList) {
         // Get intygstyper from the view privilege
-        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        // If intygstyper is null, user are not granted access to view any intyg.
-        if (intygsTyper == null) {
-            fullIntygItemList = Collections.emptyList();
-            return;
-        }
-
-        // If intygstyper is an empty set, user are granted access to view intyg of any intygstyp.
+        // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
         if (intygsTyper.isEmpty()) {
+            fullIntygItemList.clear();
             return;
         }
 
@@ -190,7 +185,8 @@ public class IntygServiceImpl implements IntygService {
     private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        // TODO: PRIVILEGE_LIST_INTYG borde det finnas
+        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, intygsTyper);
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
     }

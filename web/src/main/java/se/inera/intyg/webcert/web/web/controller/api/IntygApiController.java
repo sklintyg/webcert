@@ -11,6 +11,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
@@ -76,8 +77,8 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private MonitoringLogService monitoringLogService;
 
-    public IntygApiController() {
 
+    public IntygApiController() {
     }
 
     /**
@@ -166,7 +167,7 @@ public class IntygApiController extends AbstractApiController {
 
         if (checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) {
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer.getPersonnummer(), enhetsIds,
-                    ALL_DRAFTS, getWebCertUserService().getUser().getIntygsTyper());
+                    ALL_DRAFTS, getWebCertUserService().getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG));
             LOG.debug("Got {} utkast", utkastList.size());
         } else {
             utkastList = Collections.emptyList();

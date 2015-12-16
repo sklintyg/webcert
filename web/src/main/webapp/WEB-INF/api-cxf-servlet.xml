@@ -59,7 +59,7 @@
   <beans profile="dev,testability-api">
     <jaxrs:server address="/testability">
       <jaxrs:serviceBeans>
-        <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserRoleResource" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.authtestability.UserRoleResource" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />

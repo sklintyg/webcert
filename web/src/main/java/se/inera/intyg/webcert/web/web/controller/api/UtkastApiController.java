@@ -46,11 +46,8 @@ public class UtkastApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
 
-    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE);
-
+    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
     private static final List<UtkastStatus> COMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_COMPLETE);
-
     private static final List<UtkastStatus> INCOMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;

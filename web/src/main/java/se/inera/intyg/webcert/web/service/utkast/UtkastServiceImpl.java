@@ -23,6 +23,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;
@@ -163,22 +165,16 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
-        // Get a list of drafts
-        List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
-
         // Get intygstyper from the view privilege
-        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
+        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        // If intygstyper is null, user are not granted access to view any intyg.
-        if (intygsTyper == null) {
+        // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
+        if (intygsTyper.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // If intygstyper is an empty set, user are granted access
-        // to view intyg of any intygstyp, thus no filtering
-        if (intygsTyper.isEmpty()) {
-            return utkastList;
-        }
+        // Get a list of drafts
+        List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
 
         // If there are intygstyper in the set, then user is only granted access to
         // view intyg of intygstyper that are in the set.

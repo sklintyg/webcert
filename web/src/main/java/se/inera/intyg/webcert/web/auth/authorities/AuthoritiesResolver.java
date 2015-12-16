@@ -1,13 +1,5 @@
 package se.inera.intyg.webcert.web.auth.authorities;
 
-import org.opensaml.saml2.core.Assertion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
@@ -15,7 +7,13 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.T
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_TANDLAKARE;
 
-
+import org.opensaml.saml2.core.Assertion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.saml.SAMLCredential;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
@@ -48,6 +46,77 @@ public class AuthoritiesResolver {
     private HsaPersonService hsaPersonService;
 
 
+    // ~ API
+    // ======================================================================================
+
+    public Role resolveRole(SAMLCredential credential, HttpServletRequest request) {
+        Assert.notNull(credential, "Argument 'credential' cannot be null");
+        Assert.notNull(request, "Argument 'request' cannot be null");
+
+        SakerhetstjanstAssertion sa = getAssertion(credential.getAuthenticationAssertion());
+        List<PersonInformationType> personInfo = getPersonInfo(sa.getHsaId());
+
+        Role role = lookupUserRole(sa, personInfo);
+        return role;
+    }
+
+    /**
+     * Get all configured (known/loaded) intygstyper.
+     * @return a list with intygstyper
+     */
+    public List<String> getIntygstyper() {
+        return configurationLoader.getConfiguration().getKnownIntygstyper();
+    }
+
+    /**
+     * Get all configured (loaded) privileges.
+     * @return a list with privileges
+     */
+    public List<Privilege> getPrivileges() {
+        return configurationLoader.getConfiguration().getPrivileges();
+    }
+
+    public Role getRole(String name) {
+        return fnRole.apply(name);
+    }
+
+    public RequestOrigin getRequestOrigin(String name) {
+        return fnRequestOrigin.apply(name);
+    }
+
+    /**
+     * Get all configured (loaded) request origins.
+     * @return a list with request origins
+     */
+    public List<RequestOrigin> getRequestOrigins() {
+        return configurationLoader.getConfiguration().getRequestOrigins();
+    }
+
+    /**
+     * Get all configured (loaded) roles.
+     * @return a list with  roles
+     */
+    public List<Role> getRoles() {
+        return configurationLoader.getConfiguration().getRoles();
+    }
+
+    /**
+     * Get all configured (loaded) titles (a.k.a legitimerade yrkesgrupper).
+     * @return a list with titles
+     */
+    public List<Title> getTitles() {
+        return configurationLoader.getConfiguration().getTitles();
+    }
+
+    /**
+     * Get all configured (loaded) title codes (a.k.a befattningskoder).
+     * @return a list with title codes
+     */
+    public List<TitleCode> getTitleCodes() {
+        return configurationLoader.getConfiguration().getTitleCodes();
+    }
+
+
     // ~ Getter and setter
     // ======================================================================================
 
@@ -68,123 +137,8 @@ public class AuthoritiesResolver {
     }
 
 
-    // ~ Lambdas
-    // ======================================================================================
-
-    private Predicate<RequestOrigin> isRequestOrigin(String name) {
-        return ro -> ro.getName() != null && ro.getName().equalsIgnoreCase(name);
-    }
-
-    private Predicate<Role> isRole(String name) {
-        return r -> r.getName() != null && r.getName().equalsIgnoreCase(name);
-    }
-
-    private Predicate<Title> isTitle(String title) {
-        return t -> t.getTitle() != null && t.getTitle().equalsIgnoreCase(title);
-    }
-
-    private Predicate<TitleCode> isTitleCode(String titleCode) {
-        return tc -> tc.getTitleCode() != null && tc.getTitleCode().equalsIgnoreCase(titleCode);
-    }
-
-    private Predicate<TitleCode> isGroupPrescriptionCode(String groupPrescriptionCode) {
-        return tc -> tc.getGroupPrescriptionCode() != null && tc.getGroupPrescriptionCode().equalsIgnoreCase(groupPrescriptionCode);
-    }
-
-    private Function<String, RequestOrigin> fnRequestOrigin = (name) -> {
-        return getRequestOrigins().stream()
-                .filter(isRequestOrigin(name))
-                .findFirst()
-                .orElse(null);
-    };
-
-    private Function<String, Role> fnRole = (name) -> {
-        return getRoles().stream()
-                .filter(isRole(name))
-                .findFirst()
-                .orElse(null);
-    };
-
-    private Function<String, Title> fnTitle = (title) -> {
-        return getTitles().stream()
-                .filter(isTitle(title))
-                .findFirst()
-                .orElse(null);
-    };
-
-    private BiFunction<String, String, TitleCode> fnTitleCode = (titleCode, groupPrescriptionCode) -> {
-        return getTitleCodes().stream()
-                .filter(isTitleCode(titleCode).and(isGroupPrescriptionCode(groupPrescriptionCode)))
-                .findFirst()
-                .orElse(null);
-    };
-
-
-    // ~ API
-    // ======================================================================================
-
-    public Role resolveRole(SAMLCredential credential, HttpServletRequest request) {
-        Assert.notNull(credential, "Argument 'credential' cannot be null");
-        Assert.notNull(request, "Argument 'request' cannot be null");
-
-        SakerhetstjanstAssertion sa = getAssertion(credential.getAuthenticationAssertion());
-        List<PersonInformationType> personInfo = getPersonInfo(sa.getHsaId());
-
-        Role role = lookupUserRole(sa, personInfo);
-        return role;
-    }
-
-
-    public Role getRole(String name) {
-        return fnRole.apply(name);
-    }
-
-    public RequestOrigin getRequestOrigin(String name) {
-        return fnRequestOrigin.apply(name);
-    }
-
-
     // ~ Package methods
     // ======================================================================================
-    /**
-     * Get loaded request origins.
-     * @return a list with request origins
-     */
-    List<RequestOrigin> getRequestOrigins() {
-        return configurationLoader.getConfiguration().getRequestOrigins();
-    }
-
-    /**
-     * Get loaded privileges.
-     * @return a list with privileges
-     */
-    List<Privilege> getPrivileges() {
-        return configurationLoader.getConfiguration().getPrivileges();
-    }
-
-    /**
-     * Get loaded roles.
-     * @return a list with  roles
-     */
-    List<Role> getRoles() {
-        return configurationLoader.getConfiguration().getRoles();
-    }
-
-    /**
-     * Get loaded titles (a.k.a legitimerade yrkesgrupper).
-     * @return a list with titles
-     */
-    List<Title> getTitles() {
-        return configurationLoader.getConfiguration().getTitles();
-    }
-
-    /**
-     * Get loaded title codes (a.k.a befattningskoder).
-     * @return a list with title codes
-     */
-    List<TitleCode> getTitleCodes() {
-        return configurationLoader.getConfiguration().getTitleCodes();
-    }
 
     /**
      * Resolve a user role using SAML credential and HSA information.
@@ -344,5 +298,57 @@ public class AuthoritiesResolver {
 
         return personInfo;
     }
+
+
+    // ~ Lambdas
+    // ======================================================================================
+
+    private Predicate<RequestOrigin> isRequestOrigin(String name) {
+        return ro -> ro.getName() != null && ro.getName().equalsIgnoreCase(name);
+    }
+
+    private Predicate<Role> isRole(String name) {
+        return r -> r.getName() != null && r.getName().equalsIgnoreCase(name);
+    }
+
+    private Predicate<Title> isTitle(String title) {
+        return t -> t.getTitle() != null && t.getTitle().equalsIgnoreCase(title);
+    }
+
+    private Predicate<TitleCode> isTitleCode(String titleCode) {
+        return tc -> tc.getTitleCode() != null && tc.getTitleCode().equalsIgnoreCase(titleCode);
+    }
+
+    private Predicate<TitleCode> isGroupPrescriptionCode(String groupPrescriptionCode) {
+        return tc -> tc.getGroupPrescriptionCode() != null && tc.getGroupPrescriptionCode().equalsIgnoreCase(groupPrescriptionCode);
+    }
+
+    private Function<String, RequestOrigin> fnRequestOrigin = (name) -> {
+        return getRequestOrigins().stream()
+                .filter(isRequestOrigin(name))
+                .findFirst()
+                .orElse(null);
+    };
+
+    private Function<String, Role> fnRole = (name) -> {
+        return getRoles().stream()
+                .filter(isRole(name))
+                .findFirst()
+                .orElse(null);
+    };
+
+    private Function<String, Title> fnTitle = (title) -> {
+        return getTitles().stream()
+                .filter(isTitle(title))
+                .findFirst()
+                .orElse(null);
+    };
+
+    private BiFunction<String, String, TitleCode> fnTitleCode = (titleCode, groupPrescriptionCode) -> {
+        return getTitleCodes().stream()
+                .filter(isTitleCode(titleCode).and(isGroupPrescriptionCode(groupPrescriptionCode)))
+                .findFirst()
+                .orElse(null);
+    };
 
 }

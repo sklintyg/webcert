@@ -50,13 +50,6 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                         if (authorityService.isAuthorityActive(options)) {
                             types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
                         }
-/*
-                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id)
-                            && UserModel.isAuthorizedForIntygstyp(UserModel.privileges.SKRIVA_INTYG, m.id)
-                            && UserModel.isAuthorizedForOrigin(m.id)) {
-                            types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
-                        }
-*/
                     }
                     onSuccess(types);
                 }).error(function(data, status) {
@@ -109,23 +102,23 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 $log.debug('_getUtkastFetchMore');
                 var restPath = '/api/utkast';
                 $http.get(restPath, { params: query }).success(function(data) {
-                    $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
+                    $log.debug('_getUtkastFetchMore got data:' + data);
                     onSuccess(data);
                 }).error(function(data, status) {
-                    $log.error('_getUnsignedCertificatesByQueryFetchMore error ' + status);
+                    $log.error('_getUtkastFetchMore error ' + status);
                     // Let calling code handle the error of no data response
                     onError(data);
                 });
             }
 
             function _getUtkastSavedByList(onSuccess, onError) {
-                $log.debug('_getCertificateSavedByList');
+                $log.debug('_getUtkastSavedByList');
                 var restPath = '/api/utkast/lakare/';
                 $http.get(restPath).success(function(data) {
-                    $log.debug('_getCertificateSavedByList got data:' + data);
+                    $log.debug('_getUtkastSavedByList got data:' + data);
                     onSuccess(data);
                 }).error(function(data, status) {
-                    $log.error('_getCertificateSavedByList error ' + status);
+                    $log.error('_getUtkastSavedByList error ' + status);
                     // Let calling code handle the error of no data response
                     onError(data);
                 });

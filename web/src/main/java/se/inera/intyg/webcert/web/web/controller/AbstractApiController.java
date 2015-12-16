@@ -103,7 +103,8 @@ public abstract class AbstractApiController {
     protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {
         Assert.notNull(webcertFeature);
         WebCertUser webCertUser = webCertUserService.getUser();
-        return webCertUser.hasAktivFunktion(webcertFeature.getName());
+        String webcertFeatureName = webcertFeature.getName();
+        return webCertUser.isFeatureActive(webcertFeatureName);
     }
 
     protected boolean checkIfWebcertFeatureIsAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
@@ -111,7 +112,7 @@ public abstract class AbstractApiController {
         Assert.notNull(moduleType);
         WebCertUser webCertUser = webCertUserService.getUser();
         String webcertFeatureName = StringUtils.join(new String[] { webcertFeature.getName(), moduleType }, ".");
-        return webCertUser.hasAktivFunktion(webcertFeatureName);
+        return webCertUser.isFeatureActive(webcertFeatureName);
     }
 
     protected void abortIfWebcertFeatureIsNotAvailable(WebcertFeature webcertFeature) {
