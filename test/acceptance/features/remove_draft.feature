@@ -13,7 +13,7 @@ Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 Och jag går tillbaka till start
 Och jag går in på ett "Läkarintyg FK 7263" med status "Utkast, uppgifter saknas"
 Och jag raderar utkastet
-Och kollar i databasen att "19971019-2387" är borttagen
+Och kollar i databasen att intyget är borttaget
 Så ska intyget "Läkarintyg FK 7263" med status "Utkast, uppgifter saknas" inte synas mer
 
 @removeDraft
@@ -23,7 +23,7 @@ Och jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" in
 Och jag går tillbaka till start
 Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Utkast, uppgifter saknas"
 Och jag raderar utkastet
-Och kollar i databasen att "19971019-2387" är borttagen
+Och kollar i databasen att intyget är borttaget
 Så ska intyget "Transportstyrelsens läkarintyg, diabetes" med status "Utkast, uppgifter saknas" inte synas mer
 
 @removeDraft
@@ -33,5 +33,5 @@ Och jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
 Och jag går tillbaka till start
 Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Utkast, uppgifter saknas"
 Och jag raderar utkastet
-Och kollar i databasen att "19971019-2387" är borttagen
+Och kollar i databasen att intyget är borttaget
 Så ska intyget "Transportstyrelsens läkarintyg, diabetes" med status "Utkast, uppgifter saknas" inte synas mer

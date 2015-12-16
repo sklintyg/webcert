@@ -26,29 +26,12 @@ module.exports = function () {
         pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
         pages.app.views.sokSkrivIntyg.continueToUtkast();
 
+        //Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){
           intygsid = text.split('/').slice(-1)[0];
           logg('Intygsid: '+intygsid);
         });
 
-        // if(intyg.typ === 'Läkarintyg FK 7263'){
-        //   browser.getCurrentUrl().then(function(text){
-        //     intygsid = text.split('/').slice(-1)[0];
-        //     logg('Intygsid: '+intygsid);
-        //   });
-        // }
-        // else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
-        //   browser.getCurrentUrl().then(function(text){
-        //     intygsid = text.split('/').slice(-1)[0];
-        //     logg('Intygsid: '+intygsid);
-        //   });
-        // }
-        // else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
-        //   browser.getCurrentUrl().then(function(text){
-        //     intygsid = text.split('/').slice(-1)[0];
-        //     logg('Intygsid: '+intygsid);
-        //   });
-        // }
         callback();
     });
 

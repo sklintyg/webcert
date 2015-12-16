@@ -64,12 +64,13 @@ module.exports = function () {
       });
   });
 
-  this.Given(/^kollar i databasen att "([^"]*)" är borttagen$/, function (pers_nummer, callback) {
+
+  this.Given(/^kollar i databasen att intyget är borttaget$/, function (callback) {
     var mysql = require('mysql');
 
     var connection = mysql.createConnection({
       host  : "10.1.0.66",
-      user  : "nmt_test",
+      user  : process.env.DBUSR,
       password  : process.env.DBPW,
       database  : "webcert_ip40"
     });
@@ -79,7 +80,7 @@ module.exports = function () {
       if(rows!=null){
       console.log('Amount of rows in database : ' + rows[0].Counter);
       var count = parseInt(rows[0].Counter);
-      expect(count).to.equal(0);
+      expect(parseInt(rows[0].Counter)).to.equal(0);
       callback();
     }
   });
