@@ -45,7 +45,6 @@ public final class UpdateUserUtil {
         VardpersonReferens vardPerson = new VardpersonReferens();
         vardPerson.setNamn(hosPerson.getNamn());
         vardPerson.setHsaId(hosPerson.getHsaId());
-
         return vardPerson;
     }
 

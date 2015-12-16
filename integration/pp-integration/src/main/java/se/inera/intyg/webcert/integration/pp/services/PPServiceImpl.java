@@ -45,7 +45,6 @@ public class PPServiceImpl implements PPService {
     }
 
 
-
     @Override
     public boolean validatePrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
         LOG.debug("Validating person information from Privatläkarportalen.");
@@ -126,6 +125,4 @@ public class PPServiceImpl implements PPService {
 
         return ppType;
     }
-
-
 }
