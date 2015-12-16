@@ -1,6 +1,5 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 
@@ -12,18 +11,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.authtestability.UserResource;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
+public class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -40,22 +34,20 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testGetUserRoles() throws Exception {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+    public void testGetUserOrigin() throws Exception {
+        String origin = WebCertUserOriginType.NORMAL.name();
 
         //Given
         WebCertUser user = Mockito.mock(WebCertUser.class);
-        Map<String, Role> roleHashMap = new HashMap<>();
-        roleHashMap.put(role.getName(), role);
 
-        Mockito.when(user.getRoles()).thenReturn(roleHashMap);
+        Mockito.when(user.getOrigin()).thenReturn(origin);
         Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
         //When
-        final Collection<String> rolesResponse = (Collection<String>) userResource.getUserRoles().getEntity();
+        final String originResponse = (String) userResource.getOrigin().getEntity();
 
         //Then
-        assertArrayEquals(new String[]{role.getName()}, rolesResponse.toArray());
+        assertEquals(origin, originResponse);
     }
 
     @Test
@@ -65,13 +57,11 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
         Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
         //When
-        Role newRole = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-        userResource.setUserRole(newRole);
+        String newOrigin = WebCertUserOriginType.UTHOPP.name();
+        userResource.setOrigin(newOrigin);
 
         //Then
-        Mockito.verify(webCertUserService, times(1)).updateUserRole(roleArrCaptor.capture());
-        assertEquals(newRole.getName(), roleArrCaptor.getValue());
-        //assertEquals(1, roleArrCaptor.getValue().length);
-        //assertEquals(newRole.getName(), roleArrCaptor.getValue()[0]);
+        Mockito.verify(webCertUserService, times(1)).updateOrigin(roleArrCaptor.capture());
+        assertEquals(newOrigin, roleArrCaptor.getValue());
     }
 }

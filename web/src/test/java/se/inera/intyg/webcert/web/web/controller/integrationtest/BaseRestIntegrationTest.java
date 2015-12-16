@@ -106,7 +106,7 @@ public abstract class BaseRestIntegrationTest {
      * @param newRole
      */
     protected void changeRoleTo(String newRole) {
-        given().pathParam("role", newRole).expect().statusCode(200).when().get("authtestability/roles/userrole/{role}");
+        given().pathParam("role", newRole).expect().statusCode(200).when().get("authtestability/user/role/{role}");
     }
 
     /**

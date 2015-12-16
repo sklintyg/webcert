@@ -68,11 +68,11 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = createWebCertUser(false);
 
-        assertEquals(0, user.getAktivaFunktioner().size());
+        assertEquals(0, user.getFeatures().size());
 
         webcertUserService.enableFeatures(user, WebcertFeature.HANTERA_FRAGOR, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        assertEquals(2, user.getAktivaFunktioner().size());
+        assertEquals(2, user.getFeatures().size());
     }
 
     @Test
@@ -80,16 +80,16 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = createWebCertUser(false);
 
-        assertEquals(0, user.getAktivaFunktioner().size());
+        assertEquals(0, user.getFeatures().size());
 
         // base features must be enabled first
         webcertUserService.enableFeatures(user, WebcertFeature.HANTERA_FRAGOR, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        assertEquals(2, user.getAktivaFunktioner().size());
+        assertEquals(2, user.getFeatures().size());
 
         webcertUserService.enableModuleFeatures(user, "fk7263", ModuleFeature.HANTERA_FRAGOR, ModuleFeature.HANTERA_INTYGSUTKAST);
 
-        assertEquals(4, user.getAktivaFunktioner().size());
+        assertEquals(4, user.getFeatures().size());
     }
 
     private WebCertUser createWebCertUser(boolean fromJS) {

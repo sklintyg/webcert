@@ -378,7 +378,7 @@ public class WebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestS
         assertEquals(3, webCertUser.getSpecialiseringar().size());
         assertEquals(2, webCertUser.getLegitimeradeYrkesgrupper().size());
         assertEquals(TITLE_HEAD_DOCTOR, webCertUser.getTitel());
-        assertFalse(webCertUser.getAktivaFunktioner().isEmpty());
+        assertFalse(webCertUser.getFeatures().isEmpty());
 
         assertTrue(webCertUser.getRoles().containsKey(AuthoritiesConstants.ROLE_LAKARE));
         assertUserPrivileges(AuthoritiesConstants.ROLE_LAKARE, webCertUser);
