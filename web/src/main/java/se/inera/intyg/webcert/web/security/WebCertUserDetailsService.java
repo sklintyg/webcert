@@ -34,7 +34,6 @@ import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.roles.model.Role;
 import se.inera.intyg.webcert.persistence.roles.model.TitleCode;
 import se.inera.intyg.webcert.persistence.roles.repository.TitleCodeRepository;
@@ -448,7 +447,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     /**
-     * Tries to use title attribute
+     * Tries to use title attribute, otherwise resorts to healthcareProfessionalLicenses.
      */
     private String extractTitel(List<PersonInformationType> hsaPersonInfo) {
         Set<String> titleSet = new HashSet<>();
