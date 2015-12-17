@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2015 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <con:soapui-project activeEnvironment="Default" name="RecieveAnswerFromFK" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ReceiveAnswerResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.webcert.inera.se/}ReceiveAnswerResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9088/services/receive-answer/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9088/services/receive-answer/v1.0?wsdl"><con:part><con:url>http://localhost:9088/services/receive-answer/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveAnswerResponderImplService" targetNamespace="http://integration.webcert.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.webcert.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20">
   <wsdl:import location="http://localhost:9088/services/receive-answer/v1.0?wsdl=ReceiveMedicalCertificateAnswerResponderInterface.wsdl" namespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20"></wsdl:import>
   <wsdl:binding name="ReceiveAnswerResponderImplServiceSoapBinding" type="ns1:ReceiveMedicalCertificateAnswerResponderInterface">
