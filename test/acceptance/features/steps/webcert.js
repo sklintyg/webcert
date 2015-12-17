@@ -79,7 +79,6 @@ module.exports = function () {
     {
       if(rows!=null){
       console.log('Amount of rows in database : ' + rows[0].Counter);
-      var count = parseInt(rows[0].Counter);
       expect(parseInt(rows[0].Counter)).to.equal(0);
       callback();
     }

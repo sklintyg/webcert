@@ -67,10 +67,7 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^jag jämför att all data är rätt$/, function(callback) {
-        expect(intyg).to.equal(global.intyg);
-        callback();
-    });
+  
 
 
 };

@@ -49,6 +49,14 @@ module.exports = function () {
         // // Intyget avser
         var intygetAvser = element(by.id('intygAvser'));
 
+        var period = element(by.id('observationsperiod'));
+        var dTyp = element(by.id('diabetestyp'));
+        var eKost = element(by.id('endastKost'));
+        var tabl = element(by.id('tabletter'));
+        var insul = element(by.id('insulin'));
+        var insulPeriod = element(by.id('insulinBehandlingsperiod'));
+        var besk = element(by.id('annanBehandlingBeskrivning'));
+
         //Sortera typer till den ordning som Webcert använder
         var selectedTypes = intyg.korkortstyper.sort(function (a, b) {
             var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'TRAKTOR', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'TAXI'];
@@ -65,13 +73,36 @@ module.exports = function () {
         logg('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
 
 
-        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
+        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) { 
             // Specialare eftersom status inte innehåller den punkt som utkastet innehåller.
             var txt = 'Försäkran enligt 18 kap 4 §';
             expect(idStarktGenom.getText()).to.eventually.contain(txt).and.notify(callback);
         } else {
             expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
         }
+        console.log('check if \"observationsperiod: \"'+period.getText()+' equals \"intyg.allmant.year: \"'+intyg.allmant.year);
+        
+        expect(period.getText()).to.equal(intyg.allmant.year).and.notify(callback);
+
+        // expect(period.getText()).to.equal(intyg.allmant.year).and.notify(callback);
+
+        // intyg.allmant.typ
+
+        // intyg.allmant.behandling
+
+        // intyg.allmant.hypoglykemier
+        // intyg.allmant.synintyg
+        // intyg.allmant.bedomning
+
+
+
+
+// intyg.identitetStyrktGenom
+// intyg.allmant
+// intyg.hypoglykemier
+// intyg.synintyg
+// intyg.bedomning
+// intyg.korkortstyper
 
     });
 

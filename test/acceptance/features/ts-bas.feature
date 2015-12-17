@@ -13,7 +13,7 @@ Scenario: Skapa och signera ett intyg till transportstyrelsen
     Och signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
-    Och jag jämför att all data är rätt
+    
 
 Scenario: Skicka ett signerat bas-intyg till Transportstyrelsen
 När jag väljer patienten "19121212-1212"
