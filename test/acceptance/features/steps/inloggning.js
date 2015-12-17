@@ -37,6 +37,7 @@ module.exports = function () {
 
     this.Given(/^signerar intyget$/, function (callback) {
         var EC = protractor.ExpectedConditions;
+        browser.sleep(5000);
         browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
@@ -49,11 +50,9 @@ module.exports = function () {
         // // Intyget avser
         var intygetAvser = element(by.id('intygAvser'));
 
-        var period = element(by.id('observationsperiod'));
-        var dTyp = element(by.id('diabetestyp'));
-        var eKost = element(by.id('endastKost'));
-        var tabl = element(by.id('tabletter'));
-        var insul = element(by.id('insulin'));
+        
+        // var period = element(by.id('observationsperiod'));
+
         var insulPeriod = element(by.id('insulinBehandlingsperiod'));
         var besk = element(by.id('annanBehandlingBeskrivning'));
 
@@ -80,29 +79,49 @@ module.exports = function () {
         } else {
             expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
         }
-        console.log('check if \"observationsperiod: \"'+period.getText()+' equals \"intyg.allmant.year: \"'+intyg.allmant.year);
+
+        var period = element(by.id('observationsperiod'));
+        period.getText().then(function (_text) {
+            expect(_text).to.eventually.equals(intyg.allmant.year).and.notify(callback);
+        });
         
-        expect(period.getText()).to.equal(intyg.allmant.year).and.notify(callback);
+        var dTyp = element(by.id('diabetestyp'));
 
-        // expect(period.getText()).to.equal(intyg.allmant.year).and.notify(callback);
+        var eKost = element(by.id('endastKost'));
+        var tabl = element(by.id('tabletter'));
+        var insul = element(by.id('insulin'));
 
-        // intyg.allmant.typ
+        var typer = intyg.allmant.behandling.typer;
+        typer.forEach(function(typ) {
+            if(typ==='Endast kost')
+            {
+                expect(eKost.getText()).to.eventually.equal(typ).and.notify(callback);
+            }
+            else if(typ==='Tabletter')
+            {
+                expect(tabl.getText()).to.eventually.equal(typ).and.notify(callback);
+            }
+            else if(typ==='Insulin')
+            {
+                expect(insul.getText()).to.eventually.equal(typ).and.notify(callback);
+            }
+        });
+
+        // endastKost
+        // tabletter
+        // insulin
 
         // intyg.allmant.behandling
 
         // intyg.allmant.hypoglykemier
         // intyg.allmant.synintyg
         // intyg.allmant.bedomning
-
-
-
-
-// intyg.identitetStyrktGenom
-// intyg.allmant
-// intyg.hypoglykemier
-// intyg.synintyg
-// intyg.bedomning
-// intyg.korkortstyper
+        // intyg.identitetStyrktGenom
+        // intyg.allmant
+        // intyg.hypoglykemier
+        // intyg.synintyg
+        // intyg.bedomning
+        // intyg.korkortstyper
 
     });
 
