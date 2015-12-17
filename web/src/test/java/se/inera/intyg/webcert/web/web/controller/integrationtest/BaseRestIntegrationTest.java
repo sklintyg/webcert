@@ -18,7 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
@@ -132,6 +134,24 @@ public abstract class BaseRestIntegrationTest {
 
         final String utkastId = model.getString("id");
         assertTrue(utkastId.length() > 0);
+
+        return utkastId;
+    }
+
+    /**
+     * Create a intyg with status SIGNED
+     *
+     * @param intygsTyp
+     * @param patientPersonNummer
+     * @return
+     */
+    protected String createSignedIntyg(String intygsTyp, String patientPersonNummer) {
+
+        //First create the draft
+        final String utkastId = createUtkast(intygsTyp, patientPersonNummer);
+
+        //..then "fake" it to be signed. Maybe we should set more signature related metadata?
+        given().pathParam("intygsId", utkastId).expect().statusCode(200).when().put("testability/intyg/{intygsId}/signerat");
 
         return utkastId;
     }
