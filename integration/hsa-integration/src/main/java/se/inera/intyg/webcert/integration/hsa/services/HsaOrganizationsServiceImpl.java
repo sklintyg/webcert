@@ -1,15 +1,10 @@
 package se.inera.intyg.webcert.integration.hsa.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.webcert.integration.hsa.client.AuthorizationManagementService;
 import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
@@ -27,6 +22,10 @@ import se.riv.infrastructure.directory.v1.AddressType;
 import se.riv.infrastructure.directory.v1.CommissionType;
 import se.riv.infrastructure.directory.v1.CredentialInformationType;
 import se.riv.infrastructure.directory.v1.ResultCodeEnum;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Provides HSA organization services through TJK over NTjP.
@@ -192,6 +191,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         }
 
         vardenhet.setPostnummer(response.getPostalCode());
+
         StringBuilder postaAddress = new StringBuilder();
         List<String> lines = address.getAddressLine();
         for (int i = 0; i < lines.size() - 1; i++) {
@@ -199,9 +199,9 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 postaAddress.append(lines.get(i).trim());
             }
         }
-
         vardenhet.setPostadress(postaAddress.toString());
-        String lastLine = lines.get(lines.size() - 1);
+
+        String lastLine = lines.isEmpty() ? null : lines.get(lines.size() - 1);
         final int shortestLengthToIncludeBothPnrAndPostort = 7;
         if (lastLine != null && lastLine.length() > shortestLengthToIncludeBothPnrAndPostort && Character.isDigit(lastLine.charAt(0))) {
             final int startPostort = 6;
