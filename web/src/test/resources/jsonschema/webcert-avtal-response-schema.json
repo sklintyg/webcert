@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Schema for avtal as resturned from e.g /latestavtal",
+  "id": "/",
+  "type": "object",
+  "properties": {
+    "avtalVersion": {
+      "id": "avtalVersion",
+      "type": "integer"
+    },
+    "avtalText": {
+      "id": "avtalText",
+      "type": "string"
+    },
+    "versionDatum": {
+      "id": "versionDatum",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "avtalVersion",
+    "avtalText",
+    "versionDatum"
+  ]
+}

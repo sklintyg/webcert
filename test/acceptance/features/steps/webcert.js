@@ -1,95 +1,90 @@
-/* globals pages, browser, intyg, it, describe */
+/* global pages, browser, protractor, logg, intyg */
 
 'use strict';
 
+var fkUtkastPage = pages.intygpages.fk7263Utkast;
+var fkIntygPage = pages.intygpages.fkIntyg;
+
 module.exports = function () {
 
-    this.Given(/^fyller i alla nödvändiga fält för intyget$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        // 
-        console.log('Fyller i värden för intyget...');
+    this.Given(/^signerar FK7263-intyget$/, function (callback) {
 
-        global.pages.intygpages.fkUtkast.smittskyddCheckboxClick();
-        global.pages.intygpages.fkUtkast.nedsattMed25CheckboxClick();
+        fkUtkastPage.whenSigneraButtonIsEnabled().then(function () {
+            fkUtkastPage.signeraButtonClick();
+        });
 
-        callback();
-    });
-
-    this.Given(/^signerar "Läkarintyg FK 7263"-intyget$/, {
-        timeout: 100 * 2000
-    }, function (callback) {
-
-        global.pages.intygpages.fkUtkast.whenSigneraButtonIsEnabled().then(function () {
-            global.pages.intygpages.fkUtkast.signeraButtonClick();
+        browser.getCurrentUrl().then(function (text) {
+            global.intyg.id = text.split('/').slice(-1)[0];
+            global.intyg.id = global.intyg.id.replace('?signed', '');
         });
 
         callback();
     });
 
-    this.Then(/^ska "Läkarintyg FK 7263"-intygets status vara "([^"]*)"$/, {
-        timeout: 100 * 2000
-    }, function (statustext, callback) {
-        expect(element(by.id("certificate-is-sent-to-it-message-text")).getText()).to.eventually.contain(statustext).and.notify(callback);
-    });
-    
-    this.Given(/^jag går till mvk på patienten "([^"]*)"$/, function (arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^ska intyget finnas i mvk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^att ett intyg är skapat$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^jag öppnar intyget$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^intyget är signerat$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^jag skickar intyget till Försäkringskassan$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
-    this.Given(/^intyget är skickat till försäkringskassan$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-1)[0];
+            intyg.id = intyg.id.replace('?signed', '');
+        });
+
+        fkIntygPage.makulera.btn.click();
+        fkIntygPage.makulera.dialogAterta.click();
+        fkIntygPage.makulera.kvittensOKBtn.click()
+        .then(callback);
     });
 
-    this.Given(/^ska jag få en dialogruta som säger "([^"]*)"$/, function (arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
+    this.Given(/^jag raderar utkastet$/, function (callback) {
+        // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
+        fkUtkastPage.radera.knapp.click();
+        fkUtkastPage.radera.bekrafta.click()
+        .then(callback);
+    });
+
+    this.Given(/^jag går tillbaka till start$/, function (callback) {
+        element(by.id('tillbakaButton')).click()
+        .then(callback);
     });
 
     this.Given(/^ska intyget visa varningen "([^"]*)"$/, function (arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
+        expect(element(by.id('certificate-is-revoked-message-text')).getText())
+            .to.eventually.contain(arg1).and.notify(callback);
     });
 
-    this.Given(/^jag arkiverar intyget i mvk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
+    this.Given(/^ska intyget "([^"]*)" med status "([^"]*)" inte synas mer$/, function (intyg, status, callback) {
+      var qaTable = element(by.css('table.table-qa'));
 
-    this.Given(/^ska intygets inte visas i mvk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
+      qaTable.all(by.cssContainingText('tr', intyg)).filter(function(elem, index) {
+          return elem.getText().then(function(text) {
+              return (text.indexOf(status) > -1);
+          });
+      }).then(function(filteredElements) {
+          expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
+          callback();
+      });
+  });
+
+
+  this.Given(/^kollar jag i databasen att intyget är borttaget$/, function (callback) {
+    var mysql = require('mysql');
+
+    var connection = mysql.createConnection({
+      host  : "10.1.0.66",
+      user  : process.env.DBUSR,
+      password  : process.env.DBPW,
+      database  : "webcert_ip40"
     });
-    
+    connection.connect();
+    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.INTYGS_ID = \""+intygsid+"\";", function(err, rows, fields)
+    {
+      if(rows!=null){
+      console.log('Amount of rows in database : ' + rows[0].Counter);
+      var count = parseInt(rows[0].Counter);
+      expect(parseInt(rows[0].Counter)).to.equal(0);
+      callback();
+    }
+  });
+    connection.end();
+});
+
 };

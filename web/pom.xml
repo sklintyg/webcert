@@ -390,6 +390,10 @@
       <version>2.7.0</version><!--TODO: move versioning to common-pom -->
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>se.rivta.tools</groupId>
+      <artifactId>infrastructure-directory-employee-schemas</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -416,6 +420,11 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <packagingExcludes>**/*.page.js,**/*.spec.js,**/*.test.js,**/karma*.conf.js,**/karma*.conf.ci.js</packagingExcludes>
+          <webResources>
+            <resource>
+              <directory>target/webapp</directory>
+            </resource>
+          </webResources>
         </configuration>
       </plugin>
       <plugin>
@@ -461,6 +470,10 @@
         <configuration>
           <webAppConfig>
             <contextPath>/</contextPath>
+            <resourceBases>
+              <resourceBase>${basedir}/src/main/webapp</resourceBase>
+              <resourceBase>${basedir}/target/webapp/</resourceBase>
+            </resourceBases>
           </webAppConfig>
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-web.xml</contextXml>
           <systemProperties>

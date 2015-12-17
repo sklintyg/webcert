@@ -27,9 +27,19 @@ public interface HealthCheckService {
     HealthStatus checkSignatureQueue();
 
     /**
-     * Check if the connection to HSA is up.
+     * Check if the connection to HSA authmgmt over NTjP is up.
      */
-    HealthStatus checkHSA();
+    HealthStatus checkHsaAuthorizationmanagement();
+
+    /**
+     * Check if the connection to HSA employee over NTjP is up.
+     */
+    HealthStatus checkHsaEmployee();
+
+    /**
+     * Check if the connection to HSA organization over NTjP is up.
+     */
+    HealthStatus checkHsaOrganization();
 
     /**
      * Returns the applications uptime.

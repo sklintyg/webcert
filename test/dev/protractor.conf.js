@@ -1,5 +1,5 @@
 // conf.js
-
+/*globals browser,global,exports,process*/
 /**
  * Setup :
  * <webcert/test/> : npm install
@@ -12,13 +12,13 @@ var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
-    baseUrl: process.env.WEBCERT_URL,
-    //rootElement:'html',
+    baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
     specs: ['./spec/*.spec.js'],
 
     suites: {
         testdata: './spec/generateTestData/**/*.spec.js',
+        clean: './spec/cleanTestData/**/*.spec.js',
         app: ['./spec/*.spec.js']
     },
 
@@ -28,12 +28,14 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance. (ignored if multiCapabilities is used)
     capabilities: {
-        //browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // IE11
-        browserName: 'internet explorer',
+        /*browserName: 'internet explorer',
         platform: 'ANY',
-        version: '11',
+        version: '11',*/
+
+        // Any other browser
+        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances
@@ -79,14 +81,19 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.testdata = require('../lib/testdata/testdata.js');
-        global.intygTemplates = require('./../lib/testdata/intygTemplates.js');
-        global.pages = require('./../lib/pages.js');
+        global.wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+
+        var reporters = require('jasmine-reporters');
+        jasmine.getEnv().addReporter(
+            new reporters.JUnitXmlReporter({
+                savePath:'dev/report/',
+                filePrefix: 'junit',
+                consolidateAll:true}));
 
         jasmine.getEnv().addReporter(
             new HtmlScreenshotReporter({
-                dest: 'screenshots',
-                filename: 'dev-report.html'
+                dest: 'dev/report',
+                filename: 'index.html'
             })
         );
     }

@@ -52,10 +52,28 @@ public class HealthCheckApiController extends AbstractApiController {
     }
 
     @GET
-    @Path("/hsa")
+    @Path("/hsa-authorizationmanagement")
     @Produces(MediaType.APPLICATION_XML)
     public Response checkHSA() {
-        HealthStatus status = healthCheck.checkHSA();
+        HealthStatus status = healthCheck.checkHsaAuthorizationmanagement();
+        String xmlResponse = buildXMLResponse(status);
+        return Response.ok(xmlResponse).build();
+    }
+
+    @GET
+    @Path("/hsa-employee")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response checkHsaEmployee() {
+        HealthStatus status = healthCheck.checkHsaEmployee();
+        String xmlResponse = buildXMLResponse(status);
+        return Response.ok(xmlResponse).build();
+    }
+
+    @GET
+    @Path("/hsa-organization")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response checkHsaOrganization() {
+        HealthStatus status = healthCheck.checkHsaOrganization();
         String xmlResponse = buildXMLResponse(status);
         return Response.ok(xmlResponse).build();
     }

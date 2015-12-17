@@ -41,6 +41,7 @@ public class WebCertUser implements UserDetails {
     private String authenticationScheme;
 
     private List<Vardgivare> vardgivare;
+    private List<String> befattningar;
     private List<String> specialiseringar;
     private List<String> legitimeradeYrkesgrupper;
 
@@ -255,6 +256,18 @@ public class WebCertUser implements UserDetails {
 
     public void setSpecialiseringar(List<String> specialiseringar) {
         this.specialiseringar = specialiseringar;
+    }
+
+    public List<String> getBefattningar() {
+        if (befattningar == null) {
+            befattningar = Collections.emptyList();
+        }
+        return befattningar;
+    }
+
+
+    public void setBefattningar(List<String> befattningar) {
+        this.befattningar = befattningar;
     }
 
     public String getTitel() {

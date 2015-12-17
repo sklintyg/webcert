@@ -20,10 +20,5 @@ target
 activemq-data
 web/node_modules/
 web/src/main/webapp/js/coverage/
-web/src/main/webapp/app/app.min.js
-web/src/main/webapp/app/templates.js
 web/src/test/js/coverage/
 web/src/test/coverage/
-web/src/main/webapp/app.min.js
-test/screenshots/
-test/dev/screenshots/

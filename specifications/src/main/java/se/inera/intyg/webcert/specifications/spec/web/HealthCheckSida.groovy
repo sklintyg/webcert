@@ -10,8 +10,16 @@ class HealthCheckSida extends ExceptionHandlingFixture {
     private String databasStatus
     private String jmsTid
     private String jmsStatus
-    private String hsaTid
-    private String hsaStatus
+
+    private String hsaAuthorizationmanagementTid
+    private String hsaAuthorizationmanagementStatus
+
+    private String hsaEmployeeTid
+    private String hsaEmployeeStatus
+
+    private String hsaOrganizationTid
+    private String hsaOrganizationStatus
+
     private String intygstjanstTid
     private String intygstjanstStatus
     private String signeringsKo
@@ -25,8 +33,16 @@ class HealthCheckSida extends ExceptionHandlingFixture {
             databasStatus = page.dbStatus
             jmsTid = page.jmsMeasurement
             jmsStatus = page.jmsStatus
-            hsaTid = page.hsaMeasurement
-            hsaStatus = page.hsaStatus
+
+            hsaAuthorizationmanagementTid = page.hsaAuthorizationmanagementMeasurement
+            hsaAuthorizationmanagementStatus = page.hsaAuthorizationmanagementStatus
+
+            hsaEmployeeTid = page.hsaEmployeeMeasurement
+            hsaEmployeeStatus = page.hsaEmployeeStatus
+
+            hsaOrganizationTid = page.hsaOrganizationMeasurement
+            hsaOrganizationStatus = page.hsaOrganizationStatus
+
             intygstjanstTid = page.intygstjanstMeasurement
             intygstjanstStatus = page.intygstjanstStatus
             signeringsKo = page.signatureQueueMeasurement
@@ -46,12 +62,29 @@ class HealthCheckSida extends ExceptionHandlingFixture {
     String jmsStatus() {
         jmsStatus
     }
-    String hsaTid() {
-        hsaTid
+
+    String hsaAuthorizationmanagementTid() {
+        hsaAuthorizationmanagementTid
     }
-    String hsaStatus() {
-        hsaStatus
+    String hsaAuthorizationmanagementStatus() {
+        hsaAuthorizationmanagementStatus
     }
+
+    String hsaEmployeeTid() {
+        hsaEmployeeTid
+    }
+    String hsaEmployeeStatus() {
+        hsaEmployeeStatus
+    }
+
+    String hsaOrganizationTid() {
+        hsaOrganizationTid
+    }
+    String hsaOrganizationStatus() {
+        hsaOrganizationStatus
+    }
+
+
     String intygstjanstTid() {
         intygstjanstTid
     }

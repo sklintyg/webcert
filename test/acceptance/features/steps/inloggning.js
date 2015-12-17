@@ -1,27 +1,19 @@
-/* globals pages */
-/* globals browser, intyg, protractor */
+/* globals pages, protractor*/
+/* globals browser, intyg, scenario, logg */
 
 'use strict';
 
+var fk7263Utkast = pages.intygpages.fk7263Utkast;
+
 module.exports = function () {
+
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
-    this.Given(/^att jag är inloggad som läkare "([^"]*)"$/, function (anvandarnamn, callback) {
-        console.log('Loggar in som ' + anvandarnamn + '..');
-        
-        browser.ignoreSynchronization = true;
-        pages.welcome.get();
-        pages.welcome.loginByName(anvandarnamn);
-        browser.ignoreSynchronization = false;
-        browser.sleep(2000);
-        expect(element(by.id('wcHeader')).getText()).to.eventually.contain(anvandarnamn).and.notify(callback);
-        
-    });
-
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
+        element(by.id('menu-skrivintyg')).click();
         global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas
@@ -29,20 +21,23 @@ module.exports = function () {
         expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);
     });
 
-    this.Given(/^jag går in på  att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
+    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
+        intyg.typ = intygsTyp;
+        pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
+        pages.app.views.sokSkrivIntyg.continueToUtkast();
 
-        global.pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
-        global.pages.app.views.sokSkrivIntyg.continueToUtkast();
+        //Save INTYGS_ID:
+        browser.getCurrentUrl().then(function(text){
+          intygsid = text.split('/').slice(-1)[0];
+          logg('Intygsid: '+intygsid);
+        });
+
         callback();
     });
-    
-    this.Given(/^signerar intyget$/, {
-        timeout: 100 * 2000
-    }, function (callback) {
-        // expect(element(by.id('signera-utkast-button')).isPresent()).toBe(true);
+
+    this.Given(/^signerar intyget$/, function (callback) {
         var EC = protractor.ExpectedConditions;
-        // Waits for the element with id 'abc' to be clickable.
-        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 20000);
+        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
 
@@ -61,14 +56,27 @@ module.exports = function () {
         });
 
         selectedTypes = selectedTypes.join(', ').toUpperCase();
-        console.log('Kontrollerar att intyget avser körkortstyper:'+selectedTypes);
+        logg('Kontrollerar att intyget avser körkortstyper:'+selectedTypes);
 
         expect(intygetAvser.getText()).to.eventually.contain(selectedTypes);
 
         // //Identiteten är styrkt genom
         var idStarktGenom = element(by.id('identitet'));
-        console.log('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
-        expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
+        logg('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
+
+
+        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
+            // Specialare eftersom status inte innehåller den punkt som utkastet innehåller.
+            var txt = 'Försäkran enligt 18 kap 4 §';
+            expect(idStarktGenom.getText()).to.eventually.contain(txt).and.notify(callback);
+        } else {
+            expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
+        }
+
+    });
+
+    this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
+        expect(fk7263Utkast.signeraButton.isPresent()).to.become(false).and.notify(callback);
     });
 
 };

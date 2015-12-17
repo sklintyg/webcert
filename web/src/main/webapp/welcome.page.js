@@ -1,4 +1,4 @@
-/* globals browser, intyg, protractor */
+/* globals browser */
 
 /**
  * Created by stephenwhite on 09/06/15.
@@ -7,6 +7,7 @@
 
 
 var loginButton = element(by.id('loginBtn'));
+var jsonDisplay = element(by.id('userJsonDisplay'));
 
 module.exports = {
     get: function () {
@@ -20,6 +21,10 @@ module.exports = {
     },
     loginByName: function (name) {
         element(by.cssContainingText('option', name)).click();
+        loginButton.click();
+    },
+    loginByJSON: function(userJson) {
+        jsonDisplay.clear().sendKeys(userJson);
         loginButton.click();
     }
 };

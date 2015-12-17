@@ -35,8 +35,8 @@ describe('UnsignedCertCtrlSpec', function() {
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
-        inject(['$rootScope', '$location', '$httpBackend', '$controller', '$cookies', '$timeout', 'mockResponse', '$document',
-            function($rootScope, _$location_, _$httpBackend_, _$controller_, _$cookies_, _$timeout_, _mockResponse_, $document) {
+        inject(['$rootScope', '$location', '$httpBackend', '$controller', '$cookies', '$timeout', 'mockResponse',
+            function($rootScope, _$location_, _$httpBackend_, _$controller_, _$cookies_, _$timeout_, _mockResponse_) {
                 $scope = $rootScope.$new();
                 $scope.filterFormElement = {
                     'filter-changedate-from': { $error: {}},
@@ -56,7 +56,6 @@ describe('UnsignedCertCtrlSpec', function() {
 
                 $httpBackend.expectGET('/api/utkast/lakare/').respond(200, {});
                 $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
-                console.log("$document1: ",$document);
                 controller = $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
                 $httpBackend.flush();
                 $timeout.flush();

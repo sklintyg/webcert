@@ -15,13 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityCodes;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType.UserInformations;
-import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
-import se.inera.intyg.webcert.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.intyg.webcert.integration.hsa.client.AuthorizationManagementService;
+import se.inera.intyg.webcert.integration.hsa.client.EmployeeService;
+import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
+import se.riv.infrastructure.directory.v1.ResultCodeEnum;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HsaPersonServiceTest {
@@ -30,7 +28,10 @@ public class HsaPersonServiceTest {
     private static final String INVALID_HSA_ID = "SE88888888";
 
     @Mock
-    private HSAWebServiceCalls hsaWebServiceCalls;
+    private EmployeeService employeeService;
+
+    @Mock
+    private AuthorizationManagementService authorizationManagementService;
 
     @InjectMocks
     private HsaPersonServiceImpl hsaPersonService;
@@ -38,24 +39,23 @@ public class HsaPersonServiceTest {
     @Before
     public void setupExpectations() {
 
-        GetHsaPersonType validParams = new GetHsaPersonType();
-        validParams.setHsaIdentity(VALID_HSA_ID);
+//        PersonInformationType validParams = new PersonInformationType();
+//        validParams.setPersonHsaId(VALID_HSA_ID);
+//
+//        PersonInformationType invalidParams = new PersonInformationType();
+//        invalidParams.setPersonHsaId(INVALID_HSA_ID);
 
-        GetHsaPersonType invalidParams = new GetHsaPersonType();
-        invalidParams.setHsaIdentity(INVALID_HSA_ID);
+        GetEmployeeIncludingProtectedPersonResponseType response = buildResponse();
+        when(employeeService.getEmployee(VALID_HSA_ID, null, null)).thenReturn(response);
 
-        GetHsaPersonResponseType response = buildResponse();
-        when(hsaWebServiceCalls.callGetHsaPerson(validParams)).thenReturn(response);
-
-        GetHsaPersonResponseType emptyResponse = new GetHsaPersonResponseType();
-        emptyResponse.setUserInformations(new UserInformations());
-        when(hsaWebServiceCalls.callGetHsaPerson(invalidParams)).thenReturn(emptyResponse);
+        GetEmployeeIncludingProtectedPersonResponseType emptyResponse = new GetEmployeeIncludingProtectedPersonResponseType();
+        when(employeeService.getEmployee(INVALID_HSA_ID, null, null)).thenReturn(emptyResponse);
     }
 
     @Test
     public void testGetHsaPersonInfoWithValidPerson() {
 
-        List<GetHsaPersonHsaUserType> res = hsaPersonService.getHsaPersonInfo(VALID_HSA_ID);
+        List<PersonInformationType> res = hsaPersonService.getHsaPersonInfo(VALID_HSA_ID);
 
         assertNotNull(res);
         assertFalse(res.isEmpty());
@@ -64,40 +64,32 @@ public class HsaPersonServiceTest {
     @Test
     public void testGetHsaPersonInfoWithInvalidPerson() {
 
-        List<GetHsaPersonHsaUserType> res = hsaPersonService.getHsaPersonInfo(INVALID_HSA_ID);
+        List<PersonInformationType> res = hsaPersonService.getHsaPersonInfo(INVALID_HSA_ID);
 
         assertNotNull(res);
         assertTrue(res.isEmpty());
     }
 
-    private GetHsaPersonResponseType buildResponse() {
+    private GetEmployeeIncludingProtectedPersonResponseType buildResponse() {
 
-        GetHsaPersonHsaUserType userType = buildUserType(VALID_HSA_ID, "Henry", "Jekyl");
+        PersonInformationType userType = buildUserType(VALID_HSA_ID, "Henry", "Jekyl");
 
-        UserInformations userInfo = new UserInformations();
-        userInfo.getUserInformation().add(userType);
-
-        GetHsaPersonResponseType response = new GetHsaPersonResponseType();
-        response.setUserInformations(userInfo);
-
+        GetEmployeeIncludingProtectedPersonResponseType response = new GetEmployeeIncludingProtectedPersonResponseType();
+        response.getPersonInformation().add(userType);
+        response.setResultCode(ResultCodeEnum.OK);
         return response;
     }
 
-    private GetHsaPersonHsaUserType buildUserType(String hsaId, String fName, String lName) {
+    private PersonInformationType buildUserType(String hsaId, String fName, String lName) {
 
-        GetHsaPersonHsaUserType type = new GetHsaPersonHsaUserType();
-        type.setHsaIdentity(hsaId);
+        PersonInformationType type = new PersonInformationType();
+        type.setPersonHsaId(hsaId);
         type.setGivenName(fName);
-        type.setSn(lName);
+        type.setMiddleAndSurName(lName);
         type.setMail(fName.concat(".").concat(lName).concat("@mailinator.com"));
 
-        SpecialityCodes specCodes = new SpecialityCodes();
-        specCodes.getSpecialityCode().addAll(Arrays.asList("100", "200", "300"));
-        type.setSpecialityCodes(specCodes);
-
-        SpecialityNames specNames = new SpecialityNames();
-        specNames.getSpecialityName().addAll(Arrays.asList("Kirurgi", "Psykiatri", "Ortopedi"));
-        type.setSpecialityNames(specNames);
+        type.getSpecialityCode().addAll(Arrays.asList("100", "200", "300"));
+        type.getSpecialityName().addAll(Arrays.asList("Kirurgi", "Psykiatri", "Ortopedi"));
 
         return type;
     }

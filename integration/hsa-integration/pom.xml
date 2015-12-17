@@ -16,17 +16,31 @@
 
   <name>Webcert (HSA-integration)</name>
 
+  <!--
   <properties>
     <schema.path>src/main/resources/schemas</schema.path>
   </properties>
-
+                  -->
   <dependencies>
     <!-- Schemas -->
     <dependency>
       <groupId>se.rivta.tools</groupId>
       <artifactId>infrastructure-directory-employee-schemas</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>se.rivta.tools</groupId>
+      <artifactId>infrastructure-directory-organization-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.rivta.tools</groupId>
+      <artifactId>infrastructure-directory-authorizationmanagement-schemas</artifactId>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>se.riv.ehr.commission</groupId>
+      <artifactId>ehr-commission-schemas</artifactId>
+    </dependency>
+     -->
     <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
@@ -111,6 +125,7 @@
 
   </dependencies>
 
+  <!--
   <build>
     <plugins>
       <plugin>
@@ -183,5 +198,5 @@
         </dependencies>
       </plugin>
     </plugins>
-  </build>
+  </build> -->
 </project>

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Response schema for getting list of lakare that have saved utkast items for a given vardenehet",
+  "id": "/",
+  "type": "array",
+  "minItems": 0,
+  "uniqueItems": true,
+  "additionalItems": true,
+  "items": [
+    {
+      "id": "0",
+      "type": "object",
+      "properties": {
+        "hsaId": {
+          "id": "hsaId",
+          "type": "string"
+        },
+        "name": {
+          "id": "name",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "hsaId",
+        "name"
+      ]
+    }
+  ]
+}

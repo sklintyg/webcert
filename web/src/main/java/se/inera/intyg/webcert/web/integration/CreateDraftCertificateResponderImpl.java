@@ -1,22 +1,12 @@
 package se.inera.intyg.webcert.web.integration;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
-import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -27,6 +17,16 @@ import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.riv.infrastructure.directory.v1.CommissionType;
+
+import java.util.List;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -67,7 +67,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
-        MiuInformationType unitMIU = checkMIU(utkastsParams);
+        CommissionType unitMIU = checkMIU(utkastsParams);
         if (unitMIU == null) {
             return createMIUErrorResponse(utkastsParams);
         }
@@ -78,7 +78,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         return createSuccessResponse(utkast.getIntygsId());
     }
 
-    private Utkast createNewDraft(Utlatande utlatandeRequest, MiuInformationType unitMIU) {
+    private Utkast createNewDraft(Utlatande utlatandeRequest, CommissionType unitMIU) {
 
         String invokingUserHsaId = utlatandeRequest.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension();
@@ -98,12 +98,12 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
      * Method checks if invoking person, i.e the health care personal,
      * is entitled to look at the information.
      */
-    private MiuInformationType checkMIU(Utlatande utlatandeType) {
+    private CommissionType checkMIU(Utlatande utlatandeType) {
 
         String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
-        List<MiuInformationType> miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
+        List<CommissionType> miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
 
         switch (miusOnUnit.size()) {
         case 0:
