@@ -45,6 +45,13 @@
       "items": {},
       "additionalItems": false
     },
+    "befattningar": {
+      "id": "befattningar",
+      "type": "array",
+      "minItems": 0,
+      "items": {},
+      "additionalItems": false
+    },
     "legitimeradeYrkesgrupper": {
       "id": "legitimeradeYrkesgrupper",
       "type": "array",
