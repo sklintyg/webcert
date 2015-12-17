@@ -1,14 +1,13 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals pages */
-/*globals describe,it,helpers,utkastTextmap */
+/*globals describe,it */
 'use strict';
 
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
-var tsdIntygPage = pages.intygpages.tsDiabetesIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var tsdUtkastPage = wcTestTools.pages.intygpages['ts-diabetesUtkast'];
+var tsdIntygPage = wcTestTools.pages.intygpages.tsDiabetesIntyg;
 
 describe('Create and Sign ts-diabetes utkast', function() {
 
@@ -43,17 +42,17 @@ describe('Create and Sign ts-diabetes utkast', function() {
             tsdUtkastPage.fillInKorkortstyper(['D']);
 
             // Identiteten är styrkt genom
-            tsdUtkastPage.fillInIdentitetStyrktGenom(utkastTextmap.ts.identitetStyrktGenom.pass);
+            tsdUtkastPage.fillInIdentitetStyrktGenom(wcTestTools.utkastTextmap.ts.identitetStyrktGenom.pass);
         });
 
         it('allmant', function() {
 
             var allmant = {
                 year: '2015',
-                typ: utkastTextmap.ts.diabetes.typ.typ1,
+                typ: wcTestTools.utkastTextmap.ts.diabetes.typ.typ1,
                 behandling: {
-                    typer: [utkastTextmap.ts.diabetes.behandling.endastkost,
-                        utkastTextmap.ts.diabetes.behandling.insulin],
+                    typer: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost,
+                        wcTestTools.utkastTextmap.ts.diabetes.behandling.insulin],
                     insulinYear: '2000'
                 }
             };
@@ -89,13 +88,14 @@ describe('Create and Sign ts-diabetes utkast', function() {
             browser.ignoreSynchronization = false;
             tsdUtkastPage.whenSigneraButtonIsEnabled().then(function() {
                 tsdUtkastPage.signeraButtonClick();
-                expect(tsdIntygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
+                expect(tsdIntygPage.isAt()).toBeTruthy();
             });
         });
 
         describe('remove test intyg', function() {
             it('should clean up all utkast after the test', function() {
-                testdataHelper.deleteAllUtkast();
+                testdataHelper.deleteUtkast(utkast.intygsId);
+                testdataHelper.deleteIntyg(utkast.intygsId);
             });
         });
     });

@@ -10,22 +10,15 @@
  **/
 var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
-var envConfig = null;
-if(process.env.WEBCERT_URL) {
-    envConfig = process.env;
-} else {
-    envConfig = require('./../lib/envConfig.json').dev; // override if not running via grunt ie IDEA.
-}
-
 exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
-    baseUrl: envConfig.WEBCERT_URL,
-    //rootElement:'html',
+    baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
     specs: ['./spec/*.spec.js'],
 
     suites: {
         testdata: './spec/generateTestData/**/*.spec.js',
+        clean: './spec/cleanTestData/**/*.spec.js',
         app: ['./spec/*.spec.js']
     },
 
@@ -35,12 +28,14 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance. (ignored if multiCapabilities is used)
     capabilities: {
-        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // IE11
         /*browserName: 'internet explorer',
         platform: 'ANY',
         version: '11',*/
+
+        // Any other browser
+        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
 
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances
@@ -86,18 +81,19 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.envConfig = envConfig;
-        global.testdata = require('../lib/testdata/testdata.js');
-        global.utkastTextmap = require('../lib/testdata/utkastTextmap.js');
-        global.intygTemplates = require('./../lib/testdata/intygTemplates.js');
-        // The order is important. Helpers requires pages.
-        global.pages = require('./../lib/pages.js');
-        global.helpers = require('./../lib/helpers.js');
+        global.wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+
+        var reporters = require('jasmine-reporters');
+        jasmine.getEnv().addReporter(
+            new reporters.JUnitXmlReporter({
+                savePath:'dev/report/',
+                filePrefix: 'junit',
+                consolidateAll:true}));
 
         jasmine.getEnv().addReporter(
             new HtmlScreenshotReporter({
-                dest: 'screenshots',
-                filename: 'dev-report.html'
+                dest: 'dev/report',
+                filename: 'index.html'
             })
         );
     }

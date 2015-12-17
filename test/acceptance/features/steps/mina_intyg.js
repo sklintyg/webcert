@@ -7,8 +7,11 @@ module.exports = function() {
         browser.ignoreSynchronization = true;
         browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
         element(by.id('guid')).sendKeys(pnr);
-        
         element(by.css('input.btn')).click().then(function() {
+
+            // Detta behövs pga att Mina intyg är en extern sida
+            browser.sleep(2000);
+
             // Om samtyckesruta visas
             element(by.id('consentTerms')).isPresent().then(function(result) {
                 if (result) {

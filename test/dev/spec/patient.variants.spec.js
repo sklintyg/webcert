@@ -4,8 +4,8 @@
 /*globals afterEach,beforeEach */
 'use strict';
 
-var specHelper = helpers.spec;
-var SokSkrivIntygPage = pages.app.views.sokSkrivIntyg;
+var specHelper = wcTestTools.helpers.spec;
+var SokSkrivIntygPage = wcTestTools.pages.app.views.sokSkrivIntyg;
 
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);
@@ -25,9 +25,7 @@ describe('Patient lookup variants', function() {
         });
 
         beforeEach(function () {
-            browser.addMockModule('httpBackendMock', function () {
-                angular.module('httpBackendMock', ['ngMockE2E']);
-            });
+            specHelper.loadHttpBackendMock();
         });
 
         describe('When patient lookup receives error', function() {

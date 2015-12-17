@@ -1,5 +1,5 @@
 /*global
-browser, intyg
+browser, intyg, logg
 */
 'use strict';
 
@@ -17,8 +17,13 @@ module.exports = function() {
                 return (text.indexOf(status) > -1);
             });
         }).then(function(filteredElements) {
-            filteredElements[0].element(by.cssContainingText('button', 'Visa')).click();
-            callback();
+            if(!filteredElements[0]){
+                callback('TODO: Hantera fall då det inte redan finns något intyg att använda');
+            }
+            else{
+                filteredElements[0].element(by.cssContainingText('button', 'Visa')).click();
+                callback();
+            }
         });       
 	});
 
@@ -37,33 +42,4 @@ module.exports = function() {
         
         callback();
     });
-
-    // this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
-    //     // TODO / FIX THIS 
-
-    //     var EC = protractor.ExpectedConditions;
-    //     var url = process.env.MINAINTYG_URL + '/web/sso?guid=' + pnr;
-
-    //     var urlChanged = function() {
-    //         return browser.getCurrentUrl().then(function (currUrl) {
-    //             return stringStartWith(currUrl, process.env.MINAINTYG_URL + '/web/start');
-    //         });
-    //     };
-        
-    //     var cond = EC.and(urlChanged);
-
-    //     browser.get(url);
-    //     browser.wait(cond, 50000);
-    //     callback();
-        
-    // });
-
-    // this.Given(/^ska intygets status i mvk visa "([^"]*)"$/, function(status, callback) {
-    //     // Write code here that turns the phrase above into concrete actions
-    //     var certBox = element(by.id('certificate-#'+intyg.id));
-    //     expect(certBox.element(by.cssContainingText('.ng-binding', status))
-    //     .isPresent()).to.eventually.to.equal(true)
-    //     .and.notify(callback);
-
-    // });
 };

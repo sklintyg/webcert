@@ -1,23 +1,18 @@
 /**
- * Created by stephenwhite on 09/06/15.
+ * Created by bennysce on 09/06/15.
  */
 'use strict';
 
-var viewCertAndQa = element(by.id('viewCertAndQA')),
-    copyBtn = element(by.id('copyBtn')),
-    dialogCopyBtn = element(by.id('button1copy-dialog'));
+var BaseIntyg = require('./base.intyg.page.js');
 
-module.exports = {
-    get: function(intygId) {
-        browser.get('/web/dashboard#/intyg/ts-diabetes/' + intygId);
+var TsDiabetesIntyg = BaseIntyg._extend({
+    init: function init() {
+        init._super.call(this);
+        this.intygType = 'ts-diabetes';
     },
-    viewCertAndQaIsDisplayed: function(){
-        return viewCertAndQa.isDisplayed();
+    get: function get(intygId) {
+        get._super.call(this, intygId);
     },
-    copy: function(){
-        copyBtn.click();
-    },
-    copyDialogConfirm: function() {
-        dialogCopyBtn.click();
-    }
-};
+});
+
+module.exports = new TsDiabetesIntyg();

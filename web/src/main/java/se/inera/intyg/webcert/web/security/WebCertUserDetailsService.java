@@ -2,6 +2,15 @@ package se.inera.intyg.webcert.web.security;
 
 import static se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.opensaml.saml2.core.Assertion;
@@ -12,6 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
@@ -25,13 +35,6 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragExcept
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 
 /**
@@ -222,11 +225,41 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(hsaPersonInfo);
+        List<String> befattningar = extractBefattningar(hsaPersonInfo);
         String titel = extractTitel(hsaPersonInfo);
 
         webcertUser.setSpecialiseringar(specialiseringar);
         webcertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
+        webcertUser.setBefattningar(befattningar);
         webcertUser.setTitel(titel);
+    }
+
+    private List<String> extractBefattningar(List<PersonInformationType> hsaPersonInfo) {
+        Set<String> befattningar = new TreeSet<>();
+
+        for (PersonInformationType userType : hsaPersonInfo) {
+            if (userType.getPaTitle() != null) {
+                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
+                befattningar.addAll(hsaTitles);
+            }
+        }
+
+        return new ArrayList<>(befattningar);
+    }
+
+    /**
+     * Tries to use title attribute, otherwise resorts to healthcareProfessionalLicenses.
+     */
+    private String extractTitel(List<PersonInformationType> hsaPersonInfo) {
+        Set<String> titleSet = new HashSet<>();
+        for (PersonInformationType pit : hsaPersonInfo) {
+            if (pit.getTitle() != null && pit.getTitle().trim().length() > 0) {
+                titleSet.add(pit.getTitle());
+            } else if (pit.getHealthCareProfessionalLicence() != null && pit.getHealthCareProfessionalLicence().size() > 0) {
+                titleSet.addAll(pit.getHealthCareProfessionalLicence());
+            }
+        }
+        return titleSet.stream().sorted().collect(Collectors.joining(", "));
     }
 
     private void decorateWebCertUserWithAuthenticationMethod(WebCertUser webcertUser, SAMLCredential credential) {
@@ -287,17 +320,17 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new ArrayList<>(specSet);
     }
 
-    private String extractTitel(List<PersonInformationType> hsaUserTypes) {
-        List<String> titlar = new ArrayList<>();
-
-        for (PersonInformationType userType : hsaUserTypes) {
-            if (StringUtils.isNotBlank(userType.getTitle())) {
-                titlar.add(userType.getTitle());
-            }
-        }
-
-        return StringUtils.join(titlar, COMMA);
-    }
+//    private String extractTitel(List<PersonInformationType> hsaUserTypes) {
+//        List<String> titlar = new ArrayList<>();
+//
+//        for (PersonInformationType userType : hsaUserTypes) {
+//            if (StringUtils.isNotBlank(userType.getTitle())) {
+//                titlar.add(userType.getTitle());
+//            }
+//        }
+//
+//        return StringUtils.join(titlar, COMMA);
+//    }
 
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
         Vardgivare firstVardgivare = user.getVardgivare().get(0);

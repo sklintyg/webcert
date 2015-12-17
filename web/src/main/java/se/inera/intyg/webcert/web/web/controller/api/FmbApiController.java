@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,10 +95,6 @@ public class FmbApiController extends AbstractApiController {
             return null;
         }
 
-        if (fmbs.size() == 1) {
-            return new FmbContent(fmbType, fmbs.get(0).getText());
-        }
-
         final List<String> texts = Lists.transform(fmbs, new Function<Fmb, String>() {
             @Override
             public String apply(Fmb fmb) {
@@ -107,7 +104,13 @@ public class FmbApiController extends AbstractApiController {
                 return fmb.getText();
             }
         });
-        return new FmbContent(fmbType, texts);
+        final List<String> textsWithoutDuplicates = Lists.newArrayList(Sets.newHashSet(texts));
+
+        if (textsWithoutDuplicates.size() == 1) {
+            return new FmbContent(fmbType, textsWithoutDuplicates.get(0));
+        }
+
+        return new FmbContent(fmbType, textsWithoutDuplicates);
     }
 
 }

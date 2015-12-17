@@ -7,12 +7,6 @@ var fkIntygPage = pages.intygpages.fkIntyg;
 
 module.exports = function () {
 
-    this.Given(/^fyller i alla nödvändiga fält för intyget$/, function (callback) {
-        fkUtkastPage.smittskyddCheckboxClick();
-        fkUtkastPage.nedsattMed25CheckboxClick();
-        callback();
-    });
-
     this.Given(/^signerar FK7263-intyget$/, function (callback) {
 
         fkUtkastPage.whenSigneraButtonIsEnabled().then(function () {
@@ -42,13 +36,13 @@ module.exports = function () {
 
     this.Given(/^jag raderar utkastet$/, function (callback) {
         // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
-        fkIntygPage.radera.knapp.click();
-        fkIntygPage.radera.radera.click()
+        fkUtkastPage.radera.knapp.click();
+        fkUtkastPage.radera.bekrafta.click()
         .then(callback);
     });
 
     this.Given(/^jag går tillbaka till start$/, function (callback) {
-        element(by.id('tillbakaButton ')).click()
+        element(by.id('tillbakaButton')).click()
         .then(callback);
     });
 
@@ -65,10 +59,31 @@ module.exports = function () {
               return (text.indexOf(status) > -1);
           });
       }).then(function(filteredElements) {
-          // filteredElements[1].element(by.cssContainingText('button', 'Kopiera')).click();
           expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
           callback();
       });
   });
+
+
+  this.Given(/^kollar jag i databasen att intyget är borttaget$/, function (callback) {
+    var mysql = require('mysql');
+
+    var connection = mysql.createConnection({
+      host  : "10.1.0.66",
+      user  : process.env.DBUSR,
+      password  : process.env.DBPW,
+      database  : "webcert_ip40"
+    });
+    connection.connect();
+    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.INTYGS_ID = \""+intygsid+"\";", function(err, rows, fields)
+    {
+      if(rows!=null){
+      console.log('Amount of rows in database : ' + rows[0].Counter);
+      expect(parseInt(rows[0].Counter)).to.equal(0);
+      callback();
+    }
+  });
+    connection.end();
+});
 
 };

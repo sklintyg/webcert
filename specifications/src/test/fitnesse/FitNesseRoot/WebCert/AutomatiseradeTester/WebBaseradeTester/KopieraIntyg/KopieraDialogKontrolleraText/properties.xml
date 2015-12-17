@@ -2,7 +2,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Säkerställ WEBCERT-1449 / -1447</Help>
+<Help>Kopiera tooltip och dialog innehåller rätt text (WEBCERT-1449 / -1447)</Help>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>

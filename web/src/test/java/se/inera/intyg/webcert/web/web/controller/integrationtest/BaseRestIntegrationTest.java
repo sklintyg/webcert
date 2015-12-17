@@ -16,11 +16,12 @@ import org.junit.After;
 import org.junit.Before;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
+import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
@@ -144,6 +145,24 @@ public abstract class BaseRestIntegrationTest {
 
         final String utkastId = model.getString("id");
         assertTrue(utkastId.length() > 0);
+
+        return utkastId;
+    }
+
+    /**
+     * Create a intyg with status SIGNED
+     *
+     * @param intygsTyp
+     * @param patientPersonNummer
+     * @return
+     */
+    protected String createSignedIntyg(String intygsTyp, String patientPersonNummer) {
+
+        //First create the draft
+        final String utkastId = createUtkast(intygsTyp, patientPersonNummer);
+
+        //..then "fake" it to be signed. Maybe we should set more signature related metadata?
+        given().pathParam("intygsId", utkastId).expect().statusCode(200).when().put("testability/intyg/{intygsId}/signerat");
 
         return utkastId;
     }

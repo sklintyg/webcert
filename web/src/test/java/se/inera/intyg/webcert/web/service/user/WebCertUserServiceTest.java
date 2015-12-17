@@ -101,6 +101,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setForskrivarkod("Forskrivarkod");
         user.setAuthenticationScheme("AuthScheme");
         user.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
+        user.setBefattningar(Arrays.asList("Specialistläkare"));
 
         List<Vardgivare> vardgivare = new ArrayList<>();
 

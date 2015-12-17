@@ -3,17 +3,19 @@
  */
 /*globals helpers,pages*/
 'use strict';
-var specHelper = helpers.spec;
-var testdataHelper = helpers.testdata;
-var FkIntygPage = pages.intygpages.fkIntyg;
-var FkUtkastPage = pages.intygpages.fk7263Utkast;
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var FkIntygPage = wcTestTools.pages.intygpages.fkIntyg;
+var FkUtkastPage = wcTestTools.pages.intygpages.fk7263Utkast;
 
 describe('Generate fk intyg', function() {
+
+    var intygId = specHelper.generateTestGuid();
 
     describe('prepare test with intyg', function() {
         it('should generate fk max intyg', function() {
             browser.ignoreSynchronization = false;
-            testdataHelper.createIntygFromTemplate('fkMax').then(function(response) {
+            testdataHelper.createIntygFromTemplate('fkMax', intygId).then(function(response) {
                 var intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();
             }, function(error) {
@@ -28,18 +30,26 @@ describe('Generate fk intyg', function() {
         });
     });
 
+    var utkastId = null;
+
     describe('copy fk intyg to new utkast', function() {
         it('should view fk intyg', function() {
-            FkIntygPage.get(intygTemplates.fkMax.intygId);
+            FkIntygPage.get(intygId);
         });
 
         it('should copy intyg and view resulting utkast', function() {
-            FkIntygPage.copy();
-            FkIntygPage.copyDialogConfirm();
+            FkIntygPage.copyBtn().click();
+            FkIntygPage.copyDialogConfirmBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
         });
 
         it('fill missing text capacityForWorkForecastText', function() {
+
+            // Save id so it can be removed in cleanup stage.
+            browser.getCurrentUrl().then(function(url) {
+                utkastId = url.split('/').pop();
+            });
+
             browser.ignoreSynchronization = true;
             FkUtkastPage.getCapacityForWorkForecastText().sendKeys('Litet förtydligande');
             expect(FkUtkastPage.getCapacityForWorkForecastText().getAttribute('value')).toContain('Litet förtydligande');
@@ -49,15 +59,16 @@ describe('Generate fk intyg', function() {
             browser.ignoreSynchronization = false;
             FkUtkastPage.whenSigneraButtonIsEnabled().then(function() {
                 FkUtkastPage.signeraButtonClick();
-                expect(FkIntygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
+                expect(FkIntygPage.isAt()).toBeTruthy();
             });
         });
     });
 
     describe('remove test intyg', function() {
         it('should clean up all utkast after the test', function() {
-            testdataHelper.deleteAllIntyg();
-            testdataHelper.deleteAllUtkast();
+            testdataHelper.deleteIntyg(intygId);
+            testdataHelper.deleteUtkast(utkastId); // in case the test breaks before it is signed..
+            testdataHelper.deleteIntyg(utkastId);
         });
     });
 });

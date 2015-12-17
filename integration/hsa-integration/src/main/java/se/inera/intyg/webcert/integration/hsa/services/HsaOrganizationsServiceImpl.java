@@ -41,6 +41,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
     private static final String DEFAULT_ARBETSPLATSKOD = "0000000";
 
     private static final Logger LOG = LoggerFactory.getLogger(HsaOrganizationsServiceImpl.class);
+    private static final String DEFAULT_POSTNR = "XXXXX";
 
     @Autowired
     private AuthorizationManagementService authorizationManagementService;
@@ -55,7 +56,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         UnitType unit = getUnit(careUnitHsaId);
 
-        Vardenhet vardenhet = new Vardenhet(unit.getUnitHsaId(), unit.getPublicName(), unit.getUnitStartDate(), unit.getUnitEndDate());
+        Vardenhet vardenhet = new Vardenhet(unit.getUnitHsaId(), unit.getUnitName(), unit.getUnitStartDate(), unit.getUnitEndDate());
         attachMottagningar(vardenhet);
         updateWithContactInformation(vardenhet, unit);
 
@@ -94,7 +95,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                                 Vardenhet vardenhet = new Vardenhet(ct.getHealthCareUnitHsaId(), ct.getHealthCareUnitName());
                                 vardenhet.setStart(ct.getHealthCareUnitStartDate());
                                 vardenhet.setEnd(ct.getHealthCareUnitEndDate());
-                                vardenhet.setArbetsplatskod(credentialInformation.getGroupPrescriptionCode().size() > 0 ? credentialInformation.getGroupPrescriptionCode().get(0) : null);
+                                vardenhet.setArbetsplatskod(credentialInformation.getGroupPrescriptionCode().size() > 0 ? credentialInformation.getGroupPrescriptionCode().get(0) : "");
 
                                 // I don't like this, but we need to do an extra call to infrastructure:directory:organization:getUnit for address related stuff.
                                 updateWithContactInformation(vardenhet, getUnit(vardenhet.getId()));
@@ -158,19 +159,21 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             }
 
             Mottagning mottagning = new Mottagning(member.getHealthCareUnitMemberHsaId(), member.getHealthCareUnitMemberName(), member.getHealthCareUnitMemberStartDate(), member.getHealthCareUnitMemberEndDate());
-            mottagning.setPostadress(member.getHealthCareUnitMemberpostalAddress().getAddressLine()
-                    .stream()
-                    .collect(Collectors.joining(" "))
-            );
+            if (member.getHealthCareUnitMemberpostalAddress() != null && member.getHealthCareUnitMemberpostalAddress().getAddressLine() != null) {
+                mottagning.setPostadress(member.getHealthCareUnitMemberpostalAddress().getAddressLine()
+                        .stream()
+                        .collect(Collectors.joining(" "))
+                );
+            }
+
             mottagning.setPostnummer(member.getHealthCareUnitMemberpostalCode());
             mottagning.setTelefonnummer(member.getHealthCareUnitMemberTelephoneNumber().stream().collect(Collectors.joining(", ")));
-            mottagning.setArbetsplatskod(member.getHealthCareUnitMemberPrescriptionCode().size() > 0 ? member.getHealthCareUnitMemberPrescriptionCode().get(0) : "0000000");
+            mottagning.setArbetsplatskod(member.getHealthCareUnitMemberPrescriptionCode().size() > 0 ? member.getHealthCareUnitMemberPrescriptionCode().get(0) : DEFAULT_ARBETSPLATSKOD);
 
             vardenhet.getMottagningar().add(mottagning);
             LOG.debug("Attached mottagning '{}' to vardenhet '{}'", mottagning.getId(), vardenhet.getId());
         }
         vardenhet.setMottagningar(vardenhet.getMottagningar().stream().sorted().collect(Collectors.toList()));
-
     }
 
 
@@ -190,7 +193,10 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             return;
         }
 
-        vardenhet.setPostnummer(response.getPostalCode());
+        // There exists a postal code field, HSA doesn't seem to use it though (they use adressline2 for zip and city)
+        if (response.getPostalCode() != null && response.getPostalCode().trim().length() > 0) {
+            vardenhet.setPostnummer(response.getPostalCode());
+        }
 
         StringBuilder postaAddress = new StringBuilder();
         List<String> lines = address.getAddressLine();
@@ -201,12 +207,18 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         }
         vardenhet.setPostadress(postaAddress.toString());
 
-        String lastLine = lines.isEmpty() ? null : lines.get(lines.size() - 1);
+        String lastLine = lines != null && lines.size() > 0 ? lines.get(lines.size() - 1) : null;
         final int shortestLengthToIncludeBothPnrAndPostort = 7;
         if (lastLine != null && lastLine.length() > shortestLengthToIncludeBothPnrAndPostort && Character.isDigit(lastLine.charAt(0))) {
             final int startPostort = 6;
             vardenhet.setPostort(lastLine.substring(startPostort).trim());
+            if (vardenhet.getPostnummer() == null) {
+                vardenhet.setPostnummer(lastLine.substring(0, startPostort).trim());
+            }
         } else {
+            if (vardenhet.getPostnummer() == null) {
+                vardenhet.setPostnummer(DEFAULT_POSTNR);
+            }
             vardenhet.setPostort(lastLine != null ? lastLine.trim() : "");
         }
     }

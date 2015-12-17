@@ -12,7 +12,7 @@
       "postadress" : "NMT gata 1",
       "postnummer" : "12345",
       "postort" : "Testhult",
-      "arbetsplatskod" : ""
+      "arbetsplatskod" : "1234567890"
     },
     {
       "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
@@ -23,7 +23,7 @@
       "postadress" : "NMT gata 2",
       "postnummer" : "12345",
       "postort" : "Testhult",
-      "arbetsplatskod" : ""
+      "arbetsplatskod" : "1234567890"
     }
   ]
 }

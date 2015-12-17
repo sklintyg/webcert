@@ -4,8 +4,7 @@
 /*globals*/
 'use strict';
 var restClient = require('./restclient.util.js');
-var lib = require('./../lib.js');
-var env = lib.envConfig;
+var env = require('./../environment.js').envConfig;
 
 module.exports = {
     login: function(userJson) {
@@ -18,7 +17,7 @@ module.exports = {
             'enhetId': 'IFV1239877878-1042',
             'lakare': true,
             'forskrivarKod': '2481632'
-        };
+        }; 
 
         var options = {
             url: 'fake',

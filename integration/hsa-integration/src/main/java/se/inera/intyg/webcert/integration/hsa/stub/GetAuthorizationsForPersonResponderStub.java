@@ -19,6 +19,7 @@ import se.riv.infrastructure.directory.v1.ResultCodeEnum;
  */
 public class GetAuthorizationsForPersonResponderStub implements GetCredentialsForPersonIncludingProtectedPersonResponderInterface {
 
+    public static final String DEFAULT_ARBETSPLATSKOD = "0000000";
     @Autowired
     private HsaServiceStub serviceStub;
 
@@ -69,7 +70,9 @@ public class GetAuthorizationsForPersonResponderStub implements GetCredentialsFo
 
                             cit.getCommission().add(miuInfo);
                         }
-                        cit.getGroupPrescriptionCode().add(enhet.getArbetsplatskod() != null ? enhet.getArbetsplatskod() : "0000000");
+                        cit.getGroupPrescriptionCode()
+                                .add(enhet.getArbetsplatskod() != null && enhet.getArbetsplatskod().trim().length() > 0 ? enhet.getArbetsplatskod()
+                                        : DEFAULT_ARBETSPLATSKOD);
                     }
                 }
             }

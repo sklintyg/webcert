@@ -1,38 +1,30 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "/",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "totalCount": {
-      "id": "totalCount",
       "type": "integer"
     },
     "results": {
-      "id": "results",
       "type": "array",
       "minItems": 0,
       "uniqueItems": true,
       "additionalItems": true,
       "items": {
-        "id": "9",
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "internReferens": {
-            "id": "internReferens",
             "type": "integer"
           },
           "externReferens": {
-            "id": "externReferens",
             "type": "string"
           },
           "frageStallare": {
-            "id": "frageStallare",
             "type": "string"
           },
           "amne": {
-            "id": "amne",
             "type": "string",
             "enum": [
               "KOMPLETTERING_AV_LAKARINTYG",
@@ -45,31 +37,24 @@
             ]
           },
           "frageText": {
-            "id": "frageText",
             "type": "string"
           },
           "frageSigneringsDatum": {
-            "id": "frageSigneringsDatum",
             "type": "string"
           },
           "frageSkickadDatum": {
-            "id": "frageSkickadDatum",
             "type": "string"
           },
           "senasteHandelse": {
-            "id": "senasteHandelse",
             "type": "string"
           },
           "vardAktorHsaId": {
-            "id": "vardAktorHsaId",
             "type": "string"
           },
           "vardAktorNamn": {
-            "id": "vardAktorNamn",
             "type": "string"
           },
           "externaKontakter": {
-            "id": "externaKontakter",
             "type": "array",
             "minItems": 0,
             "uniqueItems": false,
@@ -77,28 +62,22 @@
             "items": {}
           },
           "intygsReferens": {
-            "id": "intygsReferens",
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "intygsId": {
-                "id": "intygsId",
                 "type": "string"
               },
               "intygsTyp": {
-                "id": "intygsTyp",
                 "type": "string"
               },
               "patientId": {
-                "id": "patientId",
                 "type": "string"
               },
               "patientNamn": {
-                "id": "patientNamn",
                 "type": "string"
               },
               "signeringsDatum": {
-                "id": "signeringsDatum",
                 "type": "string"
               }
             },
@@ -111,7 +90,6 @@
             ]
           },
           "kompletteringar": {
-            "id": "kompletteringar",
             "type": "array",
             "minItems": 0,
             "uniqueItems": false,
@@ -119,56 +97,43 @@
             "items": {}
           },
           "vardperson": {
-            "id": "vardperson",
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "hsaId": {
-                "id": "hsaId",
                 "type": "string"
               },
               "namn": {
-                "id": "namn",
                 "type": "string"
               },
               "forskrivarKod": {
-                "id": "forskrivarKod",
                 "type": "string"
               },
               "enhetsId": {
-                "id": "enhetsId",
                 "type": "string"
               },
               "arbetsplatsKod": {
-                "id": "arbetsplatsKod",
                 "type": "string"
               },
               "enhetsnamn": {
-                "id": "enhetsnamn",
                 "type": "string"
               },
               "postadress": {
-                "id": "postadress",
                 "type": "string"
               },
               "postnummer": {
-                "id": "postnummer",
                 "type": "string"
               },
               "postort": {
-                "id": "postort",
                 "type": "string"
               },
               "telefonnummer": {
-                "id": "telefonnummer",
                 "type": "string"
               },
               "vardgivarId": {
-                "id": "vardgivarId",
                 "type": "string"
               },
               "vardgivarnamn": {
-                "id": "vardgivarnamn",
                 "type": "string"
               }
             },
@@ -188,7 +153,6 @@
             ]
           },
           "status": {
-            "id": "status",
             "type": "string",
             "enum": [
               "PENDING_INTERNAL_ACTION",
@@ -198,11 +162,9 @@
             ]
           },
           "vidarebefordrad": {
-            "id": "vidarebefordrad",
             "type": "boolean"
           },
           "senasteHandelseDatum": {
-            "id": "senasteHandelseDatum",
             "type": "string"
           }
         },

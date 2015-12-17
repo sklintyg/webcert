@@ -4,7 +4,7 @@
  */
 /*globals protractor */
 'use strict';
-
+var testdata = require('./../testdata/testdata.js')
 module.exports = {
     clickAll: function(elementArray, elementTextsArray) {
         // filter all elemenets matching elementTextsArray

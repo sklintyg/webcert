@@ -10,7 +10,7 @@ module.exports = function(grunt) {
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
-        env: grunt.file.readJSON('./lib/envConfig.json'),
+        env: grunt.file.readJSON('./webcertTestTools/envConfig.json'),
         protractor: {
             options: {
                 //configFile: './protractor.cli.conf.js', // Target-specific config file
@@ -47,7 +47,14 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('default', ['env:dev', 'protractor_webdriver', 'protractor:dev']);
+    grunt.registerTask('default', function(environment, tags) {
+        if(!environment){
+            var defaultEnv = 'dev';
+            grunt.log.subhead('Ingen miljö vald, använder '+defaultEnv+'-miljön..');
+            environment = defaultEnv;
+        }
+        grunt.task.run(['env:'+environment, 'protractor_webdriver', 'protractor:dev']);
+    });
 
 
     // Run: 'grunt acc:ip20:tags'
