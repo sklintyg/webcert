@@ -13,7 +13,7 @@ module.exports = {
     login: function(userOptional) {
         WelcomePage.get();
         WelcomePage.login(userOptional || 'IFV1239877878-104B_IFV1239877878-1042');
-        browser.sleep(500); // need to sleep here since we aren't in the angular app yet
+        browser.sleep(5000); // need to sleep here since we aren't in the angular app yet
         expect(SokSkrivIntygPage.getDoctorText()).toContain('Åsa Andersson');
     },
     createUtkastForPatient: function(patientId, intygType) {
