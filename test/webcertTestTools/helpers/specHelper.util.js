@@ -39,7 +39,7 @@ module.exports = {
                     var newScript = document.createElement('script');
                     newScript.type = 'text/javascript';
                     newScript.src = urls[i];
-                    newScript.async = true;
+                    newScript.async = false;
                     newScript.defer = false;
 
                     document.getElementsByTagName('head')[0].appendChild(newScript);
