@@ -7,13 +7,13 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.junit.Test;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
-import se.inera.intyg.webcert.web.auth.FakeCredentials;
+import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
+
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
 
 public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
 
