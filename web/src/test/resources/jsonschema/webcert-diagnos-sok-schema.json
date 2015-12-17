@@ -1,28 +1,22 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "/",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "resultat": {
-      "id": "resultat",
       "type": "string"
     },
     "diagnoser": {
-      "id": "diagnoser",
       "type": "array",
       "items": [
         {
-          "id": "0",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "kod": {
-              "id": "kod",
               "type": "string"
             },
             "beskrivning": {
-              "id": "beskrivning",
               "type": "string"
             }
           }
@@ -30,7 +24,6 @@
       ]
     },
     "moreResults": {
-      "id": "moreResults",
       "type": "boolean"
     }
   },
