@@ -1,5 +1,8 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.endsWith;
+
 import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -8,9 +11,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.endsWith;
 
 /**
  * Created by marced on 16/12/15.
@@ -29,7 +29,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeRoleTo("ROLE_LAKARE_DJUPINTEGRERAD");
+        changeOriginTo("DJUPINTEGRATION");
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -55,7 +55,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeRoleTo("ROLE_LAKARE_DJUPINTEGRERAD");
+        changeOriginTo("DJUPINTEGRATION");
 
         given().redirects().follow(false).and().pathParam("intygsId", intygsId).and().queryParam("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
