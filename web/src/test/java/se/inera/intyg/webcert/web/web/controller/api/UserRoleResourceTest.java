@@ -65,12 +65,12 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
         Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
         //When
-        Role newRole = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-        userResource.setUserRole(newRole);
+        //Role newRole = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+        userResource.setUserRole(AuthoritiesConstants.ROLE_LAKARE);
 
         //Then
         Mockito.verify(webCertUserService, times(1)).updateUserRole(roleArrCaptor.capture());
-        assertEquals(newRole.getName(), roleArrCaptor.getValue());
+        assertEquals(AuthoritiesConstants.ROLE_LAKARE, roleArrCaptor.getValue());
         //assertEquals(1, roleArrCaptor.getValue().length);
         //assertEquals(newRole.getName(), roleArrCaptor.getValue()[0]);
     }

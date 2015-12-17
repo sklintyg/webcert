@@ -80,7 +80,7 @@ describe('ViewCertCtrl', function() {
             },
             isFeatureActive: function() { return true; }
         });
-        $provide.value('common.UserModel', getTestUser({LAKARE: 'LAKARE', UTHOPP: 'UTHOPP'}));
+        $provide.value('common.UserModel', getTestUser({'LAKARE': {'name': 'Läkare', 'desc': 'Läkare'}}, 'UTHOPP'));
     }));
 
     // Get references to the object we want to test from the context.
@@ -376,9 +376,9 @@ describe('ViewCertCtrl', function() {
                 ]
             },
             'roles': role,
-            'aktivaFunktioner': ['hanteraFragor', 'hanteraFragor.fk7263'],
+            'features': ['hanteraFragor', 'hanteraFragor.fk7263'],
             'totaltAntalVardenheter': 6,
-            'requestOrigin': origin
+            'origin': origin
         };
 
     }

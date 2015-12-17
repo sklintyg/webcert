@@ -1,244 +1,616 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title" : "Webcertuser transport model",
-  "description" : "Defines the transport model of an authenticated webcert user model, e.g returned by /api/anvandare",
-  "id": "/",
-  "type": "object",
+  "description": "Defines the transport model of an authenticated webcert user model, e.g returned by /api/anvandare",
   "properties": {
-    "privatLakareAvtalGodkand": {
-      "id": "privatLakareAvtalGodkand",
-      "type": "boolean"
-    },
-    "hsaId": {
-      "id": "hsaId",
-      "type": "string"
-    },
-    "namn": {
-      "id": "namn",
-      "type": "string"
-    },
-    "titel": {
-      "id": "titel",
-      "type": "string"
-    },
-    "forskrivarkod": {
-      "id": "forskrivarkod",
+    "authenticationMethod": {
       "type": "string"
     },
     "authenticationScheme": {
-      "id": "authenticationScheme",
       "type": "string"
-    },
-    "vardgivare": {
-      "id": "vardgivare",
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "id": "auto-generated-schema-451"
-      },
-      "additionalItems": false
-    },
-    "specialiseringar": {
-      "id": "specialiseringar",
-      "type": "array",
-      "minItems": 0,
-      "items": {},
-      "additionalItems": false
-    },
-    "legitimeradeYrkesgrupper": {
-      "id": "legitimeradeYrkesgrupper",
-      "type": "array",
-      "minItems": 0,
-      "items": {},
-      "additionalItems": false
-    },
-    "aktivaFunktioner": {
-      "id": "aktivaFunktioner",
-      "type": "array",
-      "minItems": 0,
-      "items": {
-        "id": "auto-generated-schema-824"
-      },
-      "additionalItems": false
-    },
-    "valdVardenhet": {
-      "id": "valdVardenhet",
-      "type": "object",
-      "properties": {
-        "@class": {
-          "id": "@class",
-          "type": "string"
-        },
-        "id": {
-          "id": "id",
-          "type": "string"
-        },
-        "namn": {
-          "id": "namn",
-          "type": "string"
-        },
-        "epost": {
-          "id": "epost",
-          "type": "string"
-        },
-        "postadress": {
-          "id": "postadress",
-          "type": "string"
-        },
-        "postnummer": {
-          "id": "postnummer",
-          "type": "string"
-        },
-        "postort": {
-          "id": "postort",
-          "type": "string"
-        },
-        "telefonnummer": {
-          "id": "telefonnummer",
-          "type": "string"
-        },
-        "arbetsplatskod": {
-          "id": "arbetsplatskod",
-          "type": "string"
-        },
-        "mottagningar": {
-          "id": "mottagningar",
-          "type": "array",
-          "items": {},
-          "additionalItems": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "valdVardgivare": {
-      "id": "valdVardgivare",
-      "type": "object",
-      "properties": {
-        "@class": {
-          "id": "@class",
-          "type": "string"
-        },
-        "id": {
-          "id": "id",
-          "type": "string"
-        },
-        "namn": {
-          "id": "namn",
-          "type": "string"
-        },
-        "vardenheter": {
-          "id": "vardenheter",
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "id": "auto-generated-schema-148"
-          },
-          "additionalItems": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "roles": {
-      "id": "roles",
-      "type": "object",
-      "properties": {},
-      "additionalProperties": true
     },
     "authorities": {
-      "id": "authorities",
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "MAKULERA_INTYG": {
-          "id": "MAKULERA_INTYG",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "SIGNERA_INTYG": {
-          "id": "SIGNERA_INTYG",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
+        "ATKOMST_ANDRA_ENHETER": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
         },
         "BESVARA_KOMPLETTERINGSFRAGA": {
-          "id": "BESVARA_KOMPLETTERINGSFRAGA",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "VIDAREBEFORDRA_FRAGASVAR": {
-          "id": "VIDAREBEFORDRA_FRAGASVAR",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "ATKOMST_ANDRA_ENHETER": {
-          "id": "ATKOMST_ANDRA_ENHETER",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "KOPIERA_INTYG": {
-          "id": "KOPIERA_INTYG",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "NAVIGERING": {
-          "id": "NAVIGERING",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
         },
         "FILTRERA_PA_LAKARE": {
-          "id": "FILTRERA_PA_LAKARE",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "VIDAREBEFORDRA_UTKAST": {
-          "id": "VIDAREBEFORDRA_UTKAST",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
-        },
-        "HANTERA_PERSONUPPGIFTER": {
-          "id": "HANTERA_PERSONUPPGIFTER",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
         },
         "HANTERA_MAILSVAR": {
-          "id": "HANTERA_MAILSVAR",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": true
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "HANTERA_PERSONUPPGIFTER": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "KOPIERA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "MAKULERA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "NAVIGERING": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "SIGNERA_INTYG": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "SKRIVA_INTYG": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "VIDAREBEFORDRA_FRAGASVAR": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "VIDAREBEFORDRA_UTKAST": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "VISA_INTYG": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
         }
       },
-      "additionalProperties": false
+      "type": "object"
     },
-    "authenticationMethod": {
-      "id": "authenticationMethod",
+    "features": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 0,
+      "type": "array"
+    },
+    "forskrivarkod": {
       "type": "string"
     },
-    "requestOrigin": {
-      "id": "requestOrigin",
+    "hsaId": {
       "type": "string"
     },
     "lakare": {
-      "id": "lakare",
       "type": "boolean"
+    },
+    "legitimeradeYrkesgrupper": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 0,
+      "type": "array"
+    },
+    "namn": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
     },
     "privatLakare": {
-      "id": "privatLakare",
       "type": "boolean"
     },
+    "privatLakareAvtalGodkand": {
+      "type": "boolean"
+    },
+    "roles": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    },
+    "specialiseringar": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 0,
+      "type": "array"
+    },
+    "titel": {
+      "type": "string"
+    },
     "totaltAntalVardenheter": {
-      "id": "totaltAntalVardenheter",
       "type": "integer"
+    },
+    "valdVardenhet": {
+      "additionalProperties": false,
+      "properties": {
+        "@class": {
+          "type": "string"
+        },
+        "arbetsplatskod": {
+          "type": "string"
+        },
+        "epost": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "mottagningar": {
+          "additionalItems": false,
+          "items": {},
+          "type": "array"
+        },
+        "namn": {
+          "type": "string"
+        },
+        "postadress": {
+          "type": "string"
+        },
+        "postnummer": {
+          "type": "string"
+        },
+        "postort": {
+          "type": "string"
+        },
+        "telefonnummer": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "valdVardgivare": {
+      "additionalProperties": false,
+      "properties": {
+        "@class": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "namn": {
+          "type": "string"
+        },
+        "vardenheter": {
+          "additionalItems": false,
+          "items": {},
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "vardgivare": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 1,
+      "type": "array"
     }
   },
-  "additionalProperties": false,
   "required": [
     "privatLakareAvtalGodkand",
     "hsaId",
@@ -249,15 +621,18 @@
     "vardgivare",
     "specialiseringar",
     "legitimeradeYrkesgrupper",
-    "aktivaFunktioner",
+    "features",
     "valdVardenhet",
     "valdVardgivare",
     "roles",
     "authorities",
-    "requestOrigin",
+    "origin",
     "authenticationMethod",
     "lakare",
     "privatLakare",
     "totaltAntalVardenheter"
-  ]
+  ],
+  "title": "WebCertUser transport model",
+  "type": "object",
+  "additionalProperties": false
 }

@@ -7,7 +7,7 @@ class Anvandarroll extends ExceptionHandlingFixture {
 
     def ändraTill(String role) {
         Browser.drive {
-            go System.getProperty("webcert.baseUrl") + "authtestability/roles/userrole/${role}"
+            go System.getProperty("webcert.baseUrl") + "authtestability/user/role/${role}"
             getDriver().navigate().back()
         }
     }

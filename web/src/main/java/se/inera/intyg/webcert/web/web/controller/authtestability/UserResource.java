@@ -52,8 +52,8 @@ public class UserResource {
     @Path("/role/{role}")
     @Produces(MediaType.APPLICATION_JSON)
     @JsonPropertyDescription("Set the roles for user in session")
-    public Response setUserRole(@PathParam("role") Role newRole) {
-        webCertUserService.updateUserRole(newRole.getName());
+    public Response setUserRole(@PathParam("role") String role) {
+        webCertUserService.updateUserRole(role);
         return Response.ok().build();
     }
 

@@ -27,10 +27,6 @@ public class UserAgreementResource {
     @Autowired
     private GodkantAvtalRepository godkantAvtalRepository;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
-
-
     @PUT
     @Path("/godkannavtal/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON)

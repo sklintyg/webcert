@@ -41,7 +41,7 @@
             <entry key="integration" value="/visa"/>
             <entry key="legacyintegration" value="/webcert/web/user"/>
             <entry key="testability" value="/testability"/>
-            <entry key="authtestability" value="/authtestability/roles"/>
+            <entry key="authtestability" value="/authtestability/user"/>
           </map>
         </property>
       </bean>

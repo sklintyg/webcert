@@ -100,13 +100,23 @@ public abstract class BaseRestIntegrationTest {
     }
 
     /**
-     * Change the role for the current session.
-     * This method required that a session is already established.
+     * Change user's role for the current session.
+     * This method require that a session is already established.
      *
      * @param newRole
      */
     protected void changeRoleTo(String newRole) {
         given().pathParam("role", newRole).expect().statusCode(200).when().get("authtestability/user/role/{role}");
+    }
+
+    /**
+     * Change user's request origin for the current session.
+     * This method require that a session is already established.
+     *
+     * @param newOrigin
+     */
+    protected void changeOriginTo(String newOrigin) {
+        given().pathParam("origin", newOrigin).expect().statusCode(200).when().get("authtestability/user/origin/{origin}");
     }
 
     /**
