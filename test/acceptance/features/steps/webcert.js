@@ -71,21 +71,25 @@ module.exports = function () {
             .to.eventually.contain(arg1).and.notify(callback);
     });
 
-    this.Given(/^ska intyget "([^"]*)" med status "([^"]*)" inte synas mer$/, function (intyg, status, callback) {
-      var qaTable = element(by.css('table.table-qa'));
+  //   this.Given(/^ska intyget "([^"]*)" med status "([^"]*)" inte synas mer$/, function (intyg, status, callback) {
+  //     var qaTable = element(by.css('table.table-qa'));
 
-      qaTable.all(by.cssContainingText('tr', intyg)).filter(function(elem, index) {
-          return elem.getText().then(function(text) {
-              return (text.indexOf(status) > -1);
-          });
-      }).then(function(filteredElements) {
-          expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
-          callback();
-      });
+  //     qaTable.all(by.cssContainingText('tr', intyg)).filter(function(elem, index) {
+  //         return elem.getText().then(function(text) {
+  //             return (text.indexOf(status) > -1);
+  //         });
+  //     }).then(function(filteredElements) {
+  //         expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
+  //         callback();
+  //     });
+  // });
+
+  this.Given(/^ska intyget inte finnas i intygsöversikten$/, function (callback) {
+    element(by.id('intygFilterSamtliga')).click();
+    expect(element(by.id('showBtn-'+intyg.id)).isPresent()).to.become(false).and.notify(callback);
   });
 
-
-  this.Given(/^kollar jag i databasen att intyget är borttaget$/, function (callback) {
+  this.Given(/^ska spår av utkastet inte finnas i databasen$/, function (callback) {
     
     if(!process.env.DATABASE_PASSWORD){
       callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:'+process.env.DATABASE_USER);
