@@ -19,16 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.util;
 
+import java.util.stream.Collectors;
+
 import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import sun.text.resources.lt.CollationData_lt;
-
-import java.util.stream.Collectors;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public final class UpdateUserUtil {
 
