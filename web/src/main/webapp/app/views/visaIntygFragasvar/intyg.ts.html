@@ -1,10 +1,11 @@
-<div class="col-sm-6 webcert-col webcert-col-primary">
-  <div class="print-hide">
-    <a id="tillbakaButton" wc-authority="NAVIGERING" class="backlink-icon"
-       href="/web/dashboard#/create/choose-cert-type/index" title="Tillbaka till Sök/skriv intyg"></a>
-    <h1 class="backlink-heading">
-      <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
-    </h1>
-  </div>
-  <div ui-view="intyg" />
+<div class="webcert-multicol-container">
+    <div class="col-sm-6 webcert-col webcert-col-primary">
+        <div class="print-hide">
+            <a id="tillbakaButton" wc-authority="NAVIGERING" class="backlink-icon" href="/web/dashboard#/create/choose-cert-type/index" title="Tillbaka till Sök/skriv intyg"></a>
+            <h1 class="backlink-heading">
+                <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
+            </h1>
+        </div>
+        <div ui-view="intyg" />
+    </div>
 </div>
