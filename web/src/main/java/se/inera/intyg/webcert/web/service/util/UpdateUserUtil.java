@@ -26,6 +26,9 @@ import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
+import sun.text.resources.lt.CollationData_lt;
+
+import java.util.stream.Collectors;
 
 public final class UpdateUserUtil {
 
@@ -34,6 +37,9 @@ public final class UpdateUserUtil {
 
     /**
      * Create a user object from WebCertUser.
+     *
+     * Note that befattningar (a List) is concatenated into a string with ", " as separator.
+     *
      * @param user {@link WebCertUser}
      */
     public static HoSPersonal createUserObject(WebCertUser user) {
@@ -46,9 +52,10 @@ public final class UpdateUserUtil {
                 valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(),
                 valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
 
+        String befattning = user.getBefattningar().stream().collect(Collectors.joining(", "));
         HoSPersonal hosPerson = new HoSPersonal(
                 user.getHsaId(),
-                user.getNamn(), user.getForskrivarkod(), user.getTitel(), user.getSpecialiseringar(), vardenhet);
+                user.getNamn(), user.getForskrivarkod(), befattning, user.getSpecialiseringar(), vardenhet);
         return hosPerson;
     }
 
