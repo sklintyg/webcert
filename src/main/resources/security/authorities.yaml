@@ -1,13 +1,51 @@
+# ====================================================================================================
+#   Konfiguration för Webcerts rollhantering
+#
+#   YAML specifikation: http://www.yaml.org/spec/1.2/spec.html
+#
+#   Kort förklaring till vissa konstruktioner i filen:
+#
+#   '-'   används för att skapa listor av värden
+#   '&'   används för att skapa ett ankare (unik nyckel)
+#   '*'   används för att peka på ett ankare, kallas också alias
+#   '<<:' används för att slå ihop och skriva över värden
+#
+#   '&' och '*' används för att undvika duplikat i en YAML-fil
+#
+#   Överskådligt exempel:
+#
+#  defaults: &defaults
+#     adapter:  postgres
+#     host:     localhost
+#
+#   development:
+#     database: myapp_development
+#     <<: *defaults
+#
+#   test:
+#     database: myapp_test
+#     <<: *defaults
+#
+#   & sets up the name of the anchor (“defaults”),
+#   << means “merge the given hash into the current one”, and
+#   * includes the named anchor (“defaults” again).
+#
+# ====================================================================================================
 ---
 version: 1.0
-released: 2015-11-18
+released: 2015-12-18
 changedby: Magnus Ekstrand
 
-# Kända ingångar till systemet
+
+# ====================================================================================================
+#   Kända basvärden
+# ====================================================================================================
+
+# De ingångar till systemet som finns
 knownRequestOrigins:
-  - &kro010 NORMAL
-  - &kro020 DJUPINTEGRATION
-  - &kro030 UTHOPP
+  - &kro010 NORMAL # Inloggning via SITHS / BankID
+  - &kro020 DJUPINTEGRATION # Inloggning via länk från journalsystem
+  - &kro030 UTHOPP # Inloggning via uthoppslänk från journalsystem
 
 # De intygstyper som systemet har
 knownIntygstyper:
@@ -37,6 +75,11 @@ knownRoles:
   - &kr020 PRIVATLAKARE
   - &kr030 TANDLAKARE
   - &kr040 VARDADMINISTRATOR
+
+
+# ====================================================================================================
+#   Definitioner av ingångar, roller, privilegier, yrkesroller och befattnings-/gruppförskrivarkoder
+# ====================================================================================================
 
 # Ingångar
 requestOrigins:
