@@ -21,7 +21,7 @@ Och jag går tillbaka till start
 Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Utkast, uppgifter saknas"
 Och jag raderar utkastet
 Så ska spår av utkastet inte finnas i databasen
-Och ska intyget "Transportstyrelsens läkarintyg, diabetes" med status "Utkast, uppgifter saknas" inte synas mer
+Och ska intyget inte finnas i intygsöversikten
 
 Scenario: Radera ett utkast för Transportstyrelsens läkarintyg
 När jag väljer patienten "19971019-2387"
@@ -30,4 +30,4 @@ Och jag går tillbaka till start
 Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Utkast, uppgifter saknas"
 Och jag raderar utkastet
 Så ska spår av utkastet inte finnas i databasen
-Och ska intyget "Transportstyrelsens läkarintyg, diabetes" med status "Utkast, uppgifter saknas" inte synas mer
+Och ska intyget inte finnas i intygsöversikten
