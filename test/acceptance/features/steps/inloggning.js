@@ -47,8 +47,8 @@ module.exports = function () {
 
         //Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){
-          intygsid = text.split('/').slice(-1)[0];
-          logg('Intygsid: '+intygsid);
+          intyg.id = text.split('/').slice(-1)[0];
+          logg('Intygsid: '+intyg.id);
         });
 
         callback();

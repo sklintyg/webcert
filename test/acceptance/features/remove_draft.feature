@@ -4,7 +4,7 @@ Egenskap: Kontrollera att webcerts olika funktioner går att använda
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
-
+@fk7263 @a
 Scenario: Radera ett utkast för läkarintyg fk7263
 När jag väljer patienten "19971019-2387"
 Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg

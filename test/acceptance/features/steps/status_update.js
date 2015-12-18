@@ -103,7 +103,7 @@ function getNumberOfEvents(intygsId, event) {
     var connection = mysql.createConnection({
         host  : '10.1.0.66',
         user  : 'nmt_test',
-        password  : 'Saetter01',
+        password  : '',
         database  : 'webcert_requests'
     });
 

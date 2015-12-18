@@ -17,12 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor, logg, intyg */
+/* global pages, browser, protractor, logg, intyg, should */
 
 'use strict';
 
 var fkUtkastPage = pages.intygpages.fk7263Utkast;
 var fkIntygPage = pages.intygpages.fkIntyg;
+var mysql = require('mysql');
 
 module.exports = function () {
 
@@ -85,23 +86,28 @@ module.exports = function () {
 
 
   this.Given(/^kollar jag i databasen att intyget är borttaget$/, function (callback) {
-    var mysql = require('mysql');
+
+    should.exist(process.env.DBUSR);
+    should.exist(process.env.DBPW);
 
     var connection = mysql.createConnection({
-      host  : "10.1.0.66",
+      host  : '10.1.0.66',
       user  : process.env.DBUSR,
       password  : process.env.DBPW,
-      database  : "webcert_ip40"
+      database  : process.env.DATABASE_NAME
     });
     connection.connect();
-    connection.query("SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.INTYGS_ID = \""+intygsid+"\";", function(err, rows, fields)
-    {
-      if(rows!=null){
-      console.log('Amount of rows in database : ' + rows[0].Counter);
-      expect(parseInt(rows[0].Counter)).to.equal(0);
-      callback();
-    }
-  });
+    connection.query('SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.INTYGS_ID = \"'+intyg.id+'\";', function(err, rows, fields){
+      should.not.exist(err);
+      logg('Från databas:');
+      logg(JSON.stringify(rows));
+      if(rows!==null){
+        logg('Antal rader i databasen : ' + rows[0].Counter);
+        var radix = 10; //for parseInt
+        expect(parseInt(rows[0].Counter,radix)).to.equal(0);
+        callback();
+      }
+    });
     connection.end();
 });
 
