@@ -43,7 +43,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;

@@ -204,7 +204,6 @@ public class IntygServiceImpl implements IntygService {
     private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        // TODO: PRIVILEGE_LIST_INTYG borde det finnas
         Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, intygsTyper);
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
