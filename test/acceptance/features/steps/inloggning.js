@@ -55,9 +55,9 @@ module.exports = function () {
     });
 
     this.Given(/^signerar intyget$/, function (callback) {
-        var EC = protractor.ExpectedConditions;
-        browser.sleep(5000);
-        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
+        // var EC = protractor.ExpectedConditions;
+        // browser.sleep(5000);
+        // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
 
@@ -65,15 +65,22 @@ module.exports = function () {
         expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
+    function testHypoglykemi(_typ, _element){
+        var hyp = element(by.id(_element));
+        if(_typ === null ){
+            logg('Kontrollerar hypoglykemi : '+ _typ);
+            expect(hyp.getText()).to.eventually.equal('Ej angivet');
+        }
+        else if(_typ === 'Ja' || _typ === 'Nej'){
+            logg('Kontrollerar hypoglykemi : '+ _typ);
+            expect(hyp.getText()).to.eventually.equal(_typ);
+        }
+    };
+    
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
+        if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
         // // Intyget avser
         var intygetAvser = element(by.id('intygAvser'));
-
-        
-        // var period = element(by.id('observationsperiod'));
-
-        var insulPeriod = element(by.id('insulinBehandlingsperiod'));
-        var besk = element(by.id('annanBehandlingBeskrivning'));
 
         //Sortera typer till den ordning som Webcert använder
         var selectedTypes = intyg.korkortstyper.sort(function (a, b) {
@@ -85,62 +92,95 @@ module.exports = function () {
         logg('Kontrollerar att intyget avser körkortstyper:'+selectedTypes);
 
         expect(intygetAvser.getText()).to.eventually.contain(selectedTypes);
-
+        
         // //Identiteten är styrkt genom
         var idStarktGenom = element(by.id('identitet'));
         logg('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
 
 
-        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) { 
+        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {     
             // Specialare eftersom status inte innehåller den punkt som utkastet innehåller.
             var txt = 'Försäkran enligt 18 kap 4 §';
-            expect(idStarktGenom.getText()).to.eventually.contain(txt).and.notify(callback);
+            expect(idStarktGenom.getText()).to.eventually.contain(txt);
         } else {
-            expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).and.notify(callback);
+            expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom);
+        }
+        //  Vilket år ställdes diagnosen diabetes?
+        var period = element(by.id('observationsperiod'));
+        if (intyg.allmant.year != null){
+        logg('Kontrollerar att observationsperiod är: '+intyg.allmant.year);
+        expect(period.getText()).to.eventually.equal(intyg.allmant.year.toString());
+        }
+        //  Insulin sedan år
+        var insulPeriod = element(by.id('insulinBehandlingsperiod'));
+        if (intyg.allmant.behandling.insulinYear != null){
+        logg('Kontrollerar att intyg.insulinBehandlingsperiod är: '+intyg.allmant.behandling.insulinYear);
+        expect(insulPeriod.getText()).to.eventually.equal(intyg.allmant.behandling.insulinYear.toString());
         }
 
-        var period = element(by.id('observationsperiod'));
-        period.getText().then(function (_text) {
-            expect(_text).to.eventually.equals(intyg.allmant.year).and.notify(callback);
-        });
-        
+        // Kolla Diabetestyp
         var dTyp = element(by.id('diabetestyp'));
+        logg('Kontrollerar att diabetestyp är: '+intyg.allmant.typ);
+        expect(dTyp.getText()).to.eventually.equal(intyg.allmant.typ);
 
-        var eKost = element(by.id('endastKost'));
-        var tabl = element(by.id('tabletter'));
-        var insul = element(by.id('insulin'));
 
+        // var annanBeh = element(by.id('annanBehandlingBeskrivning'));
+
+        testHypoglykemi(intyg.hypoglykemier.a, 'kunskapOmAtgarder');
+        testHypoglykemi(intyg.hypoglykemier.b, 'teckenNedsattHjarnfunktion');
+        testHypoglykemi(intyg.hypoglykemier.c, 'saknarFormagaKannaVarningstecken');
+        testHypoglykemi(intyg.hypoglykemier.d, 'allvarligForekomst');
+        testHypoglykemi(intyg.hypoglykemier.e, 'allvarligForekomstTrafiken');
+        testHypoglykemi(intyg.hypoglykemier.f, 'egenkontrollBlodsocker');
+        testHypoglykemi(intyg.hypoglykemier.g, 'allvarligForekomstVakenTid');
+
+        var synIntyg = element(by.id('separatOgonlakarintyg'));
+        if (intyg.syn === 'Ja') {
+            logg('Kontrollerar att synintyg är:' + intyg.syn)
+            expect(synIntyg.getText()).to.eventually.equal(intyg.syn);
+        }
+        else {
+            //Kontrollera det ifyllda synintyget.
+        }
+
+        var bed = element(by.id('bedomning'));
+
+        logg('Kontrollerar att bedömningen avser körkortstyper:'+selectedTypes);
+        expect(bed.getText()).to.eventually.contain(selectedTypes);
+        
+        // ============= PLACEHOLDERS:
+        var komment = element(by.id('kommentar'));
+        expect(komment.getText()).to.eventually.equal('Ej angivet');
+        var specKomp = element(by.id('lakareSpecialKompetens'));
+        expect(specKomp.getText()).to.eventually.equal('Ej angivet');
+        // ==============
+        
         var typer = intyg.allmant.behandling.typer;
-        typer.forEach(function(typ) {
-            if(typ==='Endast kost')
+        typer.forEach(function (typ) {
+            if(typ === 'Endast kost')
             {
-                expect(eKost.getText()).to.eventually.equal(typ).and.notify(callback);
+                var eKost = element(by.id('endastKost'));
+                logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
+                expect(eKost.getText()).to.eventually.equal('Ja').and.notify(callback);
             }
-            else if(typ==='Tabletter')
+            else if(typ === 'Tabletter')
             {
-                expect(tabl.getText()).to.eventually.equal(typ).and.notify(callback);
+                var tabl = element(by.id('tabletter'));
+                logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
+                expect(tabl.getText()).to.eventually.equal('Ja').and.notify(callback);
             }
-            else if(typ==='Insulin')
+            else if(typ === 'Insulin')
             {
-                expect(insul.getText()).to.eventually.equal(typ).and.notify(callback);
+                var insul = element(by.id('insulin')); 
+                logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
+                expect(insul.getText()).to.eventually.equal('Ja').and.notify(callback);
             }
         });
-
-        // endastKost
-        // tabletter
-        // insulin
-
-        // intyg.allmant.behandling
-
-        // intyg.allmant.hypoglykemier
-        // intyg.allmant.synintyg
-        // intyg.allmant.bedomning
-        // intyg.identitetStyrktGenom
-        // intyg.allmant
-        // intyg.hypoglykemier
-        // intyg.synintyg
-        // intyg.bedomning
-        // intyg.korkortstyper
+       
+    }
+    else if (intyg.typ === 'Transportstyrelsens läkarintyg'){}
+    else if (intyg.typ === 'Läkarintyg FK 7263'){}
+        
 
     });
 

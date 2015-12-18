@@ -122,7 +122,7 @@ var TsDiabetesUtkast = BaseUtkast._extend({
      *          }
      *      }
      */
-    fillInAllmant: function(allmant) {
+    fillInAllmant: function(allmant) { 
 
         // Ange år då diagnos ställts
         //console.log('Anger år då diagnos ställts: ' + allmant.year);
