@@ -30,21 +30,21 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>0-SNAPSHOT</version>
+  <version>4.1.0-b41</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
 
   <properties>
     <!-- Common -->
-    <common.version>0-SNAPSHOT</common.version>
+    <common.version>2.5.0-b49</common.version>
     <common.version.range>(,2.5.0]</common.version.range>
 
     <!-- TEMP -->
     <!--<ehcache.version>2.10.0</ehcache.version>-->
 
     <!-- Intygstyper -->
-    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
+    <intygstyper.version>2.5.0-b29</intygstyper.version>
     <intygstyper.version.range>(,2.5.0]</intygstyper.version.range>
 
     <!-- Schemas -->
@@ -65,11 +65,11 @@
     <cgi-funktionstjanster-grp.version>1.0.0</cgi-funktionstjanster-grp.version>
 
     <!-- Schemas with 0-SNAPSHOT dependencies as standard -->
-    <rivta-hsa-organization.version>0-SNAPSHOT</rivta-hsa-organization.version>
+    <rivta-hsa-organization.version>1.1.RC5.0</rivta-hsa-organization.version>
     <rivta-hsa-organization.version.range>(,1.1.RC5.0]</rivta-hsa-organization.version.range>
-    <rivta-hsa-authorizationmanagement.version>0-SNAPSHOT</rivta-hsa-authorizationmanagement.version>
+    <rivta-hsa-authorizationmanagement.version>1.0.RC4.0</rivta-hsa-authorizationmanagement.version>
     <rivta-hsa-authorizationmanagement.version.range>(,1.0.RC4.0]</rivta-hsa-authorizationmanagement.version.range>
-    <rivta-hsa-employee.version>0-SNAPSHOT</rivta-hsa-employee.version>
+    <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
     <rivta-hsa-employee.version.range>(,1.0.RC4.0]</rivta-hsa-employee.version.range>
 
     <skip-coverage>true</skip-coverage>
