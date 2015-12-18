@@ -27,8 +27,6 @@ exports.config = {
     allScriptsTimeout: 30000,
     // seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
     framework: 'custom',
-    timeout : 100000,
-    defaultTimeoutInterval: 30000,
 
     // path relative to the current config file
     frameworkPath: require.resolve('protractor-cucumber-framework'),

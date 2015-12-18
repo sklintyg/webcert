@@ -21,38 +21,9 @@
 
 'use strict';
 
-var mysql = require('mysql');
 var fkUtkastPage = pages.intyg.fk7263Utkast;
-var fkIntygPage = pages.intyg.fkIntyg;
 
 module.exports = function () {
-
-    this.Given(/^signerar FK7263-intyget$/, function (callback) {
-
-        fkUtkastPage.whenSigneraButtonIsEnabled().then(function () {
-            fkUtkastPage.signeraButtonClick();
-        });
-
-        browser.getCurrentUrl().then(function (text) {
-            global.intyg.id = text.split('/').slice(-1)[0];
-            global.intyg.id = global.intyg.id.replace('?signed', '');
-        });
-
-        callback();
-    });
-
-
-    this.Given(/^jag makulerar intyget$/, function (callback) {
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            intyg.id = intyg.id.replace('?signed', '');
-        });
-
-        fkIntygPage.makulera.btn.click();
-        fkIntygPage.makulera.dialogAterta.click();
-        fkIntygPage.makulera.kvittensOKBtn.click()
-        .then(callback);
-    });
 
     this.Given(/^jag raderar utkastet$/, function (callback) {
         // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
@@ -88,34 +59,5 @@ module.exports = function () {
     element(by.id('intygFilterSamtliga')).click();
     expect(element(by.id('showBtn-'+intyg.id)).isPresent()).to.become(false).and.notify(callback);
   });
-
-  this.Given(/^ska spår av utkastet inte finnas i databasen$/, function (callback) {
-    
-    if(!process.env.DATABASE_PASSWORD){
-      callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:'+process.env.DATABASE_USER);
-    }
-    else{
-      var dbName = process.env.DATABASE_NAME;
-      var connection = mysql.createConnection({
-        host  : process.env.DATABASE_HOST,
-        user  : process.env.DATABASE_USER,
-        password  : process.env.DATABASE_PASSWORD,
-        database  : dbName
-      });
-
-      connection.connect();
-      connection.query('SELECT COUNT(*) AS Counter FROM '+dbName+'.INTYG WHERE '+dbName+'.INTYG.INTYGS_ID = \"'+intyg.id+'\";', function(err, rows, fields){
-        should.not.exist(err);
-
-        logg('Från databas:');
-        logg(JSON.stringify(rows));
-
-        var radix = 10; //for parseInt
-        expect(parseInt(rows[0].Counter,radix)).to.equal(0);
-        callback();
-      });
-      connection.end();
-    }
-});
 
 };

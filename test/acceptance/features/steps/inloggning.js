@@ -54,13 +54,6 @@ module.exports = function () {
         callback();
     });
 
-    this.Given(/^signerar intyget$/, function (callback) {
-        // var EC = protractor.ExpectedConditions;
-        // browser.sleep(5000);
-        // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
-        element(by.id('signera-utkast-button')).click().then(callback);
-    });
-
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
         expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
@@ -75,7 +68,7 @@ module.exports = function () {
             logg('Kontrollerar hypoglykemi : '+ _typ);
             expect(hyp.getText()).to.eventually.equal(_typ);
         }
-    };
+    }
     
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
         if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
@@ -107,13 +100,13 @@ module.exports = function () {
         }
         //  Vilket år ställdes diagnosen diabetes?
         var period = element(by.id('observationsperiod'));
-        if (intyg.allmant.year != null){
+        if (intyg.allmant.year !== null){
         logg('Kontrollerar att observationsperiod är: '+intyg.allmant.year);
         expect(period.getText()).to.eventually.equal(intyg.allmant.year.toString());
         }
         //  Insulin sedan år
         var insulPeriod = element(by.id('insulinBehandlingsperiod'));
-        if (intyg.allmant.behandling.insulinYear != null){
+        if (intyg.allmant.behandling.insulinYear !== null){
         logg('Kontrollerar att intyg.insulinBehandlingsperiod är: '+intyg.allmant.behandling.insulinYear);
         expect(insulPeriod.getText()).to.eventually.equal(intyg.allmant.behandling.insulinYear.toString());
         }
@@ -136,7 +129,7 @@ module.exports = function () {
 
         var synIntyg = element(by.id('separatOgonlakarintyg'));
         if (intyg.syn === 'Ja') {
-            logg('Kontrollerar att synintyg är:' + intyg.syn)
+            logg('Kontrollerar att synintyg är:' + intyg.syn);
             expect(synIntyg.getText()).to.eventually.equal(intyg.syn);
         }
         else {

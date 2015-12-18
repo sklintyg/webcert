@@ -57,6 +57,19 @@ var FkUtkast = BaseUtkast._extend({
             fortydligande: element(by.id('capacityForWorkForecastText'))
         };
 
+        this.arbete={
+            nuvarandeArbete:{
+                checkbox:element(by.id('arbeteNuvarande')),
+                text: element(by.id('currentWork'))
+            },
+            arbetslos:{
+                checkbox:element(by.id('arbeteArbetslos'))
+            },
+            foraldraledig:{
+                checkbox:element(by.id('arbeteForaldraledig'))
+            }
+        };
+
         this.nedsatt = {
             med25:{
                 checkbox: element(by.id('nedsattMed25')),
@@ -143,7 +156,9 @@ var FkUtkast = BaseUtkast._extend({
         this.funktionsNedsattning.sendKeys(txt);
     },
     angeAktivitetsBegransning : function(txt) {
-        this.aktivitetsBegransning.sendKeys(txt);
+        if(txt){
+            this.aktivitetsBegransning.sendKeys(txt);
+        }
     },
     angeNuvarandeArbete : function(txt) {
         this.nuvarandeArbete.sendKeys(txt);
@@ -224,6 +239,22 @@ var FkUtkast = BaseUtkast._extend({
             if(prognos.fortydligande){
                 this.prognos.fortydligande.sendKeys(prognos.fortydligande);
             }
+        }
+    },
+
+    angeArbete:function(arbete){
+        if(arbete.nuvarandeArbete){
+            this.arbete.nuvarandeArbete.checkbox.click();
+            if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter){
+                this.arbete.nuvarandeArbete.text
+                .sendKeys(arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
+            }
+        }
+        if(arbete.arbetsloshet){
+            this.arbete.arbetslos.checkbox.click();
+        }
+        if(arbete.foraldraledighet){
+            this.arbete.foraldraledig.checkbox.click();
         }
     }
 });

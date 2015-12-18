@@ -76,12 +76,17 @@ module.exports = function() {
 
             global.intyg = testdata.fk.sjukintyg.getRandom();
             fkUtkastPage.angeSmittskydd(intyg.smittskydd);
+            browser.ignoreSynchronization = true;
             fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
             fkUtkastPage.angeDiagnoser(intyg.diagnos);
             fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
+            fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
+            fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning);
+            fkUtkastPage.angeArbete(intyg.arbete);
             fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
             fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
             fkUtkastPage.angePrognos(intyg.prognos);
+            browser.ignoreSynchronization = false;
             callback();
         }
     });
