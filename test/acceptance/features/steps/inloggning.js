@@ -55,25 +55,25 @@ module.exports = function () {
         callback();
     });
 
+
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
         expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
-    function testHypoglykemi(_typ, _element){
-        var hyp = element(by.id(_element));
+    function testElement(_typ, _element){
+        var ele = element(by.id(_element));
         if(_typ === null ){
-            logg('Kontrollerar hypoglykemi : '+ _typ);
-            expect(hyp.getText()).to.eventually.equal('Ej angivet');
+            logg('Kontrollerar '+_element+' : '+ _typ);
+            expect(ele.getText()).to.eventually.equal('Ej angivet');
         }
         else if(_typ === 'Ja' || _typ === 'Nej'){
-            logg('Kontrollerar hypoglykemi : '+ _typ);
-            expect(hyp.getText()).to.eventually.equal(_typ);
+            logg('Kontrollerar '+_element+' : '+ _typ);
+            expect(ele.getText()).to.eventually.equal(_typ);
         }
     }
     
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
-        if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
-        // // Intyget avser
+        // // Intyget avser  
         var intygetAvser = element(by.id('intygAvser'));
 
         //Sortera typer till den ordning som Webcert använder
@@ -86,11 +86,10 @@ module.exports = function () {
         logg('Kontrollerar att intyget avser körkortstyper:'+selectedTypes);
 
         expect(intygetAvser.getText()).to.eventually.contain(selectedTypes);
-        
+
         // //Identiteten är styrkt genom
         var idStarktGenom = element(by.id('identitet'));
         logg('Kontrollerar att intyg är styrkt genom: ' + intyg.identitetStyrktGenom);
-
 
         if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {     
             // Specialare eftersom status inte innehåller den punkt som utkastet innehåller.
@@ -99,6 +98,9 @@ module.exports = function () {
         } else {
             expect(idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom);
         }
+
+        if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
+
         //  Vilket år ställdes diagnosen diabetes?
         var period = element(by.id('observationsperiod'));
         if (intyg.allmant.year !== null){
@@ -120,13 +122,13 @@ module.exports = function () {
 
         // var annanBeh = element(by.id('annanBehandlingBeskrivning'));
 
-        testHypoglykemi(intyg.hypoglykemier.a, 'kunskapOmAtgarder');
-        testHypoglykemi(intyg.hypoglykemier.b, 'teckenNedsattHjarnfunktion');
-        testHypoglykemi(intyg.hypoglykemier.c, 'saknarFormagaKannaVarningstecken');
-        testHypoglykemi(intyg.hypoglykemier.d, 'allvarligForekomst');
-        testHypoglykemi(intyg.hypoglykemier.e, 'allvarligForekomstTrafiken');
-        testHypoglykemi(intyg.hypoglykemier.f, 'egenkontrollBlodsocker');
-        testHypoglykemi(intyg.hypoglykemier.g, 'allvarligForekomstVakenTid');
+        testElement(intyg.hypoglykemier.a, 'kunskapOmAtgarder');
+        testElement(intyg.hypoglykemier.b, 'teckenNedsattHjarnfunktion');
+        testElement(intyg.hypoglykemier.c, 'saknarFormagaKannaVarningstecken');
+        testElement(intyg.hypoglykemier.d, 'allvarligForekomst');
+        testElement(intyg.hypoglykemier.e, 'allvarligForekomstTrafiken');
+        testElement(intyg.hypoglykemier.f, 'egenkontrollBlodsocker');
+        testElement(intyg.hypoglykemier.g, 'allvarligForekomstVakenTid');
 
         var synIntyg = element(by.id('separatOgonlakarintyg'));
         if (intyg.syn === 'Ja') {
@@ -172,7 +174,46 @@ module.exports = function () {
         });
        
     }
-    else if (intyg.typ === 'Transportstyrelsens läkarintyg'){}
+    else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
+    logg('inside Transportstyrelsens läkarintyg');
+        
+   
+    testElement(intyg.synDonder, 'synfaltsdefekter');
+    testElement(intyg.synNedsattBelysning, 'nattblindhet');
+    testElement(intyg.synOgonsjukdom, 'progressivOgonsjukdom');
+    testElement(intyg.synDubbel, 'diplopi');
+    testElement(intyg.synNystagmus, 'nystagmus');
+
+    // ============= PLACEHOLDERS:
+    // Ändra så att man sparar/genererar random värden!:     
+    var hogerOgautanKorrektion = element(by.id('hogerOgautanKorrektion'));
+    expect(hogerOgautanKorrektion.getText()).to.eventually.equal('0,8');
+    var hogerOgamedKorrektion = element(by.id('hogerOgamedKorrektion'));
+    expect(hogerOgamedKorrektion.getText()).to.eventually.equal('1,0');
+    var vansterOgautanKorrektion = element(by.id('vansterOgautanKorrektion'));
+    expect(vansterOgautanKorrektion.getText()).to.eventually.equal('0,7');
+    var vansterOgamedKorrektion = element(by.id('vansterOgamedKorrektion'));
+    expect(vansterOgamedKorrektion.getText()).to.eventually.equal('1,0');
+    var binokulartutanKorrektion = element(by.id('binokulartutanKorrektion'));
+    expect(binokulartutanKorrektion.getText()).to.eventually.equal('1,0');
+    var binokulartmedKorrektion = element(by.id('binokulartmedKorrektion'));
+    expect(binokulartmedKorrektion.getText()).to.eventually.equal('1,0');
+
+    var korrektionsglasensStyrka = element(by.id('korrektionsglasensStyrka'));
+    expect(korrektionsglasensStyrka.getText()).to.eventually.equal('Nej');
+    // ==============
+
+    var horselBalansbalansrubbningar = element(by.id('horselBalansbalansrubbningar'));
+    expect(horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel);
+
+    var hasHogreKorkortsbehorigheter = element(by.id('hasHogreKorkortsbehorigheter'));
+    if(selectedTypes.length() > -1){
+        logg('Kontrollerar att Hörsel och balanssinne (b) :'+ intyg.horselSamtal);
+        expect(hasHogreKorkortsbehorigheter.getText()).to.eventually.equal(intyg.horselSamtal);
+
+    }
+    callback();
+    }
     else if (intyg.typ === 'Läkarintyg FK 7263'){}
         
 
