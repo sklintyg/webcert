@@ -35,7 +35,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
  */
 public class PersonAPIControllerIT extends BaseRestIntegrationTest {
 
-    private static final String PATIENT_PERSON_NUMMER = "191212121212";
+//    private static final String PATIENT_PERSON_NUMMER = "191212121212";
 
     @Before
     public void setup() {
@@ -55,10 +55,10 @@ public class PersonAPIControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetExistingPerson() {
 
-        given().pathParam("personNummer", PATIENT_PERSON_NUMMER).expect().statusCode(200).when().get("api/person/{personNummer}").
+        given().pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/person/{personNummer}").
                 then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json")).
-                body("person.personnummer", equalTo(PATIENT_PERSON_NUMMER)).
+                body("person.personnummer", equalTo(DEFAULT_PATIENT_PERSONNUMMER)).
                 body("status", equalTo(PersonSvar.Status.FOUND.name()));
     }
 }

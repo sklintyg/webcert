@@ -26,22 +26,18 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.junit.Test;
 
-import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
-import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 
-public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
+import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
 
-    protected static FakeCredentials LAKARE = new FakeCredentials.FakeCredentialsBuilder("eva", "Eva", "Holgersson",
-            "centrum-vast").lakare(true).build();
+public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
     public void testSearchDiagnosisByCode() {
-        RestAssured.sessionId = getAuthSession(LAKARE);
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         DiagnosParameter body = new DiagnosParameter();
         body.setCodeFragment("A01");
@@ -58,7 +54,7 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
     public void testSearchDiagnosisByDescription() {
-        RestAssured.sessionId = getAuthSession(LAKARE);
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         DiagnosParameter body = new DiagnosParameter();
         body.setDescriptionSearchString("C");

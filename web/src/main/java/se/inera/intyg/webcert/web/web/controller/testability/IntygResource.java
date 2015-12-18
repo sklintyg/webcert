@@ -155,6 +155,14 @@ public class IntygResource {
         return Response.ok().build();
     }
 
+    @PUT
+    @Path("/{id}/skickat")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sendDraft(@PathParam("id") String id) {
+        updateStatus(id, UtkastStatus.SIGNED);
+        return Response.ok().build();
+    }
+
     private void updateStatus(String id, UtkastStatus status) {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {

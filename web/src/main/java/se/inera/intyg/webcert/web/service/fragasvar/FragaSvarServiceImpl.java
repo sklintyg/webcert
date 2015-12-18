@@ -217,7 +217,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         while (iterator.hasNext()) {
             FragaSvar fragaSvar = iterator.next();
 
-            if (!hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId())) {
+            if (fragaSvar.getVardperson() != null && !hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId())) {
                 iterator.remove();
             }
         }
