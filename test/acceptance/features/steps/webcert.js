@@ -86,29 +86,32 @@ module.exports = function () {
 
 
   this.Given(/^kollar jag i databasen att intyget är borttaget$/, function (callback) {
+    
+    if(!process.env.DATABASE_PASSWORD){
+      callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:'+process.env.DATABASE_USER);
+    }
+    else{
+      var dbName = process.env.DATABASE_NAME;
+      var connection = mysql.createConnection({
+        host  : process.env.DATABASE_HOST,
+        user  : process.env.DATABASE_USER,
+        password  : process.env.DATABASE_PASSWORD,
+        database  : dbName
+      });
 
-    should.exist(process.env.DBUSR);
-    should.exist(process.env.DBPW);
+      connection.connect();
+      connection.query('SELECT COUNT(*) AS Counter FROM '+dbName+'.INTYG WHERE '+dbName+'.INTYG.INTYGS_ID = \"'+intyg.id+'\";', function(err, rows, fields){
+        should.not.exist(err);
 
-    var connection = mysql.createConnection({
-      host  : '10.1.0.66',
-      user  : process.env.DBUSR,
-      password  : process.env.DBPW,
-      database  : process.env.DATABASE_NAME
-    });
-    connection.connect();
-    connection.query('SELECT COUNT(*) AS Counter FROM webcert_ip40.INTYG WHERE webcert_ip40.INTYG.INTYGS_ID = \"'+intyg.id+'\";', function(err, rows, fields){
-      should.not.exist(err);
-      logg('Från databas:');
-      logg(JSON.stringify(rows));
-      if(rows!==null){
-        logg('Antal rader i databasen : ' + rows[0].Counter);
+        logg('Från databas:');
+        logg(JSON.stringify(rows));
+
         var radix = 10; //for parseInt
         expect(parseInt(rows[0].Counter,radix)).to.equal(0);
         callback();
-      }
-    });
-    connection.end();
+      });
+      connection.end();
+    }
 });
 
 };
