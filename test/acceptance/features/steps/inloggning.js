@@ -23,7 +23,8 @@
 'use strict';
 
 var fk7263Utkast = pages.intyg.fk7263Utkast;
-
+var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.sokSkrivValjUtkastType;
+var sokSkrivIntygPage = pages.sokSkrivIntyg.sokSkrivIntygIndex;
 module.exports = function () {
 
 
@@ -33,7 +34,7 @@ module.exports = function () {
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
         element(by.id('menu-skrivintyg')).click();
-        global.pages.app.views.sokSkrivIntyg.selectPersonnummer(personnummer);
+        sokSkrivIntygPage.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas
         var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
@@ -42,8 +43,8 @@ module.exports = function () {
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
         intyg.typ = intygsTyp;
-        pages.app.views.sokSkrivIntyg.selectIntygTypeByLabel(intygsTyp);
-        pages.app.views.sokSkrivIntyg.continueToUtkast();
+        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
+        sokSkrivIntygUtkastTypePage.continueToUtkast();
 
         //Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){

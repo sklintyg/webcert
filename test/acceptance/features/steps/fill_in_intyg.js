@@ -64,12 +64,14 @@ module.exports = function() {
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
             global.intyg = testdata.getRandomTsDiabetesIntyg();
 
-            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
             tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+            browser.ignoreSynchronization = true;
+            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
             tsdUtkastPage.fillInAllmant(intyg.allmant);
             tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
             tsdUtkastPage.fillInSynintyg(intyg.synintyg);
             tsdUtkastPage.fillInBedomning(intyg.bedomning);
+            browser.ignoreSynchronization = false;
 
             callback();
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
