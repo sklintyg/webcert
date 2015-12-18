@@ -24,7 +24,6 @@
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
-var pageHelpers = require('./../webcertTestTools/helpers/pageHelper.util.js');
 
 var BaseTsUtkast = BaseUtkast._extend({
     init: function init() {
@@ -50,7 +49,7 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInKorkortstyper: function(typer) {
         console.log('Anger körkortstyper: '+ typer.toString());
-        pageHelpers.clickAll(this.korkortsTyperChecks, typer);
+        wcTestTools.helpers.page.clickAll(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
         console.log('Anger identitet styrkt genom ' + idtyp);
@@ -59,7 +58,7 @@ var BaseTsUtkast = BaseUtkast._extend({
     fillInBedomning: function(bedomningObj) {
         console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
         element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
-        pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
+        wcTestTools.helpers.page.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
     },
     fillInOvrigKommentar: function(utkast) {
         this.kommentar.sendKeys(utkast.kommentar);

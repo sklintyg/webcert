@@ -21,9 +21,9 @@
 
 'use strict';
 
-var fkUtkastPage = pages.intygpages.fk7263Utkast;
-var fkIntygPage = pages.intygpages.fkIntyg;
 var mysql = require('mysql');
+var fkUtkastPage = pages.intyg.fk7263Utkast;
+var fkIntygPage = pages.intyg.fkIntyg;
 
 module.exports = function () {
 

@@ -17,20 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*globals pages */
+/*globals describe,it,helpers */
 'use strict';
 
-var environment = require('./environment.js');
-var testdata = require('./testdata/testdata.js');
-var utkastTextmap = require('./testdata/utkastTextmap.js');
-var intygTemplates = require('./testdata/intygTemplates.js');
-var pages = require('./pages.js');
-var helpers = require('./helpers.js'); // The order is important. Helpers requires pages.
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
+var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.sokSkrivIntygIndex;
+var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.sokSkrivValjUtkastType;
+var IntygPage = wcTestTools.pages.intyg.fkIntyg;
 
-module.exports = {
-    envConfig: environment.envConfig,
-    testdata: testdata,
-    utkastTextmap: utkastTextmap,
-    intygTemplates: intygTemplates,
-    pages: pages,
-    helpers: helpers
-}
+describe('Create and Sign FK utkast', function() {
+
+    var utkastId = null;
+
+    describe('Login through the welcome page', function() {
+        it('with user', function() {
+            browser.ignoreSynchronization = false;
+            specHelper.login();
+            SokSkrivIntygPage.selectPersonnummer('191212121212');
+            expect(SokSkrivValjUtkastType.isAt()).toBe(true);
+        });
+    });
+
+});

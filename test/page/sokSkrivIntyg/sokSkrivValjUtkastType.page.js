@@ -18,34 +18,21 @@
  */
 
 /**
- * Created by stephenwhite on 09/06/15.
+ * Created by bennysce on 17/12/15.
  */
 'use strict';
 
-var doctor = element(by.css('.logged-in')),
-    personnummer = element(by.id('pnr')),
-    pnButton = element(by.id('skapapersonnummerfortsatt')),
-    intygTypeSelector = element(by.id('intygType')),
-    intygTypeButton = element(by.id('intygTypeFortsatt')),
-    sekretessmarkering = element(by.id('sekretessmarkering')),
-    puerror = element(by.id('puerror')),
-    fornamn = element(by.id('fornamn')),
-    efternamn = element(by.id('efternamn')),
-    namnFortsatt = element(by.id('namnFortsatt'));
+var intygTypeSelector = element(by.id('intygType'));
+var intygTypeButton = element(by.id('intygTypeFortsatt'));
+var sekretessmarkering = element(by.id('sekretessmarkering'));
+var namnFortsatt = element(by.id('namnFortsatt'));
 
 module.exports = {
     get: function () {
         browser.get('web/dashboard#/create/choose-cert-type/index');
     },
-    getDoctorText: function () {
-        return doctor.getText();
-    },
-    setPersonnummer: function (pn) {
-        personnummer.sendKeys(pn);
-    },
-    selectPersonnummer: function (pn) {
-        this.setPersonnummer(pn);
-        pnButton.click();
+    isAt: function(){
+        return intygTypeSelector.isDisplayed();
     },
     selectIntygType: function (index) {
         intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
@@ -56,11 +43,6 @@ module.exports = {
     continueToUtkast: function () {
         intygTypeButton.click();
     },
-    sekretessmarkering: sekretessmarkering,
-    puerror: puerror,
     intygTypeSelector: intygTypeSelector,
     intygTypeButton: intygTypeButton,
-    fornamn: fornamn,
-    efternamn: efternamn,
-    namnFortsatt: namnFortsatt
 };

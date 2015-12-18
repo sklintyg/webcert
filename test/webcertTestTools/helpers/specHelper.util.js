@@ -26,7 +26,8 @@
 
 var pages = require('./../pages.js');
 var WelcomePage = pages.welcome;
-var SokSkrivIntygPage = pages.app.views.sokSkrivIntyg;
+var SokSkrivIntygPage = pages.sokSkrivIntyg.sokSkrivIntygIndex;
+var SokSkrivValjUtkastType = pages.sokSkrivIntyg.sokSkrivValjUtkastType;
 
 module.exports = {
     login: function(userOptional) {
@@ -77,9 +78,9 @@ module.exports = {
     },
     createUtkastForPatient: function(patientId, intygType) {
         SokSkrivIntygPage.selectPersonnummer(patientId);
-        SokSkrivIntygPage.selectIntygType('string:'+ intygType);
-        SokSkrivIntygPage.continueToUtkast();
-        var UtkastPage = pages.intygpages[intygType+'Utkast'];
+        SokSkrivValjUtkastType.selectIntygType('string:'+ intygType);
+        SokSkrivValjUtkastType.continueToUtkast();
+        var UtkastPage = pages.intyg[intygType+'Utkast'];
         expect(UtkastPage.isAt()).toBe(true);
     },
     generateTestGuid: function(){

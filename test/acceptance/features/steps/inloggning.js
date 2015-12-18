@@ -22,7 +22,7 @@
 
 'use strict';
 
-var fk7263Utkast = pages.intygpages.fk7263Utkast;
+var fk7263Utkast = pages.intyg.fk7263Utkast;
 
 module.exports = function () {
 

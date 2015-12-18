@@ -24,7 +24,8 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var SokSkrivIntygPage = wcTestTools.pages.app.views.sokSkrivIntyg;
+var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.sokSkrivIntygIndex;
+var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.sokSkrivValjUtkastType;
 
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);
@@ -54,8 +55,8 @@ describe('Patient lookup variants', function() {
                 proxy.whenPOST(/.*/).passThrough();
                 proxy.whenGET(/.*/).passThrough();
                 SokSkrivIntygPage.selectPersonnummer(patientId);
-                expect(SokSkrivIntygPage.intygTypeSelector.isPresent()).toBe(false);
-                expect(SokSkrivIntygPage.intygTypeButton.isPresent()).toBe(false);
+                expect(SokSkrivValjUtkastType.intygTypeSelector.isPresent()).toBe(false);
+                expect(SokSkrivValjUtkastType.intygTypeButton.isPresent()).toBe(false);
                 expect(SokSkrivIntygPage.fornamn.isDisplayed()).toBe(true);
                 expect(SokSkrivIntygPage.efternamn.isDisplayed()).toBe(true);
             });
@@ -64,8 +65,8 @@ describe('Patient lookup variants', function() {
                 SokSkrivIntygPage.fornamn.sendKeys('Test');
                 SokSkrivIntygPage.efternamn.sendKeys('Testsson');
                 SokSkrivIntygPage.namnFortsatt.click();
-                expect(SokSkrivIntygPage.intygTypeSelector.isDisplayed()).toBe(true);
-                expect(SokSkrivIntygPage.intygTypeButton.isDisplayed()).toBe(true);
+                expect(SokSkrivValjUtkastType.intygTypeSelector.isDisplayed()).toBe(true);
+                expect(SokSkrivValjUtkastType.intygTypeButton.isDisplayed()).toBe(true);
             });
         });
 
@@ -76,8 +77,8 @@ describe('Patient lookup variants', function() {
             proxy.whenGET(/.*/).passThrough();
             SokSkrivIntygPage.selectPersonnummer(patientId);
             expect(SokSkrivIntygPage.puerror.isDisplayed()).toBe(true);
-            expect(SokSkrivIntygPage.intygTypeSelector.isPresent()).toBe(false);
-            expect(SokSkrivIntygPage.intygTypeButton.isPresent()).toBe(false);
+            expect(SokSkrivValjUtkastType.intygTypeSelector.isPresent()).toBe(false);
+            expect(SokSkrivValjUtkastType.intygTypeButton.isPresent()).toBe(false);
         });
 
         it('should not be possible to create utkast when patient has sekretessmarkering', function () {
@@ -87,8 +88,8 @@ describe('Patient lookup variants', function() {
             proxy.whenGET(/.*/).passThrough();
             SokSkrivIntygPage.selectPersonnummer(patientId);
             expect(SokSkrivIntygPage.sekretessmarkering.isDisplayed()).toBe(true);
-            expect(SokSkrivIntygPage.intygTypeSelector.isDisplayed()).toBe(false);
-            expect(SokSkrivIntygPage.intygTypeButton.isDisplayed()).toBe(false);
+            expect(SokSkrivValjUtkastType.intygTypeSelector.isDisplayed()).toBe(false);
+            expect(SokSkrivValjUtkastType.intygTypeButton.isDisplayed()).toBe(false);
         });
 
         it('should be possible to select intygtype when patient exists without sekretessmarkering', function () {
@@ -99,8 +100,8 @@ describe('Patient lookup variants', function() {
             SokSkrivIntygPage.selectPersonnummer(patientId);
             expect(SokSkrivIntygPage.puerror.isPresent()).toBe(false);
             expect(SokSkrivIntygPage.sekretessmarkering.isPresent()).toBe(false);
-            expect(SokSkrivIntygPage.intygTypeSelector.isDisplayed()).toBe(true);
-            expect(SokSkrivIntygPage.intygTypeButton.isDisplayed()).toBe(true);
+            expect(SokSkrivValjUtkastType.intygTypeSelector.isDisplayed()).toBe(true);
+            expect(SokSkrivValjUtkastType.intygTypeButton.isDisplayed()).toBe(true);
         });
     });
 });

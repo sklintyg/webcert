@@ -24,7 +24,7 @@
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
-var wcTestTools = require('./../webcertTestTools/helpers/pageHelper.util.js');
+var wcTestTools = require('./../../webcertTestTools/helpers/pageHelper.util.js');
 
 var TsDiabetesUtkast = BaseUtkast._extend({
     init: function init() {

@@ -23,22 +23,24 @@
  */
 'use strict';
 
-var appPath = __dirname + '/../../web/src/main/webapp/'; // should point to webapp
-var intygPath = __dirname + '/../intygpages/'; // should point to intygpages folder
+var intygPath = __dirname + '/../page/intyg/'; // should point to intyg folder
+var pagePath = __dirname + '/../page/'; // should point to page folder
+
+var webcertBase = require(pagePath + 'webcert.base.page.js');
 
 module.exports = {
-    'intygpages': {
+    'webcertBase': webcertBase,
+    'welcome': require(pagePath + 'welcome.page.js'),
+    'sokSkrivIntyg' : {
+        'sokSkrivIntygIndex': require(pagePath + 'sokSkrivIntyg/sokSkrivIntyg.page.js'),
+        'sokSkrivValjUtkastType': require(pagePath + 'sokSkrivIntyg/sokSkrivValjUtkastType.page.js'),
+    },
+    'intyg': {
         'fk7263Utkast': require(intygPath + 'fk.utkast.page.js'),
         'fkIntyg': require(intygPath + 'fk.intyg.page.js'),
         'ts-diabetesUtkast': require(intygPath + 'tsDiabetes.utkast.page.js'),
         'tsDiabetesIntyg': require(intygPath + 'tsDiabetes.intyg.page.js'),
         'ts-basUtkast': require(intygPath + 'tsBas.utkast.page.js'),
         'tsBasIntyg': require(intygPath + 'tsBas.intyg.page.js')
-    },
-    'welcome': require(appPath + 'welcome.page.js'),
-    'app': {
-        'views' : {
-            'sokSkrivIntyg': require(appPath + 'app/views/sokSkrivIntyg/sokSkrivIntyg.page.js')
-        }
     }
 };

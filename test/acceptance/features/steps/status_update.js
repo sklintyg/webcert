@@ -180,7 +180,7 @@ module.exports = function () {
     this.Given(/^när jag fyller i fältet "([^"]*)"$/, function (arg1, callback) {
         // Write code here that turns the phrase above into concrete actions
 
-        var fk7263Utkast = pages.intygpages.fk7263Utkast;
+        var fk7263Utkast = pages.intyg.fk7263Utkast;
 
         if (arg1 === 'Min undersökning av patienten') {
             console.log('Fyller i min undersökning av patienten...');

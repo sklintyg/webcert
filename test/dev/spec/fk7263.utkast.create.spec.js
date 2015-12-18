@@ -23,8 +23,8 @@
 
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
-var UtkastPage = wcTestTools.pages.intygpages.fk7263Utkast;
-var IntygPage = wcTestTools.pages.intygpages.fkIntyg;
+var UtkastPage = wcTestTools.pages.intyg.fk7263Utkast;
+var IntygPage = wcTestTools.pages.intyg.fkIntyg;
 
 describe('Create and Sign FK utkast', function() {
 

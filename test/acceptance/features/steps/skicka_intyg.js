@@ -21,7 +21,7 @@
 /* globals browser, intyg, protractor */
 
 'use strict';
-var fkIntygPage = pages.intygpages.fkIntyg;
+var fkIntygPage = pages.intyg.fkIntyg;
 
 module.exports = function() {
 

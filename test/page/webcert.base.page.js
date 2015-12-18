@@ -17,20 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Created by bennysce on 17-12-15.
+ */
+/*globals browser*/
 'use strict';
 
-var environment = require('./environment.js');
-var testdata = require('./testdata/testdata.js');
-var utkastTextmap = require('./testdata/utkastTextmap.js');
-var intygTemplates = require('./testdata/intygTemplates.js');
-var pages = require('./pages.js');
-var helpers = require('./helpers.js'); // The order is important. Helpers requires pages.
+var Class = require('jclass');
 
-module.exports = {
-    envConfig: environment.envConfig,
-    testdata: testdata,
-    utkastTextmap: utkastTextmap,
-    intygTemplates: intygTemplates,
-    pages: pages,
-    helpers: helpers
-}
+/**
+ * Elements always shown in webcert are connected here. Header etc.
+ */
+var WebcertBasePage = Class._extend({
+    init: function() {
+        this.doctor = element(by.css('.logged-in'));
+    },
+    getDoctorText: function () {
+        return this.doctor.getText();
+    },
+});
+
+module.exports = WebcertBasePage;
