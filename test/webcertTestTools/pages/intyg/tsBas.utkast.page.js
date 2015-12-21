@@ -197,16 +197,19 @@ var TsBasUtkast = BaseTsUtkast._extend({
             }
 
             // Ange behandlingstyp 
-            var typer = utkast.diabetes.behandling.typer;
-            logg('fillInDiabetes: function (utkast) -> utkast.diabetes.behandling.typer === '+ utkast.diabetes.behandling.typer);
+            var typ = utkast.dTyper;
+            // var typer = utkast.allmant.behandling.typer;
+            // utkast.allmant.behandling.typer
+            // var typer = utkast.allmant.behandling;
+            logg('fillInDiabetes: function (utkast) -> utkast.dTyper === '+ utkast.dTyper);
 
-            if (typer.indexOf('Endast kost') > -1) {
+            if (typ.indexOf('Endast kost') > -1) {
                 this.diabetes.endastkost.sendKeys(protractor.Key.SPACE);
             }
-            if (typer.indexOf('Tabletter') > -1) {
+            if (typ.indexOf('Tabletter') > -1) {
                 this.diabetes.tabletter.sendKeys(protractor.Key.SPACE);
             }
-            if (typer.indexOf('Insulin') > -1) {
+            if (typ.indexOf('Insulin') > -1) {
                 this.diabetes.insulin.sendKeys(protractor.Key.SPACE);
             }
         } else {

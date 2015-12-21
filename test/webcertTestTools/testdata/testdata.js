@@ -44,8 +44,8 @@ module.exports = {
     hjartHjarna:                  ['Ja', 'Nej'],
     hjartSkada:                   ['Ja', 'Nej'],
     hjartRisk:                    ['Ja', 'Nej'],
-    diabetes:                     ['Ja', 'Ja'],
-    // diabetes:                     ['Ja', 'Nej'],
+    // diabetes:                     ['Ja', 'Ja'],
+    diabetes:                     ['Ja', 'Nej'],
     neurologiska:                 ['Ja', 'Nej'],
     epilepsi:                     ['Ja', 'Nej'],
     njursjukdom:                  ['Ja', 'Nej'],
@@ -109,12 +109,7 @@ module.exports = {
 
         return behandlingObj;
     },
-        getRandomBehandlingForTs: function() {
-        var behandlingObj = {
-            typer: shuffle(this.diabetesbehandlingtyper).slice(0, Math.floor(Math.random() * this.diabetesbehandlingtyper.length) + 1)
-        };
-        return behandlingObj;
-    },
+
     getRandomBedomning: function(korkortstyper) {
         var bedomningsObj = {
             stallningstagande: 'behorighet_bedomning',
@@ -166,7 +161,8 @@ module.exports = {
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
             allmant: {
                 year: Math.floor((Math.random() * 20) + 1980),
-                behandling: this.getRandomBehandlingForTs()
+                behandling: this.getRandomBehandling()
+                // behandling: this.diabetesbehandlingtyper
             },
             synintyg: {
                 a: 'Ja'
@@ -200,7 +196,9 @@ module.exports = {
             adhdSyndrom:                  shuffle(this.adhdSyndrom)[0],                  
             sjukhusvard:                  shuffle(this.sjukhusvard)[0],                  
             ovrigMedicin:                 shuffle(this.ovrigMedicin)[0],
-            kommentar:                    'Inget att rapportera'
+            kommentar:                    'Inget att rapportera',
+            dTyper:                       this.diabetesbehandlingtyper
+
         };
     }
 };

@@ -151,7 +151,8 @@ module.exports = function () {
         expect(specKomp.getText()).to.eventually.equal('Ej angivet');
         // ==============
         
-        var typer = intyg.allmant.behandling.typer;
+        // var typer = intyg.allmant.behandling.typer;
+        var typer = utkast.allmant.behandling;
         typer.forEach(function (typ) {
             if(typ === 'Endast kost')
             {
@@ -203,14 +204,12 @@ module.exports = function () {
     // Hörsel och balanssinne:
     var horselBalansbalansrubbningar = element(by.id('horselBalansbalansrubbningar'));
     expect(horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel);
-
     var hasHogreKorkortsbehorigheter = element(by.id('hasHogreKorkortsbehorigheter'));
+    
     if(selectedTypes.length > -1){
         logg('Kontrollerar att Hörsel och balanssinne (b) :'+ intyg.horselSamtal);
         expect(hasHogreKorkortsbehorigheter.getText()).to.eventually.equal(intyg.horselSamtal);
-
-
-    // }
+    }
     // Rörelseorganens funktioner:
     var funktionsnedsattning = element(by.id('funktionsnedsattning'));
     var funktionsnedsattningbeskrivning = element(by.id('funktionsnedsattningbeskrivning'));
