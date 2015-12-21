@@ -41,7 +41,7 @@ module.exports = function() {
 
             browser.ignoreSynchronization = true;
             tsBasUtkastPage.fillInSynfunktioner(global.intyg);
-            tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
+            // tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
             tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg);
             tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg);
             tsBasUtkastPage.fillInDiabetes(global.intyg);

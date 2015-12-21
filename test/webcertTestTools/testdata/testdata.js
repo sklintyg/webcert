@@ -44,7 +44,8 @@ module.exports = {
     hjartHjarna:                  ['Ja', 'Nej'],
     hjartSkada:                   ['Ja', 'Nej'],
     hjartRisk:                    ['Ja', 'Nej'],
-    diabetes:                     ['Ja', 'Nej'],
+    diabetes:                     ['Ja', 'Ja'],
+    // diabetes:                     ['Ja', 'Nej'],
     neurologiska:                 ['Ja', 'Nej'],
     epilepsi:                     ['Ja', 'Nej'],
     njursjukdom:                  ['Ja', 'Nej'],
@@ -108,6 +109,12 @@ module.exports = {
 
         return behandlingObj;
     },
+        getRandomBehandlingForTs: function() {
+        var behandlingObj = {
+            typer: shuffle(this.diabetesbehandlingtyper).slice(0, Math.floor(Math.random() * this.diabetesbehandlingtyper.length) + 1)
+        };
+        return behandlingObj;
+    },
     getRandomBedomning: function(korkortstyper) {
         var bedomningsObj = {
             stallningstagande: 'behorighet_bedomning',
@@ -159,7 +166,7 @@ module.exports = {
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
             allmant: {
                 year: Math.floor((Math.random() * 20) + 1980),
-                behandling: this.getRandomBehandling()
+                behandling: this.getRandomBehandlingForTs()
             },
             synintyg: {
                 a: 'Ja'
@@ -178,6 +185,7 @@ module.exports = {
             hjartSkada:                   shuffle(this.hjartSkada)[0],                   
             hjartRisk:                    shuffle(this.hjartRisk)[0],                    
             diabetes:                     shuffle(this.diabetes)[0],                     
+            diabetestyp:                  shuffle(this.diabetestyp)[0],                     
             neurologiska:                 shuffle(this.neurologiska)[0],                 
             epilepsi:                     shuffle(this.epilepsi)[0],                     
             njursjukdom:                  shuffle(this.njursjukdom)[0],                  

@@ -177,13 +177,12 @@ module.exports = function () {
     else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
     logg('inside Transportstyrelsens läkarintyg');
         
-   
+    // Synfunktioner
     testElement(intyg.synDonder, 'synfaltsdefekter');
     testElement(intyg.synNedsattBelysning, 'nattblindhet');
     testElement(intyg.synOgonsjukdom, 'progressivOgonsjukdom');
     testElement(intyg.synDubbel, 'diplopi');
     testElement(intyg.synNystagmus, 'nystagmus');
-
     // ============= PLACEHOLDERS:
     // Ändra så att man sparar/genererar random värden!:     
     var hogerOgautanKorrektion = element(by.id('hogerOgautanKorrektion'));
@@ -198,11 +197,10 @@ module.exports = function () {
     expect(binokulartutanKorrektion.getText()).to.eventually.equal('1,0');
     var binokulartmedKorrektion = element(by.id('binokulartmedKorrektion'));
     expect(binokulartmedKorrektion.getText()).to.eventually.equal('1,0');
-
     var korrektionsglasensStyrka = element(by.id('korrektionsglasensStyrka'));
     expect(korrektionsglasensStyrka.getText()).to.eventually.equal('Nej');
     // ==============
-
+    // Hörsel och balanssinne:
     var horselBalansbalansrubbningar = element(by.id('horselBalansbalansrubbningar'));
     expect(horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel);
 
@@ -211,8 +209,104 @@ module.exports = function () {
         logg('Kontrollerar att Hörsel och balanssinne (b) :'+ intyg.horselSamtal);
         expect(hasHogreKorkortsbehorigheter.getText()).to.eventually.equal(intyg.horselSamtal);
 
+
+    // }
+    // Rörelseorganens funktioner:
+    var funktionsnedsattning = element(by.id('funktionsnedsattning'));
+    var funktionsnedsattningbeskrivning = element(by.id('funktionsnedsattningbeskrivning'));
+    
+    logg('Kontrollerar att rörelsehinder är: '+intyg.rorOrgInUt);
+    expect(funktionsnedsattning.getText()).to.eventually.equal(intyg.rorOrgInUt).and.notify(callback);
+    
+    if(intyg.rorOrgNedsattning==='Ja'){
+        logg('Kontrollerar att rörelsehinder kommentar');
+        expect(funktionsnedsattningbeskrivning.getText()).to.eventually.equal('Amputerad under höger knä.');
+    }else{
+        logg('Kontrollerar att rörelsehinder kommentar är tom');
+        expect(funktionsnedsattningbeskrivning.getText()).to.eventually.equal('');
     }
-    callback();
+    
+    var funktionsnedsRorelseformaga = element(by.id('funktionsnedsattningotillrackligRorelseformaga'));
+    logg('Kontrollerar \"Är rörelseförmågan otillräcklig\": '+intyg.rorOrgInUt);
+    expect(funktionsnedsRorelseformaga.getText()).to.eventually.equal(intyg.rorOrgInUt);
+
+    // Hjärt- och kärlsjukdomar:
+    var hjartKarlSjukdom = element(by.id('hjartKarlSjukdom'));
+    var hjarnskadaEfterTrauma = element(by.id('hjarnskadaEfterTrauma'));
+    
+    expect(hjartKarlSjukdom.getText()).to.eventually.equal(intyg.hjartHjarna);
+    expect(hjarnskadaEfterTrauma.getText()).to.eventually.equal(intyg.hjartHjarna);
+
+    var riskfaktorerStroke = element(by.id('riskfaktorerStroke'));
+    var beskrivningRiskfaktorer = element(by.id('beskrivningRiskfaktorer'));
+
+    logg('Kontrollerar \"Föreligger viktiga riskfaktorer för stroke\": '+intyg.hjartHjarna);
+    expect(riskfaktorerStroke.getText()).to.eventually.equal(intyg.hjartHjarna);
+    if (intyg.hjartHjarna === 'Ja') {
+        logg('Kontrollerar \"Föreligger viktiga riskfaktorer för stroke\" kommentar');
+        expect(beskrivningRiskfaktorer.getText()).to.eventually.equal('TIA och förmaksflimmer.');
+    }else{
+        logg('Kontrollerar \"Föreligger viktiga riskfaktorer för stroke\" kommentar är tom');
+        expect(beskrivningRiskfaktorer.getText()).to.eventually.equal('');
+    }
+
+    // Diabetes
+    var harDiabetes = element(by.id('harDiabetes'));
+    logg('Kontrollerar att Patient har Diabetes: '+ intyg.diabetes);
+    expect(harDiabetes.getText()).to.eventually.equal(intyg.diabetes);
+   
+    var diabetesTyp = element(by.id('diabetesTyp'));
+    // diabetestyp: ['Typ 1', 'Typ 2']
+    var kost = element(by.id('kost'));
+    var tabeltter = element(by.id('tabletter'));
+    var insulin = element(by.id('insulin'));
+    
+    logg('Kontrollerar att Patient diabetes typ: '+ intyg.diabetestyp.has);
+    expect(diabetesTyp.getText()).to.eventually.equal(intyg.diabetestyp).and.notify(callback);
+
+    if (intyg.diabetestyp === 'Typ 2') {
+        var typer = intyg.diabetes.behandling.typer;
+        typer.forEach( function (_typ){
+            if (_typ === 'Kost') {
+                logg('Kontrollerar att behandlingstyp är: '+ _typ);
+                expect(kost.getText()).to.eventually.equal('Kost').and.notify(callback);
+            }else if (_typ === 'Tabletter'){
+                logg('Kontrollerar att behandlingstyp är: '+ _typ);
+                expect(tabeltter.getText()).to.eventually.equal('Tabletter').and.notify(callback);
+            }else if (_typ === 'Insulin'){
+                logg('Kontrollerar att behandlingstyp är: '+ _typ);
+                expect(insulin.getText()).to.eventually.equal('Insulin').and.notify(callback);
+            }
+        });
+    } else {
+        expect(kost.getText()).to.eventually.equal('').and.notify(callback);
+        expect(tabeltter.getText()).to.eventually.equal('').and.notify(callback);
+        expect(insulin.getText()).to.eventually.equal('').and.notify(callback);
+    }
+
+// var typer = intyg.allmant.behandling.typer;
+//         typer.forEach(function (typ) {
+//             if(typ === 'Endast kost')
+//             {
+//                 var eKost = element(by.id('endastKost'));
+//                 logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
+//                 expect(eKost.getText()).to.eventually.equal('Ja').and.notify(callback);
+//             }
+//             else if(typ === 'Tabletter')
+//             {
+//                 var tabl = element(by.id('tabletter'));
+//                 logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
+//                 expect(tabl.getText()).to.eventually.equal('Ja').and.notify(callback);
+//             }
+//             else if(typ === 'Insulin')
+//             {
+//                 var insul = element(by.id('insulin')); 
+//                 logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
+//                 expect(insul.getText()).to.eventually.equal('Ja').and.notify(callback);
+//             }
+//         });
+    // expect(funktionsnedsattning.getText()).to.eventually.equal(intyg.funktionsnedsattning)
+    // callback();
     }
     else if (intyg.typ === 'Läkarintyg FK 7263'){}
         

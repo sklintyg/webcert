@@ -165,6 +165,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             }
         }
     },
+
     fillInHjartOchKarlsjukdomar: function(utkast) {
         if (utkast.hjartHjarna === 'Ja') {
             this.hjartKarl.aYes.sendKeys(protractor.Key.SPACE);
@@ -184,17 +185,21 @@ var TsBasUtkast = BaseTsUtkast._extend({
         }
     },
     fillInDiabetes: function (utkast) {
-        if (utkast.diabetes.has === 'Ja') {
+        logg('fillInDiabetes: function (utkast) -> utkast.diabetes === '+ utkast.diabetes);
+        if (utkast.diabetes === 'Ja') {
             this.diabetes.aYes.sendKeys(protractor.Key.SPACE);
 
-            if (utkast.diabetes.typ === 'Typ 1') {
+            logg('fillInDiabetes: function (utkast) -> utkast.diabetestyp === '+ utkast.diabetestyp);
+            if (utkast.diabetestyp === 'Typ 1') {
                 this.diabetes.typ1.sendKeys(protractor.Key.SPACE);
             } else {
                 this.diabetes.typ2.sendKeys(protractor.Key.SPACE);
             }
 
-            // Ange behandlingstyp
+            // Ange behandlingstyp 
             var typer = utkast.diabetes.behandling.typer;
+            logg('fillInDiabetes: function (utkast) -> utkast.diabetes.behandling.typer === '+ utkast.diabetes.behandling.typer);
+
             if (typer.indexOf('Endast kost') > -1) {
                 this.diabetes.endastkost.sendKeys(protractor.Key.SPACE);
             }
