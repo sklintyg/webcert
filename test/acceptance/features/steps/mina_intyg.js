@@ -22,6 +22,12 @@
 'use strict';
 
 module.exports = function() {
+
+    this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
+      var intygElement = element(by.id('certificate-' + intyg.id));
+      expect(intygElement.isPresent()).to.eventually.equal(true).and.notify(callback);
+    });
+
     this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
         browser.ignoreSynchronization = true;
         browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');

@@ -321,7 +321,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
         element.all(by.css('[name="medicineringa"]')).then(function (elm) {
             if (utkast.ovrigMedicin === 'Ja') {
                 elm[0].sendKeys(protractor.Key.SPACE);
-                element(by.id('beskrivningMedicinering')).sendKeys('Xanax FTW');
+                element(by.id('beskrivningMedicinering')).sendKeys('beskrivning övrig medicinering');
             } else {
                 elm[1].sendKeys(protractor.Key.SPACE);
             }
