@@ -25,9 +25,9 @@ var envConfig = null;
 if(process.env.WEBCERT_URL) {
     envConfig = process.env;
 } else {
-    envConfig = require('./../webcertTestTools/envConfig.json').dev; // override if not running via grunt ie IDEA.
+    envConfig = require('./envConfig.json').dev; // override if not running via grunt ie IDEA.
 }
 
 module.exports = {
-    'envConfig': envConfig,
+    'envConfig': envConfig
 };
