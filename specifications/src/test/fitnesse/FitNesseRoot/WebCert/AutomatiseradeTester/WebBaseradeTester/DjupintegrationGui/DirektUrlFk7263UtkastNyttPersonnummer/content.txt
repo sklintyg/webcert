@@ -14,8 +14,8 @@
 | skript | !-SokSkrivIntyg-! |
 | sok skriv intyg sidan visas |
 
-| skript | Anvandarroll |
-| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+| skript | !-HanteraAnvandare-! |
+| uppdatera origin till | DJUPINTEGRATION |
 
 !3 Visa utkastet via integrationslänken
 

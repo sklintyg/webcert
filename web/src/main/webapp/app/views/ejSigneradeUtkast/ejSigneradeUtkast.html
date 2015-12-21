@@ -21,7 +21,7 @@
             <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
-              <div wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST" class="form-group" id="filterFormVidarebefordrad">
+              <div wc-authority="VIDAREBEFORDRA_UTKAST" class="form-group" id="filterFormVidarebefordrad">
                 <label class="col-sm-2 control-label">Utkast som är</label>
                 <div class="col-sm-10">
                   <label class="radio-inline">
@@ -82,7 +82,7 @@
                 </div>
               </div>
 
-              <div wc-authority="PRIVILEGE_FILTRERA_PA_LAKARE" class="form-group" id="filterFormSparatAv">
+              <div wc-authority="FILTRERA_PA_LAKARE" class="form-group" id="filterFormSparatAv">
                 <label class="col-sm-2 control-label">Sparat av</label>
                 <div class="col-sm-10">
                   <select id="uc-savedBy" class="form-control" ng-model="filterForm.lastFilterQuery.filter.savedBy"
@@ -133,8 +133,8 @@
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
-                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST"></th>
-                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST" class="center"
+                    <th wc-authority="VIDAREBEFORDRA_UTKAST"></th>
+                    <th wc-authority="VIDAREBEFORDRA_UTKAST" class="center"
                         title="Här markerar du om utkastet är vidarebefordrat till den som ska signera det.">
                       Vidarebefordrad
                     </th>
@@ -157,7 +157,7 @@
                               id="showBtn-{{cert.intygId}}"> Visa
                       </button>
                     </td>
-                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST">
+                    <td wc-authority="VIDAREBEFORDRA_UTKAST">
                       <button class="btn btn-default vidarebefordra-btn"
                               ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
                               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
@@ -166,7 +166,7 @@
                         <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
                       </button>
                     </td>
-                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST" class="center">
+                    <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
                       <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="cert.updateState.vidarebefordraInProgress" ng-model="cert.vidarebefordrad"
                              ng-change="onNotifyChange(cert)" />
                       <span ng-if="cert.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>

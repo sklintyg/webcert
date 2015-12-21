@@ -1,14 +1,38 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.user.dto;
+
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.util.Assert;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.common.common.model.UserDetails;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.auth.authorities.Privilege;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 
 import java.util.ArrayList;
@@ -17,12 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_LAKARE;
-import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
-import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
-import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
-import static se.inera.intyg.webcert.common.common.security.authority.UserRole.ROLE_TANDLAKARE;
 
 /**
  * @author andreaskaltenbach
@@ -45,19 +63,25 @@ public class WebCertUser implements UserDetails {
     private List<String> specialiseringar;
     private List<String> legitimeradeYrkesgrupper;
 
-    private Set<String> aktivaFunktioner;
-
     private SelectableVardenhet valdVardenhet;
     private SelectableVardenhet valdVardgivare;
 
-    private Map<String, UserRole> roles;
-    private Map<String, UserPrivilege> authorities;
-
     private AuthenticationMethod authenticationMethod;
+
+    // Fields related to the authority context
+    private Set<String> features;
+    private Map<String, Role> roles;
+    private Map<String, Privilege> authorities;
+    private String origin;
+
 
     /** The sole constructor. */
     public WebCertUser() {
     }
+
+
+    // ~ Public scope
+    // ======================================================================================================
 
     public boolean changeValdVardenhet(String vardenhetId) {
         if (vardenhetId == null) {
@@ -76,24 +100,24 @@ public class WebCertUser implements UserDetails {
         return false;
     }
 
-    public Set<String> getAktivaFunktioner() {
-        if (aktivaFunktioner == null) {
-            aktivaFunktioner = new HashSet<>();
+    public Set<String> getFeatures() {
+        if (features == null) {
+            features = new HashSet<>();
         }
-
-        return aktivaFunktioner;
+        return features;
     }
 
-    public void setAktivaFunktioner(Set<String> aktivaFunktioner) {
-        this.aktivaFunktioner = aktivaFunktioner;
+    public void setFeatures(Set<String> features) {
+        this.features = features;
+    }
+
+    public boolean isFeatureActive(String featureName) {
+        return features != null && features.contains(featureName);
     }
 
     public boolean isFeatureActive(WebcertFeature feature) {
-        if (aktivaFunktioner == null) {
-            return false;
-        }
-        final String featureName = feature.getName();
-        return aktivaFunktioner.contains(featureName);
+        Assert.notNull(feature);
+        return isFeatureActive(feature.getName());
     }
 
     @JsonIgnore
@@ -121,13 +145,21 @@ public class WebCertUser implements UserDetails {
         this.authenticationScheme = authenticationScheme;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
     /**
      * Returns the privileges granted to the user. Cannot return <code>null</code>.
      *
      * @return the privileges, sorted by natural key (never <code>null</code>)
      */
     @Override
-    public Map<String, UserPrivilege> getAuthorities() {
+    public Map<String, Privilege> getAuthorities() {
         return this.authorities;
     }
 
@@ -135,7 +167,7 @@ public class WebCertUser implements UserDetails {
      * Set the authorities/privileges granted to a user.
      */
     @Override
-    public void setAuthorities(Map<String, UserPrivilege> authorities) {
+    public void setAuthorities(Map<String, Privilege> authorities) {
         this.authorities = authorities;
     }
 
@@ -234,7 +266,7 @@ public class WebCertUser implements UserDetails {
      * @return the role, sorted by natural key (never <code>null</code>)
      */
     @Override
-    public Map<String, UserRole> getRoles() {
+    public Map<String, Role> getRoles() {
         return this.roles;
     }
 
@@ -242,7 +274,7 @@ public class WebCertUser implements UserDetails {
      * Set the roles granted to a user.
      */
     @Override
-    public void setRoles(Map<String, UserRole> roles) {
+    public void setRoles(Map<String, Role> roles) {
         this.roles = roles;
     }
 
@@ -310,10 +342,6 @@ public class WebCertUser implements UserDetails {
         this.vardgivare = vardgivare;
     }
 
-    public boolean hasAktivFunktion(String aktivFunktion) {
-        return getAktivaFunktioner().contains(aktivFunktion);
-    }
-
     /**
      * Checks if a user has been granted a specific role.
      *
@@ -353,13 +381,13 @@ public class WebCertUser implements UserDetails {
 
     /**
      * Returns true if the user's authorities map contains the specified
-     * {@link se.inera.intyg.webcert.common.common.security.authority.UserPrivilege}.
+     * {@link se.inera.intyg.webcert.web.auth.authorities.Privilege}.
      */
-    public boolean hasPrivilege(UserPrivilege privilege) {
-        if (authorities == null) {
+    public boolean hasPrivilege(String name) {
+        if (authorities == null || name == null) {
             return false;
         }
-        return authorities.containsKey(privilege.name());
+        return authorities.containsKey(name);
     }
 
     /**
@@ -367,8 +395,6 @@ public class WebCertUser implements UserDetails {
      * <ul>
      * The following roles are considered lakare:
      * <li>ROLE_LAKARE</li>
-     * <li>ROLE_LAKARE_DJUPINTEGRERAD</li>
-     * <li>ROLE_LAKARE_UTHOPP</li>
      * <li>ROLE_PRIVATLAKARE</li>
      * <li>ROLE_TANDLAKARE</li>
      * </ul>
@@ -376,13 +402,11 @@ public class WebCertUser implements UserDetails {
      * @return true if role is one the above, otherwise false
      */
     public boolean isLakare() {
-        return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name())
-                || roles.containsKey(ROLE_TANDLAKARE.name());
+        return roles.containsKey(ROLE_LAKARE) || roles.containsKey(ROLE_PRIVATLAKARE) || roles.containsKey(ROLE_TANDLAKARE);
     }
 
     public boolean isPrivatLakare() {
-        return roles.containsKey(ROLE_PRIVATLAKARE.name());
+        return roles.containsKey(ROLE_PRIVATLAKARE);
     }
 
     public boolean isPrivatLakareAvtalGodkand() {
@@ -393,31 +417,10 @@ public class WebCertUser implements UserDetails {
         this.privatLakareAvtalGodkand = privatLakareAvtalGodkand;
     }
 
-    public boolean isRoleUthopp() {
-        return roles.containsValue(UserRole.ROLE_LAKARE_UTHOPP) || roles.containsValue(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP);
-    }
-
     @JsonIgnore
     @Override
     public String toString() {
         return hsaId + " [authScheme=" + authenticationScheme + ", lakare=" + isLakare() + "]";
-    }
-
-    /**
-     * Iterates over all roles and flatmaps distinct intygstyper into a set of strings.
-     */
-    @JsonIgnore
-    public Set<String> getIntygsTyper() {
-        Set<String> set = new HashSet<>();
-        if (roles == null || roles.isEmpty()) {
-            return set;
-        }
-        for (Map.Entry<String, UserRole> entry : roles.entrySet()) {
-            if (entry.getValue() != null) {
-                set.addAll(entry.getValue().getAuthorizedIntygsTyper());
-            }
-        }
-        return set;
     }
 
 }

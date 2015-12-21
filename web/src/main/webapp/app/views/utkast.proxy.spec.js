@@ -1,9 +1,29 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 describe('UtkastProxy', function() {
     'use strict';
 
     var UtkastProxy;
     var $httpBackend;
     var featureService;
+    var authorityService;
     var dialogService;
     var $cookies;
     var $location;
@@ -27,6 +47,10 @@ describe('UtkastProxy', function() {
             isFeatureActive: jasmine.createSpy('isFeatureActive')
         };
 
+        authorityService = {
+            isAuthorityActive: jasmine.createSpy('isAuthorityActive')
+        };
+
         var User = {
             getValdVardenhet: function() {
                 return {
@@ -48,12 +72,18 @@ describe('UtkastProxy', function() {
 
 
         $provide.value('common.featureService', featureService);
+        $provide.value('common.authorityService', authorityService);
         $provide.value('common.dialogService', dialogService);
         statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
         $provide.value('common.statService', statService);
         $provide.value('common.User', User);
         $provide.value('common.messageService', {});
-        $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
+        $provide.value('common.UserModel', {
+            userContext: {authenticationScheme: null},
+            user: {origin: 'NORMAL'},
+            privileges: {SKRIVA_INTYG: {}},
+            getActiveFeatures: function() {
+            },
             hasIntygsTyp: function() {return true;} });
         //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
 
@@ -127,6 +157,7 @@ describe('UtkastProxy', function() {
             var onError = jasmine.createSpy('onError');
 
             featureService.isFeatureActive.and.returnValue(true);
+            authorityService.isAuthorityActive.and.returnValue(true);
 
             $httpBackend.expectGET('/api/modules/map').respond([
                 {

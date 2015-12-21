@@ -1,0 +1,141 @@
+---
+version: 1.0
+released: 2015-11-18
+changedby: Magnus Ekstrand
+
+# Kända ingångar till systemet
+knownRequestOrigins:
+  - &kro010 NORMAL
+  - &kro020 DJUPINTEGRATION
+  - &kro030 UTHOPP
+
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+
+# De rättigheter som systemet har
+knownPrivileges:
+  - &kp000 VISA_INTYG
+  - &kp005 SKRIVA_INTYG
+  - &kp010 SIGNERA_INTYG
+  - &kp020 MAKULERA_INTYG
+  - &kp030 KOPIERA_INTYG
+  - &kp070 FILTRERA_PA_LAKARE
+
+# De roller som systemet har
+knownRoles:
+  - &kr010 LAKARE
+  - &kr020 PRIVATLAKARE
+  - &kr030 TANDLAKARE
+  - &kr040 VARDADMINISTRATOR
+
+# Ingångar
+requestOrigins:
+  - &ro010
+    name: *kro010
+    intygstyper: # Implicit alla
+  - &ro020
+    name: *kro020
+    intygstyper:
+      - *ki010 # FK7263
+  - &ro030
+    name: *kro030
+    intygstyper:
+      - *ki010 # FK7263
+
+# Rättigheter
+privileges:
+  - &p000
+    name: *kp000
+    desc: Visa intyg
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins: # Implicit alla
+  - &p005
+    name: *kp005
+    desc: Skriva intyg
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins: # Implicit alla
+  - &p010
+    name: *kp010
+    desc: Signera intyg
+    intygstyper: # Implicit alla
+    requestOrigins: # Implicit alla
+  - &p020
+    name: *kp020
+    desc: Makulera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
+  - &p030
+    name: *kp030
+    desc: Kopiera intyg
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins: # Implicit alla
+  - &p070
+    name: *kp070
+    desc: Filtrera på annan läkare
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+
+# Roller
+roles:
+  - &r010
+    name: *kr010 # LAKARE
+    desc: Läkare
+    privileges:
+      - *p000 # VISA_INTYG
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - <<: *p030 # KOPIERA_INTYG
+        intygstyper:
+          - ts-bas
+  - &r020
+    name: *kr020 # PRIVATLAKARE
+    desc: Privatläkare
+    privileges:
+      - *p000 # VISA_INTYG
+      - *p010 # SIGNERA_INTYG
+  - &r030
+    name: *kr030 # LAKARE
+    desc: Tandläkare
+    privileges:
+      - *p000 # VISA_INTYG
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+  - &r040
+    name: *kr040 # VARDADMINISTRATOR
+    desc: Vårdadministratör
+    privileges:
+      - *p000 # VISA_INTYG
+      - <<: *p030 # KOPIERA_INTYG
+        intygstyper:
+          - ts-diabetes
+
+# Legitimerade yrkesroller
+titles:
+  - title: Läkare
+    role: *r010 # LAKARE
+  - title: Tandläkare
+    role: *r030 # TANDLAKARE
+
+# Kombination befattningskoder och gruppförskrivarkoder
+titleCodes:
+  - titleCode: 204010
+    groupPrescriptionCode:
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9300005
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9400003
+    role: *r010 # LAKARE
+  - titleCode: 204090
+    groupPrescriptionCode: 9100009
+    role: *r010 # LAKARE

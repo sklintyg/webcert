@@ -1,29 +1,29 @@
-/**
- * Copyright (C) 2013 Inera AB (http://www.inera.se)
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
  *
- * This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+ * This file is part of sklintyg (https://github.com/sklintyg).
  *
- * Inera Certificate Web is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Inera Certificate Web is distributed in the hope that it will be useful,
+ * sklintyg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package se.inera.intyg.webcert.web.service.user;
 
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.web.security.AuthoritiesException;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
+import java.util.Set;
 
 public interface WebCertUserService {
 
@@ -34,13 +34,11 @@ public interface WebCertUserService {
      */
     WebCertUser getUser();
 
-    void assertUserRoles(String[] grantedRoles) throws AuthoritiesException;
-
-    void clearEnabledFeaturesOnUser();
-
     void enableFeaturesOnUser(WebcertFeature... featuresToEnable);
 
     void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
+
+    Set<String> getIntygstyper(String privilegeName);
 
     boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
 
@@ -48,6 +46,8 @@ public interface WebCertUserService {
 
     boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
 
-    void updateUserRoles(String[] userRoles);
+    void updateOrigin(String origin);
+
+    void updateUserRole(String roleName);
 
 }

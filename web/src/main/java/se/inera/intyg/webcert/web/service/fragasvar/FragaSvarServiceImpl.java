@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.fragasvar;
 
 import java.util.ArrayList;
@@ -32,7 +51,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
@@ -58,6 +77,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
+
 
 /**
  * @author andreaskaltenbach
@@ -197,7 +217,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         while (iterator.hasNext()) {
             FragaSvar fragaSvar = iterator.next();
 
-            if (!hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId())) {
+            if (fragaSvar.getVardperson() != null && !hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId())) {
                 iterator.remove();
             }
         }
@@ -240,7 +260,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webCertUserService.getUser();
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.hasPrivilege(UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)) {
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.hasPrivilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
                     + ") can only be answered by user that is Lakare");

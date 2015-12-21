@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.signatur;
 
 import static org.junit.Assert.assertEquals;
@@ -5,16 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.OptimisticLockException;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -23,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -31,8 +40,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
@@ -40,8 +48,11 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -52,47 +63,37 @@ import se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Util;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.util.ReflectionUtils;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SignaturServiceImplTest {
+public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String ENHET_ID = "testID";
-
     private static final String INTYG_ID = "abc123";
-
     private static final String INTYG_JSON = "A bit of text representing json";
-
     private static final String INTYG_TYPE = "fk7263";
     private static final String PERSON_ID = "191212121212";
 
     @Mock
     private UtkastRepository mockUtkastRepository;
-
     @Mock
     private IntygService intygService;
-
     @Mock
     private LogService logService;
-
     @Mock
     private NotificationService notificationService;
-
     @Mock
     private MonitoringLogService monitoringService;
-
     @Mock
     private WebCertUserService webcertUserService;
-
     @Mock
     private IntygModuleRegistry moduleRegistry;
-
     @Mock
     private ModuleApi moduleApi;
-
     @Mock
     private ASN1Util asn1Util;
 
@@ -100,17 +101,11 @@ public class SignaturServiceImplTest {
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
 
     private Utkast utkast;
-
     private Utkast completedUtkast;
-
     private Utkast signedUtkast;
-
     private HoSPerson hoSPerson;
-
     private Vardenhet vardenhet;
-
     private Vardgivare vardgivare;
-
     private WebCertUser user;
 
     @Before
@@ -138,15 +133,18 @@ public class SignaturServiceImplTest {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
 
-        ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
+        setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
     private WebCertUser createWebCertUser(boolean doctor) {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+        if (!doctor) {
+            role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN);
+        }
+
         WebCertUser user = new WebCertUser();
-
-        user.setRoles(getGrantedRole(doctor));
-        user.setAuthorities(getGrantedPrivileges(doctor));
-
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
         user.setVardgivare(Collections.singletonList(vardgivare));
@@ -364,56 +362,21 @@ public class SignaturServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void abortClientSignIfPersonIdOnSigDoesNotMatchSession() throws IOException {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
 
         user = createWebCertUser(true);
         user.setAuthenticationMethod(AuthenticationMethod.NET_ID);
-        user.setRoles(getGrantedRoleForPrivatlakare());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setPrivatLakareAvtalGodkand(true);
         user.setPersonId(PERSON_ID);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
         when(webcertUserService.getUser()).thenReturn(user);
         when(asn1Util.parsePersonId(any(InputStream.class))).thenReturn("other-person-id-1");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         intygSignatureService.clientSignature(ticket.getId(), "test");
-    }
-
-
-
-    private Map<String, UserRole> getGrantedRoleForPrivatlakare() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_PRIVATLAKARE.name(), UserRole.ROLE_PRIVATLAKARE);
-        return map;
-    }
-
-    private Map<String, UserRole> getGrantedRole(boolean doctor) {
-        Map<String, UserRole> map = new HashMap<>();
-
-        if (doctor) {
-            map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        } else {
-            map.put(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR);
-        }
-
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges(boolean doctor) {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-        Map<String, UserPrivilege> privilegeMap = new HashMap<>();
-
-        // convert list to map
-        if (doctor) {
-            privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-                @Override
-                public String apply(UserPrivilege userPrivilege) {
-                    return userPrivilege.name();
-                }
-            });
-        }
-
-        return privilegeMap;
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson, String enhetsId) {

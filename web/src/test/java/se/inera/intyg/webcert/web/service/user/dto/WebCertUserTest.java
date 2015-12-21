@@ -1,82 +1,110 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.user.dto;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-import org.junit.Before;
-import org.junit.Test;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class WebCertUserTest {
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
+import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
-    private WebCertUser wcu;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@RunWith(MockitoJUnitRunner.class)
+public class WebCertUserTest extends AuthoritiesConfigurationTestSetup {
+
+    @InjectMocks
+    private WebCertUser user;
+
+    @Before
+    public void setup() throws Exception {
+        setupWebCertUser();
+    }
 
     @Test
     public void testGetAsJson() {
-        String res = wcu.getAsJson();
+        String res = user.getAsJson();
         assertNotNull(res);
         assertTrue(res.length() > 0);
-        System.out.println(res);
+        //System.out.println(res);
     }
 
     @Test
     public void testIsLakare() {
-        assertTrue(wcu.isLakare());
+        assertTrue(user.isLakare());
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR));
-        assertFalse(wcu.isLakare());
+        setUserRole(AuthoritiesConstants.ROLE_ADMIN);
+        assertFalse(user.isLakare());
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_PRIVATLAKARE));
-        assertTrue(wcu.isLakare());
+        setUserRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
+        assertTrue(user.isLakare());
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_TANDLAKARE));
-        assertTrue(wcu.isLakare());
+        setUserRole(AuthoritiesConstants.ROLE_TANDLAKARE);
+        assertTrue(user.isLakare());
     }
 
     @Test
     public void testChangeValdVardenhetWithNullParam() {
-        boolean res = wcu.changeValdVardenhet(null);
+        boolean res = user.changeValdVardenhet(null);
         assertFalse(res);
     }
 
     @Test
     public void testChangeValdVardenhetThatIsAVardenhet() {
-        boolean res = wcu.changeValdVardenhet("VG1VE2");
+        boolean res = user.changeValdVardenhet("VG1VE2");
         assertTrue(res);
-        assertEquals("Vardenhet 2", wcu.getValdVardenhet().getNamn());
-        assertEquals("Vardgivare 1", wcu.getValdVardgivare().getNamn());
+        assertEquals("Vardenhet 2", user.getValdVardenhet().getNamn());
+        assertEquals("Vardgivare 1", user.getValdVardgivare().getNamn());
     }
 
     @Test
     public void testChangeValdVardenhetThatIsAMottagning() {
-        boolean res = wcu.changeValdVardenhet("VG2VE1M1");
+        boolean res = user.changeValdVardenhet("VG2VE1M1");
         assertTrue(res);
-        assertEquals("Mottagning 1", wcu.getValdVardenhet().getNamn());
-        assertEquals("Vardgivare 2", wcu.getValdVardgivare().getNamn());
+        assertEquals("Mottagning 1", user.getValdVardenhet().getNamn());
+        assertEquals("Vardgivare 2", user.getValdVardgivare().getNamn());
     }
 
     @Test
     public void testGetVardenheterIdsWithMottagningSelected() {
 
         // Set a Vardenhet that has no Mottagningar as selected
-        boolean res = wcu.changeValdVardenhet("VG1VE1");
+        boolean res = user.changeValdVardenhet("VG1VE1");
         assertTrue(res);
 
-        List<String> ids = wcu.getIdsOfSelectedVardenhet();
+        List<String> ids = user.getIdsOfSelectedVardenhet();
         assertNotNull(ids);
         assertEquals(1, ids.size());
     }
@@ -85,10 +113,10 @@ public class WebCertUserTest {
     public void testGetVardenheterIdsWithVardenhetSelected() {
 
         // Set the Vardenhet that has a Mottagning attached as selected
-        boolean res = wcu.changeValdVardenhet("VG2VE1");
+        boolean res = user.changeValdVardenhet("VG2VE1");
         assertTrue(res);
 
-        List<String> ids = wcu.getIdsOfSelectedVardenhet();
+        List<String> ids = user.getIdsOfSelectedVardenhet();
         assertNotNull(ids);
         assertEquals(2, ids.size());
     }
@@ -96,42 +124,38 @@ public class WebCertUserTest {
     @Test
     public void testGetIdsOfAllVardenheter() {
 
-        List<String> ids = wcu.getIdsOfAllVardenheter();
+        List<String> ids = user.getIdsOfAllVardenheter();
         assertNotNull(ids);
         assertEquals(5, ids.size());
     }
 
     @Test
     public void testGetTotaltAntalVardenheter() {
-        int res = wcu.getTotaltAntalVardenheter();
+        int res = user.getTotaltAntalVardenheter();
         assertEquals(5, res);
     }
 
     @Test
     public void testGetTotaltAntalVardenheterWithNoVardgivare() {
-        wcu.getVardgivare().clear();
-        int res = wcu.getTotaltAntalVardenheter();
+        user.getVardgivare().clear();
+        int res = user.getTotaltAntalVardenheter();
         assertEquals(0, res);
     }
 
-    @Before
-    public void setup() {
-        this.wcu = createWebCertUser();
-    }
+    private void setupWebCertUser() {
+        user.setNamn("A Name");
+        user.setHsaId("HSA-id");
+        user.setForskrivarkod("Forskrivarkod");
+        user.setAuthenticationScheme("AuthScheme");
+        user.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
 
-    private WebCertUser createWebCertUser() {
+        // Setup where user originates from
+        user.setOrigin(WebCertUserOriginType.NORMAL.name());
 
-        WebCertUser wcu = new WebCertUser();
+        // Set the user's role
+        setUserRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE));
-        wcu.setAuthorities(getGrantedPrivileges());
-
-        wcu.setNamn("A Name");
-        wcu.setHsaId("HSA-id");
-        wcu.setForskrivarkod("Forskrivarkod");
-        wcu.setAuthenticationScheme("AuthScheme");
-        wcu.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
-
+        // Setup MIU
         List<Vardgivare> vardgivare = new ArrayList<>();
 
         Vardgivare vg1 = new Vardgivare("VG1", "Vardgivare 1");
@@ -156,59 +180,16 @@ public class WebCertUserTest {
         vardgivare.add(vg1);
         vardgivare.add(vg2);
 
-        wcu.setVardgivare(vardgivare);
-
-        wcu.setValdVardenhet(vg2ve2m1);
-        wcu.setValdVardgivare(vg2);
-
-        return wcu;
+        user.setVardgivare(vardgivare);
+        user.setValdVardenhet(vg2ve2m1);
+        user.setValdVardgivare(vg2);
     }
 
-    private Map<String, UserRole> getGrantedRole(UserRole role) {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(role.name(), role);
-        return map;
-    }
+    private void setUserRole(String roleName ) {
+        Role role = AUTHORITIES_RESOLVER.getRole(roleName);
 
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
-    }
-
-    @Test
-    public void testIsRoleUthopp() throws Exception {
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_PRIVATLAKARE));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_TANDLAKARE));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD));
-        assertFalse(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_LAKARE_UTHOPP));
-        assertTrue(wcu.isRoleUthopp());
-
-        wcu.setRoles(getGrantedRole(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP));
-        assertTrue(wcu.isRoleUthopp());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
     }
 
 }

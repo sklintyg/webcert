@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.intyg;
 
 import static org.junit.Assert.assertEquals;
@@ -8,15 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBException;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -25,18 +36,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -47,8 +53,10 @@ import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarReposito
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
@@ -56,7 +64,12 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.util.ReflectionUtils;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
@@ -71,13 +84,10 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Mock
     private FragaSvarRepository fragaSvarRepository;
-
     @Mock
     private FragaSvarService fragaSvarService;
-
     @Mock
     private RevokeRequestConverter revokeRequestConverter;
-
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
 
@@ -85,7 +95,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private Utkast revokedUtkast;
 
     @Before
-    public void setup() throws JAXBException {
+    public void setup() throws Exception {
         HoSPerson person = buildHosPerson();
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
@@ -95,10 +105,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
         when(webCertUserService.getUser()).thenReturn(user);
-
         when(revokeRequestConverter.toXml(any(RevokeMedicalCertificateRequestType.class))).thenReturn(SAMPLE_XML);
 
-        ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
+        setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
     @Override
@@ -281,32 +290,15 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     }
 
     private WebCertUser buildWebCertUser(HoSPerson person) {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setNamn(person.getNamn());
         user.setHsaId(person.getHsaId());
+
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

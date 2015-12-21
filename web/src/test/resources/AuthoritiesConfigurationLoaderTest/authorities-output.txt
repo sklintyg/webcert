@@ -1,0 +1,71 @@
+Version: 1.0
+Released: Wed Nov 18 01:00:00 CET 2015
+Changedby: Magnus Ekstrand
+KnownRequestOrigins: [NORMAL, DJUPINTEGRATION, UTHOPP]
+KnownRoles: [LAKARE, PRIVATLAKARE, TANDLAKARE, VARDADMINISTRATOR]
+KnownPrivileges: [VISA_INTYG, SKRIVA_INTYG, SIGNERA_INTYG, MAKULERA_INTYG, KOPIERA_INTYG, FILTRERA_PA_LAKARE]
+KnownIntygstyper: [fk7263, ts-bas, ts-diabetes]
+RequestOrigins: [
+RequestOrigin{name='NORMAL',intygstyper=[]},
+RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]},
+RequestOrigin{name='UTHOPP',intygstyper=[fk7263]}]
+Privileges: [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SKRIVA_INTYG', desc='Skriva intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='FILTRERA_PA_LAKARE', desc='Filtrera på annan läkare', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}]}]
+Roles: [
+Role { name='LAKARE', desc='Läkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-bas], requestOrigins= []}]},
+Role { name='PRIVATLAKARE', desc='Privatläkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []}]},
+Role { name='TANDLAKARE', desc='Tandläkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]}]},
+Role { name='VARDADMINISTRATOR', desc='Vårdadministratör', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-diabetes], requestOrigins= []}]}]
+Titles: [
+Title { title='Läkare', desc='null', role=
+Role { name='LAKARE', desc='Läkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-bas], requestOrigins= []}]}},
+Title { title='Tandläkare', desc='null', role=
+Role { name='TANDLAKARE', desc='Tandläkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]}]}}]
+TitleCodes: [
+TitleCode { titleCode='204010', groupPrescriptionCode='null', role=
+Role { name='LAKARE', desc='Läkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-bas], requestOrigins= []}]}},
+TitleCode { titleCode='203090', groupPrescriptionCode='9300005', role=
+Role { name='LAKARE', desc='Läkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-bas], requestOrigins= []}]}},
+TitleCode { titleCode='203090', groupPrescriptionCode='9400003', role=
+Role { name='LAKARE', desc='Läkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-bas], requestOrigins= []}]}},
+TitleCode { titleCode='204090', groupPrescriptionCode='9100009', role=
+Role { name='LAKARE', desc='Läkare', privileges= [
+Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
+Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
+Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
+Privilege { name='KOPIERA_INTYG', desc='Kopiera intyg', intygstyper= [ts-bas], requestOrigins= []}]}}]

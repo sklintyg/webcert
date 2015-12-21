@@ -1,7 +1,35 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.dto.Patient;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,19 +40,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -126,11 +143,31 @@ public class IntygResource {
     @Path("/{id}/komplett")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDraft(@PathParam("id") String id) {
+        updateStatus(id, UtkastStatus.DRAFT_COMPLETE);
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/{id}/signerat")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response signDraft(@PathParam("id") String id) {
+        updateStatus(id, UtkastStatus.SIGNED);
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/{id}/skickat")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sendDraft(@PathParam("id") String id) {
+        updateStatus(id, UtkastStatus.SIGNED);
+        return Response.ok().build();
+    }
+
+    private void updateStatus(String id, UtkastStatus status) {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
-            utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
+            utkast.setStatus(status);
             utkastRepository.save(utkast);
         }
-        return Response.ok().build();
     }
 }

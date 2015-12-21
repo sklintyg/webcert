@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
@@ -46,11 +65,8 @@ public class UtkastApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
 
-    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE);
-
+    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
     private static final List<UtkastStatus> COMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_COMPLETE);
-
     private static final List<UtkastStatus> INCOMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;

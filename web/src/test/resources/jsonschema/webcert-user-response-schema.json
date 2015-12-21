@@ -1,251 +1,622 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title" : "Webcertuser transport model",
-  "description" : "Defines the transport model of an authenticated webcert user model, e.g returned by /api/anvandare",
-  "id": "/",
-  "type": "object",
+  "description": "Defines the transport model of an authenticated webcert user model, e.g returned by /api/anvandare",
   "properties": {
-    "privatLakareAvtalGodkand": {
-      "id": "privatLakareAvtalGodkand",
-      "type": "boolean"
-    },
-    "hsaId": {
-      "id": "hsaId",
-      "type": "string"
-    },
-    "namn": {
-      "id": "namn",
-      "type": "string"
-    },
-    "titel": {
-      "id": "titel",
-      "type": "string"
-    },
-    "forskrivarkod": {
-      "id": "forskrivarkod",
+    "authenticationMethod": {
       "type": "string"
     },
     "authenticationScheme": {
-      "id": "authenticationScheme",
       "type": "string"
     },
-    "vardgivare": {
-      "id": "vardgivare",
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "id": "auto-generated-schema-451"
+    "authorities": {
+      "additionalProperties": false,
+      "properties": {
+        "ATKOMST_ANDRA_ENHETER": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "BESVARA_KOMPLETTERINGSFRAGA": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "FILTRERA_PA_LAKARE": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "HANTERA_MAILSVAR": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "HANTERA_PERSONUPPGIFTER": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "KOPIERA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "MAKULERA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "NAVIGERING": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "SIGNERA_INTYG": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "SKRIVA_INTYG": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "VIDAREBEFORDRA_FRAGASVAR": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "VIDAREBEFORDRA_UTKAST": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "VISA_INTYG": {
+          "additionalProperties": true,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
       },
-      "additionalItems": false
-    },
-    "specialiseringar": {
-      "id": "specialiseringar",
-      "type": "array",
-      "minItems": 0,
-      "items": {},
-      "additionalItems": false
+      "type": "object"
     },
     "befattningar": {
-      "id": "befattningar",
-      "type": "array",
-      "minItems": 0,
+      "additionalItems": false,
       "items": {},
-      "additionalItems": false
-    },
-    "legitimeradeYrkesgrupper": {
-      "id": "legitimeradeYrkesgrupper",
-      "type": "array",
       "minItems": 0,
+      "type": "array"
+    },
+    "features": {
+      "additionalItems": false,
       "items": {},
-      "additionalItems": false
-    },
-    "aktivaFunktioner": {
-      "id": "aktivaFunktioner",
-      "type": "array",
       "minItems": 0,
-      "items": {
-        "id": "auto-generated-schema-824"
-      },
-      "additionalItems": false
+      "type": "array"
     },
-    "valdVardenhet": {
-      "id": "valdVardenhet",
-      "type": "object",
-      "properties": {
-        "@class": {
-          "id": "@class",
-          "type": "string"
-        },
-        "id": {
-          "id": "id",
-          "type": "string"
-        },
-        "namn": {
-          "id": "namn",
-          "type": "string"
-        },
-        "epost": {
-          "id": "epost",
-          "type": "string"
-        },
-        "postadress": {
-          "id": "postadress",
-          "type": "string"
-        },
-        "postnummer": {
-          "id": "postnummer",
-          "type": "string"
-        },
-        "postort": {
-          "id": "postort",
-          "type": "string"
-        },
-        "telefonnummer": {
-          "id": "telefonnummer",
-          "type": "string"
-        },
-        "arbetsplatskod": {
-          "id": "arbetsplatskod",
-          "type": "string"
-        },
-        "mottagningar": {
-          "id": "mottagningar",
-          "type": "array",
-          "items": {},
-          "additionalItems": false
-        }
-      },
-      "additionalProperties": false
+    "forskrivarkod": {
+      "type": "string"
     },
-    "valdVardgivare": {
-      "id": "valdVardgivare",
-      "type": "object",
-      "properties": {
-        "@class": {
-          "id": "@class",
-          "type": "string"
-        },
-        "id": {
-          "id": "id",
-          "type": "string"
-        },
-        "namn": {
-          "id": "namn",
-          "type": "string"
-        },
-        "vardenheter": {
-          "id": "vardenheter",
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "id": "auto-generated-schema-148"
-          },
-          "additionalItems": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "roles": {
-      "id": "roles",
-      "type": "object",
-      "properties": {},
-      "additionalProperties": true
-    },
-    "authorities": {
-      "id": "authorities",
-      "type": "object",
-      "properties": {
-        "PRIVILEGE_MAKULERA_INTYG": {
-          "id": "PRIVILEGE_MAKULERA_INTYG",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_SIGNERA_INTYG": {
-          "id": "PRIVILEGE_SIGNERA_INTYG",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA": {
-          "id": "PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR": {
-          "id": "PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_ATKOMST_ANDRA_ENHETER": {
-          "id": "PRIVILEGE_ATKOMST_ANDRA_ENHETER",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_KOPIERA_INTYG": {
-          "id": "PRIVILEGE_KOPIERA_INTYG",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_NAVIGERING": {
-          "id": "PRIVILEGE_NAVIGERING",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_FILTRERA_PA_LAKARE": {
-          "id": "PRIVILEGE_FILTRERA_PA_LAKARE",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_VIDAREBEFORDRA_UTKAST": {
-          "id": "PRIVILEGE_VIDAREBEFORDRA_UTKAST",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_HANTERA_PERSONUPPGIFTER": {
-          "id": "PRIVILEGE_HANTERA_PERSONUPPGIFTER",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        },
-        "PRIVILEGE_HANTERA_MAILSVAR": {
-          "id": "PRIVILEGE_HANTERA_MAILSVAR",
-          "type": "object",
-          "properties": {},
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "authenticationMethod": {
-      "id": "authenticationMethod",
+    "hsaId": {
       "type": "string"
     },
     "lakare": {
-      "id": "lakare",
       "type": "boolean"
     },
-    "roleUthopp": {
-      "id": "roleUthopp",
-      "type": "boolean"
+    "legitimeradeYrkesgrupper": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 0,
+      "type": "array"
+    },
+    "namn": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
     },
     "privatLakare": {
-      "id": "privatLakare",
       "type": "boolean"
     },
+    "privatLakareAvtalGodkand": {
+      "type": "boolean"
+    },
+    "roles": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    },
+    "specialiseringar": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 0,
+      "type": "array"
+    },
+    "titel": {
+      "type": "string"
+    },
     "totaltAntalVardenheter": {
-      "id": "totaltAntalVardenheter",
       "type": "integer"
+    },
+    "valdVardenhet": {
+      "additionalProperties": false,
+      "properties": {
+        "@class": {
+          "type": "string"
+        },
+        "arbetsplatskod": {
+          "type": "string"
+        },
+        "epost": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "mottagningar": {
+          "additionalItems": false,
+          "items": {},
+          "type": "array"
+        },
+        "namn": {
+          "type": "string"
+        },
+        "postadress": {
+          "type": "string"
+        },
+        "postnummer": {
+          "type": "string"
+        },
+        "postort": {
+          "type": "string"
+        },
+        "telefonnummer": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "valdVardgivare": {
+      "additionalProperties": false,
+      "properties": {
+        "@class": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "namn": {
+          "type": "string"
+        },
+        "vardenheter": {
+          "additionalItems": false,
+          "items": {},
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "vardgivare": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 1,
+      "type": "array"
     }
   },
-  "additionalProperties": false,
   "required": [
     "privatLakareAvtalGodkand",
     "hsaId",
@@ -256,15 +627,18 @@
     "vardgivare",
     "specialiseringar",
     "legitimeradeYrkesgrupper",
-    "aktivaFunktioner",
+    "features",
     "valdVardenhet",
     "valdVardgivare",
     "roles",
     "authorities",
+    "origin",
     "authenticationMethod",
     "lakare",
-    "roleUthopp",
     "privatLakare",
     "totaltAntalVardenheter"
-  ]
+  ],
+  "title": "WebCertUser transport model",
+  "type": "object",
+  "additionalProperties": false
 }

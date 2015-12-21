@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import static org.junit.Assert.assertNotNull;
@@ -7,12 +26,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,17 +38,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opensaml.saml2.core.NameID;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.saml.SAMLCredential;
-
+import org.springframework.security.web.PortResolverImpl;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.intyg.webcert.persistence.roles.model.Privilege;
-import se.inera.intyg.webcert.persistence.roles.model.Role;
-import se.inera.intyg.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
@@ -42,6 +57,9 @@ import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -55,10 +73,10 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String PERSON_ID = "197705232382";
 
     @Mock
-    private PPService ppService;
+    private HsaPersonService hsaPersonService;
 
     @Mock
-    private RoleRepository roleRepository;
+    private PPService ppService;
 
     @Mock
     private WebcertFeatureService webcertFeatureService;
@@ -85,9 +103,17 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Before
     public void setupForSuccess() {
+        // Setup a servlet request
+        MockHttpServletRequest request = mockHttpServletRequest("/any/path");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
+        AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
+        testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
+
+        //when(authoritiesResolver.getRole(anyString())).thenReturn(role);
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
-        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles().get(0));
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
     }
@@ -145,20 +171,20 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         hoSPersonType.setEnhet(vardEnhet);
 
         return hoSPersonType;
-
     }
 
-    private List<Role> buildUserRoles() {
-        List<Privilege> privileges = new ArrayList<>();
+    private MockHttpServletRequest mockHttpServletRequest(String requestURI) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
 
-        for (UserPrivilege up : UserPrivilege.values()) {
-            Privilege privilege = new Privilege(up.name());
-            privileges.add(privilege);
+        if ((requestURI != null) && (requestURI.length() > 0)) {
+            request.setRequestURI(requestURI);
         }
 
-        Role role = new Role(UserRole.ROLE_LAKARE.name());
-        role.setPrivileges(privileges);
+        SavedRequest savedRequest = new DefaultSavedRequest(request, new PortResolverImpl());
+        request.getSession().setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
 
-        return Collections.singletonList(role);
+        return request;
     }
+
+
 }

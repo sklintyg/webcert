@@ -1,16 +1,31 @@
-package se.inera.intyg.webcert.web.web.controller;
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import java.util.ArrayList;
-import java.util.List;
+package se.inera.intyg.webcert.web.web.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
@@ -18,6 +33,9 @@ import se.inera.intyg.webcert.web.service.exception.FeatureNotAvailableException
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractApiController {
 
@@ -78,22 +96,34 @@ public abstract class AbstractApiController {
         return webCertUserService;
     }
 
-    protected boolean checkIfUserHasRole(UserRole... userRoles) {
+    protected boolean checkIfUserHasRole(Role... userRoles) {
         Assert.notNull(userRoles);
 
         List<String> list = new ArrayList<>();
-        for (UserRole userRole : userRoles) {
-            list.add(userRole.name());
+        for (Role userRole : userRoles) {
+            list.add(userRole.getName());
         }
 
         WebCertUser webCertUser = webCertUserService.getUser();
         return webCertUser.hasRole(list.toArray(new String[list.size()]));
     }
 
+    protected boolean checkIfUserHasRequestOrigin(String requestOrigin) {
+        if (requestOrigin == null) {
+            return false;
+        }
+
+        WebCertUser webCertUser = webCertUserService.getUser();
+        String origin = webCertUser.getOrigin();
+
+        return origin.equals(requestOrigin);
+    }
+
     protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {
         Assert.notNull(webcertFeature);
         WebCertUser webCertUser = webCertUserService.getUser();
-        return webCertUser.hasAktivFunktion(webcertFeature.getName());
+        String webcertFeatureName = webcertFeature.getName();
+        return webCertUser.isFeatureActive(webcertFeatureName);
     }
 
     protected boolean checkIfWebcertFeatureIsAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
@@ -101,7 +131,7 @@ public abstract class AbstractApiController {
         Assert.notNull(moduleType);
         WebCertUser webCertUser = webCertUserService.getUser();
         String webcertFeatureName = StringUtils.join(new String[] { webcertFeature.getName(), moduleType }, ".");
-        return webCertUser.hasAktivFunktion(webcertFeatureName);
+        return webCertUser.isFeatureActive(webcertFeatureName);
     }
 
     protected void abortIfWebcertFeatureIsNotAvailable(WebcertFeature webcertFeature) {

@@ -1,7 +1,9 @@
 {
   "name": "e2e-test",
   "version": "0.0.1",
-  "dependencies": {},
+  "dependencies": {
+    "webcert-testtools": "file:webcertTestTools"
+  },
   "devDependencies": {
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",

@@ -1,14 +1,23 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.utkast;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.OptimisticLockException;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -27,18 +35,19 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -54,6 +63,17 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -183,15 +203,27 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
+        // Get intygstyper from the view privilege
+        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+        // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
+        if (intygsTyper.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Get a list of drafts
         List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
+
+        // If there are intygstyper in the set, then user is only granted access to
+        // view intyg of intygstyper that are in the set.
         Iterator<Utkast> i = utkastList.iterator();
-        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
         while (i.hasNext()) {
             Utkast utkast = i.next();
             if (!intygsTyper.contains(utkast.getIntygsTyp())) {
                 i.remove();
             }
         }
+
         return utkastList;
     }
 

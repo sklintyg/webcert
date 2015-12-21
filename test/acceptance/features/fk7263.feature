@@ -5,14 +5,14 @@ Egenskap: Kontrollera att webcerts olika funktioner går att använda
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 
-@RegisterMedicalCertificate @minaintyg @dev 
+@RegisterMedicalCertificate @minaintyg @dev
 Scenario: Skapa och signera ett intyg i webcert
 	När jag väljer patienten "19971019-2387"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
-	Och jag jämför att all data är rätt
+	
 
 #	När jag går till Mina intyg för patienten "19971019-2387"
 #	Så ska intyget finnas i Mina intyg

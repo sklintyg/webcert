@@ -1,9 +1,28 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 angular.module('webcert').factory('webcert.UtkastProxy',
     [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
-        'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.statService',
+        'common.User', 'common.dialogService', 'common.authorityService', 'common.featureService', 'common.messageService', 'common.statService',
         'common.UserModel',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, User, dialogService,
-            featureService, messageService, statService, UserModel) {
+            authorityService, featureService, messageService, statService, UserModel) {
             'use strict';
 
             /**
@@ -40,8 +59,14 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                     for (var i = 0; i < data.length; i++) {
                         var m = data[i];
 
+                        var options = {
+                            feature: featureService.features.HANTERA_INTYGSUTKAST,
+                            authority: UserModel.privileges.SKRIVA_INTYG,
+                            requestOrigin: UserModel.user.origin,
+                            intygstyp: m.id};
+
                         // Only add type if feature is active and user has global intygTyp access through their role.
-                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id) && UserModel.hasIntygsTyp(m.id)) {
+                        if (authorityService.isAuthorityActive(options)) {
                             types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
                         }
                     }
@@ -96,23 +121,23 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 $log.debug('_getUtkastFetchMore');
                 var restPath = '/api/utkast';
                 $http.get(restPath, { params: query }).success(function(data) {
-                    $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
+                    $log.debug('_getUtkastFetchMore got data:' + data);
                     onSuccess(data);
                 }).error(function(data, status) {
-                    $log.error('_getUnsignedCertificatesByQueryFetchMore error ' + status);
+                    $log.error('_getUtkastFetchMore error ' + status);
                     // Let calling code handle the error of no data response
                     onError(data);
                 });
             }
 
             function _getUtkastSavedByList(onSuccess, onError) {
-                $log.debug('_getCertificateSavedByList');
+                $log.debug('_getUtkastSavedByList');
                 var restPath = '/api/utkast/lakare/';
                 $http.get(restPath).success(function(data) {
-                    $log.debug('_getCertificateSavedByList got data:' + data);
+                    $log.debug('_getUtkastSavedByList got data:' + data);
                     onSuccess(data);
                 }).error(function(data, status) {
-                    $log.error('_getCertificateSavedByList error ' + status);
+                    $log.error('_getUtkastSavedByList error ' + status);
                     // Let calling code handle the error of no data response
                     onError(data);
                 });

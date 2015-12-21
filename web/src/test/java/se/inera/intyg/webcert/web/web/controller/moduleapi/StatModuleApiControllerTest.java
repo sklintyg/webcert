@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import static org.junit.Assert.assertEquals;
@@ -6,8 +25,6 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,11 +35,13 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.Mottagning;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -37,32 +56,26 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StatModuleApiControllerTest {
+public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
 
     private static final int OK = 200;
 
     @Mock
     private WebCertUserService webCertUserService;
-
     @Mock
     private FragaSvarService fragaSvarService;
-
     @Mock
     private UtkastService intygDraftService;
-
     @Captor
     private ArgumentCaptor<List<String>> listCaptor;
-
     @InjectMocks
     private StatModuleApiController statController;
 
     private WebCertUser mockUser;
-
     private Map<String, Long> fragaSvarStatsMap;
-
     private Map<String, Long> intygStatsMap;
-
     private Vardenhet ve1, ve2, ve3, ve4;
+
 
     @Before
     public void setupDataAndExpectations() {
@@ -83,8 +96,9 @@ public class StatModuleApiControllerTest {
 
         mockUser = new WebCertUser();
 
-        mockUser.setRoles(getGrantedRole());
-        mockUser.setAuthorities(getGrantedPrivileges());
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+        mockUser.setRoles(AuthoritiesResolverUtil.toMap(role));
+        mockUser.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         ve1 = new Vardenhet("VE1", "Vardenhet1");
         ve1.getMottagningar().add(new Mottagning("VE1M1", "Mottagning1"));
@@ -233,26 +247,6 @@ public class StatModuleApiControllerTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        Map<String, UserRole> map = new HashMap<>();
-        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
-        return map;
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
     }
 
 }

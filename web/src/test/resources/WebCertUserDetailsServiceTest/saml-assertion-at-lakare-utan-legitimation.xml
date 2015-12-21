@@ -1,3 +1,22 @@
+<!--
+  ~ Copyright (C) 2015 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
                 ID="ID899901706435095567250996391684454024864868529507" IssueInstant="2013-10-11T06:54:55.124Z"
                 Version="2.0">
@@ -63,7 +82,7 @@
     </saml:Attribute>
     <saml:Attribute FriendlyName="titleCode" Name="urn:sambi:names:attribute:titleCode"
         NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>204090</saml:AttributeValue>
+      <saml:AttributeValue>203090</saml:AttributeValue>
     </saml:Attribute>
     <saml:Attribute FriendlyName="careProviderHsaId" Name="urn:sambi:names:attribute:careProviderHsaId"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">

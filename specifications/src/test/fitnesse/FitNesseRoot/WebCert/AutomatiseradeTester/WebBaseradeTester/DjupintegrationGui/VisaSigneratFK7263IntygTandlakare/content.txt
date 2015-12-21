@@ -23,8 +23,8 @@ Testet beskriver fallet när en tandläkare går in på ett signerat FK7263 inty
 
 !3 Ändra användarroll till dupintegrerad läkare
 
-| skript | Anvandarroll |
-| ändra till | ROLE_TANDLAKARE_DJUPINTEGRERAD |
+| skript | !-HanteraAnvandare-! |
+| uppdatera origin till | DJUPINTEGRATION |
 
 !3 Verifiera att sidan sök/skriv intyg visas
 

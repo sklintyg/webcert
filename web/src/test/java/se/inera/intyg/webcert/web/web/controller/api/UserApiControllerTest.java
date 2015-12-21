@@ -1,4 +1,28 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.api;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +32,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;
@@ -19,11 +42,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
 
 public class UserApiControllerTest {
 
@@ -61,14 +79,14 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(true);
         webUserFeaturesRequest.setJsMinified(true);
 
-        final HashSet<String> aktivaFunktioner = new HashSet<>();
-        Mockito.when(webCertUser.getAktivaFunktioner()).thenReturn(aktivaFunktioner);
+        final HashSet<String> features = new HashSet<>();
+        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setAktivaFunktioner(stringSetCaptor.capture());
+        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
         assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
         assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
 
@@ -82,16 +100,16 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(false);
         webUserFeaturesRequest.setJsMinified(false);
 
-        final HashSet<String> aktivaFunktioner = new HashSet<>();
-        aktivaFunktioner.add(WebcertFeature.JS_LOGGNING.getName());
-        aktivaFunktioner.add(WebcertFeature.JS_MINIFIED.getName());
-        Mockito.when(webCertUser.getAktivaFunktioner()).thenReturn(aktivaFunktioner);
+        final HashSet<String> features = new HashSet<>();
+        features.add(WebcertFeature.JS_LOGGNING.getName());
+        features.add(WebcertFeature.JS_MINIFIED.getName());
+        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setAktivaFunktioner(stringSetCaptor.capture());
+        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
         assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
         assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
 
@@ -105,16 +123,16 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(true);
         webUserFeaturesRequest.setJsMinified(true);
 
-        final HashSet<String> aktivaFunktioner = new HashSet<>();
-        aktivaFunktioner.add(WebcertFeature.JS_LOGGNING.getName());
-        aktivaFunktioner.add(WebcertFeature.JS_MINIFIED.getName());
-        Mockito.when(webCertUser.getAktivaFunktioner()).thenReturn(aktivaFunktioner);
+        final HashSet<String> features = new HashSet<>();
+        features.add(WebcertFeature.JS_LOGGNING.getName());
+        features.add(WebcertFeature.JS_MINIFIED.getName());
+        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setAktivaFunktioner(stringSetCaptor.capture());
+        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
         assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
         assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
 
@@ -128,14 +146,14 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(false);
         webUserFeaturesRequest.setJsMinified(false);
 
-        final HashSet<String> aktivaFunktioner = new HashSet<>();
-        Mockito.when(webCertUser.getAktivaFunktioner()).thenReturn(aktivaFunktioner);
+        final HashSet<String> features = new HashSet<>();
+        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setAktivaFunktioner(stringSetCaptor.capture());
+        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
         assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
         assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
 

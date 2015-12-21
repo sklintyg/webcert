@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 describe('ViewCertCtrl', function() {
     'use strict';
 
@@ -80,7 +99,7 @@ describe('ViewCertCtrl', function() {
             },
             isFeatureActive: function() { return true; }
         });
-        $provide.value('common.UserModel',getTestUser({ROLE_LAKARE_UTHOPP: 'Läkare - uthopp'}));
+        $provide.value('common.UserModel', getTestUser({'LAKARE': {'name': 'Läkare', 'desc': 'Läkare'}}, 'UTHOPP'));
     }));
 
     // Get references to the object we want to test from the context.
@@ -102,9 +121,9 @@ describe('ViewCertCtrl', function() {
             // setup the current location
             $location.url(currentUrl);
 
-            userModel.roles = {ROLE_LAKARE: 'Läkare'};
+            userModel.roles = {LAKARE: 'Läkare'};
             userModel.isLakare = function(){return true;};
-            userModel.isLakareUthopp = function(){return false;};
+            userModel.isUthopp = function(){return false;};
             $stateParams.certificateType = 'fk7263';
 
             $controller = _$controller_;
@@ -324,7 +343,7 @@ describe('ViewCertCtrl', function() {
 
     });
 
-    function getTestUser (role){
+    function getTestUser (role, origin){
         return {
             'hsaId': 'eva',
             'namn': 'Eva Holgersson',
@@ -376,8 +395,9 @@ describe('ViewCertCtrl', function() {
                 ]
             },
             'roles': role,
-            'aktivaFunktioner': ['hanteraFragor', 'hanteraFragor.fk7263'],
-            'totaltAntalVardenheter': 6
+            'features': ['hanteraFragor', 'hanteraFragor.fk7263'],
+            'totaltAntalVardenheter': 6,
+            'origin': origin
         };
 
     }

@@ -1,10 +1,29 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /*global
 testdata, intyg, browser, pages*/
 'use strict';
 
-var tsdUtkastPage = pages.intygpages['ts-diabetesUtkast'];
-var tsBasUtkastPage = pages.intygpages['ts-basUtkast'];
-var fkUtkastPage = pages.intygpages.fk7263Utkast;
+var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
+var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
 module.exports = function() {
 
@@ -45,32 +64,36 @@ module.exports = function() {
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
             global.intyg = testdata.getRandomTsDiabetesIntyg();
 
-            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
             tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+            browser.ignoreSynchronization = true;
+            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
             tsdUtkastPage.fillInAllmant(intyg.allmant);
             tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
             tsdUtkastPage.fillInSynintyg(intyg.synintyg);
             tsdUtkastPage.fillInBedomning(intyg.bedomning);
+            browser.ignoreSynchronization = false;
 
             callback();
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
 
             global.intyg = testdata.fk.sjukintyg.getRandom();
             fkUtkastPage.angeSmittskydd(intyg.smittskydd);
+            browser.ignoreSynchronization = true;
             fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
             fkUtkastPage.angeDiagnoser(intyg.diagnos);
             fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
+            fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
+            fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning);
+            fkUtkastPage.angeArbete(intyg.arbete);
             fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
             fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
             fkUtkastPage.angePrognos(intyg.prognos);
+            browser.ignoreSynchronization = false;
             callback();
         }
     });
 
-    this.Given(/^jag jämför att all data är rätt$/, function(callback) {
-        expect(intyg).to.equal(global.intyg);
-        callback();
-    });
+  
 
 
 };

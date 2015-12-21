@@ -1,12 +1,23 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.intyg;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.ws.WebServiceException;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -14,24 +25,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
@@ -53,6 +64,14 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.ws.WebServiceException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 
 
 /**
@@ -158,8 +177,18 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void filterByIntygTypeForUser(List<IntygItem> fullIntygItemList) {
+        // Get intygstyper from the view privilege
+        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+        // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
+        if (intygsTyper.isEmpty()) {
+            fullIntygItemList.clear();
+            return;
+        }
+
+        // If there are intygstyper in the set, then user is only granted access to
+        // view intyg of intygstyper that are in the set.
         Iterator<IntygItem> i = fullIntygItemList.iterator();
-        Set<String> intygsTyper = webCertUserService.getUser().getIntygsTyper();
         while (i.hasNext()) {
             IntygItem intygItem = i.next();
             if (!intygsTyper.contains(intygItem.getType())) {
@@ -181,7 +210,8 @@ public class IntygServiceImpl implements IntygService {
     private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, webCertUserService.getUser().getIntygsTyper());
+        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, intygsTyper);
         return serviceConverter.convertDraftsToListOfIntygItem(drafts);
     }
 
@@ -380,7 +410,7 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        IntygContentHolder intyg = null;
+        IntygContentHolder intyg;
         if (utkast != null) {
             intyg = buildIntygContentHolder(utkast);
         } else {

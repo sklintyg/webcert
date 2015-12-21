@@ -1,30 +1,50 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.service.user;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @RunWith(MockitoJUnitRunner.class)
-public class WebCertUserServiceTest {
+public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     public static final String VARDGIVARE_1 = "VG1";
     public static final String VARDGIVARE_2 = "VG2";
@@ -34,6 +54,8 @@ public class WebCertUserServiceTest {
     public static final String VARDENHET_3 = "VG2VE1";
     public static final String VARDENHET_4 = "VG2VE2";
 
+
+    @InjectMocks
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
 
     @Test
@@ -65,11 +87,11 @@ public class WebCertUserServiceTest {
 
         WebCertUser user = createWebCertUser(false);
 
-        assertEquals(0, user.getAktivaFunktioner().size());
+        assertEquals(0, user.getFeatures().size());
 
         webcertUserService.enableFeatures(user, WebcertFeature.HANTERA_FRAGOR, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        assertEquals(2, user.getAktivaFunktioner().size());
+        assertEquals(2, user.getFeatures().size());
     }
 
     @Test
@@ -77,16 +99,16 @@ public class WebCertUserServiceTest {
 
         WebCertUser user = createWebCertUser(false);
 
-        assertEquals(0, user.getAktivaFunktioner().size());
+        assertEquals(0, user.getFeatures().size());
 
         // base features must be enabled first
         webcertUserService.enableFeatures(user, WebcertFeature.HANTERA_FRAGOR, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        assertEquals(2, user.getAktivaFunktioner().size());
+        assertEquals(2, user.getFeatures().size());
 
         webcertUserService.enableModuleFeatures(user, "fk7263", ModuleFeature.HANTERA_FRAGOR, ModuleFeature.HANTERA_INTYGSUTKAST);
 
-        assertEquals(4, user.getAktivaFunktioner().size());
+        assertEquals(4, user.getFeatures().size());
     }
 
     private WebCertUser createWebCertUser(boolean fromJS) {
@@ -122,45 +144,22 @@ public class WebCertUserServiceTest {
         user.setValdVardgivare(vg1);
 
         if (fromJS) {
-            user.setRoles(createUserRoles(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
+            user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        } else {
+            user.setOrigin(WebCertUserOriginType.NORMAL.name());
         }
 
         return user;
     }
 
     private WebCertUser createUser() {
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(getGrantedRole());
-        user.setAuthorities(getGrantedPrivileges());
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+
         return user;
-    }
-
-    private Map<String, UserRole> getGrantedRole() {
-        return createUserRoles(UserRole.ROLE_LAKARE);
-    }
-
-    private Map<String, UserPrivilege> getGrantedPrivileges() {
-        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
-
-        // convert list to map
-        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
-            @Override
-            public String apply(UserPrivilege userPrivilege) {
-                return userPrivilege.name();
-            }
-        });
-
-        return privilegeMap;
-    }
-
-    private Map<String, UserRole> createUserRoles(UserRole... userRoles) {
-        Map<String, UserRole> roles = new HashMap<>();
-
-        for (UserRole userRole : userRoles) {
-            roles.put(userRole.name(), userRole);
-        }
-
-        return roles;
     }
 
 }

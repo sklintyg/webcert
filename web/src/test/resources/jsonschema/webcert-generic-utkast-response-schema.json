@@ -1,95 +1,77 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title" : "Webcert certificate draft transport model",
-  "description" : "Defines the transport model of an draft model of an intygstype, e.g returned by /api/utkast/intygstyp",
-  "id": "/",
+  "title": "Webcert certificate draft transport model",
+  "description": "Defines the transport model of an draft model of an intygstype, e.g returned by /api/utkast/intygstyp. It doesn't specify the internal intygstyp structure as this is a encoded json within the 'model' property of this json.",
   "properties": {
     "intygsId": {
-      "id": "intygsId",
       "type": "string"
     },
     "intygsTyp": {
-      "id": "intygsTyp",
       "type": "string"
     },
     "enhetsId": {
-      "id": "enhetsId",
       "type": "string"
     },
     "enhetsNamn": {
-      "id": "enhetsNamn",
       "type": "string"
     },
     "vardgivarId": {
-      "id": "vardgivarId",
       "type": "string"
     },
     "vardgivarNamn": {
-      "id": "vardgivarNamn",
       "type": "string"
     },
     "patientPersonnummer": {
-      "id": "patientPersonnummer",
       "type": "string"
     },
     "patientFornamn": {
-      "id": "patientFornamn",
       "type": "string"
     },
     "patientEfternamn": {
-      "id": "patientEfternamn",
       "type": "string"
     },
     "version": {
-      "id": "version",
       "type": "integer"
     },
     "skapadAv": {
-      "id": "skapadAv",
       "type": "object",
       "properties": {
         "hsaId": {
-          "id": "hsaId",
           "type": "string"
         },
         "namn": {
-          "id": "namn",
           "type": "string"
         }
       },
       "additionalProperties": false
     },
     "senastSparadAv": {
-      "id": "senastSparadAv",
       "type": "object",
       "properties": {
         "hsaId": {
-          "id": "hsaId",
           "type": "string"
         },
         "namn": {
-          "id": "namn",
           "type": "string"
         }
       },
       "additionalProperties": false,
-      "required": ["hsaId", "namn"]
+      "required": [
+        "hsaId",
+        "namn"
+      ]
     },
     "senastSparadDatum": {
-      "id": "senastSparadDatum",
       "type": "string"
     },
     "model": {
-      "id": "model",
       "type": "string"
     },
     "status": {
-      "id": "status",
       "type": "string"
     },
     "vidarebefordrad": {
-      "id": "vidarebefordrad",
       "type": "boolean"
     }
   },

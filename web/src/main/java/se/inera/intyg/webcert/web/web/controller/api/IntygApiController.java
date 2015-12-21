@@ -1,35 +1,38 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.api;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.persistence.OptimisticLockException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
-import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
@@ -45,6 +48,21 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+
+import javax.persistence.OptimisticLockException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Controller for the API that serves WebCert.
@@ -78,8 +96,8 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private MonitoringLogService monitoringLogService;
 
-    public IntygApiController() {
 
+    public IntygApiController() {
     }
 
     /**
@@ -130,12 +148,7 @@ public class IntygApiController extends AbstractApiController {
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }
 
-        UserRole[] userRoles = new UserRole[] {
-            UserRole.ROLE_LAKARE_DJUPINTEGRERAD,
-            UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD
-        };
-
-        if (checkIfUserHasRole(userRoles)) {
+        if (checkIfUserHasRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name())) {
             LOG.debug("Setting djupintegrerad flag on request to true");
             req.setDjupintegrerad(true);
         }
@@ -173,7 +186,7 @@ public class IntygApiController extends AbstractApiController {
 
         if (checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) {
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer.getPersonnummer(), enhetsIds,
-                    ALL_DRAFTS, getWebCertUserService().getUser().getIntygsTyper());
+                    ALL_DRAFTS, getWebCertUserService().getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG));
             LOG.debug("Got {} utkast", utkastList.size());
         } else {
             utkastList = Collections.emptyList();

@@ -1,10 +1,27 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,7 +36,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,15 +47,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import se.inera.intyg.webcert.common.common.security.authority.UserPrivilege;
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
 import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
 import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
+import io.swagger.annotations.Api;
+
+
 /**
  * Bean for inserting questions directly into the database.
  * <p/>
@@ -65,6 +86,10 @@ public class QuestionResource {
 
     @Autowired
     private FragaSvarRepository fragasvarRepository;
+
+    @Autowired
+    private AuthoritiesResolver authoritiesResolver;
+
 
     @GET
     @Path("/extern/{externReferens}")
@@ -207,7 +232,9 @@ public class QuestionResource {
     @SuppressWarnings("serial")
     private SecurityContext getSecurityContext(final String vardgivarId, final String enhetsId) {
         final WebCertUser user = getWebCertUser(vardgivarId, enhetsId);
+
         return new SecurityContext() {
+
             @Override
             public void setAuthentication(Authentication authentication) {
             }
@@ -254,11 +281,12 @@ public class QuestionResource {
     }
 
     // Create a fake WebCertUser which is authorized for the given care giver and unit
-    private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
+    private WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
         WebCertUser user = new WebCertUser();
 
-        user.setRoles(buildUserRoles(UserRole.ROLE_LAKARE));
-        user.setAuthorities(new HashMap<String, UserPrivilege>());
+        Role role = authoritiesResolver.getRole(AuthoritiesConstants.ROLE_LAKARE);
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         user.setHsaId("questionResource");
         user.setNamn("questionResource");
@@ -277,16 +305,6 @@ public class QuestionResource {
         user.setValdVardenhet(enhet);
 
         return user;
-    }
-
-    private static Map<String, UserRole> buildUserRoles(UserRole... userRoles) {
-        Map<String, UserRole> map = new HashMap<>();
-
-        for (UserRole userRole : userRoles) {
-            map.put(userRole.name(), userRole);
-        }
-
-        return map;
     }
 
 }

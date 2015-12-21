@@ -12,8 +12,8 @@ Verifiera att en vårdadministratör som använder en djupintegrationslänk har 
 | skript | logga in |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 
-| skript | Anvandarroll |
-| ändra till | ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD |
+| skript | !-HanteraAnvandare-! |
+| uppdatera origin till | DJUPINTEGRATION |
 
 !3 Visa utkastet via integrationslänken
 

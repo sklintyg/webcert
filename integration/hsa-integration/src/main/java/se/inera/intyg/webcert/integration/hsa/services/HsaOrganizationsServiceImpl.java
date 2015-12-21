@@ -1,15 +1,29 @@
-package se.inera.intyg.webcert.integration.hsa.services;
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+package se.inera.intyg.webcert.integration.hsa.services;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.webcert.integration.hsa.client.AuthorizationManagementService;
 import se.inera.intyg.webcert.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
@@ -27,6 +41,10 @@ import se.riv.infrastructure.directory.v1.AddressType;
 import se.riv.infrastructure.directory.v1.CommissionType;
 import se.riv.infrastructure.directory.v1.CredentialInformationType;
 import se.riv.infrastructure.directory.v1.ResultCodeEnum;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Provides HSA organization services through TJK over NTjP.
@@ -198,6 +216,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         if (response.getPostalCode() != null && response.getPostalCode().trim().length() > 0) {
             vardenhet.setPostnummer(response.getPostalCode());
         }
+
         StringBuilder postaAddress = new StringBuilder();
         List<String> lines = address.getAddressLine();
         for (int i = 0; i < lines.size() - 1; i++) {
@@ -205,8 +224,8 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 postaAddress.append(lines.get(i).trim());
             }
         }
-
         vardenhet.setPostadress(postaAddress.toString());
+
         String lastLine = lines != null && lines.size() > 0 ? lines.get(lines.size() - 1) : null;
         final int shortestLengthToIncludeBothPnrAndPostort = 7;
         if (lastLine != null && lastLine.length() > shortestLengthToIncludeBothPnrAndPostort && Character.isDigit(lastLine.charAt(0))) {

@@ -1,0 +1,296 @@
+# ====================================================================================================
+#   Konfiguration för Webcerts rollhantering
+#
+#   YAML specifikation: http://www.yaml.org/spec/1.2/spec.html
+#
+#   Kort förklaring till vissa konstruktioner i filen:
+#
+#   '-'   används för att skapa listor av värden
+#   '&'   används för att skapa ett ankare (unik nyckel)
+#   '*'   används för att peka på ett ankare, kallas också alias
+#   '<<:' används för att slå ihop och skriva över värden
+#
+#   '&' och '*' används för att undvika duplikat i en YAML-fil
+#
+#   Överskådligt exempel:
+#
+#  defaults: &defaults
+#     adapter:  postgres
+#     host:     localhost
+#
+#   development:
+#     database: myapp_development
+#     <<: *defaults
+#
+#   test:
+#     database: myapp_test
+#     <<: *defaults
+#
+#   & sets up the name of the anchor (“defaults”),
+#   << means “merge the given hash into the current one”, and
+#   * includes the named anchor (“defaults” again).
+#
+# ====================================================================================================
+---
+version: 1.0
+released: 2015-12-18
+changedby: Magnus Ekstrand
+
+
+# ====================================================================================================
+#   Kända basvärden
+# ====================================================================================================
+
+# De ingångar till systemet som finns
+knownRequestOrigins:
+  - &kro010 NORMAL # Inloggning via SITHS / BankID
+  - &kro020 DJUPINTEGRATION # Inloggning via länk från journalsystem
+  - &kro030 UTHOPP # Inloggning via uthoppslänk från journalsystem
+
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+
+# De rättigheter som systemet har
+knownPrivileges:
+  - &kp000 VISA_INTYG
+  - &kp005 SKRIVA_INTYG
+  - &kp010 SIGNERA_INTYG
+  - &kp020 MAKULERA_INTYG
+  - &kp030 KOPIERA_INTYG
+  - &kp040 VIDAREBEFORDRA_UTKAST
+  - &kp050 VIDAREBEFORDRA_FRAGASVAR
+  - &kp060 BESVARA_KOMPLETTERINGSFRAGA
+  - &kp070 FILTRERA_PA_LAKARE
+  - &kp080 ATKOMST_ANDRA_ENHETER
+  - &kp090 HANTERA_PERSONUPPGIFTER
+  - &kp100 HANTERA_MAILSVAR
+  - &kp110 NAVIGERING
+
+# De roller som systemet har
+knownRoles:
+  - &kr010 LAKARE
+  - &kr020 PRIVATLAKARE
+  - &kr030 TANDLAKARE
+  - &kr040 VARDADMINISTRATOR
+
+
+# ====================================================================================================
+#   Definitioner av ingångar, roller, privilegier, yrkesroller och befattnings-/gruppförskrivarkoder
+# ====================================================================================================
+
+# Ingångar
+requestOrigins:
+  - &ro010
+    name: *kro010
+    intygstyper: # Implicit alla
+  - &ro020
+    name: *kro020
+    intygstyper:
+      - *ki010 # FK7263
+  - &ro030
+    name: *kro030
+    intygstyper:
+      - *ki010 # FK7263
+
+# Rättigheter
+privileges:
+  - &p000
+    name: *kp000
+    desc: Visa intyg
+    intygstyper:
+    requestOrigins: # Implicit alla
+  - &p005
+    name: *kp005
+    desc: Skriva intyg
+    intygstyper:
+    requestOrigins: # Implicit alla
+  - &p010
+    name: *kp010
+    desc: Signera intyg
+    intygstyper: # Implicit alla
+    requestOrigins: # Implicit alla
+  - &p020
+    name: *kp020
+    desc: Makulera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
+  - &p030
+    name: *kp030
+    desc: Kopiera intyg
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
+  - &p040
+    name: *kp040
+    desc: Vidarebefordra utkast
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
+  - &p050
+    name: *kp050
+    desc: Vidarebefordra frågasvar
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
+  - &p060
+    name: *kp060
+    desc: Besvara fråga om komplettering
+    intygstyper:
+      - *ki010 # FK7263
+    requestOrigins: # Implicit alla
+  - &p070
+    name: *kp070
+    desc: Filtrera på annan läkare
+    intygstyper: # Implicit alla
+    requestOrigins: # Implicit alla
+      - *ro010 # NORMAL
+  - &p080
+    name: *kp080
+    desc: Åtkomst andra vårdenheter
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
+  - &p090
+    name: *kp090
+    desc: Hantera personuppgifter
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
+  - &p100
+    name: *kp100
+    desc: Hantera notifieringsmail om frågasvar
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
+  - &p110
+    name: *kp110
+    desc: Navigera i menyer, på logo, via tillbakaknappar
+    intygstyper: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro030 # UTHOPP
+
+# Roller
+roles:
+  - &r010
+    name: *kr010 # LAKARE
+    desc: Läkare
+    privileges:
+      - *p000 # VISA_INTYG
+      - *p005 # SKRIVA_INTYG
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p040 # VIDAREBEFORDRA_UTKAST
+      - *p050 # VIDAREBEFORDRA_FRAGASVAR
+      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p070 # FILTRERA_PA_LAKARE
+      - *p080 # ATKOMST_ANDRA_ENHETER
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+  - &r020
+    name: *kr020 # PRIVATLAKARE
+    desc: Privatläkare
+    privileges:
+      - *p000 # VISA_INTYG
+      - *p005 # SKRIVA_INTYG
+      - *p010 # SIGNERA_INTYG
+      - *p020 # MAKULERA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
+      - *p080 # ATKOMST_ANDRA_ENHETER
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+  - &r030
+    name: *kr030 # TANDLAKARE
+    desc: Tandläkare
+    privileges:
+      - <<: *p000 # VISA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p005 # SKRIVA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p010 # SIGNERA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p020 # MAKULERA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p030 # KOPIERA_INTYG
+        intygstyper:
+          - *ki010
+      - <<: *p040 # VIDAREBEFORDRA_UTKAST
+        intygstyper:
+          - *ki010
+      - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
+        intygstyper:
+          - *ki010
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
+        intygstyper:
+          - *ki010
+      - <<: *p070 # FILTRERA_PA_LAKARE
+        intygstyper:
+          - *ki010
+      - <<: *p080 # ATKOMST_ANDRA_ENHETER
+        intygstyper:
+          - *ki010
+      - <<: *p090 # HANTERA_PERSONUPPGIFTER
+        intygstyper:
+          - *ki010
+      - <<: *p100 # HANTERA_MAILSVAR
+        intygstyper:
+          - *ki010
+      - <<: *p110 # NAVIGERING
+        intygstyper:
+          - *ki010
+  - &r040
+    name: *kr040 # VARDADMINISTRATOR
+    desc: Vårdadministratör
+    privileges:
+      - *p000 # VISA_INTYG
+      - *p005 # SKRIVA_INTYG
+      - *p030 # KOPIERA_INTYG
+      - *p040 # VIDAREBEFORDRA_UTKAST
+      - *p050 # VIDAREBEFORDRA_FRAGASVAR
+      - *p080 # ATKOMST_ANDRA_ENHETER
+      - *p090 # HANTERA_PERSONUPPGIFTER
+      - *p100 # HANTERA_MAILSVAR
+      - *p110 # NAVIGERING
+
+# Legitimerade yrkesroller
+titles:
+  - title: Läkare
+    role: *r010 # LAKARE
+  - title: Tandläkare
+    role: *r030 # TANDLAKARE
+
+# Kombination befattningskoder och gruppförskrivarkoder
+titleCodes:
+  - titleCode: 204010
+    groupPrescriptionCode:
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9300005
+    role: *r010 # LAKARE
+  - titleCode: 203090
+    groupPrescriptionCode: 9400003
+    role: *r010 # LAKARE
+  - titleCode: 204090
+    groupPrescriptionCode: 9100009
+    role: *r010 # LAKARE
+

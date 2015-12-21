@@ -1,6 +1,26 @@
+/*
+ * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import static se.inera.intyg.common.support.common.enumerations.CertificateTypes.FK7263;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -18,7 +38,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.intyg.webcert.common.common.security.authority.UserRole;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 import io.swagger.annotations.Api;
 
@@ -64,6 +84,20 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
+
+    // - - - - - Protected scope - - - - -
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return new String[] { ROLE_PRIVATLAKARE };
+    }
+
+    @Override
+    protected String getGrantedRequestOrigin() {
+        return WebCertUserOriginType.NORMAL.name();
+    }
+
+
     // - - - - - Default scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
@@ -80,11 +114,5 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
     }
 
 
-
-
-    @Override
-    protected String[] getGrantedRoles() {
-        return new String[]{UserRole.ROLE_PRIVATLAKARE.name()};
-    }
 
 }

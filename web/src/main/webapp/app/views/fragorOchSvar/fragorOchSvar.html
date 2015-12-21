@@ -37,7 +37,7 @@
                  ng-show="!widgetState.filterFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
-              <div wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR" class="form-group" id="filterFormVidarebefordrad">
+              <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="form-group" id="filterFormVidarebefordrad">
                 <label class="col-sm-2 control-label">Frågor och svar som är</label>
                 <div class="col-sm-10">
                   <label class="radio-inline">
@@ -82,7 +82,7 @@
                 </div>
               </div>
 
-              <div wc-authority="PRIVILEGE_FILTRERA_PA_LAKARE" class="form-group" id="filterFormSigneratAv">
+              <div wc-authority="FILTRERA_PA_LAKARE" class="form-group" id="filterFormSigneratAv">
                 <label class="col-sm-2 control-label">Signerat av</label>
                 <div class="col-sm-10">
                   <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
@@ -142,8 +142,8 @@
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
-                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR"></th>
-                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR" class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
+                    <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
+                    <th wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
                       Vidarebefordrad
                     </th>
                     <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.">Åtgärd</th>
@@ -160,7 +160,7 @@
                               ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa
                       </button>
                     </td>
-                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR">
+                    <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
                       <button class="btn btn-default vidarebefordra-btn"
                               ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                               title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
@@ -169,7 +169,7 @@
                         <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
                       </button>
                     </td>
-                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR" class="center">
+                    <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
                       <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
                              ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
                                             <span ng-if="qa.updateInProgress"> <img
