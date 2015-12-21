@@ -23,8 +23,8 @@
  */
 'use strict';
 
-var intygPath = __dirname + '/../page/intyg/'; // should point to intyg folder
-var pagePath = __dirname + '/../page/'; // should point to page folder
+var intygPath = './intyg/'; // should point to intyg folder
+var pagePath = './'; // should point to page folder
 
 var webcertBase = require(pagePath + 'webcert.base.page.js');
 
@@ -33,7 +33,7 @@ module.exports = {
     'welcome': require(pagePath + 'welcome.page.js'),
     'sokSkrivIntyg' : {
         'sokSkrivIntygIndex': require(pagePath + 'sokSkrivIntyg/sokSkrivIntyg.page.js'),
-        'sokSkrivValjUtkastType': require(pagePath + 'sokSkrivIntyg/sokSkrivValjUtkastType.page.js'),
+        'sokSkrivValjUtkastType': require(pagePath + 'sokSkrivIntyg/sokSkrivValjUtkastType.page.js')
     },
     'intyg': {
         'fk7263Utkast': require(intygPath + 'fk.utkast.page.js'),

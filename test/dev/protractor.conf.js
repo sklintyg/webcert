@@ -27,6 +27,7 @@
  * <webcert/test/> : grunt
  *
  **/
+ 'use strict';
 var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 exports.config = {
@@ -100,7 +101,7 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+        global.wcTestTools = require('webcert-testtools');
 
         var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(

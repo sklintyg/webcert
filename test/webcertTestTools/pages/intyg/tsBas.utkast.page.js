@@ -25,7 +25,7 @@
 
 // NOTE: This file is loaded before helpers in protractor.conf.js onPrepare. Therefore helpers are not available in file scope.
 var BaseTsUtkast = require('./ts.base.utkast.page.js');
-var pageHelpers = require('./../../webcertTestTools/helpers/pageHelper.util.js');
+var pageHelpers = require('./../pageHelper.util.js');
 
 var TsBasUtkast = BaseTsUtkast._extend({
     init: function init() {
@@ -141,7 +141,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
         } else {
             this.horselBalans.aNo.sendKeys(protractor.Key.SPACE);
         }
-        if (pageHelpershasHogreKorkortsbehorigheter(utkast.korkortstyper)) {
+        if (pageHelpers.hasHogreKorkortsbehorigheter(utkast.korkortstyper)) {
             if (utkast.horselSamtal === 'Ja') {
                 this.horselBalans.bYes.sendKeys(protractor.Key.SPACE);
             } else {

@@ -24,7 +24,7 @@
 /*globals browser */
 'use strict';
 
-var pages = require('./../pages.js');
+var pages = require('./../pages/pages.js');
 var WelcomePage = pages.welcome;
 var SokSkrivIntygPage = pages.sokSkrivIntyg.sokSkrivIntygIndex;
 var SokSkrivValjUtkastType = pages.sokSkrivIntyg.sokSkrivValjUtkastType;

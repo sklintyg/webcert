@@ -23,7 +23,7 @@
 /*globals element,by,browser*/
 'use strict';
 
-var pageHelpers = require('./../../webcertTestTools/helpers/pageHelper.util.js');
+var pageHelpers = require('./../pageHelper.util.js');
 var BaseUtkast = require('./base.utkast.page.js');
 
 var BaseTsUtkast = BaseUtkast._extend({

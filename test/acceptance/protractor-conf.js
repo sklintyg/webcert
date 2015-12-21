@@ -55,7 +55,7 @@ exports.config = {
         global.expect = global.chai.expect;
         global.should = global.chai.should();
 
-        var wcTestTools = require('./../webcertTestTools/webcertTestTools.js');
+        var wcTestTools = require('webcert-testtools');
 
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
