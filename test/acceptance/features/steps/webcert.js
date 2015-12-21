@@ -21,7 +21,7 @@
 
 'use strict';
 
-var fkUtkastPage = pages.intyg.fk7263Utkast;
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
 module.exports = function () {
 

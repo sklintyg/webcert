@@ -24,8 +24,8 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.sokSkrivIntygIndex;
-var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.sokSkrivValjUtkastType;
+var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
+var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);

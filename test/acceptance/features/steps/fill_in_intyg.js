@@ -21,9 +21,9 @@
 testdata, intyg, browser, pages*/
 'use strict';
 
-var tsdUtkastPage = pages.intyg['ts-diabetesUtkast'];
-var tsBasUtkastPage = pages.intyg['ts-basUtkast'];
-var fkUtkastPage = pages.intyg.fk7263Utkast;
+var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
+var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
 module.exports = function() {
 

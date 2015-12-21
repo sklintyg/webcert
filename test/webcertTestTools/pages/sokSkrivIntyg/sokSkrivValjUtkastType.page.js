@@ -34,9 +34,9 @@ module.exports = {
     isAt: function(){
         return intygTypeSelector.isDisplayed();
     },
-    selectIntygType: function (index) {
-        intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
-    },
+    // selectIntygType: function (index) {
+    //     intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
+    // },
     selectIntygTypeByLabel: function (val) {
         intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
     },
@@ -44,5 +44,5 @@ module.exports = {
         intygTypeButton.click();
     },
     intygTypeSelector: intygTypeSelector,
-    intygTypeButton: intygTypeButton,
+    intygTypeButton: intygTypeButton
 };

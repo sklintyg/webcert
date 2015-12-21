@@ -23,9 +23,9 @@
 
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
-var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.sokSkrivIntygIndex;
-var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.sokSkrivValjUtkastType;
-var IntygPage = wcTestTools.pages.intyg.fkIntyg;
+var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
+var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
+var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 
 describe('Create and Sign FK utkast', function() {
 

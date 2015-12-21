@@ -24,23 +24,32 @@
 'use strict';
 
 var intygPath = './intyg/'; // should point to intyg folder
-var pagePath = './'; // should point to page folder
 
-var webcertBase = require(pagePath + 'webcert.base.page.js');
+var webcertBase = require('./webcert.base.page.js');
 
 module.exports = {
     'webcertBase': webcertBase,
-    'welcome': require(pagePath + 'welcome.page.js'),
+    'welcome': require('./welcome.page.js'),
     'sokSkrivIntyg' : {
-        'sokSkrivIntygIndex': require(pagePath + 'sokSkrivIntyg/sokSkrivIntyg.page.js'),
-        'sokSkrivValjUtkastType': require(pagePath + 'sokSkrivIntyg/sokSkrivValjUtkastType.page.js')
+        'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),
+        'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js')
     },
     'intyg': {
-        'fk7263Utkast': require(intygPath + 'fk.utkast.page.js'),
-        'fkIntyg': require(intygPath + 'fk.intyg.page.js'),
-        'ts-diabetesUtkast': require(intygPath + 'tsDiabetes.utkast.page.js'),
-        'tsDiabetesIntyg': require(intygPath + 'tsDiabetes.intyg.page.js'),
-        'ts-basUtkast': require(intygPath + 'tsBas.utkast.page.js'),
-        'tsBasIntyg': require(intygPath + 'tsBas.intyg.page.js')
+        fk:{
+            '7263':{
+                utkast:require(intygPath + 'fk.utkast.page.js'),
+                intyg:require(intygPath + 'fk.intyg.page.js')
+            }
+        },
+        ts:{
+            diabetes:{
+                utkast:require(intygPath + 'tsDiabetes.utkast.page.js'),
+                intyg: require(intygPath + 'tsDiabetes.intyg.page.js')
+            },
+            bas:{
+                utkast:require(intygPath + 'tsBas.utkast.page.js'),
+                intyg: require(intygPath + 'tsBas.intyg.page.js')
+            }
+        }
     }
 };

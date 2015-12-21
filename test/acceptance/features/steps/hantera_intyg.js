@@ -21,7 +21,7 @@
 
 'use strict';
 
-var fkIntygPage = pages.intyg.fkIntyg;
+var fkIntygPage = pages.intyg.fk['7263'].intyg;
 
 module.exports = function () {
 	this.Given(/^signerar intyget$/, function (callback) {

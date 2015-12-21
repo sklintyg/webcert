@@ -23,8 +23,8 @@
 
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
-var UtkastPage = wcTestTools.pages.intyg.fk7263Utkast;
-var IntygPage = wcTestTools.pages.intyg.fkIntyg;
+var UtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 
 describe('Create and Sign FK utkast', function() {
 
@@ -34,7 +34,7 @@ describe('Create and Sign FK utkast', function() {
         it('with user', function() {
             browser.ignoreSynchronization = false;
             specHelper.login();
-            specHelper.createUtkastForPatient('191212121212', 'fk7263');
+            specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
         });
     });
 

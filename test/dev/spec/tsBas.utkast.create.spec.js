@@ -26,8 +26,8 @@
 
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
-var tsdBasUtkastPage = wcTestTools.pages.intyg['ts-basUtkast'];
-var tsdBasIntygPage = wcTestTools.pages.intyg.tsBasIntyg;
+var tsdBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
+var tsdBasIntygPage = wcTestTools.pages.intyg.ts.bas.intyg;
 
 describe('Create and Sign ts-diabetes utkast', function() {
 

@@ -26,8 +26,8 @@
 
 var pages = require('./../pages/pages.js');
 var WelcomePage = pages.welcome;
-var SokSkrivIntygPage = pages.sokSkrivIntyg.sokSkrivIntygIndex;
-var SokSkrivValjUtkastType = pages.sokSkrivIntyg.sokSkrivValjUtkastType;
+var SokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+var SokSkrivValjUtkastType = pages.sokSkrivIntyg.valjUtkastType;
 
 module.exports = {
     login: function(userOptional) {
@@ -78,10 +78,15 @@ module.exports = {
     },
     createUtkastForPatient: function(patientId, intygType) {
         SokSkrivIntygPage.selectPersonnummer(patientId);
-        SokSkrivValjUtkastType.selectIntygType('string:'+ intygType);
+        SokSkrivValjUtkastType.selectIntygTypeByLabel(intygType);
         SokSkrivValjUtkastType.continueToUtkast();
-        var UtkastPage = pages.intyg[intygType+'Utkast'];
-        expect(UtkastPage.isAt()).toBe(true);
+        var utkastPage;
+
+        if(intygType === 'Läkarintyg FK 7263'){
+         utkastPage = pages.intyg.fk['7263'].utkast;
+        }
+
+        expect(utkastPage.isAt()).toBe(true);
     },
     generateTestGuid: function(){
         function s4() {

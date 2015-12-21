@@ -22,9 +22,9 @@
 
 'use strict';
 
-var fk7263Utkast = pages.intyg.fk7263Utkast;
-var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.sokSkrivValjUtkastType;
-var sokSkrivIntygPage = pages.sokSkrivIntyg.sokSkrivIntygIndex;
+var fk7263Utkast = pages.intyg.fk['7263'].utkast;
+var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
+var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 module.exports = function () {
 
 

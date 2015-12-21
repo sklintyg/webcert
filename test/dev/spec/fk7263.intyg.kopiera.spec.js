@@ -24,8 +24,8 @@
 'use strict';
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
-var FkIntygPage = wcTestTools.pages.intyg.fkIntyg;
-var FkUtkastPage = wcTestTools.pages.intyg.fk7263Utkast;
+var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
+var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 
 describe('Generate fk intyg', function() {
 
