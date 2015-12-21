@@ -26,8 +26,8 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 module.exports = function () {
 	this.Given(/^signerar intyget$/, function (callback) {
         // Klicka på 'visa vad som saknas' innan signering för att underlätta felsökning
-        element(by.id('showCompleteButton')).click();
-        
+        var EC = protractor.ExpectedConditions;
+        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
 

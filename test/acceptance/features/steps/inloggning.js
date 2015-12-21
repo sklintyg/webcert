@@ -207,7 +207,7 @@ module.exports = function () {
     expect(horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel);
 
     var hasHogreKorkortsbehorigheter = element(by.id('hasHogreKorkortsbehorigheter'));
-    if(selectedTypes.length() > -1){
+    if(selectedTypes.length > -1){
         logg('Kontrollerar att Hörsel och balanssinne (b) :'+ intyg.horselSamtal);
         expect(hasHogreKorkortsbehorigheter.getText()).to.eventually.equal(intyg.horselSamtal);
 
