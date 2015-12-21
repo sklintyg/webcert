@@ -23,7 +23,7 @@ var testdata = require('./testdata/testdata.js');
 var utkastTextmap = require('./testdata/utkastTextmap.js');
 var intygTemplates = require('./testdata/intygTemplates.js');
 var pages = require('./pages/pages.js');
-var helpers = require('./helpers.js'); // The order is important. Helpers requires pages.
+var helpers = require('./helpers/helpers.js'); // The order is important. Helpers requires pages.
 
 module.exports = {
     envConfig: environment.envConfig,

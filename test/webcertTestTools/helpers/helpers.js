@@ -22,6 +22,6 @@
  */
 
 module.exports = {
-    'spec': require('./helpers/specHelper.util.js'),
-    'testdata': require('./helpers/restTestdataHelper.util.js')
+    'spec': require('./specHelper.util.js'),
+    'testdata': require('./restTestdataHelper.util.js')
 };
