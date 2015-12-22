@@ -44,7 +44,6 @@ module.exports = {
     hjartHjarna:                  ['Ja', 'Nej'],
     hjartSkada:                   ['Ja', 'Nej'],
     hjartRisk:                    ['Ja', 'Nej'],
-    // diabetes:                     ['Ja', 'Ja'],
     diabetes:                     ['Ja', 'Nej'],
     neurologiska:                 ['Ja', 'Nej'],
     epilepsi:                     ['Ja', 'Nej'],

@@ -77,7 +77,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             aYes: element(by.id('diabetesay')),
             aNo: element(by.id('diabetesan')),
             typ1: element(by.id('diabetestyp1')),
-            typ2: element(by.id('diabetestyp2')),
+            typ2: element(by.id('diabetesty2')),
             endastkost: element(by.id('diabetestreat1')),
             tabletter: element(by.id('diabetestreat2')),
             insulin: element(by.id('diabetestreat3'))
@@ -192,25 +192,23 @@ var TsBasUtkast = BaseTsUtkast._extend({
             logg('fillInDiabetes: function (utkast) -> utkast.diabetestyp === '+ utkast.diabetestyp);
             if (utkast.diabetestyp === 'Typ 1') {
                 this.diabetes.typ1.sendKeys(protractor.Key.SPACE);
-            } else {
+            } 
+            else {
                 this.diabetes.typ2.sendKeys(protractor.Key.SPACE);
             }
-
             // Ange behandlingstyp 
-            var typ = utkast.dTyper;
-            // var typer = utkast.allmant.behandling.typer;
-            // utkast.allmant.behandling.typer
-            // var typer = utkast.allmant.behandling;
-            logg('fillInDiabetes: function (utkast) -> utkast.dTyper === '+ utkast.dTyper);
-
-            if (typ.indexOf('Endast kost') > -1) {
-                this.diabetes.endastkost.sendKeys(protractor.Key.SPACE);
-            }
-            if (typ.indexOf('Tabletter') > -1) {
-                this.diabetes.tabletter.sendKeys(protractor.Key.SPACE);
-            }
-            if (typ.indexOf('Insulin') > -1) {
-                this.diabetes.insulin.sendKeys(protractor.Key.SPACE);
+             if(utkast.diabetestyp === 'Typ 2'){
+                var typ = utkast.dTyper;
+                logg('fillInDiabetes: function (utkast) -> utkast.dTyper === '+ utkast.dTyper);
+                if (typ.indexOf('Endast kost') > -1) {
+                    this.diabetes.endastkost.sendKeys(protractor.Key.SPACE);
+                }
+                if (typ.indexOf('Tabletter') > -1) {
+                    this.diabetes.tabletter.sendKeys(protractor.Key.SPACE);
+                }
+                if (typ.indexOf('Insulin') > -1) {
+                    this.diabetes.insulin.sendKeys(protractor.Key.SPACE);
+                }
             }
         } else {
             this.diabetes.aNo.sendKeys(protractor.Key.SPACE);

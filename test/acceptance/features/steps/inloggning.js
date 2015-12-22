@@ -60,19 +60,10 @@ module.exports = function () {
         expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
-    function testElement(_typ, _element){
-        var ele = element(by.id(_element));
-        if(_typ === null ){
-            logg('Kontrollerar '+_element+' : '+ _typ);
-            expect(ele.getText()).to.eventually.equal('Ej angivet');
-        }
-        else if(_typ === 'Ja' || _typ === 'Nej'){
-            logg('Kontrollerar '+_element+' : '+ _typ);
-            expect(ele.getText()).to.eventually.equal(_typ);
-        }
-    }
+
     
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
+
         // // Intyget avser  
         var intygetAvser = element(by.id('intygAvser'));
 
@@ -176,8 +167,8 @@ module.exports = function () {
        
     }
     else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
-    logg('inside Transportstyrelsens läkarintyg');
-        
+        logg('inside Transportstyrelsens läkarintyg');
+    }
     // Synfunktioner
     testElement(intyg.synDonder, 'synfaltsdefekter');
     testElement(intyg.synNedsattBelysning, 'nattblindhet');
@@ -204,12 +195,7 @@ module.exports = function () {
     // Hörsel och balanssinne:
     var horselBalansbalansrubbningar = element(by.id('horselBalansbalansrubbningar'));
     expect(horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel);
-    var hasHogreKorkortsbehorigheter = element(by.id('hasHogreKorkortsbehorigheter'));
-    
-    if(selectedTypes.length > -1){
-        logg('Kontrollerar att Hörsel och balanssinne (b) :'+ intyg.horselSamtal);
-        expect(hasHogreKorkortsbehorigheter.getText()).to.eventually.equal(intyg.horselSamtal);
-    }
+
     // Rörelseorganens funktioner:
     var funktionsnedsattning = element(by.id('funktionsnedsattning'));
     var funktionsnedsattningbeskrivning = element(by.id('funktionsnedsattningbeskrivning'));
@@ -244,76 +230,146 @@ module.exports = function () {
     if (intyg.hjartHjarna === 'Ja') {
         logg('Kontrollerar \"Föreligger viktiga riskfaktorer för stroke\" kommentar');
         expect(beskrivningRiskfaktorer.getText()).to.eventually.equal('TIA och förmaksflimmer.');
-    }else{
+    }
+    else{
         logg('Kontrollerar \"Föreligger viktiga riskfaktorer för stroke\" kommentar är tom');
         expect(beskrivningRiskfaktorer.getText()).to.eventually.equal('');
     }
 
     // Diabetes
+
     var harDiabetes = element(by.id('harDiabetes'));
-    logg('Kontrollerar att Patient har Diabetes: '+ intyg.diabetes);
-    expect(harDiabetes.getText()).to.eventually.equal(intyg.diabetes);
-   
-    var diabetesTyp = element(by.id('diabetesTyp'));
-    // diabetestyp: ['Typ 1', 'Typ 2']
     var kost = element(by.id('kost'));
     var tabeltter = element(by.id('tabletter'));
     var insulin = element(by.id('insulin'));
-    
-    logg('Kontrollerar att Patient diabetes typ: '+ intyg.diabetestyp.has);
-    expect(diabetesTyp.getText()).to.eventually.equal(intyg.diabetestyp).and.notify(callback);
 
-    if (intyg.diabetestyp === 'Typ 2') {
-        var typer = intyg.diabetes.behandling.typer;
+    logg('Kontrollerar att Patient har Diabetes: '+ intyg.diabetes);
+    expect(harDiabetes.getText()).to.eventually.equal(intyg.diabetes);
+
+
+    var diabetesTyp = element(by.id('diabetesTyp'));
+    logg('Kontrollerar att Patient diabetes typ: '+ intyg.diabetestyp);
+    expect(diabetesTyp.getText()).to.eventually.equal(intyg.diabetestyp);
+
+    if (intyg.diabetestyp === 'Typ 2' && intyg.diabetes === 'Ja') {
+        var typer = intyg.dTyper;
         typer.forEach( function (_typ){
-            if (_typ === 'Kost') {
+            if (_typ === 'Endast kost') {
                 logg('Kontrollerar att behandlingstyp är: '+ _typ);
-                expect(kost.getText()).to.eventually.equal('Kost').and.notify(callback);
+                expect(kost.getText()).to.eventually.equal('Endast kost');
             }else if (_typ === 'Tabletter'){
                 logg('Kontrollerar att behandlingstyp är: '+ _typ);
-                expect(tabeltter.getText()).to.eventually.equal('Tabletter').and.notify(callback);
+                expect(tabeltter.getText()).to.eventually.equal('Tabletter');
             }else if (_typ === 'Insulin'){
                 logg('Kontrollerar att behandlingstyp är: '+ _typ);
-                expect(insulin.getText()).to.eventually.equal('Insulin').and.notify(callback);
+                expect(insulin.getText()).to.eventually.equal('Insulin');
             }
         });
-    } else {
-        expect(kost.getText()).to.eventually.equal('').and.notify(callback);
-        expect(tabeltter.getText()).to.eventually.equal('').and.notify(callback);
-        expect(insulin.getText()).to.eventually.equal('').and.notify(callback);
+    } else if (intyg.diabetestyp === 'Typ 1'){
+        expect(kost.getText()).to.eventually.equal('');
+        expect(tabeltter.getText()).to.eventually.equal('');
+        expect(insulin.getText()).to.eventually.equal('');
     }
 
-// var typer = intyg.allmant.behandling.typer;
-//         typer.forEach(function (typ) {
-//             if(typ === 'Endast kost')
-//             {
-//                 var eKost = element(by.id('endastKost'));
-//                 logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
-//                 expect(eKost.getText()).to.eventually.equal('Ja').and.notify(callback);
-//             }
-//             else if(typ === 'Tabletter')
-//             {
-//                 var tabl = element(by.id('tabletter'));
-//                 logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
-//                 expect(tabl.getText()).to.eventually.equal('Ja').and.notify(callback);
-//             }
-//             else if(typ === 'Insulin')
-//             {
-//                 var insul = element(by.id('insulin')); 
-//                 logg('Kontrollerar att behandlingstyp '+typ+'är satt till \"Ja\"');
-//                 expect(insul.getText()).to.eventually.equal('Ja').and.notify(callback);
-//             }
-//         });
-    // expect(funktionsnedsattning.getText()).to.eventually.equal(intyg.funktionsnedsattning)
-    // callback();
+    // Neurologiska sjukdomar
+    var neurologiskSjukdom = element(by.id('neurologiskSjukdom'));
+    logg('Kontrollerar att Neurologiska sjukdomar är: '+ intyg.neurologiska);
+    expect(neurologiskSjukdom.getText()).to.eventually.equal(intyg.neurologiska);
+
+    // Epilepsi, epileptiskt anfall och annan medvetandestörning
+    var medvetandestorning = element(by.id('medvetandestorning'));
+    logg('Kontrollerar om patienten har eller har patienten haft epilepsi: '+ intyg.epilepsi);
+    expect(medvetandestorning.getText()).to.eventually.equal(intyg.epilepsi);
+    if (intyg.epilepsi === 'Ja') {
+        logg('Kontrollerar Kommentar: \"Blackout. Midsommarafton.\"');
+        var medvetandestorningbeskrivning = element(by.id('medvetandestorningbeskrivning'));
+        expect(medvetandestorningbeskrivning.getText()).to.eventually.equal('Blackout. Midsommarafton.');
     }
-    else if (intyg.typ === 'Läkarintyg FK 7263'){}
-        
+
+    // Njursjukdomar
+    var nedsattNjurfunktion = element(by.id('nedsattNjurfunktion'));
+    expect(nedsattNjurfunktion.getText()).to.eventually.equal(intyg.njursjukdom);
+    logg('Kontrollerar nedsatt njurfunktion är: ' + intyg.njursjukdom);
+
+    // Demens och andra kognitiva störningar
+    var sviktandeKognitivFunktion = element(by.id('sviktandeKognitivFunktion'));
+    expect(sviktandeKognitivFunktion.getText()).to.eventually.equal(intyg.demens);
+    logg('Kontrollerar sviktande kognitiv funktion är: ' + intyg.demens);
+
+    //Sömn- och vakenhetsstörningar
+    var teckenSomnstorningar = element(by.id('teckenSomnstorningar'));
+    logg('Kontrollerar sömnstörningar är: ' + intyg.somnVakenhet);
+    if (intyg.somnVakenhet==='Ja') {
+        expect(teckenSomnstorningar.getText()).to.eventually.equal('Ja');
+    }else {
+        expect(teckenSomnstorningar.getText()).to.eventually.equal(intyg.somnVakenhet);
+    }
+    // Alkohol, narkotika och läkemedel
+    var teckenMissbruk = element(by.id('teckenMissbruk'));
+    var foremalForVardinsats = element(by.id('foremalForVardinsats'));
+    var provtagningBehovs = element(by.id('provtagningBehovs'));
+    var lakarordineratLakemedelsbruk = element(by.id('lakarordineratLakemedelsbruk'));
+    
+    logg('Kontrollera att  tecken på missbruk eller beroende är: '+ intyg.alkoholMissbruk);
+    expect(teckenMissbruk.getText()).to.eventually.equal(intyg.alkoholMissbruk);
+
+    logg('Kontrollera att alkohol vård är: '+ intyg.alkoholVard);
+    expect(foremalForVardinsats.getText()).to.eventually.equal(intyg.alkoholVard);
+
+    logg('Kontrollera att alkohol läkemedel är: '+ intyg.alkoholLakemedel);
+    expect(provtagningBehovs.getText()).to.eventually.equal(intyg.alkoholLakemedel);   
+    
+    if (intyg.alkoholLakemedel==='Ja') {
+        var lakemedelOchDos = element(by.id('lakemedelOchDos'));
+        expect(lakemedelOchDos.getText()).to.eventually.equal('2 liter metadon.');
+        logg('Kontrollera att kommentar innehåller: \" 2 liter metadon.\"');
+    }
+    // Psykiska sjukdomar och störningar
+    var psykiskSjukdom = element(by.id('psykiskSjukdom'));
+    expect(psykiskSjukdom.getText()).to.eventually.equal(intyg.psykiskSjukdom);
+    logg('Kontrollera att psykisk sjukdom är: '+ intyg.psykiskSjukdom);
+    // assertEllementYesNo(intyg.psykiskSjukdom,'psykiskSjukdom');
+
+    //ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning
+    var psykiskUtvecklingsstorning = element(by.id('psykiskUtvecklingsstorning'));
+    logg('Kontrollera att adhd psykisk är: '+ intyg.adhdPsykisk);    
+    expect(psykiskUtvecklingsstorning.getText()).to.eventually.equal(intyg.adhdPsykisk);
+    // assertEllementYesNo(intyg.adhdPsykisk,'psykiskUtvecklingsstorning');
+    var harSyndrom = element(by.id('harSyndrom'));
+    logg('Kontrollera att adhd syndrom är: '+ intyg.adhdSyndrom);
+    // assertEllementYesNo(intyg.adhdSyndrom, 'harSyndrom');
+    // callback();
+    expect(harSyndrom.getText()).to.eventually.equal(intyg.adhdSyndrom).and.notify(callback);
+    //.and.notify(callback)
+   
 
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
         expect(fk7263Utkast.signeraButton.isPresent()).to.become(false).and.notify(callback);
     });
+        function testElement(_typ, _element){
+        var ele = element(by.id(_element));
+        if(_typ === null ){
+            logg('Kontrollerar '+_element+' : '+ _typ);
+            expect(ele.getText()).to.eventually.equal('Ej angivet');
+        }
+        else if(_typ === 'Ja' || _typ === 'Nej'){
+            logg('Kontrollerar '+_element+' : '+ _typ);
+            expect(ele.getText()).to.eventually.equal(_typ);
+        }
+    }
+    function assertEllementYesNo(_elementVal, _element){
+        var ele = element(by.id(_element));
+        if(_elementVal === 'Ja' ){
+            logg('Kontrollerar '+_element+' : Ja');
+            expect(ele.getText()).to.eventually.equal('Ja');
+        }
+        else if(_elementVal==='Nej'){
+            logg('Kontrollerar '+_element+' : Nej');
+            expect(ele.getText()).to.eventually.equal('Nej');
+        }
+    }
+
 
 };
