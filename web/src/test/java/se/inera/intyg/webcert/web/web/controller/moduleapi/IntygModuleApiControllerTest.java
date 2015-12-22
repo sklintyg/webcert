@@ -33,7 +33,6 @@ import javax.ws.rs.core.Response;
 
 import org.joda.time.LocalDateTime;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -42,9 +41,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -84,7 +83,6 @@ public class IntygModuleApiControllerTest {
 
     @BeforeClass
     public static void setupCertificateData() throws IOException {
-
         Utlatande utlatande = new Utlatande();
         utlatande.setId(CERTIFICATE_ID);
         utlatande.setTyp(CERTIFICATE_TYPE);

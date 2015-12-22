@@ -1,9 +1,8 @@
----
-# file: host_vars/webcert-dev
-
 # Spring profiles.
 profiles: test,wc-security-test,wc-eid-stub,wc-hsa-stub,wc-pp-stub,wc-pu-stub,wc-fk-stub,wc-loggtjanst-stub,wc-mail-stub,wc-notificationsender-stub
 
 # Configuration repository
 environment_name: "dev"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
+
+deploy_from_repo: false

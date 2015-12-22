@@ -99,6 +99,19 @@ public class UtkastApiController extends AbstractApiController {
         return Response.ok().entity(utkast).build();
     }
 
+    @GET
+    @Path("/questions/{intygsTyp}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getQuestions(@PathParam("intygsTyp") String intygsTyp) {
+
+        LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, "1");
+
+        String questions = intygDraftService.getQuestions(intygsTyp, "1");
+
+        return Response.ok().entity(questions).build();
+    }
+
     /**
      * Creates a filtered query to get drafts for a specific unit.
      */

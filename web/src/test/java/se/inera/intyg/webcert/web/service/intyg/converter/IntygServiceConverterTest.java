@@ -19,30 +19,53 @@
 
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.containsString;
-
-import org.apache.commons.io.IOUtils;
-import org.joda.time.LocalDateTime;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl.Operation;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.joda.time.LocalDateTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl.Operation;
+
+@RunWith(MockitoJUnitRunner.class)
 public class IntygServiceConverterTest {
 
     private IntygServiceConverterImpl converter = new IntygServiceConverterImpl();
+
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    ModuleApi moduleApi;
+
+    @Before
+    public void setup() throws Exception {
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Utlatande());
+        converter.setModuleRegistry(moduleRegistry);
+    }
 
 
     @Test
@@ -113,12 +136,11 @@ public class IntygServiceConverterTest {
      */
     @Test(expected = WebCertServiceException.class)
     public void testUtlatandBuiltFromInvalidJson() throws IOException {
-        converter.setObjectMapper(new CustomObjectMapper());
-
         Utkast utkast = new Utkast();
         StringBuilder buf = new StringBuilder();
         buf.append("X").append(createUtlatandeJson());
         utkast.setModel(buf.toString());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenThrow(new IOException());
         converter.buildUtlatandeFromUtkastModel(utkast);
     }
 

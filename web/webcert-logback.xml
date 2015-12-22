@@ -97,7 +97,7 @@
   <logger name="org.hibernate" level="error" />
   <logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="off" />
 
-  <logger name="org.apache.cxf.services" level="error" />
+  <logger name="org.apache.cxf.services" level="debug" />
 
   <logger name="se.inera.intyg.webcert.web.auth" level="info" />
 
@@ -108,6 +108,10 @@
   <logger name="se.inera.intyg.intygstyper.ts_bas" level="info" />
 
   <logger name="se.inera.intyg.intygstyper.ts_diabetes" level="info" />
+
+  <logger name="se.inera.certificate.modules.sjukpenning" level="debug" />
+
+  <logger name="se.inera.certificate.modules.sjukersattning" level="debug" />
 
   <logger name="org.apache.camel" level="error" />
 

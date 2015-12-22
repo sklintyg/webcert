@@ -27,11 +27,14 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
+import java.io.IOException;
+import java.util.*;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
@@ -45,13 +48,16 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -60,7 +66,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -75,16 +80,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -114,10 +109,16 @@ public class IntygServiceTest {
     private UtkastIntygDecorator utkastIntygDecorator;
 
     @Spy
-    private IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
+    private IntygServiceConverterImpl serviceConverter = new IntygServiceConverterImpl();
 
     @Mock
     private LogService logservice;
+    
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    ModuleApi moduleApi;
 
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
@@ -181,8 +182,12 @@ public class IntygServiceTest {
     }
 
     @Before
-    public void setupObjectMapperForIntygServiceConverter() {
-        ((IntygServiceConverterImpl) serviceConverter).setObjectMapper(new CustomObjectMapper());
+    public void IntygServiceConverter() throws Exception {
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        Utlatande utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        serviceConverter.setModuleRegistry(moduleRegistry);
     }
 
     @Test

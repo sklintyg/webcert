@@ -63,6 +63,10 @@ module.exports = function(grunt) {
     var TSDIABETES_DEST_DIR = '/../../intygstyper/ts-diabetes/target/classes/META-INF/resources/webjars/ts-diabetes/webcert'; 
     var FK7263_SRC_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
     var FK7263_DEST_DIR = '/../../intygstyper/fk7263/target/classes/META-INF/resources/webjars/fk7263/webcert'; 
+    var SJUKPENNING_SRC_DIR = '/../../intygstyper/sjukpenning/src/main/resources/META-INF/resources/webjars/sjukpenning/webcert';
+    var SJUKPENNING_DEST_DIR = '/../../intygstyper/sjukpenning/target/classes/META-INF/resources/webjars/sjukpenning/webcert';
+    var SJUKERSATTNING_SRC_DIR = '/../../intygstyper/sjukersattning/src/main/resources/META-INF/resources/webjars/sjukersattning/webcert';
+    var SJUKERSATTNING_DEST_DIR = '/../../intygstyper/sjukersattning/target/classes/META-INF/resources/webjars/webjars/sjukersattning/webcert';
 
     grunt.initConfig({
 
@@ -147,7 +151,9 @@ module.exports = function(grunt) {
                         __dirname + COMMON_SRC_DIR + '/**/*.html',
                         __dirname + FK7263_SRC_DIR + '/**/*.html',
                         __dirname + TSBAS_SRC_DIR + '/**/*.html',
-                        __dirname + TSDIABETES_SRC_DIR + '/**/*.html'
+                        __dirname + TSDIABETES_SRC_DIR + '/**/*.html',
+                        __dirname + SJUKPENNING_SRC_DIR + '/**/*.html',
+                        __dirname + SJUKERSATTNING_SRC_DIR + '/**/*.html'
                 ],
                 tasks: ['ngtemplates']
             }
@@ -247,6 +253,28 @@ module.exports = function(grunt) {
                     }
                 }
             },
+            sjukpenning: {
+                cwd: __dirname + SJUKPENNING_SRC_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + SJUKPENNING_SRC_DIR + '/templates.js',
+                options:{
+                    module: 'sjukpenning',
+                    url: function(url) {
+                        return '/web/webjars/sjukpenning/webcert/' + url;
+                    }
+                }
+            },
+            sjukersattning: {
+                cwd: __dirname + SJUKERSATTNING_SRC_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + SJUKERSATTNING_SRC_DIR + '/templates.js',
+                options:{
+                    module: 'sjukersattning',
+                    url: function(url) {
+                        return '/web/webjars/sjukersattning/webcert/' + url;
+                    }
+                }
+            },
             fk7263: {
                 cwd: __dirname + FK7263_SRC_DIR,
                 src: ['**/*.html'],
@@ -342,6 +370,26 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/web/webjars/ts-diabetes/webcert/css',
                                 connect.static(__dirname + TSDIABETES_DEST_DIR + '/css') //jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/sjukpenning/webcert',
+                                connect.static(__dirname + SJUKPENNING_SRC_DIR)//jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/sjukpenning/webcert/css',
+                                connect.static(__dirname + SJUKPENNING_DEST_DIR + '/css')//jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/sjukersattning/webcert',
+                                connect.static(__dirname + SJUKERSATTNING_SRC_DIR) //jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/sjukersattning/webcert/css',
+                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/css')//jshint ignore:line
                             ));
                         middlewares.push(proxy);
                         return middlewares;

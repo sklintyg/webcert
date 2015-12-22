@@ -140,6 +140,26 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    public String getQuestions(String intygsTyp, String version) {
+        LOG.debug("Calling module '{}' to get questions", intygsTyp);
+
+        String questionsAsJson;
+
+        try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+            questionsAsJson = moduleApi.getQuestions(version);
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        } catch (ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        }
+
+        LOG.debug("Got questions of {} chars from module '{}'", getSafeLength(questionsAsJson), intygsTyp);
+
+        return questionsAsJson;
+    }
+
+    @Override
     @Transactional
     public void deleteUnsignedDraft(String intygId, long version) {
 

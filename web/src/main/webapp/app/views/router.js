@@ -142,6 +142,54 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
+        state('webcert.intyg.sjukpenning', {
+            data: { defaultActive : 'index' },
+            url:'/intyg/sjukpenning/:certificateId?:patientId&:hospName&:signed',
+            onEnter: function($stateParams){
+                $stateParams.certificateType = 'sjukpenning';
+            },
+            views: {
+                'main@webcert.intyg' : {
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
+                    controller: 'webcert.ViewCertCtrl'
+                },
+                'intyg@webcert.intyg.sjukpenning' : {
+                    templateUrl: '/web/webjars/sjukpenning/webcert/views/intyg/intyg.html'
+
+                },
+                'fragaSvar@webcert.intyg.sjukpenning' : {
+                    templateUrl: '/web/webjars/sjukpenning/webcert/views/intyg/fragasvar/fragasvar.html'
+                },
+                'header@webcert.intyg.sjukpenning' : {
+                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    controller: 'common.IntygHeader'
+                }
+            }
+        }).
+        state('webcert.intyg.sjukersattning', {
+            data: { defaultActive : 'index' },
+            url:'/intyg/sjukersattning/:certificateId?:patientId&:hospName&:signed',
+            onEnter: function($stateParams){
+                $stateParams.certificateType = 'sjukersattning';
+            },
+            views: {
+                'main@webcert.intyg' : {
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
+                    controller: 'webcert.ViewCertCtrl'
+                },
+                'intyg@webcert.intyg.sjukersattning' : {
+                    templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/intyg.html'
+
+                },
+                'fragaSvar@webcert.intyg.sjukersattning' : {
+                    templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/fragasvar/fragasvar.html'
+                },
+                'header@webcert.intyg.sjukersattning' : {
+                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    controller: 'common.IntygHeader'
+                }
+            }
+        }).
         state('webcert.fragasvar', {
             data: { defaultActive : 'unhandled-qa' },
             url: '/fragasvar/:certificateType/:certificateId',

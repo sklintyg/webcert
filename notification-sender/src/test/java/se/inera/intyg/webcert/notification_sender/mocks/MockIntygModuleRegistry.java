@@ -20,7 +20,9 @@
 package se.inera.intyg.webcert.notification_sender.mocks;
 
 import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -38,6 +40,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
@@ -126,6 +129,17 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public String marshall(String jsonString) {
                 return null;
             }
+
+            @Override
+            public String getQuestions(String version) {
+                return null;
+            }
+
+            @Override
+            public Utlatande getUtlatandeFromJson(String utlatandeJson) {
+                return null;
+            }
+
         };
     }
 

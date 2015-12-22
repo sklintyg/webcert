@@ -54,4 +54,5 @@ public interface UtkastService {
 
     int countFilterIntyg(UtkastFilter filter);
 
+    String getQuestions(String intygsTyp, String version);
 }

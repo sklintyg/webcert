@@ -20,7 +20,9 @@
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import java.io.IOException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -28,22 +30,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.converter.ClinicalProcessCertificateMetaTypeConverter;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.annotations.VisibleForTesting;
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
@@ -51,7 +56,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceConverterImpl.class);
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private IntygModuleRegistry moduleRegistry;
 
     @Override
     public List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source) {
@@ -218,18 +223,17 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     @Override
     public Utlatande buildUtlatandeFromUtkastModel(Utkast utkast) {
         try {
-            return objectMapper.readValue(utkast.getModel(), Utlatande.class);
-        } catch (IOException e) {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            return moduleApi.getUtlatandeFromJson(utkast.getModel());
+        } catch (IOException | ModuleNotFoundException e) {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
     }
 
-    /**
-     * Since this class is @Spy injected at unit test level we need to manually set the ObjectMapper.
-     */
-    public void setObjectMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    @VisibleForTesting
+    public void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
+        this.moduleRegistry = moduleRegistry;
     }
 
     public enum Operation {

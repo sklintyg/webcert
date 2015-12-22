@@ -163,6 +163,12 @@ public class IntygServiceImpl implements IntygService {
                         "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
             }
         } catch (WebServiceException wse) {
+            LOG.warn("Error when connecting to intygstjänsten: ", wse.getMessage());
+            LOG.info("Stacktrace: ", wse.getStackTrace());
+            wse.printStackTrace();
+            if (wse.getCause() != null) {
+                LOG.info(wse.getCause().toString());
+            }
             // If intygstjansten was unavailable, we return whatever certificates we can find and clearly inform
             // the caller that the set of certificates are only those that have been issued by WebCert.
             List<IntygItem> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
@@ -383,7 +389,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolder(typ, utkast);
+            return buildIntygContentHolder(utkast);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findOne(intygId);
@@ -392,7 +398,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolder(typ, utkast);
+            return buildIntygContentHolder(utkast);
         }
     }
 
@@ -406,16 +412,15 @@ public class IntygServiceImpl implements IntygService {
         Utkast utkast = utkastRepository.findOne(intygId);
         IntygContentHolder intyg;
         if (utkast != null) {
-            intyg = buildIntygContentHolder(intygTyp, utkast);
+            intyg = buildIntygContentHolder(utkast);
         } else {
             intyg = getIntygData(intygId, intygTyp);
         }
         return intyg;
     }
 
-    private IntygContentHolder buildIntygContentHolder(String typ, Utkast utkast) {
+    private IntygContentHolder buildIntygContentHolder(Utkast utkast) {
         Utlatande utlatande = serviceConverter.buildUtlatandeFromUtkastModel(utkast);
-        utlatande.setTyp(typ);
         List<Status> statuses = serviceConverter.buildStatusesFromUtkast(utkast);
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null);
     }

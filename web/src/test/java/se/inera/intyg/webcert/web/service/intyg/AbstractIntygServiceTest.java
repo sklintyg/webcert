@@ -19,9 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -38,17 +36,18 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.ri
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -97,11 +96,17 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
     // Here we test the real converter
     @Spy
-    protected IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
+    protected IntygServiceConverterImpl serviceConverter = new IntygServiceConverterImpl();
 
     // Here we use the real config manager
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
+
+    @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    ModuleApi moduleApi;
 
     @InjectMocks
     protected SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
@@ -114,13 +119,16 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected CertificateResponse certificateResponse;
 
     @Before
-    public void setupIntygstjanstResponse() throws Exception {
-
+    public void setupMocks() throws Exception {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        serviceConverter.setModuleRegistry(moduleRegistry);
     }
 
     private CertificateMetaData buildCertificateMetaData() {
@@ -136,9 +144,4 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
     }
 
-    @Before
-    public void setupObjectMapperForConverter() {
-        // TODO Ask around, must be a cleaner way to inject stuff into a spied object?
-        ((IntygServiceConverterImpl) serviceConverter).setObjectMapper(new CustomObjectMapper());
-    }
 }

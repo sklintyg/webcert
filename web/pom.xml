@@ -117,10 +117,17 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-bas</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-diabetes</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>sjukpenning</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>sjukersattning</artifactId>
     </dependency>
      
     <!-- RIVTA Schemas -->
@@ -610,6 +617,20 @@
                   verbose="false">
                   <fileset
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
+                  </fileset>
+                </copy>
+                <copy
+                  todir="${project.build.directory}/webjardependencies/sjukpenning"
+                  verbose="false">
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukpenning">
+                  </fileset>
+                </copy>
+                <copy
+                  todir="${project.build.directory}/webjardependencies/sjukersattning"
+                  verbose="false">
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukersattning">
                   </fileset>
                 </copy>
                 <!-- 
