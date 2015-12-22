@@ -328,21 +328,46 @@ module.exports = function () {
     var psykiskSjukdom = element(by.id('psykiskSjukdom'));
     expect(psykiskSjukdom.getText()).to.eventually.equal(intyg.psykiskSjukdom);
     logg('Kontrollera att psykisk sjukdom är: '+ intyg.psykiskSjukdom);
-    // assertEllementYesNo(intyg.psykiskSjukdom,'psykiskSjukdom');
 
     //ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning
     var psykiskUtvecklingsstorning = element(by.id('psykiskUtvecklingsstorning'));
     logg('Kontrollera att adhd psykisk är: '+ intyg.adhdPsykisk);    
     expect(psykiskUtvecklingsstorning.getText()).to.eventually.equal(intyg.adhdPsykisk);
-    // assertEllementYesNo(intyg.adhdPsykisk,'psykiskUtvecklingsstorning');
     var harSyndrom = element(by.id('harSyndrom'));
     logg('Kontrollera att adhd syndrom är: '+ intyg.adhdSyndrom);
-    // assertEllementYesNo(intyg.adhdSyndrom, 'harSyndrom');
-    // callback();
-    expect(harSyndrom.getText()).to.eventually.equal(intyg.adhdSyndrom).and.notify(callback);
+    expect(harSyndrom.getText()).to.eventually.equal(intyg.adhdSyndrom);
     //.and.notify(callback)
-   
+    //Sjukhusvård
+    var sjukhusEllerLakarkontakt = element(by.id('sjukhusEllerLakarkontakt'));
 
+    var tidpunkt = element(by.id('tidpunkt'));
+    var vardinrattning = element(by.id('vardinrattning'));
+    var sjukhusvardanledning = element(by.id('sjukhusvardanledning'));
+    
+
+    if (intyg.sjukhusvard === 'Ja') {
+        logg('Kontrollera att sjukhusvard är: '+ intyg.sjukhusvard);
+        expect(tidpunkt.getText()).to.eventually.equal('2015-12-13');
+        expect(vardinrattning.getText()).to.eventually.equal('Östra sjukhuset.');
+        expect(sjukhusvardanledning.getText()).to.eventually.equal('Allmän ysterhet.');
+        expect(sjukhusEllerLakarkontakt.getText()).to.eventually.contain('Ja');
+    } else {
+        expect(sjukhusEllerLakarkontakt.getText()).to.eventually.equal('Nej');
+        logg('Kontrollera att sjukhusvard är: '+ intyg.sjukhusvard);
+    }
+
+    var stadigvarandeMedicinering = element(by.id('stadigvarandeMedicinering'));
+    var medicineringbeskrivning = element(by.id('medicineringbeskrivning'));
+    if (intyg.ovrigMedicin === 'Ja') {
+        logg('Kontrollera att stadig varande Medicinering är: '+ intyg.ovrigMedicin);
+        expect(stadigvarandeMedicinering.getText()).to.eventually.contain('Ja');
+        logg('Kontrollera att kommentar är: \"beskrivning övrig medicinering\"');
+        expect(ovrigMedicin.getText()).to.eventually.equal('beskrivning övrig medicinering').and.notify(callback);
+    }
+    else{
+        expect(stadigvarandeMedicinering.getText()).to.eventually.equal('Nej').and.notify(callback);
+        logg('Kontrollera att stadig varande Medicinering är: '+ intyg.ovrigMedicin);
+    }
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
@@ -359,6 +384,7 @@ module.exports = function () {
             expect(ele.getText()).to.eventually.equal(_typ);
         }
     }
+    //Fails sometimes need to find out why before using.
     function assertEllementYesNo(_elementVal, _element){
         var ele = element(by.id(_element));
         if(_elementVal === 'Ja' ){
