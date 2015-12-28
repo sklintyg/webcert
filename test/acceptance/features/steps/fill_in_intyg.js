@@ -90,6 +90,8 @@ module.exports = function() {
             fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
             fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
             fkUtkastPage.angePrognos(intyg.prognos);
+            fkUtkastPage.angeKontaktaFK(intyg.kontaktOnskasMedFK);
+            fkUtkastPage.angeRekommendationRessatt(intyg.rekomendation.resor);
             browser.ignoreSynchronization = false;
             callback();
         }
