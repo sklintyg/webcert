@@ -45,7 +45,6 @@ module.exports = function () {
         intyg.typ = intygsTyp;
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
         sokSkrivIntygUtkastTypePage.continueToUtkast();
-        browser.sleep(10000);
         //Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){
           intyg.id = text.split('/').slice(-1)[0];
@@ -101,7 +100,7 @@ module.exports = function () {
         }
         //  Insulin sedan år
         var insulPeriod = element(by.id('insulinBehandlingsperiod'));
-        if (intyg.allmant.behandling.insulinYear !== null){
+        if (typeof intyg.allmant.behandling.insulinYear != 'undefined'){
         logg('Kontrollerar att intyg.insulinBehandlingsperiod är: '+intyg.allmant.behandling.insulinYear);
         expect(insulPeriod.getText()).to.eventually.equal(intyg.allmant.behandling.insulinYear.toString());
         }
@@ -137,9 +136,9 @@ module.exports = function () {
         expect(specKomp.getText()).to.eventually.equal('Ej angivet');
         // ==============
         
-        // var typer = intyg.allmant.behandling.typer;
-        var typer = utkast.allmant.behandling;
-        typer.forEach(function (typ) {
+        var typer = intyg.allmant.behandling.typer;
+        typer.forEach(function(typ) {
+            console.log('Kontrollerar behandlingstyp: ' + typ);
             if(typ === 'Endast kost')
             {
                 var eKost = element(by.id('endastKost'));
@@ -159,7 +158,6 @@ module.exports = function () {
                 expect(insul.getText()).to.eventually.equal('Ja').and.notify(callback);
             }
         });
-       
     }
     else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
         logg('inside Transportstyrelsens läkarintyg');
@@ -355,12 +353,12 @@ module.exports = function () {
     var medicineringbeskrivning = element(by.id('medicineringbeskrivning'));
     if (intyg.ovrigMedicin === 'Ja') {
         logg('Kontrollera att stadig varande Medicinering är: '+ intyg.ovrigMedicin);
-        expect(stadigvarandeMedicinering.getText()).to.eventually.contain('Ja');
+        // expect(stadigvarandeMedicinering.getText()).to.eventually.contain('Ja');
         logg('Kontrollera att kommentar är: \"beskrivning övrig medicinering\"');
-        expect(ovrigMedicin.getText()).to.eventually.equal('beskrivning övrig medicinering').and.notify(callback);
+        expect(medicineringbeskrivning.getText()).to.eventually.equal('beskrivning övrig medicinering').and.notify(callback);
     }
-    else{
-        expect(stadigvarandeMedicinering.getText()).to.eventually.equal('Nej').and.notify(callback);
+    else if (intyg.ovrigMedicin === 'Nej'){
+        // expect(stadigvarandeMedicinering.getText()).to.eventually.equal('Nej').and.notify(callback);
         logg('Kontrollera att stadig varande Medicinering är: '+ intyg.ovrigMedicin);
     }
 }
