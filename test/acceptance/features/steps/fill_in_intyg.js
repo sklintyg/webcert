@@ -28,6 +28,8 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = function() {
 
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
+
+
         if (intyg.typ === 'Transportstyrelsens läkarintyg') {
             global.intyg = testdata.getRandomTsBasIntyg();
 
@@ -36,9 +38,7 @@ module.exports = function() {
             tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
             // Identiteten är styrkt genom
             tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
-
             // Synfunktioner
-
             browser.ignoreSynchronization = true;
             tsBasUtkastPage.fillInSynfunktioner(global.intyg);
             // tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
@@ -63,7 +63,6 @@ module.exports = function() {
             callback();
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
             global.intyg = testdata.getRandomTsDiabetesIntyg();
-
             tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
             browser.ignoreSynchronization = true;
             tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
@@ -76,9 +75,10 @@ module.exports = function() {
             callback();
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
             global.intyg = testdata.fk.sjukintyg.getRandom();
-            browser.ignoreSynchronization = true;
             
             fkUtkastPage.angeSmittskydd(intyg.smittskydd);
+            browser.ignoreSynchronization = true;
+            
             if (!intyg.smittskydd) {
                 fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
                 fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
@@ -91,10 +91,11 @@ module.exports = function() {
             fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
             fkUtkastPage.angePrognos(intyg.prognos);
             fkUtkastPage.angeKontaktaFK(intyg.kontaktOnskasMedFK);
-            fkUtkastPage.angeRekommendationRessatt(intyg.rekomendation.resor);
             browser.ignoreSynchronization = false;
+            fkUtkastPage.angeRekommendationRessatt(intyg.rekomendation.resor);
             callback();
         }
+
     });
 
   

@@ -26,12 +26,13 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 module.exports = function () {
 	this.Given(/^signerar intyget$/, function (callback) {
         // Klicka på 'visa vad som saknas' innan signering för att underlätta felsökning
-        var EC = protractor.ExpectedConditions;
-        browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000);
+        // var EC = protractor.ExpectedConditions;
+        // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000).then(callback);
         element(by.id('signera-utkast-button')).click().then(callback);
     });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
+        
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
             intyg.id = intyg.id.replace('?signed', '');

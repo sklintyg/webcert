@@ -45,12 +45,12 @@ module.exports = function () {
         intyg.typ = intygsTyp;
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
         sokSkrivIntygUtkastTypePage.continueToUtkast();
-        //Save INTYGS_ID:
+        
+        // Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){
           intyg.id = text.split('/').slice(-1)[0];
           logg('Intygsid: '+intyg.id);
         });
-
         callback();
     });
 
@@ -452,7 +452,7 @@ module.exports = function () {
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
-        expect(fk7263Utkast.signeraButton.isPresent()).to.become(false).and.notify(callback);
+        expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
     });
         function testElement(_typ, _element){
         var ele = element(by.id(_element));

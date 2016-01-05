@@ -42,6 +42,7 @@ module.exports = function () {
       connection.query('SELECT COUNT(*) AS Counter FROM '+dbName+'.INTYG WHERE '+dbName+'.INTYG.INTYGS_ID = \"'+intyg.id+'\";', function(err, rows, fields){
         should.not.exist(err);
 
+        logg('Intygs id: ' + intyg.id);
         logg('Från databas:');
         logg(JSON.stringify(rows));
 

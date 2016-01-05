@@ -33,8 +33,10 @@ module.exports = function () {
     });
 
     this.Given(/^jag går tillbaka till start$/, function (callback) {
-        element(by.id('tillbakaButton')).click()
-        .then(callback);
+        var back  = element(by.id('tillbakaButton'));
+        browser.driver.wait(protractor.until.elementIsVisible(back));
+
+        back.click().then(callback);
     });
 
     this.Given(/^ska intyget visa varningen "([^"]*)"$/, function (arg1, callback) {
