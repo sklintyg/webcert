@@ -98,7 +98,7 @@ public class ObjectCreator {
 
     private List<BefattningType> buildBefattningar() {
         List<BefattningType> l = new ArrayList<>();
-        l.add(buildBefattning(HSABefattning.SPECIALISTLAKARE.getCode(), HSABefattning.SPECIALISTLAKARE.getDescription()));
+        l.add(buildBefattning(HSABefattning.SPECIALISTLAKARE.getCode(), HSABefattning.SPECIALISTLAKARE.getNamn()));
         return l;
     }
 

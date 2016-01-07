@@ -50,28 +50,28 @@ public enum HSABefattning {
 
     private String code;
 
-    private String description;
+    private String namn;
 
-    HSABefattning(String code, String desc) {
+    HSABefattning(String code, String namn) {
         this.code = code;
-        this.description = desc;
+        this.namn = namn;
     }
 
     public String getCode() {
         return code;
     }
 
-    public String getDescription() {
-        return description;
+    public String getNamn() {
+        return namn;
     }
 
-    public static HSABefattning getByCode(String code) {
-        for (HSABefattning bef : values()) {
-            if (bef.getCode().equals(code)) {
-                return bef;
-            }
-        }
-
-        return null;
-    }
+//    public static HSABefattning getByCode(String code) {
+//        for (HSABefattning bef : values()) {
+//            if (bef.getCode().equals(code)) {
+//                return bef;
+//            }
+//        }
+//
+//        return null;
+//    }
 }
