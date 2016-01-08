@@ -20,7 +20,10 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntyg
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
- * Created by eriklupander on 2016-01-08.
+ * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
+ *
+ * Due to the nature of these integration tests - i.e. running without Intygstjänsten, some corners are cut using
+ * testability APIs in order to set up test data properly.
  */
 public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
@@ -39,6 +42,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
 
+        deleteUtkast(intygsId);
     }
 
     @Test
@@ -54,6 +58,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
 
+        deleteUtkast(intygsId);
     }
 
     @Test
@@ -70,6 +75,22 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
 
+        deleteUtkast(intygsId);
+    }
+
+    @Test
+    public void testGetUnknownFk7263() {
+        testGetUnknownIntyg("fk7263");
+    }
+
+    @Test
+    public void testGetUnknownTsBas() {
+        testGetUnknownIntyg("ts-bas");
+    }
+
+    @Test
+    public void testGetUnknownTsDiabetes() {
+        testGetUnknownIntyg("ts-diabetes");
     }
 
     @Test
@@ -86,6 +107,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).body(sendParam).expect().statusCode(200)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
+
+        deleteUtkast(intygsId);
     }
 
     @Test
@@ -101,6 +124,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).body(revokeParam).expect().statusCode(200)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
+
+        deleteUtkast(intygsId);
     }
 
     private String createUtkast(String utkastType) {
@@ -126,4 +151,17 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).expect().statusCode(200).when().put(completePath);
         given().contentType(ContentType.JSON).expect().statusCode(200).when().put(signPath);
     }
+
+    private void testGetUnknownIntyg(String intygsTyp) {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygsId = "unknown-1";
+        given().expect().statusCode(500)
+                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId);
+    }
+
+
+    private void deleteUtkast(String id) {
+        given().contentType(ContentType.JSON).expect().statusCode(200).when().delete("testability/intyg/" + id);
+    }
+
 }
