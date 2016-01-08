@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Schema for response from signed intyg send",
+  "type": "string",
+  "additionalProperties": false
+}

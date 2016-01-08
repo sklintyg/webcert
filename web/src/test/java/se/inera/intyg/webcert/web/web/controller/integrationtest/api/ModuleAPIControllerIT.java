@@ -43,7 +43,7 @@ public class ModuleAPIControllerIT extends BaseRestIntegrationTest {
         given().expect().statusCode(200).when().get("api/modules/map").
                 then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json")).
-                body("", hasSize(3)).
+                body("", hasSize(5)).
                 body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
     }
 }

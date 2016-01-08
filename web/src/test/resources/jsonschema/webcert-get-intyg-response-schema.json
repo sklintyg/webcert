@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "contents": {
+      "type": "object",
+      "properties": {
+        "grundData": {
+          "type": "object",
+          "properties": {},
+          "required" : [
+            "skapadAv",
+            "patient"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "grundData"
+      ]
+    },
+    "statuses": {
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "additionalItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "id": "type",
+            "type": "string"
+          },
+          "target": {
+            "id": "target",
+            "type": "string"
+          },
+          "timestamp": {
+            "id": "timestamp",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "revoked": {
+      "id": "revoked",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "contents",
+    "statuses",
+    "revoked"
+  ]
+}

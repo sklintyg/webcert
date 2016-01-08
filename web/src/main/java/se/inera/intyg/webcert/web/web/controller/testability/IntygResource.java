@@ -20,8 +20,10 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -151,15 +153,17 @@ public class IntygResource {
     @Path("/{id}/signerat")
     @Produces(MediaType.APPLICATION_JSON)
     public Response signDraft(@PathParam("id") String id) {
-        updateStatus(id, UtkastStatus.SIGNED);
+        updateUtkastForSign(id);
         return Response.ok().build();
     }
+
+
 
     @PUT
     @Path("/{id}/skickat")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sendDraft(@PathParam("id") String id) {
-        updateStatus(id, UtkastStatus.SIGNED);
+        updateUtkastForSend(id);
         return Response.ok().build();
     }
 
@@ -167,6 +171,33 @@ public class IntygResource {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
             utkast.setStatus(status);
+            utkastRepository.save(utkast);
+        }
+    }
+
+    private void updateUtkastForSign(@PathParam("id") String id) {
+        Utkast utkast = utkastRepository.findOne(id);
+        if (utkast != null) {
+            utkast.setStatus(UtkastStatus.SIGNED);
+            Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "");
+            utkast.setSignatur(sig);
+            utkastRepository.save(utkast);
+        }
+    }
+
+    private void updateUtkastForSend(@PathParam("id") String id) {
+        Utkast utkast = utkastRepository.findOne(id);
+        if (utkast != null) {
+            utkast.setStatus(UtkastStatus.SIGNED);
+
+            if (utkast.getSignatur() == null) {
+                Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "");
+                utkast.setSignatur(sig);
+            }
+
+            utkast.setSkickadTillMottagare("FK");
+            utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+
             utkastRepository.save(utkast);
         }
     }
