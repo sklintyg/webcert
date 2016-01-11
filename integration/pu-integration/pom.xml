@@ -63,7 +63,7 @@
 
     <!-- Schemas -->
     <dependency>
-      <groupId>se.inera.population.residentmaster</groupId>
+      <groupId>se.riv.population.residentmaster</groupId>
       <artifactId>population-residentmaster-schemas</artifactId>
     </dependency>
 
