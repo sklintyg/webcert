@@ -456,41 +456,36 @@ module.exports = function () {
     });
         function testElement(_typ, _element){
         var ele = element(by.id(_element));
-        if(_typ === null ){
-            logg('Kontrollerar '+_element+' : '+ _typ);
-            expect(ele.getText()).to.eventually.equal('Ej angivet');
+        if(!_typ){
+            _typ = 'Ej angivet';
         }
-        else if(_typ === 'Ja' || _typ === 'Nej'){
-            logg('Kontrollerar '+_element+' : '+ _typ);
-            expect(ele.getText()).to.eventually.equal(_typ);
-        }
+        logg('Kontrollerar '+_element+' : '+ _typ);
+        expect(ele.getText()).to.eventually.equal(_typ);
     }
  
     function genericAssert(_val, _element){
         var ele = element(by.id(_element));
-        if(_val != null ){
+        if(_val !== null ){
             logg('Kontrollerar '+_element+' : '+ _val);
             expect(ele.getText()).to.eventually.equal(_val);
         }
     }
 
     function getDateForAssertion(_date){
-        var monthNames = [
-        "januari", "februari", "mars",
-        "april", "maj", "juni", "juli",
-        "augusti", "september", "oktober",
-        "november", "december"];
+        var monthNames = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'
+        ];
+        var dateObj,month,day,year;
         if (typeof _date === 'undefined') {
-            var dateObj = new Date();
-            var month = monthNames[dateObj.getUTCMonth()]; 
-            var day = dateObj.getUTCDate().toString();
-            var year = dateObj.getUTCFullYear().toString();
+            dateObj = new Date();
+            month = monthNames[dateObj.getUTCMonth()]; 
+            day = dateObj.getUTCDate().toString();
+            year = dateObj.getUTCFullYear().toString();
             return day.concat(' ', month, ' ', year);
         } else {
             var _split = _date.split('-');
-            var month = monthNames[_split[1] - 1]; 
-            var day = _split[2];
-            var year = _split[0];
+            month = monthNames[_split[1] - 1]; 
+            day = _split[2];
+            year = _split[0];
             return day.concat(' ', month, ' ', year);
         }
     }
