@@ -116,6 +116,7 @@ var FkUtkast = BaseUtkast._extend({
             fortydligande:element(by.id('diagnoseClarification')),
             samsjuklighetForeligger: element(by.id('diagnoseMultipleDiagnoses'))
         };
+        this.kontaktFk = element(by.id('kontaktFk'));
         
     },
     
@@ -153,6 +154,7 @@ var FkUtkast = BaseUtkast._extend({
         this.diagnosKod.sendKeys(kod);
     },
     angeFunktionsnedsattning : function(txt) {
+        if(!txt){return false;}
         this.funktionsNedsattning.sendKeys(txt);
     },
     angeAktivitetsBegransning : function(txt) {
@@ -172,6 +174,7 @@ var FkUtkast = BaseUtkast._extend({
         }
     },
     angeIntygetBaserasPa:function(intygetBaserasPa){
+        if(!intygetBaserasPa){ return false; }
 
         if(intygetBaserasPa.minUndersokning){
             this.baserasPa.minUndersokning.checkbox.click();
@@ -255,6 +258,16 @@ var FkUtkast = BaseUtkast._extend({
         }
         if(arbete.foraldraledighet){
             this.arbete.foraldraledig.checkbox.click();
+        }
+    },
+    angeKontaktOnskasMedFK:function(kontaktOnskas){
+        if(kontaktOnskas){
+            this.kontaktFk.click();
+        }
+    },
+    angeRekommendationer:function(rekommendationer){
+        if(rekommendationer.resor){
+            this.travelRadioButtonJa.click();
         }
     }
 });

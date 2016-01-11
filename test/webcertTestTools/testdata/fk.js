@@ -114,7 +114,7 @@ var random = {
                 };
     },
     kontaktOnskasMedFK:function(){
-        return true;
+        return shuffle([true,false])[0];
     },
     ovrigaUpplysningar:function(){
         return 'Övriga upplysningar och förtydliganden text';

@@ -79,10 +79,8 @@ module.exports = function() {
             fkUtkastPage.angeSmittskydd(intyg.smittskydd);
             browser.ignoreSynchronization = true;
             
-            if (!intyg.smittskydd) {
-                fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
-                fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
-            }
+            fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
+            fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
             fkUtkastPage.angeDiagnoser(intyg.diagnos);
             fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
             fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning);
@@ -90,9 +88,9 @@ module.exports = function() {
             fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
             fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
             fkUtkastPage.angePrognos(intyg.prognos);
-            fkUtkastPage.angeKontaktaFK(intyg.kontaktOnskasMedFK);
+            fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK);
             browser.ignoreSynchronization = false;
-            fkUtkastPage.angeRekommendationRessatt(intyg.rekomendation.resor);
+            fkUtkastPage.angeRekommendationer(intyg.rekommendationer);
             callback();
         }
 
