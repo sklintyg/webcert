@@ -34,7 +34,45 @@ var Fk7263Intyg = BaseIntyg._extend({
     		text: element(by.css('div[field-number="1"]')).element(by.css('.text'))
         };
 
-        this.field2 = {title: null, text: null};
+        this.field2 = {
+        	diagnoskod: element(by.id('diagnosKod')), 
+        	diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
+        };
+        this.field3 = {
+        	sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
+        };
+        this.field4 = {
+        	funktionsnedsattning : element(by.id('funktionsnedsattning'))
+        };
+        this.field5 = {
+            aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
+        };
+
+        this.field6a = {
+            kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
+            kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
+            ovrigt: element(by.id('rekommendationOvrigt'))
+        };
+
+        this.field7 = {
+            text: element(by.id('field7')).element(by.css('.text'))
+        };
+
+        this.field10 = {
+            title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
+            text: element(by.css('div[field-number="10"]')).element(by.css('.text'))
+        };
+
+        this.field11 = {
+            title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
+            text: element(by.css('div[field-number="11"]')).element(by.css('.text'))
+        };
+
+        this.field12 = {
+    		title: element(by.id('field12')).element(by.css('.title')),
+    		text: element(by.id('field12')).element(by.css('.text'))
+        };
+        
     },
     get: function get(intygId) {
         get._super.call(this, intygId);

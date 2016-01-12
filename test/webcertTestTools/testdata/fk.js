@@ -25,6 +25,29 @@ var testdata =  {
         smittskydd: [true, false]
     };
 
+function randomKontaktMedAF(smittskydd){
+    if(smittskydd){return false;}
+    else {return shuffle([true,false])[0];}
+}
+function randomRekommendationOvrigt(smittskydd){
+    if(smittskydd){return false;}
+    else{
+        return shuffle(['Övrig rekommendation beskrivning',' '])[0];
+    }
+}
+function randomRehabAktuell(smittskydd){
+    if(smittskydd){return false;}
+    else{
+        return shuffle(['Ja','Nej','Går inte att bedöma'])[0];
+    }
+}
+
+function randomPrognosFortydligande(val){
+    if(val ==='Går ej att bedöma'){
+        return 'Prognos förtydligande text';
+    }
+}
+
 var random = {
     baserasPa:function (smittskydd) {
         if (smittskydd) {return false;}
@@ -45,15 +68,15 @@ var random = {
         };
     },
     aktuelltSjukdomsforlopp: function(smittskydd){
-        if (smittskydd) {return false;}
+        if (smittskydd) {return '';}
         return 'Aktuellt sjukdomsförlopp text';
     },
     funktionsnedsattning:function(smittskydd){
-        if (smittskydd) {return false;}
+        if (smittskydd) {return '';}
         return 'Funktionsnedsattning text';
     },
     aktivitestbegransning:function(smittskydd){
-        if (smittskydd) {return false;}
+        if (smittskydd) {return '';}
         return 'Aktivitetsbegränsning text';
     },
     arbete:function(smittskydd){
@@ -87,14 +110,10 @@ var random = {
         };
     },
     prognos:function(){
+        var val =  shuffle(['Ja','Ja, delvis','Nej','Går ej att bedöma'])[0];
         return {
-                    choice: {
-                        // JA:1,
-                        // JA_DELVIS:1,
-                        // NEJ:1,
-                        GAR_EJ_ATT_BEDOMA:1
-                    },
-                    fortydligande: 'Fortydligande text'
+                    val: val,
+                    fortydligande: randomPrognosFortydligande()
                 };
     },
     atgarder:function(smittskydd){
@@ -104,13 +123,13 @@ var random = {
                     annan: 'Annan åtgärd text'
                 };
     },
-    rekommendationer:function(){
+    rekommendationer:function(smittskydd){
         return {
-                    resor:true,
-                    kontaktMedArbetsformedlingen:true,
-                    kontaktMedForetagshalsovard: true,
-                    Ovrigt:'Rekomendation övrigt text',
-                    arbetslivsinriktadRehab: 'Går ej att bedöma'
+                    resor:shuffle([true,false])[0],
+                    kontaktMedArbetsformedlingen:randomKontaktMedAF(smittskydd),
+                    kontaktMedForetagshalsovard: randomKontaktMedAF(smittskydd),
+                    ovrigt:randomRekommendationOvrigt(smittskydd),
+                    arbetslivsinriktadRehab: randomRehabAktuell(smittskydd)
                 };
     },
     kontaktOnskasMedFK:function(){
@@ -148,7 +167,7 @@ module.exports = {
                 arbetsformagaFMB: random.arbetsformagaFMB(),
                 prognos:random.prognos(),
                 atgarder:random.atgarder(isSmittskydd),
-                rekommendationer:random.rekommendationer(),
+                rekommendationer:random.rekommendationer(isSmittskydd),
                 kontaktOnskasMedFK:random.kontaktOnskasMedFK(),
                 ovrigaUpplysningar: random.ovrigaUpplysningar()
             };

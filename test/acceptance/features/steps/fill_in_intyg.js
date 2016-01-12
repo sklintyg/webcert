@@ -87,9 +87,9 @@ module.exports = function() {
             fkUtkastPage.angeArbete(intyg.arbete);
             fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
             fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
+            browser.ignoreSynchronization = false;
             fkUtkastPage.angePrognos(intyg.prognos);
             fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK);
-            browser.ignoreSynchronization = false;
             fkUtkastPage.angeRekommendationer(intyg.rekommendationer);
             callback();
         }

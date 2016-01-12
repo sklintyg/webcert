@@ -58,7 +58,7 @@ module.exports ={
     //     expect(field8.getText()).to.eventually.equal(ejAngivet);
             
 
-    //Kontrollera smittskydd
+    // Kontrollera FÄLT 1 : Smittskydd
     var smitta = boolTillJaNej(intyg.smittskydd);
     expect(intygPage.field1.text.getText()).to.eventually.equal(smitta).then(function(value) {
         logg('OK - SMITTA = ' +value);
@@ -66,49 +66,96 @@ module.exports ={
         callback('FEL, SMITTA,' + reason);
     });
 
-    //Kontrollera diagnos
+    //Kontrollera FÄLT 2 : Diagnos
+    var field2 = intygPage.field2;
     if(intyg.diagnos){
-        helpers.genericAssert(intyg.diagnos.diagnoser[0].ICD10, 'diagnosKod');
-        helpers.genericAssert(intyg.diagnos.fortydligande, 'diagnosBeskrivning');
+        expect(field2.diagnoskod.getText()).to.eventually.equal(intyg.diagnos.diagnoser[0].ICD10).then(
+            function(value) {
+                logg('OK - Diagnoskod = ' +value);
+            }, function(reason) {
+                callback('FEL, Diagnoskod,' + reason);
+            }
+        );
+
+        expect(field2.diagnosBeskrivning.getText()).to.eventually.equal(intyg.diagnos.fortydligande).then(
+            function(value) {
+                logg('OK - Diagnos förtydligande = ' +value);
+            }, function(reason) {
+                callback('FEL, Diagnos förtydligande,' + reason);
+            }
+        );
 	}
 
-    //Kontrollera sjukdomsförlopp
-    if(intyg.aktuelltSjukdomsforlopp){
-    	helpers.genericAssert(intyg.aktuelltSjukdomsforlopp, 'sjukdomsforlopp');
-    }
-    else{
-    	helpers.genericAssert('', 'sjukdomsforlopp');
-    }
+    //Kontrollera FÄLT 3 : Sjukdomsförlopp
+    expect(intygPage.field3.sjukdomsforlopp.getText()).to.eventually.equal(intyg.aktuelltSjukdomsforlopp).then(
+        function(value) {
+            logg('OK - Sjukdomsförlopp = ' +value);
+        }, function(reason) {
+            callback('FEL, Sjukdomsförlopp,' + reason);
+        }
+    );
 
-    //Kontrollera funktionsnedsättning
-    if(intyg.funktionsnedsattning){
-    	helpers.genericAssert(intyg.funktionsnedsattning, 'funktionsnedsattning');
-    }
-    else{
-    	helpers.genericAssert('', 'funktionsnedsattning');
-    }
+    //Kontrollera FÄLT 4 : Funktionsnedsättning
+    expect(intygPage.field4.funktionsnedsattning.getText()).to.eventually.equal(intyg.funktionsnedsattning).then(
+        function(value) {
+            logg('OK - Funktionsnedsättning = ' +value);
+        }, function(reason) {
+            callback('FEL, Funktionsnedsättning,' + reason);
+        }
+    );
 
-    //Kontrollera Intyget baseras på
-    if(intyg.baserasPa){
-    	helpers.genericAssert(helpers.getDateForAssertion(intyg.baserasPa.minUndersokning.datum), 'undersokningAvPatienten');
-    	helpers.genericAssert(helpers.getDateForAssertion(intyg.baserasPa.minTelefonkontakt.datum), 'telefonkontaktMedPatienten');
-    	helpers.genericAssert(helpers.getDateForAssertion(intyg.baserasPa.journaluppgifter.datum), 'journaluppgifter');
-    	helpers.genericAssert(helpers.getDateForAssertion(intyg.baserasPa.annat.datum), 'annanReferens');
+    //Kontrollera FÄLT 4b : Intyget baseras på
+    logg('TODO: Kontrollera Intyget baseras på');
+
+    //Kontrollera Fält 5 : Aktivitetsbegränsning
+    var field5 = intygPage.field5.aktivitetsbegransning;
+    expect(field5.getText()).to.eventually.equal(intyg.aktivitetsBegransning).then(
+        function(value) {
+            logg('OK - Aktivitetsbegränsning = ' +value);
+        }, function(reason) {
+            callback('FEL, Aktivitetsbegränsning,' + reason);
+        }
+    );
+
+    //Kontrollera FÄLT 6a : Rekommendationer
+    var field6a = intygPage.field6a;
+    //Kontakt med AF
+    expect(field6a.kontaktArbetsformedlingen.isDisplayed()).to.become(intyg.rekommendationer.kontaktMedArbetsformedlingen).then(
+        function(value) {
+            logg('OK - Kontakt med AF = ' +value);
+        }, function(reason) {
+            callback('FEL, Kontakt med AF,' + reason);
+        }
+    );
+    //Kontakt med Företagshälsovården
+    expect(field6a.kontaktForetagshalsovarden.isDisplayed()).to.become(intyg.rekommendationer.kontaktMedForetagshalsovard).then(
+        function(value) {
+            logg('OK - Kontakt med Företagshälsovård = ' +value);
+        }, function(reason) {
+            callback('FEL, Kontakt med Företagshälsovård,' + reason);
+        }
+    );
+    //Övrig rekommendation
+    if(intyg.rekommendationer.ovrigt){
+        expect(field6a.ovrigt.getText()).to.eventually.equal(intyg.rekommendationer.ovrigt).then(
+            function(value) {
+                logg('OK - Övrig rekommendation= ' +value);
+            }, function(reason) {
+                callback('FEL, Övrig rekommendation,' + reason);
+            }
+        );
     }
-
-    //Kontrollera rekommendationer
-    logg('TODO: Kontrollera rekommendationer');
-    // var field6a = element(by.xpath('//*[@id=\"field6a\"]/span/span[1]/span'));
-    // var field6b = element(by.xpath('//*[@id=\"field6b\"]/span/span[1]/span'));
-    // expect(field6a.getText()).to.eventually.equal(ejAngivet);
-    // expect(field6b.getText()).to.eventually.equal(ejAngivet);
-
     
-    // Kontrollera rehabilitering aktuell
-    logg('TODO: Kontrollera rehabilitering aktuell');
-    // var rehabiliteringEjAktuell = element(by.id('rehabiliteringEjAktuell'));
-    // logg('(PLACEHOLDER) Kontrollera att aktivitets begränsning är : Nej');
-    // expect(rehabiliteringEjAktuell.getText()).to.eventually.equal('Nej');
+    // Kontrollera FÄLT 7 : Rehabilitering
+    if(intyg.rekommendationer.arbetslivsinriktadRehab){
+        expect(intygPage.field7.text.getText()).to.eventually.equal(intyg.rekommendationer.arbetslivsinriktadRehab).then(
+            function(value) {
+                logg('OK - Rehabilitering aktuell = ' +value);
+            }, function(reason) {
+                callback('FEL, Rehabilitering aktuell,' + reason);
+            }
+        );
+    }
     
     //Kontrollera arbetsuppgifter
     if(intyg.arbete){
@@ -122,41 +169,37 @@ module.exports ={
 
     // Kontrollera nedsatt arbetsförmåga
     logg('TODO: Kontrollera arbetsförmåga');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed25.from), 'nedsattMed25from');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed25.tom), 'nedsattMed25tom');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed50.from), 'nedsattMed50from');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed50.tom), 'nedsattMed50tom');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed75.from), 'nedsattMed75from');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed75.tom), 'nedsattMed75tom');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed100.from), 'nedsattMed100from');
-    // helpers.genericAssert(helpers.getDateForAssertion(intyg.arbetsformaga.nedsattMed100.tom), 'nedsattMed100tom');
-    // helpers.genericAssert(intyg.arbetsformagaFMB,'arbetsformagaPrognos');
-    // helpers.genericAssert('Går inte att bedöma','arbetsformataPrognosGarInteAttBedoma');
 
-    // Kontrollera kontakt önskas med FK
-    var kontaktMedFk = element(by.id('kontaktMedFk'));
+    // Kontrollera FÄLT 11 : Resa till arbete med annat färdsätt
+    expect(intygPage.field11.text.getText()).to.eventually.contain(boolTillJaNej(intyg.rekommendationer.resor)).then(function(value) {
+        logg('OK - Resor till arbete med annat färdsätt = ' + value);
+    }, function(reason) {
+        callback('FEL, Resor till arbete med annat färdsätt,' + reason);
+    }).then(callback);
+
+    // Kontrollera FÄLT 10 : Prognos
+    expect(intygPage.field10.text.getText()).to.eventually.equal(intyg.prognos.val).then(function(value) {
+        logg('OK - Prognos = ' +value);
+    }, function(reason) {
+        callback('FEL, Prognos,' + reason);
+    });
+
+
+    // Kontrollera FÄLT 12 : Kontakt önskas med FK
     var kontaktOnskas = boolTillJaNej(intyg.kontaktOnskasMedFK);
-    expect(kontaktMedFk.getText()).to.eventually.equal(kontaktOnskas).then(function(value) {
+    expect(intygPage.field12.text.getText()).to.eventually.equal(kontaktOnskas).then(function(value) {
         logg('OK - Kontakt med FK = ' +value);
     }, function(reason) {
         callback('FEL, Kontakt med FK,' + reason);
     });
 
-
-    // Kontrollera rekommendationer
-    logg('TODO: Kontrollera rekommendationer');
-    // var ressattTillArbeteAktuellt = element(by.id('ressattTillArbeteAktuellt'));
-    // intyg.ressattTillArbeteAktuellt 
-    // logg('Kontrollera att ressattTillArbeteAktuellt är: '+ s);
-    // expect(ressattTillArbeteAktuellt.getText()).to.eventually.equal(s);
-
-
-    //Kontrollera övriga upplysningar
+    //Kontrollera FÄLT13 : Övriga upplysningar
     var kommentar = element(by.id('kommentar'));
     expect(kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).then(function(value) {
-        logg('OK - Kommentar = ' +value);
+        logg('OK - Övrig kommentar = ' +value);
     }, function(reason) {
-        callback('FEL, Kommentar,' + reason);
+        callback('FEL, Övrig kommentar,' + reason);
     }).then(callback);
+
 }
 };

@@ -56,7 +56,19 @@ var FkUtkast = BaseUtkast._extend({
             GAR_EJ_ATT_BEDOMA: element(by.id('capacityForWork4')),
             fortydligande: element(by.id('capacityForWorkForecastText'))
         };
-
+        this.rekommendationer = {
+            kontaktAf: element(by.id('rekommendationKontaktAf')),
+            kontaktFH: element(by.id('rekommendationKontaktForetagshalsovard')),
+            ovrigt: {
+                checkbox: element(by.id('rekommendationOvrigt')),
+                beskrivning:element(by.id('rekommendationOvrigtBeskrivning'))
+            },
+            rehab:{
+                JA:element(by.id('rehabYes')),
+                NEJ:element(by.id('rehabNo')),
+                GAR_EJ_ATT_BEDOMA:element(by.id('garej'))
+            }
+        };
         this.arbete={
             nuvarandeArbete:{
                 checkbox:element(by.id('arbeteNuvarande')),
@@ -234,10 +246,10 @@ var FkUtkast = BaseUtkast._extend({
         this.arbetsformagaFMB.sendKeys(txt);
     },
     angePrognos:function(prognos){
-        if(prognos.choice.JA){this.prognos.sendKeys(protractor.Key.SPACE);}
-        if(prognos.choice.JA_DELVIS){this.prognos.sendKeys(protractor.Key.SPACE);}
-        if(prognos.choice.NEJ){this.prognos.sendKeys(protractor.Key.SPACE);}
-        if(prognos.choice.GAR_EJ_ATT_BEDOMA){
+        if(prognos.val === 'Ja'){this.prognos.JA.sendKeys(protractor.Key.SPACE);}
+        else if(prognos.val === 'Ja, delvis'){this.prognos.JA_DELVIS.sendKeys(protractor.Key.SPACE);}
+        else if(prognos.val === 'Nej'){this.prognos.NEJ.sendKeys(protractor.Key.SPACE);}
+        else if(prognos.val ==='Går ej att bedöma'){
             this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE);
             if(prognos.fortydligande){
                 this.prognos.fortydligande.sendKeys(prognos.fortydligande);
@@ -262,12 +274,34 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeKontaktOnskasMedFK:function(kontaktOnskas){
         if(kontaktOnskas){
-            this.kontaktFk.click();
+            this.kontaktFk.sendKeys(protractor.Key.SPACE);
         }
     },
     angeRekommendationer:function(rekommendationer){
         if(rekommendationer.resor){
             this.travelRadioButtonJa.click();
+        }
+        if(rekommendationer.kontaktMedArbetsformedlingen){
+            this.rekommendationer.kontaktAf.sendKeys(protractor.Key.SPACE);
+        }
+        if(rekommendationer.kontaktMedForetagshalsovard){
+            this.rekommendationer.kontaktFH.sendKeys(protractor.Key.SPACE);
+        }
+        if(rekommendationer.ovrigt){
+            this.rekommendationer.ovrigt.checkbox.sendKeys(protractor.Key.SPACE);
+            this.rekommendationer.ovrigt.beskrivning.sendKeys(rekommendationer.ovrigt);
+        }
+
+        if(rekommendationer.arbetslivsinriktadRehab){
+            if(rekommendationer.arbetslivsinriktadRehab === 'Ja'){
+                this.rekommendationer.rehab.JA.sendKeys(protractor.Key.SPACE);
+            }
+            else if(rekommendationer.arbetslivsinriktadRehab === 'Nej'){
+                this.rekommendationer.rehab.NEJ.sendKeys(protractor.Key.SPACE);
+            }
+            else if(rekommendationer.arbetslivsinriktadRehab === 'Går inte att bedöma'){
+                this.rekommendationer.rehab.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE);
+            }
         }
     }
 });
