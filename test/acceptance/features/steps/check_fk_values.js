@@ -24,6 +24,7 @@
 
 
 var helpers = require('./helpers.js');
+var intygPage = pages.intyg.fk['7263'].intyg;
 
 function boolTillJaNej(val){
 	if(val){
@@ -37,9 +38,7 @@ function boolTillJaNej(val){
 module.exports ={
 	checkFKValues:function(intyg, callback){
 
-	var ejAngivet = 'Ej angivet'; 
-    var idSmittskydd = element(by.id('smittskydd'));
-
+	// var ejAngivet = 'Ej angivet'; 
     //     var field2 = element(by.xpath('//*[@id=\"field2\"]/span/span[1]/span'));
     //     var certificateDiv3 = element(by.xpath('//*[@id=\"certificate\"]/div/div/div/div[3]/span/span[1]/span'));
     //     var field4b = element(by.xpath('//*[@id=\"field4b\"]/span/span[1]/span'));
@@ -61,8 +60,11 @@ module.exports ={
 
     //Kontrollera smittskydd
     var smitta = boolTillJaNej(intyg.smittskydd);
-    logg('Kontrollera att smitta är :'+ smitta);
-    expect(idSmittskydd.getText()).to.eventually.equal(smitta);
+    expect(intygPage.field1.text.getText()).to.eventually.equal(smitta).then(function(value) {
+        logg('OK - SMITTA = ' +value);
+    }, function(reason) {
+        logg('FEL, SMITTA,' + reason);
+    });
 
     //Kontrollera diagnos
     if(intyg.diagnos){
@@ -134,8 +136,11 @@ module.exports ={
     // Kontrollera kontakt önskas med FK
     var kontaktMedFk = element(by.id('kontaktMedFk'));
     var kontaktOnskas = boolTillJaNej(intyg.kontaktOnskasMedFK);
-    logg('Kontrollera att kontaktOnskasMedFK är: '+ kontaktOnskas);
-    expect(kontaktMedFk.getText()).to.eventually.equal(kontaktOnskas);
+    expect(kontaktMedFk.getText()).to.eventually.equal(kontaktOnskas).then(function(value) {
+        logg('OK - Kontakt med FK = ' +value);
+    }, function(reason) {
+        logg('FEL, Kontakt med FK,' + reason);
+    });
 
 
     // Kontrollera rekommendationer
@@ -148,7 +153,10 @@ module.exports ={
 
     //Kontrollera övriga upplysningar
     var kommentar = element(by.id('kommentar'));
-    logg('Kontrollera att Kommentar är :' + intyg.prognos.fortydligande);
-    expect(kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).and.notify(callback);
+    expect(kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).then(function(value) {
+        logg('OK - Kommentar = ' +value);
+    }, function(reason) {
+        logg('FEL, Kommentar,' + reason);
+    }).then(callback);
 }
 };

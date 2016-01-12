@@ -35,8 +35,12 @@ module.exports = {
     genericAssert:function (_val, _element){
         var ele = element(by.id(_element));
         if(_val !== null ){
-            logg('Kontrollerar '+_element+' : '+ _val);
-            expect(ele.getText()).to.eventually.equal(_val);
+            // logg('Kontrollerar '+_element+' : '+ _val);
+            expect(ele.getText()).to.eventually.equal(_val).then(function(value) {
+                logg('OK - '+_element+' = '+value);
+            }, function(reason) {
+                logg('FEL, '+_element+', '+ reason);
+            });
         }
     },
     getDateForAssertion:function (_date){

@@ -28,10 +28,17 @@ var Fk7263Intyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'fk7263';
+
+        this.field1 = {
+    		title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
+    		text: element(by.css('div[field-number="1"]')).element(by.css('.text'))
+        };
+
+        this.field2 = {title: null, text: null};
     },
     get: function get(intygId) {
         get._super.call(this, intygId);
-    },
+    }
 });
 
 module.exports = new Fk7263Intyg();
