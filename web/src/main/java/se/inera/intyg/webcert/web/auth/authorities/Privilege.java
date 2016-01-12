@@ -21,13 +21,16 @@ package se.inera.intyg.webcert.web.auth.authorities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Magnus Ekstrand on 19/11/15.
  */
-public class Privilege {
+public class Privilege implements Serializable {
+
+    private static final long serialVersionUID = 7182651417178986967L;
 
     @JsonProperty
     private String name;
@@ -40,7 +43,6 @@ public class Privilege {
 
     @JsonProperty
     private List<RequestOrigin> requestOrigins;
-
 
     // ~ Getter and setter
     // =======================================================================
