@@ -151,6 +151,10 @@
       <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
       <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.riv.infrastructure.directory.employee</groupId>
+      <artifactId>infrastructure-directory-employee-schemas</artifactId>
+    </dependency>
 
     <!-- Intyg Schemas -->
     <dependency>
@@ -408,11 +412,7 @@
       <artifactId>json-schema-validator</artifactId>
       <version>2.7.0</version><!--TODO: move versioning to common-pom -->
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>se.rivta.tools</groupId>
-      <artifactId>infrastructure-directory-employee-schemas</artifactId>
-    </dependency>
+    </dependency>    
   </dependencies>
 
   <build>

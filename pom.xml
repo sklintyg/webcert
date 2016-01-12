@@ -65,9 +65,9 @@
     <cgi-funktionstjanster-grp.version>1.0.1</cgi-funktionstjanster-grp.version>
 
     <!-- Schemas with 0-SNAPSHOT dependencies as standard -->
-    <rivta-hsa-organization.version>1.1.RC5.0</rivta-hsa-organization.version>
-    <rivta-hsa-authorizationmanagement.version>1.0.RC4.0</rivta-hsa-authorizationmanagement.version>
-    <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
+    <rivta-hsa-authorizationmanagement.version>1.0.RC4.1</rivta-hsa-authorizationmanagement.version>
+    <rivta-hsa-employee.version>1.0.RC4.1</rivta-hsa-employee.version>
+    <rivta-hsa-organization.version>1.1.RC5.1</rivta-hsa-organization.version>
 
     <skip-coverage>true</skip-coverage>
   </properties>
@@ -251,21 +251,21 @@
 
       <!-- HSA Schemas -->
       <dependency>
-        <groupId>se.rivta.tools</groupId>
+        <groupId>se.riv.infrastructure.directory.authorizationmanagement</groupId>
+        <artifactId>infrastructure-directory-authorizationmanagement-schemas</artifactId>
+        <version>${rivta-hsa-authorizationmanagement.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>se.riv.infrastructure.directory.employee</groupId>
         <artifactId>infrastructure-directory-employee-schemas</artifactId>
         <version>${rivta-hsa-employee.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>se.rivta.tools</groupId>
+        <groupId>se.riv.infrastructure.directory.organization</groupId>
         <artifactId>infrastructure-directory-organization-schemas</artifactId>
         <version>${rivta-hsa-organization.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>se.rivta.tools</groupId>
-        <artifactId>infrastructure-directory-authorizationmanagement-schemas</artifactId>
-        <version>${rivta-hsa-authorizationmanagement.version}</version>
       </dependency>
 
       <!-- RIVTA Schemas -->
