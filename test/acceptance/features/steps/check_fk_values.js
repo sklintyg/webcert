@@ -63,7 +63,7 @@ module.exports ={
     expect(intygPage.field1.text.getText()).to.eventually.equal(smitta).then(function(value) {
         logg('OK - SMITTA = ' +value);
     }, function(reason) {
-        logg('FEL, SMITTA,' + reason);
+        callback('FEL, SMITTA,' + reason);
     });
 
     //Kontrollera diagnos
@@ -139,7 +139,7 @@ module.exports ={
     expect(kontaktMedFk.getText()).to.eventually.equal(kontaktOnskas).then(function(value) {
         logg('OK - Kontakt med FK = ' +value);
     }, function(reason) {
-        logg('FEL, Kontakt med FK,' + reason);
+        callback('FEL, Kontakt med FK,' + reason);
     });
 
 
@@ -156,7 +156,7 @@ module.exports ={
     expect(kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).then(function(value) {
         logg('OK - Kommentar = ' +value);
     }, function(reason) {
-        logg('FEL, Kommentar,' + reason);
+        callback('FEL, Kommentar,' + reason);
     }).then(callback);
 }
 };

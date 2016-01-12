@@ -33,6 +33,7 @@ module.exports = {
     },
  
     genericAssert:function (_val, _element){
+        logg('genericAssert-function is deprecated, does not fail on error');
         var ele = element(by.id(_element));
         if(_val !== null ){
             // logg('Kontrollerar '+_element+' : '+ _val);
