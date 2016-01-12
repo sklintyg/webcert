@@ -65,12 +65,9 @@
     <cgi-funktionstjanster-grp.version>1.0.1</cgi-funktionstjanster-grp.version>
 
     <!-- Schemas with 0-SNAPSHOT dependencies as standard -->
-    <rivta-hsa-organization.version>0-SNAPSHOT</rivta-hsa-organization.version>
-    <rivta-hsa-organization.version.range>(,1.1.RC5.0]</rivta-hsa-organization.version.range>
-    <rivta-hsa-authorizationmanagement.version>0-SNAPSHOT</rivta-hsa-authorizationmanagement.version>
-    <rivta-hsa-authorizationmanagement.version.range>(,1.0.RC4.0]</rivta-hsa-authorizationmanagement.version.range>
-    <rivta-hsa-employee.version>0-SNAPSHOT</rivta-hsa-employee.version>
-    <rivta-hsa-employee.version.range>(,1.0.RC4.0]</rivta-hsa-employee.version.range>
+    <rivta-hsa-organization.version>1.1.RC5.0</rivta-hsa-organization.version>
+    <rivta-hsa-authorizationmanagement.version>1.0.RC4.0</rivta-hsa-authorizationmanagement.version>
+    <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
 
     <skip-coverage>true</skip-coverage>
   </properties>
@@ -638,10 +635,7 @@
         <configuration>
           <includeProperties>
             common.version,
-            intygstyper.version,
-            rivta-hsa-organization.version,
-            rivta-hsa-authorizationmanagement.version,
-            rivta-hsa-employee.version
+            intygstyper.version
           </includeProperties>
           <properties>
             <property>
@@ -651,18 +645,6 @@
             <property>
               <name>intygstyper.version</name>
               <version>${intygstyper.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-hsa-organization.version</name>
-              <version>${rivta-hsa-organization.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-hsa-authorizationmanagement.version</name>
-              <version>${rivta-hsa-authorizationmanagement.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-hsa-employee.version</name>
-              <version>${rivta-hsa-employee.version.range}</version>
             </property>
           </properties>
         </configuration>
