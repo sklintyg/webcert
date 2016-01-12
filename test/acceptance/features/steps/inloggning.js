@@ -22,6 +22,7 @@
 
 'use strict';
 
+var helpers = require('./helpers.js');
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
@@ -100,7 +101,7 @@ module.exports = function () {
         }
         //  Insulin sedan år
         var insulPeriod = element(by.id('insulinBehandlingsperiod'));
-        if (typeof intyg.allmant.behandling.insulinYear != 'undefined'){
+        if (typeof intyg.allmant.behandling.insulinYear !== 'undefined'){
         logg('Kontrollerar att intyg.insulinBehandlingsperiod är: '+intyg.allmant.behandling.insulinYear);
         expect(insulPeriod.getText()).to.eventually.equal(intyg.allmant.behandling.insulinYear.toString());
         }
@@ -110,13 +111,13 @@ module.exports = function () {
         logg('Kontrollerar att diabetestyp är: '+intyg.allmant.typ);
         expect(dTyp.getText()).to.eventually.equal(intyg.allmant.typ);
 
-        testElement(intyg.hypoglykemier.a, 'kunskapOmAtgarder');
-        testElement(intyg.hypoglykemier.b, 'teckenNedsattHjarnfunktion');
-        testElement(intyg.hypoglykemier.c, 'saknarFormagaKannaVarningstecken');
-        testElement(intyg.hypoglykemier.d, 'allvarligForekomst');
-        testElement(intyg.hypoglykemier.e, 'allvarligForekomstTrafiken');
-        testElement(intyg.hypoglykemier.f, 'egenkontrollBlodsocker');
-        testElement(intyg.hypoglykemier.g, 'allvarligForekomstVakenTid');
+        helpers.testElement(intyg.hypoglykemier.a, 'kunskapOmAtgarder');
+        helpers.testElement(intyg.hypoglykemier.b, 'teckenNedsattHjarnfunktion');
+        helpers.testElement(intyg.hypoglykemier.c, 'saknarFormagaKannaVarningstecken');
+        helpers.testElement(intyg.hypoglykemier.d, 'allvarligForekomst');
+        helpers.testElement(intyg.hypoglykemier.e, 'allvarligForekomstTrafiken');
+        helpers.testElement(intyg.hypoglykemier.f, 'egenkontrollBlodsocker');
+        helpers.testElement(intyg.hypoglykemier.g, 'allvarligForekomstVakenTid');
 
         var synIntyg = element(by.id('separatOgonlakarintyg'));
         if (intyg.syn === 'Ja') {
@@ -163,11 +164,11 @@ module.exports = function () {
         logg('inside Transportstyrelsens läkarintyg');
     
     // Synfunktioner
-    testElement(intyg.synDonder, 'synfaltsdefekter');
-    testElement(intyg.synNedsattBelysning, 'nattblindhet');
-    testElement(intyg.synOgonsjukdom, 'progressivOgonsjukdom');
-    testElement(intyg.synDubbel, 'diplopi');
-    testElement(intyg.synNystagmus, 'nystagmus');
+    helpers.testElement(intyg.synDonder, 'synfaltsdefekter');
+    helpers.testElement(intyg.synNedsattBelysning, 'nattblindhet');
+    helpers.testElement(intyg.synOgonsjukdom, 'progressivOgonsjukdom');
+    helpers.testElement(intyg.synDubbel, 'diplopi');
+    helpers.testElement(intyg.synNystagmus, 'nystagmus');
     // ============= PLACEHOLDERS:
     // Ändra så att man sparar/genererar random värden!:     
     var hogerOgautanKorrektion = element(by.id('hogerOgautanKorrektion'));
@@ -363,89 +364,8 @@ module.exports = function () {
     }
 }
     else if (intyg.typ === 'Läkarintyg FK 7263'){
-        logg('Läkarintyg FK 7263');
-        var ejAngivet = 'Ej angivet'; 
-        var idSmittskydd = element(by.id('smittskydd'));
-
-        if (intyg.smittskydd) {
-            var field2 = element(by.xpath('//*[@id=\"field2\"]/span/span[1]/span'));
-            var certificateDiv3 = element(by.xpath('//*[@id=\"certificate\"]/div/div/div/div[3]/span/span[1]/span'));
-            var field4b = element(by.xpath('//*[@id=\"field4b\"]/span/span[1]/span'));
-            var certificateDiv6 = element(by.xpath('//*[@id=\"certificate\"]/div/div/div/div[6]/span/span[1]/span'));
-            var field6a = element(by.xpath('//*[@id=\"field6a\"]/span/span[1]/span'));
-            var field6b = element(by.xpath('//*[@id=\"field6b\"]/span/span[1]/span'));
-            var field7 = element(by.xpath('//*[@id=\"field7\"]/span/span[1]/span'));
-            var field8 = element(by.xpath('//*[@id=\"field8\"]/span/span[1]/span'));
-
-            expect(field2.getText()).to.eventually.equal(ejAngivet);
-            expect(certificateDiv3.getText()).to.eventually.equal(ejAngivet);
-            expect(field4b.getText()).to.eventually.equal(ejAngivet);
-            expect(certificateDiv6.getText()).to.eventually.equal(ejAngivet);
-            expect(field6a.getText()).to.eventually.equal(ejAngivet);
-            expect(field6b.getText()).to.eventually.equal(ejAngivet);
-            expect(field7.getText()).to.eventually.equal(ejAngivet);
-            expect(field8.getText()).to.eventually.equal(ejAngivet);
-            
-            logg('Kontrollera att smitta är : Ja');
-            expect(idSmittskydd.getText()).to.eventually.equal('Ja').and.notify(callback);
-
-        }else {
-            
-            genericAssert(getDateForAssertion(intyg.baserasPa.minUndersokning.datum), 'undersokningAvPatienten');
-            genericAssert(getDateForAssertion(intyg.baserasPa.minTelefonkontakt.datum), 'telefonkontaktMedPatienten');
-            genericAssert(getDateForAssertion(intyg.baserasPa.journaluppgifter.datum), 'journaluppgifter');
-            genericAssert(getDateForAssertion(intyg.baserasPa.annat.datum), 'annanReferens');
-            
-
-            var idEJSmittskydd = element(by.xpath('//*[@id=\"certificate\"]/div/div/div/div[1]/span/span[2]/span[2]/span'));
-            logg('Kontrollera att smitta är : Nej');
-            expect(idEJSmittskydd.getText()).to.eventually.equal('Nej');
-
-
-            var field6a = element(by.xpath('//*[@id=\"field6a\"]/span/span[1]/span'));
-            var field6b = element(by.xpath('//*[@id=\"field6b\"]/span/span[1]/span'));
-            expect(field6a.getText()).to.eventually.equal(ejAngivet);
-            expect(field6b.getText()).to.eventually.equal(ejAngivet);
-            
-            var rehabiliteringEjAktuell = element(by.id('rehabiliteringEjAktuell'));
-            logg('(PLACEHOLDER) Kontrollera att aktivitets begränsning är : Nej');
-            expect(rehabiliteringEjAktuell.getText()).to.eventually.equal('Nej');
-            
-            genericAssert(intyg.aktuelltSjukdomsforlopp, 'sjukdomsforlopp');
-            genericAssert(intyg.funktionsnedsattning, 'funktionsnedsattning');
-            genericAssert(intyg.arbete.nuvarandeArbete.aktuellaArbetsuppgifter, 'nuvarandeArbetsuppgifter');
-            genericAssert(intyg.diagnos.diagnoser[0].ICD10, 'diagnosKod');
-            genericAssert(intyg.diagnos.fortydligande, 'diagnosBeskrivning');
-            genericAssert(intyg.aktivitetsBegransning, 'aktivitetsbegransning');
-
-
-        }
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed25.from), 'nedsattMed25from');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed25.tom), 'nedsattMed25tom');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed50.from), 'nedsattMed50from');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed50.tom), 'nedsattMed50tom');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed75.from), 'nedsattMed75from');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed75.tom), 'nedsattMed75tom');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed100.from), 'nedsattMed100from');
-            genericAssert(getDateForAssertion(intyg.arbetsformaga.nedsattMed100.tom), 'nedsattMed100tom');
-            genericAssert(intyg.arbetsformagaFMB,'arbetsformagaPrognos');
-            genericAssert('Går inte att bedöma','arbetsformataPrognosGarInteAttBedoma');
-
-            var kontaktMedFk = element(by.id('kontaktMedFk'));
-            var s;
-            intyg.kontaktOnskasMedFK ? s = 'Ja' : s = 'Nej'; 
-            logg('Kontrollera att kontaktOnskasMedFK är: '+ s);
-            expect(kontaktMedFk.getText()).to.eventually.equal(s);
-
-            var ressattTillArbeteAktuellt = element(by.id('ressattTillArbeteAktuellt'));
-            intyg.ressattTillArbeteAktuellt ? s = 'Ja' : s = 'Nej'; 
-            logg('Kontrollera att ressattTillArbeteAktuellt är: '+ s);
-            expect(ressattTillArbeteAktuellt.getText()).to.eventually.equal(s);
-
-            var kommentar = element(by.id('kommentar'));
-            logg('Kontrollera att Kommentar är :' + intyg.prognos.fortydligande);
-            expect(kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).and.notify(callback);
-
+        logg('-- Kontrollerar Läkarintyg FK 7263 --');
+        require('./check_fk_values').checkFKValues(intyg, callback);
 
     }
 
@@ -454,41 +374,5 @@ module.exports = function () {
     this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
         expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
     });
-        function testElement(_typ, _element){
-        var ele = element(by.id(_element));
-        if(!_typ){
-            _typ = 'Ej angivet';
-        }
-        logg('Kontrollerar '+_element+' : '+ _typ);
-        expect(ele.getText()).to.eventually.equal(_typ);
-    }
- 
-    function genericAssert(_val, _element){
-        var ele = element(by.id(_element));
-        if(_val !== null ){
-            logg('Kontrollerar '+_element+' : '+ _val);
-            expect(ele.getText()).to.eventually.equal(_val);
-        }
-    }
-
-    function getDateForAssertion(_date){
-        var monthNames = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'
-        ];
-        var dateObj,month,day,year;
-        if (typeof _date === 'undefined') {
-            dateObj = new Date();
-            month = monthNames[dateObj.getUTCMonth()]; 
-            day = dateObj.getUTCDate().toString();
-            year = dateObj.getUTCFullYear().toString();
-            return day.concat(' ', month, ' ', year);
-        } else {
-            var _split = _date.split('-');
-            month = monthNames[_split[1] - 1]; 
-            day = _split[2];
-            year = _split[0];
-            return day.concat(' ', month, ' ', year);
-        }
-    }
-
 
 };
