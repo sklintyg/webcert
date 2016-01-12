@@ -161,7 +161,7 @@ module.exports = function () {
         });
     }
     else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
-        logg('inside Transportstyrelsens läkarintyg');
+        logg('-- Kontrollerar Transportstyrelsens läkarintyg --');
         require('./check_tsBas_values').checkTsBasValues(intyg, callback);
 
     
