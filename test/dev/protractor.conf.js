@@ -103,6 +103,10 @@ exports.config = {
 
         global.wcTestTools = require('webcert-testtools');
 
+        global.logg = function(text){
+            console.log(text);
+        };
+
         var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(
             new reporters.JUnitXmlReporter({
