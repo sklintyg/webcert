@@ -45,7 +45,7 @@ module.exports = function () {
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
         intyg.typ = intygsTyp;
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
-        sokSkrivIntygUtkastTypePage.intygTypeButton.click();
+        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
         
         // Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){
