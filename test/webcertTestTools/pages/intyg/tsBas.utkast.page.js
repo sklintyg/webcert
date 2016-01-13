@@ -49,7 +49,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
             synBinokulartUtanKorrektion: element(by.id('synBinokulartUtanKorrektion')),
             synHogerOgaMedKorrektion: element(by.id('synHogerOgaMedKorrektion')),
             synVansterOgaMedKorrektion: element(by.id('synVansterOgaMedKorrektion')),
-            synBinokulartMedKorrektion: element(by.id('synBinokulartMedKorrektion'))
+            synBinokulartMedKorrektion: element(by.id('synBinokulartMedKorrektion')),
+            hogerOgakontaktlinsYes: element(by.id('synHogerOgaKontaktlins')),
+            vansterOgakontaktlinsYes: element(by.id('synVasterOgaKontaktlins'))
         },
         this.horselBalans = {
             aYes: element(by.id('horselbalansay')),
@@ -126,14 +128,20 @@ var TsBasUtkast = BaseTsUtkast._extend({
         } else {
             this.syn.eNo.sendKeys(protractor.Key.SPACE);
         }
+        if (utkast.linserH === 'Ja') {
+            this.syn.hogerOgakontaktlinsYes.sendKeys(protractor.Key.SPACE);
 
-        this.syn.synHogerOgaUtanKorrektion.sendKeys('0,8');
-        this.syn.synVansterOgaUtanKorrektion.sendKeys('0,7');
-        this.syn.synBinokulartUtanKorrektion.sendKeys('1,0');
+        } else if (utkast.linserV === 'Ja') {
+            this.syn.vansterOgakontaktlinsYes.sendKeys(protractor.Key.SPACE);
+        }
 
-        this.syn.synHogerOgaMedKorrektion.sendKeys('1,0');
-        this.syn.synVansterOgaMedKorrektion.sendKeys('1,0');
-        this.syn.synBinokulartMedKorrektion.sendKeys('1,0');
+        this.syn.synHogerOgaUtanKorrektion.sendKeys(utkast.styrkor.houk);
+        this.syn.synVansterOgaUtanKorrektion.sendKeys(utkast.styrkor.vouk);
+        this.syn.synBinokulartUtanKorrektion.sendKeys(utkast.styrkor.buk);
+
+        this.syn.synHogerOgaMedKorrektion.sendKeys(utkast.styrkor.homk);
+        this.syn.synVansterOgaMedKorrektion.sendKeys(utkast.styrkor.vomk);
+        this.syn.synBinokulartMedKorrektion.sendKeys(utkast.styrkor.bmk);
     },
     fillInHorselOchBalanssinne: function(utkast) {
         if (utkast.horselYrsel === 'Ja') {
@@ -185,11 +193,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
         }
     },
     fillInDiabetes: function (utkast) {
-        logg('fillInDiabetes: function (utkast) -> utkast.diabetes === '+ utkast.diabetes);
         if (utkast.diabetes === 'Ja') {
             this.diabetes.aYes.sendKeys(protractor.Key.SPACE);
 
-            logg('fillInDiabetes: function (utkast) -> utkast.diabetestyp === '+ utkast.diabetestyp);
             if (utkast.diabetestyp === 'Typ 1') {
                 this.diabetes.typ1.sendKeys(protractor.Key.SPACE);
             } 
@@ -199,7 +205,6 @@ var TsBasUtkast = BaseTsUtkast._extend({
             // Ange behandlingstyp 
              if(utkast.diabetestyp === 'Typ 2'){
                 var typ = utkast.dTyper;
-                logg('fillInDiabetes: function (utkast) -> utkast.dTyper === '+ utkast.dTyper);
                 if (typ.indexOf('Endast kost') > -1) {
                     this.diabetes.endastkost.sendKeys(protractor.Key.SPACE);
                 }

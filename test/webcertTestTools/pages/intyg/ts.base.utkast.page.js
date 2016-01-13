@@ -49,15 +49,12 @@ var BaseTsUtkast = BaseUtkast._extend({
         get._super.call(this, this.intygType, intygId);
     },
     fillInKorkortstyper: function(typer) {
-        console.log('Anger körkortstyper: '+ typer.toString());
         pageHelpers.clickAll(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
-        console.log('Anger identitet styrkt genom ' + idtyp);
         this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
     },
     fillInBedomning: function(bedomningObj) {
-        console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
         element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
         pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
     },

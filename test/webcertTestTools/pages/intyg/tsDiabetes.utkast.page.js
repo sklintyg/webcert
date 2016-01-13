@@ -89,24 +89,18 @@ var TsDiabetesUtkast = BaseUtkast._extend({
         get._super.call(this, 'ts-diabetes', intygId);
     },
     fillInKorkortstyper: function(typer) {
-        console.log('Anger körkortstyper: ' + typer.toString());
 
-        // hittar flera på text körkortstyp A
         this.korkortsTyperChecks.filter(function(elem) {
-            //Return the element or elements
             return elem.getText().then(function(text) {
-                //Match the text
                 return (typer.indexOf(text) >= 0);
             });
         }).then(function(filteredElements) {
-            //filteredElements is the list of filtered elements
             for (var i = 0; i < filteredElements.length; i++) {
                 filteredElements[i].sendKeys(protractor.Key.SPACE);
             }
         });
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
-        console.log('Anger identitet styrkt genom ' + idtyp);
         this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
     },
 
@@ -125,24 +119,20 @@ var TsDiabetesUtkast = BaseUtkast._extend({
     fillInAllmant: function(allmant) { 
 
         // Ange år då diagnos ställts
-        //console.log('Anger år då diagnos ställts: ' + allmant.year);
         this.allmant.diabetesyear.sendKeys(allmant.year);
 
         var form = this.allmant.form;
 
         // Ange diabetestyp
-        //console.log('Anger diabetestyp:' + allmant.typ);
         form.element(by.cssContainingText('label.radio', allmant.typ)).sendKeys(protractor.Key.SPACE);
 
         // Ange behandlingstyp
         var typer = allmant.behandling.typer;
         typer.forEach(function(typ) {
-            console.log('Anger behandlingstyp: ' + typ);
             form.element(by.cssContainingText('label.checkbox', typ)).sendKeys(protractor.Key.SPACE);
         });
 
         if (allmant.behandling.insulinYear) {
-            console.log('Anger insulin från år: ' + allmant.behandling.insulinYear);
             this.allmant.insulinbehandlingsperiod.sendKeys(allmant.behandling.insulinYear);
         }
     },
@@ -191,15 +181,12 @@ var TsDiabetesUtkast = BaseUtkast._extend({
         }
     },
     fillInBedomning: function(bedomningObj) {
-        console.log('Anger bedömning: ' + bedomningObj.stallningstagande);
         this.bedomning.form.element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
 
-        console.log('Anger körkortstyper: ' + bedomningObj.behorigheter.toString());
 
         wcTestTools.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
 
         if (bedomningObj.lamplighet) {
-            console.log('Anger lämplighet: ' + bedomningObj.lamplighet);
             if (bedomningObj.lamplighet === 'Ja') {
                 this.bedomning.yes.sendKeys(protractor.Key.SPACE);
             } else {

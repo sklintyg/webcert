@@ -84,6 +84,12 @@ var TsBasIntyg = BaseIntyg._extend({
 
     this.stadigvarandeMedicinering = element(by.id('stadigvarandeMedicinering'));
     this.medicineringbeskrivning = element(by.id('medicineringbeskrivning'));
+    this.intygetAvser = element(by.id('intygAvser'));
+    this.idStarktGenom = element(by.id('identitet'));
+    
+    this.hogerOgakontaktlins = element(by.id('hogerOgakontaktlins'));
+    this.vansterOgakontaktlins = element(by.id('vansterOgakontaktlins'));
+
 
     },
     get: function get(intygId) {

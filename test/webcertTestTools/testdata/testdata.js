@@ -37,6 +37,7 @@ module.exports = {
     synOgonsjukdom:               ['Ja', 'Nej'],
     synDubbel:                    ['Ja', 'Nej'],
     synNystagmus:                 ['Ja', 'Nej'],
+    synLinser:                    ['Ja', 'Nej'], 
     horselYrsel:                  ['Ja', 'Nej'],
     horselSamtal:                 ['Ja', 'Nej'],
     rorOrgNedsattning:            ['Ja', 'Nej'],
@@ -66,9 +67,24 @@ module.exports = {
         // Shuffla korkortstyper och returnera slumpad längd på array
         return shuffle(this.korkortstyper).slice(0, Math.floor(Math.random() * this.korkortstyper.length));
     },
+    getRandomFloat: function() {
+        return parseFloat(Math.round((Math.random() * (2.0 -1.0) + 1.0)* 10) / 10).toFixed(1);
+    },
     getRandomKorkortstyperHogre: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
         return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length));
+    },
+    getRandomStyrka: function() {
+        // console.log('test: ' + parseFloat(Math.round((Math.random() * (2.0 -1.0) + 1.0)* 10) / 10).toFixed(1));
+        var styrkor = {
+            houk:  this.getRandomFloat(),
+            homk:  this.getRandomFloat(),
+            vouk:  this.getRandomFloat(),
+            vomk:  this.getRandomFloat(),
+            buk:  this.getRandomFloat(),
+            bmk:  this.getRandomFloat()
+        }
+        return styrkor;
     },
 
     getRandomIdentitetStyrktGenom: function() {
@@ -161,7 +177,6 @@ module.exports = {
             allmant: {
                 year: Math.floor((Math.random() * 20) + 1980),
                 behandling: this.getRandomBehandling()
-                // behandling: this.diabetesbehandlingtyper
             },
             synintyg: {
                 a: 'Ja'
@@ -173,6 +188,8 @@ module.exports = {
             synDubbel:                    shuffle(this.synDubbel)[0],                    
             synNystagmus:                 shuffle(this.synNystagmus)[0],                 
             horselYrsel:                  shuffle(this.horselYrsel)[0],                  
+            linserV:                      shuffle(this.synLinser)[0],                  
+            linserH:                      shuffle(this.synLinser)[0],                  
             horselSamtal:                 shuffle(this.horselSamtal)[0],                  
             rorOrgNedsattning:            shuffle(this.rorOrgNedsattning)[0],            
             rorOrgInUt:                   shuffle(this.rorOrgInUt)[0],            
@@ -196,7 +213,8 @@ module.exports = {
             sjukhusvard:                  shuffle(this.sjukhusvard)[0],                  
             ovrigMedicin:                 shuffle(this.ovrigMedicin)[0],
             kommentar:                    'Inget att rapportera',
-            dTyper:                       this.diabetesbehandlingtyper
+            dTyper:                       this.diabetesbehandlingtyper,
+            styrkor:                      this.getRandomStyrka()
 
         };
     }

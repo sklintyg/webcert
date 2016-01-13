@@ -24,7 +24,7 @@
 
 
 var helpers = require('./helpers.js');
-// var tsBasIntygPage = pages.intyg.ts.bas.intyg;
+
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 
 function boolTillJaNej(val){
@@ -35,17 +35,9 @@ function boolTillJaNej(val){
 		return 'Nej';
 	}
 }
-
 module.exports ={
 	checkTsBasValues:function(intyg, callback){
-    // Synfunktioner
-    // helpers.testElement(intyg.synDonder, 'synfaltsdefekter');
-    // helpers.testElement(intyg.synNedsattBelysning, 'nattblindhet');
-    // helpers.testElement(intyg.synOgonsjukdom, 'progressivOgonsjukdom');
-    // helpers.testElement(intyg.synDubbel, 'diplopi');
-    // helpers.testElement(intyg.synNystagmus, 'nystagmus');
-
-    
+   
     expect(tsBasIntygPage.synfaltsdefekter.getText()).to.eventually.equal(intyg.synDonder).then(function(value) {
         logg('OK - Synfaltsdefekter = ' + value);
     }, function(reason) {
@@ -72,54 +64,70 @@ module.exports ={
         callback('FEL - Nystagmus : ' + reason);
     });
 
-    // ============= PLACEHOLDERS:
-    // Ändra så att man sparar/genererar random värden!:     
-    expect(tsBasIntygPage.hogerOgautanKorrektion.getText()).to.eventually.equal('0,8').then(function(value) {
+    expect(tsBasIntygPage.hogerOgautanKorrektion.getText()).to.eventually.equal(intyg.styrkor.houk.toString().replace('.',',')).then(function(value) {
         logg('OK - Höger Öga utan korrektion = ' + value);
     }, function(reason) {
         callback('FEL - Höger Öga utan korrektion : ' + reason);
     });
-    expect(tsBasIntygPage.hogerOgamedKorrektion.getText()).to.eventually.equal('1,0').then(function(value) {
+    expect(tsBasIntygPage.hogerOgamedKorrektion.getText()).to.eventually.equal(intyg.styrkor.homk.toString().replace('.',',')).then(function(value) {
         logg('OK - Höger Öga med korrektion = ' + value);
     }, function(reason) {
         callback('FEL - Höger Öga med korrektion : ' + reason);
     });
-    expect(tsBasIntygPage.vansterOgautanKorrektion.getText()).to.eventually.equal('0,7').then(function(value) {
+    expect(tsBasIntygPage.vansterOgautanKorrektion.getText()).to.eventually.equal(intyg.styrkor.vouk.toString().replace('.',',')).then(function(value) {
         logg('OK - Vänster öga utan korrektion = ' + value);
     }, function(reason) {
         callback('FEL - Vänster öga utan korrektion : ' + reason);
     });
-    expect(tsBasIntygPage.vansterOgamedKorrektion.getText()).to.eventually.equal('1,0').then(function(value) {
+    expect(tsBasIntygPage.vansterOgamedKorrektion.getText()).to.eventually.equal(intyg.styrkor.vomk.toString().replace('.',',')).then(function(value) {
         logg('OK - Höger Öga med korrektion = ' + value);
     }, function(reason) {
         callback('FEL - Höger Öga med korrektion: ' + reason);
     });
-    expect(tsBasIntygPage.binokulartutanKorrektion.getText()).to.eventually.equal('1,0').then(function(value) {
+    expect(tsBasIntygPage.binokulartutanKorrektion.getText()).to.eventually.equal(intyg.styrkor.buk.toString().replace('.',',')).then(function(value) {
         logg('OK - Binokulärt utan klorrektion = ' + value);
     }, function(reason) {
         callback('FEL - Binokulärt utan klorrektion : ' + reason);
     });
-    expect(tsBasIntygPage.binokulartmedKorrektion.getText()).to.eventually.equal('1,0').then(function(value) {
+    expect(tsBasIntygPage.binokulartmedKorrektion.getText()).to.eventually.equal(intyg.styrkor.bmk.toString().replace('.',',')).then(function(value) {
         logg('OK - Binokulärt med klorrektion = ' + value);
     }, function(reason) {
         callback('FEL - Binokulärt med klorrektion : ' + reason);
     });
-    expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Nej').then(function(value) {
+    expect(tsBasIntygPage.vansterOgakontaktlins.getText()).to.eventually.equal(intyg.linserH).then(function(value) {
         logg('OK - Korrektionsglasens styrka = ' + value);
     }, function(reason) {
         callback('FEL - Korrektionsglasens styrka : ' + reason);
-    });
-    // ==============
+    });    
+    expect(tsBasIntygPage.hogerOgakontaktlins.getText()).to.eventually.equal(intyg.linserH).then(function(value) {
+        logg('OK - Höger öga kontaktlins = ' + value);
+    }, function(reason) {
+        callback('FEL - Höger öga kontaktlins : ' + reason);
+    });    
+    // TBI:: Räkna ut om styrka i något av glasen överskrider plus 8 dioptrier och anpassa assertion.
+    // var _sum = +intyg.styrkor.houk + + intyg.styrkor.homk + + intyg.styrkor.vouk + + intyg.styrkor.vomk + + intyg.styrkor.buk + + intyg.styrkor.bmk;
+    // console.log('_sum is: '+_sum);
+    
+    // if(parseInt(_sum) < 8 ){
+    //     expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Nej').then(function(value) {
+    //         logg('OK - Korrektionsglasens styrka = ' + value);
+    //     }, function(reason) {
+    //         callback('FEL - Korrektionsglasens styrka : ' + reason);
+    //     });
+    // } else {
+    //     expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Ja').then(function(value) {
+    //         logg('OK - Korrektionsglasens styrka = ' + value);
+    //     }, function(reason) {
+    //         callback('FEL - Korrektionsglasens styrka : ' + reason);
+    //     });
+    // }
 
-    // Hörsel och balanssinne:
     expect(tsBasIntygPage.horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel).then(function(value) {
         logg('OK - Hörsel balansbalans rubbningar = ' + value);
     }, function(reason) {
         callback('FEL - Hörsel balansbalans rubbningar : ' + reason);
     });
 
-    
-    // logg('Kontrollerar att rörelsehinder är: '+intyg.rorOrgInUt);
     expect(tsBasIntygPage.funktionsnedsattning.getText()).to.eventually.equal(intyg.rorOrgNedsattning).then(function(value) {
         logg('OK - Rörelsehinder = ' + value);
     }, function(reason) {
@@ -145,8 +153,6 @@ module.exports ={
         }, function(reason) {
             callback('FEL - Rörelseförmågan : ' + reason);
         });
-
-    // Hjärt- och kärlsjukdomar:
 
     expect(tsBasIntygPage.hjartKarlSjukdom.getText()).to.eventually.equal(intyg.hjartHjarna).then(function(value) {
         logg('OK - Hjart kärl sjukdom = ' + value);
@@ -265,11 +271,11 @@ module.exports ={
                 callback('FEL - Kognitiv funktion = '+ reason);
             });
 
-    if (intyg.somnVakenhet==='Ja') {
-        expect(tsBasIntygPage.teckenSomnstorningar.getText()).to.eventually.equal('Ja');
-    }else {
-        expect(tsBasIntygPage.teckenSomnstorningar.getText()).to.eventually.equal(intyg.somnVakenhet);
-    }
+    expect(tsBasIntygPage.teckenSomnstorningar.getText()).to.eventually.equal(intyg.somnVakenhet).then(function(value) {
+        logg('OK - Tecken somnstörningar = '+ value);
+            }, function(reason) {
+                callback('FEL - Tecken somnstörningar = '+ reason);
+            });
     
     expect(tsBasIntygPage.teckenMissbruk.getText()).to.eventually.equal(intyg.alkoholMissbruk).then(function(value) {
         logg('OK - Missbruk eller beroende = '+ value);
@@ -282,18 +288,26 @@ module.exports ={
         }, function(reason) {
             callback('FEL - Alkohol vård = '+ reason);
         });
-    // TBI::
-    // expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal(intyg.alkoholProvtagning).then(function(value) {
-    //     logg('OK - Alkohol provtagning = '+ value);
-    //     }, function(reason) {
-    //         callback('FEL - Alkohol provtagning = '+ reason);
-    //     });   
-    
+
+    if(intyg.alkoholMissbruk ==='Ja' || intyg.alkoholVard === 'Ja'){
+        expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal(intyg.alkoholProvtagning).then(function(value) {
+            logg('OK - Alkohol provtagning = '+ value);
+            }, function(reason) {
+                callback('FEL - Alkohol provtagning = '+ reason);
+            });   
+    } else {
+        expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal('').then(function(value) {
+            logg('OK - Alkohol provtagning = '+ value);
+            }, function(reason) {
+                callback('FEL - Alkohol provtagning = '+ reason);
+            });  
+    }
     expect(tsBasIntygPage.lakarordineratLakemedelsbruk.getText()).to.eventually.equal(intyg.alkoholLakemedel).then(function(value) {
         logg('OK - Alkohol läkemedel = '+ value);
         }, function(reason) {
             callback('FEL - Alkohol läkemedel = '+ reason);
         });   
+
     
     if (intyg.alkoholLakemedel==='Ja') {
         expect(tsBasIntygPage.lakemedelOchDos.getText()).to.eventually.equal('2 liter metadon.').then(function(value) {
@@ -309,22 +323,17 @@ module.exports ={
             callback('FEL - Psykisk sjukdom: '+ reason);
         }).then(callback);
 
-    //ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning
-    // logg('Kontrollera att adhd psykisk är: '+ intyg.adhdPsykisk);    
     expect(tsBasIntygPage.psykiskUtvecklingsstorning.getText()).to.eventually.equal(intyg.adhdPsykisk).then(function(value) {
         logg('OK - ADHD psykisk = '+ value);
         }, function(reason) {
             callback('FEL - ADHD psykisk: '+ reason);
         });
 
-    // logg('Kontrollera att adhd syndrom är: '+ intyg.adhdSyndrom);
     expect(tsBasIntygPage.harSyndrom.getText()).to.eventually.equal(intyg.adhdSyndrom).then(function(value) {
         logg('OK - ADHD syndrom = '+ value);
         }, function(reason) {
             callback('FEL - ADHD syndrom: '+ reason);
         }).then(callback);
-
-    // //Sjukhusvård
 
     if (intyg.sjukhusvard === 'Ja') {
         expect(tsBasIntygPage.tidpunkt.getText()).to.eventually.equal('2015-12-13').then(function(value) {
@@ -332,16 +341,19 @@ module.exports ={
         }, function(reason) {
             callback('FEL - Tidpunkt: '+ reason);
         });
+
         expect(tsBasIntygPage.vardinrattning.getText()).to.eventually.equal('Östra sjukhuset.').then(function(value) {
         logg('OK - Vardinrättning = '+ value);
         }, function(reason) {
             callback('FEL - Vardinrättning: '+ reason);
         });
+
         expect(tsBasIntygPage.sjukhusvardanledning.getText()).to.eventually.equal('Allmän ysterhet.').then(function(value) {
         logg('OK - Sjukhusvårdanledning = '+ value);
         }, function(reason) {
             callback('FEL - Sjukhusvårdanledning: '+ reason);
         });
+
         expect(tsBasIntygPage.sjukhusEllerLakarkontakt.getText()).to.eventually.contain('Ja').then(function(value) {
         logg('OK - Sjukhus Eller Läkarkontakt = '+ value);
         }, function(reason) {
@@ -361,8 +373,8 @@ module.exports ={
         }, function(reason) {
             callback('FEL - Stadig varande Medicinering: '+ reason);
         }).then(callback);
-    }
-    else if (intyg.ovrigMedicin === 'Nej'){
+
+    } else if (intyg.ovrigMedicin === 'Nej'){
         expect(tsBasIntygPage.stadigvarandeMedicinering.getText()).to.eventually.equal('Nej').then(function(value) {
         logg('OK - Stadig varande Medicinering = '+ value);
         }, function(reason) {
