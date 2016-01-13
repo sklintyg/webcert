@@ -279,7 +279,7 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeRekommendationer:function(rekommendationer){
         if(rekommendationer.resor){
-            this.travelRadioButtonJa.click();
+            this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE);
         }
         if(rekommendationer.kontaktMedArbetsformedlingen){
             this.rekommendationer.kontaktAf.sendKeys(protractor.Key.SPACE);
