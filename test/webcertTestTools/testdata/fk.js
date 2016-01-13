@@ -48,6 +48,11 @@ function randomPrognosFortydligande(val){
     }
 }
 
+function dateFormat(date){
+    var d = date.toISOString().slice(0,10).replace(/-/g,'-');
+    return d;
+}
+
 var random = {
     baserasPa:function (smittskydd) {
         if (smittskydd) {return false;}
@@ -90,30 +95,47 @@ var random = {
         };
     },
     arbetsformaga:function(){
+        var today = new Date();
+        var todayPlus5Days = new Date();
+        var todayPlus6Days = new Date();
+        var todayPlus10Days = new Date();
+        var todayPlus11Days = new Date();
+        var todayPlus20Days = new Date();
+        var todayPlus21Days = new Date();
+        var todayPlus30Days = new Date();
+         
+        todayPlus5Days.setDate(today.getDate() + 5);
+        todayPlus6Days.setDate(today.getDate() + 6);
+        todayPlus10Days.setDate(today.getDate() + 10);
+        todayPlus11Days.setDate(today.getDate() + 11);
+        todayPlus20Days.setDate(today.getDate() + 20);
+        todayPlus21Days.setDate(today.getDate() + 21);
+        todayPlus30Days.setDate(today.getDate() + 30);
+    
         return {
-                    nedsattMed25: {
-                        from: '2015-12-15',
-                        tom: '2016-01-20'
-                    },
-                    nedsattMed50: {
-                        from: '2016-01-21',
-                        tom: '2016-02-20'
-                    },
-                    nedsattMed75: {
-                        from: '2016-02-21',
-                        tom: '2016-03-20'
-                    },
-                    nedsattMed100: {
-                        from: '2016-03-21',
-                        tom: '2016-04-20'
-                    }
+                nedsattMed25: {
+                    from: dateFormat(today),
+                    tom: dateFormat(todayPlus5Days)
+                },
+                nedsattMed50: {
+                    from: dateFormat(todayPlus6Days),
+                    tom: dateFormat(todayPlus10Days)
+                },
+                nedsattMed75: {
+                    from: dateFormat(todayPlus11Days),
+                    tom: dateFormat(todayPlus20Days)
+                },
+                nedsattMed100: {
+                    from: dateFormat(todayPlus21Days),
+                    tom: dateFormat(todayPlus30Days)
+                }
         };
     },
     prognos:function(){
         var val =  shuffle(['Ja','Ja, delvis','Nej','Går ej att bedöma'])[0];
         return {
                     val: val,
-                    fortydligande: randomPrognosFortydligande()
+                    fortydligande: randomPrognosFortydligande(val)
                 };
     },
     atgarder:function(smittskydd){

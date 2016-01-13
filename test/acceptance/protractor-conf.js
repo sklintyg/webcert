@@ -45,6 +45,7 @@ exports.config = {
         require: ['features/steps/**/*.js', 'features/support/**/*.js']
     },
     onPrepare: function () {
+
         //http://chaijs.com/
         global.chai = require('chai');
 
