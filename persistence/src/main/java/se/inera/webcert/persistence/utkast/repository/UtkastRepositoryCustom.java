@@ -1,6 +1,7 @@
 package se.inera.webcert.persistence.utkast.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,8 +41,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @param statuses
      * @return
      */
-    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses)")
-    List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses);
+    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:allowedIntygTypes)")
+    List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("allowedIntygTypes") Set<String> allowedIntygTypes);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied enhetsId.
@@ -55,7 +56,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid, @Param("statuses") List<UtkastStatus> statuses);
 
     /**
-     * Return the status of a draft
+     * Return the status of a draft.
      * @param intygsId
      * @return
      */
@@ -63,7 +64,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     UtkastStatus getIntygsStatus(@Param("intygsId") String intygsId);
 
     /**
-     * Return the HSA-ID for the Enhet on which the Utkast was created
+     * Return the HSA-ID for the Enhet on which the Utkast was created.
      * @param intygsId
      * @return
      */

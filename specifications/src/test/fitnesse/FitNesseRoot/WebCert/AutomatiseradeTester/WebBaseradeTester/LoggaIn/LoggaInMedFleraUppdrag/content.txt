@@ -9,13 +9,13 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Verifiera att enhetsväljaren visas och att man kan byta enhet
 
-| script | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | enhetsvaljare visas |
 | valj vardenhet | IFV1239877878-1045 |

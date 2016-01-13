@@ -24,7 +24,7 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly=true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -45,7 +45,7 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly=true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public int countFilterIntyg(UtkastFilter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

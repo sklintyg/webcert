@@ -1,9 +1,8 @@
 package se.inera.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasResponseType;
-import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasType;
 import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponderInterface;
 import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponseType;
 import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType;
@@ -23,7 +22,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesResponderInterface {
 
     @Autowired
-    IntygStore intygStore;
+    private IntygStore intygStore;
 
     @Override
     @StubModeAware

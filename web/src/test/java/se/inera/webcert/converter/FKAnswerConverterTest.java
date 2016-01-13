@@ -17,14 +17,13 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.StringWriter;
 import java.io.Writer;
 
-
 /**
  * This test makes use of Equals and HashCode from JAXB basics. All types must implement
- * this. 
+ * this.
  */
 public class FKAnswerConverterTest {
-	
-	private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
+
+    private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
 
     private QuestionFromFkType inflateQuestionFromFK() throws Exception {
         JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
@@ -61,15 +60,15 @@ public class FKAnswerConverterTest {
 
         QuestionFromFkType questionFromFK = inflateQuestionFromFK();
         AnswerToFkType referenceAnswerToFK = inflateAnswerToFK();
-        
+
         // convert QuestionFromFK to FragaSvar entity
         FragaSvar fragaSvar = fragaSvarConverter.convert(questionFromFK);
-        
+
         // add some data
         fragaSvar.setInternReferens(321L);
         fragaSvar.setSvarsText(fragaSvar.getFrageText());
         fragaSvar.setSvarSigneringsDatum(fragaSvar.getFrageSigneringsDatum());
-        
+
         // convert FragaSvar entity to AnswerToFK
         AnswerToFkType convertedAnswerToFK = FKAnswerConverter.convert(fragaSvar);
 

@@ -1,7 +1,5 @@
 package se.inera.webcert.security;
 
-import javax.xml.transform.stream.StreamSource;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -16,7 +14,7 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 
-import se.inera.auth.SakerhetstjanstAssertion;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * @author andreaskaltenbach
@@ -26,6 +24,7 @@ public class SakerhetstjanstAssertionTest {
     private static Assertion assertionWithEnhet;
     private static Assertion assertionWithoutEnhet;
     private static Assertion assertionWithMultipleTitles;
+    private static Assertion assertionWithNewFormat;
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
@@ -45,6 +44,10 @@ public class SakerhetstjanstAssertionTest {
         doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-with-multiple-titles.xml").getInputStream()));
         assertionWithMultipleTitles = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
+
+        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+                "SakerhetstjanstAssertionTest/saml-assertion-new.xml").getInputStream()));
+        assertionWithNewFormat = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
     }
 
     @Test
@@ -53,7 +56,7 @@ public class SakerhetstjanstAssertionTest {
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithEnhet);
 
         assertTrue(assertion.getTitelKod().contains("204010"));
-        assertEquals("8787878", assertion.getForskrivarkod());
+        assertEquals("8787878", assertion.getForskrivarkod().get(0));
         assertEquals("TST5565594230-106J", assertion.getHsaId());
         assertEquals("Markus", assertion.getFornamn());
         assertEquals("Gran", assertion.getMellanOchEfternamn());
@@ -76,4 +79,19 @@ public class SakerhetstjanstAssertionTest {
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithMultipleTitles);
         assertTrue(assertion.getTitelKod().contains("204010"));
     }
+
+    @Test
+    public void testAssertionNewFormat() {
+        SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithNewFormat);
+        assertTrue(assertion.getTitelKod().contains("204010"));
+        assertEquals("8787878", assertion.getForskrivarkod().get(0));
+        assertEquals("TST5565594230-106J", assertion.getHsaId());
+        assertEquals("Markus", assertion.getFornamn());
+        assertEquals("Gran", assertion.getMellanOchEfternamn());
+        assertEquals("IFV1239877878-103D", assertion.getEnhetHsaId());
+        assertEquals("VårdEnhetA", assertion.getEnhetNamn());
+        assertEquals("IFV1239877878-0001", assertion.getVardgivareHsaId());
+        assertEquals("IFV Testdata", assertion.getVardgivareNamn());
+    }
+
 }

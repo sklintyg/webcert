@@ -3,6 +3,7 @@ package se.inera.webcert.integration.builder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.service.dto.HoSPerson;
@@ -71,7 +72,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private se.inera.webcert.service.dto.Patient createPatient(Patient patientType) {
         se.inera.webcert.service.dto.Patient patient = new se.inera.webcert.service.dto.Patient();
-        patient.setPersonnummer(patientType.getPersonId().getExtension());
+        patient.setPersonnummer(new Personnummer(patientType.getPersonId().getExtension()));
         patient.setFornamn(joinNames(patientType.getFornamn()));
         patient.setMellannamn(joinNames(patientType.getMellannamn()));
         patient.setEfternamn(patientType.getEfternamn());

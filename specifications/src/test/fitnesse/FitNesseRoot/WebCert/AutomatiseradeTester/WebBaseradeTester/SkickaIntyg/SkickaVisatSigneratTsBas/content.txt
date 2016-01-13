@@ -1,28 +1,35 @@
 Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 
-!3 Välj patient och visa intyget
-| script | !-SokSkrivIntyg-! |
+!3 Logga in
+
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+
+!3 Välj patient och visa intyget
+
+| skript | !-SokSkrivIntyg-! |
+| säkerställ att | sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
-| valj intygstyp sidan visas |
+| säkerställ att | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-7 |
-| visa intyg sidan visas |
+| säkerställ att | visa intyg sidan visas |
 
 !3 Skicka intyget och kontrollera att intyget skickats
-| script | !-SokSkrivIntyg-! |
+
+| skript | !-SokSkrivIntyg-! |
+| säkerställ att | meddelande for status intyg inte skickat visas | Transportstyrelsen |
 | skicka det visade intyget av typ | ts-bas |
-| skicka status visas |
-| skicka status visas | true | med ratt meddelande | Transportstyrelsen |
+| säkerställ att | meddelande for status intyg skickat visas | Transportstyrelsen |
 
 !3 Verififera att intyget finns i intygstjänsten och stubben
 
-| script | !-IntygstjanstAsynk-! |
-| finns intyg i intygstjansten skickad till | intyg-fit-7 | skickad till | TS | med vantetid | 5000 |
+| skript | !-IntygstjanstAsynk-! |
+| säkerställ att| finns intyg | intyg-fit-7 | i intygstjansten skickad till | TS | med vantetid | 5000 |
 
 | ts intyg finns i stub |
 | id | exists? |
 | intyg-fit-7 | true |
 
 !3 Rensa intyg från ts stub
+
 | ta bort ts intyg stub |

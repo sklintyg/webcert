@@ -9,7 +9,7 @@ describe('Siths.jsp', function() {
 
         // Find where the serialnumber ends and remove everything after
         var subjectSerialEndIndex = subjectSerial.indexOf(',');
-        if (subjectSerialEndIndex == -1) {
+        if (subjectSerialEndIndex === -1) {
             // There are no more commas in the string, assume serial runs to the end of it
             subjectSerial = subjectSerial.substring(0);
         } else {

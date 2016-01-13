@@ -58,4 +58,6 @@ public interface WebcertFeatureService {
      * @return
      */
     Set<String> getActiveFeatures();
+
+    void setFeature(String key, String value);
 }

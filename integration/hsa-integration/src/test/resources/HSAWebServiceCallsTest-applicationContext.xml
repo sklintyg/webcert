@@ -22,9 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:cxf="http://cxf.apache.org/core" xmlns:contex="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://cxf.apache.org/core
         http://cxf.apache.org/schemas/core.xsd

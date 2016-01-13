@@ -1,12 +1,13 @@
 package se.inera.webcert.web.controller.api.dto;
 
 import org.apache.commons.lang.StringUtils;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 
 public class CreateUtkastRequest {
 
     private String intygType;
 
-    private String patientPersonnummer;
+    private Personnummer patientPersonnummer;
 
     private String patientFornamn;
 
@@ -30,7 +31,7 @@ public class CreateUtkastRequest {
             return false;
         }
 
-        if (StringUtils.isBlank(patientPersonnummer)) {
+        if (patientPersonnummer == null || StringUtils.isBlank(patientPersonnummer.getPersonnummer())) {
             return false;
         }
 
@@ -49,11 +50,11 @@ public class CreateUtkastRequest {
         this.intygType = intygType;
     }
 
-    public String getPatientPersonnummer() {
+    public Personnummer getPatientPersonnummer() {
         return patientPersonnummer;
     }
 
-    public void setPatientPersonnummer(String patientPersonnummer) {
+    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
         this.patientPersonnummer = patientPersonnummer;
     }
 

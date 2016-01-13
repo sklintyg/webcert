@@ -27,6 +27,6 @@
 | externReferens |
 | FK-1234 |
 
-| script | Mailbox |
+| skript | Mailbox |
 | rensa |
 

@@ -1,6 +1,13 @@
 package se.inera.webcert.service.fragasvar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -25,11 +32,15 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.fragasvar.model.*;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.fragasvar.repository.VantarPa;
@@ -44,10 +55,9 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
-import se.inera.webcert.web.service.WebCertUserService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -68,7 +78,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     private static final CertificateState SENT_STATUS_TYPE = CertificateState.SENT;
-    private static final CertificateState REVOKED_STATUS_TYPE = CertificateState.CANCELLED;
 
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(
             Amne.ARBETSTIDSFORLAGGNING,
@@ -106,12 +115,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private NotificationService notificationService;
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
-    
-    @Autowired
-    private ObjectMapper objectMapper;
 
     /* --------------------- Public scope --------------------- */
 
@@ -121,7 +127,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         validateAcceptsQuestions(fragaSvar);
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
-                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getExternReferens());
+                (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                fragaSvar.getExternReferens(),
+                fragaSvar.getInternReferens(),
+                fragaSvar.getVardAktorHsaId(),
+                (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -137,7 +147,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new IllegalStateException("No question found with internal ID " + internId);
         }
 
-        if (FrageStallare.FORSAKRINGSKASSAN.equals(fragaSvar.getFrageStallare())) {
+        if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(fragaSvar.getFrageStallare())) {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
@@ -148,8 +158,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        monitoringService.logAnswerReceived(fragaSvar.getInternReferens(),
-                fragaSvar.getIntygsReferens().getIntygsId());
+        monitoringService.logAnswerReceived(fragaSvar.getExternReferens(),
+                fragaSvar.getInternReferens(),
+                (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                fragaSvar.getVardAktorHsaId(),
+                (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -175,7 +188,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
         // Filter questions to that current user only sees questions issued to
@@ -226,8 +239,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Implement Business Rule FS-005, FS-006
-        WebCertUser user = webCertUserService.getWebCertUser();
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
+        WebCertUser user = webCertUserService.getUser();
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.hasPrivilege(UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
                     + ") can only be answered by user that is Lakare");
@@ -268,7 +281,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logAnswerSent(fragaSvarsId, saved.getIntygsReferens().getIntygsId());
+        monitoringService.logAnswerSent(saved.getExternReferens(),
+                saved.getInternReferens(),
+                (saved.getIntygsReferens() == null ? null : saved.getIntygsReferens().getIntygsId()),
+                saved.getVardAktorHsaId(),
+                (saved.getAmne() == null ? null : saved.getAmne().toString()));
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
@@ -328,7 +345,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setVardperson(vardPerson);
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         fraga.setVardAktorHsaId(user.getHsaId());
         fraga.setVardAktorNamn(user.getNamn());
 
@@ -357,14 +374,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logQuestionSent(fraga.getInternReferens(), intygId);
+        monitoringService.logQuestionSent(fraga.getExternReferens(),
+                fraga.getInternReferens(),
+                (fraga.getIntygsReferens() == null ? null : fraga.getIntygsReferens().getIntygsId()),
+                fraga.getVardAktorHsaId(),
+                (fraga.getAmne() == null ? null : fraga.getAmne().toString()));
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
 
         return saved;
     }
-
 
     @Override
     public FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched) {
@@ -380,7 +400,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
 
-        FragaSvar closedFragaSvar = closeQuestionAsHandled(fragaSvar); 
+        FragaSvar closedFragaSvar = closeQuestionAsHandled(fragaSvar);
 
         if (notificationEvent != null) {
             sendNotification(closedFragaSvar, notificationEvent);
@@ -424,7 +444,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
 
         // Enforce business rule FS-011, from FK + answer should remain closed
-        if (!FrageStallare.WEBCERT.equals(fragaSvar.getFrageStallare())
+        if (!FrageStallare.WEBCERT.isKodEqual(fragaSvar.getFrageStallare())
                 && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "FS-011: Cant revert status for question " + frageSvarId);
@@ -435,7 +455,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
-            if (FrageStallare.WEBCERT.equals(fragaSvar.getFrageStallare())) {
+            if (FrageStallare.WEBCERT.isKodEqual(fragaSvar.getFrageStallare())) {
                 fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
             } else {
                 fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
@@ -443,7 +463,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         }
         FragaSvar openedFragaSvar = fragaSvarRepository.save(fragaSvar);
-        
+
         if (notificationEvent != null) {
             sendNotification(openedFragaSvar, notificationEvent);
         }
@@ -477,7 +497,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             verifyEnhetsAuth(enhetsId);
             enhetsIdParams.add(enhetsId);
         } else {
-            WebCertUser user = webCertUserService.getWebCertUser();
+            WebCertUser user = webCertUserService.getUser();
             enhetsIdParams.addAll(user.getIdsOfSelectedVardenhet());
         }
 
@@ -549,7 +569,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             verifyEnhetsAuth(params.getEnhetId(), true);
             filter.getEnhetsIds().add(params.getEnhetId());
         } else {
-            WebCertUser user = webCertUserService.getWebCertUser();
+            WebCertUser user = webCertUserService.getUser();
             filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
         }
 
@@ -601,21 +621,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return (booleanObj != null) && booleanObj;
     }
 
-    private boolean isCertificateRevoked(List<se.inera.certificate.model.Status> statuses) {
-        if (statuses != null) {
-            for (se.inera.certificate.model.Status status : statuses) {
-                if (REVOKED_STATUS_TYPE.equals(status.getType())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private boolean isCertificateSentToFK(List<se.inera.certificate.model.Status> statuses) {
         if (statuses != null) {
             for (se.inera.certificate.model.Status status : statuses) {
-                if (FrageStallare.FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
+                if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }
             }
@@ -633,9 +642,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {
-
-        Long fragaSvarId = fragaSvar.getInternReferens();
-        String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
 
         switch (event) {
         case ANSWER_FROM_FK_HANDLED:

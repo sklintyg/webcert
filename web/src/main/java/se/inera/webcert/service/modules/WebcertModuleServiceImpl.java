@@ -41,7 +41,7 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
 
     @Override
     public boolean validateDiagnosisCode(String codeFragment, Diagnoskodverk codeSystem) {
-        
+
         DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystem);
 
         LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);

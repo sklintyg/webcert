@@ -16,31 +16,28 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 
-
 /**
  * Created by pehr on 10/7/13.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:test-services-cxf-servlet.xml"})
+@ContextConfiguration(locations = { "classpath:test-services-cxf-servlet.xml" })
 @ActiveProfiles("dev")
 public class SendQuestionToFKTest {
 
-
     @Autowired
-    SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
     @Before
-    public void setup(){
-
+    public void setup() {
     }
 
     @Test
     @Ignore
-    public void sendQuestionTest(){
+    public void sendQuestionTest() {
         SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
         QuestionToFkType q2fk = new QuestionToFkType();
         sendType.setQuestion(q2fk);
-        SendMedicalCertificateQuestionResponseType resp =  sendQuestionToFKClient.sendMedicalCertificateQuestion(null, sendType);
+        SendMedicalCertificateQuestionResponseType resp = sendQuestionToFKClient.sendMedicalCertificateQuestion(null, sendType);
         Assert.assertTrue(resp.getResult().getResultCode().equals(ResultCodeEnum.OK));
     }
 

@@ -20,6 +20,7 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,9 +55,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MonitoringLogService monitoringLog;
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftCreated(se.inera.webcert
      * .persistence.utkast.model.Utkast)
@@ -68,7 +72,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftSigned(se.inera.webcert.
      * persistence.utkast.model.Utkast)
@@ -80,7 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftChanged(se.inera.webcert
      * .persistence.utkast.model.Utkast)
@@ -92,7 +96,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftDeleted(se.inera.webcert
      * .persistence.utkast.model.Utkast)
@@ -104,7 +108,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.notification.NewNotificationService#sendNotificationForIntygSent(se.inera.webcert.
      * persistence.utkast.model.Utkast)
      */
@@ -115,7 +119,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForIntygRevoked(se.inera.webcert
      * .persistence.utkast.model.Utkast)
@@ -127,7 +131,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.inera.webcert
      * .persistence.fragasvar.model.FragaSvar)
@@ -139,7 +143,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.inera.webcert
      * .persistence.fragasvar.model.FragaSvar)
@@ -151,7 +155,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.webcert
      * .persistence.fragasvar.model.FragaSvar)
@@ -163,7 +167,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera.webcert
      * .persistence.fragasvar.model.FragaSvar)
@@ -175,7 +179,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.webcert
      * .persistence.fragasvar.model.FragaSvar)
@@ -193,7 +197,7 @@ public class NotificationServiceImpl implements NotificationService {
             LOGGER.debug("Will not send notification message for certificate '{}' and event '{}'", intygsId, handelse);
             return;
         }
-        
+
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
         send(notificationMessage, utkast.getEnhetsId());
     }
@@ -236,6 +240,8 @@ public class NotificationServiceImpl implements NotificationService {
         jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson, enhetsId));
 
         LOGGER.debug("Notification sent: {}", notificationMessage);
+        monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId);
+
     }
 
     String notificationMessageToJson(NotificationMessage notificationMessage) {

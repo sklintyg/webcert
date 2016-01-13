@@ -4,8 +4,8 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 !3 Givet test-intyg i Intygstjänsten
 
 | Intyg |
-| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | skickat |
-| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104K | IFV1239877878-1045 | IFV1239877878-1043 | FK7263 | intyg-fit-fraga |ja |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | skickat | respons? |
+| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104K | IFV1239877878-1045 | IFV1239877878-1043 | FK7263 | intyg-fit-fraga |ja | 200 |
 
 !3 Lägg till fråga
 
@@ -15,13 +15,13 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
-| script | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | visa alla fragor |
 | lista med ohanterade fragor visas |
@@ -30,13 +30,13 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 
 !3 Verifiera att en dialog för att hantera fråga och svar visas när man försöka att lämna sidan
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | lamna fraga svar|
 | lamna fraga svar ej hanterad dialog visas |
 
 !3 Verifiera att fraga svar blir ej hanterad när man klicka på ej hantera knappen
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | klicka pa ejhanterad knappen |
 | lista med ohanterade fragor visas |
 | svar ar med | $internReferens1 |

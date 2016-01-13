@@ -1,0 +1,14 @@
+{
+    "hsaId": "TSTNMT2321000156-103B",
+	"forNamn": "Louise",
+	"efterNamn": "Ericsson",
+	"titel" : "Tandläkare",
+	"legitimeradeYrkesgrupper" : ["Tandläkare"],
+    "uppdrag":[
+    	{
+    		"vardgivare": "TSTNMT2321000156-1002",
+    		"enhet": "TSTNMT2321000156-1039",
+			"andamal":["Vård och behandling"]
+    	}
+    ]
+}

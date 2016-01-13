@@ -1,0 +1,1792 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:GetDiagnosInformationResponse xmlns:ns3="urn:riv:itintegration:registry:1" xmlns:ns2="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:GetDiagnosInformationResponder:1" xmlns="urn:riv:processmanagement:decisionsupport:insurancemedicinedecisionsupport:1">
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.1</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Annat tillstånd eller rubbning sammanhängande med graviditet</rubrik>
+    <funktionsnedsattningBeskrivning>Funktionen kan vara nedsatt i form av trötthet, uttröttbarhet, smärta, koncentrationssvårighet och yrsel.</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>nedsatt koncentrationsförmåga,  nedsatt förmåga till fysisk och kognitiv ansträngning</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>O26.9</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</displayName>
+        <originalText>O26.9:Tillstånd eller rubbning sammanhängande med gravititeten, ospecificerad</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b152</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Oro</displayName>
+        <originalText>b152:Oro</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b2401</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Yrsel</displayName>
+        <originalText>b2401:Yrsel</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b140</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Nedsatt koncentration</displayName>
+        <originalText>b140:Nedsatt koncentration</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <symtomPrognosBehandling>Förändringar av sömnrytmen, yrsel, urinträngningar, värk i bäcken och svårigheter att hitta viloläge är vanliga tillstånd för gravida. Tidiga besvär brukar gå över efter den första trimestern. Trötthet på grund av att sömnen störs vid värk kommer vanligen i senare delen av graviditeten och kvarstår troligen till efter barnets födelse. Om besvären kommer senare under graviditeten kan de bli mer långvariga. Tillstånden är svåra att behandla med läkemedel på ett lämpligt sätt.</symtomPrognosBehandling>
+      <genrellInformation>Det är viktigt att de symtom som nedsätter arbetsförmågan beskrivs i det medicinska underlaget. Bedöm om patienten har annan somatisk eller psykisk sjukdom, som depression, om symtomen kommit under första trimestern och kvarstår in i andra trimestern. Överväg remiss till psykolog. Överväg remiss till annan instans (vårdcentral, psykiatrisk mottagning) för att den ska bedöma, eventuellt åtgärda och ta ställning till fortsatt sjukskrivning.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.2</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Graviditetsrelaterad rygg-och bäckensmärta</rubrik>
+    <funktionsnedsattningBeskrivning>Benägenheten för smärta kvarstår under hela graviditeten. Smärtintensiteten är belastningsrelaterad och ökar under eller efter belastning. Smärtan medför svårigheter att sitta, stå och gå och svårigheter att lyfta tungt och upprepat.  Arbeten som kan vara svår att klara är sådana som kräver gång längre sträckor, sitta eller stå längre stunder och arbeten som kräver upprepade lyft. När smärtan väcker upprepat under natten ger det dagtrötthet och koncentrationssvårigheter.</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Svårt att sitta, stå och gå. Svårt att lyft tungt och upprepat. Koncentrationssvårigheter och dagtrötthet när smärtan stör sömnen.</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>O26.7</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Symfyseolys under gravitet, förlossning och barnsängstid</displayName>
+        <originalText>O26.7:Symfyseolys under gravitet, förlossning och barnsängstid</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b770</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Stel/haltande gång</displayName>
+        <originalText>b770:Stel/haltande gång</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d4600</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att röra sig inom hemmet</displayName>
+        <originalText>d4600:Begränsad förmåga att röra sig inom hemmet</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d4602</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att röra sig utanför hemmet</displayName>
+        <originalText>d4602:Begränsad förmåga att röra sig utanför hemmet</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d660</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att bistå andra</displayName>
+        <originalText>d660:Begränsad förmåga att bistå andra</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d450</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att gå/gå i trappor</displayName>
+        <originalText>d450:Begränsad förmåga att gå/gå i trappor</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <symtomPrognosBehandling>Mer än varannan kvinna får smärta i ryggen eller bäckenet med debut under aktuell graviditet. Smärtan kan starta när som helst under graviditeten, från tidigt till sent, men för de flesta kvinnor debuterar smärtan under graviditetens första hälft. Kvinnorna förlägger smärtan till korsryggen (sacrum) och över skinkorna (glutéerna), inte sällan med smärtutstrålning ned i benen, mot ljumskar, höfter och symfysregionen. Smärtutstrålningen ned i benen känns oftast i låren ned mot knäna men sällan ner i underben och fötter. Smärtans intensitet varierar mellan kvinnor från lindrig till intensiv och är beroende av fysisk belastning av bäckenet. Benägenheten för bäckensmärta under och efter fysisk belastning kvarstår under hela graviditeten men går tillbaka efter förlossningen. För de flesta kvinnor är den belastningsrelaterade smärtan borta inom första halvåret efter förlossningen, men för mellan 5 och 10 % av de kvinnor som fött barn kvarstår smärtan invalidiserande mer än två år efter förlossningen. Gravida kvinnor med hög smärtintensitet och lång smärtduration löper ökad risk för långdragen smärta, även efter förlossningen. Behandling under och efter graviditet bygger på stabiliserande träning av den muskulatur som överför sina krafter från ryggen diagonalt över bäckenet och ned i motsatta sidans benmuskulatur på båda sidor. Den fysikaliska behandlingen bör ske under överinseende av fysioterapeut med särskilt intresse för denna problematik.</symtomPrognosBehandling>
+      <genrellInformation>Observandum / Särskilda överväganden
+        Klinisk undersökning av rygg och bäcken skall utföras. P4-testet är ett smärtprovocerande test med hygglig sensitivitet och god specificitet för att konfirmera bäckenmärtan. Den fysiska arbetsbelastningen är avgörande för kvinnans arbetsförmåga. Eftersom smärtintensiteten är belastningsrelaterad finns det goda möjligheter att minska kvinnans smärtintensitet genom minskad mekanisk belastning av bäckenet.
+
+        Information till patienten
+        Graviditetsrelaterad rygg- och bäckensmärta är ett obehagligt och ibland invalidiserande smärttillstånd. Hos de allra flesta kvinnor går smärttillståndet tillbaka inom 6 månader efter förlossningen.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.3</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Knäledsbesvär</rubrik>
+    <funktionsnedsattningBeskrivning>Meniskskador kan ge upphakningar i knäleden och i samband med detta smärtor vid belastning och svullnad samt inskränkt rörlighet. Andra symtom kan vara svullnad av knäleden.
+
+      Vid främre korsbandsskador beskrivs ofta en ostadighet och känsla av att "knäet viker sig". Vid akuta skador kan svullnaden och smärtan vara så uttalade symtom att patienten inte kan stödja på benet under några dygn.</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>påverkad gångförmåga</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>S83</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Luxation och distorsion i knäets leder och ligament</displayName>
+        <originalText>S83:Luxation och distorsion i knäets leder och ligament</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>S83.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>S83.2</displayName>
+        <originalText>S83.2</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>S83.5</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>S83.5</displayName>
+        <originalText>S83.5</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>S83.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>S83.6</displayName>
+        <originalText>S83.6</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M23.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M23.2</displayName>
+        <originalText>M23.2</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d465</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att förflytta sig med hjälp av utrustning</displayName>
+        <originalText>d465:att förflytta sig med hjälp av utrustning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <symtomPrognosBehandling>Meniskskador kan uppkomma efter trauma samt som en degenerativ förändring. Skador uppstår oftast vid vridvåld. Symtom vid meniskskada är smärta över ledspringan, upphakningar i knäleden samt svullnad. Hos personer med menisk-relaterade besvär i medelåldern och uppåt bör man alltid misstänka samtidig knäledsartros.
+
+        Korsbandsskador kan drabba främre eller bakre korsbanden i knäna och ger akuta symtom med knäledssvullnad och smärta. Skador uppstår oftast med vridvåld. Behandlingen är farmakologisk, sjukgymnastisk och i vissa fall kirur-gisk.</symtomPrognosBehandling>
+      <genrellInformation>Akuta besvär efter en meniskskada brukar pågå upp till 10 dagar. Fall som inte förbättrats bör remitteras till ortoped. Efter operation med till exempel menis-kektomi (bortoperation av skadad menisk) är normal funktion som regel åter-ställd inom 4 veckor.
+
+        Efter operation med korsbandsrekonstruktion brukar patienten i normalfallet ha återvunnit en god funktion efter upp till 4 månader.
+
+        Ett fåtal fall med meniskbesvär eller skador återfår inte en tillfredsställande funktionsförmåga vilket brukar bli tydligt efter 1-2 månaders besvär. En anledning kan vara förekomst av artros.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.4</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Höftledsartros</rubrik>
+    <funktionsnedsattningBeskrivning>Funktionen varierar ofta över tid.
+      Urval av funktionsnedsättningar som kan förekomma:</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Artros sätter ofta ned gång- och rörelseförmågan.
+      Förmågan att lyfta eller bära tungt kan vara nedsatt.
+      Stillasittande eller stående kan vara svårt.
+      Urval av aktiviteter som kan påverkas:</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>M16</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Höftledsartros</displayName>
+        <originalText>M16:Höftledsartros</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.0</displayName>
+        <originalText>M16.0</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.1</displayName>
+        <originalText>M16.1</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.2</displayName>
+        <originalText>M16.2</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.3</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.3</displayName>
+        <originalText>M16.3</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.4</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.4</displayName>
+        <originalText>M16.4</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.5</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.5</displayName>
+        <originalText>M16.5</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.6</displayName>
+        <originalText>M16.6</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.7</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.7</displayName>
+        <originalText>M16.7</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M16.9</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M16.9</displayName>
+        <originalText>M16.9</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d420</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att förflyttar sig själv</displayName>
+        <originalText>d420:Att förflyttar sig själv</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Överväg deltidssjukskrivning.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.5</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Spondylartriter (Bechterews sjukdom)</rubrik>
+    <funktionsnedsattningBeskrivning>Lindrig sjukdom påverkar inte funktionen. Oftast kan symtomen dämpas med läkemedelsbehandling</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Fysisk aktivitet i sig förvärrar inte sjukdomen, utan det är tvärtom bra med lagom anpassad fysisk aktivitet. En del patienter har trots medicinering stora svårigheter med värk och stelhet och rörelseinskränkning i nacke, bröst- och ländrygg och kan ha svårt att klara långvarigt stillasittande samt aktiviteter som kräver framåtböjning samt sidovridning av huvudet. Patienten kan få irit (inflammation i regnbågshinnan) som kan begränsa aktiviteten under perioder.</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>M45</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Pelvospondylit [Bechterews sjukdom]</displayName>
+        <originalText>M45:Pelvospondylit [Bechterews sjukdom]</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M46</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M46</displayName>
+        <originalText>M46</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b789</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Andra specificerade och ospecificerade rörelsefunktioner</displayName>
+        <originalText>b789:Andra specificerade och ospecificerade rörelsefunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d4153</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att bibehålla sittande ställning,</displayName>
+        <originalText>d4153:att bibehålla sittande ställning,</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d4105</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att böja sig</displayName>
+        <originalText>d4105:att böja sig</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <symtomPrognosBehandling>Ankyloserande spondylit (även kallad Bechterews sjukdom eller pelvospondylit) är en kronisk inflammatorisk ryggsjukdom oftast med långsamt tilltagande rygg-stelhet, ibland med ledförstörelse. Vanliga symtom är värk och stelhet i ryggslutet som strålar ut i skinkor och höfter. Besvären minskar ofta vid rörelse och fysisk aktivitet. Det finns alla grader av sjukdomen, alltifrån med lätta symtom till höggradigt inflammatorisk sjukdom. Sjukdomen behandlas med regelbunden fysisk aktivitet. I övrigt är behandlingen farmakologisk (läkemedel – inflammat-ionsdämpande, symtomlindrande och sjukdomsmodifierande) och i vissa fall kirurgisk. Det är sällsynt att patienter med denna sjukdom är helt arbetsoförmögna under lång tid, men sjukdomen går ofta i skov och under försämringsperioderna kan arbetsförmågan sättas ned. Det är ofta nödvändigt att byta arbetsuppgifter om de är tunga och krävande. Ofta kan deltidssjukskrivning vara ett alternativ. Företagshälsovården och/eller arbetsgivaren och Försäkringskassan bör kopp-las in tidigt. Det kan bli aktuellt med ergonomiska förbättringsåtgärder, anpas-sade arbetsuppgifter eller omplacering. Ett lagom rörligt arbete med möjlighet att ofta ändra arbetsställning är idealt.</symtomPrognosBehandling>
+      <genrellInformation>Sjukdomen är kronisk och symtomen kvarstår därför i högre eller lägre grad. Effekten av symtomlindrande mediciner kommer tämligen omgående, medan effekten av sjukdomsmodifierande mediciner, som används i svårare fall, kan dröja månader. Effekten av biologiska läkemedel ses som regel inom veckor, ibland redan efter dagar. Även för personer som varit sjuka mycket lång tid kan biologisk läkemedelsbehandling leda till betydlig förbättring. Effekten av kortison kommer inom några dagar. Patienter med reumatisk inflammatorisk sjukdom kontrolleras regelbundet och behandlingen utvärderas. Vid otillräcklig effekt eller biverkningar av mediciner kan patienten behöva sjukskrivning i väntan på effekten av den förändrade behandlingen och medicineringen.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.6</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Graviditetsillamående och -kräkningar</rubrik>
+    <funktionsnedsattningBeskrivning>viktminskning, Koncentrationssvårigheter, förekomst av ketoner</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Trötthet, ork, personliga kontakter/ interaktion</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>O21</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21</displayName>
+        <originalText>O21</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Lätta graviditetskräkningar</displayName>
+        <originalText>O21.0:Lätta graviditetskräkningar</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.2</displayName>
+        <originalText>O21.2</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.8</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.8</displayName>
+        <originalText>O21.8</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.9</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O21.9</displayName>
+        <originalText>O21.9</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b510</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Kräkningar</displayName>
+        <originalText>b510:Kräkningar</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b535</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Illamående</displayName>
+        <originalText>b535:Illamående</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b255</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Nedsatt tolerans för dofter</displayName>
+        <originalText>b255:Nedsatt tolerans för dofter</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d660</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att bistå andra</displayName>
+        <originalText>d660:Begränsad förmåga att bistå andra</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d230</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att klara dagliga rutiner</displayName>
+        <originalText>d230:Begränsad förmåga att klara dagliga rutiner</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <symtomPrognosBehandling>Graviditetsillamående är den näst största orsaken till sjukskrivning under graviditet. Tillståndet kommer tidigt i graviditeten och har oftast gått tillbaka vid 12–14 veckor. Besvären lindras vid vila och i vissa fall med antiemetika (läkemedel mot illamående och kräkningar).
+        I extremfall läggs den gravida kvinnan in för parenteral vätska (till FK). Hypere-mesis gravidarum (O21.1) är definierat som viktnedgång eller acidos (sjuklig förändring i kroppsvätskornas sammansättning).</symtomPrognosBehandling>
+      <genrellInformation>Observandum / Särskilda överväganden
+        Psykisk belastning och minskad stresstålighet kan också bidra till illamående.
+
+        Differentialdiagnoser/ utdraget förlopp
+        Illamående efter den inledande trimestern kan bero på andra faktorer. Utred för att utesluta anemi, thyreoideasjukdom och gastrit.
+
+
+        Information till patienten
+        XX</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.7</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Graviditetsillamående och -kräkningar</rubrik>
+    <funktionsnedsattningBeskrivning>viktminskning, Koncentrationssvårigheter, förekomst av ketoner</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Trötthet, ork, personliga kontakter/ interaktion</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>O21.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Graviditetskräkningar med ämnesomsättning rubbning</displayName>
+        <originalText>O21.1:Graviditetskräkningar med ämnesomsättning rubbning</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b510</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Kräkningar</displayName>
+        <originalText>b510:Kräkningar</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b535</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Illamående</displayName>
+        <originalText>b535:Illamående</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b255</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Nedsatt tolerans för dofter</displayName>
+        <originalText>b255:Nedsatt tolerans för dofter</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d660</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att bistå andra</displayName>
+        <originalText>d660:Begränsad förmåga att bistå andra</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d230</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att klara dagliga rutiner</displayName>
+        <originalText>d230:Begränsad förmåga att klara dagliga rutiner</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <symtomPrognosBehandling>Graviditetsillamående är den näst största orsaken till sjukskrivning under graviditet. Tillståndet kommer tidigt i graviditeten och har oftast gått tillbaka vid 12–14 veckor. Besvären lindras vid vila och i vissa fall med antiemetika (läkemedel mot illamående och kräkningar).
+        I extremfall läggs den gravida kvinnan in för parenteral vätska (till FK). Hypere-mesis gravidarum (O21.1) är definierat som viktnedgång eller acidos (sjuklig förändring i kroppsvätskornas sammansättning).</symtomPrognosBehandling>
+      <genrellInformation>Observandum / Särskilda överväganden
+        Psykisk belastning och minskad stresstålighet kan också bidra till illamående.
+
+        Differentialdiagnoser/ utdraget förlopp
+        Illamående efter den inledande trimestern kan bero på andra faktorer. Utred för att utesluta anemi, thyreoideasjukdom och gastrit.
+
+
+        Information till patienten
+        XX</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.8</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Förvärkar och hotande förtidsbörd</rubrik>
+    <funktionsnedsattningBeskrivning>smärta, koncentration</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Gå, stå, sitta, att böja sig, utföra lyft, mellanmänskliga aktiviteter</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>O47</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Förvärkar och hotande förtidsbörd</displayName>
+        <originalText>O47:Förvärkar och hotande förtidsbörd</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>O47.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>O47.0</displayName>
+        <originalText>O47.0</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b152</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Oro</displayName>
+        <originalText>b152:Oro</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d660</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att bistå andra</displayName>
+        <originalText>d660:Begränsad förmåga att bistå andra</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Om det inte föreligger cervixpåverkan eller särskilda riskfaktorer i anamnesen räcker det ofta med lugnande besked eller deltidssjukskrivning. Minskad arbetsbelastning (både psykiskt och fysiskt) kan lindra symtomen, annars tenderar tillståndet att vara graviditeten ut. Om flerbördsgraviditet eller andra riskfaktorer i anamnesen föreligger (t.ex. tidigare förtidsbörd, flera missfall, vissa infektioner) krävs oftast sjukskrivning på heltid fram till fullgången tid. Utan minskad belastning tenderar tillståndet att vara graviditeten ut. Att informera om hur ett normalt graviditetsförlopp med väntade förändringar och symtom ser ut är viktigt.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.9</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Akillestendinit</rubrik>
+    <funktionsnedsattningBeskrivning>Smärta</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Att gå</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>M76.6</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Akillestendinit</displayName>
+        <originalText>M76.6:Akillestendinit</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d465</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att förflytta sig med hjälp av utrustning</displayName>
+        <originalText>d465:att förflytta sig med hjälp av utrustning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d450</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att gå/gå i trappor</displayName>
+        <originalText>d450:Begränsad förmåga att gå/gå i trappor</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Information: Total avlastning har inte någon positivt effekt på läkningen utan kan tvärtom vara skadlig för både muskler, senor och den neuro-muskulära funktionen. Anpassade arbetsuppgifter: Vid långvariga besvär kan det behövas förändrade arbetsuppgifter för att patienten ska kunna återgå i arbete. Vid belastande arbeten (till exempel med mycket gående) finns ofta anledning att se över arbetssituationen för att bedöma om arbetsuppgifterna kan behöva anpassas under läkningen. Långvarigt förlopp: Vid långdragna besvär eller inflammationer på annat ställe bör reumatisk ledsjukdom övervägas.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.10</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Akillesruptur</rubrik>
+    <funktionsnedsattningBeskrivning>Funktionen varierar ofta över tid. Sömn, smärta, rörlighet i leder, muskelkraft.</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Aktivitetsförmågan varierar ofta över tid. Företa mångfaldiga uppgifter, hanterna stress och psykologiska krav, ändra kroppsställning, bibehålla kroppsställning, lyfta och bära, gå.</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>S86.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Skada på akillessena</displayName>
+        <originalText>S86.0:Skada på akillessena</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d465</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att förflytta sig med hjälp av utrustning</displayName>
+        <originalText>d465:att förflytta sig med hjälp av utrustning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d450</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att gå/gå i trappor</displayName>
+        <originalText>d450:Begränsad förmåga att gå/gå i trappor</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Överväg sjukskrivning på deltid</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.11</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Gastrocnemius</rubrik>
+    <funktionsnedsattningBeskrivning>Funktionen varierar ofta över tid. Sömn, smärta, rörlighet i leder, muskelkraft.</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Aktivitetsförmågan varierar ofta över tid. Företa mångfaldiga uppgifter, hanterna stress och psykologiska krav, ändra kroppsställning, bibehålla kroppsställning, lyfta och bära, gå.</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>S86.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Skada på stora vadmuskeln</displayName>
+        <originalText>S86.1:Skada på stora vadmuskeln</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d220</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad uthållighet fysiskt och mentalt</displayName>
+        <originalText>d220:Begränsad uthållighet fysiskt och mentalt</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d465</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att förflytta sig med hjälp av utrustning</displayName>
+        <originalText>d465:att förflytta sig med hjälp av utrustning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d450</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att gå/gå i trappor</displayName>
+        <originalText>d450:Begränsad förmåga att gå/gå i trappor</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Överväg sjukskrivning på deltid</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.12</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Psoriasisartrit, PsA</rubrik>
+    <funktionsnedsattningBeskrivning>Funktionen varierar ofta över tid.</funktionsnedsattningBeskrivning>
+    <aktivitetsbegransningBeskrivning>Aktivitetsförmågan varierar ofta över tid.</aktivitetsbegransningBeskrivning>
+    <huvuddiagnos>
+      <kod>
+        <code>M07.1</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M07.1</displayName>
+        <originalText>M07.1</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M07.2</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M07.2</displayName>
+        <originalText>M07.2</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M07.3</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M07.3</displayName>
+        <originalText>M07.3</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M07</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>Ledsjukdomar vid psoriasis och tarmsjukdomar</displayName>
+        <originalText>M07:Ledsjukdomar vid psoriasis och tarmsjukdomar</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M07.0</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M07.0</displayName>
+        <originalText>M07.0</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d465</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att förflytta sig med hjälp av utrustning</displayName>
+        <originalText>d465:att förflytta sig med hjälp av utrustning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Om arbetet inte är alltför fysiskt tungt, ensidigt belastande eller alltför kognitivt krävande finns som regel goda chanser att kunna fortsätta arbeta. Patienten behöver ofta bli sjukskriven i början av sjukdomen eller vid skov, i väntan på effekt av påbörjad eller förändrad medicinering. Överväg deltid. Fysisk aktivitet i sig förvärrar inte sjukdomen. Förebyggande sjukskrivning: Vissa patienter kan behöva sjukskrivning för förebyggande behandling för att kunna delta i intensiv sjukgymnastik, rehabilitering på dagvårdsenhet, rehabilitering på reumatikersjukhus eller specialanläggning med mera. Patienter med reumatisk inflammatorisk sjukdom såsom PsA kontrolleras regelbundet och behandlingseffekten utvärderas kontinuerligt. Långvarigt förlopp: Det kan bli aktuellt att en ortoped tar ställning till om patienten ska opereras.</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:diagnosInformation>
+    <informationsId>
+      <root>OID</root>
+      <extension>D.13</extension>
+    </informationsId>
+    <giltighetstid>
+      <start>20151012</start>
+    </giltighetstid>
+    <verson>1</verson>
+    <rubrik>Reumatiod artrit, RA</rubrik>
+    <huvuddiagnos>
+      <kod>
+        <code>M05</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>seropositiv reumatoid artrit</displayName>
+        <originalText>M05:seropositiv reumatoid artrit</originalText>
+      </kod>
+    </huvuddiagnos>
+    <huvuddiagnos>
+      <kod>
+        <code>M06</code>
+        <codeSystem>1.2.752.116.1.1.1.3.2</codeSystem>
+        <codeSystemName>ICD-10-SE</codeSystemName>
+        <displayName>M06</displayName>
+        <originalText>M06</originalText>
+      </kod>
+    </huvuddiagnos>
+    <funktionsnedsattning>
+      <kod>
+        <code>b130</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Ökad uttröttbarhet</displayName>
+        <originalText>b130:Ökad uttröttbarhet</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b710</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>funktioner för rörlighet i leder</displayName>
+        <originalText>b710:funktioner för rörlighet i leder</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b134</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Sömnstörning</displayName>
+        <originalText>b134:Sömnstörning</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b730</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>muskelkraftsfunktioner</displayName>
+        <originalText>b730:muskelkraftsfunktioner</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <funktionsnedsattning>
+      <kod>
+        <code>b280</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Smärta inklusive huvudvärk</displayName>
+        <originalText>b280:Smärta inklusive huvudvärk</originalText>
+      </kod>
+    </funktionsnedsattning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d430</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad förmåga att lyfta och bära föremål</displayName>
+        <originalText>d430:Begränsad förmåga att lyfta och bära föremål</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d240</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Begränsad tolerans för stress</displayName>
+        <originalText>d240:Begränsad tolerans för stress</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d410</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att ändra grundläggande kroppsställning</displayName>
+        <originalText>d410:Att ändra grundläggande kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d465</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>att förflytta sig med hjälp av utrustning</displayName>
+        <originalText>d465:att förflytta sig med hjälp av utrustning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d415</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>Att bibehålla en kroppsställning</displayName>
+        <originalText>d415:Att bibehålla en kroppsställning</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <aktivitetsbegransning>
+      <kod>
+        <code>d445</code>
+        <codeSystem>1.2.752.116.1.1.3.3.1</codeSystem>
+        <codeSystemName>ICF</codeSystemName>
+        <displayName>användning av hand och arm</displayName>
+        <originalText>d445:användning av hand och arm</originalText>
+      </kod>
+    </aktivitetsbegransning>
+    <ovrigFmbInformation>
+      <genrellInformation>Överväg deltidssjukskrivning</genrellInformation>
+    </ovrigFmbInformation>
+  </ns2:diagnosInformation>
+  <ns2:version>
+    <senasteVersionsuppdatering>20151020</senasteVersionsuppdatering>
+    <senateAndring>20151020</senateAndring>
+  </ns2:version>
+</ns2:GetDiagnosInformationResponse>

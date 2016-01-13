@@ -1,0 +1,47 @@
+Testar WEBCERT-2011
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| skript | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | ${person4.personnummer} | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!2 Verifiera defaultvärden
+
+| Verifiera Utkast Fk7263|
+| prognos? | recommendations to fk travel? |
+| YES      | NEJ                           |
+
+!2 Populera intyget med smittskydd
+
+| Populera Fk7263 |
+| smittskydd | nedsattMed25 |
+| true | true |
+
+!2 Verifiera defaultvärden
+
+| Verifiera Utkast Fk7263|
+| prognos? | recommendations to fk travel? |
+| YES      | NEJ                           |
+
+!2 Öppna sparat utkast
+
+| skript | !-HanteraUtkast-! |
+| ga till editera intyg med typ och | fk7263 | intygid | $intygsid |
+
+!2 Verifiera defaultvärden
+
+| Verifiera Utkast Fk7263|
+| prognos? | recommendations to fk travel? |
+| YES      | NEJ                           |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

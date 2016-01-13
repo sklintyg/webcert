@@ -33,6 +33,7 @@ import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.signatur.grp.GrpSignaturService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationMessage;
@@ -54,7 +55,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
 public class UtkastModuleApiController extends AbstractApiController {
 
     public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(UtkastModuleApiController.class);
 
     @Autowired
@@ -64,8 +65,11 @@ public class UtkastModuleApiController extends AbstractApiController {
     private SignaturService signaturService;
 
     @Autowired
+    private GrpSignaturService grpSignaturService;
+
+    @Autowired
     private MonitoringLogService monitoringLogService;
-    
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -83,13 +87,15 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         Utkast utkast = utkastService.getDraft(intygsId);
-        
+
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-        
+
         DraftHolder draftHolder = new DraftHolder();
         draftHolder.setVersion(utkast.getVersion());
         draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
         draftHolder.setStatus(utkast.getStatus());
+        draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
+        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         draftHolder.setContent(utkast.getModel());
 
         return Response.ok(draftHolder).build();
@@ -107,7 +113,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
+    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version,
+            @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
@@ -115,7 +122,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(payload);
 
-        LOG.debug("---- intyg : " + draftAsJson );
+        LOG.debug("---- intyg : " + draftAsJson);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, version, draftAsJson, autoSave);
 
@@ -187,7 +194,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @DELETE
     @Path("/{intygsTyp}/{intygsId}/{version}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @Context HttpServletRequest request) {
+    public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version,
+            @Context HttpServletRequest request) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
@@ -236,7 +244,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeraserver")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @Context HttpServletRequest request) {
+    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @PathParam("version") long version, @Context HttpServletRequest request) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         SignaturTicket ticket;
         try {
@@ -245,7 +254,33 @@ public class UtkastModuleApiController extends AbstractApiController {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
-        
+
+        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
+
+        return new SignaturTicketResponse(ticket);
+    }
+
+    /**
+     * Signera utkast mha Bank ID GRP API.
+     *
+     * @param intygsId
+     *            intyg id
+     * @return SignaturTicketResponse
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/{version}/grp/signeraserver")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @PathParam("version") long version, @Context HttpServletRequest request) {
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        SignaturTicket ticket;
+        try {
+            ticket = grpSignaturService.startGrpAuthentication(intygsId, version);
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
+
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return new SignaturTicketResponse(ticket);
@@ -260,9 +295,10 @@ public class UtkastModuleApiController extends AbstractApiController {
      */
     @POST
     @Path("/{intygsTyp}/{biljettId}/signeraklient")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId, @Context HttpServletRequest request, byte[] rawSignatur) {
+    public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
+            @Context HttpServletRequest request, byte[] rawSignatur) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
 
@@ -296,7 +332,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version) {
+    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @PathParam("version") long version) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         SignaturTicket ticket;
         try {

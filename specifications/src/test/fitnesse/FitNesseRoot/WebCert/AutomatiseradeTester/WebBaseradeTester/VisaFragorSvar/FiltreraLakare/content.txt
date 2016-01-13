@@ -2,7 +2,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Lägg till frågor
@@ -15,38 +15,43 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 
 !3 Verifiera att filtreringen på läkare fungerar
 
-| script | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj lakare med namn | Åsa Andersson |
 | filtrera fragor och svar |
-| visas fraga | $internReferens2 |
-| doljs fraga| $internReferens1 |
-| doljs fraga| $internReferens3 |
+| säkerställ att| fraga | $internReferens2 | visas |
+| säkerställ att inte | fraga | $internReferens1 | visas |
+| säkerställ att inte | fraga | $internReferens3 | visas |
 
 !4 Byt läkare och gör om filtreringen
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
+| aterstall sokformular |
 | valj lakare med namn | Lars Andersson |
 | filtrera fragor och svar |
-| visas fraga | $internReferens3 |
-| doljs fraga| $internReferens1 |
-| doljs fraga| $internReferens2 |
+| säkerställ att | fraga | $internReferens3 | visas |
+| säkerställ att inte | fraga | $internReferens1 | visas |
+| säkerställ att inte | fraga | $internReferens2 | visas |
 
 !4 Byt enhet, välj läkare som bara finns på den enheten och gör om filtreringen
 
-| script | !-SvaraOchFraga-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| ga till svara och fraga |
+
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj lakare med namn | Jan Nilsson |
 | filtrera fragor och svar |
-| visas fraga | $internReferens1 |
-| doljs fraga | $internReferens2 |
-| doljs fraga | $internReferens3 |
+| säkerställ att | fraga | $internReferens1 | visas |
+| säkerställ att inte | fraga | $internReferens2 | visas |
+| säkerställ att inte | fraga | $internReferens3 | visas |
 
 !3 Ta bort frågor
 

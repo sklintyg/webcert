@@ -5,6 +5,6 @@ import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 
 public interface CopyUtkastService {
 
-    public abstract CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest);
+    CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest);
 
 }

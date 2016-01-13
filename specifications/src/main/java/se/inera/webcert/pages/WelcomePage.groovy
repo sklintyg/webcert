@@ -8,7 +8,7 @@ class WelcomePage extends AbstractPage {
 
     static content = {
         userSelect { $("#jsonSelect") }
-        loginBtn { $("#loginBtn") }
+        loginBtn(wait: true, to: [SokSkrivaIntygPage, UnhandledQAPage, AccessDeniedPage, AvtalPage]) { $("#loginBtn") }
     }
 
     def loginAs(String id) {

@@ -17,8 +17,8 @@
                 {
                 	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "IFV1239877878-1046",
-                    "namn" : "WebCert-Underenhet1",
-                    "epost" : "underenhet1@webcert.invalid.se",
+                    "namn" : "WebCert-Enhet2-Mottagning1",
+                    "epost" : "mottagning1@webcert.invalid.se",
                     "telefonnummer" : "0101234567890",
                     "postadress" : "Storgatan 1",
                     "postnummer" : "12345",
@@ -28,8 +28,8 @@
                 {
                 	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "IFV1239877878-104C",
-                    "namn" : "WebCert-Underenhet2",
-                    "epost" : "underenhet2@webcert.invalid.se",
+                    "namn" : "WebCert-Enhet2-Mottagning2",
+                    "epost" : "mottagning2@webcert.invalid.se",
                     "telefonnummer" : "0101234567890",
                     "postadress" : "Storgatan 1",
                     "postnummer" : "12345",

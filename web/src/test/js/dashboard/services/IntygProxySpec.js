@@ -37,6 +37,9 @@ describe('IntygProxy', function() {
         $provide.value('common.CertificateService', {});
         $provide.value('common.messageService', {});
 
+        //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
+
+
     }));
 
     // Get references to the object we want to test from the context.
@@ -60,14 +63,16 @@ describe('IntygProxy', function() {
             featureService.isFeatureActive.and.returnValue(true);
 
             $httpBackend.expectGET('/api/intyg/person/' + personId).respond([
-                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
+                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT',
+                    'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
             ]);
 
             IntygProxy.getIntygForPatient(personId, onSuccess, onError);
             $httpBackend.flush();
 
             expect(onSuccess).toHaveBeenCalledWith([
-                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
+                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT',
+                    'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
             ]);
             expect(onError).not.toHaveBeenCalled();
         });

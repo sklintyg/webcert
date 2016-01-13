@@ -1,15 +1,29 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
+class UnsignedIntygPage extends AbstractLoggedInPage {
 
-class UnsignedIntygPage extends AbstractPage {
-
+    static url = "/web/dashboard#/unsigned"
     static at = { doneLoading() && $("#unsigned").isDisplayed() }
 
     static content = {
         unitstatUnsignedIntygsBadge(required: false) { $("#stat-unitstat-unsigned-certs-count") }
         unsignedIntygTable(required: false) { $("#unsignedCertTable") }
         ingaEjSigneradeIntyg { $("#current-list-noResults-query") }
-        logoutLink { $("#logoutLink") }
+
+        advancedFilterBtn(wait: true) { $("#show-advanced-filter-btn") }
+        advancedFilterResetBtn(wait: true) { $("#reset-search-form") }
+        advancedFilterForm(wait: true) { $("#advanced-filter-form") }
+
+        filterVidarebefordrad(required: false) { $("#filterFormVidarebefordrad") }
+        filterSparatAv(required: false) { $("#filterFormSparatAv") }
+        filterSigneratAv(required: false) { $("#filterFormSigneratAv") }
+    }
+
+    def showAdvancedFilter() {
+        advancedFilterBtn.click()
+    }
+
+    def resetAdvancedFilter() {
+        advancedFilterResetBtn.click()
     }
 }

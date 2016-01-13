@@ -79,11 +79,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 changedFrom: undefined,
                 changedTo: undefined,
 
-                vantarPa: undefined,
-                replyLatest: undefined
+                vantarPa: undefined
             };
 
-            // $scope.qaListUnhandled = undefined;
             $scope.activeUnit = {};
             $scope.filterQuery = {};
             var unitStats = {};
@@ -123,10 +121,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     filterQuery.changedTo = $filter('date')(filterQuery.changedTo, 'yyyy-MM-dd');
                 }
 
-                if (filterQuery.replyLatest) {
-                    filterQuery.replyLatest = $filter('date')(filterQuery.replyLatest, 'yyyy-MM-dd');
-                }
-
                 if ($scope.filterForm.questionFrom === 'FK') {
                     filterQuery.questionFromFK = true;
                     filterQuery.questionFromWC = false;
@@ -155,9 +149,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                 QuestionAnswer.getQA(preparedQuery, function(successData) {
 
-                    $log.log("QuestionAnswer.getQA success +++++++++++++++");
+                    $log.debug('QuestionAnswer.getQA success +++++++++++++++');
 
-                    $log.log("--- preparedQuery : " + JSON.stringify(preparedQuery));
+                    $log.debug('--- preparedQuery : ' + JSON.stringify(preparedQuery));
                     $scope.widgetState.totalCount = successData.totalCount;
 
                     var qaListQuery = [];
@@ -185,12 +179,12 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                     decorateList($scope.widgetState.currentList);
 
-                    $log.log("Running query : " + $scope.widgetState.runningQuery);
-                    $log.log("QuestionAnswer.getQA success -------------------");
+                    $log.log('Running query : ' + $scope.widgetState.runningQuery);
+                    $log.log('QuestionAnswer.getQA success -------------------');
 
                 }, function(errorData) {
                     $log.debug('Query Error' + errorData);
-                    $log.log("QuestionAnswer.getQA error ***************");
+                    $log.log('QuestionAnswer.getQA error ***************');
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
                 });
@@ -323,7 +317,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 // implementation.
                 var name;
                 for (name in $scope.activeUnit) {
-                    return true;
+                    if ($scope.activeUnit.hasOwnProperty(name)) {
+                        return true;
+                    }
                 }
                 return false;
             };
@@ -366,7 +362,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             // Broadcast by statService on poll
             $scope.$on('wc-stat-update', function(event, message) {
                 unitStats = message;
-                if (!$scope.widgetState.filteredYet && unitStats.fragaSvarValdEnhet == 0) {
+                if (!$scope.widgetState.filteredYet && unitStats.fragaSvarValdEnhet === 0) {
                     $scope.widgetState.filterFormCollapsed = false;
                 }
             });

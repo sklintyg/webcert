@@ -1,8 +1,9 @@
 angular.module('webcert').factory('webcert.UtkastProxy',
     [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.statService',
+        'common.UserModel',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, User, dialogService,
-            featureService, messageService, statService) {
+            featureService, messageService, statService, UserModel) {
             'use strict';
 
             /**
@@ -38,7 +39,9 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                     ];
                     for (var i = 0; i < data.length; i++) {
                         var m = data[i];
-                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id)) {
+
+                        // Only add type if feature is active and user has global intygTyp access through their role.
+                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id) && UserModel.hasIntygsTyp(m.id)) {
                             types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
                         }
                     }

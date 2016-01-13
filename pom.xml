@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.14</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -17,14 +17,16 @@
   <name>Webcert</name>
 
   <properties>
-
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.3.0]</common.version.range>
+    <common.version.range>(,2.4.0]</common.version.range>
+
+    <!-- TEMP -->
+    <!--<ehcache.version>2.10.0</ehcache.version>-->
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.3.0]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.4.0]</intygstyper.version.range>
 
     <!-- Schemas -->
     <rivta-clinicalprocess.version>1.0.RC3.0</rivta-clinicalprocess.version>
@@ -32,11 +34,23 @@
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
+    <rivta-decisionsupport.version>1.0.RC4.0</rivta-decisionsupport.version>
+    <rivta-population-residentmaster.version>1.1.3.0</rivta-population-residentmaster.version>
 
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
     <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
     <intyg-transportstyrelsen.version>1.0.0</intyg-transportstyrelsen.version>
 
+    <intyg-privatepractitioner.version>0-SNAPSHOT</intyg-privatepractitioner.version>
+    <intyg-privatepractitioner.version.range>(,1.0.0]</intyg-privatepractitioner.version.range>
+
+    <intyg-privatepractitioner-terms.version>0-SNAPSHOT</intyg-privatepractitioner-terms.version>
+    <intyg-privatepractitioner-terms.version.range>(,1.0.0]</intyg-privatepractitioner-terms.version.range>
+
+    <cgi-funktionstjanster-grp.version>0-SNAPSHOT</cgi-funktionstjanster-grp.version>
+    <cgi-funktionstjanster-grp.version.range>(,1.0.0]</cgi-funktionstjanster-grp.version.range>
+
+    <skip-coverage>true</skip-coverage>
   </properties>
 
   <modules>
@@ -45,9 +59,10 @@
     <module>log-messages</module>
     <module>log-sender</module>
     <module>notification-sender</module>
-    <module>integration/eid-integration</module>
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
+    <module>integration/pp-integration</module>
+    <module>integration/fmb-integration</module>
     <module>specifications</module>
     <module>stubs/fk-stub</module>
     <module>stubs/loggtjanst-stub</module>
@@ -118,6 +133,16 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>pu-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>pp-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fmb-integration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -218,6 +243,16 @@
         <artifactId>ehr-logstore-schemas</artifactId>
         <version>${rivta-ehr-logstore.version}</version>
       </dependency>
+      <dependency>
+        <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
+        <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
+        <version>${rivta-decisionsupport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.population.residentmaster</groupId>
+        <artifactId>population-residentmaster-schemas</artifactId>
+        <version>${rivta-population-residentmaster.version}</version>
+      </dependency>
 
       <!-- Intyg Schemas -->
       <dependency>
@@ -234,6 +269,23 @@
         <groupId>se.inera.intyg.transportstyrelsen</groupId>
         <artifactId>intyg-transportstyrelsen-schemas</artifactId>
         <version>${intyg-transportstyrelsen.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner</groupId>
+        <artifactId>intyg-infrastructure-directory-privatepractitioner-schemas</artifactId>
+        <version>${intyg-privatepractitioner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner.terms</groupId>
+        <artifactId>intyg-infrastructure-directory-privatepractitioner-terms-schemas</artifactId>
+        <version>${intyg-privatepractitioner.version}</version>
+      </dependency>
+
+      <!-- CGI GRP schema -->
+      <dependency>
+        <groupId>se.funktionstjanster.grp</groupId>
+        <artifactId>funktionstjanster-grp-schemas</artifactId>
+        <version>${cgi-funktionstjanster-grp.version}</version>
       </dependency>
 
       <!-- Authentication -->
@@ -469,15 +521,36 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+            <skip>${skip-coverage}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>prepare-unit-test-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>generate-unit-test-report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>
           <includeProperties>
             common.version,
             intygstyper.version,
-            intyg-clinicalprocess.version,
-            intyg-insuranceprocess.version,
-            intyg-transportstyrelsen.version
+            intyg-privatepractitioner.version,
+            intyg-privatepractitioner-terms.version,
+            cgi-funktionstjanster-grp.version
           </includeProperties>
           <properties>
             <property>
@@ -488,6 +561,18 @@
               <name>intygstyper.version</name>
               <version>${intygstyper.version.range}</version>
             </property>
+            <property>
+              <name>intyg-privatepractitioner.version</name>
+              <version>${intyg-privatepractitioner.version.range}</version>
+            </property>
+            <property>
+              <name>intyg-privatepractitioner-terms.version</name>
+              <version>${intyg-privatepractitioner-terms.version.range}</version>
+            </property>
+            <property>
+              <name>cgi-funktionstjanster-grp.version</name>
+              <version>${cgi-funktionstjanster-grp.version.range}</version>
+            </property>
           </properties>
         </configuration>
       </plugin>
@@ -495,6 +580,46 @@
   </build>
 
   <repositories>
+    <repository>
+      <id>inera-release</id>
+      <url>https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>inera-nightly</id>
+      <url>https://build-inera.nordicmedtest.se/nexus/content/repositories/nightly/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>inera-snapshot</id>
+      <url>https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>thirdparty</id>
+      <url>https://build-inera.nordicmedtest.se/nexus/content/repositories/thirdparty/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>callista-release</id>
       <url>http://repository-callistasoftware.forge.cloudbees.com/release/</url>
@@ -506,18 +631,8 @@
       </snapshots>
     </repository>
     <repository>
-      <id>callista-snapshot</id>
-      <url>http://repository-callistasoftware.forge.cloudbees.com/snapshot/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>thirdparty</id>
-      <url>http://repository-callistasoftware.forge.cloudbees.com/3rdparty</url>
+      <id>callista-thirdparty</id>
+      <url>http://repository-callistasoftware.forge.cloudbees.com/3rdparty/</url>
       <releases>
         <enabled>true</enabled>
       </releases>

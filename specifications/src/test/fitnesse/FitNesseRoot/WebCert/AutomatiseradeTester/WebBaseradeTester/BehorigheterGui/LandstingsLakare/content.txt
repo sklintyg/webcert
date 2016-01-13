@@ -1,0 +1,118 @@
+!3 Logga in som landstingsläkare och testa olika scenarier där vissa GUI element skall eller inte skall synas
+
+!3 Lägg till fråga på intyget
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-PRIV-1 | FK | En fråga från försäkringskassan | intyg-fit-1 | IFV1239877878-104B| Tolvan Privatläkarsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1| IFV1239877878-104B | Tolvan Privatläkarsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| skript | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Verifiera att knapp för signera är synlig
+
+| skript | !-HanteraUtkast-! |
+| säkerställ att | signera knapp visas |
+
+!3 Gå till sidan för Ej signerade utkast
+
+| skript | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| säkerställ att | ej signerade intyg sidan visas |
+
+!3 Expandera sökfiltret och verifiera att filter "Vidarebefordrade" och "Sparat av" visas
+
+| skript | !-HanteraUtkast-! |
+| visa avancerat filter |
+| säkerställ att | filter vidarebefordrad visas |
+| säkerställ att | filter sparat av visas |
+
+!3 Verifiera knappen för att vidarebeforda finns i tabellen över ej signerade utkast
+
+| skript | !-HanteraUtkast-! |
+| säkerställ att | vidare befordra knapp visas |
+| säkerställ att | vidarebefordrad checkbox visas |
+
+!3 Gå till visa intyg sidan för ett existerande intyg som inloggad läkare har rätt att titta på. Verifiera att förväntade knappar för en landstingsläkare visas (skicka visas ej eftersom intyget redan är skickat)
+
+| skript | !-VisaIntyg-! |
+| visa intyg med id | intyg-fit-1 | och typ | fk7263 |
+| säkerställ att | skriv ut knapp visas |
+| säkerställ att | kopiera knapp visas |
+| säkerställ att | makulera knapp visas |
+
+!3 Gå till listsida för Fråga & Svar
+
+!| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
+| säkerställ att | lista med ohanterade fragor visas |
+
+!3 Kontrollera så filtret visar "Frågor och svar som är" eller "Signerat av" för landstingsläkare
+
+!| skript | !-SvaraOchFraga-! |
+| visa avancerat filter |
+| säkerställ att | filter vidarebefordrad visas |
+| säkerställ att | filter signerat av visas |
+
+!3 Vidarebefordra-knapp i listan får visas
+
+!| skript | !-SvaraOchFraga-! |
+| säkerställ att | vidare befordra knapp visas |
+| säkerställ att | vidarebefordrad checkbox visas |
+
+!3 Gå in på frågan och verifiera att vidarebefordra-knappen är synlig för landstingsläkare
+
+!| skript | !-SvaraOchFraga-! |
+| visa fraga | $internReferens1 |
+| säkerställ att | intyg med fraga svar sidan visas |
+| säkerställ att | vidarebefordra knapp inne pa fraga visas |
+
+!3 Gå tillbaka till listsida för Fråga & Svar
+
+!| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
+| säkerställ att | lista med ohanterade fragor visas |
+
+!3 Gå in på frågan med komplettering på och verifiera att vidarebefordra-knappen är synlig för landstingsläkare
+
+!| skript | !-SvaraOchFraga-! |
+| visa fraga | $internReferens2 |
+| säkerställ att | intyg med fraga svar sidan visas |
+| visas fk kompletteringar | $internReferens2 |
+| säkerställ att | vidarebefordra knapp inne pa fraga visas |
+
+!3 Gå till Om Webcert och verifiera att avtalsvillkorsalternativet inte syns
+
+| skript | !-OmWebcert-! |
+| ga till om webcert |
+| säkerställ att inte | avtalsvillkor synlig i menyn |
+
+!3 Verifiera att länk för Ändra uppgifter inte visas (skall endast visas för privatläkare)
+
+!| skript | HeaderMenu |
+| säkerställ att inte | redigera anvandare visas |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+| $internReferens2 |

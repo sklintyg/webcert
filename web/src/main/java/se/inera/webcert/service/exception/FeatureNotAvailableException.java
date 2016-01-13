@@ -2,6 +2,8 @@ package se.inera.webcert.service.exception;
 
 public class FeatureNotAvailableException extends RuntimeException {
 
+    private static final long serialVersionUID = 7688576313893632920L;
+
     private String featureName;
 
     public FeatureNotAvailableException() {

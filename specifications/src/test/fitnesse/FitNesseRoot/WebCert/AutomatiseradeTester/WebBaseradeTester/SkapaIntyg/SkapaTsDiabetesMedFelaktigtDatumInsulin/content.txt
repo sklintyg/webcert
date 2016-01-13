@@ -3,12 +3,12 @@
 !2 Mata in felaktigt värde i insulin
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
+| skript | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | ts-diabetes |
 | $intygsid= | intygsid |
 
@@ -20,10 +20,10 @@ Populera intyget med information i samtliga fält så det blir komplett
 | postadress | postnummer | postort | intygetAvser | identifieringstyp | diabetesAr | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | diabetesBehandlingInsulinPeriod | diabetesBehandlingAnnan | hypoglykemierA | hypoglykemierB | hypoglykemierC | hypoglykemierD | hypoglykemierAllvarligForekomstEpisoder | hypoglykemierE | hypoglykemierAllvarligForekomstTrafikEpisoder | hypoglykemierF | hypoglykemierG | hypoglykemierAllvarligForekomstVakenTid | synA | synB | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | synD | behorighet | bedomdBehorighet | bedomning |  kommentar | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
 | Storgatan 1 | 12345 | Göteborg | A,B,C | korkort | 2010 | typ2 | true | true | true | feel | Träning | true | true | true | true | 4 | true | 1 | true | true | 2014-01-02 | false | true | 1,1 | 1,2 | 0,2 | 0,8 | 0,6 | 0,9 | true | true | A,B,C  | bedomning | Inga kommentar | Sjukdommar | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
 
-| script | !-HanteraUtkast-! |
-| ensure | intyg ej komplett visas |
-| ensure | signera knapp visas |
-| ensure | signera knapp ej aktiverad |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | meddelande intyget ej komplett visas |
+| säkerställ att | signera knapp visas |
+| säkerställ att inte | signera knapp aktiverad |
 
 !3 Ta bort utkastet
 

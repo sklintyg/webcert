@@ -1,23 +1,35 @@
 Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg via djupintegration med ett uppdaterat personnummer och kopierar intyget.
 
-| Intyg |
-| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat | 
-| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-104D | FK7263 | intyg-fit-annan-enhet | L | ja | nej |
-!3 Välj patient och visa intyget
+!4 Ta bort kvarvarande intyg
+| ta bort intyg |
+| id |
+| intyg-nytt-pnr |
 
-| script | !-SokSkrivIntyg-! |
+!4 Skapa ett skickat intyg
+| Intyg |
+| personnr |patient namn| utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat | rättat | respons? |
+| ${person1.personnummer}|${person1.namn} | 2015-06-01 | 2015-06-01| 2015-06-28| IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | FK7263 | intyg-nytt-pnr | L | ja | nej |200|
+
+| skript | logga in |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 
 !4 Testa har ett felaktigt personnummer.
-| script | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration med | intyg-fit-1 | personnummer | ${person2.personnummer} |
-| nytt personnummer meddelande visas|
-| kopiera intyg | intyg-fit-1 |
-| verifiera namn och personnummer | ${person1.namn} - ${person2.personnummer} |
+| skript | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | intyg-nytt-pnr | personnummer | ${person2.personnummer} |
+| säkerställ att |nytt personnummer meddelande visas|
+| kopiera intyg |
+| kontrollera att |patientens namn|${person1.namn}|
+| kontrollera att |patientens personnummer |${person2.personnummer}|
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | editera Fk7263 sidan visas |
 | radera utkast |
 
-| script | !-IntegrationMedJournalsystem-! |
-| integration borttaget meddelande visas |
+| skript | !-IntegrationMedJournalsystem-! |
+| säkerställ att | integration borttaget meddelande visas |

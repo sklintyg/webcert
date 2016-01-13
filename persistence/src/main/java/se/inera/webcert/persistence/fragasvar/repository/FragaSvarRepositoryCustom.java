@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus;
-import se.inera.webcert.persistence.fragasvar.model.Status;
 
 public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCustom {
 
@@ -52,13 +51,13 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
 
     /**
      * Returns a list of FragaSvarStatus object for all FragaSvar belonging to an intyg.
-     * 
+     *
      * @param intygsId
      * @return
      */
     @Query("SELECT NEW se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.frageStallare, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
     List<FragaSvarStatus> findFragaSvarStatusesForIntyg(@Param("intygsId") String intygsId);
-    
+
     /**
      * Should return a list of {@link FragaSvar} entities in the repository related to the specified intygsId.
      *

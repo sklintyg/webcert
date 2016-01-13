@@ -1,19 +1,28 @@
 package se.inera.webcert.web.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageControllerTest {
@@ -28,7 +37,7 @@ public class PageControllerTest {
 
     @Test
     public void testStartViewForDoctor() {
-        when(webCertUserService.getWebCertUser()).thenReturn(createMockUser(true));
+        when(webCertUserService.getUser()).thenReturn(createMockUser(true));
         when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
         ModelAndView result = controller.displayStart();
         assertEquals(PageController.DASHBOARD_VIEW_REDIRECT, result.getViewName());
@@ -36,7 +45,7 @@ public class PageControllerTest {
 
     @Test
     public void testStartViewForNonDoctor() {
-        when(webCertUserService.getWebCertUser()).thenReturn(createMockUser(false));
+        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
         when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
         ModelAndView result = controller.displayStart();
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result.getViewName());
@@ -55,10 +64,40 @@ public class PageControllerTest {
         String result = controller.resolveStartView(createMockUser(false));
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
     }
-    private WebCertUser createMockUser(boolean isLakare) {
+
+    private WebCertUser createMockUser(boolean doctor) {
         WebCertUser user = new WebCertUser();
-        user.setLakare(isLakare);
+        user.setRoles(getGrantedRole(doctor));
+        user.setAuthorities(getGrantedPrivileges(doctor));
         return user;
+    }
+
+    private Map<String, UserRole> getGrantedRole(boolean doctor) {
+        Map<String, UserRole> map = new HashMap<>();
+
+        if (doctor) {
+            map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        } else {
+            map.put(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR);
+        }
+
+        return map;
+    }
+
+    private Map<String, UserPrivilege> getGrantedPrivileges(boolean doctor) {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+        Map<String, UserPrivilege> privilegeMap = new HashMap<>();
+
+        // convert list to map
+        if (doctor) {
+            privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+                public String apply(UserPrivilege userPrivilege) {
+                    return userPrivilege.name();
+                }
+            });
+        }
+
+        return privilegeMap;
     }
 
 }

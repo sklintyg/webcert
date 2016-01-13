@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus;
-import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
 @Component
@@ -25,8 +24,9 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see se.inera.webcert.service.notification.FragorOchSvarCreator#createFragorOchSvar(java.lang.String)
+     *
+     * @see se.inera.webcert.service.notification.FragorOchSvarCreator#
+     * createFragorOchSvar(java.lang.String)
      */
     @Override
     public FragorOchSvar createFragorOchSvar(String intygsId) {
@@ -49,12 +49,14 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
         for (FragaSvarStatus fsStatus : fsStatuses) {
 
+            // WEBCERT-2001: Vi vill endast öka antalet hanteradeSvar på
+            // faktiska svar från FK.
             if (isFromWebcert(fsStatus)) {
                 if (fsStatus.hasAnswerSet()) {
                     antalSvar++;
-                }
-                if (fsStatus.isClosed()) {
-                    antalHanteradeSvar++;
+                    if (fsStatus.isClosed()) {
+                        antalHanteradeSvar++;
+                    }
                 }
             } else if (isFromFK(fsStatus)) {
                 antalFragor++;
@@ -64,7 +66,8 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
             }
         }
 
-        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor,
+                antalHanteradeSvar);
     }
 
     public boolean isFromFK(FragaSvarStatus fsStatus) {
@@ -72,7 +75,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     }
 
     public boolean isFromWebcert(FragaSvarStatus fsStatus) {
-        return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_WEBCERT);
+        return fsStatus.getFrageStallare().equalsIgnoreCase(
+                FRAGESTALLARE_WEBCERT);
     }
-
 }

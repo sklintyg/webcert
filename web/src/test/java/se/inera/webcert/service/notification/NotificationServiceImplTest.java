@@ -2,20 +2,17 @@ package se.inera.webcert.service.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-
-import java.io.IOException;
 
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.joda.time.LocalDateTime;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -28,8 +25,6 @@ import org.mockito.stubbing.Answer;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
@@ -38,6 +33,7 @@ import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -53,9 +49,6 @@ public class NotificationServiceImplTest {
 
     private static final String LOGISK_ADDR = "SE12345678-1234";
 
-    String expected = "{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",\"utkast\":"
-            + INTYG_JSON + ",\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}";
-
     @Mock
     private JmsTemplate template = mock(JmsTemplate.class);
 
@@ -64,7 +57,10 @@ public class NotificationServiceImplTest {
 
     @Mock
     private NotificationMessageFactory mockNotificationMessageFactory;
-    
+
+    @Mock
+    private MonitoringLogService mockMonitoringLogService;
+
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -100,10 +96,10 @@ public class NotificationServiceImplTest {
 
         MessageCreator messageCreator = messageCreatorCaptor.getValue();
         messageCreator.createMessage(session);
-        
+
         // get the notfication message as json and transform it back to object
         NotificationMessage captNotMsg = objectMapper.readValue(stringArgumentCaptor.getValue(), NotificationMessage.class);
-        
+
         // assert that things are still there
         assertNotNull(captNotMsg);
         assertEquals(INTYG_ID, captNotMsg.getIntygsId());
@@ -111,7 +107,6 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
     }
 
-    
     private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);

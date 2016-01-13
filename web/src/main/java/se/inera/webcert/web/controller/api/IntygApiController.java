@@ -21,16 +21,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.utkast.CopyUtkastService;
@@ -116,8 +118,8 @@ public class IntygApiController extends AbstractApiController {
     private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
 
         HoSPerson hosPerson = createHoSPersonFromUser();
-        se.inera.webcert.service.dto.Vardenhet vardenhet = createVardenhetFromUser();
-        String patientPersonnummer = copyRequest.getPatientPersonnummer();
+        Vardenhet vardenhet = createVardenhetFromUser();
+        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
 
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
 
@@ -126,7 +128,12 @@ public class IntygApiController extends AbstractApiController {
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }
 
-        if (checkIfWebcertFeatureIsAvailable(WebcertFeature.FRAN_JOURNALSYSTEM)) {
+        UserRole[] userRoles = new UserRole[] {
+            UserRole.ROLE_LAKARE_DJUPINTEGRERAD,
+            UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD
+        };
+
+        if (checkIfUserHasRole(userRoles)) {
             LOG.debug("Setting djupintegrerad flag on request to true");
             req.setDjupintegrerad(true);
         }
@@ -139,16 +146,16 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummer
+     * @param personNummerIn
      *            personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
     @Path("/person/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummer) {
-
-        LOG.debug("Retrieving intyg for person {}", personNummer);
+    public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
+        Personnummer personNummer = new Personnummer(personNummerIn);
+        LOG.debug("Retrieving intyg for person {}", personNummer.getPnrHash());
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 
@@ -163,8 +170,8 @@ public class IntygApiController extends AbstractApiController {
         List<Utkast> utkastList;
 
         if (checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) {
-            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
-                    ALL_DRAFTS);
+            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer.getPersonnummer(), enhetsIds,
+                    ALL_DRAFTS, getWebCertUserService().getUser().getIntygsTyper());
             LOG.debug("Got {} utkast", utkastList.size());
         } else {
             utkastList = Collections.emptyList();

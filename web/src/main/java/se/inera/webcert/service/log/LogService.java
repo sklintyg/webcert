@@ -1,5 +1,6 @@
 package se.inera.webcert.service.log;
 
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
 
@@ -144,4 +145,15 @@ public interface LogService {
      * @param user the user who performs the action that is being logged
      */
     void logSendIntygToRecipient(LogRequest logRequest, LogUser user);
+
+    /**
+     * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
+     *
+     * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned
+     * by a HTTP request that has manually supplied the job with the original WebCertUser.
+     *
+     * @param webCertUser
+     * @return A {@link LogUser} instance
+     */
+    LogUser getLogUser(WebCertUser webCertUser);
 }

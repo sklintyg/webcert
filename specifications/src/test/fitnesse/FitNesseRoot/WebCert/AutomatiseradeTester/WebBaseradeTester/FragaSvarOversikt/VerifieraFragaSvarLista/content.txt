@@ -2,7 +2,7 @@ Testet beskriver fallet när en användare visar Frågor och Svar översikten. I
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Lägg till fråga
@@ -13,10 +13,10 @@ Testet beskriver fallet när en användare visar Frågor och Svar översikten. I
 
 !3 Verifiera att det går att visa innehållet i frågan i listan med ohanterade frågor
 
-!| script | SvaraOchFraga |
-| ga till svara och fraga |
-| lista med ohanterade fragor visas |
-| personnummer syns for fraga | $internReferens1 |
+!| skript | SvaraOchFraga |
+| ga till fragor och svar |
+| säkerställ att |lista med ohanterade fragor visas |
+| säkerställ att |personnummer syns for fraga | $internReferens1 |
 
 !3 Ta bort fråga
 

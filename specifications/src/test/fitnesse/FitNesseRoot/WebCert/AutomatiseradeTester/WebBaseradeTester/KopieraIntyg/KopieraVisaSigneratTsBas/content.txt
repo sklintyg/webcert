@@ -1,10 +1,14 @@
 Detta test ska visa på att man kan kopiera ett signerat ts-bas intyg från visa-vyn och få ett nytt utkast baserat på det.
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
 !3 Välj patient och visa intyget
 
-| script | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-4 |
@@ -12,18 +16,18 @@ Detta test ska visa på att man kan kopiera ett signerat ts-bas intyg från visa
 
 !3 Kopiera intyget
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | kopiera visat intyg | ts-bas |
 
 !3 Författarstöd visas
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | editera sidan visas |
-| ensure | intyget komplett meddelande visas |
+| säkerställ att | meddelande intyget komplett visas |
 | radera utkast |
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | visa intyg sidan visas |
 
-| script | !-HanteraUtkast-! |
-| ensure | inga ej signerade intyg visas |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | inga ej signerade intyg visas |

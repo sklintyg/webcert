@@ -11,7 +11,6 @@ import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -34,7 +33,6 @@ public class UtkastIntygDecoratorTest {
     private static final String INTYG_TYPE = "fk7263";
 
     private static final String INTYG_ID = "123";
-    private static final String PATIENT_ID = "19121212-1212";
 
     private Utkast signedUtkast;
 
@@ -76,7 +74,8 @@ public class UtkastIntygDecoratorTest {
     public void testRevokedIntygDoesNotAddAnyStatuses() {
 
         CertificateResponse response = buildCertificateResponse();
-        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(), response.getMetaData(), true);
+        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(), response.getMetaData(),
+                true);
 
         testee.decorateWithUtkastStatus(revokedResponse);
         assertEquals(1, response.getMetaData().getStatus().size());
@@ -103,7 +102,6 @@ public class UtkastIntygDecoratorTest {
         testee.decorateWithUtkastStatus(response);
         assertEquals(3, response.getMetaData().getStatus().size());
     }
-
 
     @Test
     public void testSentStatusIsAddedFromUtkast() {
@@ -135,7 +133,7 @@ public class UtkastIntygDecoratorTest {
         assertEquals(CertificateState.CANCELLED, response.getMetaData().getStatus().get(2).getType());
     }
 
-    private CertificateResponse buildCertificateResponse()  {
+    private CertificateResponse buildCertificateResponse() {
         CertificateResponse response = new CertificateResponse("{}", null, buildCertificateMetaData(), false);
         return response;
     }
@@ -148,7 +146,6 @@ public class UtkastIntygDecoratorTest {
         metaData.getStatus().add(statusSigned);
         return metaData;
     }
-
 
     private HoSPerson buildHosPerson() {
         HoSPerson person = new HoSPerson();

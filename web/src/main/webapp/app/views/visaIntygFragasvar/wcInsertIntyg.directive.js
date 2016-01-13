@@ -18,11 +18,6 @@ angular.module('webcert').directive('wcInsertCertificate',
                     error(function(error) {
                         $log.debug(error);
                     });
-
-                /*require([ 'text!./' + scope.certificateType + '/webcert/views/intyg-view.html' ], function(file) {
-                 element.html(file);
-                 element.replaceWith($compile(element.html())(scope));
-                 });*/
             }
         };
     });

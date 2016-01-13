@@ -1,11 +1,11 @@
-# This playbook deploys WebCert 
+# This playbook deploys WebCert
 
 - hosts: webcert-tomcat
-  sudo: yes 
+  sudo: yes
   vars:
-    # repo - values: snapshot or release
-    repo: release
-    version: 3.2.0-RC2
+    # repo - values: snapshots or releases
+    repo: releases
+    version: 4.0.0-b26
     config_version: master
 
   roles:

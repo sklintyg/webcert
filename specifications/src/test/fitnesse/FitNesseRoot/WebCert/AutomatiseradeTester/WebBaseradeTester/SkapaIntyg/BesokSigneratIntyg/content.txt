@@ -1,29 +1,35 @@
+Om man försöker att komma direkt till en signerat intyg så ska man bli omdirrigerad till visa intyg
+
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Lägg till komplett utkast
 
 | skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | 200 |
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Givet att det finns ett komplett utkast, verifiera att det går att signera det
 
-| script | !-HanteraUtkast-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+| skript | !-HanteraUtkast-! |
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| ensure | signera knapp visas |
-| ensure | signera knapp aktiverad |
+| säkerställ att | signera knapp visas |
+| säkerställ att | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| ensure | intyget signerat meddelande visas |
+| säkerställ att | meddelande intyget signerat visas |
 !3 Nar man forsoka att ga direkt till edit intyg man skulle vara omdirigerat till visa intyg sidan om intyget ar signerat
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | prova ga till edit intyg med intygsid | webcert-fitnesse-signera-1 |
 | visa intyg sidan visas |
 

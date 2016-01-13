@@ -19,6 +19,10 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
+  <bean id="utkastRepository" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.webcert.persistence.utkast.repository.UtkastRepository" />
+  </bean>
+
   <context:annotation-config/>
   <context:property-placeholder location="classpath:MailNotificationServiceTest/test.properties" ignore-unresolvable="false" ignore-resource-not-found="false" />
   <context:component-scan base-package="se.inera.webcert.service.mail"/>
@@ -35,6 +39,14 @@
   <bean class="se.inera.webcert.hsa.stub.HsaServiceStub"/>
   
   <bean class="se.inera.webcert.service.monitoring.MonitoringLogServiceImpl" />
+
+  <bean class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.webcert.service.user.WebCertUserService" />
+  </bean>
+
+  <bean id="ppService" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.intyg.webcert.integration.pp.services.PPService" />
+  </bean>
 
   <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
   <task:annotation-driven executor="threadPoolTaskExecutor"/>

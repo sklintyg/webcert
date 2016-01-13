@@ -18,7 +18,7 @@
 
 !3 Ta bort svar till försäkringskassan (stub)
 
-| script | !-RensaFragorSvarTillFk-! |
+| skript | !-RensaFragorSvarTillFk-! |
 | rensa svar |
 
 !3 Ta bort fråga

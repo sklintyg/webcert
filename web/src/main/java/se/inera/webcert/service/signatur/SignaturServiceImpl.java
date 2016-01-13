@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.persistence.OptimisticLockException;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +22,13 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
@@ -36,10 +37,11 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.web.service.WebCertUserService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.service.util.UpdateUserUtil;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -68,10 +70,10 @@ public class SignaturServiceImpl implements SignaturService {
     private MonitoringLogService monitoringService;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private IntygModuleRegistry moduleRegistry;
+    private ASN1Util asn1Util;
 
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
@@ -111,8 +113,9 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     private WebCertUser getWebcertUserForSignering() {
-        WebCertUser user = webCertUserService.getWebCertUser();
-        if (!user.isLakare()) {
+        WebCertUser user = webCertUserService.getUser();
+
+        if (!user.hasPrivilege(UserPrivilege.PRIVILEGE_SIGNERA_INTYG)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User is not a doctor. Could not sign utkast.");
         }
@@ -123,6 +126,64 @@ public class SignaturServiceImpl implements SignaturService {
     @Transactional("jpaTransactionManager")
     public SignaturTicket clientSignature(String ticketId, String rawSignatur) {
 
+        // Fetch Webcert user
+        WebCertUser user = getWebcertUserForSignering();
+
+        // For NetID-based signing, we must match the personId / hsaId on the user principal with the serialNumber
+        // extracted from the signature data.
+        validateSigningIdentity(user, rawSignatur);
+
+        // Use method common between NetID and BankID to finish signing.
+        return finalizeClientSignature(ticketId, rawSignatur, user);
+    }
+
+    private void validateSigningIdentity(WebCertUser user, String rawSignatur) {
+
+        // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
+        if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
+            String signaturPersonId = asn1Util.parsePersonId(IOUtils.toInputStream(rawSignatur));
+
+            if (verifyPersonIdEqual(user, signaturPersonId)) {
+                String errMsg = "Cannot finalize signing of Utkast, the logged in user's personId and the personId in the ASN.1 "
+                        + "signature data from the NetID client does not match.";
+                LOG.error(errMsg);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+            }
+
+        }
+
+        // Siths-inloggade måste signera med samma SITHS-kort som de loggade in med.
+        if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
+            String signaturHsaId = asn1Util.parseHsaId(IOUtils.toInputStream(rawSignatur));
+
+            if (verifyHsaIdEqual(user, signaturHsaId)) {
+                String errMsg = "Cannot finalize signing of Utkast, the logged in user's hsaId and the hsaId in the ASN.1 "
+                        + "signature data from the NetID client does not match.";
+                LOG.error(errMsg);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+            }
+        }
+    }
+
+    // Strips off any hyphens
+    private boolean verifyPersonIdEqual(WebCertUser user, String signaturPersonId) {
+        return !user.getPersonId().trim().replaceAll("\\-", "").equals(signaturPersonId.trim().replaceAll("\\-", ""));
+    }
+
+    // We may need to tweak this if it turns out we _somehow_ are getting HsaId's from the sig. that doesn't exactly
+    // match what we got from SAML-tickets or HSA on session start. (Kronoberg, see WEBCERT-1501)
+    // Consider making a 2-way "subset of" check, if either string is subset of the other, we're OK.
+    private boolean verifyHsaIdEqual(WebCertUser user, String signaturHsaId) {
+        return !user.getHsaId().trim().replaceAll("\\-", "").equalsIgnoreCase(signaturHsaId.trim().replaceAll("\\-", ""));
+    }
+
+    @Override
+    @Transactional("jpaTransactionManager")
+    public SignaturTicket clientGrpSignature(String biljettId, String rawSignatur, WebCertUser webCertUser) {
+        return finalizeClientSignature(biljettId, rawSignatur, webCertUser);
+    }
+
+    private SignaturTicket finalizeClientSignature(String ticketId, String rawSignatur, WebCertUser user) {
         // Lookup signature ticket
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
 
@@ -132,8 +193,6 @@ public class SignaturServiceImpl implements SignaturService {
         }
         LOG.debug("Klientsignering ticket '{}' intyg '{}'", ticket.getId(), ticket.getIntygsId());
 
-        // Fetch Webcert user
-        WebCertUser user = getWebcertUserForSignering();
 
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
@@ -148,7 +207,9 @@ public class SignaturServiceImpl implements SignaturService {
         notificationService.sendNotificationForDraftSigned(utkast);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logSignIntyg(logRequest);
+        // Note that we explictly supplies the WebCertUser here. The BankID finalization is not executed in a HTTP
+        // request context and thus we need to supply the user instance manually.
+        logService.logSignIntyg(logRequest, logService.getLogUser(user));
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -192,7 +253,6 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Fetch the certificate
         Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion(), user);
-
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
@@ -232,12 +292,11 @@ public class SignaturServiceImpl implements SignaturService {
         return utkast;
     }
 
-    /**
-     * Update utkast with "senast sparad av" information
+    /** Update utkast with "senast sparad av" information.
      *
      * @param utkast
-     * @param userId
-     * @param userName
+     * @param user
+     * @param signeringstid
      * @return
      */
     private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {

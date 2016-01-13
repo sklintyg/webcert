@@ -4,10 +4,7 @@ import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.common.security.authority.UserRole;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,23 +25,21 @@ import java.util.Map;
  * @author nikpet
  */
 @Path("/certificate")
-public class LegacyIntygIntegrationController {
+public class LegacyIntygIntegrationController extends BaseIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
-    private static final String PARAM_QA_ONLY = "qaOnly";
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
 
-    private String urlBaseTemplate;
+    private static final String[] GRANTED_ROLES = new String[] { UserRole.ROLE_LAKARE_UTHOPP.name(), UserRole.ROLE_TANDLAKARE_UTHOPP.name(), UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name() };
 
     private String urlFragmentTemplate;
 
-    @Autowired
-    private IntygService intygService;
-
-    @Autowired
-    private WebCertUserService webCertUserService;
+    @Override
+    protected String[] getGrantedRoles() {
+        return GRANTED_ROLES;
+    }
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
@@ -59,37 +54,34 @@ public class LegacyIntygIntegrationController {
     @Path("/{intygId}/questions")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
-        String intygType = FK7263.toString();
+        boolean ok = super.validateRedirectToIntyg(intygId);
+        if (!ok) {
+            return Response.serverError().build();
+        }
 
+        String intygType = FK7263.toString();
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 
-        //webCertUserService.clearEnabledFeaturesOnUser();
-        //webCertUserService.enableFeaturesOnUser(WebcertFeature.HANTERA_FRAGOR);
-        //webCertUserService.enableModuleFeatureOnUser(intygType, ModuleFeature.HANTERA_FRAGOR);
-        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM_QAONLY);
-
         return buildRedirectResponse(uriInfo, intygType, intygId);
-    }
-
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
-
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
-
-        Map<String, Object> urlParams = new HashMap<String, Object>();
-        urlParams.put(PARAM_CERT_TYPE, certificateType);
-        urlParams.put(PARAM_CERT_ID, certificateId);
-        urlParams.put(PARAM_QA_ONLY, true);
-
-        URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
-
-        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    public void setUrlBaseTemplate(String urlBaseTemplate) {
-        this.urlBaseTemplate = urlBaseTemplate;
     }
 
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
+
+    // - - - - - Default scope - - - - -
+
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
+
+        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+
+        Map<String, Object> urlParams = new HashMap<>();
+        urlParams.put(PARAM_CERT_TYPE, certificateType);
+        urlParams.put(PARAM_CERT_ID, certificateId);
+
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+
+        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+    }
+
 }

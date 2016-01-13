@@ -1,20 +1,27 @@
 package se.inera.webcert.pu.services;
 
-import com.google.common.annotations.VisibleForTesting;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import se.inera.population.residentmaster.v1.*;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
-import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
+
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
+import se.riv.population.residentmaster.types.v1.JaNejTYPE;
+import se.riv.population.residentmaster.types.v1.NamnTYPE;
+import se.riv.population.residentmaster.types.v1.ResidentType;
+import se.riv.population.residentmaster.types.v1.SvenskAdressTYPE;
 
-import javax.xml.ws.soap.SOAPFaultException;
+import com.google.common.annotations.VisibleForTesting;
 
 public class PUServiceImpl implements PUService {
 
@@ -30,17 +37,16 @@ public class PUServiceImpl implements PUService {
     @Cacheable(value = "personCache",
                key = "#personId",
                unless = "#result.status == T(se.inera.webcert.pu.model.PersonSvar$Status).ERROR")
-    public PersonSvar getPerson(String personId) {
-        String normalizedId = normalizeId(personId);
+    public PersonSvar getPerson(Personnummer personId) {
 
-        LOG.debug("Looking up person '{}'({})", normalizedId, personId);
+        LOG.debug("Looking up person '{}'", personId.getPnrHash());
         LookupResidentForFullProfileType parameters = new LookupResidentForFullProfileType();
         parameters.setLookUpSpecification(new LookUpSpecificationType());
-        parameters.getPersonId().add(normalizedId);
+        parameters.getPersonId().add(personId.getPersonnummerWithoutDash());
         try {
             LookupResidentForFullProfileResponseType response = service.lookupResidentForFullProfile(logicaladdress, parameters);
             if (response.getResident().isEmpty()) {
-                LOG.warn("No person '{}'({}) found", normalizedId, personId);
+                LOG.warn("No person '{}' found", personId.getPnrHash());
                 return new PersonSvar(null, PersonSvar.Status.NOT_FOUND);
             }
 
@@ -53,27 +59,20 @@ public class PUServiceImpl implements PUService {
             String adressRader = buildAdress(adress);
             Person person = new Person(personId, resident.getSekretessmarkering() == JaNejTYPE.J, namn.getFornamn(),
                     namn.getMellannamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
-            LOG.debug("Person '{}' found", normalizedId);
+            LOG.debug("Person '{}' found", personId.getPnrHash());
 
             return new PersonSvar(person, PersonSvar.Status.FOUND);
         } catch (SOAPFaultException e) {
-            LOG.warn("Error occured, no person '{}'({}) found", normalizedId, personId);
+            LOG.warn("Error occured, no person '{}' found", personId.getPnrHash());
             return new PersonSvar(null, PersonSvar.Status.ERROR);
         }
     }
 
+    @Override
     @VisibleForTesting
     @CacheEvict(value = "personCache", allEntries = true)
     public void clearCache() {
         LOG.debug("personCache cleared");
-    }
-
-    private String normalizeId(String personId) {
-        if (personId.length() == 13) {
-            return personId.substring(0, 8) + personId.substring(9);
-        } else {
-            return personId;
-        }
     }
 
     private String buildAdress(SvenskAdressTYPE adress) {

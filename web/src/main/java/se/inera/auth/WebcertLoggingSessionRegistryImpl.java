@@ -6,19 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistryImpl;
 
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
- * Implementation of SessioRegistry that performs audit logging of login and logout.
- * 
+ * Implementation of SessionRegistry that performs audit logging of login and logout.
+ *
  * @author npet
  *
  */
 public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebcertLoggingSessionRegistryImpl.class);
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
 

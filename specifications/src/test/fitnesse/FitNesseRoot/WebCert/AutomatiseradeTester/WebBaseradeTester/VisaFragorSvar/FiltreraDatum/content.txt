@@ -2,16 +2,16 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Verifiera att förväntade informationrutor avseende frågor på enhet/sökresultat visas
 
-| script | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
-| infotext inga fragar pa enhet visas | true |
-| infotext inget sokresultat visas | false |
+| säkerställ att | infotext inga fragar pa enhet visas |
+| säkerställ att inte | infotext inget sokresultat visas |
 
 !3 Lägg till frågor
 
@@ -24,26 +24,28 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 
 !3 Verifiera att filtreringen på läkare fungerar
 
-| script | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
+| aterstall sokformular |
 | valj datum fran | 2013-01-02 |
 | valj datum till | 2013-01-03 |
 | filtrera fragor och svar |
-| visas fraga| $internReferens2 |
-| visas fraga | $internReferens3 |
-| doljs fraga| $internReferens1 |
-| doljs fraga| $internReferens4 |
+| säkerställ att | fraga| $internReferens2 | visas |
+| säkerställ att | fraga | $internReferens3 | visas |
+| säkerställ att inte | fraga| $internReferens1 | visas |
+| säkerställ att inte | fraga| $internReferens4 | visas |
 
 !3 Filtrera så inga träffar fås, verifiera förväntat infomeddelande
-| script | !-SvaraOchFraga-! |
+
+| skript | !-SvaraOchFraga-! |
 | valj datum fran | 2012-01-02 |
 | valj datum till | 2012-01-03 |
-| filtrera fragor och svar | false |
-| infotext inget sokresultat visas | true |
-| infotext inga fragar pa enhet visas | false |
+| filtrera fragor och svar |
+| säkerställ att | infotext inget sokresultat visas |
+| säkerställ att inte | infotext inga fragar pa enhet visas |
 
 !3 Ta bort frågor
 

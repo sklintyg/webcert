@@ -7,7 +7,7 @@
     "frageSkickadDatum": "2013-09-08T00:00:00.000",
     "meddelandeRubrik": "Angående intygets innehåll",
     "externaKontakter": ["Hans Persson", "Olle Nilsson 0730-211233"],
-    "kompletteringar" : [{"falt": "Fält 4", "text": "Diagnosen är tvetydig och stämmer inte överens med beskriva symptom"}], 
+    "kompletteringar" : [{"falt": "Fält 4", "text": "Diagnosen är tvetydig och stämmer inte överens med beskriva symtom"}],
     "intygsReferens": {
         "intygsId": "intyg-1",
         "intygsTyp": "fk7263",

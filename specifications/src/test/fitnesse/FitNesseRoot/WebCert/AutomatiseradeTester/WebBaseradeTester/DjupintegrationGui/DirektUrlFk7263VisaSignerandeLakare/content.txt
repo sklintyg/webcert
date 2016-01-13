@@ -1,21 +1,24 @@
-!3 Logga in
-
-| script | !-LoggaIn-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-
 !3 Skapa ett nytt intygsutkast
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej |
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
 
 !3 Visa utkastet via integrationslänken
 
-| script | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | signerande lakare | Per+Persson |
-| signerande lakare meddelande visas | Per Persson |
+| skript | !-IntegrationMedJournalsystem-! |
+| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | signerande lakare | Åsa+Andersson |
+| signerande lakare meddelande visas | Åsa Andersson |
 
 !3 Ta bort utkastet
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | radera utkast |

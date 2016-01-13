@@ -5,14 +5,14 @@ import java.util.UUID;
 
 import org.joda.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 /**
  * Base class for all log messages.
  *
  * @author andreaskaltenbach
  */
 public class AbstractLogMessage implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final String RESOURCE_TYPE = "Intyg";
 
@@ -44,8 +44,8 @@ public class AbstractLogMessage implements Serializable {
     private Enhet resourceOwner;
 
     public AbstractLogMessage() {
-        
     }
+
     /**
      * Constructor for a log message.
      *

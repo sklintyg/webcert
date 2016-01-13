@@ -2,7 +2,7 @@ package se.inera.webcert.persistence.fragasvar.model;
 
 /**
  * Possible statuses for a FragaSvar Entity.
- * 
+ *
  * @author marced
  *
  */

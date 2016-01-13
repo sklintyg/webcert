@@ -19,6 +19,8 @@
   <properties>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+    <sonar.javascript.lcov.reportPath>target/karma_coverage/lcov.info</sonar.javascript.lcov.reportPath>
+    <sonar.exclusions>**/templates.js,**/vendor/*,**/app.min.js</sonar.exclusions>
   </properties>
 
   <dependencies>
@@ -37,7 +39,15 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>pp-integration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>fk-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fmb-integration</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -110,6 +120,10 @@
       <groupId>se.riv.ehr.logstore</groupId>
       <artifactId>ehr-logstore-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
+      <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
+    </dependency>
 
     <!-- Intyg Schemas -->
     <dependency>
@@ -119,6 +133,16 @@
     <dependency>
       <groupId>se.inera.intyg.transportstyrelsen</groupId>
       <artifactId>intyg-transportstyrelsen-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner.terms</groupId>
+      <artifactId>intyg-infrastructure-directory-privatepractitioner-terms-schemas</artifactId>
+    </dependency>
+
+    <!-- CGI GRP schema -->
+    <dependency>
+      <groupId>se.funktionstjanster.grp</groupId>
+      <artifactId>funktionstjanster-grp-schemas</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -179,6 +203,11 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Misc -->
@@ -290,11 +319,6 @@
     </dependency>
 
     <!-- Test dependencies -->
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
@@ -526,6 +550,8 @@
             <configuration>
               <nodeVersion>${node.version}</nodeVersion>
               <npmVersion>${npm.version}</npmVersion>
+              <nodeDownloadRoot>https://build-inera.nordicmedtest.se/node/</nodeDownloadRoot>
+              <npmDownloadRoot>https://build-inera.nordicmedtest.se/node/npm/</npmDownloadRoot>
             </configuration>
           </execution>
           <execution>
@@ -549,7 +575,7 @@
               <goal>karma</goal>
             </goals>
             <configuration>
-              <karmaConfPath>${project.basedir}/src/test/resources/karma.conf.ci.js</karmaConfPath>
+              <karmaConfPath>${project.basedir}/src/test/resources/karma.conf.ci.js --skip-coverage=${skip-coverage}</karmaConfPath>
             </configuration>
           </execution>
         </executions>

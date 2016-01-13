@@ -8,7 +8,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 public interface RevokeCertificateServiceClient {
 
     /**
-     * Tells IT to perform a revoke operation based on the supplied request (in XML format)
+     * Tells IT to perform a revoke operation based on the supplied request (in XML format).
      *
      * @param xml
      *      A {@link se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType}

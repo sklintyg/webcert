@@ -1,6 +1,8 @@
 package se.inera.webcert.service.intyg;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -32,9 +34,8 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturServiceImpl;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
-
 
 public abstract class AbstractIntygServiceTest {
 
@@ -67,7 +68,7 @@ public abstract class AbstractIntygServiceTest {
 
     @Mock
     protected NotificationService notificationService;
-    
+
     @Mock
     protected MonitoringLogService monitoringService;
 
@@ -87,12 +88,11 @@ public abstract class AbstractIntygServiceTest {
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
-    
+
     protected String json;
     protected Utlatande utlatande;
     protected CertificateResponse certificateResponse;
-    protected CertificateResponse revokedCertificateResponse;
-    
+
     @Before
     public void setupIntygstjanstResponse() throws Exception {
 
@@ -100,7 +100,6 @@ public abstract class AbstractIntygServiceTest {
         utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, true);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
     }
 

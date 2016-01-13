@@ -1,7 +1,7 @@
 !1 Detta test kräver möjlighet att logga in som Per Persson, dvs applikationen måste använda HSA-stubben
 
 !3 Logga in
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | perpersson_anestesikliniken |
 
 !3 Lägg till fråga
@@ -15,8 +15,8 @@
 | OVRIGT | FIT-QA-1006 | FK | blah-5 | intyg-fit-1 | perpersson | Per Persson | vardavdelning-F | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens6= |
 
 
-!| script | SvaraOchFraga |
-| ga till svara och fraga |
+!| skript | SvaraOchFraga |
+| ga till fragor och svar |
 | enhetsvaljare visas |
 | visas fraga | $internReferens1 |
 | visas fraga | $internReferens2 |
@@ -49,7 +49,7 @@
 | for enheten | vardavdelning-F | i modalen ar siffran | 1 |
 | valj enhet | vardavdelning-D | i modal |
 | visas fraga | $internReferens5 |
-| ensure | visas ej fraga | $internReferens1 |
+| säkerställ att | visas ej fraga | $internReferens1 |
 
 !3 Ta bort fråga
 | ta bort fraga |

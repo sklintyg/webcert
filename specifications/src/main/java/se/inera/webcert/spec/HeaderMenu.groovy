@@ -18,4 +18,26 @@ class HeaderMenu {
             }
         }
     }
+
+    boolean redigeraAnvandareVisas() {
+        def result
+        Browser.drive {
+            waitFor {
+                at HeaderPage
+            }
+            result = page.editUserLink()?.isDisplayed()
+        }
+        result
+    }
+
+    boolean anvandarensRollVisas(String rollNamn) {
+        def result
+        Browser.drive {
+            waitFor {
+                at HeaderPage
+            }
+            result = page.loggedInRole().text().contains(rollNamn)
+        }
+        result
+    }
 }

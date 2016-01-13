@@ -1,7 +1,7 @@
 !-FitNesse-! tester för Webcert.
 
 !3 Specifikationer
-Våra test specifikationer. Gör alla förändringar här.
+Våra testspecifikationer. Gör alla förändringar här.
 
  * WebCert
 

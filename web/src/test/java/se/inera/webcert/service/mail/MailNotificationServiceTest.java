@@ -11,6 +11,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,6 +34,8 @@ import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:MailNotificationServiceTest/test-context.xml")
 public class MailNotificationServiceTest {
+
+    private static final int THRESHOLD = 2000;
 
     private static final String CITYAKUTEN = "cityakuten";
 
@@ -191,7 +196,7 @@ public class MailNotificationServiceTest {
         mailStore.setWait(false);
         mailStore.waitForMails(1);
         long endTimestamp = System.currentTimeMillis();
-        assertTrue(endTimestamp - startTimestamp < 2000);
+        assertTrue(endTimestamp - startTimestamp < THRESHOLD);
         assertEquals(1, mailStore.getMails().size());
         OutgoingMail mail = mailStore.getMails().get(0);
 

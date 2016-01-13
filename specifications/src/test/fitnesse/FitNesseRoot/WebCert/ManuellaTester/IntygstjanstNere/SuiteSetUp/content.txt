@@ -6,10 +6,10 @@
 
 !2 Använd REST-api för att sätta Intygstjänst stub i OFFLINE
 
-!|script              |!-SokSkrivIntyg-!      |
+!|skript              |!-SokSkrivIntyg-!      |
 |intygstjanst stub offline|
 
 !2 Starta browser
 
-!|script|Browser|
+!|skript|Browser|
 |öppna          |

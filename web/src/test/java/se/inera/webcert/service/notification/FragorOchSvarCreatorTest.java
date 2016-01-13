@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
@@ -69,7 +68,7 @@ public class FragorOchSvarCreatorTest {
     }
 
     @Test
-    public void testPerformCountHan9_Answered() {
+    public void testPerformCountHan9Answered() {
 
         List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);
@@ -81,7 +80,7 @@ public class FragorOchSvarCreatorTest {
     }
 
     @Test
-    public void testPerformCountHan9_NotAnswered() {
+    public void testPerformCountHan9NotAnswered() {
 
         List<FragaSvarStatus> fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED));
         FragorOchSvar fos = fsCreator.performCount(fsStatuses);

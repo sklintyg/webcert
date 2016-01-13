@@ -6,11 +6,11 @@
     dest="{{ activemq_conf }}/activemq.xml"
     regexp=".*<policyEntry queue='{{ environment_name }}.webcert.notification.ws.queue'>"
     insertbefore=".*</policyEntries>"
-    line="                <policyEntry queue='{{ environment_name }}.webcert.notification.ws.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true'/></deadLetterStrategy></policyEntry>"
+    line="                <policyEntry queue='{{ environment_name }}.webcert.notification.ws.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true' enableAudit='false'/></deadLetterStrategy></policyEntry>"
 
 - name: configure certificate-sender DLQ
   lineinfile:
     dest="{{ activemq_conf }}/activemq.xml"
     regexp=".*<policyEntry queue='{{ environment_name }}.webcert.certificate.queue'>"
     insertbefore=".*</policyEntries>"
-    line="                <policyEntry queue='{{ environment_name }}.webcert.certificate.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true'/></deadLetterStrategy></policyEntry>"
+    line="                <policyEntry queue='{{ environment_name }}.webcert.certificate.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true' enableAudit='false'/></deadLetterStrategy></policyEntry>"

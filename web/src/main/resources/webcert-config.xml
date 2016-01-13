@@ -16,7 +16,10 @@
   <import resource="classpath:/repository-context.xml" />
   <import resource="security/securityContext.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
+  <import resource="classpath:/fmb-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
+  <import resource="classpath:/pp-services-config.xml" />
+  <import resource="classpath:/pp-stub-context.xml" />
   <import resource="jms-config.xml" />
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />
@@ -29,12 +32,35 @@
   <context:annotation-config />
   
   <context:component-scan base-package="se.inera.webcert" />
-  
+
+
   <beans>
     <!-- All config files must be present in other modes than dev -->
     <context:property-placeholder
-      location="file:${credentials.file}, file:${webcert.config.file}"
+      location="file:${credentials.file}"
       order="1" ignore-unresolvable="true"/>
+    <util:properties id="webcertProps" location="file:${webcert.config.file}"/>
+    <context:property-placeholder
+        properties-ref="webcertProps"
+        order="2" ignore-unresolvable="true"/>
+
+    <!-- Remove when REST-api is used to serve config to frontend! -->
+    <!-- This ugliness is needed in order for dashboard.jsp to get an id from which to evaluate a property -->
+    <util:properties id="defaultProps" location="classpath:default.properties"/>
+    <context:property-placeholder
+        properties-ref="defaultProps"
+        order="3" ignore-unresolvable="false"/>
+    <!-- Remove when REST-api is used to serve config to frontend! -->
+    <!-- This configuration solves WEBCERT-2249 -->
+    <bean id="webcertProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+      <property name="singleton" value="true" />
+      <property name="properties">
+        <props>
+          <prop key="privatepractitioner.portal.registration.url">${privatepractitioner.portal.registration.url}</prop>
+          <prop key="certificate.view.url.base">${certificate.view.url.base}</prop>
+        </props>
+      </property>
+    </bean>
   </beans>
   
   <beans profile="dev,wc-init-data">
@@ -65,15 +91,30 @@
       </property>
     </bean>
 
+    <bean id="avtalService" class="se.inera.webcert.service.privatlakaravtal.AvtalServiceImpl"/>
+
     <!-- Exposes healthCheckService for use in health-check.jsp -->
     <bean
       class="org.springframework.web.context.support.ServletContextAttributeExporter">
       <property name="attributes">
         <map>
           <entry key="healthcheck" value-ref="healthCheckService" />
+          <entry key="avtalservice" value-ref="avtalService" />
         </map>
       </property>
     </bean>
+
+    <bean id="savedRequestFactory" class="se.inera.auth.SavedRequestFactoryImpl"/>
+
+    <bean id="idpSelectionFilter" class="se.inera.auth.IdpSelectionFilter">
+        <property name="savedRequestFactory" ref="savedRequestFactory"/>
+    </bean>
+
+    <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
+    <bean id="termsFilter" class="se.inera.auth.TermsFilter"/>
+
+    <!-- Eleg login redirect filter for easier URL handling in PP -->
+    <bean id="elegRedirectFilter" class="se.inera.auth.eleg.ElegRedirectFilter" />
 
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
@@ -92,5 +133,12 @@
 
     <bean id="localDateTimeHandler" class="se.inera.webcert.web.handlers.LocalDateTimeHandler" />
 
+    <!-- Thread pool for BankID GRP collect tasks. TODO tweak properties -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+      <property name="corePoolSize" value="5" />
+      <property name="maxPoolSize" value="10" />
+      <property name="queueCapacity" value="25" />
+    </bean>
   </beans>
+
 </beans>

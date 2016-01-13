@@ -1,27 +1,30 @@
-!3 Logga in
-
-| script | !-LoggaIn-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-
 !3 Skapa ett nytt intygsutkast
 
 | skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? | intygId? |
+| fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej | 200 | $intygId= |
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
 
 !3 Visa utkastet via integrationslänken
 
-| script | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration | webcert-fitnesse-signera-1 |
-| verifiera tillbakaknapp borta |
+| skript | !-IntegrationMedJournalsystem-! |
+| visa utkast via integration | $intygId |
+| säkerställ att inte | verifiera tillbakaknapp synlig |
 
 !3 Ta bort utkastet
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | radera utkast |
 
-!3 Verifiera att man fick ett felmeddelande istället för att man blev skickad till ej signerade intyg
+!3 Verifiera att man fick ett meddelande istället för att man blev skickad till ej signerade intyg
 
-| script | !-IntegrationMedJournalsystem-! |
+| skript | !-IntegrationMedJournalsystem-! |
 | integration borttaget meddelande visas |
 

@@ -37,8 +37,10 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
                     // If the pu-service says noone exists with this pnr we just show an error message.
                     if(personIdValidator.validResult(personIdValidator.validateSamordningsnummer($scope.personnummer))) {
+                        // This is a samordningsnummer that does not exist
                         $scope.widgetState.errorid = 'error.pu.samordningsnummernotfound';
                     } else {
+                        // This is a personnummer that does not exist
                         $scope.widgetState.errorid = 'error.pu.namenotfound';
                     }
                 };

@@ -1,0 +1,31 @@
+<div class="modal-header">
+    <button class="close" ng-click="$dismiss()">×</button>
+    <h3>
+        <span message key="common.title.{{title}}"></span>
+    </h3>
+</div>
+<div class="modal-body">
+
+    <div class="row">
+        <div class="col-md-10">
+        <h2>
+            <span message key="{{model.heading}}"></span>
+        </h2>
+        <p>
+            <span message key="{{model.bodyTextId}}"></span>
+        </p>
+        </div>
+        <div class="col-md-2">
+            <div ng-if="model.signState=='VANTA_SIGN'">
+                <img aria-labelledby="loading-message" src="/img/ajax-loader.gif">
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button id="buttonYes" class="btn btn-info" ng-click="$dismiss()">
+        <span message key="common.cancel"></span>
+    </button>
+
+</div>

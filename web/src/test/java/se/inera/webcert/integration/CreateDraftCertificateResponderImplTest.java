@@ -18,7 +18,7 @@ import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
-import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.integration.validator.ResultValidator;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -45,47 +45,46 @@ public class CreateDraftCertificateResponderImplTest {
 
     private static final String LOGICAL_ADDR = "1234567890";
 
-    private static final String USER_HSAID      = "SE1234567890";
-    private static final String UNIT_HSAID      = "SE0987654321";
+    private static final String USER_HSAID = "SE1234567890";
+    private static final String UNIT_HSAID = "SE0987654321";
     private static final String CAREGIVER_HSAID = "SE0000112233";
 
-    private static final String UTKAST_ID      = "abc123";
+    private static final String UTKAST_ID = "abc123";
     private static final String UTKAST_VERSION = "1";
-    private static final String UTKAST_TYPE    = "fk7263";
-    private static final String UTKAST_JSON    = "A bit of text representing json";
-
-
-    @Mock
-    UtkastService mockUtkastService;
+    private static final String UTKAST_TYPE = "fk7263";
+    private static final String UTKAST_JSON = "A bit of text representing json";
 
     @Mock
-    HsaPersonService mockHsaPersonService;
+    private UtkastService mockUtkastService;
 
     @Mock
-    CreateNewDraftRequestBuilder mockRequestBuilder;
+    private HsaPersonService mockHsaPersonService;
 
     @Mock
-    CreateDraftCertificateValidator mockValidator;
+    private CreateNewDraftRequestBuilder mockRequestBuilder;
 
     @Mock
-    IntegreradeEnheterRegistry mockIntegreradeEnheterService;
+    private CreateDraftCertificateValidator mockValidator;
+
+    @Mock
+    private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
 
     @InjectMocks
-    CreateDraftCertificateResponderImpl responder;
+    private CreateDraftCertificateResponderImpl responder;
 
     /**
      * When a new certificate draft is being created the caller
      * should get a success response returned and any stakeholder
-     * should be notified with a notification message:
+     * should be notified with a notification message.
      */
     @Test
     public void whenNewCertificateDraftSuccessResponse() {
 
         // Given
-        ValidationResult validationResults = new ValidationResult();
+        ResultValidator resultsValidator = new ResultValidator();
         List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         Vardgivare vardgivare = createVardgivare();
-        Vardenhet  vardenhet = createVardenhet(vardgivare);
+        Vardenhet vardenhet = createVardenhet(vardgivare);
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);
         CreateDraftCertificateType certificateType = createCertificateType();
 
@@ -95,14 +94,14 @@ public class CreateDraftCertificateResponderImplTest {
 
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON, vardperson);
 
-        //When
-        when(mockValidator.validate(any(Utlatande.class))).thenReturn(validationResults);
+        // When
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(MiuInformationType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
-        //Then
+        // Then
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));

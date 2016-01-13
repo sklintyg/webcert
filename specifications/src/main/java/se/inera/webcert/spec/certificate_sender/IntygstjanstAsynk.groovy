@@ -22,7 +22,7 @@ class IntygstjanstAsynk {
      * Returns true if the Intyg identified by the specified ID exists in Intygstjänsten with state SENT targeting the
      * specified mottagare. Will wait up to ${timeout} ms.
      */
-    boolean finnsIntygIIntygstjanstenSkickadTillSkickadTillMedVantetid(String intygsId, String mottagare, long vantetid = 4000) {
+    boolean finnsIntygIIntygstjanstenSkickadTillMedVantetid(String intygsId, String mottagare, long vantetid = 4000) {
         def result = false
         result = new AsyncUtils().intygFinnsMarkeratSomSkickatIIntygstjansten(intygsId, mottagare, vantetid)
     }
@@ -44,7 +44,7 @@ class IntygstjanstAsynk {
     }
 
 
-    boolean finnsIntygIStubSkickadTillSkickadTillMedVantetid(String intygsId, String mottagare, long vantetid = 4000) {
+    boolean finnsIntygIStubSkickadTillMedVantetid(String intygsId, String mottagare, long vantetid = 4000) {
         def result = false
         result = new AsyncUtilsITStub().intygFinnsMarkeratSomSkickatIStub(intygsId, mottagare, vantetid)
     }

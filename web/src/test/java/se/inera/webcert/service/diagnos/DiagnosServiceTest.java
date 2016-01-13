@@ -22,9 +22,9 @@ public class DiagnosServiceTest {
     @Autowired
     private DiagnosService service;
 
-    private final static String ICD_10 = Diagnoskodverk.ICD_10_SE.name();
+    private static final String ICD_10 = Diagnoskodverk.ICD_10_SE.name();
 
-    private final static String KSH97P = Diagnoskodverk.KSH_97_P.name();
+    private static final String KSH97P = Diagnoskodverk.KSH_97_P.name();
 
     @Test
     public void testGetICD10DiagnosisByCode() {
@@ -32,16 +32,19 @@ public class DiagnosServiceTest {
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", ICD_10).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ", ICD_10).getResultat());
         assertEquals("A is too short and should  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A", ICD_10).getResultat());
-        assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A0", ICD_10).getResultat());
-        assertEquals("X01.1X is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X01.1X", ICD_10).getResultat());
-        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X00", ICD_10).getResultat());
+        assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE,
+                service.getDiagnosisByCode("A0", ICD_10).getResultat());
+        assertEquals("X01.1X is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
+                service.getDiagnosisByCode("X01.1X", ICD_10).getResultat());
+        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
+                service.getDiagnosisByCode("X00", ICD_10).getResultat());
         assertEquals("A00 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00", ICD_10).getResultat());
         assertEquals("A000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000", ICD_10).getResultat());
         assertEquals("A00.0 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0", ICD_10).getResultat());
         assertEquals("A083B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0", ICD_10).getResultat());
         assertEquals("A08.3B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0", ICD_10).getResultat());
         assertEquals("W0000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("W0000", ICD_10).getResultat());
-        
+
     }
 
     @Test
@@ -50,9 +53,12 @@ public class DiagnosServiceTest {
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", KSH97P).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ", KSH97P).getResultat());
         assertEquals("A is too short and should  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A", KSH97P).getResultat());
-        assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A0", KSH97P).getResultat());
-        assertEquals("X01-P is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X01-P", KSH97P).getResultat());
-        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X00", KSH97P).getResultat());
+        assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE,
+                service.getDiagnosisByCode("A0", KSH97P).getResultat());
+        assertEquals("X01-P is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
+                service.getDiagnosisByCode("X01-P", KSH97P).getResultat());
+        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
+                service.getDiagnosisByCode("X00", KSH97P).getResultat());
         assertEquals("A00 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00", KSH97P).getResultat());
         assertEquals("A000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000", KSH97P).getResultat());
         assertEquals("A09-P should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A09-P", KSH97P).getResultat());
@@ -92,7 +98,7 @@ public class DiagnosServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDiagnosServiceWithNbrOfResultsMinusOne() {
-        service.searchDiagnosisByCode("A04", ICD_10,-1);
+        service.searchDiagnosisByCode("A04", ICD_10, -1);
     }
 
     @Test
@@ -130,5 +136,11 @@ public class DiagnosServiceTest {
                 service.searchDiagnosisByDescription("", ICD_10, 5).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
                 service.searchDiagnosisByDescription(" ", ICD_10, 5).getResultat());
+    }
+
+    @Test
+    public void testValidateDiagnosesCodeMissingKodverk() {
+        boolean valid = service.validateDiagnosisCode("A18", null);
+        assertFalse(valid);
     }
 }

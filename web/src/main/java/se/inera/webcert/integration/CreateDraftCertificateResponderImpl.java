@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
@@ -22,7 +21,7 @@ import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
-import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.integration.validator.ResultValidator;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
@@ -50,16 +49,16 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private MonitoringLogService monitoringLogService;
-    
+
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
         Utlatande utkastsParams = parameters.getUtlatande();
 
         // Validate draft parameters
-        ValidationResult validationResults = validator.validate(utkastsParams);
-        if (validationResults.hasErrors()) {
-            return createValidationErrorResponse(validationResults);
+        ResultValidator resultsValidator = validator.validate(utkastsParams);
+        if (resultsValidator.hasErrors()) {
+            return createValidationErrorResponse(resultsValidator);
         }
 
         String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
@@ -97,7 +96,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     /**
      * Method checks if invoking person, i.e the health care personal,
-     * is entitled to look at the information
+     * is entitled to look at the information.
      *
      * @param utlatandeType
      * @return
@@ -121,7 +120,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     /**
-     * The response sent back to caller when an error is raised
+     * The response sent back to caller when an error is raised.
+     *
      * @param errorMsg
      * @param errorType
      * @return
@@ -135,7 +135,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     /**
-     * Builds a specific MIU error response
+     * Builds a specific MIU error response.
+     *
      * @param utlatandeType
      * @return
      */
@@ -145,24 +146,26 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
-        
+
         String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId, invokingUnitHsaId);
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 
     /**
-     * Builds a specific validation error response
-     * @param validationResults
+     * Builds a specific validation error response.
+     *
+     * @param resultsValidator
      * @return
      */
-    private CreateDraftCertificateResponseType createValidationErrorResponse(ValidationResult validationResults) {
-        String errMsgs = validationResults.getErrorMessagesAsString();
+    private CreateDraftCertificateResponseType createValidationErrorResponse(ResultValidator resultsValidator) {
+        String errMsgs = resultsValidator.getErrorMessagesAsString();
         LOG.warn("Utlatande did not validate correctly: {}", errMsgs);
         return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
     }
 
     /**
-     * The response sent back to caller when creating a certificate draft succeeded
+     * The response sent back to caller when creating a certificate draft succeeded.
+     *
      * @param nyttUtkastsId
      * @return
      */

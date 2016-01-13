@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
@@ -48,13 +49,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private LogService logService;
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.utkast.CopyUtkastService#createCopy(se.inera.webcert.service.utkast.dto.
      * CreateNewDraftCopyRequest)
      */
@@ -110,7 +111,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private Person refreshPatientDetails(CreateNewDraftCopyRequest copyRequest) {
 
-        String patientPersonnummer = copyRequest.getPatientPersonnummer();
+        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
 
         if (copyRequest.containsNyttPatientPersonnummer()) {
             patientPersonnummer = copyRequest.getNyttPatientPersonnummer();

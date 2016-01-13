@@ -145,39 +145,6 @@ public class CertificateRevokeProcessorTest {
         fail();
     }
 
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testBodyIsMissing() throws Exception {
-//        try {
-//            certificateRevokeProcessor.process(null, INTYGS_ID1, LOGICAL_ADDRESS1);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
-//            throw e;
-//        }
-//        fail();
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testBodyIsEmpty() throws Exception {
-//        try {
-//            certificateRevokeProcessor.process("", INTYGS_ID1, LOGICAL_ADDRESS1);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
-//            throw e;
-//        }
-//        fail();
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testBodyIsEmptyButWithWhitespace() throws Exception {
-//        try {
-//            certificateRevokeProcessor.process(" ", INTYGS_ID1, LOGICAL_ADDRESS1);
-//        } catch (IllegalArgumentException e) {
-//            assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
-//            throw e;
-//        }
-//        fail();
-//    }
-
     private RevokeMedicalCertificateResponseType createResponse(ResultCodeEnum resultCodeType, ErrorIdEnum errorType) {
         ResultOfCall resultType = new ResultOfCall();
         resultType.setResultCode(resultCodeType);

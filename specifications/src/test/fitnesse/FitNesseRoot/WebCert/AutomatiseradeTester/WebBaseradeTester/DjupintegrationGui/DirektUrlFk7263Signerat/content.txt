@@ -1,21 +1,26 @@
-Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg via djupintegration
+Testet beskriver fallet när en läkare går in på ett signerat FK7263 intyg via djupintegration
 
-!3 Välj patient och visa intyget
+!3 Logga in
 
-| script | !-SokSkrivIntyg-! |
+| skript | logga in |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
 
-| script | !-IntegrationMedJournalsystem-! |
+| skript | Anvandarroll |
+| ändra till | ROLE_LAKARE_DJUPINTEGRERAD |
+
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
+
+| skript | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration | intyg-fit-1 |
-| verifiera tillbakaknapp borta |
-| vidarebefordra ej hanterad fraga ej synlig |
+| säkerställ att inte | verifiera tillbakaknapp synlig |
+| säkerställ att inte | vidarebefordra ej hanterad fraga synlig |
 
 !3 Verifiera att djupintegrationsläget visar rätt element
 
-| script | !-IntegrationMedJournalsystem-! |
-| webcert logo ej klickbar |
-| huvudmeny ej synlig |
-| byt vardenhet ej synlig |
-| logga ut ej synlig |
-| om webcert kan oppnas via lank |
+| skript | !-IntegrationMedJournalsystem-! |
+| säkerställ att inte | webcert logo klickbar |
+| säkerställ att inte | huvudmeny synlig |
+| säkerställ att inte | byt vardenhet synlig |
+| säkerställ att inte | logga ut synlig |
+| säkerställ att | om webcert kan oppnas via lank |

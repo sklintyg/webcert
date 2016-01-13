@@ -2,7 +2,7 @@ Testet beskriver fallet när FK skickar en fråga med utökad information.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Lägg till frågor
@@ -13,8 +13,8 @@ Testet beskriver fallet när FK skickar en fråga med utökad information.
 
 !3 Verifiera att det går att visa frågan att all information finns
 
-| script | !-SvaraOchFraga-! |
-| ga till svara och fraga |
+| skript | !-SvaraOchFraga-! |
+| ga till fragor och svar |
 | ohanterade fragor sidan visas |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
@@ -23,9 +23,10 @@ Testet beskriver fallet när FK skickar en fråga med utökad information.
 | visas fk kontakt | $internReferens1 |
 | visas fk kompletteringar | $internReferens1 |
 
-!3 Ta bort frågor
+
+
+!3 Ta bort fråga
 
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
-

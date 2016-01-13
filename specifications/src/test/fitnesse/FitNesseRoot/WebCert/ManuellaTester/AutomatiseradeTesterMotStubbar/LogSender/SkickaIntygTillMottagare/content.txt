@@ -2,12 +2,12 @@
 |aktivitet|vardperson|enhet|vardgivare|personnummer|
 |SkickaTillMottagare|lakare1|enhet1|vg1|${person1.personnummer}|
 
-|script|Vanta|5|sekunder|
+|skript|Vanta|5|sekunder|
 
 !|Logg post|
 |systemId?|activityType?|purpose?|userId?|careProvider?|careUnit?|resourceType?|
 |systemId|Utskrift|Vård och behandling|lakare1|vg1|enhet1|Intyg|
 
 
-|script|Logg post|
+|skript|Logg post|
 |rensa|

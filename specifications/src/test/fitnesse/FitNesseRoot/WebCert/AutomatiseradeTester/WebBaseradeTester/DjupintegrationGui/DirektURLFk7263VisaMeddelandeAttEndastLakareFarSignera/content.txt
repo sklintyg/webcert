@@ -1,0 +1,26 @@
+Testet kontroller att meddelandet om att endast läkare får signera utkast visas ifall användaren ej är en läkare.
+
+!3 Skapa ett nytt intygsutkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej |
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
+
+| skript | Anvandarroll |
+| ändra till | ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD |
+
+!3 Visa utkastet via integrationslänken
+
+| skript | !-IntegrationMedJournalsystem-! |
+| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} |
+| säkerställ att | signeringKraverLakareMeddelandeVisas |
+
+!3 Ta bort utkastet
+
+| skript | !-HanteraUtkast-! |
+| radera utkast |

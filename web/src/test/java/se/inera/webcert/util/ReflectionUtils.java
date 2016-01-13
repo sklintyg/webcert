@@ -3,15 +3,19 @@ package se.inera.webcert.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class ReflectionUtils {
+public final class ReflectionUtils {
 
-    public static void setStaticAttribute(Class clazz, String attribute, Object newValue) throws Exception {
+    // Util class should not be instantiated
+    private ReflectionUtils() {
+    }
+
+    public static void setStaticAttribute(Class<?> clazz, String attribute, Object newValue) throws Exception {
         Field field = clazz.getDeclaredField(attribute);
         field.setAccessible(true);
         field.set(null, newValue);
     }
 
-    public static void setStaticFinalAttribute(Class clazz, String attribute, Object newValue) throws Exception {
+    public static void setStaticFinalAttribute(Class<?> clazz, String attribute, Object newValue) throws Exception {
         Field field = clazz.getDeclaredField(attribute);
         field.setAccessible(true);
         removeFinalModifier(field);

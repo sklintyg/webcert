@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -44,7 +45,7 @@ public class FragaSvarRepositoryTest {
     private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
     private LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-04-01T12:00:00");
 
-    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk", "19121212-1212",
+    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk", new Personnummer("19121212-1212"),
             "Sven Persson", FRAGA_SENT_DATE);
 
     private static String ENHET_1_ID = "ENHET_1_ID";
@@ -141,7 +142,7 @@ public class FragaSvarRepositoryTest {
     @Test
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
-        saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", "19121212-1212", "Sven Persson",
+        saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", new Personnummer("19121212-1212"), "Sven Persson",
                 FRAGA_SENT_DATE));
         fragasvarRepository.save(saved);
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));

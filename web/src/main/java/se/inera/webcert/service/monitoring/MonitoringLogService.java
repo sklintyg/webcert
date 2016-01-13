@@ -1,9 +1,11 @@
 package se.inera.webcert.service.monitoring;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
+import org.joda.time.LocalDateTime;
+
 /**
- * Service that writes messages to the monitoring log
- * 
- * 
+ * Service that writes messages to the monitoring log.
+ *
  * @author npet
  *
  */
@@ -17,19 +19,21 @@ public interface MonitoringLogService {
 
     void logUserLogout(String userHsaId, String authScheme);
 
+    void logConsentGiven(String id, String userHsaId, int version, LocalDateTime date);
+
     void logUserSessionExpired(String userHsaId, String authScheme);
 
     void logMissingMedarbetarUppdrag(String userHsaId);
-    
+
     void logMissingMedarbetarUppdrag(String userHsaId, String enhetsId);
 
-    void logQuestionReceived(String fragestallare, String intygsId, String externReferens);
+    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne);
 
-    void logAnswerReceived(Long fragaSvarsId, String intygsId);
+    void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
 
-    void logQuestionSent(Long fragaSvarsId, String intygId);
+    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
 
-    void logAnswerSent(Long fragaSvarsId, String intygsId);
+    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
 
     void logIntygRead(String intygsId, String intygsTyp);
 
@@ -54,9 +58,12 @@ public interface MonitoringLogService {
     void logUtkastDeleted(String intygsId, String intygsTyp);
 
     void logUtkastRead(String intygsId, String intygsTyp);
-    
-    void logUtkastPrint(String intygsId, String intygsTyp);
-    
-    void logPULookup(String personNummer, String result);
 
+    void logUtkastPrint(String intygsId, String intygsTyp);
+
+    void logPULookup(Personnummer personNummer, String result);
+
+    void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion);
+
+    void logNotificationSent(String unitId, String hanType);
 }

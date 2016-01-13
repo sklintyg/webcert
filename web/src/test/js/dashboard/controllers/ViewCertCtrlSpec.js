@@ -18,6 +18,7 @@ describe('ViewCertCtrl', function() {
     var UserPreferencesService;
     var $controller;
     var qas = [{}];
+    var userModel;
 
     function MockDeferreds($q){
         this.$q = $q;
@@ -54,7 +55,7 @@ describe('ViewCertCtrl', function() {
     beforeEach(angular.mock.module('webcert', function($provide) {
         dialogService = jasmine.createSpyObj('common.dialogService', [ 'showDialog' ]);
         modalMock = jasmine.createSpyObj('modal', [ 'close' ]);
-        modalMock.result = {then:function(){}}
+        modalMock.result = {then:function(){}};
         dialogService.showDialog.and.callFake(function(){
             return modalMock;
         });
@@ -73,12 +74,18 @@ describe('ViewCertCtrl', function() {
         $stateParams = {qaOnly:false};
         $provide.value('$stateParams', $stateParams);
 
-        $provide.value('common.featureService', { features: { 'HANTERA_FRAGOR': 'hanteraFragor' }, isFeatureActive: function() { return true; } }); // jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ])
+        $provide.value('common.featureService', {
+            features: {
+                'HANTERA_FRAGOR': 'hanteraFragor'
+            },
+            isFeatureActive: function() { return true; }
+        });
+        $provide.value('common.UserModel',getTestUser({ROLE_LAKARE_UTHOPP: 'Läkare - uthopp'}));
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$httpBackend', '$location', '$window', 'common.featureService',
-        function( _$controller_, _$rootScope_,_$q_,_$httpBackend_, _$location_, _$window_, featureService) {
+    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$httpBackend', '$location', '$window', 'common.featureService', 'common.UserModel',
+        function( _$controller_, _$rootScope_,_$q_,_$httpBackend_, _$location_, _$window_, featureService, _userModel_) {
 
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
@@ -89,12 +96,15 @@ describe('ViewCertCtrl', function() {
             $window = _$window_;
             mockDeferreds = new MockDeferreds($q);
 
+            userModel = _userModel_;
             spyOn($scope, '$broadcast');
 
             // setup the current location
             $location.url(currentUrl);
 
-            $stateParams.qaOnly = false;
+            userModel.roles = {ROLE_LAKARE: 'Läkare'};
+            userModel.isLakare = function(){return true;};
+            userModel.isLakareUthopp = function(){return false;};
             $stateParams.certificateType = 'fk7263';
 
             $controller = _$controller_;
@@ -108,8 +118,6 @@ describe('ViewCertCtrl', function() {
 
     describe('#checkSpecialQALink', function() {
         beforeEach(function(){
-            $stateParams.qaOnly = true;
-
             $controller('webcert.ViewCertCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
@@ -122,9 +130,6 @@ describe('ViewCertCtrl', function() {
         });
 
         it('Check if the user used the special qa-link to get here', function(){
-
-
-            $stateParams.qaOnly = true;
 
             $controller('webcert.ViewCertCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
@@ -318,5 +323,63 @@ describe('ViewCertCtrl', function() {
 
 
     });
+
+    function getTestUser (role){
+        return {
+            'hsaId': 'eva',
+            'namn': 'Eva Holgersson',
+            'lakare': true,
+            'forskrivarkod': '2481632',
+            'authenticationScheme': 'urn:inera:webcert:fake',
+            'vardgivare': [
+                {
+                    'id': 'vastmanland', 'namn': 'Landstinget Västmanland', 'vardenheter': [
+                    {
+                        'id': 'centrum-vast', 'namn': 'Vårdcentrum i Väst', 'arbetsplatskod': '0000000', 'mottagningar': [
+                        {'id': 'akuten', 'namn': 'Akuten', 'arbetsplatskod': '0000000'},
+                        {'id': 'dialys', 'namn': 'Dialys', 'arbetsplatskod': '0000000'}
+                    ]
+                    }
+                ]
+                },
+                {
+                    'id': 'ostergotland', 'namn': 'Landstinget Östergötland', 'vardenheter': [
+                    {
+                        'id': 'linkoping',
+                        'namn': 'Linköpings Universitetssjukhus',
+                        'arbetsplatskod': '0000000',
+                        'mottagningar': [
+                            {'id': 'lkpg-akuten', 'namn': 'Akuten', 'arbetsplatskod': '0000000'},
+                            {'id': 'lkpg-ogon', 'namn': 'Ögonmottagningen', 'arbetsplatskod': '0000000'}
+                        ]
+                    }
+                ]
+                }
+            ],
+            'specialiseringar': ['Kirurgi', 'Oftalmologi'],
+            'titel': 'Leg. Ögonläkare',
+            'legitimeradeYrkesgrupper': ['Läkare'],
+            'valdVardenhet': {
+                'id': 'centrum-vast', 'namn': 'Vårdcentrum i Väst', 'arbetsplatskod': '0000000', 'mottagningar': [
+                    {'id': 'akuten', 'namn': 'Akuten', 'arbetsplatskod': '0000000'},
+                    {'id': 'dialys', 'namn': 'Dialys', 'arbetsplatskod': '0000000'}
+                ]
+            },
+            'valdVardgivare': {
+                'id': 'vastmanland', 'namn': 'Landstinget Västmanland', 'vardenheter': [
+                    {
+                        'id': 'centrum-vast', 'namn': 'Vårdcentrum i Väst', 'arbetsplatskod': '0000000', 'mottagningar': [
+                        {'id': 'akuten', 'namn': 'Akuten', 'arbetsplatskod': '0000000'},
+                        {'id': 'dialys', 'namn': 'Dialys', 'arbetsplatskod': '0000000'}
+                    ]
+                    }
+                ]
+            },
+            'roles': role,
+            'aktivaFunktioner': ['hanteraFragor', 'hanteraFragor.fk7263'],
+            'totaltAntalVardenheter': 6
+        };
+
+    }
 
 });

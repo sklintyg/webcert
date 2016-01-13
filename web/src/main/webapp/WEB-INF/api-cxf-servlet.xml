@@ -17,34 +17,52 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
-  <cxf:bus>
-    <cxf:features>
-      <cxf:logging />
-    </cxf:features>
-  </cxf:bus>
+  <beans>
+    <cxf:bus>
+      <cxf:features>
+        <cxf:logging />
+      </cxf:features>
+    </cxf:bus>
 
-  <context:annotation-config />
+    <context:annotation-config />
 
-  <context:component-scan base-package="se.inera.webcert.web.controller.api" />
+    <context:component-scan base-package="se.inera.webcert.web.controller.api" />
 
-  <jaxrs:server address="/">
-    <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
-      <bean class="se.inera.webcert.web.controller.api.IntygApiController" />
-      <bean class="se.inera.webcert.web.controller.api.JsLogApiController" />
-      <bean class="se.inera.webcert.web.controller.api.PersonApiController" />
-      <bean class="se.inera.webcert.web.controller.api.UserApiController" />
-      <bean class="se.inera.webcert.web.controller.api.ModuleApiController" />
-      <bean class="se.inera.webcert.web.controller.api.UtkastApiController" />
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
-      <ref bean="webcertRestExceptionHandler"/>
-      <ref bean="localDateTimeHandler"/>
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
+    <jaxrs:server address="/">
+      <jaxrs:serviceBeans>
+        <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
+        <bean class="se.inera.webcert.web.controller.api.IntygApiController" />
+        <bean class="se.inera.webcert.web.controller.api.JsLogApiController" />
+        <bean class="se.inera.webcert.web.controller.api.PersonApiController" />
+        <bean class="se.inera.webcert.web.controller.api.UserApiController" />
+        <bean class="se.inera.webcert.web.controller.api.ModuleApiController" />
+        <bean class="se.inera.webcert.web.controller.api.UtkastApiController" />
+        <bean class="se.inera.webcert.web.controller.api.FmbApiController" />
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider" />
+        <ref bean="webcertRestExceptionHandler"/>
+        <ref bean="localDateTimeHandler"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json" />
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  </beans>
 
+  <beans profile="dev,testability-api">
+    <jaxrs:server address="/testability">
+      <jaxrs:serviceBeans>
+        <bean class="se.inera.webcert.web.controller.api.TestabilityApiController" />
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider" />
+        <ref bean="webcertRestExceptionHandler"/>
+        <ref bean="localDateTimeHandler"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json" />
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  </beans>
 </beans>

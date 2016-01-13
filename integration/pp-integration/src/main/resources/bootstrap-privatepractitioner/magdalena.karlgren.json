@@ -1,0 +1,56 @@
+{"hsaId": {
+    "root": "1.2.752.129.2.1.4.1",
+    "extension": "HSA0000-123457654"
+}, "personId": {
+    "root": "1.2.752.129.2.1.3.1",
+    "extension": "194606109108"
+}, "fullstandigtNamn": "Magdalena Karlgren",
+    "befattning": [
+    {
+        "kod": "202010",
+        "namn": "Specialistläkare"
+    }],
+    "specialitet": [
+    {
+        "kod": "100",
+        "namn": "Kirurgi"
+    },
+    {
+        "kod": "200",
+        "namn": "Ortopedi"
+    }],
+    "legitimeradYrkesgrupp": [
+    {
+        "kod": "100",
+        "namn": "Läkare"
+    }],
+    "forskrivarkod": "33333",
+    "godkandAnvandare": true,
+    "enhet": {
+    "enhetsId": {
+        "root": "1.2.752.129.2.1.4.1",
+        "extension": "HSA123456780-0094"
+    },
+    "enhetsnamn": "Privatenheten 9",
+    "arbetsplatskod": {},
+    "agarform": "Privat",
+    "postadress": "Privatgatan 9",
+    "postnummer": "12345",
+    "postort": "Privatstan",
+    "epost": "privat@privatenhet.pe",
+    "telefonnummer": "060-1818000",
+    "startdatum": "2014-05-15T07:00:00.000",
+    "geografiskIndelning": {
+    },
+    "verksamhetstyp": {
+        "verksamhet": [],
+        "vardform": []
+    },
+    "vardgivare": {
+        "vardgivareId": {
+            "root": "1.2.752.129.2.1.4.1",
+            "extension": "HSA123456780-0095"
+        },
+        "vardgivarenamn" : "Privatvardgivaren"
+    }
+}}

@@ -1,8 +1,6 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
-
-class OmWebcertPage extends AbstractPage {
+class OmWebcertPage extends AbstractOmWebcertPage {
 
     static at = { doneLoading() && $("#about-webcert-webcert").isDisplayed() }
 
@@ -12,5 +10,6 @@ class OmWebcertPage extends AbstractPage {
         intygLink { $("#about-intyg") }
         faqLink { $("#about-faq") }
         cookiesLink { $("#about-cookies") }
+        ppTermsLink(required: false) { $('#about-pp-terms') }
     }
 }

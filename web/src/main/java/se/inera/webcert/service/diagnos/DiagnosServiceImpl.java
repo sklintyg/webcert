@@ -137,7 +137,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
@@ -180,7 +180,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
@@ -245,6 +245,11 @@ public class DiagnosServiceImpl implements DiagnosService {
     }
 
     private boolean validateDiagnosisCode(String diagnosisCode, Diagnoskodverk codeSystem) {
+
+        if (codeSystem == null) {
+            LOG.warn("Tried to validate diagnosis code, but supplied Diagnoskodverk was null");
+            return false;
+        }
 
         String regExp = null;
 

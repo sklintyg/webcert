@@ -2,8 +2,12 @@ package se.inera.webcert.service.intyg;
 
 import java.util.List;
 
+import se.inera.certificate.modules.support.api.dto.Personnummer;
 import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.service.intyg.dto.*;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
 /**
  * @author andreaskaltenbach
@@ -32,15 +36,18 @@ public interface IntygService {
      * @return list of certificates matching the search criteria wrapped in a response container also indicating whether
      *         the data was fetched from intygstjansten ("online") or from webcert ("offline").
      */
-    IntygItemListResponse listIntyg(List<String> enhetId, String personnummer);
+    IntygItemListResponse listIntyg(List<String> enhetId, Personnummer personnummer);
 
     /**
      * Returns a given certificate as PDF.
      *
      * @param intygId
+     * @param typ
+     * @param isEmployer
+     *            Indicates if the certificate should be for the employer.
      * @return
      */
-    IntygPdf fetchIntygAsPdf(String intygId, String typ);
+    IntygPdf fetchIntygAsPdf(String intygId, String typ, boolean isEmployer);
 
     /**
      * Registers a given certificate in the Intygstjanst.

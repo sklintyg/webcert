@@ -26,6 +26,7 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,9 +37,12 @@ public class MailNotificationServiceMockedTest {
 
     @Mock
     private HSAWebServiceCalls hsaClient;
-    
+
     @Mock
     private MonitoringLogService monitoringService;
+
+    @Mock
+    private UtkastRepository utkastRepository;
 
     @InjectMocks
     private MailNotificationServiceImpl mailNotificationService;
@@ -66,7 +70,7 @@ public class MailNotificationServiceMockedTest {
         getHsaUnitResponseType.setEmail("test@test.invalid");
         getHsaUnitResponseType.setHsaIdentity("enhetsid");
         when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
-        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session)null));
+        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
     }
 
@@ -75,7 +79,7 @@ public class MailNotificationServiceMockedTest {
         try {
             SOAPFault soapFault = SOAPFactory.newInstance().createFault();
             soapFault.setFaultString("Connection reset");
-            when(hsaClient.callGetHsaunit(anyString())).thenThrow( new SOAPFaultException(soapFault));
+            when(hsaClient.callGetHsaunit(anyString())).thenThrow(new SOAPFaultException(soapFault));
         } catch (SOAPException e) {
             e.printStackTrace();
         }
