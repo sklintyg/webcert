@@ -40,9 +40,6 @@ module.exports = {
     selectIntygTypeByLabel: function (val) {
         intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
     },
-    continueToUtkast: function () {
-        intygTypeButton.click();
-    },
     intygTypeSelector: intygTypeSelector,
     intygTypeButton: intygTypeButton
 };

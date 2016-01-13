@@ -1,13 +1,13 @@
 # language: sv
 
 @smoke @webcert @ts @bas
-Egenskap: Kontrollera att det går att hantera bas-intyg för transportstyrelsen
+Egenskap: Hantera Transportstyrelsens basintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
     Givet att jag är inloggad som läkare
 
 
-Scenario: Skapa och signera ett intyg till transportstyrelsen
+Scenario: Skapa och signera ett intyg
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
@@ -16,13 +16,13 @@ Scenario: Skapa och signera ett intyg till transportstyrelsen
     Och jag ska se den data jag angett för intyget
     
 
-Scenario: Skicka ett signerat bas-intyg till Transportstyrelsen
+Scenario: Skicka ett signerat intyg till Transportstyrelsen
 När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
-Scenario: Makulera ett skickat bas-intyg
+Scenario: Makulera ett skickat intyg
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Mottaget"
     Så ska intygets status vara "Intyget är signerat och mottaget av Transportstyrelsens system"

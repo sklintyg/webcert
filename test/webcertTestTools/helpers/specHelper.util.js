@@ -79,7 +79,7 @@ module.exports = {
     createUtkastForPatient: function(patientId, intygType) {
         SokSkrivIntygPage.selectPersonnummer(patientId);
         SokSkrivValjUtkastType.selectIntygTypeByLabel(intygType);
-        SokSkrivValjUtkastType.continueToUtkast();
+        SokSkrivValjUtkastType.intygTypeButton.click();
         var utkastPage;
 
         if(intygType === 'Läkarintyg FK 7263'){

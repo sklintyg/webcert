@@ -1,6 +1,6 @@
 # language: sv
 @soap @notReady
-Egenskap: Kontrollera att webcerts hanterar CertificateStatusUpdate korrekt
+Egenskap: Statusuppdateringar skickas till vårdsystem med djupintegration
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Givet att vårdsystemet skickat ett intygsutkast

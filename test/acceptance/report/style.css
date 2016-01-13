@@ -17,6 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+html {
+overflow: -moz-scrollbars-vertical; 
+overflow-y: scroll;
+}
 
 a {
  color: #0084b4;
@@ -24,29 +28,32 @@ a {
 }
 a:hover { text-decoration : underline; }
 
+#anchor{
+  width: 800px ;
+}
 
 .step{
   padding:10px;
 }
 
 .passed{
-  background-color: #90EE90;
+  background-color: #90EE90 !important;
 }
 .failed{
-  background-color: #FFCCCC;
+  background-color: #FFCCCC !important;
 }
 .skipped{
-  background-color: lightblue;
+  background-color: lightblue !important;
 }
 .pending{
-  background-color: yellow;
+  background-color: yellow !important;
 }
-.feature{
+/*.feature{
   padding: 5px;
   border-style: solid;
   border-width: 1px;
   max-width:700px;
-}
+}*/
 .scenario{
   padding:3px;
 
@@ -57,10 +64,6 @@ a:hover { text-decoration : underline; }
 }
 img{
   max-width:200px;
-}
-
-.error_message{
-  font-size:small;
 }
 
 .step.Before{
@@ -75,4 +78,54 @@ b.After{
 .text-attach{
   margin-left:30px;
   font-family: "Courier New", Courier, monospace;
+  font-size:small;
 }
+
+
+
+
+/* panel */
+.panel, .panelcollapsed 
+{
+  background: #eee;
+  margin: 5px;
+  padding: 0px 0px 5px;
+  border: 1px solid #999;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+/* panel heading */
+.panel h2, .panelcollapsed h2 
+{
+  font-size: 18px;
+  font-weight: normal;
+  margin: 0px;
+  padding: 4px;
+  background: #CCC url(arrow-up.gif) no-repeat 770px;
+  border-bottom: 1px solid #999;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top: 1px solid #FFF;
+  border-right: 1px solid #FFF;
+  border-left: 1px solid #FFF;
+}
+
+/* panel heading on rollover */
+.panel h2:hover, .panelcollapsed h2:hover { background-color: #A9BCEF; }
+
+/* heading of a collapsed panel */
+.panelcollapsed h2 
+{
+  background: #CCC url(arrow-dn.gif) no-repeat 770px;
+  /*border-color: #CCC;*/
+}
+
+/* panel content - do not set borders or paddings */
+.panelcontent 
+{ 
+  overflow: hidden;
+}
+
+/* collapsed panel content */
+.panelcollapsed .panelcontent { display: none; }

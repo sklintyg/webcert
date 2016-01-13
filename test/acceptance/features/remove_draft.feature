@@ -1,6 +1,6 @@
 # language: sv
 @notReady
-Egenskap: Kontrollera att webcerts olika funktioner går att använda
+Egenskap: Radera intygsutkast
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare

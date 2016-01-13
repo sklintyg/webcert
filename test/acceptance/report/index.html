@@ -7,9 +7,15 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+    <script type="text/javascript" src="utils.js"></script>  
   </head>
  
   <body>
+
+  <div style="float:right;">
+    <a href="javascript:expandAll()">Expand</a>
+    <a href="javascript:collapseAll()">Collapse</a>
+  </div>
  
     <!-- 2. Anchor -->
     <div id="anchor"></div>
@@ -17,33 +23,35 @@
     <!-- 3. Template -->
     <script id="tpl" type="text/template">
     {{#each this}}
-    <div class='feature'>
-      <h3>{{keyword}} <span class="{{status}}">{{name}}</span></h3>
-      <br>
-      {{#each elements}}
-        <div class='scenario'>
-        <b>{{keyword}}</b> <span class="{{status}}">{{name}}</span><br>
-        {{#each steps}}
-         <span class='step {{keyword}}'>
-          <b class={{keyword}}>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
-          {{#if result.error_message}}
-          <span class='error_message text-attach'>{{result.error_message}}</span><br>
-          {{/if}}
-          {{#each embeddings}}
+    <div class='panelcollapsed'>
+    <h2 class="{{status}}">{{name}}</h2>
+      <div class='panelcontent'>
+        <br>
+        {{#each elements}}
+          <div class='scenario'>
+          <b>{{keyword}}</b> <span class="{{status}}">{{name}}</span><br>
+          {{#each steps}}
+           <span class='step {{keyword}}'>
+            <b class={{keyword}}>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
+            {{#if result.error_message}}
+            <span class='error_message text-attach'>{{result.error_message}}</span><br>
+            {{/if}}
+            {{#each embeddings}}
 
-            {{#if_eq this.mime_type "image/png"}}
-              <img src="data:image/png;base64,{{data}}" />
+              {{#if_eq this.mime_type "image/png"}}
+                <img src="data:image/png;base64,{{data}}" />
 
-            {{/if_eq}}
-            {{#if_eq this.mime_type "text/plain"}}
-              <span class='text-attach'>{{atobData}}</span>
-            {{/if_eq}}
-            <br>
+              {{/if_eq}}
+              {{#if_eq this.mime_type "text/plain"}}
+                <span class='text-attach'>{{atobData}}</span>
+              {{/if_eq}}
+              <br>
+            {{/each}}
+          </span>
           {{/each}}
-        </span>
+        </div>
         {{/each}}
       </div>
-      {{/each}}
     </div>
     {{/each}}
 
@@ -71,11 +79,12 @@
         //Loop features
         var featureResult = '';
         $.each(features, function( fIndex, feature ) {
+          featureResult = 'passed';
           // Loop scenarios
           $.each(feature.elements, function( eIndex, scenario ) {
             if(scenario.type === 'background'){return;}
             // Loop steps
-            var scenarioResult = '';
+            var scenarioResult = 'passed';
             $.each(scenario.steps, function( sIndex, step ) {
               if(step.result && step.result.status !== 'passed'){
                 scenarioResult = step.result.status;
@@ -89,15 +98,17 @@
               return false;
             }
           });
+
           features[fIndex].status = featureResult;
+          console.log(features[fIndex]);
         });
-        console.log(features);
         var stone = Handlebars.compile(template)(features);
         $(anchor).append(stone);
 
       $('img').click(function() {
         $(this).toggleClass('bigger');
       });
+      setUpPanels();
 
 
      });
@@ -109,6 +120,7 @@
 
     //4b.function firing
     slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.
+    
     </script>
   </body>
 </html>
