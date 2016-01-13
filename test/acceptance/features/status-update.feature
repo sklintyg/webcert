@@ -12,6 +12,7 @@ Scenario: Ta emot en statusuppdatering
    Så ska intygsutkastets status vara "Utkastet är sparat, men obligatoriska uppgifter saknas."
    Och när jag fyller i fältet "Min undersökning av patienten"
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet."
+   Så är intygets status "DRAFT_INCOMPLETE"
    Och när jag fyller i fältet "ICD-10"
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet."
    Och när jag fyller i fältet "Funktionsnedsättning"
@@ -23,4 +24,5 @@ Scenario: Ta emot en statusuppdatering
    Och när jag fyller i fältet "Arbetsförmåga"
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet."
    Och signerar intyget
+   Så är intygets status "SIGNED"
    Så ska statusuppdatering "HAN2" skickas till vårdsystemet."

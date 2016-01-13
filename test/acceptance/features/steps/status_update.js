@@ -62,13 +62,13 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
     return body;
 }
 
-function getDraftWithStatus(personId, intygsId, status) {
+function assertDraftWithStatus(personId, intygsId, status) {
     var mysql = require('mysql');
 
     var connection = mysql.createConnection({
-        host  : '10.1.0.66',
-        user  : 'nmt_test',
-        password  : process.env.DBPW,
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : 'b4pelsin',
         database  : process.env.DATABASE_NAME
     });
 
@@ -86,25 +86,27 @@ function getDraftWithStatus(personId, intygsId, status) {
     var correctStatus = false;
     connection.query(query,
                      function(err, rows, fields) {
-                         connection.end();
-                         if (rows[0].Counter !== 0) {
-                             correctStatus = true;
-                         } else {
-                             correctStatus = false;
-                         }
+                         if (err) throw err;
+                         
+                         console.log('ROW0: ' + rows[0].Counter); 
+                         if (rows[0].Counter !== 1) {
+                             throw new Error('Bad status of certificate');
+                         } 
                      });
 
-    return correctStatus;
+    connection.end();
+
+    return true;
 }
 
-function getNumberOfEvents(intygsId, event) {
+function assertNumberOfEvents(intygsId, event, numEvents) {
     var mysql = require('mysql');
 
     var connection = mysql.createConnection({
-        host  : '10.1.0.66',
-        user  : 'nmt_test',
-        password  : '',
-        database  : 'webcert_requests'
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : 'b4pelsin',
+        database  : process.env.DATABASE_NAME
     });
 
     var databaseTable = 'webcert_requests.requests';
@@ -117,17 +119,16 @@ function getNumberOfEvents(intygsId, event) {
 
     console.log('QUERY: ' + query);
 
-    var counter = 0;
-    
     connection.query(query,
                      function(err, rows, fields) {
-                         console.log(err);
+                         if (err) throw err;
                          console.log(rows);
-                         connection.end();
-                         counter = rows[0].Counter;
+                         if (rows[0].Counter !== 1) {
+                             throw new Error('Bad number of events');
+                         } 
                      });    
-    console.log('COUNTER: ' + counter);
-    return counter;
+
+    connection.end();
 }
 
 
@@ -161,15 +162,12 @@ module.exports = function () {
     });
     
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-
         // FIXME: Temporärt för att aktivera djupintegration...
         //var url = process.env.WEBCERT_URL + 'api/testability/userrole/ROLE_LAKARE_DJUPINTEGRERAD';
-        console.log('Loggar in som djupintegrerad: ' + url);
-        // browser.get(url);
-        // browser.sleep(2000);
         
         var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+
+        console.log('Loggar in som djupintegrerad: ' + url);
         browser.get(url).then(callback);
     });
 
@@ -178,8 +176,6 @@ module.exports = function () {
     });
     
     this.Given(/^när jag fyller i fältet "([^"]*)"$/, function (arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
-
         var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 
         if (arg1 === 'Min undersökning av patienten') {
@@ -207,17 +203,20 @@ module.exports = function () {
     });
 
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\."$/, function (arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
+        assertNumberOfEvents(global.intyg.id, 'HAN1', 1);
 
-        var correctStatus = getDraftWithStatus(global.person.id,
-                                               global.intyg.id,
-                                               'DRAFT_INCOMPLETE');
-
-        expect(correctStatus).to.be(true).then.notify(callback);
+        callback();
     });
 
     this.Given(/^ska en CreateDraftUpdate skickas till vårdsystemet\.$/, function (callback) {
         // Write code here that turns the phrase above into concrete actions
         callback.pending();
     });
+
+    this.Given(/^är intygets status "([^"]*)"$/, function (arg1, callback) {
+        // Write code here that turns the phrase above into concrete actions
+        assertDraftWithStatus(global.person.id, global.intyg.id, arg1);
+        callback();
+    });
+
 };
