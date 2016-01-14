@@ -62,7 +62,7 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
     return body;
 }
 
-function assertDraftWithStatus(personId, intygsId, status) {
+function assertDraftWithStatus(personId, intygsId, status, callback) {
     var mysql = require('mysql');
 
     var connection = mysql.createConnection({
@@ -90,18 +90,20 @@ function assertDraftWithStatus(personId, intygsId, status) {
                          
                          console.log('ROW0: ' + rows[0].Counter); 
                          if (rows[0].Counter !== 1) {
-                             throw new Error('Bad status of certificate');
-                         } 
+                             throw new Error('Bad status on on draft');
+                         }
                      });
 
     connection.end();
 
-    return true;
+    callback();
 }
 
-function assertNumberOfEvents(intygsId, event, numEvents) {
+function assertNumberOfEvents(intygsId, event, numEvents, callback) {
     var mysql = require('mysql');
 
+    console.log('Asserting number of events: ' + event);
+    
     var connection = mysql.createConnection({
         host  :     process.env.DATABASE_HOST,
         user  :     process.env.DATABASE_USER,
@@ -123,12 +125,16 @@ function assertNumberOfEvents(intygsId, event, numEvents) {
                      function(err, rows, fields) {
                          if (err) throw err;
                          console.log(rows);
-                         if (rows[0].Counter !== 1) {
-                             throw new Error('Bad number of events');
+                         if (rows[0].Counter !== numEvents) {
+                             console.log('Throwing error...');
+                             throw new Error('Bad number of events: ' + rows[0].Counter);
                          } 
                      });    
 
+
+    console.log('Asserting number of events done');
     connection.end();
+    callback();
 }
 
 
@@ -180,32 +186,53 @@ module.exports = function () {
 
         if (arg1 === 'Min undersökning av patienten') {
             console.log('Fyller i min undersökning av patienten...');
-            fk7263Utkast.minUndersokningAvPatClick();
-        }
-        else if (arg1 === 'ICD-10') {
-            fk7263Utkast.angeDiagnosKod('A000');
+            fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
+                .then(function () {
+                    console.log('Fyller i diagnoskod...');
+                    fk7263Utkast.diagnosKod.sendKeys('A000')
+                })
+                .then(function () {
+                    console.log('Verifierar antalet events...');
+                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                });
         }
         else if (arg1 === 'Funktionsnedsättning') {
-            fk7263Utkast.angeFunktionsnedsattning('Halt och lytt');
+            fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt')
+                .then(function () {
+                    console.log('Verifierar antalet events...');
+                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                });
         }
         else if (arg1 === 'Aktivitetsbegränsning') {
-            fk7263Utkast.angeAktivitetsBegransning('Orkar inget');
+            fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget')
+                .then(function () {
+                    console.log('Verifierar antalet events...');
+                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                });
         }
         else if (arg1 === 'Arbete') {
-            fk7263Utkast.angeNuvarandeArbete('Stuveriarbetare');
+            fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare')
+                .then(function () {
+                    console.log('Verifierar antalet events...');
+                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                });
         }
         else if (arg1 === 'Arbetsförmåga') {
-            fk7263Utkast.angeFaktiskTjanstgoring('40');
-            fk7263Utkast.nedsattMed25CheckboxClick();
+            fk7263Utkast.faktiskTjanstgoring.sendKeys('40')
+                .then(function () {
+                    fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE)
+                        .then(function () {
+                            console.log('Verifierar antalet events...');
+                            assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                        });
+                });
+        } else {
+            callback();
         }
-        
-        callback();
     });
 
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\."$/, function (arg1, callback) {
-        assertNumberOfEvents(global.intyg.id, 'HAN1', 1);
-
-        callback();
+        assertNumberOfEvents(global.intyg.id, arg1, 1, callback);
     });
 
     this.Given(/^ska en CreateDraftUpdate skickas till vårdsystemet\.$/, function (callback) {
@@ -215,8 +242,7 @@ module.exports = function () {
 
     this.Given(/^är intygets status "([^"]*)"$/, function (arg1, callback) {
         // Write code here that turns the phrase above into concrete actions
-        assertDraftWithStatus(global.person.id, global.intyg.id, arg1);
-        callback();
+        assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
     });
 
 };
