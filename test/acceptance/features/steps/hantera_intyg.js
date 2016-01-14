@@ -28,7 +28,7 @@ module.exports = function () {
         // Klicka på 'visa vad som saknas' innan signering för att underlätta felsökning
         // var EC = protractor.ExpectedConditions;
         // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000).then(callback);
-        element(by.id('signera-utkast-button')).click().then(callback);
+        element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE).then(callback);
     });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
