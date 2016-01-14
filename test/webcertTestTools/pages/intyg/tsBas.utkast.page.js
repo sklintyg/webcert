@@ -131,7 +131,8 @@ var TsBasUtkast = BaseTsUtkast._extend({
         if (utkast.linserH === 'Ja') {
             this.syn.hogerOgakontaktlinsYes.sendKeys(protractor.Key.SPACE);
 
-        } else if (utkast.linserV === 'Ja') {
+        } 
+        if (utkast.linserV === 'Ja') {
             this.syn.vansterOgakontaktlinsYes.sendKeys(protractor.Key.SPACE);
         }
 

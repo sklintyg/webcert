@@ -32,7 +32,8 @@ function randomKontaktMedAF(smittskydd){
 function randomRekommendationOvrigt(smittskydd){
     if(smittskydd){return false;}
     else{
-        return 'Övrig rekommendation beskrivning';
+        return shuffle(['Övrig rekommendation beskrivning','Övrig rekommendation beskrivning med lite extra'])[0];
+
     }
 }
 function randomRehabAktuell(smittskydd){

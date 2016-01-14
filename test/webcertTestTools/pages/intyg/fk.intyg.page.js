@@ -51,7 +51,8 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.field6a = {
             kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
             kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
-            ovrigt: element(by.id('rekommendationOvrigt'))
+            ovrigt: element(by.id('rekommendationOvrigt')),
+            rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigtBeskrivning'))
         };
 
         this.field7 = {

@@ -27,7 +27,7 @@ module.exports = {
     identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
     diabetestyp: ['Typ 1', 'Typ 2'],
     diabetesbehandlingtyper: ['Endast kost', 'Tabletter', 'Insulin'],
-
+    comment: 'Inget att rapportera', 
     // FK7263
 
     // TS-Bas-attribut
@@ -75,7 +75,6 @@ module.exports = {
         return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length));
     },
     getRandomStyrka: function() {
-        // console.log('test: ' + parseFloat(Math.round((Math.random() * (2.0 -1.0) + 1.0)* 10) / 10).toFixed(1));
         var styrkor = {
             houk:  this.getRandomFloat(),
             homk:  this.getRandomFloat(),
@@ -212,7 +211,7 @@ module.exports = {
             adhdSyndrom:                  shuffle(this.adhdSyndrom)[0],                  
             sjukhusvard:                  shuffle(this.sjukhusvard)[0],                  
             ovrigMedicin:                 shuffle(this.ovrigMedicin)[0],
-            kommentar:                    'Inget att rapportera',
+            kommentar:                    this.comment,
             dTyper:                       this.diabetesbehandlingtyper,
             styrkor:                      this.getRandomStyrka()
 

@@ -105,7 +105,6 @@ module.exports ={
         callback('FEL - Höger öga kontaktlins : ' + reason);
     });    
 
-    // TBI:: Räkna ut om styrka i något av glasen överskrider plus 8 dioptrier och anpassa assertion.
     var _sum = (+ intyg.styrkor.homk - +intyg.styrkor.houk) +  ( + intyg.styrkor.vomk - + intyg.styrkor.vouk);
     if (_sum < 8) {
         expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Nej').then(function(value) {

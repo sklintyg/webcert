@@ -25,6 +25,7 @@
 
 var BaseUtkast = require('./base.utkast.page.js');
 var wcTestTools = require('./../pageHelper.util.js');
+var pageHelpers = require('./../pageHelper.util.js');
 
 var TsDiabetesUtkast = BaseUtkast._extend({
     init: function init() {
@@ -71,6 +72,8 @@ var TsDiabetesUtkast = BaseUtkast._extend({
                 no: element(by.id('hypogn'))
             }
         };
+        
+        this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
 
         this.syn = {
             a: {
@@ -90,15 +93,17 @@ var TsDiabetesUtkast = BaseUtkast._extend({
     },
     fillInKorkortstyper: function(typer) {
 
-        this.korkortsTyperChecks.filter(function(elem) {
-            return elem.getText().then(function(text) {
-                return (typer.indexOf(text) >= 0);
-            });
-        }).then(function(filteredElements) {
-            for (var i = 0; i < filteredElements.length; i++) {
-                filteredElements[i].sendKeys(protractor.Key.SPACE);
-            }
-        });
+        // this.korkortsTyperChecks.filter(function(elem) {
+        //     return elem.getText().then(function(text) {
+        //         return (typer.indexOf(text) >= 0);
+        //     });
+        // }).then(function(filteredElements) {
+        //     for (var i = 0; i < filteredElements.length; i++) {
+        //         filteredElements[i].sendKeys(protractor.Key.SPACE);
+        //     }
+        // });
+
+        pageHelpers.clickAll(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
         this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);

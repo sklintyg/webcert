@@ -33,15 +33,15 @@ module.exports = function() {
         if (intyg.typ === 'Transportstyrelsens läkarintyg') {
             global.intyg = testdata.getRandomTsBasIntyg();
 
+            tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
             // browser.ignoreSynchronization = true;
             // Intyget avser
-            tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
             // Identiteten är styrkt genom
             tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
             // Synfunktioner
             browser.ignoreSynchronization = true;
             tsBasUtkastPage.fillInSynfunktioner(global.intyg);
-            // tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
+            tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
             tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg);
             tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg);
             tsBasUtkastPage.fillInDiabetes(global.intyg);
@@ -63,9 +63,11 @@ module.exports = function() {
             callback();
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
             global.intyg = testdata.getRandomTsDiabetesIntyg();
+            
+            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
+
             tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
             browser.ignoreSynchronization = true;
-            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
             tsdUtkastPage.fillInAllmant(intyg.allmant);
             tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
             tsdUtkastPage.fillInSynintyg(intyg.synintyg);
