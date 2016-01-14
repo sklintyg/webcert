@@ -220,22 +220,22 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeArbetsformaga:function(arbetsformaga){
         if(arbetsformaga.nedsattMed25){
-            this.nedsatt.med25.checkbox.click();
+            // this.nedsatt.med25.checkbox.click();
             this.nedsatt.med25.from.sendKeys(arbetsformaga.nedsattMed25.from);
             this.nedsatt.med25.tom.sendKeys(arbetsformaga.nedsattMed25.tom);
         }
         if(arbetsformaga.nedsattMed50){
-            this.nedsatt.med50.checkbox.click();
+            // this.nedsatt.med50.checkbox.click();
             this.nedsatt.med50.from.sendKeys(arbetsformaga.nedsattMed50.from);
             this.nedsatt.med50.tom.sendKeys(arbetsformaga.nedsattMed50.tom);
         }
         if(arbetsformaga.nedsattMed75){
-            this.nedsatt.med75.checkbox.click();
+            // this.nedsatt.med75.checkbox.click();
             this.nedsatt.med75.from.sendKeys(arbetsformaga.nedsattMed75.from);
             this.nedsatt.med75.tom.sendKeys(arbetsformaga.nedsattMed75.tom);
         }
         if(arbetsformaga.nedsattMed100){
-            this.nedsatt.med100.checkbox.click();
+            // this.nedsatt.med100.checkbox.click();
             this.nedsatt.med100.from.sendKeys(arbetsformaga.nedsattMed100.from);
             this.nedsatt.med100.tom.sendKeys(arbetsformaga.nedsattMed100.tom);
         }
