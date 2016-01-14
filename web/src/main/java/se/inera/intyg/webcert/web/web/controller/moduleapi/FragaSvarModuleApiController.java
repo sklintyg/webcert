@@ -32,7 +32,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,7 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
+import io.swagger.annotations.Api;
 
 @Path("/fragasvar")
 @Api(value = "fragasvar", description = "REST API - moduleapi - fragasvar", produces = MediaType.APPLICATION_JSON)
@@ -125,6 +125,6 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     }
 
     private void abortIfFragaSvarNotActive(String intygsTyp) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_FRAGOR, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
     }
 }

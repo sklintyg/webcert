@@ -23,9 +23,15 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.R
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.util.Assert;
+
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
@@ -35,12 +41,8 @@ import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * @author andreaskaltenbach
@@ -342,53 +344,8 @@ public class WebCertUser implements UserDetails {
         this.vardgivare = vardgivare;
     }
 
-    /**
-     * Checks if a user has been granted a specific role.
-     *
-     * @param role
-     *            the role to check
-     * @return true if user has the role, otherwise false
-     */
-    public boolean hasRole(String role) {
-        if (role == null) {
-            return false;
-        }
 
-        return getRoles().containsKey(role);
-    }
 
-    /**
-     * Checks if a user has been granted a specific role.
-     * Method will return true if one role matches user's granted roles.
-     *
-     * @param roles
-     *            The roles to check.
-     * @return true If user has one of the roles, otherwise false.
-     */
-    public boolean hasRole(String[] roles) {
-        if (roles == null) {
-            return false;
-        }
-
-        for (String role : roles) {
-            if (hasRole(role)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the user's authorities map contains the specified
-     * {@link se.inera.intyg.webcert.web.auth.authorities.Privilege}.
-     */
-    public boolean hasPrivilege(String name) {
-        if (authorities == null || name == null) {
-            return false;
-        }
-        return authorities.containsKey(name);
-    }
 
     /**
      * Determines if the user's roles contains a lakare role or not.

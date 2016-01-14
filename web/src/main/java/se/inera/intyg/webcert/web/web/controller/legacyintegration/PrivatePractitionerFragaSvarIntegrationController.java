@@ -73,10 +73,7 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
     @Path("/{intygId}/questions")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
-        boolean ok = super.validateRedirectToIntyg(intygId);
-        if (!ok) {
-            return Response.serverError().build();
-        }
+        super.validateRedirectToIntyg(intygId);
 
         String intygType = FK7263.toString();
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
@@ -93,8 +90,8 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
     }
 
     @Override
-    protected String getGrantedRequestOrigin() {
-        return WebCertUserOriginType.NORMAL.name();
+    protected WebCertUserOriginType getGrantedRequestOrigin() {
+        return WebCertUserOriginType.NORMAL;
     }
 
 

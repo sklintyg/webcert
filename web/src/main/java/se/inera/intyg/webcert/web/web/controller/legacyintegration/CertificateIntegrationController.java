@@ -19,11 +19,11 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import io.swagger.annotations.Api;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import io.swagger.annotations.Api;
 
 /**
  * Controller to enable a landsting user to access certificates directly from a link.
@@ -37,8 +37,8 @@ import javax.ws.rs.core.MediaType;
 @Api(value = "/webcert/web/user/basic-certificate", description = "REST API för fråga/svar via normal link, landstingspersonal", produces = MediaType.APPLICATION_JSON)
 public class CertificateIntegrationController extends LegacyIntygIntegrationController {
 
-    protected String getGrantedRequestOrigin() {
-        return WebCertUserOriginType.NORMAL.name();
+    protected WebCertUserOriginType getGrantedRequestOrigin() {
+        return WebCertUserOriginType.NORMAL;
     }
 
 }

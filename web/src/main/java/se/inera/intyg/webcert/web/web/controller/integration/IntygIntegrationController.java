@@ -24,14 +24,9 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.R
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
 
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -44,9 +39,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import io.swagger.annotations.Api;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -66,7 +68,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private static final String[] GRANTED_ROLES = new String[] { ROLE_LAKARE, ROLE_TANDLAKARE, ROLE_ADMIN };
-    private static final String GRANTED_ORIGIN = WebCertUserOriginType.DJUPINTEGRATION.name();
+    private static final WebCertUserOriginType GRANTED_ORIGIN = WebCertUserOriginType.DJUPINTEGRATION;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
@@ -99,12 +101,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Path("/{typ}/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
 
-        boolean ok = super.validateRedirectToIntyg(intygId);
-        if (!ok) {
-            return Response.serverError().build();
-        }
-
-        getWebCertUserService().enableFeaturesOnUser();
+        super.validateRedirectToIntyg(intygId);
 
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -134,7 +131,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @Override
-    protected String getGrantedRequestOrigin() {
+    protected WebCertUserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
 

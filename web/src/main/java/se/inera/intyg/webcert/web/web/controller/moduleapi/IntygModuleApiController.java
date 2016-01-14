@@ -28,7 +28,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+import io.swagger.annotations.Api;
 
 /**
  * Controller exposing services to be used by modules.
@@ -133,7 +133,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, SendSignedIntygParameter param) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.SKICKA_INTYG, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.SKICKA_INTYG).orThrow();
         IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient(), param.isPatientConsent());
         return Response.ok(sendResult).build();
     }
@@ -152,7 +152,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.MAKULERA_INTYG, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.MAKULERA_INTYG).orThrow();
         String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
         return Response.ok(revokeResult).build();

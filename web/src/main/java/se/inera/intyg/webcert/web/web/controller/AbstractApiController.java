@@ -19,23 +19,19 @@
 
 package se.inera.intyg.webcert.web.web.controller;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+
 import se.inera.intyg.webcert.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
-import se.inera.intyg.webcert.web.service.exception.FeatureNotAvailableException;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractApiController {
 
@@ -44,6 +40,8 @@ public abstract class AbstractApiController {
     protected static final String UTF_8 = "UTF-8";
 
     protected static final String UTF_8_CHARSET = ";charset=utf-8";
+
+    protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -96,53 +94,4 @@ public abstract class AbstractApiController {
         return webCertUserService;
     }
 
-    protected boolean checkIfUserHasRole(Role... userRoles) {
-        Assert.notNull(userRoles);
-
-        List<String> list = new ArrayList<>();
-        for (Role userRole : userRoles) {
-            list.add(userRole.getName());
-        }
-
-        WebCertUser webCertUser = webCertUserService.getUser();
-        return webCertUser.hasRole(list.toArray(new String[list.size()]));
-    }
-
-    protected boolean checkIfUserHasRequestOrigin(String requestOrigin) {
-        if (requestOrigin == null) {
-            return false;
-        }
-
-        WebCertUser webCertUser = webCertUserService.getUser();
-        String origin = webCertUser.getOrigin();
-
-        return origin.equals(requestOrigin);
-    }
-
-    protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {
-        Assert.notNull(webcertFeature);
-        WebCertUser webCertUser = webCertUserService.getUser();
-        String webcertFeatureName = webcertFeature.getName();
-        return webCertUser.isFeatureActive(webcertFeatureName);
-    }
-
-    protected boolean checkIfWebcertFeatureIsAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
-        Assert.notNull(webcertFeature);
-        Assert.notNull(moduleType);
-        WebCertUser webCertUser = webCertUserService.getUser();
-        String webcertFeatureName = StringUtils.join(new String[] { webcertFeature.getName(), moduleType }, ".");
-        return webCertUser.isFeatureActive(webcertFeatureName);
-    }
-
-    protected void abortIfWebcertFeatureIsNotAvailable(WebcertFeature webcertFeature) {
-        if (!checkIfWebcertFeatureIsAvailable(webcertFeature)) {
-            throw new FeatureNotAvailableException(webcertFeature.getName());
-        }
-    }
-
-    protected void abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
-        if (!checkIfWebcertFeatureIsAvailableForModule(webcertFeature, moduleType)) {
-            throw new FeatureNotAvailableException(webcertFeature.getName());
-        }
-    }
 }

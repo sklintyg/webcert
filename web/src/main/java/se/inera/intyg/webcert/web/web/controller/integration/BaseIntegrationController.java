@@ -23,16 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
+
+import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertRequestOrigin;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesAssertion.assertUserRoles;
 
 /**
  * Base class for deep-integration and uthopp controllers.
@@ -45,29 +39,24 @@ public abstract class BaseIntegrationController {
 
     private WebCertUserService webCertUserService;
     private String urlBaseTemplate;
-
+    protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     // ~ API
     // ========================================================================================
 
-    public boolean validateRedirectToIntyg(String intygId) {
+    public void validateRedirectToIntyg(String intygId) {
+
+        // Input validation
         if (StringUtils.isBlank(intygId)) {
-            LOG.error("Path parameter 'intygId' was either whitespace, empty (\"\") or null");
-            return false;
+            throw new IllegalArgumentException("Path parameter 'intygId' was either whitespace, empty (\"\") or null");
         }
 
-        try {
-            Map<String, Role> userRoles = webCertUserService.getUser().getRoles();
-            assertUserRoles(getGrantedRoles(), toArray(userRoles));
+        // Do Auth validation, given the subclass role/origin constraints
+        authoritiesValidator.given(webCertUserService.getUser())
+                .roles(getGrantedRoles())
+                .origins(getGrantedRequestOrigin())
+                .orThrow();
 
-            String origin = webCertUserService.getUser().getOrigin();
-            assertRequestOrigin(getGrantedRequestOrigin(), origin);
-
-        } catch (AuthoritiesException e) {
-            LOG.error(e.getMessage());
-            return false;
-        }
-        return true;
     }
 
     @Autowired
@@ -80,17 +69,17 @@ public abstract class BaseIntegrationController {
         this.webCertUserService = webCertUserService;
     }
 
-
     // ~ Protected
     // ========================================================================================
 
     /**
      * Method should return the granted roles that allows.
+     *
      * @return
      */
     protected abstract String[] getGrantedRoles();
 
-    protected abstract String getGrantedRequestOrigin();
+    protected abstract WebCertUserOriginType getGrantedRequestOrigin();
 
     protected String getUrlBaseTemplate() {
         return urlBaseTemplate;
@@ -98,18 +87,6 @@ public abstract class BaseIntegrationController {
 
     protected WebCertUserService getWebCertUserService() {
         return webCertUserService;
-    }
-
-
-    // ~ Private
-    // ========================================================================================
-
-    private String[] toArray(Map<String, Role> roles) {
-        List<String> list = roles.entrySet().stream()
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-
-        return list.toArray(new String[list.size()]);
     }
 
 }

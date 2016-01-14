@@ -19,16 +19,17 @@
 
 package se.inera.intyg.webcert.web.web.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.web.service.exception.FeatureNotAvailableException;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
 
 /**
  * Exception handler for REST services. Runtime exceptions thrown as {@link WebCertServiceException}
@@ -47,17 +48,20 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
         if (e instanceof WebCertServiceException) {
             // If this is an exception thrown by our code, we have a more specific error code
             return handleWebCertServiceException((WebCertServiceException) e);
-        } else if (e instanceof FeatureNotAvailableException) {
-            return handleFeatureNotAvailableException((FeatureNotAvailableException) e);
+        } else if (e instanceof AuthoritiesException) {
+            return handleAuthorityException((AuthoritiesException) e);
         }
 
         return handleRuntimeException(e);
 
     }
 
-    private Response handleFeatureNotAvailableException(FeatureNotAvailableException e) {
-        String msg = "Not available since feature is not active";
-        return Response.status(Status.FORBIDDEN).entity(msg).build();
+    private Response handleAuthorityException(AuthoritiesException e) {
+        LOG.warn("AuthValidation occured: ", e);
+        WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                e.getMessage());
+        return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exceptionResponse).type(MediaType.APPLICATION_JSON)
+                .build();
     }
 
     /**

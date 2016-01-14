@@ -28,7 +28,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import io.swagger.annotations.Api;
 
 @Path("/fragasvar")
 @Api(value = "fragasvar", description = "REST API för fråga/svar", produces = MediaType.APPLICATION_JSON)
@@ -53,7 +53,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Path("/sok")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
         QueryFragaSvarResponse result = fragaSvarService.filterFragaSvar(queryParam);
         LOG.debug("/api/fragasvar/sok about to return : " + result.getTotalCount());
         return Response.ok(result).build();
@@ -63,7 +63,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
         List<Lakare> lakare = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
         return Response.ok(lakare).build();
     }

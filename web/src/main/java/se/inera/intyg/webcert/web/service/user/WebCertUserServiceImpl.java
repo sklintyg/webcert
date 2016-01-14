@@ -19,6 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.user;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +31,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -84,7 +86,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         Assert.notNull(privilegeName);
 
         // If user doesn't have a privilege, return an empty set
-        if (!getUser().hasPrivilege(privilegeName)) {
+        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+        if (!authoritiesValidator.given(getUser()).privilege(privilegeName).isVerified()) {
             return Collections.emptySet();
         }
 

@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import com.google.common.collect.ImmutableSet;
@@ -54,47 +55,52 @@ public class AuthoritiesValidatorTest {
     @Test
     public void testMustHaveFeature() {
         WebCertUser user = createDefaultUser();
-        user.setFeatures(ImmutableSet.of("feature_a", "feature_a.fk7263", "feature_b", "feature_b.fk7263"));
+        user.setFeatures(ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
+                WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
 
         assertTrue(validator.given(user).
-                features("feature_a").
-                features("feature_b").
-                notFeatures("feature_x").
+                features(WebcertFeature.HANTERA_INTYGSUTKAST).
+                features(WebcertFeature.HANTERA_FRAGOR).
+                notFeatures(WebcertFeature.KOPIERA_INTYG).
                 isVerified());
     }
 
     @Test
     public void testMustHaveSomeFeature() {
         WebCertUser user = createDefaultUser();
-        user.setFeatures(ImmutableSet.of("feature_a", "feature_a.fk7263", "feature_b", "feature_b.fk7263"));
+        user.setFeatures(ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
+                WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
 
         assertTrue(validator.given(user).
-                features("feature_a", "feature_x").
+                features(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.ARBETSGIVARUTSKRIFT).
                 isVerified());
     }
 
     @Test
     public void testMustNotHaveAnyFeature() {
         WebCertUser user = createDefaultUser();
-        user.setFeatures(ImmutableSet.of("feature_a", "feature_a.fk7263", "feature_b", "feature_b.fk7263"));
+        user.setFeatures(ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
+                WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
 
         assertTrue(validator.given(user).
-                notFeatures("feature_x", "feature_y").
+                notFeatures(WebcertFeature.ARBETSGIVARUTSKRIFT, WebcertFeature.KOPIERA_INTYG).
                 isVerified());
     }
 
     @Test
     public void testMustNotHaveAnyFeatureFails() {
         WebCertUser user = createDefaultUser();
-        user.setFeatures(ImmutableSet.of("feature_a", "feature_a.fk7263", "feature_b", "feature_b.fk7263"));
+        user.setFeatures(ImmutableSet.of(
+                WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
+                WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
 
         assertFalse(validator.given(user, "fk7263").
-                notFeatures("feature_a", "feature_y").isVerified());
+                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.KOPIERA_INTYG).isVerified());
 
         thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
-                notFeatures("feature_a", "feature_y").orThrow();
+                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.KOPIERA_INTYG).orThrow();
     }
 
     @Test
@@ -102,8 +108,8 @@ public class AuthoritiesValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user, "fk7263").
-                features("feature_a").
-                notFeatures("base_feature").
+                features(WebcertFeature.HANTERA_INTYGSUTKAST).
+                notFeatures(WebcertFeature.ARBETSGIVARUTSKRIFT).
                 isVerified());
     }
 
@@ -111,15 +117,15 @@ public class AuthoritiesValidatorTest {
     public void testMustHaveFeatureFail() {
         WebCertUser user = createDefaultUser();
 
-        user.setFeatures(ImmutableSet.of("feature_a", "feature_b"));
+
 
         assertFalse(validator.given(user, "fk7263").
-                features("feature_c").isVerified());
+                features(WebcertFeature.ARBETSGIVARUTSKRIFT).isVerified());
 
         thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
-                features("feature_c").orThrow();
+                features(WebcertFeature.ARBETSGIVARUTSKRIFT).orThrow();
     }
 
     @Test
@@ -127,12 +133,12 @@ public class AuthoritiesValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertFalse(validator.given(user, "fk7263").
-                notFeatures("feature_a").isVerified());
+                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST).isVerified());
 
         thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
-                notFeatures("feature_a").orThrow();
+                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
     }
 
     @Test
@@ -314,8 +320,8 @@ public class AuthoritiesValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user, "fk7263").
-                features("feature_a").
-                notFeatures("dummy_feature").
+                features(WebcertFeature.HANTERA_INTYGSUTKAST).
+                notFeatures(WebcertFeature.ARBETSGIVARUTSKRIFT).
                 roles(AuthoritiesConstants.ROLE_LAKARE).
                 notRoles("dummy_role").
                 origins(WebCertUserOriginType.NORMAL).
@@ -369,7 +375,8 @@ public class AuthoritiesValidatorTest {
                                                                                                                    // to
                                                                                                                    // fk7263
                                 createRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                ImmutableSet.of("feature_a", "feature_a.fk7263", "base_feature"),// feature_a is active for
+                ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
+                        "base_feature"),// feature_a is active for
                                                                                  // intygscontext fk7263, base_feature
                                                                                  // is not.
                 WebCertUserOriginType.NORMAL.name());

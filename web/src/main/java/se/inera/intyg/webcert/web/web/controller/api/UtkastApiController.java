@@ -19,25 +19,9 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -49,9 +33,27 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.dto.Patient;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import io.swagger.annotations.Api;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -83,7 +85,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
@@ -121,7 +123,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
 
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         UtkastFilter utkastFilter = createUtkastFilter(filterParameters);
         QueryIntygResponse queryResponse = performUtkastFilterQuery(utkastFilter);
@@ -139,7 +141,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getLakareWithDraftsByEnheter() {
 
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();

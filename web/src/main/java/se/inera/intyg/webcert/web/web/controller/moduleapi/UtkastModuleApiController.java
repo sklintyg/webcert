@@ -44,6 +44,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -60,9 +63,6 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import io.swagger.annotations.Api;
 
 /**
@@ -105,7 +105,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
 
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         Utkast utkast = utkastService.getDraft(intygsId);
 
@@ -137,7 +137,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version,
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
 
@@ -215,10 +215,11 @@ public class UtkastModuleApiController extends AbstractApiController {
     @DELETE
     @Path("/{intygsTyp}/{intygsId}/{version}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version,
+    public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @PathParam("version") long version,
             @Context HttpServletRequest request) {
 
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
@@ -243,7 +244,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response logPrintOfDraftToPDL(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
 
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
 
         LOG.debug("Logging printout of draft intyg '{}'", intygsId);
 
@@ -264,7 +265,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @Context HttpServletRequest request) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+
         SignaturTicket ticket;
         try {
             ticket = signaturService.serverSignature(intygsId, version);
@@ -290,7 +292,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @Context HttpServletRequest request) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+
         SignaturTicket ticket;
         try {
             ticket = grpSignaturService.startGrpAuthentication(intygsId, version);
@@ -317,7 +320,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
             @Context HttpServletRequest request, byte[] rawSignatur) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
 
         if (rawSignatur.length == 0) {
@@ -352,7 +357,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+
         SignaturTicket ticket;
         try {
             ticket = signaturService.createDraftHash(intygsId, version);
@@ -374,7 +380,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{biljettId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+
         SignaturTicket ticket = signaturService.ticketStatus(biljettId);
         return new SignaturTicketResponse(ticket);
     }

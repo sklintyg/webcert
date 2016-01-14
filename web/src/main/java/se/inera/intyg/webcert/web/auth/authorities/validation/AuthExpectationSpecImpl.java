@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -45,8 +46,8 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
     /*
      * Constraints states
      */
-    private Optional<String[]> featureConstraints = Optional.empty();
-    private Optional<String[]> featureNotConstraints = Optional.empty();
+    private Optional<WebcertFeature[]> featureConstraints = Optional.empty();
+    private Optional<WebcertFeature[]> featureNotConstraints = Optional.empty();
 
     private Optional<WebCertUserOriginType[]> originConstraints = Optional.empty();
     private Optional<WebCertUserOriginType[]> originNotConstraints = Optional.empty();
@@ -69,11 +70,13 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
         errors.clear();
 
         if (featureConstraints.isPresent() && Arrays.stream(featureConstraints.get()).noneMatch(fc -> this.checkHasFeature(fc))) {
-            errors.add(String.format("mandatory features '%s' was not present in users features.", String.join(",", featureConstraints.get())));
+            errors.add(String.format("mandatory features '%s' was not present in users features.",
+                    Arrays.stream(featureConstraints.get()).map(o -> o.name()).collect(Collectors.joining(","))));
         }
 
         if (featureNotConstraints.isPresent() && Arrays.stream(featureNotConstraints.get()).anyMatch(fc -> this.checkHasFeature(fc))) {
-            errors.add(String.format("forbidden features '%s' was present in users features.", String.join(",", featureNotConstraints.get())));
+            errors.add(String.format("forbidden features '%s' was present in users features.",
+                    Arrays.stream(featureNotConstraints.get()).map(o -> o.name()).collect(Collectors.joining(","))));
         }
 
         if (originConstraints.isPresent() && Arrays.stream(originConstraints.get()).noneMatch(oc -> this.checkHasOrigin(oc.name()))) {
@@ -113,26 +116,26 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
     }
 
     @Override
-    public AuthExpectationSpecification features(String... featureConstraints) {
+    public AuthExpectationSpecification features(WebcertFeature... featureConstraints) {
         this.featureConstraints = Optional.of(featureConstraints);
         return this;
     }
 
     @Override
-    public AuthExpectationSpecification notFeatures(String... featureNotConstraints) {
-        this.featureNotConstraints = Optional.of(featureNotConstraints);
+    public AuthExpectationSpecification notFeatures(WebcertFeature... invalidFeatureConstraints) {
+        this.featureNotConstraints = Optional.of(invalidFeatureConstraints);
         return this;
     }
 
-    private boolean checkHasFeature(String featureConstraint) {
+    private boolean checkHasFeature(WebcertFeature featureConstraint) {
 
-        if (!this.user.getFeatures().contains(featureConstraint)) {
+        if (!this.user.getFeatures().contains(featureConstraint.getName())) {
             return false;
         }
-
+        // If intygscontext is given, the intygsmodule feature must also be present.
         if (this.intygsTypeContext.isPresent()) {
-            String intygsFeatureConstraint = featureConstraint + "." + this.intygsTypeContext.get();
-            return this.user.getFeatures().contains(intygsFeatureConstraint);
+            String intygsModuleFeatureConstraint = featureConstraint.getName() + "." + this.intygsTypeContext.get();
+            return this.user.getFeatures().contains(intygsModuleFeatureConstraint);
         }
 
         return true;

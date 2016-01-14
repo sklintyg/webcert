@@ -24,11 +24,9 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.R
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
 
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -39,9 +37,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
+import io.swagger.annotations.Api;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -59,7 +61,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     private static final String PARAM_CERT_ID = "certId";
 
     private static final String[] GRANTED_ROLES = new String[] { ROLE_ADMIN, ROLE_LAKARE, ROLE_TANDLAKARE };
-    private static final String GRANTED_ORIGIN = WebCertUserOriginType.UTHOPP.name();
+    private static final WebCertUserOriginType GRANTED_ORIGIN = WebCertUserOriginType.UTHOPP;
 
     private String urlFragmentTemplate;
 
@@ -69,10 +71,9 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     }
 
     @Override
-    protected String getGrantedRequestOrigin() {
+    protected WebCertUserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
-
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
@@ -85,10 +86,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     @Path("/{intygId}/questions")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
-        boolean ok = super.validateRedirectToIntyg(intygId);
-        if (!ok) {
-            return Response.serverError().build();
-        }
+        super.validateRedirectToIntyg(intygId);
 
         String intygType = FK7263.toString();
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
@@ -99,7 +97,6 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
-
 
     // - - - - - Private scope - - - - -
 

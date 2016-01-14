@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 
 /**
  * Created by marced on 18/12/15.
@@ -29,13 +30,14 @@ public interface AuthExpectationSpecification {
      * To pass, the user must have at least one of the given features active.
      * Also, if intygstyp context is given, that intygsmodule must also have given feature active.
      * <p/>
-     * If multiple featureConstraints are given, this is effectively an OR condition. To express an AND condition you
-     * can simply chain multiple features("x").features("y")
+     * If multiple invalidFeatureConstraints are given, this is effectively an OR condition. To express an AND condition
+     * you can simply chain multiple features("x").features("y")
      *
      * @param featureConstraints
+     *            The features(s) that the user should have
      * @return
      */
-    AuthExpectationSpecification features(String... featureConstraints);
+    AuthExpectationSpecification features(WebcertFeature... featureConstraints);
 
     /**
      * To pass, the user must NOT have ANY of the given features active.
@@ -43,10 +45,11 @@ public interface AuthExpectationSpecification {
      * active.
      * <p/>
      *
-     * @param featureConstraints
+     * @param invalidFeatureConstraints
+     *            The features(s) that the user should NOT have
      * @return
      */
-    AuthExpectationSpecification notFeatures(String... featureConstraints);
+    AuthExpectationSpecification notFeatures(WebcertFeature... invalidFeatureConstraints);
 
     /**
      * To pass, the user's request origin must match one of the given validOriginTypes.
@@ -55,6 +58,7 @@ public interface AuthExpectationSpecification {
      * simply chain multiple origins(type1).origins(type2)
      *
      * @param validOriginTypes
+     *            The origin(s) the user should have
      * @return
      */
     AuthExpectationSpecification origins(WebCertUserOriginType... validOriginTypes);
@@ -63,6 +67,7 @@ public interface AuthExpectationSpecification {
      * To pass, the user's request origin must NOT match any of the given invalidOriginTypes.
      *
      * @param invalidOriginTypes
+     *            The origin(s) the user must NOT have
      * @return
      */
     AuthExpectationSpecification notOrigins(WebCertUserOriginType... invalidOriginTypes);
@@ -74,6 +79,7 @@ public interface AuthExpectationSpecification {
      * chain multiple roles(type1).roles(type2)
      *
      * @param validRoles
+     *            The role(s) the user mut NOT have
      * @return
      */
     AuthExpectationSpecification roles(String... validRoles);
@@ -82,6 +88,7 @@ public interface AuthExpectationSpecification {
      * To pass, the user's role must NOT match any of the given invalidRoles.
      *
      * @param invalidRoles
+     *            The role(s) the user mut NOT have
      * @return
      */
     AuthExpectationSpecification notRoles(String... invalidRoles);
@@ -110,14 +117,15 @@ public interface AuthExpectationSpecification {
     AuthExpectationSpecification notPrivilege(String privilegeConstraint);
 
     /**
-     * Returns true if all added checks passes, otherwise false.
+     * Verify all given expectations.
+     *
      * @return
+     *         Returns true if all added checks passes, otherwise false.
      */
     boolean isVerified();
 
     /**
      * Throws AuthoritiesException if any of the added check fails.
-     * @return
      */
     void orThrow();
 }
