@@ -61,8 +61,11 @@ describe('Generate fk intyg', function() {
             //template : ''
         };
 
+        //console.log("======================================================INTYGOPTIONS");
+        //console.log(intygOptions);
+
         var intygsId = null;
-        restUtil.createIntyg('fk7263', intygGenerator.buildIntyg(intygOptions)).then(function(response){
+        restUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response){
             intygsId = JSON.parse(response.request.body).id;
             expect(intygsId).not.toBe(null);
         }, function(error) {

@@ -51,7 +51,11 @@ var fkIntyg = require('./../testdata/intyg.fk7263.json');
  */
 function _buildIntyg(intygOptions) {
 
+//    console.log("======================================================INTYG");
+//    console.log(fkIntyg);
     var jsonDocument = buildDocumentFromIntygTemplate(fkIntyg, intygOptions);
+//    console.log("======================================================JSONDOCUMENT");
+//    console.log(jsonDocument);
 
     var stateList = [{state:'RECEIVED', target:'MI', timestamp: intygOptions.issued + 'T12:00:00.000'}];
     if (intygOptions.sent) {
@@ -82,7 +86,10 @@ function _buildIntyg(intygOptions) {
         deletedByCareGiver = false
     }
   */
-    return {
+//    console.log("======================================================INTYGOPTIONS-2");
+//    console.log(intygOptions);
+
+    var resultIntyg = {
         id: intygOptions.intygId, // id, issued??
         type: intygOptions.intygType,
         civicRegistrationNumber: intygOptions.personnr,
@@ -97,7 +104,11 @@ function _buildIntyg(intygOptions) {
         additionalInfo: additionalInfo,
         certificateStates: stateList,
         document: jsonDocument
-    };
+    }
+
+//    console.log("======================================================RESULTINTYG");
+//    console.log(resultIntyg);
+    return resultIntyg;
 }
 
 function buildDocumentFromIntygTemplate(intyg, intygOptions) {
