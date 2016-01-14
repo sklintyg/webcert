@@ -5,7 +5,7 @@ Egenskap: Hantera Transportstyrelsens basintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
     Givet att jag är inloggad som läkare
-
+@tsbas
 Scenario: Skapa och signera ett intyg till transportstyrelsen
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg

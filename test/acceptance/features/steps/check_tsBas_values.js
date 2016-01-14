@@ -94,34 +94,32 @@ module.exports ={
     }, function(reason) {
         callback('FEL - Binokulärt med klorrektion : ' + reason);
     });
-    expect(tsBasIntygPage.vansterOgakontaktlins.getText()).to.eventually.equal(intyg.linserH).then(function(value) {
-        logg('OK - Korrektionsglasens styrka = ' + value);
+    expect(tsBasIntygPage.vansterOgakontaktlins.getText()).to.eventually.equal(intyg.linserV).then(function(value) {
+        logg('OK - Vanster öga kontaktlins = ' + value);
     }, function(reason) {
-        callback('FEL - Korrektionsglasens styrka : ' + reason);
+        callback('FEL - Vanster öga kontaktlins : ' + reason);
     });    
     expect(tsBasIntygPage.hogerOgakontaktlins.getText()).to.eventually.equal(intyg.linserH).then(function(value) {
         logg('OK - Höger öga kontaktlins = ' + value);
     }, function(reason) {
         callback('FEL - Höger öga kontaktlins : ' + reason);
     });    
-    // TBI:: Räkna ut om styrka i något av glasen överskrider plus 8 dioptrier och anpassa assertion.
-    // var _sum = +intyg.styrkor.houk + + intyg.styrkor.homk + + intyg.styrkor.vouk + + intyg.styrkor.vomk + + intyg.styrkor.buk + + intyg.styrkor.bmk;
-    // console.log('_sum is: '+_sum);
-    
-    // if(parseInt(_sum) < 8 ){
-    //     expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Nej').then(function(value) {
-    //         logg('OK - Korrektionsglasens styrka = ' + value);
-    //     }, function(reason) {
-    //         callback('FEL - Korrektionsglasens styrka : ' + reason);
-    //     });
-    // } else {
-    //     expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Ja').then(function(value) {
-    //         logg('OK - Korrektionsglasens styrka = ' + value);
-    //     }, function(reason) {
-    //         callback('FEL - Korrektionsglasens styrka : ' + reason);
-    //     });
-    // }
 
+    // TBI:: Räkna ut om styrka i något av glasen överskrider plus 8 dioptrier och anpassa assertion.
+    var _sum = (+ intyg.styrkor.homk - +intyg.styrkor.houk) +  ( + intyg.styrkor.vomk - + intyg.styrkor.vouk);
+    if (_sum < 8) {
+        expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Nej').then(function(value) {
+            logg('OK - Korrektionsglasens styrka = ' + value);
+        }, function(reason) {
+            callback('FEL - Korrektionsglasens styrka : ' + reason);
+        });
+    } else {
+        expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Ja').then(function(value) {
+            logg('OK - Korrektionsglasens styrka = ' + value);
+        }, function(reason) {
+            callback('FEL - Korrektionsglasens styrka : ' + reason);
+        });
+    }
     expect(tsBasIntygPage.horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel).then(function(value) {
         logg('OK - Hörsel balansbalans rubbningar = ' + value);
     }, function(reason) {
