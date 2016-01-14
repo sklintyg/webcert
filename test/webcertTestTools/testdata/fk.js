@@ -32,7 +32,7 @@ function randomKontaktMedAF(smittskydd){
 function randomRekommendationOvrigt(smittskydd){
     if(smittskydd){return false;}
     else{
-        return shuffle(['Övrig rekommendation beskrivning',' '])[0];
+        return 'Övrig rekommendation beskrivning';
     }
 }
 function randomRehabAktuell(smittskydd){
@@ -150,7 +150,7 @@ var random = {
                     resor:shuffle([true,false])[0],
                     kontaktMedArbetsformedlingen:randomKontaktMedAF(smittskydd),
                     kontaktMedForetagshalsovard: randomKontaktMedAF(smittskydd),
-                    ovrigt:randomRekommendationOvrigt(smittskydd),
+                    ovrigt:shuffle([false,randomRekommendationOvrigt(smittskydd)])[0],
                     arbetslivsinriktadRehab: randomRehabAktuell(smittskydd)
                 };
     },
