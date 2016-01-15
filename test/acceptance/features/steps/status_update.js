@@ -103,7 +103,7 @@ function assertDatabaseContents(intygsId, column, value, callback) {
     var mysql = require('mysql');
 
     console.log('Asserting contents');
-    sleep.sleep(5);
+    sleep.sleep(10);
     
     var connection = mysql.createConnection({
         host  :     process.env.DATABASE_HOST,
@@ -116,21 +116,19 @@ function assertDatabaseContents(intygsId, column, value, callback) {
     
     connection.connect();
 
-    var query = 'SELECT ' + column + ' FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
+    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+        databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
+        databaseTable + '.' + column + '="' + value + '";';
 
     console.log('QUERY: ' + query);
     
     connection.query(query,
                      function(err, rows, fields) {
-                         console.log('ROWS: ' + rows);
-                         console.log('FIELDS: ' + fields);
-
                          connection.end();
                          if (err) { throw err; }
                          
                          if (rows[0].Counter !== 1) {
-                             callback('Bad status on on draft: ' + rows[0].Counter);
+                             callback('Incorrect value of column: ' + column);
                          } else {
                              callback();
                          }
@@ -226,56 +224,32 @@ module.exports = function () {
             fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
                 .then(function () {
                     console.log('Fyller i diagnoskod...');
-                    fk7263Utkast.diagnosKod.sendKeys('A00');
-                })
-                .then(function () {
-                    console.log('Verifierar antalet events...');
-                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
-                    assertNumberOfEvents(global.intyg.id, 'HAN11', 1, callback);
+                    fk7263Utkast.diagnosKod.sendKeys('A00').then(callback);
                 });
         }
         else if (arg1 === 'Funktionsnedsättning') {
-            fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt')
-                .then(function () {
-                    console.log('Verifierar antalet events...');
-                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
-                });
+            fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt').then(callback);
         }
         else if (arg1 === 'Aktivitetsbegränsning') {
-            fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget')
-                .then(function () {
-                    console.log('Verifierar antalet events...');
-                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
-                });
+            fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget').then(callback);
         }
         else if (arg1 === 'Arbete') {
-            fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare')
-                .then(function () {
-                    console.log('Verifierar antalet events...');
-                    assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
-                });
+            fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
         }
         else if (arg1 === 'Arbetsförmåga') {
             fk7263Utkast.faktiskTjanstgoring.sendKeys('40')
                 .then(function () {
-                    fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE)
-                        .then(function () {
-                            console.log('Verifierar antalet HAN1-events...');
-                            assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
-                        })
-                        .then(function() {
-                            console.log('Verifierar antalet HAN11-events...');
-                            assertNumberOfEvents(global.intyg.id, 'HAN11', 2, callback);
-                        });
+                    fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE).then(callback);
                 });
         } else {
             callback();
         }
     });
 
-    this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\."$/, function (arg1, callback) {
-        assertNumberOfEvents(global.intyg.id, arg1, 1, callback);
+    this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function (arg1, arg2,callback) {
+        assertNumberOfEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
     });
+
 
     this.Given(/^är intygets status "([^"]*)"$/, function (arg1, callback) {
         assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
@@ -285,10 +259,11 @@ module.exports = function () {
         // Write code here that turns the phrase above into concrete actions
         var fkIntygPage = pages.intyg.fk['7263'].intyg;
         
-        fkIntygPage.skicka.knapp.click();
-        fkIntygPage.skicka.samtyckeCheckbox.click();
-        fkIntygPage.skicka.dialogKnapp.click();
-        callback();
+        fkIntygPage.skicka.knapp.click().then(function () {
+            fkIntygPage.skicka.samtyckeCheckbox.click().then(function () {
+                fkIntygPage.skicka.dialogKnapp.click().then(callback);
+            });
+        });
     });
     
     this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function (arg1, arg2, callback) {
