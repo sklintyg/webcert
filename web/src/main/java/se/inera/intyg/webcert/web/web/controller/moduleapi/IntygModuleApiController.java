@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -152,7 +153,10 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.MAKULERA_INTYG).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .orThrow();
         String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
         return Response.ok(revokeResult).build();

@@ -2,22 +2,26 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -67,7 +71,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String intygsTyp = "ts-diabetes";
         String intygsId = createUtkast(intygsTyp);
-
 
         given().expect().statusCode(200)
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
@@ -128,6 +131,29 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         deleteUtkast(intygsId);
     }
 
+    @Test
+    public void testRevokeSignedIntygWithoutPrivilegeFails() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsTyp = "fk7263";
+        String intygsId = createUtkast(intygsTyp);
+        signeraUtkastWithTestbarhetsApi(intygsId);
+
+        // Change role to admin - which does not have sign privilege..
+        changeRoleTo(AuthoritiesConstants.ROLE_ADMIN);
+
+        RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
+        revokeParam.setRevokeMessage("Makulera!");
+        given().contentType(ContentType.JSON).body(revokeParam)
+                .expect().statusCode(500)
+                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
+                .then()
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
+
+        deleteUtkast(intygsId);
+    }
+
     private String createUtkast(String utkastType) {
 
         CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
@@ -137,7 +163,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json")).
                 extract().response();
 
-        //The type-specific model is a serialized json "within" the model property, need to extract that first and then we can assert some basic things.
+        // The type-specific model is a serialized json "within" the model property, need to extract that first and then
+        // we can assert some basic things.
         JsonPath draft = new JsonPath(response.body().asString());
         JsonPath model = new JsonPath(draft.getString("model"));
 
@@ -158,7 +185,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().expect().statusCode(500)
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId);
     }
-
 
     private void deleteUtkast(String id) {
         given().contentType(ContentType.JSON).expect().statusCode(200).when().delete("testability/intyg/" + id);

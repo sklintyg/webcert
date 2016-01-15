@@ -44,12 +44,14 @@ public final class AuthoritiesConstants {
     public static final String ROLE_TANDLAKARE = "TANDLAKARE";
     public static final String ROLE_ADMIN = "VARDADMINISTRATOR";
 
-    // Known privileges (these privileges are copied from authorities.yaml which is the master authorities configuration)
+    // Known privileges (these privileges are copied from authorities.yaml which is the master authorities
+    // configuration)
     // Note: not all privileges are mapped, only the ones actually used in beckend
     public static final String PRIVILEGE_VISA_INTYG = "VISA_INTYG";
     public static final String PRIVILEGE_SIGNERA_INTYG = "SIGNERA_INTYG";
     public static final String PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA = "BESVARA_KOMPLETTERINGSFRAGA";
     public static final String PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR = "VIDAREBEFORDRA_FRAGASVAR";
     public static final String PRIVILEGE_VIDAREBEFORDRA_UTKAST = "VIDAREBEFORDRA_UTKAST";
+    public static final String PRIVILEGE_MAKULERA_INTYG = "MAKULERA_INTYG";
 
 }
