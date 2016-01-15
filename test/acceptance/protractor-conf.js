@@ -40,6 +40,7 @@ exports.config = {
         version: '',
         platform: 'ANY'
     },
+    maxSessions: 1,
     cucumberOpts: {
         format: ['json:./acceptance/report/acc_results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js']
