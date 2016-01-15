@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -77,8 +78,14 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{fragasvarId}/hanterad")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId, DispatchState dispatchState) {
-        abortIfFragaSvarNotActive(intygsTyp);
+    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId,
+            DispatchState dispatchState) {
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
+                .orThrow();
+
         LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, dispatchState.isDispatched());
         FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, dispatchState.isDispatched());
         return Response.ok(fragaSvarResponse).build();
