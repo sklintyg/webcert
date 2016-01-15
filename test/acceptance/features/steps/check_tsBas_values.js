@@ -17,31 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor*/
-/* globals browser, intyg, scenario, logg */
+/* globals pages*/
+/* globals browser, intyg, logg */
 
 'use strict';
 
-
-var helpers = require('./helpers.js');
-
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 
-function boolTillJaNej(val){
-	if(val){
-		return 'Ja';
-	}
-	else{
-		return 'Nej';
-	}
-}
 module.exports ={
 	checkTsBasValues:function(intyg, callback){
    
     expect(tsBasIntygPage.synfaltsdefekter.getText()).to.eventually.equal(intyg.synDonder).then(function(value) {
-        logg('OK - Synfaltsdefekter = ' + value);
+        logg('OK - Synfältsdefekter = ' + value);
     }, function(reason) {
-        callback('FEL - Synfaltsdefekter : ' + reason);
+        callback('FEL - Synfältsdefekter : ' + reason);
     });
     expect(tsBasIntygPage.nattblindhet.getText()).to.eventually.equal(intyg.synNedsattBelysning).then(function(value) {
         logg('OK - Nattblindhet = ' + value);
@@ -94,12 +83,12 @@ module.exports ={
     }, function(reason) {
         callback('FEL - Binokulärt med klorrektion : ' + reason);
     });
-    expect(tsBasIntygPage.vansterOgakontaktlins.getText()).to.eventually.equal(intyg.linserV).then(function(value) {
-        logg('OK - Vanster öga kontaktlins = ' + value);
+    expect(tsBasIntygPage.vansterOgakontaktlins.getText()).to.eventually.equal(intyg.linser.vanster).then(function(value) {
+        logg('OK - Vänster öga kontaktlins = ' + value);
     }, function(reason) {
-        callback('FEL - Vanster öga kontaktlins : ' + reason);
+        callback('FEL - Vänster öga kontaktlins : ' + reason);
     });    
-    expect(tsBasIntygPage.hogerOgakontaktlins.getText()).to.eventually.equal(intyg.linserH).then(function(value) {
+    expect(tsBasIntygPage.hogerOgakontaktlins.getText()).to.eventually.equal(intyg.linser.hoger).then(function(value) {
         logg('OK - Höger öga kontaktlins = ' + value);
     }, function(reason) {
         callback('FEL - Höger öga kontaktlins : ' + reason);
@@ -158,9 +147,9 @@ module.exports ={
     });
 
     expect(tsBasIntygPage.hjarnskadaEfterTrauma.getText()).to.eventually.equal(intyg.hjartSkada).then(function(value) {
-        logg('OK - Hjarnskada efter trauma = ' + value);
+        logg('OK - Hjärnskada efter trauma = ' + value);
     }, function(reason) {
-        callback('FEL - Hjarnskada efter trauma : ' + reason);
+        callback('FEL - Hjärnskada efter trauma : ' + reason);
     });
 
 
@@ -269,9 +258,9 @@ module.exports ={
             });
 
     expect(tsBasIntygPage.teckenSomnstorningar.getText()).to.eventually.equal(intyg.somnVakenhet).then(function(value) {
-        logg('OK - Tecken somnstörningar = '+ value);
+        logg('OK - Tecken sömnstörningar = '+ value);
             }, function(reason) {
-                callback('FEL - Tecken somnstörningar = '+ reason);
+                callback('FEL - Tecken sömnstörningar = '+ reason);
             });
     
     expect(tsBasIntygPage.teckenMissbruk.getText()).to.eventually.equal(intyg.alkoholMissbruk).then(function(value) {
@@ -340,9 +329,9 @@ module.exports ={
         });
 
         expect(tsBasIntygPage.vardinrattning.getText()).to.eventually.equal('Östra sjukhuset.').then(function(value) {
-        logg('OK - Vardinrättning = '+ value);
+        logg('OK - Vårdinrättning = '+ value);
         }, function(reason) {
-            callback('FEL - Vardinrättning: '+ reason);
+            callback('FEL - Vårdinrättning: '+ reason);
         });
 
         expect(tsBasIntygPage.sjukhusvardanledning.getText()).to.eventually.equal('Allmän ysterhet.').then(function(value) {
@@ -366,16 +355,16 @@ module.exports ={
 
     if (intyg.ovrigMedicin === 'Ja') {
         expect(tsBasIntygPage.medicineringbeskrivning.getText()).to.eventually.equal('beskrivning övrig medicinering').then(function(value) {
-        logg('OK - Stadig varande Medicinering = '+ value);
+        logg('OK - Stadigvarande medicinering = '+ value);
         }, function(reason) {
-            callback('FEL - Stadig varande Medicinering: '+ reason);
+            callback('FEL - Stadigvarande medicinering: '+ reason);
         }).then(callback);
 
     } else if (intyg.ovrigMedicin === 'Nej'){
         expect(tsBasIntygPage.stadigvarandeMedicinering.getText()).to.eventually.equal('Nej').then(function(value) {
-        logg('OK - Stadig varande Medicinering = '+ value);
+        logg('OK - Stadigvarande medicinering = '+ value);
         }, function(reason) {
-            callback('FEL - Stadig varande Medicinering: '+ reason);
+            callback('FEL - Stadigvarande medicinering: '+ reason);
         }).then(callback);
     }
 }

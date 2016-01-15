@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,helpers*/
+/*globals element,by,helpers,protractor*/
 'use strict';
 
 // NOTE: This file is loaded before helpers in protractor.conf.js onPrepare. Therefore helpers are not available in file scope.
@@ -44,14 +44,20 @@ var TsBasUtkast = BaseTsUtkast._extend({
             dNo: element(by.id('syndn')),
             eYes: element(by.id('syney')),
             eNo: element(by.id('synen')),
-            synHogerOgaUtanKorrektion: element(by.id('synHogerOgaUtanKorrektion')),
-            synVansterOgaUtanKorrektion: element(by.id('synVansterOgaUtanKorrektion')),
-            synBinokulartUtanKorrektion: element(by.id('synBinokulartUtanKorrektion')),
-            synHogerOgaMedKorrektion: element(by.id('synHogerOgaMedKorrektion')),
-            synVansterOgaMedKorrektion: element(by.id('synVansterOgaMedKorrektion')),
-            synBinokulartMedKorrektion: element(by.id('synBinokulartMedKorrektion')),
-            hogerOgakontaktlinsYes: element(by.id('synHogerOgaKontaktlins')),
-            vansterOgakontaktlinsYes: element(by.id('synVasterOgaKontaktlins'))
+            utanKorrektion:{
+                hoger: element(by.id('synHogerOgaUtanKorrektion')),
+                vanster:element(by.id('synVansterOgaUtanKorrektion')),
+                binokulart:element(by.id('synBinokulartUtanKorrektion'))
+            },
+            medKorrektion:{
+                hoger: element(by.id('synHogerOgaMedKorrektion')),
+                vanster:element(by.id('synVansterOgaMedKorrektion')),
+                binokulart:element(by.id('synBinokulartMedKorrektion'))
+            },
+            kontaktlins:{
+                hoger:element(by.id('synHogerOgaKontaktlins')),
+                vanster: element(by.id('synVasterOgaKontaktlins'))
+            }
         },
         this.horselBalans = {
             aYes: element(by.id('horselbalansay')),
@@ -65,7 +71,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             aText: element(by.id('funktionsnedsattning')),
             bYes: element(by.id('funktionsnedsattningby')),
             bNo: element(by.id('funktionsnedsattningbn'))
-        }
+        },
         this.hjartKarl = {
             aYes: element(by.id('hjartkarlay')),
             aNo: element(by.id('hjartkarlan')),
@@ -74,7 +80,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             cYes: element(by.id('hjartkarlcy')),
             cNo: element(by.id('hjartkarlcn')),
             cText: element(by.id('beskrivningRiskfaktorer'))
-        }
+        },
         this.diabetes = {
             aYes: element(by.id('diabetesay')),
             aNo: element(by.id('diabetesan')),
@@ -83,20 +89,20 @@ var TsBasUtkast = BaseTsUtkast._extend({
             endastkost: element(by.id('diabetestreat1')),
             tabletter: element(by.id('diabetestreat2')),
             insulin: element(by.id('diabetestreat3'))
-        }
+        },
         this.neurologiska = {
             aYes: element(by.id('neurologiay')),
             aNo: element(by.id('neurologian'))
-        }
+        },
         this.epilepsi = {
             aYes: element(by.id('medvetandestorningay')),
             aText: element(by.id('beskrivningMedvetandestorning')),
             aNo: element(by.id('medvetandestorningan'))
-        }
+        },
         this.njursjukdom = {
             aYes: element(by.id('njuraray')),
             aNo: element(by.id('njuraran'))
-        }
+        },
         this.kognitivt = {
             aYes: element(by.id('kognitivtay')),
             aNo: element(by.id('kognitivtan'))
@@ -128,21 +134,21 @@ var TsBasUtkast = BaseTsUtkast._extend({
         } else {
             this.syn.eNo.sendKeys(protractor.Key.SPACE);
         }
-        if (utkast.linserH === 'Ja') {
-            this.syn.hogerOgakontaktlinsYes.sendKeys(protractor.Key.SPACE);
+        if (utkast.linser.hoger === 'Ja') {
+            this.syn.kontaktlins.hoger.sendKeys(protractor.Key.SPACE);
 
         } 
-        if (utkast.linserV === 'Ja') {
-            this.syn.vansterOgakontaktlinsYes.sendKeys(protractor.Key.SPACE);
+        if (utkast.linser.vanster === 'Ja') {
+            this.syn.kontaktlins.vanster.sendKeys(protractor.Key.SPACE);
         }
 
-        this.syn.synHogerOgaUtanKorrektion.sendKeys(utkast.styrkor.houk);
-        this.syn.synVansterOgaUtanKorrektion.sendKeys(utkast.styrkor.vouk);
-        this.syn.synBinokulartUtanKorrektion.sendKeys(utkast.styrkor.buk);
+        this.syn.utanKorrektion.hoger.sendKeys(utkast.styrkor.houk);
+        this.syn.utanKorrektion.vanster.sendKeys(utkast.styrkor.vouk);
+        this.syn.utanKorrektion.binokulart.sendKeys(utkast.styrkor.buk);
 
-        this.syn.synHogerOgaMedKorrektion.sendKeys(utkast.styrkor.homk);
-        this.syn.synVansterOgaMedKorrektion.sendKeys(utkast.styrkor.vomk);
-        this.syn.synBinokulartMedKorrektion.sendKeys(utkast.styrkor.bmk);
+        this.syn.medKorrektion.hoger.sendKeys(utkast.styrkor.homk);
+        this.syn.medKorrektion.vanster.sendKeys(utkast.styrkor.vomk);
+        this.syn.medKorrektion.binokulart.sendKeys(utkast.styrkor.bmk);
     },
     fillInHorselOchBalanssinne: function(utkast) {
         if (utkast.horselYrsel === 'Ja') {

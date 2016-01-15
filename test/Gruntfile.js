@@ -80,7 +80,7 @@ module.exports = function(grunt) {
     grunt.task.registerTask('acc', 'Task för att köra acceptanstest', function(environment, tags) {
         
         if(!environment){
-            var defaultEnv = 'ip40';
+            var defaultEnv = 'ip30';
             grunt.log.subhead('Ingen miljö vald, använder '+defaultEnv+'-miljön..');
             environment = defaultEnv;
         }

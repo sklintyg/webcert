@@ -82,7 +82,7 @@ module.exports = {
             vomk:  this.getRandomFloat(),
             buk:  this.getRandomFloat(),
             bmk:  this.getRandomFloat()
-        }
+        };
         return styrkor;
     },
 
@@ -187,8 +187,10 @@ module.exports = {
             synDubbel:                    shuffle(this.synDubbel)[0],                    
             synNystagmus:                 shuffle(this.synNystagmus)[0],                 
             horselYrsel:                  shuffle(this.horselYrsel)[0],                  
-            linserV:                      shuffle(this.synLinser)[0],                  
-            linserH:                      shuffle(this.synLinser)[0],                  
+            linser:{
+                vanster: 'Ja', 
+                hoger:   shuffle(this.synLinser)[0]
+            },                  
             horselSamtal:                 shuffle(this.horselSamtal)[0],                  
             rorOrgNedsattning:            shuffle(this.rorOrgNedsattning)[0],            
             rorOrgInUt:                   shuffle(this.rorOrgInUt)[0],            
