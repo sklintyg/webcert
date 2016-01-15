@@ -47,6 +47,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -265,8 +266,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @Context HttpServletRequest request) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
-
+        verifyIsAuthorizedToSignIntyg(intygsTyp);
         SignaturTicket ticket;
         try {
             ticket = signaturService.serverSignature(intygsId, version);
@@ -278,6 +278,13 @@ public class UtkastModuleApiController extends AbstractApiController {
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return new SignaturTicketResponse(ticket);
+    }
+
+    private void verifyIsAuthorizedToSignIntyg(String intygsTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
+                .orThrow();
     }
 
     /**
@@ -292,7 +299,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @Context HttpServletRequest request) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+
+        verifyIsAuthorizedToSignIntyg(intygsTyp);
 
         SignaturTicket ticket;
         try {
@@ -321,7 +329,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
             @Context HttpServletRequest request, byte[] rawSignatur) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        verifyIsAuthorizedToSignIntyg(intygsTyp);
 
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
 
