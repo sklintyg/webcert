@@ -61,6 +61,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
             synOgonsjukdom: 'Ja',
             synDubbel: 'Ja',
             synNystagmus: 'Ja',
+            styrkor: wcTestTools.testdata.getRandomStyrka(),
             horselYrsel: 'Ja',
             horselSamtal: 'Ja',
             rorOrgNedsattning: 'Ja',
@@ -88,7 +89,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
             adhdSyndrom: 'Ja',
             sjukhusvard: 'Ja',
             ovrigMedicin: 'Ja',
-            kommentar: 'Inget att rapportera'
+            kommentar: 'Inget att rapportera'    
         };
 
         it('first half', function() {
