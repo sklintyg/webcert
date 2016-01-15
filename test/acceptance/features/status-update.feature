@@ -24,3 +24,6 @@ Scenario: Ta emot en statusuppdatering
    Så är intygets status "DRAFT_COMPLETE"
    Och signerar intyget
    Så är intygets status "SIGNED"
+   När jag går in på intygsutkastet via djupintegrationslänk
+   Och när jag skickar intyget till Försäkringskassan
+   Så är innehåller databasfältet "SKICKAD_TILL_MOTTAGARE" värdet "FK"

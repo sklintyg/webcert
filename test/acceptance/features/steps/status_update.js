@@ -99,6 +99,44 @@ function assertDraftWithStatus(personId, intygsId, status, callback) {
                      });
 }
 
+function assertDatabaseContents(intygsId, column, value, callback) {
+    var mysql = require('mysql');
+
+    console.log('Asserting contents');
+    sleep.sleep(5);
+    
+    var connection = mysql.createConnection({
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : 'b4pelsin',
+        database  : process.env.DATABASE_NAME
+    });
+
+    var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+    
+    connection.connect();
+
+    var query = 'SELECT ' + column + ' FROM ' + databaseTable + ' WHERE ' +
+        databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
+
+    console.log('QUERY: ' + query);
+    
+    connection.query(query,
+                     function(err, rows, fields) {
+                         console.log('ROWS: ' + rows);
+                         console.log('FIELDS: ' + fields);
+
+                         connection.end();
+                         if (err) { throw err; }
+                         
+                         if (rows[0].Counter !== 1) {
+                             callback('Bad status on on draft: ' + rows[0].Counter);
+                         } else {
+                             callback();
+                         }
+                     });
+}
+
 function assertNumberOfEvents(intygsId, event, numEvents, callback) {
     var mysql = require('mysql');
 
@@ -239,14 +277,24 @@ module.exports = function () {
         assertNumberOfEvents(global.intyg.id, arg1, 1, callback);
     });
 
-    this.Given(/^ska en CreateDraftUpdate skickas till vårdsystemet\.$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback.pending();
-    });
-
     this.Given(/^är intygets status "([^"]*)"$/, function (arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
         assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
     });
+
+    this.Given(/^när jag skickar intyget till Försäkringskassan$/, function (callback) {
+        // Write code here that turns the phrase above into concrete actions
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+        
+        fkIntygPage.skicka.knapp.click();
+        fkIntygPage.skicka.samtyckeCheckbox.click();
+        fkIntygPage.skicka.dialogKnapp.click();
+        callback();
+    });
+    
+    this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function (arg1, arg2, callback) {
+        // Write code here that turns the phrase above into concrete actions
+        assertDatabaseContents(global.intyg.id, arg1, arg2, callback);
+    });
+    
 
 };
