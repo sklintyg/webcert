@@ -22,12 +22,14 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.legacyintegrat
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
 
-import com.jayway.restassured.RestAssured;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
+
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
-import javax.servlet.http.HttpServletResponse;
+import com.jayway.restassured.RestAssured;
 
 /**
  * Check that private-practitioner-links are redirected correctly.
@@ -55,7 +57,8 @@ public class PrivatePractitionerFragaSvarIntegrationControllerIT extends BaseRes
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
-                expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).
-                when().get("webcert/web/user/pp-certificate/{intygsId}/questions");
+                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+                when().get("webcert/web/user/pp-certificate/{intygsId}/questions").
+                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
     }
 }

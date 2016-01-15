@@ -44,7 +44,7 @@
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
-      <ref bean="webcertRestExceptionHandler" />
+      <ref bean="webcertRedirectIntegrationExceptionHandler"/>
     </jaxrs:providers>
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />
