@@ -188,7 +188,7 @@ module.exports = {
             synNystagmus:                 shuffle(this.synNystagmus)[0],                 
             horselYrsel:                  shuffle(this.horselYrsel)[0],                  
             linser:{
-                vanster: 'Ja', 
+                vanster: shuffle(this.synLinser)[0], 
                 hoger:   shuffle(this.synLinser)[0]
             },                  
             horselSamtal:                 shuffle(this.horselSamtal)[0],                  
