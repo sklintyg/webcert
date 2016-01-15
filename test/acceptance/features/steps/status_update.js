@@ -277,4 +277,12 @@ module.exports = function () {
             });
         });
     });
+
+    this.Given(/^när jag raderar intyget$/, function (callback) {
+        var fk7263Utkast = pages.intyg.fk['7263'].utkast;
+
+        fk7263Utkast.radera.knapp.click().then(function () {
+            fk7263Utkast.radera.bekrafta.click().then(callback);
+        });
+    });
 };

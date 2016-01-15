@@ -42,3 +42,17 @@ Scenario: Statusuppdateringar då intyg makuleras
    Så är intygets status "SIGNED"
    Och när jag makulerar intyget
    Så ska statusuppdatering "HAN5" skickas till vårdsystemet. Totalt: "1"
+
+Scenario: Statusuppdateringar då intyg raderas
+   Givet att jag är inloggad som läkare
+   Och jag går in på intygsutkastet via djupintegrationslänk
+   Så ska intygsutkastets status vara "Utkastet är sparat, men obligatoriska uppgifter saknas."
+   Och när jag fyller i fältet "Min undersökning av patienten"
+   Och när jag fyller i fältet "ICD-10"
+   Och när jag fyller i fältet "Funktionsnedsättning"
+   Och när jag fyller i fältet "Aktivitetsbegränsning"
+   Och när jag fyller i fältet "Arbete"
+   Och när jag fyller i fältet "Arbetsförmåga"
+   Så är intygets status "DRAFT_COMPLETE"
+   Och när jag raderar intyget
+   Så ska statusuppdatering "HAN4" skickas till vårdsystemet. Totalt: "1"
