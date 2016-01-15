@@ -256,7 +256,6 @@ module.exports = function () {
     });
 
     this.Given(/^när jag skickar intyget till Försäkringskassan$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
         var fkIntygPage = pages.intyg.fk['7263'].intyg;
         
         fkIntygPage.skicka.knapp.click().then(function () {
@@ -267,9 +266,15 @@ module.exports = function () {
     });
     
     this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function (arg1, arg2, callback) {
-        // Write code here that turns the phrase above into concrete actions
         assertDatabaseContents(global.intyg.id, arg1, arg2, callback);
     });
-    
 
+    this.Given(/^när jag makulerar intyget$/, function (callback) {
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+        fkIntygPage.makulera.btn.click().then(function () {
+            fkIntygPage.makulera.dialogAterta.click().then(function () {
+                fkIntygPage.makulera.kvittensOKBtn.click().then(callback);
+            });
+        });
+    });
 };
