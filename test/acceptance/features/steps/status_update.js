@@ -21,7 +21,7 @@
 
 'use strict';
 var soap = require('soap');
-
+var sleep = require('sleep');
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
@@ -65,6 +65,9 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
 function assertDraftWithStatus(personId, intygsId, status, callback) {
     var mysql = require('mysql');
 
+    console.log('Asserting status: ' + status);
+    sleep.sleep(5);
+    
     var connection = mysql.createConnection({
         host  :     process.env.DATABASE_HOST,
         user  :     process.env.DATABASE_USER,
@@ -81,28 +84,26 @@ function assertDraftWithStatus(personId, intygsId, status, callback) {
         databaseTable + '.STATUS="' + status + '" AND ' +
         databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
 
-    console.log('QUERY: ' + query);
+    console.log('QUERY STATUS: ' + query);
     
-    var correctStatus = false;
     connection.query(query,
                      function(err, rows, fields) {
-                         if (err) throw err;
+                         connection.end();
+                         if (err) { throw err; }
                          
-                         console.log('ROW0: ' + rows[0].Counter); 
                          if (rows[0].Counter !== 1) {
-                             throw new Error('Bad status on on draft');
+                             callback('Bad status on on draft: ' + rows[0].Counter);
+                         } else {
+                             callback();
                          }
                      });
-
-    connection.end();
-
-    callback();
 }
 
 function assertNumberOfEvents(intygsId, event, numEvents, callback) {
     var mysql = require('mysql');
 
     console.log('Asserting number of events: ' + event);
+    sleep.sleep(5);
     
     var connection = mysql.createConnection({
         host  :     process.env.DATABASE_HOST,
@@ -119,22 +120,20 @@ function assertNumberOfEvents(intygsId, event, numEvents, callback) {
         databaseTable + '.handelseKod = "' + event + '" AND ' +
         databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
 
-    console.log('QUERY: ' + query);
+    console.log('QUERY EVENTS: ' + query);
 
     connection.query(query,
                      function(err, rows, fields) {
-                         if (err) throw err;
-                         console.log(rows);
+                         connection.end();
+                         
+                         if (err) { throw err; }
+                         
                          if (rows[0].Counter !== numEvents) {
-                             console.log('Throwing error...');
-                             throw new Error('Bad number of events: ' + rows[0].Counter);
-                         } 
+                             callback('Bad number of ' + event + ' events: ' + rows[0].Counter + ' (' + numEvents + ')');
+                         } else {
+                             callback();
+                         }
                      });    
-
-
-    console.log('Asserting number of events done');
-    connection.end();
-    callback();
 }
 
 
@@ -157,7 +156,7 @@ module.exports = function () {
             
             client.CreateDraftCertificate(body, function(err, result, body) {
                 if (result.result.resultCode !== 'OK') {
-                    throw new Error('CreateDraftCertificate failed!');
+                    callback('CreateDraftCertificate failed!');
                 }
                 global.intyg.id = result['utlatande-id'].attributes.extension;
                 console.log('CreateDraftCertificate Utlåtande ID: ' + global.intyg.id);
@@ -189,11 +188,12 @@ module.exports = function () {
             fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
                 .then(function () {
                     console.log('Fyller i diagnoskod...');
-                    fk7263Utkast.diagnosKod.sendKeys('A000')
+                    fk7263Utkast.diagnosKod.sendKeys('A00');
                 })
                 .then(function () {
                     console.log('Verifierar antalet events...');
                     assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                    assertNumberOfEvents(global.intyg.id, 'HAN11', 1, callback);
                 });
         }
         else if (arg1 === 'Funktionsnedsättning') {
@@ -222,8 +222,12 @@ module.exports = function () {
                 .then(function () {
                     fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE)
                         .then(function () {
-                            console.log('Verifierar antalet events...');
+                            console.log('Verifierar antalet HAN1-events...');
                             assertNumberOfEvents(global.intyg.id, 'HAN1', 1, callback);
+                        })
+                        .then(function() {
+                            console.log('Verifierar antalet HAN11-events...');
+                            assertNumberOfEvents(global.intyg.id, 'HAN11', 2, callback);
                         });
                 });
         } else {

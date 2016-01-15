@@ -21,6 +21,6 @@ Scenario: Ta emot en statusuppdatering
    Och när jag fyller i fältet "Arbete"
    Så är intygets status "DRAFT_INCOMPLETE"
    Och när jag fyller i fältet "Arbetsförmåga"
-   Så är intygets status "DRAFT_INCOMPLETE"
+   Så är intygets status "DRAFT_COMPLETE"
    Och signerar intyget
    Så är intygets status "SIGNED"
