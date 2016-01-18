@@ -69,6 +69,10 @@
     var app = angular.module('webcert',
         ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll']);
 
+    app.value('networkConfig', {
+        defaultTimeout: 30000, // test: 1000
+    });
+
     app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider',
         function($httpProvider, http403ResponseInterceptorProvider, $logProvider) {
             // Add cache buster interceptor
