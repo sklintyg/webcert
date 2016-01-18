@@ -79,6 +79,14 @@ var Fk7263Intyg = BaseIntyg._extend({
     		text: panel.element(by.css('textarea')),
             sendButton: panel.element(by.css('.btn-success'))
         };
+
+        this.question = {
+            newQuestionButton: element(by.id('askQuestionBtn')),
+            text:              element(by.id('newQuestionText')),
+            topic:             element(by.id('new-question-topic')),
+            kontakt:           element(by.cssContainingText('option', 'Kontakt')),
+            sendButton:        element(by.id('sendQuestionBtn'))
+        };
         
     },
     get: function get(intygId) {
