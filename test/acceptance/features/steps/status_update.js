@@ -20,7 +20,6 @@
 /* global pages, browser, protractor, logg */
 
 'use strict';
-var soap = require('soap');
 var sleep = require('sleep');
 
 function stripTrailingSlash(str) {
@@ -61,6 +60,61 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
 
     return body;
 }
+
+function getQuestionBody(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
+    var body ='<urn:ReceiveMedicalCertificateQuestion ' +
+        'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' + 
+        'xmlns:add="http://www.w3.org/2005/08/addressing"  ' + 
+        'xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"  ' + 
+        'xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1"  ' + 
+        'xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2"         ' + 
+        '>' + 
+        '  <urn:Question>' + 
+        '    <urn:fkReferens-id>8e048a89</urn:fkReferens-id>' + 
+        '    <urn:amne>Ovrigt</urn:amne>' + 
+        '    <urn:fraga>' + 
+        '      <urn1:meddelandeText>Fråga RT simulerar FK</urn1:meddelandeText>' + 
+        '      <urn1:signeringsTidpunkt>2014-11-28T10:18:10</urn1:signeringsTidpunkt>' + 
+        '    </urn:fraga>' + 
+        '    <urn:avsantTidpunkt>2014-11-28T10:18:10</urn:avsantTidpunkt>' + 
+        '    <urn:fkKontaktInfo>' + 
+        '      <urn1:kontakt>NMT RT</urn1:kontakt>' + 
+        '    </urn:fkKontaktInfo>' + 
+        '    <urn:adressVard>' + 
+        '      <urn1:hosPersonal>' + 
+        '        <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + doctorHsa + '"/>' + 
+        '        <urn2:fullstandigtNamn>' + doctorName + '</urn2:fullstandigtNamn>' + 
+        '        <urn2:enhet>' + 
+        '          <urn2:enhets-id extension="' + unitHsa + '" root="1.2.752.129.2.1.4.1"/>' + 
+        '          <urn2:enhetsnamn>unitName</urn2:enhetsnamn>' + 
+        '          <urn2:vardgivare>' + 
+        '            <urn2:vardgivare-id extension="' + unitHsa + '" root="1.2.752.129.2.1.4.1"/>' + 
+        '            <urn2:vardgivarnamn>NMT</urn2:vardgivarnamn>' + 
+        '          </urn2:vardgivare>' + 
+        '        </urn2:enhet>' + 
+        '      </urn1:hosPersonal>' + 
+        '    </urn:adressVard>' + 
+        '    <urn:fkMeddelanderubrik>Avstämningsmöte</urn:fkMeddelanderubrik>' + 
+        '    <urn:fkKomplettering>' + 
+        '      <urn1:falt>Test</urn1:falt>' + 
+        '      <urn1:text>Testfråga</urn1:text>' + 
+        '    </urn:fkKomplettering>' + 
+        '    <urn:fkSistaDatumForSvar>2015-01-28</urn:fkSistaDatumForSvar>' + 
+        '    <urn:lakarutlatande>' + 
+        '      <urn1:lakarutlatande-id>' + intygsId + '</urn1:lakarutlatande-id>' + 
+        '      <urn1:signeringsTidpunkt>2014-11-28T10:18:10</urn1:signeringsTidpunkt>' + 
+        '      <urn1:patient>' + 
+        '        <urn2:person-id extension="' + personId + '" root="1.2.752.129.2.1.3.1"/>' + 
+        '        <urn2:fullstandigtNamn>Lars Persson</urn2:fullstandigtNamn>' + 
+        '      </urn1:patient>' + 
+        '    </urn:lakarutlatande>' + 
+        '  </urn:Question>' + 
+        '</urn:ReceiveMedicalCertificateQuestion>'; 
+
+    return body;
+}
+
+
 
 function assertDraftWithStatus(personId, intygsId, status, callback) {
     var mysql = require('mysql');
@@ -188,6 +242,8 @@ module.exports = function () {
         
         console.log('CreateDraftCertificate URL: ' + url);
         
+        var soap = require('soap');
+
         soap.createClient(url, function(err, client) {
             
             client.CreateDraftCertificate(body, function(err, result, body) {
@@ -205,6 +261,8 @@ module.exports = function () {
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function (callback) {
         // FIXME: Temporärt för att aktivera djupintegration...
         //var url = process.env.WEBCERT_URL + 'api/testability/userrole/ROLE_LAKARE_DJUPINTEGRERAD';
+
+        global.intyg.typ = 'Läkarintyg FK 7263';
         
         var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
 
@@ -227,15 +285,6 @@ module.exports = function () {
                     fk7263Utkast.diagnosKod.sendKeys('A00').then(callback);
                 });
         }
-        else if (arg1 === 'Funktionsnedsättning') {
-            fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt').then(callback);
-        }
-        else if (arg1 === 'Aktivitetsbegränsning') {
-            fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget').then(callback);
-        }
-        else if (arg1 === 'Arbete') {
-            fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
-        }
         else if (arg1 === 'Arbetsförmåga') {
             fk7263Utkast.faktiskTjanstgoring.sendKeys('40')
                 .then(function () {
@@ -246,6 +295,17 @@ module.exports = function () {
         }
     });
 
+    this.Given(/^när jag fyller i resten av de nödvändiga fälten\.$/, function (callback) {
+        var fk7263Utkast = pages.intyg.fk['7263'].utkast;
+        fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt').then(function () {
+            fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget').then(function () {
+                fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
+            });
+        });
+    });
+
+    
+    
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function (arg1, arg2,callback) {
         assertNumberOfEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
     });
@@ -285,4 +345,48 @@ module.exports = function () {
             fk7263Utkast.radera.bekrafta.click().then(callback);
         });
     });
+
+    this.Given(/^när jag svarar på frågan$/, function (callback) {
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+
+        fkIntygPage.answer.text.sendKeys('Ett litet svar.').then(function () {
+            fkIntygPage.answer.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
+        });
+    });
+    
+    this.Given(/^när Försäkringskassan ställer en fråga om intyget$/, function (callback) {
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-question/v1.0?wsdl';
+        url = url.replace('https', 'http');
+
+        global.person.id = '19121212-1212';
+
+        var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
+                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id);
+
+        console.log('ReceiveMedicalCertificateQuestion URL: ' + url);
+        
+        var soap = require('soap');
+
+        soap.createClient(url, function(err, client) {
+
+            if (err) {
+                callback(err);
+            }
+            
+            console.log('IN there. ID=' + global.intyg.id);
+
+            console.log(client.describe());
+            
+            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                console.log('Receiving...');
+                console.log(body);
+                console.log(result);
+                console.log(err);
+                callback();
+            });
+        });
+
+        console.log('Ya hoo');
+    });
+    
 };

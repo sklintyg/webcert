@@ -28,7 +28,10 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = function() {
 
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
-
+        if (!global.intyg.typ) {
+            callback('Intyg.typ odefinierad.');
+        }
+        
 
         if (intyg.typ === 'Transportstyrelsens läkarintyg') {
             global.intyg = testdata.getRandomTsBasIntyg();
