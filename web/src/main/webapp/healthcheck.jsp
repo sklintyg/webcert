@@ -2,7 +2,7 @@
 	session="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%--
-  ~ Copyright (C) 2015 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
