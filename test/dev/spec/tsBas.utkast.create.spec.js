@@ -29,7 +29,7 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var tsdBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 var tsdBasIntygPage = wcTestTools.pages.intyg.ts.bas.intyg;
 
-describe('Create and Sign ts-diabetes utkast', function() {
+describe('Create and Sign ts-bas utkast', function() {
 
     var utkast = null;
 
@@ -62,6 +62,10 @@ describe('Create and Sign ts-diabetes utkast', function() {
             synDubbel: 'Ja',
             synNystagmus: 'Ja',
             styrkor: wcTestTools.testdata.getRandomStyrka(),
+            linser: {
+                hoger: 'Ja',
+                vanster: 'Ja',
+            },
             horselYrsel: 'Ja',
             horselSamtal: 'Ja',
             rorOrgNedsattning: 'Ja',
