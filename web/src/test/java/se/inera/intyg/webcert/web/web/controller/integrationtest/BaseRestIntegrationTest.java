@@ -42,12 +42,7 @@ import com.jayway.restassured.response.Response;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
@@ -304,6 +299,16 @@ public abstract class BaseRestIntegrationTest {
             }
         });
         return fs;
+    }
+
+    /**
+     * Marks the intyg as sent
+     *
+     * @param intygId
+     *            the internal reference to the intyg to be marked
+     */
+    protected void sendIntyg(String intygId) {
+        given().pathParams("id", intygId).expect().statusCode(200).when().put("/testability/intyg/{id}/skickat");
     }
 
 }

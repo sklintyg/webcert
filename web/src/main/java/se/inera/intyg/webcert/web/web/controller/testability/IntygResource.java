@@ -23,6 +23,12 @@ import io.swagger.annotations.Api;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -31,6 +37,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.dto.Patient;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
 import javax.ws.rs.Consumes;
@@ -42,6 +49,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +62,9 @@ public class IntygResource {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private IntygServiceConverter intygServiceConverter;
 
     @DELETE
     @Path("/")
@@ -157,8 +170,6 @@ public class IntygResource {
         return Response.ok().build();
     }
 
-
-
     @PUT
     @Path("/{id}/skickat")
     @Produces(MediaType.APPLICATION_JSON)
@@ -189,6 +200,16 @@ public class IntygResource {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
+            Utlatande utlatande = intygServiceConverter.buildUtlatandeFromUtkastModel(utkast);
+            utlatande.getGrundData().setSigneringsdatum(LocalDateTime.now());
+            try {
+                CustomObjectMapper mapper = new CustomObjectMapper();
+                StringWriter writer = new StringWriter();
+                mapper.writeValue(writer, utlatande);
+                utkast.setModel(writer.toString());
+            } catch (IOException e) {
+                // This should not be empty
+            }
 
             if (utkast.getSignatur() == null) {
                 Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "");

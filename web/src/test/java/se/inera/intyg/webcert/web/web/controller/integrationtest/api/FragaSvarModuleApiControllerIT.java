@@ -5,11 +5,17 @@ import static com.jayway.restassured.RestAssured.sessionId;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import com.jayway.restassured.http.ContentType;
 
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
 
 public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
 
@@ -35,34 +41,92 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body("svarsText")
-                .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/besvara");
+                .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/besvara").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
 
         deleteQuestion(internId);
     }
 
-    // @Test
+    @Test
     public void testSetDispatchState() {
-        given().expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/hanterad");
+        sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+        int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+
+        DispatchState state = new DispatchState();
+        state.setDispatched(true);
+
+        given().contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body(state)
+                .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/hanterad").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+        deleteQuestion(internId);
     }
 
-    // @Test
+    @Test
     public void createQuestion() {
-        given().expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsTyp}/{intygsId}");
+        sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+
+        // We need to mark the question as sent otherwise we cannot create a question the legitimate way
+        sendIntyg(intygId);
+
+        CreateQuestionParameter param = new CreateQuestionParameter();
+        param.setAmne(Amne.OVRIGT);
+        param.setFrageText("Test");
+
+        int id = given().contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId).body(param)
+                .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"))
+                .extract().path("internReferens");
+        deleteQuestion(id);
     }
 
-    // @Test
+    @Test
     public void closeAsHandled() {
-        given().expect().statusCode(200).when().get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang");
+        sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+        int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+        given().pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).expect().statusCode(200).when()
+                .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+        deleteQuestion(internId);
     }
 
-    // @Test
+    @Test
     public void closeQAsAsHandled() {
-        given().expect().statusCode(200).when().put("moduleapi/fragasvar/stang");
+        sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+        int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Create the body of the request
+        ArrayList<QARequest> requests = new ArrayList<>();
+        QARequest request = new QARequest();
+        request.setFragaSvarId((long) internId);
+        request.setIntygsTyp(DEFAULT_INTYGSTYP);
+        requests.add(request);
+
+        given().contentType(ContentType.JSON).body(requests).expect().statusCode(200).when().put("moduleapi/fragasvar/stang").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-schema.json"))
+                .body("$", hasSize(requests.size()));
+        deleteQuestion(internId);
     }
 
     // @Test
     public void openAsUnhandled() {
-        given().expect().statusCode(200).when().get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/oppna");
+        sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+        int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Close the question
+        given().pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).expect().statusCode(200).when()
+                .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang");
+
+        // Open the question again
+        given().pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).expect().statusCode(200).when()
+                .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/oppna").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+
+        deleteQuestion(internId);
     }
 
 }

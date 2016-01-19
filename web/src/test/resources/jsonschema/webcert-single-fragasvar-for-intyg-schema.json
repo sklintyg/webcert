@@ -1,0 +1,168 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "internReferens": {
+      "type": "integer"
+    },
+    "amne": {
+      "type": "string",
+      "enum": [
+        "KOMPLETTERING_AV_LAKARINTYG",
+        "MAKULERING_AV_LAKARINTYG",
+        "AVSTAMNINGSMOTE",
+        "KONTAKT",
+        "ARBETSTIDSFORLAGGNING",
+        "PAMINNELSE",
+        "OVRIGT"
+      ]
+    },
+    "frageText": {
+      "type": "string"
+    },
+    "externaKontakter": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string"
+      }
+    },
+    "intygsReferens": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "intygsId": {
+          "type": "string"
+        },
+        "intygsTyp": {
+          "type": "string"
+        },
+        "patientId": {
+          "type": "string"
+        },
+        "patientNamn": {
+          "type": "string"
+        },
+        "signeringsDatum": {
+          "type": "string"
+        }
+      }
+    },
+    "kompletteringar": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "falt": {
+              "type": "string"
+          },
+          "text": {
+              "type": "string"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string"
+    },
+    "vidarebefordrad": {
+      "type": "boolean"
+    },
+    "senasteHandelse": {
+    "type": "string"
+      },
+    "senasteHandelseDatum": {
+      "type": "string"
+    },
+    "frageSkickadDatum": {
+      "type": "string"
+    },
+    "meddelandeRubrik": {
+      "type": "string"
+    },
+    "frageStallare": {
+      "type": "string"
+    },
+    "frageSigneringsDatum": {
+      "type": "string"
+    },
+    "vardAktorNamn": {
+      "type": "string"
+    },
+    "vardAktorHsaId": {
+      "type": "string"
+    },
+    "externReferens": {
+      "type": "string"
+    },
+    "svarsText": {
+      "type": "string"
+    },
+    "svarSigneringsDatum": {
+      "type": "string"
+    },
+    "svarSkickadDatum": {
+      "type": "string"
+    },
+    "vardperson": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hsaId": {
+          "type": "string"
+        },
+        "namn": {
+          "type": "string"
+        },
+        "forskrivarKod": {
+          "type": "string"
+        },
+        "enhetsId": {
+          "type": "string"
+        },
+        "arbetsplatsKod": {
+          "type": "string"
+        },
+        "enhetsnamn": {
+          "type": "string"
+        },
+        "postadress": {
+          "type": "string"
+        },
+        "postnummer": {
+          "type": "string"
+        },
+        "postort": {
+          "type": "string"
+        },
+        "telefonnummer": {
+          "type": "string"
+        },
+        "vardgivarId": {
+          "type": "string"
+        },
+        "vardgivarnamn": {
+          "type": "string"
+        },
+        "epost": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "hsaId",
+        "namn",
+        "enhetsId"
+      ]
+    }
+  },
+  "required": [
+    "internReferens",
+    "amne",
+    "frageText",
+    "intygsReferens",
+    "status",
+    "vidarebefordrad"
+  ]
+}

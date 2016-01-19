@@ -99,6 +99,15 @@
       "externReferens": {
         "type": "string"
       },
+      "svarsText": {
+        "type": "string"
+      },
+      "svarSigneringsDatum": {
+        "type": "string"
+      },
+      "svarSkickadDatum": {
+        "type": "string"
+      },
       "vardperson": {
         "type": "object",
         "additionalProperties": false,
