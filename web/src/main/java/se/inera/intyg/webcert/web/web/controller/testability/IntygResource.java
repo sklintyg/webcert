@@ -19,46 +19,36 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import io.swagger.annotations.Api;
-import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
 @Path("/intyg")
 public class IntygResource {
+
+    public static final Logger LOG = LoggerFactory.getLogger(IntygResource.class);
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -208,7 +198,7 @@ public class IntygResource {
                 mapper.writeValue(writer, utlatande);
                 utkast.setModel(writer.toString());
             } catch (IOException e) {
-                // This should not be empty
+                LOG.error("Could not update the model of the utkast. Failed with message ", e.getMessage());
             }
 
             if (utkast.getSignatur() == null) {
