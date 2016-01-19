@@ -190,19 +190,19 @@ var FkUtkast = BaseUtkast._extend({
         if(!intygetBaserasPa){ return false; }
 
         if(intygetBaserasPa.minUndersokning){
-            this.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE);
+            // this.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE);
             this.baserasPa.minUndersokning.datum.sendKeys(intygetBaserasPa.minUndersokning.datum);
         }
         if(intygetBaserasPa.minTelefonkontakt){
-            this.baserasPa.minTelefonkontakt.checkbox.sendKeys(protractor.Key.SPACE);
+            // this.baserasPa.minTelefonkontakt.checkbox.sendKeys(protractor.Key.SPACE);
             this.baserasPa.minTelefonkontakt.datum.sendKeys(intygetBaserasPa.minTelefonkontakt.datum);
         }
         if(intygetBaserasPa.journaluppgifter){
-            this.baserasPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
+            // this.baserasPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
             this.baserasPa.journaluppgifter.datum.sendKeys(intygetBaserasPa.journaluppgifter.datum);
         }
         if(intygetBaserasPa.annat){
-            this.baserasPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
+            // this.baserasPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
             this.baserasPa.annat.datum.sendKeys(intygetBaserasPa.annat.datum);
             this.baserasPa.annat.text.sendKeys(intygetBaserasPa.annat.text);
         }
@@ -250,7 +250,7 @@ var FkUtkast = BaseUtkast._extend({
         if(prognos.val === 'Ja'){this.prognos.JA.sendKeys(protractor.Key.SPACE);}
         else if(prognos.val === 'Ja, delvis'){this.prognos.JA_DELVIS.sendKeys(protractor.Key.SPACE);}
         else if(prognos.val === 'Nej'){this.prognos.NEJ.sendKeys(protractor.Key.SPACE);}
-        else if(prognos.val ==='Går ej att bedöma'){
+        else if(prognos.val ==='Går inte att bedöma'){
             this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE);
             if(prognos.fortydligande){
                 this.prognos.fortydligande.sendKeys(prognos.fortydligande);

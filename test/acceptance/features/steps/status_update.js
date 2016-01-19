@@ -20,6 +20,7 @@
 /* global pages, browser, protractor, logg */
 
 'use strict';
+var soap = require('soap');
 var sleep = require('sleep');
 
 function stripTrailingSlash(str) {

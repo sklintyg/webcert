@@ -42,7 +42,10 @@ var Fk7263Intyg = BaseIntyg._extend({
         	sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
         };
         this.field4 = {
-        	funktionsnedsattning : element(by.id('funktionsnedsattning'))
+            funktionsnedsattning : element(by.id('funktionsnedsattning'))
+        };
+        this.field4b = {
+        	undersokningAvPatienten : element(by.id('undersokningAvPatienten'))
         };
         this.field5 = {
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
@@ -57,6 +60,25 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         this.field7 = {
             text: element(by.id('field7')).element(by.css('.text'))
+        };
+
+        this.field8b = {
+            nedsat25 : {
+                from: element(by.id('nedsattMed25from')),
+                tom: element(by.id('nedsattMed25tom'))
+            },
+            nedsat50 : {
+                from: element(by.id('nedsattMed50from')),
+                tom: element(by.id('nedsattMed50tom'))
+            },
+            nedsat75 : {
+                from: element(by.id('nedsattMed75from')),
+                tom: element(by.id('nedsattMed75tom'))
+            },
+            nedsat100 : {
+                from: element(by.id('nedsattMed100from')),
+                tom: element(by.id('nedsattMed100tom'))
+            }
         };
 
         this.field10 = {
@@ -75,6 +97,16 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
 
         var panel = element(by.css('.qa-panel'));
+        this.FMBprognos = element(by.id('arbetsformagaPrognos'));
+
+        this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
+
+        this.prognosGIAB = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
+        this.prognosN = element(by.id('arbetsformataPrognosNej'));
+        this.prognosJD = element(by.id('arbetsformataPrognosJaDelvis'));
+        this.prognosJ = element(by.id('arbetsformataPrognosJa'));
+        this.prognosFortyd = element(by.id('arbetsformagaPrognosGarInteAttBedomaBeskrivning'));
+        this.forsKod = element(by.id('forskrivarkodOchArbetsplatskod'));
         this.answer = {
     		text: panel.element(by.css('textarea')),
             sendButton: panel.element(by.css('.btn-success'))

@@ -133,7 +133,7 @@ var random = {
         };
     },
     prognos:function(){
-        var val =  shuffle(['Ja','Ja, delvis','Nej','Går ej att bedöma'])[0];
+        var val =  shuffle(['Ja','Ja, delvis','Nej','Går inte att bedöma'])[0];
         return {
                     val: val,
                     fortydligande: randomPrognosFortydligande(val)
