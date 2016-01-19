@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Webcert Error Rest api response model",
+  "type": "object",
+  "properties": {
+    "errorCode": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "errorCode",
+    "message"
+  ]
+}

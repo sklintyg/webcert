@@ -1,73 +1,71 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://jsonschema.net",
+  "title": "Webcert Stat lookup Rest api response model",
   "type": "object",
   "properties": {
     "fragaSvarValdEnhet": {
-      "id": "http://jsonschema.net/fragaSvarValdEnhet",
       "type": "integer"
     },
     "fragaSvarAndraEnheter": {
-      "id": "http://jsonschema.net/fragaSvarAndraEnheter",
       "type": "integer"
     },
     "intygAndraEnheter": {
-      "id": "http://jsonschema.net/intygAndraEnheter",
       "type": "integer"
     },
     "intygValdEnhet": {
-      "id": "http://jsonschema.net/intygValdEnhet",
       "type": "integer"
     },
     "vardgivare": {
-      "id": "http://jsonschema.net/vardgivare",
       "type": "array",
-      "items": [
-        {
-          "id": "http://jsonschema.net/vardgivare/0",
+      "minItems": 0,
+      "uniqueItems": true,
+      "additionalItems": true,
+      "items": {
           "type": "object",
           "properties": {
             "namn": {
-              "id": "http://jsonschema.net/vardgivare/0/namn",
               "type": "string"
             },
             "id": {
-              "id": "http://jsonschema.net/vardgivare/0/id",
               "type": "string"
             },
             "vardenheter": {
-              "id": "http://jsonschema.net/vardgivare/0/vardenheter",
               "type": "array",
+              "uniqueItems": true,
+              "additionalItems": true,
               "items": {
-                "id": "http://jsonschema.net/vardgivare/0/vardenheter/0",
                 "type": "object",
                 "properties": {
                   "namn": {
-                    "id": "http://jsonschema.net/vardgivare/0/vardenheter/0/namn",
                     "type": "string"
                   },
                   "id": {
-                    "id": "http://jsonschema.net/vardgivare/0/vardenheter/0/id",
                     "type": "string"
                   },
                   "fragaSvar": {
-                    "id": "http://jsonschema.net/vardgivare/0/vardenheter/0/fragaSvar",
                     "type": "integer"
                   },
                   "intyg": {
-                    "id": "http://jsonschema.net/vardgivare/0/vardenheter/0/intyg",
                     "type": "integer"
                   }
                 },
-                "additionalProperties": false
-              },
-              "additionalItems": true
+                "additionalProperties": false,
+                "required": [
+                  "namn",
+                  "id",
+                  "fragaSvar",
+                  "intyg"
+                ]
+              }
             }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "required": [
+            "namn",
+            "id",
+            "vardenheter"
+          ]
         }
-      ],
-      "additionalItems": true
     }
   },
   "additionalProperties": false,

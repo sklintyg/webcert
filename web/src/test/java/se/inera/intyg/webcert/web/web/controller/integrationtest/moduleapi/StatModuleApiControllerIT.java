@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Inera AB (http://www.inera.se)
+ * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,23 +20,19 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import org.junit.Test;
-import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
- * Basic test suite that verifies that the endpoint (/moduleapi/stat) is available and repond according to specification.
+ * Basic test suite that verifies that the endpoint (/moduleapi/stat) is available and repond according to
+ * specification.
  *
  * Created by marhes on 15/01/16.
  */
 public class StatModuleApiControllerIT extends BaseRestIntegrationTest {
-
 
     @Test
     public void testGetStatisticsNotLoggedIn() {

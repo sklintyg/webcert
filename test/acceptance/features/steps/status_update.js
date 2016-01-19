@@ -354,6 +354,21 @@ module.exports = function () {
             fkIntygPage.answer.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
         });
     });
+
+    this.Given(/^när jag fyller i en ny fråga till Försäkringskassan$/, function (callback) {
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+
+        fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE).then(function () {
+            fkIntygPage.question.text.sendKeys('En liten fråga...').then(function () {
+                fkIntygPage.question.kontakt.click().then(callback);
+            });
+        });
+    });
+    
+    this.Given(/^sedan klickar på skicka$/, function (callback) {
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
+    });
     
     this.Given(/^när Försäkringskassan ställer en fråga om intyget$/, function (callback) {
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-question/v1.0?wsdl';
@@ -379,15 +394,9 @@ module.exports = function () {
             console.log(client.describe());
             
             client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                console.log('Receiving...');
-                console.log(body);
-                console.log(result);
-                console.log(err);
                 callback();
             });
         });
-
-        console.log('Ya hoo');
     });
     
 };

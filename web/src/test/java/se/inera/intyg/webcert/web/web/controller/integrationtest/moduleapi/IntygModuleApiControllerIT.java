@@ -1,27 +1,21 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -38,7 +32,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp);
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().expect().statusCode(200)
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
@@ -54,7 +48,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "ts-bas";
-        String intygsId = createUtkast(intygsTyp);
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().expect().statusCode(200)
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
@@ -70,7 +64,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "ts-diabetes";
-        String intygsId = createUtkast(intygsTyp);
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().expect().statusCode(200)
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
@@ -101,7 +95,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp);
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         signeraUtkastWithTestbarhetsApi(intygsId);
 
         SendSignedIntygParameter sendParam = new SendSignedIntygParameter();
@@ -119,7 +113,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp);
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         signeraUtkastWithTestbarhetsApi(intygsId);
 
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
@@ -136,7 +130,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp);
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         signeraUtkastWithTestbarhetsApi(intygsId);
 
         // Change role to admin - which does not have sign privilege..
@@ -152,24 +146,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("message", not(isEmptyString()));
 
         deleteUtkast(intygsId);
-    }
-
-    private String createUtkast(String utkastType) {
-
-        CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
-
-        Response response = given().contentType(ContentType.JSON).body(utkastRequest).expect().statusCode(200).when().post("api/utkast/fk7263").
-                then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json")).
-                extract().response();
-
-        // The type-specific model is a serialized json "within" the model property, need to extract that first and then
-        // we can assert some basic things.
-        JsonPath draft = new JsonPath(response.body().asString());
-        JsonPath model = new JsonPath(draft.getString("model"));
-
-        assertNotNull(model.getString("id"));
-        return model.getString("id");
     }
 
     private void signeraUtkastWithTestbarhetsApi(String intygsId) {
