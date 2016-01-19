@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Webcert Signatur Ticket response model",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "intygsId": {
+      "type": "string"
+    },
+    "hash": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "status",
+    "intygsId",
+    "hash",
+    "version"
+  ]
+}
