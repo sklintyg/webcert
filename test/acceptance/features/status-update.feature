@@ -89,10 +89,10 @@ Scenario: Statusuppdateringar med fråga till FK
    Givet att jag är inloggad som läkare
    Och jag går in på intygsutkastet via djupintegrationslänk
    Så ska intygsutkastets status vara "Utkastet är sparat, men obligatoriska uppgifter saknas."
+
    Och när jag fyller i fältet "Min undersökning av patienten"
    Och när jag fyller i fältet "ICD-10"
    Och när jag fyller i fältet "Arbetsförmåga"
-
    Och när jag fyller i resten av de nödvändiga fälten.
    Så är intygets status "DRAFT_COMPLETE"
 
@@ -107,4 +107,9 @@ Scenario: Statusuppdateringar med fråga till FK
    Och sedan klickar på skicka
    Så ska statusuppdatering "HAN8" skickas till vårdsystemet. Totalt: "1"
 
+   Och när Försäkringskassan skickar ett svar
+   Så ska statusuppdatering "HAN7" skickas till vårdsystemet. Totalt: "1"
+   
+   Och när jag markerar frågan som hanterad
+   Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    

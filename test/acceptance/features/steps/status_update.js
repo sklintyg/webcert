@@ -30,10 +30,6 @@ function stripTrailingSlash(str) {
     return str;
 }
 
-function stringStartWith (string, prefix) {
-    return string.slice(0, prefix.length) === prefix;
-}
-
 function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
     var body = '<urn1:CreateDraftCertificate ' +
         'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" ' +
@@ -115,104 +111,103 @@ function getQuestionBody(personId, doctorHsa, doctorName, unitHsa, unitName, int
     return body;
 }
 
+function getAnswerBody(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId, fragaId) {
+    var body = '<urn:ReceiveMedicalCertificateAnswer' +
+        '    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' +
+        '    xmlns:add="http://www.w3.org/2005/08/addressing"' +
+        '    xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1"' +
+        '    xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1"' +
+        '    xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">' +
+        '  <urn:Answer>' +
+        '    <urn:vardReferens-id>' + fragaId + '</urn:vardReferens-id>' +
+        '    <urn:fkReferens-id>626251</urn:fkReferens-id>' +
+        '    <urn:amne>Arbetstidsforlaggning</urn:amne>' +
+        '    <urn:fraga>' +
+        '      <urn1:meddelandeText>Fråga TF 1.5</urn1:meddelandeText>' +
+        '      <urn1:signeringsTidpunkt>2015-08-28T09:05:21</urn1:signeringsTidpunkt>' +
+        '    </urn:fraga>' +
+        '    <urn:svar>' +
+        '      <urn1:meddelandeText>Här kommer ett svar!, tf1.5</urn1:meddelandeText>' +
+        '      <urn1:signeringsTidpunkt>2015-08-28T09:05:21</urn1:signeringsTidpunkt>' +
+        '    </urn:svar>' +
+        '    <urn:avsantTidpunkt>2015-08-28T09:05:21</urn:avsantTidpunkt>' +
+        '    <urn:fkKontaktInfo>' +
+        '      <urn1:kontakt>Sim FK-kontaktinfo Anton (NMT)</urn1:kontakt>' +
+        '    </urn:fkKontaktInfo>' +
+        '    <urn:adressVard>' +
+        '      <urn1:hosPersonal>' +
+        '        <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + doctorHsa + '"/>' +
+        '        <urn2:fullstandigtNamn>' + doctorName + '</urn2:fullstandigtNamn>' +
+        '        <urn2:enhet>' +
+        '          <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="' + unitHsa + '"/>' +
+        '          <urn2:enhetsnamn>' + unitName + '</urn2:enhetsnamn>' +
+        '          <urn2:vardgivare>' +
+        '            <urn2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="' + unitHsa + '"/>' +
+        '            <urn2:vardgivarnamn>Norrbottens läns landsting - NPÖ</urn2:vardgivarnamn>' +
+        '          </urn2:vardgivare>' +
+        '        </urn2:enhet>' +
+        '      </urn1:hosPersonal>' +
+        '    </urn:adressVard>' +
+        '    <urn:lakarutlatande>' +
+        '      <urn1:lakarutlatande-id>' + intygsId + '</urn1:lakarutlatande-id>' +
+        '      <urn1:signeringsTidpunkt>2015-08-28T09:05:21</urn1:signeringsTidpunkt>' +
+        '      <urn1:patient>' +
+        '        <urn2:person-id root="1.2.752.129.2.1.3.1" extension="' + personId + '"/>' +
+        '        <urn2:fullstandigtNamn>Lars Persson</urn2:fullstandigtNamn>' +
+        '      </urn1:patient>' +
+        '    </urn:lakarutlatande>' +
+        '  </urn:Answer>' +
+        '</urn:ReceiveMedicalCertificateAnswer>';
+    return body;
+}
 
+function establishDbConnection() {
+    var mysql = require('mysql');
+    return mysql.createConnection({host  :     process.env.DATABASE_HOST,
+                                   user  :     process.env.DATABASE_USER,
+                                   password  : 'b4pelsin',
+                                   database  : process.env.DATABASE_NAME });
+}
 
 function assertDraftWithStatus(personId, intygsId, status, callback) {
-    var mysql = require('mysql');
-
-    console.log('Asserting status: ' + status);
     sleep.sleep(5);
     
-    var connection = mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : 'b4pelsin',
-        database  : process.env.DATABASE_NAME
-    });
-
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-    
-    connection.connect();
-
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
         databaseTable + '.STATUS="' + status + '" AND ' +
         databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
 
-    console.log('QUERY STATUS: ' + query);
-    
-    connection.query(query,
-                     function(err, rows, fields) {
-                         connection.end();
-                         if (err) { throw err; }
-                         
-                         if (rows[0].Counter !== 1) {
-                             callback('Bad status on on draft: ' + rows[0].Counter);
-                         } else {
-                             callback();
-                         }
-                     });
+    assertNumberOfEvents(query, 1, callback);
 }
 
 function assertDatabaseContents(intygsId, column, value, callback) {
-    var mysql = require('mysql');
-
-    console.log('Asserting contents');
     sleep.sleep(10);
     
-    var connection = mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : 'b4pelsin',
-        database  : process.env.DATABASE_NAME
-    });
-
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-    
-    connection.connect();
-
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
         databaseTable + '.' + column + '="' + value + '";';
 
-    console.log('QUERY: ' + query);
-    
-    connection.query(query,
-                     function(err, rows, fields) {
-                         connection.end();
-                         if (err) { throw err; }
-                         
-                         if (rows[0].Counter !== 1) {
-                             callback('Incorrect value of column: ' + column);
-                         } else {
-                             callback();
-                         }
-                     });
+    assertNumberOfEvents(query, 1, callback);
 }
 
-function assertNumberOfEvents(intygsId, event, numEvents, callback) {
-    var mysql = require('mysql');
-
-    console.log('Asserting number of events: ' + event);
+function assertEvents(intygsId, event, numEvents, callback) {
     sleep.sleep(5);
     
-    var connection = mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : 'b4pelsin',
-        database  : process.env.DATABASE_NAME
-    });
-
     var databaseTable = 'webcert_requests.requests';
-    
-    connection.connect();
-
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.handelseKod = "' + event + '" AND ' +
         databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
 
-    console.log('QUERY EVENTS: ' + query);
+    assertNumberOfEvents(query, numEvents, callback);
+}
 
+function assertNumberOfEvents(query, numEvents, callback) {
+    console.log('Assert number of events. Query: ' + query);
+
+    var connection = establishDbConnection();
+    connection.connect();
     connection.query(query,
                      function(err, rows, fields) {
                          connection.end();
@@ -220,7 +215,7 @@ function assertNumberOfEvents(intygsId, event, numEvents, callback) {
                          if (err) { throw err; }
                          
                          if (rows[0].Counter !== numEvents) {
-                             callback('Bad number of ' + event + ' events: ' + rows[0].Counter + ' (' + numEvents + ')');
+                             callback('Incorrect number of events: ' + rows[0].Counter + ' (' + numEvents + ')');
                          } else {
                              callback();
                          }
@@ -231,8 +226,6 @@ function assertNumberOfEvents(intygsId, event, numEvents, callback) {
 module.exports = function () {
 
     this.Given(/^att vårdsystemet skickat ett intygsutkast$/, function (callback) {
-        // Write code here that turns the phrase above into concrete actions
-
         global.person.id = '19121212-1212';
         
         var body = getDraftBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
@@ -240,9 +233,7 @@ module.exports = function () {
 
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/create-draft-certificate/v1.0?wsdl';
         url = url.replace('https', 'http');
-        
-        console.log('CreateDraftCertificate URL: ' + url);
-        
+               
         var soap = require('soap');
 
         soap.createClient(url, function(err, client) {
@@ -252,7 +243,6 @@ module.exports = function () {
                     callback('CreateDraftCertificate failed!');
                 }
                 global.intyg.id = result['utlatande-id'].attributes.extension;
-                console.log('CreateDraftCertificate Utlåtande ID: ' + global.intyg.id);
             });
         });
         
@@ -260,14 +250,10 @@ module.exports = function () {
     });
     
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function (callback) {
-        // FIXME: Temporärt för att aktivera djupintegration...
-        //var url = process.env.WEBCERT_URL + 'api/testability/userrole/ROLE_LAKARE_DJUPINTEGRERAD';
-
         global.intyg.typ = 'Läkarintyg FK 7263';
         
         var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
 
-        console.log('Loggar in som djupintegrerad: ' + url);
         browser.get(url).then(callback);
     });
 
@@ -279,10 +265,8 @@ module.exports = function () {
         var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 
         if (arg1 === 'Min undersökning av patienten') {
-            console.log('Fyller i min undersökning av patienten...');
             fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
                 .then(function () {
-                    console.log('Fyller i diagnoskod...');
                     fk7263Utkast.diagnosKod.sendKeys('A00').then(callback);
                 });
         }
@@ -305,10 +289,8 @@ module.exports = function () {
         });
     });
 
-    
-    
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function (arg1, arg2,callback) {
-        assertNumberOfEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
+        assertEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
     });
 
 
@@ -367,7 +349,16 @@ module.exports = function () {
     
     this.Given(/^sedan klickar på skicka$/, function (callback) {
         var fkIntygPage = pages.intyg.fk['7263'].intyg;
-        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
+        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function () {
+             element(by.css('.qa-panel')).getAttribute('id').then(function (result) {
+                 global.intyg.fragaId = result.split('-')[1];
+                 callback();
+            });
+        });
+    });
+
+    this.Given(/^när jag markerar frågan som hanterad$/, function (callback) {
+        element(by.id('markAsHandledWcOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
     });
     
     this.Given(/^när Försäkringskassan ställer en fråga om intyget$/, function (callback) {
@@ -379,19 +370,12 @@ module.exports = function () {
         var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
                                    'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id);
 
-        console.log('ReceiveMedicalCertificateQuestion URL: ' + url);
-        
         var soap = require('soap');
 
         soap.createClient(url, function(err, client) {
-
             if (err) {
                 callback(err);
             }
-            
-            console.log('IN there. ID=' + global.intyg.id);
-
-            console.log(client.describe());
             
             client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
                 callback();
@@ -399,4 +383,25 @@ module.exports = function () {
         });
     });
     
+    this.Given(/^när Försäkringskassan skickar ett svar$/, function (callback) {
+        var soap = require('soap');
+
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-answer/v1.0?wsdl';
+        url = url.replace('https', 'http');
+        
+        soap.createClient(url, function(err, client) {
+
+            if (err) {
+                callback(err);
+            }
+            
+            var body = getAnswerBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
+                                     'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id,
+                                     global.intyg.fragaId);
+            
+            client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+                callback();
+            });
+        });
+    });
 };
