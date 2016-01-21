@@ -171,7 +171,14 @@ function establishDbConnection() {
 
 function assertDraftWithStatus(personId, intygsId, status, callback) {
     sleep.sleep(5);
-    
+
+    var connection = mysql.createConnection({
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : process.env.DATABASE_PASSWORD, //'b4pelsin',
+        database  : process.env.DATABASE_NAME
+    });
+
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
@@ -183,7 +190,14 @@ function assertDraftWithStatus(personId, intygsId, status, callback) {
 
 function assertDatabaseContents(intygsId, column, value, callback) {
     sleep.sleep(10);
-    
+
+    var connection = mysql.createConnection({
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : process.env.DATABASE_PASSWORD, //'b4pelsin',
+        database  : process.env.DATABASE_NAME
+    });
+
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
@@ -194,7 +208,14 @@ function assertDatabaseContents(intygsId, column, value, callback) {
 
 function assertEvents(intygsId, event, numEvents, callback) {
     sleep.sleep(5);
-    
+
+    var connection = mysql.createConnection({
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : process.env.DATABASE_PASSWORD, //'b4pelsin',
+        database  : process.env.DATABASE_NAME
+    });
+
     var databaseTable = 'webcert_requests.requests';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.handelseKod = "' + event + '" AND ' +

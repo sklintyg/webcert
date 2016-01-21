@@ -256,7 +256,6 @@ module.exports ={
 
     // fält 10
     if (!smitta) {
-        // if(intyg.prognos.val === 'Ja'){
             expect(intygPage.prognosJ.getText()).to.eventually.equal(intyg.prognos.val).then(
                 function(value) {
                 logg('OK - Arbetsformåga prognos = ' +value);
@@ -272,48 +271,13 @@ module.exports ={
                 });
             }
         }
-        // }
-        // else if(intyg.prognos.val === 'Ja, delvis'){
-        //     expect(intygPage.prognosJD.getText()).to.eventually.equal(intyg.prognos.val).then(
-        //         function(value) {
-        //         logg('OK - Arbetsformåga prognos (JA, DELVIS) = ' +value);
-        //     }, function(reason) {
-        //         callback('FEL, Arbetsformåga prognos (JA, DELVIS), ' + reason);
-        //     });
-        // }
-        // else if(intyg.prognos.val === 'Nej'){
-        //     expect(intygPage.prognosN.getText()).to.eventually.equal(intyg.prognos.val).then(
-        //         function(value) {
-        //         logg('OK - Arbetsformåga prognos (NEJ) = ' +value);
-        //     }, function(reason) {
-        //         callback('FEL, Arbetsformåga prognos (NEJ), ' + reason);
-        //     });
-        // }
-        // else if(intyg.prognos.val ==='Går ej att bedöma'){
-        //     expect(intygPage.prognosGIAB.getText()).to.eventually.equal(intyg.prognos.val).then(
-        //         function(value) {
-        //         logg('OK - Arbetsformåga prognos (GÅR EJ) = ' +value);
-        //     }, function(reason) {
-        //         callback('FEL, Arbetsformåga prognos (GÅR EJ), ' + reason);
-        //     });
-    // }
-
-
 
     // Kontrollera FÄLT 11 : Resa till arbete med annat färdsätt
     expect(intygPage.field11.text.getText()).to.eventually.contain(boolTillJaNej(intyg.rekommendationer.resor)).then(function(value) {
         logg('OK - Resor till arbete med annat färdsätt = ' + value);
     }, function(reason) {
         callback('FEL, Resor till arbete med annat färdsätt,' + reason);
-    }).then(callback);
-
-    // // Kontrollera FÄLT 10 : Prognos
-    // expect(intygPage.field10.text.getText()).to.eventually.equal(intyg.prognos.val).then(function(value) {
-    //     logg('OK - Prognos = ' +value);
-    // }, function(reason) {
-    //     callback('FEL, Prognos,' + reason);
-    // });
-
+    });
 
     // Kontrollera FÄLT 12 : Kontakt önskas med FK
     var kontaktOnskas = boolTillJaNej(intyg.kontaktOnskasMedFK);
@@ -324,14 +288,16 @@ module.exports ={
     });
 
     // TBI!
-    // expect(intygPage.forsKod.getText()).not.equal(' ').then(function(value) {
-    //     logg('OK - Forskrivarkod = ' +value);
-    // }, function(reason) {
-    //     callback('FEL, Forskrivarkod,' + reason);
-    // });
+    expect(intygPage.forsKod.getText()).to.eventually.equal('0000000 - 1234567890123').then(function(value) {
+        logg('OK - Forskrivarkod = ' +value);
+    }, function(reason) {
+        callback('FEL, Forskrivarkod,' + reason);
+    });
 
     //Kontrollera FÄLT13 : Övriga upplysningar
-    expect(intygPage.field13.kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).then(function(value) {
+
+    var kommentar = element(by.id('kommentar'));
+    expect(kommentar.getText()).to.eventually.contain(intyg.baserasPa.annat.text).then(function(value) {
         logg('OK - Övrig kommentar = ' +value);
     }, function(reason) {
         callback('FEL, Övrig kommentar,' + reason);
