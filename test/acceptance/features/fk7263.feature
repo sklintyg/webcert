@@ -35,3 +35,10 @@ Scenario: Makulera ett skickat intyg
 
 	När jag går till Mina intyg för patienten "19971019-2387"
 	Så ska intygets status i Mina intyg visa "Makulerat"
+
+Scenario: Kopiera ett signerat intyg
+	När jag väljer patienten "19971019-2387"
+    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+	Och jag kopierar intyget
+	Och signerar intyget
+    Så ska intygets status vara "Intyget är signerat"	

@@ -119,7 +119,12 @@ var Fk7263Intyg = BaseIntyg._extend({
             kontakt:           element(by.cssContainingText('option', 'Kontakt')),
             sendButton:        element(by.id('sendQuestionBtn'))
         };
-        
+
+        this.copy = {
+            copyButton: element(by.id('copyBtn')),
+            copyButtonDialog: element(by.id('button1copy-dialog'))
+        };
+            
     },
     get: function get(intygId) {
         get._super.call(this, intygId);

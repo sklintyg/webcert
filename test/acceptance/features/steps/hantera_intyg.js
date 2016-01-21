@@ -43,4 +43,14 @@ module.exports = function () {
         fkIntygPage.makulera.kvittensOKBtn.click()
         .then(callback);
     });
+
+	this.Given(/^jag kopierar intyget$/, function (callback) {
+        // Klicka på 'visa vad som saknas' innan signering för att underlätta felsökning
+        // var EC = protractor.ExpectedConditions;
+        // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000).then(callback);
+        fkIntygPage.copy.copyButton.sendKeys(protractor.Key.SPACE).then(function () {
+            fkIntygPage.copy.copyButtonDialog.sendKeys(protractor.Key.SPACE).then(callback);
+        });
+    });
+
 };
