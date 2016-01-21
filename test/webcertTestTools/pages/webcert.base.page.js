@@ -31,10 +31,11 @@ var Class = require('jclass');
 var WebcertBasePage = Class._extend({
     init: function() {
         this.doctor = element(by.css('.logged-in'));
+        this.header = element(by.id('wcHeader'));
     },
     getDoctorText: function () {
         return this.doctor.getText();
-    },
+    }
 });
 
 module.exports = WebcertBasePage;

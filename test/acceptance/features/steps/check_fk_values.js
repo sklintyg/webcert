@@ -37,27 +37,6 @@ function boolTillJaNej(val){
 
 module.exports ={
 	checkFKValues:function(intyg, callback){
-
-	// var ejAngivet = 'Ej angivet'; 
-    //     var field2 = element(by.xpath('//*[@id=\"field2\"]/span/span[1]/span'));
-    //     var certificateDiv3 = element(by.xpath('//*[@id=\"certificate\"]/div/div/div/div[3]/span/span[1]/span'));
-    //     var field4b = element(by.xpath('//*[@id=\"field4b\"]/span/span[1]/span'));
-    //     var certificateDiv6 = element(by.xpath('//*[@id=\"certificate\"]/div/div/div/div[6]/span/span[1]/span'));
-    //     var field6a = element(by.xpath('//*[@id=\"field6a\"]/span/span[1]/span'));
-    //     var field6b = element(by.xpath('//*[@id=\"field6b\"]/span/span[1]/span'));
-    //     var field7 = element(by.xpath('//*[@id=\"field7\"]/span/span[1]/span'));
-    //     var field8 = element(by.xpath('//*[@id=\"field8\"]/span/span[1]/span'));
-
-    //     expect(field2.getText()).to.eventually.equal(ejAngivet);
-    //     expect(certificateDiv3.getText()).to.eventually.equal(ejAngivet);
-    //     expect(field4b.getText()).to.eventually.equal(ejAngivet);
-    //     expect(certificateDiv6.getText()).to.eventually.equal(ejAngivet);
-    //     expect(field6a.getText()).to.eventually.equal(ejAngivet);
-    //     expect(field6b.getText()).to.eventually.equal(ejAngivet);
-    //     expect(field7.getText()).to.eventually.equal(ejAngivet);
-    //     expect(field8.getText()).to.eventually.equal(ejAngivet);
-            
-
     // Kontrollera FÄLT 1 : Smittskydd
     var smitta = boolTillJaNej(intyg.smittskydd);
     expect(intygPage.field1.text.getText()).to.eventually.equal(smitta).then(function(value) {
@@ -352,8 +331,7 @@ module.exports ={
     // });
 
     //Kontrollera FÄLT13 : Övriga upplysningar
-    var kommentar = element(by.id('kommentar'));
-    expect(kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).then(function(value) {
+    expect(intygPage.field13.kommentar.getText()).to.eventually.contain(intyg.prognos.fortydligande).then(function(value) {
         logg('OK - Övrig kommentar = ' +value);
     }, function(reason) {
         callback('FEL, Övrig kommentar,' + reason);

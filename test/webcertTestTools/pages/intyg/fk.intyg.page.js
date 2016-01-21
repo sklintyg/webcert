@@ -96,6 +96,10 @@ var Fk7263Intyg = BaseIntyg._extend({
     		text: element(by.id('field12')).element(by.css('.text'))
         };
 
+        this.field13 = {
+            kommentar: element(by.id('field13')).element(by.id('kommentar'))
+        };
+
         var panel = element(by.css('.qa-panel'));
         this.FMBprognos = element(by.id('arbetsformagaPrognos'));
 
@@ -124,7 +128,6 @@ var Fk7263Intyg = BaseIntyg._extend({
             copyButton: element(by.id('copyBtn')),
             copyButtonDialog: element(by.id('button1copy-dialog'))
         };
-            
     },
     get: function get(intygId) {
         get._super.call(this, intygId);

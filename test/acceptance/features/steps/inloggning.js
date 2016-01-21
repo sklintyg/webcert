@@ -26,11 +26,13 @@ var helpers = require('./helpers.js');
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+var webcertBasePage = pages.webcertBase;
+
 module.exports = function () {
 
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
-        expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
+        expect(webcertBasePage.header.getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
