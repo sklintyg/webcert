@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion;

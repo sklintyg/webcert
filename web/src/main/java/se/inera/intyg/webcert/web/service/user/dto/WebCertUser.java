@@ -33,9 +33,9 @@ import java.util.Set;
 import org.springframework.util.Assert;
 
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
-import se.inera.intyg.webcert.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.model.UserDetails;

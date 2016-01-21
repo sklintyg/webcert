@@ -36,8 +36,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.integration.hsa.stub.HsaServiceStub;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.integration.hsa.stub.HsaServiceStub;
 import se.inera.intyg.webcert.mailstub.MailStore;
 import se.inera.intyg.webcert.mailstub.OutgoingMail;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;

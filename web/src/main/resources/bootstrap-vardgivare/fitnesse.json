@@ -1,22 +1,22 @@
 {
-    "@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardgivare",
+    "@class" : "se.inera.intyg.common.integration.hsa.model.Vardgivare",
     "id" : "vardgivare-fitnesse",
     "namn" : "FitNesse vardgivare",
     "vardenheter" : [
         {
-        	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
+        	"@class" : "se.inera.intyg.common.integration.hsa.model.Vardenhet",
             "id" : "vardenhet-fit-1",
             "namn" : "Vardenhet Fitnesse 1",
             "mottagningar" : [
                 {
-                	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Mottagning",
+                	"@class" : "se.inera.intyg.common.integration.hsa.model.Mottagning",
                     "id" : "mottagning-fit-1",
                     "namn" : "Motagning FitNesse 1"
                 }
             ]
         },
         {
-        	"@class" : "se.inera.intyg.webcert.integration.hsa.model.Vardenhet",
+        	"@class" : "se.inera.intyg.common.integration.hsa.model.Vardenhet",
             "id" : "vardenhet-fit-2",
             "namn" : "Vardenhet Fitnesse 2"
         }

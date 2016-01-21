@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.security;
 
-import static se.inera.intyg.webcert.integration.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
+import static se.inera.intyg.common.integration.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -31,11 +31,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.hsa.model.AuthenticationMethod;
-import se.inera.intyg.webcert.integration.hsa.model.Vardenhet;
-import se.inera.intyg.webcert.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.webcert.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;

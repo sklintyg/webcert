@@ -49,10 +49,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>webcert-persistence</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>hsa-integration</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pu-integration</artifactId>
@@ -106,6 +108,10 @@
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>logging-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>hsa-integration</artifactId>
     </dependency>
 
     <!--Intygstyper -->

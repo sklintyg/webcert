@@ -78,7 +78,6 @@
     <module>log-messages</module>
     <module>log-sender</module>
     <module>notification-sender</module>
-    <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
     <module>integration/pp-integration</module>
     <module>integration/fmb-integration</module>
@@ -219,6 +218,11 @@
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>common-specifications</artifactId>
+        <version>${common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.common</groupId>
+        <artifactId>hsa-integration</artifactId>
         <version>${common.version}</version>
       </dependency>
 
