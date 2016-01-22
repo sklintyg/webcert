@@ -22,6 +22,9 @@
 'use strict';
 var soap = require('soap');
 var sleep = require('sleep');
+var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var fk7263Utkast = pages.intyg.fk['7263'].utkast;
+var mysql = require('mysql');
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
@@ -58,7 +61,9 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
     return body;
 }
 
-function getQuestionBody(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
+function getQuestionBody(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId, amne) {
+    // Komplettering_av_lakarintyg, Makulering_av_lakarintyg, Avstamningsmote, Kontakt, Arbetstidsforlaggning, Paminnelse, Ovrigt
+
     var body ='<urn:ReceiveMedicalCertificateQuestion ' +
         'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' + 
         'xmlns:add="http://www.w3.org/2005/08/addressing"  ' + 
@@ -68,7 +73,7 @@ function getQuestionBody(personId, doctorHsa, doctorName, unitHsa, unitName, int
         '>' + 
         '  <urn:Question>' + 
         '    <urn:fkReferens-id>8e048a89</urn:fkReferens-id>' + 
-        '    <urn:amne>Ovrigt</urn:amne>' + 
+        '    <urn:amne>' + amne + '</urn:amne>' + 
         '    <urn:fraga>' + 
         '      <urn1:meddelandeText>Fråga RT simulerar FK</urn1:meddelandeText>' + 
         '      <urn1:signeringsTidpunkt>2014-11-28T10:18:10</urn1:signeringsTidpunkt>' + 
@@ -162,22 +167,14 @@ function getAnswerBody(personId, doctorHsa, doctorName, unitHsa, unitName, intyg
 }
 
 function establishDbConnection() {
-    var mysql = require('mysql');
     return mysql.createConnection({host  :     process.env.DATABASE_HOST,
                                    user  :     process.env.DATABASE_USER,
-                                   password  : 'b4pelsin',
+                                   password  : process.env.DATABASE_PASSWORD,
                                    database  : process.env.DATABASE_NAME });
 }
 
 function assertDraftWithStatus(personId, intygsId, status, callback) {
     sleep.sleep(5);
-
-    var connection = mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : process.env.DATABASE_PASSWORD, //'b4pelsin',
-        database  : process.env.DATABASE_NAME
-    });
 
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
@@ -191,13 +188,6 @@ function assertDraftWithStatus(personId, intygsId, status, callback) {
 function assertDatabaseContents(intygsId, column, value, callback) {
     sleep.sleep(10);
 
-    var connection = mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : process.env.DATABASE_PASSWORD, //'b4pelsin',
-        database  : process.env.DATABASE_NAME
-    });
-
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
@@ -208,13 +198,6 @@ function assertDatabaseContents(intygsId, column, value, callback) {
 
 function assertEvents(intygsId, event, numEvents, callback) {
     sleep.sleep(5);
-
-    var connection = mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : process.env.DATABASE_PASSWORD, //'b4pelsin',
-        database  : process.env.DATABASE_NAME
-    });
 
     var databaseTable = 'webcert_requests.requests';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
@@ -255,8 +238,6 @@ module.exports = function () {
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/create-draft-certificate/v1.0?wsdl';
         url = url.replace('https', 'http');
                
-        var soap = require('soap');
-
         soap.createClient(url, function(err, client) {
             
             client.CreateDraftCertificate(body, function(err, result, body) {
@@ -274,8 +255,20 @@ module.exports = function () {
         global.intyg.typ = 'Läkarintyg FK 7263';
         
         var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
-
-        browser.get(url).then(callback);
+        
+        browser.get(url).then(function () {
+            element(by.css('.qa-panel')).isPresent().then(function (isVisible) {
+                if (isVisible) {
+                    element(by.css('.qa-panel')).getAttribute('id').then(function (result) {
+                        global.intyg.fragaId = result.split('-')[1];
+                        console.log('Question ID: ' + global.intyg.fragaId);
+                        callback();
+                    });
+                } else {
+                    callback();
+                }
+            });
+        });
     });
 
     this.Then(/^ska intygsutkastets status vara "([^"]*)"$/, function (statustext, callback) {
@@ -283,7 +276,6 @@ module.exports = function () {
     });
     
     this.Given(/^när jag fyller i fältet "([^"]*)"$/, function (arg1, callback) {
-        var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 
         if (arg1 === 'Min undersökning av patienten') {
             fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
@@ -302,7 +294,6 @@ module.exports = function () {
     });
 
     this.Given(/^när jag fyller i resten av de nödvändiga fälten\.$/, function (callback) {
-        var fk7263Utkast = pages.intyg.fk['7263'].utkast;
         fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt').then(function () {
             fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget').then(function () {
                 fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
@@ -320,8 +311,6 @@ module.exports = function () {
     });
 
     this.Given(/^när jag skickar intyget till Försäkringskassan$/, function (callback) {
-        var fkIntygPage = pages.intyg.fk['7263'].intyg;
-        
         fkIntygPage.skicka.knapp.click().then(function () {
             fkIntygPage.skicka.samtyckeCheckbox.click().then(function () {
                 fkIntygPage.skicka.dialogKnapp.click().then(callback);
@@ -334,7 +323,6 @@ module.exports = function () {
     });
 
     this.Given(/^när jag makulerar intyget$/, function (callback) {
-        var fkIntygPage = pages.intyg.fk['7263'].intyg;
         fkIntygPage.makulera.btn.click().then(function () {
             fkIntygPage.makulera.dialogAterta.click().then(function () {
                 fkIntygPage.makulera.kvittensOKBtn.click().then(callback);
@@ -343,24 +331,18 @@ module.exports = function () {
     });
 
     this.Given(/^när jag raderar intyget$/, function (callback) {
-        var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-
         fk7263Utkast.radera.knapp.click().then(function () {
             fk7263Utkast.radera.bekrafta.click().then(callback);
         });
     });
 
     this.Given(/^när jag svarar på frågan$/, function (callback) {
-        var fkIntygPage = pages.intyg.fk['7263'].intyg;
-
         fkIntygPage.answer.text.sendKeys('Ett litet svar.').then(function () {
             fkIntygPage.answer.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
         });
     });
 
     this.Given(/^när jag fyller i en ny fråga till Försäkringskassan$/, function (callback) {
-        var fkIntygPage = pages.intyg.fk['7263'].intyg;
-
         fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE).then(function () {
             fkIntygPage.question.text.sendKeys('En liten fråga...').then(function () {
                 fkIntygPage.question.kontakt.click().then(callback);
@@ -369,10 +351,10 @@ module.exports = function () {
     });
     
     this.Given(/^sedan klickar på skicka$/, function (callback) {
-        var fkIntygPage = pages.intyg.fk['7263'].intyg;
         fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function () {
              element(by.css('.qa-panel')).getAttribute('id').then(function (result) {
                  global.intyg.fragaId = result.split('-')[1];
+                 console.log('Question ID: ' + global.intyg.fragaId);
                  callback();
             });
         });
@@ -380,6 +362,10 @@ module.exports = function () {
 
     this.Given(/^när jag markerar frågan som hanterad$/, function (callback) {
         element(by.id('markAsHandledWcOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
+    });
+
+    this.Given(/^när jag markerar frågan från Försäkringskassan som hanterad$/, function (callback) {
+        element(by.id('markAsHandledFkOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
     });
     
     this.Given(/^när Försäkringskassan ställer en fråga om intyget$/, function (callback) {
@@ -389,9 +375,7 @@ module.exports = function () {
         global.person.id = '19121212-1212';
 
         var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id);
-
-        var soap = require('soap');
+                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, 'Ovrigt');
 
         soap.createClient(url, function(err, client) {
             if (err) {
@@ -405,8 +389,6 @@ module.exports = function () {
     });
     
     this.Given(/^när Försäkringskassan skickar ett svar$/, function (callback) {
-        var soap = require('soap');
-
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-answer/v1.0?wsdl';
         url = url.replace('https', 'http');
         
@@ -424,5 +406,56 @@ module.exports = function () {
                 callback();
             });
         });
+    });
+
+    this.Given(/^när Försäkringskassan ställer en fråga om intyget \- "([^"]*)"$/, function (arg1, callback) {
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-question/v1.0?wsdl';
+        url = url.replace('https', 'http');
+
+        global.person.id = '19121212-1212';
+
+        var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
+                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
+
+        soap.createClient(url, function(err, client) {
+            if (err) {
+                callback(err);
+            }
+            
+            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                console.log(body);
+                console.log(result);
+                callback();
+            });
+        });
+    });
+
+    this.Given(/^när jag skickat ett signerat intyg till Försäkringskassan$/, function (callback) {
+        fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
+            .then(function () {
+                fk7263Utkast.diagnosKod.sendKeys('A00');
+            })
+            .then(function () {
+                fk7263Utkast.faktiskTjanstgoring.sendKeys('40')
+            })
+            .then(function () {
+                fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
+            })
+            .then(function () {
+                fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt');
+            })
+            .then(function () {
+                fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget');
+            }).then(function () {
+                fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare');
+            }).then(function () {
+                element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE);
+            }).then(function () {
+                fkIntygPage.skicka.knapp.click();
+            }).then(function () {
+                fkIntygPage.skicka.samtyckeCheckbox.click();
+            }).then(function () {
+                fkIntygPage.skicka.dialogKnapp.click();
+            }).then(callback);
     });
 };

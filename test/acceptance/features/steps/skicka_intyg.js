@@ -46,9 +46,12 @@ module.exports = function() {
             intyg.id = intyg.id.replace('?signed', '');
         });
 
-        fkIntygPage.skicka.knapp.click();
-        fkIntygPage.skicka.samtyckeCheckbox.click();
-        fkIntygPage.skicka.dialogKnapp.click();
+        fkIntygPage.skicka.knapp.click().then(function () {
+            fkIntygPage.skicka.samtyckeCheckbox.click().then(function () {
+                fkIntygPage.skicka.dialogKnapp.click().then(callback);
+            });
+        });
+
         callback();
     });
 
