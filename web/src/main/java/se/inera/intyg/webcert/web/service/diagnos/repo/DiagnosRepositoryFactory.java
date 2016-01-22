@@ -20,8 +20,10 @@
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,10 +38,7 @@ import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -64,9 +63,6 @@ public class DiagnosRepositoryFactory implements InitializingBean {
     @Value("${diagnos.code.encoding:ISO-8859-1}")
     private String fileEncoding;
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
     public DiagnosRepository createAndInitDiagnosRepository(List<String> filesList) {
         try {
 
@@ -90,26 +86,19 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
     }
 
-    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) {
+    public void populateRepoFromDiagnosisCodeFile(String filePath, DiagnosRepositoryImpl diagnosRepository) {
 
-        if (StringUtils.isBlank(fileUrl)) {
+        if (StringUtils.isBlank(filePath)) {
             return;
         }
 
-        LOG.debug("Loading diagnosis file '{}'", fileUrl);
+        LOG.debug("Loading diagnosis file '{}'", filePath);
 
         try {
-            Resource resource = resourceLoader.getResource(fileUrl);
-
-            if (!resource.exists()) {
-                LOG.error("Could not load diagnosis file since the resource '{}' does not exists", fileUrl);
-                return;
-            }
-
             IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
             IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(new File(filePath).toPath()), fileEncoding));
 
             while (reader.ready()) {
                 String line = reader.readLine();
@@ -125,7 +114,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
             idxWriter.close();
 
         } catch (IOException ioe) {
-            LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
+            LOG.error("IOException occured when loading diagnosis file '{}'", filePath);
             throw new RuntimeException("Error occured when loading diagnosis file", ioe);
         }
     }
