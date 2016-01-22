@@ -59,7 +59,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     /**
      * Generic method that created an utkast of given type and validates basic generic model properties
      *
-     * @param utkastType The type of utkast to create
+     * @param utkastType
+     *            The type of utkast to create
      */
     private void testGetUtkast(String utkastType) {
 
@@ -68,16 +69,14 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response response = given().contentType(ContentType.JSON).body(utkastRequest).expect().statusCode(200).when().post("api/utkast/fk7263").
-                then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json")).
-                body("intygsTyp", equalTo(utkastRequest.getIntygType())).
-                body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId())).
-                body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId())).
-                body("version", equalTo(0)).
-                body("skapadAv.namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn())).extract().response();
+        Response response = given().contentType(ContentType.JSON).body(utkastRequest).expect().statusCode(200).when().post("api/utkast/fk7263").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
+                .body("intygsTyp", equalTo(utkastRequest.getIntygType())).body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                .body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId())).body("version", equalTo(0))
+                .body("skapadAv.namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn())).extract().response();
 
-        //The type-specific model is a serialized json "within" the model property, need to extract that first and then we can assert some basic things.
+        // The type-specific model is a serialized json "within" the model property, need to extract that first and then
+        // we can assert some basic things.
         JsonPath draft = new JsonPath(response.body().asString());
         JsonPath model = new JsonPath(draft.getString("model"));
 
@@ -97,10 +96,9 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        Lakare[] lakareWithUtkast =
-                given().expect().statusCode(200).when().get("api/utkast/lakare").
-                        then().
-                        body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-lakare-med-utkast-response-schema.json")).extract().response().as(Lakare[].class);
+        Lakare[] lakareWithUtkast = given().expect().statusCode(200).when().get("api/utkast/lakare").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-lakare-med-utkast-response-schema.json")).extract().response()
+                .as(Lakare[].class);
 
         Assert.assertEquals(1, lakareWithUtkast.length);
 
@@ -116,20 +114,22 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
+        QueryIntygResponse queryResponse = given().param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId()).expect()
+                .statusCode(200).when().get("api/utkast").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json")).body("totalCount", equalTo(1)).extract()
+                .response().as(QueryIntygResponse.class);
 
-        QueryIntygResponse queryResponse = given().param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId()).
-                expect().statusCode(200).
-                when().
-                get("api/utkast").
-                then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json")).
-                body("totalCount", equalTo(1)).extract().response().as(QueryIntygResponse.class);
-
-        //The only result should match the utkast we created in the setup
+        // The only result should match the utkast we created in the setup
         Assert.assertEquals(utkastId, queryResponse.getResults().get(0).getIntygId());
         Assert.assertEquals("fk7263", queryResponse.getResults().get(0).getIntygType());
         Assert.assertEquals(DEFAULT_PATIENT_PERSONNUMMER, queryResponse.getResults().get(0).getPatientId().getPersonnummer());
+    }
 
-
+    @Test
+    public void testGetQuestion() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        given().pathParams("intygsTyp", "LISU", "version", "0.9").expect().statusCode(200)
+                .when().get("api/utkast/questions/{intygsTyp}/{version}")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-texter.json"));
     }
 }

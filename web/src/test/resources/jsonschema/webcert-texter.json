@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "intygsTyp": {
+      "type": "string"
+    },
+    "validFrom": {
+      "type": "string"
+    },
+    "validTo": {
+      "type": "string"
+    },
+    "texter": {
+      "type": "object"
+    },
+    "tillaggsfragor": {
+      "id": "http://jsonschema.net/tillaggsfragor",
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "help": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "text",
+            "help"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "version",
+    "intygsTyp"
+  ]
+}

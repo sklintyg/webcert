@@ -20,11 +20,13 @@
 package se.inera.intyg.webcert.web.service.texts.repo;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import javax.annotation.PostConstruct;
-import javax.xml.parsers.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -51,7 +53,7 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
      *
      * Gets updated on a schedule defined in properties.
      */
-    private Set<IntygTexts> intygTexts;
+    protected Set<IntygTexts> intygTexts;
 
     @Value("${texts.file.directory}")
     private String fileDirectory;
@@ -72,31 +74,35 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
      */
     @Scheduled(cron = "${texts.update.cron}")
     public void update() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(fileDirectory))) {
-            for (Path file : stream) {
-                Document doc = DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder()
-                        .parse(Files.newInputStream(file));
+        try {
+            Files.walk(Paths.get(fileDirectory)).forEach((file) -> {
+                try {
+                    Document doc = DocumentBuilderFactory.newInstance()
+                            .newDocumentBuilder()
+                            .parse(Files.newInputStream(file));
 
-                Element root = doc.getDocumentElement();
-                String version = root.getAttribute("version");
-                String intygsTyp = root.getAttribute("typ");
-                LocalDate giltigFrom = getDate(root, "giltigFrom");
-                LocalDate giltigTo = getDate(root, "giltigTom");
-                SortedMap<String, String> texts = getTexter(root);
-                List<Tillaggsfraga> tillaggsFragor = getTillaggsfragor(doc);
+                    Element root = doc.getDocumentElement();
+                    String version = root.getAttribute("version");
+                    String intygsTyp = root.getAttribute("typ");
+                    LocalDate giltigFrom = getDate(root, "giltigFrom");
+                    LocalDate giltigTo = getDate(root, "giltigTom");
+                    SortedMap<String, String> texts = getTexter(root);
+                    List<Tillaggsfraga> tillaggsFragor = getTillaggsfragor(doc);
 
-                IntygTexts newIntygTexts = new IntygTexts(version, intygsTyp, giltigFrom, giltigTo, texts, tillaggsFragor);
-                if (!intygTexts.contains(newIntygTexts)) {
-                    LOG.debug("Adding new version of {} with version name {}", intygsTyp, version);
-                    intygTexts.add(newIntygTexts);
+                    IntygTexts newIntygTexts = new IntygTexts(version, intygsTyp, giltigFrom, giltigTo, texts, tillaggsFragor);
+                    if (!intygTexts.contains(newIntygTexts)) {
+                        LOG.debug("Adding new version of {} with version name {}", intygsTyp, version);
+                        intygTexts.add(newIntygTexts);
+                    }
+                } catch (IllegalArgumentException e) {
+                    LOG.error("Bad file in directory {}: {}", fileDirectory, e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException | ParserConfigurationException | SAXException e) {
+                    LOG.error("Error while reading file {}", file.getFileName(), e);
                 }
-            }
-        } catch (IllegalArgumentException e) {
-            LOG.error("Bad file in directory {}: {}", fileDirectory, e.getMessage());
-            e.printStackTrace();
-        } catch (IOException | DirectoryIteratorException | ParserConfigurationException | SAXException x) {
-            LOG.error("Error while reading from directory {}", fileDirectory, x);
+            });
+        } catch (IOException e) {
+            LOG.error("Error while reading from directory {}", fileDirectory, e);
         }
     }
 
@@ -150,11 +156,11 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
 
     @Override
     public String getLatestVersion(String intygsTyp) {
-        return intygTexts.stream()
+        IntygTexts res = intygTexts.stream()
                 .filter((s) -> s.getIntygsTyp().equals(intygsTyp))
                 .filter((s) -> s.getValidFrom() == null || !s.getValidFrom().isAfter(LocalDate.now()))
-                .max(IntygTexts::compareVersions)
-                .get().getVersion();
+                .max(IntygTexts::compareVersions).orElse(null);
+        return res == null ? null : res.getVersion();
     }
 
     @Override
