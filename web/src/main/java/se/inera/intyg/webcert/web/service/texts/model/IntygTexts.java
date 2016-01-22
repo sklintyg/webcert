@@ -35,10 +35,10 @@ public final class IntygTexts {
     private final LocalDate validFrom;
     private final LocalDate validTo;
     private final SortedMap<String, String> texter;
-    private final List<Text> tillaggsfragor;
+    private final List<Tillaggsfraga> tillaggsfragor;
 
     public IntygTexts(String version, String intygsTyp, LocalDate validFrom, LocalDate validTo, SortedMap<String, String> texts,
-            List<Text> tillaggsfragor) {
+            List<Tillaggsfraga> tillaggsfragor) {
 
         // Validate input
         validateVersion(version);
@@ -80,7 +80,7 @@ public final class IntygTexts {
         return texter;
     }
 
-    public List<Text> getTillaggsfragor() {
+    public List<Tillaggsfraga> getTillaggsfragor() {
         return tillaggsfragor;
     }
 

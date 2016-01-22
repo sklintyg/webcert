@@ -36,7 +36,7 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import se.inera.intyg.webcert.web.service.texts.model.IntygTexts;
-import se.inera.intyg.webcert.web.service.texts.model.Text;
+import se.inera.intyg.webcert.web.service.texts.model.Tillaggsfraga;
 
 @Repository
 public class IntygTextsRepositoryImpl implements IntygTextsRepository {
@@ -84,7 +84,7 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
                 LocalDate giltigFrom = getDate(root, "giltigFrom");
                 LocalDate giltigTo = getDate(root, "giltigTom");
                 SortedMap<String, String> texts = getTexter(root);
-                List<Text> tillaggsFragor = getTillaggsfragor(doc);
+                List<Tillaggsfraga> tillaggsFragor = getTillaggsfragor(doc);
 
                 IntygTexts newIntygTexts = new IntygTexts(version, intygsTyp, giltigFrom, giltigTo, texts, tillaggsFragor);
                 if (!intygTexts.contains(newIntygTexts)) {
@@ -115,17 +115,17 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
         return texts;
     }
 
-    private List<Text> getTillaggsfragor(Document doc) {
-        List<Text> tillaggsFragor = new ArrayList<>();
+    private List<Tillaggsfraga> getTillaggsfragor(Document doc) {
+        List<Tillaggsfraga> tillaggsFragor = new ArrayList<>();
         NodeList tillaggList = doc.getElementsByTagName("tillaggsfraga");
         for (int i = 0; i < tillaggList.getLength(); i++) {
-            Text tillaggTexts = getTillaggsFraga((Element) tillaggList.item(i));
+            Tillaggsfraga tillaggTexts = getTillaggsFraga((Element) tillaggList.item(i));
             tillaggsFragor.add(tillaggTexts);
         }
         return tillaggsFragor;
     }
 
-    private Text getTillaggsFraga(Element element) {
+    private Tillaggsfraga getTillaggsFraga(Element element) {
         String id = element.getAttribute("id");
         String text = "";
         String help = "";
@@ -145,7 +145,7 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
                 throw new IllegalArgumentException("Could not parse the id " + textId + " as a tillaggsfraga");
             }
         }
-        return new Text(id, text, help);
+        return new Tillaggsfraga(id, text, help);
     }
 
     @Override
