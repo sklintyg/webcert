@@ -196,9 +196,22 @@ function assertDatabaseContents(intygsId, column, value, callback) {
     assertNumberOfEvents(query, 1, callback);
 }
 
+
+function makeConnection() {
+    var mysql = require('mysql');
+    var connection = mysql.createConnection({
+        host  :     process.env.DATABASE_HOST,
+        user  :     process.env.DATABASE_USER,
+        password  : process.env.DATABASE_PASSWORD, 
+        database  : process.env.DATABASE_NAME
+    });
+    return connection;
+}
+
 function assertEvents(intygsId, event, numEvents, callback) {
     sleep.sleep(5);
 
+    var conn = makeConnection();
     var databaseTable = 'webcert_requests.requests';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.handelseKod = "' + event + '" AND ' +
@@ -210,11 +223,11 @@ function assertEvents(intygsId, event, numEvents, callback) {
 function assertNumberOfEvents(query, numEvents, callback) {
     console.log('Assert number of events. Query: ' + query);
 
-    var connection = establishDbConnection();
-    connection.connect();
-    connection.query(query,
+    var conn = establishDbConnection();
+    conn.connect();
+    conn.query(query,
                      function(err, rows, fields) {
-                         connection.end();
+                         conn.end();
                          
                          if (err) { throw err; }
                          
