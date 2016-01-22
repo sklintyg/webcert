@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.texts.IntygTextsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -76,6 +77,9 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private UtkastService intygDraftService;
 
+    @Autowired
+    private IntygTextsService intygTextsService;
+
     /**
      * Create a new draft.
      */
@@ -102,14 +106,14 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     @GET
-    @Path("/questions/{intygsTyp}")
+    @Path("/questions/{intygsTyp}/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getQuestions(@PathParam("intygsTyp") String intygsTyp) {
+    public Response getQuestions(@PathParam("intygsTyp") String intygsTyp, @PathParam("version") String version) {
 
-        LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, "1");
+        LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, version);
 
-        String questions = intygDraftService.getQuestions(intygsTyp, "1");
+        String questions = intygTextsService.getIntygTexts(intygsTyp, version);
 
         return Response.ok().entity(questions).build();
     }
