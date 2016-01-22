@@ -44,7 +44,7 @@ function randomRehabAktuell(smittskydd){
 }
 
 function randomPrognosFortydligande(val){
-    if(val ==='Går ej att bedöma'){
+    if(val ==='Går inte att bedöma'){
         return 'Prognos förtydligande text';
     }
 }
@@ -61,7 +61,10 @@ var random = {
                 minUndersokning:{datum:'2015-12-10'},
                 minTelefonkontakt:{datum:'2015-12-10'},
                 journaluppgifter:{datum:'2015-12-10'},
-                annat:{datum:'2015-12-10',text: 'Annat text'}
+                annat:{
+                    datum:'2015-12-10',
+                    text: 'Annat text'
+                }
         };
     },
     diagnos:function(smittskydd){

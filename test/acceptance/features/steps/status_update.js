@@ -324,9 +324,12 @@ module.exports = function () {
     });
 
     this.Given(/^när jag skickar intyget till Försäkringskassan$/, function (callback) {
-        fkIntygPage.skicka.knapp.click().then(function () {
-            fkIntygPage.skicka.samtyckeCheckbox.click().then(function () {
-                fkIntygPage.skicka.dialogKnapp.click().then(callback);
+
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+
+        fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function () {
+            fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE).then(function () {
+                fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE).then(callback);
             });
         });
     });
@@ -336,9 +339,11 @@ module.exports = function () {
     });
 
     this.Given(/^när jag makulerar intyget$/, function (callback) {
-        fkIntygPage.makulera.btn.click().then(function () {
-            fkIntygPage.makulera.dialogAterta.click().then(function () {
-                fkIntygPage.makulera.kvittensOKBtn.click().then(callback);
+
+        var fkIntygPage = pages.intyg.fk['7263'].intyg;
+        fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE).then(function () {
+            fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE).then(function () {
+                fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
             });
         });
     });
@@ -358,7 +363,7 @@ module.exports = function () {
     this.Given(/^när jag fyller i en ny fråga till Försäkringskassan$/, function (callback) {
         fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE).then(function () {
             fkIntygPage.question.text.sendKeys('En liten fråga...').then(function () {
-                fkIntygPage.question.kontakt.click().then(callback);
+                fkIntygPage.question.kontakt.sendKeys(protractor.Key.SPACE).then(callback);
             });
         });
     });

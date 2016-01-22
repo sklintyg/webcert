@@ -270,6 +270,14 @@ module.exports ={
                     callback('FEL, Arbetsformåga prognos förtydligande, ' + reason);
                 });
             }
+                //Kontrollera FÄLT13 : Övriga upplysningar
+
+            var kommentar = element(by.id('kommentar'));
+            expect(kommentar.getText()).to.eventually.contain(intyg.baserasPa.annat.text).then(function(value) {
+                logg('OK - Övrig kommentar = ' +value);
+            }, function(reason) {
+                callback('FEL, Övrig kommentar,' + reason);
+            });
         }
 
     // Kontrollera FÄLT 11 : Resa till arbete med annat färdsätt
@@ -292,16 +300,9 @@ module.exports ={
         logg('OK - Forskrivarkod = ' +value);
     }, function(reason) {
         callback('FEL, Forskrivarkod,' + reason);
-    });
-
-    //Kontrollera FÄLT13 : Övriga upplysningar
-
-    var kommentar = element(by.id('kommentar'));
-    expect(kommentar.getText()).to.eventually.contain(intyg.baserasPa.annat.text).then(function(value) {
-        logg('OK - Övrig kommentar = ' +value);
-    }, function(reason) {
-        callback('FEL, Övrig kommentar,' + reason);
     }).then(callback);
+
+
 
 }
 };

@@ -22,7 +22,6 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
     Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
 	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
-
 	När jag går till Mina intyg för patienten "19971019-2387"
 	Så ska intygets status i Mina intyg visa "Mottaget av Försäkringskassans system"
 
@@ -32,7 +31,6 @@ Scenario: Makulera ett skickat intyg
     Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
-
 	När jag går till Mina intyg för patienten "19971019-2387"
 	Så ska intygets status i Mina intyg visa "Makulerat"
 

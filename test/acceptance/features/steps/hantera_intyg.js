@@ -34,11 +34,10 @@ module.exports = function () {
             intyg.id = text.split('/').slice(-1)[0];
             intyg.id = intyg.id.replace('?signed', '');
         });
-
-        fkIntygPage.makulera.btn.click();
-        fkIntygPage.makulera.dialogAterta.click();
-        fkIntygPage.makulera.kvittensOKBtn.click()
-        .then(callback);
+        
+        fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
 	this.Given(/^jag kopierar intyget$/, function (callback) {
