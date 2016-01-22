@@ -75,7 +75,7 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
     @Scheduled(cron = "${texts.update.cron}")
     public void update() {
         try {
-            Files.walk(Paths.get(fileDirectory)).forEach((file) -> {
+            Files.walk(Paths.get(fileDirectory)).filter((file) -> Files.isRegularFile(file)).forEach((file) -> {
                 try {
                     Document doc = DocumentBuilderFactory.newInstance()
                             .newDocumentBuilder()
