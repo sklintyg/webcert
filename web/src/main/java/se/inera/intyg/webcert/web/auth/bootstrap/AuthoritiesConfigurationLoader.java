@@ -32,11 +32,12 @@ import org.springframework.util.Assert;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConfiguration;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 /**
@@ -83,10 +84,14 @@ public class AuthoritiesConfigurationLoader implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
 
+        Resource resource = getResource(authoritiesConfigurationFile);
+        URI uri = null;
+
         try {
-            authoritiesConfiguration = loadConfiguration(new File(authoritiesConfigurationFile).toPath());
+            uri = resource.getURI();
+            authoritiesConfiguration = loadConfiguration(Paths.get(resource.getURI()));
         } catch (IOException ioe) {
-           throw new AuthoritiesException(format("Could not load authorities configuration file %s", authoritiesConfigurationFile), ioe);
+           throw new AuthoritiesException(format("Could not load authorities configuration file %s", uri.getPath()), ioe);
         }
 
     }
