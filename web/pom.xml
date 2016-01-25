@@ -113,6 +113,10 @@
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>hsa-integration</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-services</artifactId>
+    </dependency>
 
     <!--Intygstyper -->
     <dependency>

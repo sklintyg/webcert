@@ -216,6 +216,11 @@
         <artifactId>hsa-integration</artifactId>
         <version>${common.version}</version>
       </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.common</groupId>
+        <artifactId>common-services</artifactId>
+        <version>${common.version}</version>
+      </dependency>
 
       <!-- Intygstyper -->
       <dependency>

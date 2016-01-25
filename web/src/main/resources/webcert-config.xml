@@ -113,6 +113,9 @@
       <property name="origin" value="WEBCERT" />
     </bean>
 
+    <bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl" />
+    <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl" />
+
     <bean id="messageSource"
       class="org.springframework.context.support.ResourceBundleMessageSource">
       <property name="defaultEncoding" value="UTF-8" />
