@@ -194,12 +194,12 @@ Detta är ett EXEMPEL på Texter för Läkarintyg utökat.
 	
 	<tillagg>
 		<tillaggsfraga id="9001">
-			<text id="DFR_9001.RBK">Vilken skostorlek har du?</text>
-			<text id="DFR_9001.HLP">Ange din skostorlek.</text>
+			<text id="DFR_9001.1.RBK">Vilken skostorlek har du?</text>
+			<text id="DFR_9001.1.HLP">Ange din skostorlek.</text>
 		</tillaggsfraga>
 		<tillaggsfraga id="9002">
-			<text id="DFR_9002.RBK">Hur lång är du?</text>
-			<text id="DFR_9002.HLP">Ange din längd i centimeter (cm).</text>
+			<text id="DFR_9002.1.RBK">Hur lång är du?</text>
+			<text id="DFR_9002.1.HLP">Ange din längd i centimeter (cm).</text>
 		</tillaggsfraga>		
 	</tillagg>	
 	

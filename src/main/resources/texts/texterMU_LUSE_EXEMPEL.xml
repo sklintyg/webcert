@@ -214,13 +214,13 @@ patientens besvär.</text>
 	<text id="KAT_9999.HLP">TBD</text>
 	
 	<tillagg>
-		<tillaggsfraga id="FRG_9001">
-			<text id="DFR_9001.RBK">Vilken skostorlek har du?</text>
-			<text id="DFR_9001.HLP">Ange din skostorlek.</text>
+		<tillaggsfraga id="9001">
+			<text id="DFR_9001.1.RBK">Vilken skostorlek har du?</text>
+			<text id="DFR_9001.1.HLP">Ange din skostorlek.</text>
 		</tillaggsfraga>
-		<tillaggsfraga id="FRG_9002">
-			<text id="DFR_9002.RBK">Hur lång är du?</text>
-			<text id="DFR_9002.HLP">Ange din längd i centimeter (cm).</text>
+		<tillaggsfraga id="9002">
+			<text id="DFR_9002.1.RBK">Hur lång är du?</text>
+			<text id="DFR_9002.1.HLP">Ange din längd i centimeter (cm).</text>
 		</tillaggsfraga>		
 	</tillagg>
 
