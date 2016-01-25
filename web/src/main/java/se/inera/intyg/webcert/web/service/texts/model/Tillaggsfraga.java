@@ -45,7 +45,7 @@ public class Tillaggsfraga implements Comparable<Tillaggsfraga> {
 
     @Override
     public int compareTo(Tillaggsfraga o) {
-        return text.compareTo(o.getText());
+        return id.compareTo(o.getId());
     }
 
     @Override
