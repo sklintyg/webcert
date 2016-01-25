@@ -22,10 +22,11 @@
 'use strict';
 
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
 module.exports = function () {
 	this.Given(/^signerar intyget$/, function (callback) {
-        element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE).then(callback);
+        fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
     this.Given(/^jag makulerar intyget$/, function (callback) {
@@ -41,9 +42,6 @@ module.exports = function () {
     });
 
 	this.Given(/^jag kopierar intyget$/, function (callback) {
-        // Klicka på 'visa vad som saknas' innan signering för att underlätta felsökning
-        // var EC = protractor.ExpectedConditions;
-        // browser.wait(EC.elementToBeClickable($('#signera-utkast-button')), 100000).then(callback);
         fkIntygPage.copy.copyButton.sendKeys(protractor.Key.SPACE).then(function () {
             fkIntygPage.copy.copyButtonDialog.sendKeys(protractor.Key.SPACE).then(callback);
         });

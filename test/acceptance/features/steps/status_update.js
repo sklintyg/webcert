@@ -264,9 +264,9 @@ module.exports = function () {
         var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
         
         browser.get(url).then(function () {
-            element(by.css('.qa-panel')).isPresent().then(function (isVisible) {
+            fkIntygPage.qaPanel.isPresent().then(function (isVisible) {
                 if (isVisible) {
-                    element(by.css('.qa-panel')).getAttribute('id').then(function (result) {
+                    fkIntygPage.qaPanel.getAttribute('id').then(function (result) {
                         global.intyg.fragaId = result.split('-')[1];
                         console.log('Question ID: ' + global.intyg.fragaId);
                         callback();
@@ -364,7 +364,7 @@ module.exports = function () {
     
     this.Given(/^sedan klickar på skicka$/, function (callback) {
         fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function () {
-             element(by.css('.qa-panel')).getAttribute('id').then(function (result) {
+             fkIntygPage.qaPanel.getAttribute('id').then(function (result) {
                  global.intyg.fragaId = result.split('-')[1];
                  console.log('Question ID: ' + global.intyg.fragaId);
                  callback();

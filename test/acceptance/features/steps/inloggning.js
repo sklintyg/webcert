@@ -36,7 +36,7 @@ module.exports = function () {
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
-        element(by.id('menu-skrivintyg')).click();
+        webcertBasePage.flikar.sokSkrivIntyg.click();
         sokSkrivIntygPage.selectPersonnummer(personnummer);
 
         //Patientuppgifter visas

@@ -270,10 +270,9 @@ module.exports ={
                     callback('FEL, Arbetsformåga prognos förtydligande, ' + reason);
                 });
             }
-                //Kontrollera FÄLT13 : Övriga upplysningar
-
-            var kommentar = element(by.id('kommentar'));
-            expect(kommentar.getText()).to.eventually.contain(intyg.baserasPa.annat.text).then(function(value) {
+            
+            //Kontrollera FÄLT13 : Övriga upplysningar
+            expect(intygPage.field13.kommentar.getText()).to.eventually.contain(intyg.baserasPa.annat.text).then(function(value) {
                 logg('OK - Övrig kommentar = ' +value);
             }, function(reason) {
                 callback('FEL, Övrig kommentar,' + reason);

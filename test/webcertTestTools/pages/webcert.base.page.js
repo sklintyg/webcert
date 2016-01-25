@@ -32,6 +32,11 @@ var WebcertBasePage = Class._extend({
     init: function() {
         this.doctor = element(by.css('.logged-in'));
         this.header = element(by.id('wcHeader'));
+
+        this.flikar = {
+        	sokSkrivIntyg: element(by.id('menu-skrivintyg'))
+        }
+
     },
     getDoctorText: function () {
         return this.doctor.getText();

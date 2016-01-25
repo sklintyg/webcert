@@ -101,6 +101,9 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
 
         var panel = element(by.css('.qa-panel'));
+
+        this.qaPanel = panel;
+
         this.FMBprognos = element(by.id('arbetsformagaPrognos'));
 
         this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));

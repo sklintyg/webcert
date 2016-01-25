@@ -22,6 +22,8 @@
 
 'use strict';
 
+var webcertBasePage = pages.webcertBase;
+
 module.exports = function() {
 
     this.Given(/^att jag är inloggad som tandläkare$/, function(callback) {
@@ -64,7 +66,7 @@ function logInAsUserRole(userObj,roleName,callback){
         browser.ignoreSynchronization = false;
         browser.sleep(2000);
 
-        expect(element(by.id('wcHeader')).getText())
+        webcertBasePage.header.getText())
         .to.eventually
         .contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
         .and.notify(callback);
