@@ -129,10 +129,6 @@
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
-      <artifactId>sjukpenning</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>sjukersattning</artifactId>
     </dependency>
      
