@@ -301,8 +301,5 @@ module.exports ={
     }, function(reason) {
         callback('FEL, Forskrivarkod,' + reason);
     }).then(callback);
-
-
-
-}
+    }
 };

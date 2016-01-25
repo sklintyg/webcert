@@ -166,12 +166,6 @@ function getAnswerBody(personId, doctorHsa, doctorName, unitHsa, unitName, intyg
     return body;
 }
 
-function establishDbConnection() {
-    return mysql.createConnection({host  :     process.env.DATABASE_HOST,
-                                   user  :     process.env.DATABASE_USER,
-                                   password  : process.env.DATABASE_PASSWORD,
-                                   database  : process.env.DATABASE_NAME });
-}
 
 function assertDraftWithStatus(personId, intygsId, status, callback) {
     sleep.sleep(5);
@@ -199,13 +193,13 @@ function assertDatabaseContents(intygsId, column, value, callback) {
 
 function makeConnection() {
     var mysql = require('mysql');
-    var connection = mysql.createConnection({
+    return mysql.createConnection({
         host  :     process.env.DATABASE_HOST,
         user  :     process.env.DATABASE_USER,
         password  : process.env.DATABASE_PASSWORD, 
         database  : process.env.DATABASE_NAME
     });
-    return connection;
+     
 }
 
 function assertEvents(intygsId, event, numEvents, callback) {
@@ -223,7 +217,7 @@ function assertEvents(intygsId, event, numEvents, callback) {
 function assertNumberOfEvents(query, numEvents, callback) {
     console.log('Assert number of events. Query: ' + query);
 
-    var conn = establishDbConnection();
+    var conn = makeConnection();
     conn.connect();
     conn.query(query,
                      function(err, rows, fields) {
