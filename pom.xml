@@ -577,6 +577,7 @@
                 <artifactItem>
                   <groupId>se.inera.intyg.common</groupId>
                   <artifactId>common-build-tools</artifactId>
+                  <version>${common.version}</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/build-tools</outputDirectory>
