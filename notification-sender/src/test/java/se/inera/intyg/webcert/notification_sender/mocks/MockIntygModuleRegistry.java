@@ -131,11 +131,6 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             }
 
             @Override
-            public String getQuestions(String version) {
-                return null;
-            }
-
-            @Override
             public Utlatande getUtlatandeFromJson(String utlatandeJson) {
                 return null;
             }
