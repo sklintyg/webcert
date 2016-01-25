@@ -622,13 +622,6 @@
                   </fileset>
                 </copy>
                 <copy
-                  todir="${project.build.directory}/webjardependencies/sjukpenning"
-                  verbose="false">
-                  <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukpenning">
-                  </fileset>
-                </copy>
-                <copy
                   todir="${project.build.directory}/webjardependencies/sjukersattning"
                   verbose="false">
                   <fileset
