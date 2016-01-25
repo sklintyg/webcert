@@ -53,7 +53,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testGetDraft() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "sjukpenning";
+        String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
@@ -84,7 +84,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testDiscardDraft() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "sjukpenning";
+        String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
@@ -106,7 +106,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testLogPrintOfDraftToPDL() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "sjukpenning";
+        String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().contentType(ContentType.JSON).expect().statusCode(200).when().
@@ -117,7 +117,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testSigneraUtkastInvalidState() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "sjukpenning";
+        String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
