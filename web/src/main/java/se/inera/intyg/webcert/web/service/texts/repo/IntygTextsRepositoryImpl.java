@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,6 +44,8 @@ import se.inera.intyg.webcert.web.service.texts.model.Tillaggsfraga;
 
 @Repository
 public class IntygTextsRepositoryImpl implements IntygTextsRepository {
+    private static final String TILLAGGSFRAGA_REGEX = "\\d{4}";
+
     private static final String TEXT_SUFFIX = "RBK";
 
     private static final String HELP_TEXT_SUFFIX = "HLP";
@@ -125,14 +129,13 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
         List<Tillaggsfraga> tillaggsFragor = new ArrayList<>();
         NodeList tillaggList = doc.getElementsByTagName("tillaggsfraga");
         for (int i = 0; i < tillaggList.getLength(); i++) {
-            Tillaggsfraga tillaggTexts = getTillaggsFraga((Element) tillaggList.item(i));
-            tillaggsFragor.add(tillaggTexts);
+            tillaggsFragor.add(getTillaggsFraga((Element) tillaggList.item(i)));
         }
         return tillaggsFragor;
     }
 
     private Tillaggsfraga getTillaggsFraga(Element element) {
-        String id = element.getAttribute("id");
+        String id = getTillaggsFragaId(element);
         String text = "";
         String help = "";
 
@@ -152,6 +155,22 @@ public class IntygTextsRepositoryImpl implements IntygTextsRepository {
             }
         }
         return new Tillaggsfraga(id, text, help);
+    }
+
+    private String getTillaggsFragaId(Element element) {
+        String id = element.getAttribute("id");
+        if (id != null) {
+            Pattern p = Pattern.compile(TILLAGGSFRAGA_REGEX);
+            Matcher m = p.matcher(id);
+            if (m.find()) {
+                id = m.group();
+            } else {
+                throw new IllegalArgumentException("Tillaggsfraga with id " + id + "is of wrong format");
+            }
+        } else {
+            throw new IllegalArgumentException("Tillaggsfraga has null id");
+        }
+        return id;
     }
 
     @Override
