@@ -40,9 +40,6 @@
     <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.5.0]</common.version.range>
 
-    <!-- TEMP -->
-    <!--<ehcache.version>2.10.0</ehcache.version>-->
-
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
     <intygstyper.version.range>(,2.5.0]</intygstyper.version.range>
@@ -97,7 +94,6 @@
 
   <dependencyManagement>
     <dependencies>
-
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fk-stub</artifactId>
@@ -224,11 +220,6 @@
       <!-- Intygstyper -->
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
-        <artifactId>sjukpenning</artifactId>
-        <version>${intygstyper.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>sjukersattning</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
@@ -298,13 +289,6 @@
         <artifactId>population-residentmaster-schemas</artifactId>
         <version>${rivta-population-residentmaster.version}</version>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>se.riv.ehr.commission</groupId>
-        <artifactId>ehr-commission-schemas</artifactId>
-        <version>${rivta-ehr-commission.version}</version>
-      </dependency>
-      -->
 
       <!-- Intyg Schemas -->
       <dependency>
@@ -633,8 +617,7 @@
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>
           <includeProperties>
-            common.version,
-            intygstyper.version
+            common.version,intygstyper.version
           </includeProperties>
           <properties>
             <property>
