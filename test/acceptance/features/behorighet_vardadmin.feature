@@ -1,8 +1,8 @@
 # language: sv
 @behorighet
-Egenskap: Fråga/Svar genererar rätt statusuppdateringar 
+Egenskap: Behörigheter för en vårdadministratör
 
-Scenario: Vårdadministratör kopierar ett intyg
+Scenario: En vårdadministratör ska kunna kopiera intyg
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19121212-1212"

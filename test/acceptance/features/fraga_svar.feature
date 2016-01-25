@@ -1,9 +1,9 @@
 # language: sv
 @fragasvar
-Egenskap: Fråga/Svar genererar rätt statusuppdateringar 
+Egenskap: Försäkringskassan kan skicka frågor på sjukintyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
-          Givet att vårdsystemet skickat ett intygsutkast
+   Givet att vårdsystemet skickat ett intygsutkast
           
 Scenario: FK skickar fråga (komplettering av läkarintyg)
    Givet att jag är inloggad som läkare
