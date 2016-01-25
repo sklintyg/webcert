@@ -50,7 +50,7 @@
       <artifactId>log-messages</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>se.inera.intyg.common</groupId>
       <artifactId>hsa-integration</artifactId>
     </dependency>
     <dependency>
