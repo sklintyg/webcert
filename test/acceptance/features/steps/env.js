@@ -17,20 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser */
+/* globals browser, logg */
 'use strict';
-var fs = require('fs');
 var sleep = require('sleep');
 var mysql = require('mysql');
 module.exports = function() {
     this.setDefaultTimeout(100 * 1000);
 
-    // //Before scenario
-    // this.Before(function(scenario) {
-    //     logg('before');
-    // });
     function makeConnection() {
-        var mysql = require('mysql');
         return mysql.createConnection({
             host  :     process.env.DATABASE_HOST,
             user  :     process.env.DATABASE_USER,

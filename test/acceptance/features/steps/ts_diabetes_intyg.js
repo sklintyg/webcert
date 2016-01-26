@@ -22,9 +22,9 @@ browser, intyg, logg
 */
 'use strict';
 
-function stringStartWith (string, prefix) {
-    return string.slice(0, prefix.length) === prefix;
-}
+// function stringStartWith (string, prefix) {
+//     return string.slice(0, prefix.length) === prefix;
+// }
 
 module.exports = function() {
     

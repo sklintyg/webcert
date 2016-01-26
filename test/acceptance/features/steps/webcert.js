@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor, logg, intyg, should */
+/* global pages, intyg, browser, protractor */
 
 'use strict';
 

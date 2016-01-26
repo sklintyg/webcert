@@ -18,11 +18,10 @@
  */
 
 /* globals pages, protractor*/
-/* globals browser, intyg, scenario, logg */
+/* globals browser, intyg, logg */
 
 'use strict';
 
-var helpers = require('./helpers.js');
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;

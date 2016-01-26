@@ -17,17 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor*/
-/* globals browser, intyg, scenario, logg */
+/* globals pages*/
+/* globals logg */
 
 'use strict';
 
-
-var helpers = require('./helpers.js');
-
-var tsDiabIntygPage = pages.intyg.ts.diabetes.intyg;
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
-
 
 module.exports ={
 	checkTsCommonValues:function(intyg, callback){

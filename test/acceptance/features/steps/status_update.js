@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor, logg */
+/* global pages, browser, protractor */
 
 'use strict';
 var soap = require('soap');
 var sleep = require('sleep');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var mysql = require('mysql');
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
@@ -47,7 +46,7 @@ function getDraftBody(personId, doctorHsa, doctorName, unitHsa, unitName) {
         '<urn1:fornamn>Lars</urn1:fornamn>' + 
         '<urn1:efternamn>Persson</urn1:efternamn>' + 
         '</urn1:patient>' + 
-        '<urn1:skapadAv>' + l
+        '<urn1:skapadAv>' +
         '<urn1:personal-id root="1.2.752.129.2.1.4.1" extension="' + doctorHsa + '" identifierName="Y"/>' + 
         '<urn1:fullstandigtNamn>' + doctorName + '</urn1:fullstandigtNamn>' + 
         '<urn1:enhet>' + 
@@ -204,8 +203,6 @@ function makeConnection() {
 
 function assertEvents(intygsId, event, numEvents, callback) {
     sleep.sleep(5);
-
-    var conn = makeConnection();
     var databaseTable = 'webcert_requests.requests';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.handelseKod = "' + event + '" AND ' +
@@ -448,7 +445,7 @@ module.exports = function () {
                 fk7263Utkast.diagnosKod.sendKeys('A00');
             })
             .then(function () {
-                fk7263Utkast.faktiskTjanstgoring.sendKeys('40')
+                fk7263Utkast.faktiskTjanstgoring.sendKeys('40');
             })
             .then(function () {
                 fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);

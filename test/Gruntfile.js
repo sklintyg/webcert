@@ -30,12 +30,12 @@ module.exports = function(grunt) {
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
-        jshint:{
-            acceptanceFiles: ['acceptance/features/steps/*.js'],
-            options:{
-                force:true,
-                jshintrc:'../../common/build-tools/src/main/resources/jshint/.jshintrc'
-            },
+        jshint: {
+            acc: ['acceptance/features/steps/*.js'],
+            options: {
+                force: true,
+                jshintrc: '../../common/build-tools/src/main/resources/jshint/.jshintrc'
+            }
         },
         env: grunt.file.readJSON('./webcertTestTools/envConfig.json'),
         protractor: {
@@ -60,8 +60,7 @@ module.exports = function(grunt) {
             acc: {
                 options: {
                     configFile: './acceptance/protractor-conf.js',
-                    args: {
-                    }
+                    args: {}
                 }
             }
         },
@@ -75,36 +74,33 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('default', function(environment, tags) {
-        if(!environment){
+        if (!environment) {
             var defaultEnv = 'dev';
-            grunt.log.subhead('Ingen miljö vald, använder '+defaultEnv+'-miljön..');
+            grunt.log.subhead('Ingen miljö vald, använder ' + defaultEnv + '-miljön..');
             environment = defaultEnv;
         }
-        grunt.task.run(['env:'+environment, 'protractor_webdriver', 'protractor:dev']);
+        grunt.task.run(['env:' + environment, 'protractor_webdriver', 'protractor:dev']);
     });
 
 
     // Run: 'grunt acc:ip20:tags'
     grunt.task.registerTask('acc', 'Task för att köra acceptanstest', function(environment, tags) {
-        
-        if(!environment){
+
+        if (!environment) {
             var defaultEnv = 'ip30';
-            grunt.log.subhead('Ingen miljö vald, använder '+defaultEnv+'-miljön..');
+            grunt.log.subhead('Ingen miljö vald, använder ' + defaultEnv + '-miljön..');
             environment = defaultEnv;
         }
-        if(tags){
-            grunt.log.subhead('Kör tester taggade med: '+tags);
+        if (tags) {
+            grunt.log.subhead('Kör tester taggade med: ' + tags);
             grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tags);
-        }
-        else{
+        } else {
             grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady']);
         }
 
 
-        grunt.task.run(['jshint:acceptanceFiles','env:'+environment, 'protractor_webdriver', 'protractor:acc']);
-        
+        grunt.task.run(['jshint:acc', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
+
 
     });
-
-    grunt.registerTask('test', ['jshint']);
 };

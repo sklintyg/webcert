@@ -18,7 +18,7 @@
  */
 
 /* globals pages*/
-/* globals browser, intyg, logg */
+/* globals logg */
 
 'use strict';
 

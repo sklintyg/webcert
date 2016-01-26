@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/* globals pages, protractor*/
-/* globals browser, intyg, scenario, logg */
+ 
+/* globals logg */
 
 'use strict';
 

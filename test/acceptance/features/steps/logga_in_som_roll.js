@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor*/
-/* globals browser, intyg, scenario, logg */
+/* globals pages*/
+/* globals logg, browser, JSON */
 
 'use strict';
 
@@ -65,8 +65,7 @@ function logInAsUserRole(userObj,roleName,callback){
         pages.welcome.loginByJSON(JSON.stringify(userObj));
         browser.ignoreSynchronization = false;
         browser.sleep(2000);
-
-        webcertBasePage.header.getText())
+        webcertBasePage.header.getText()
         .to.eventually
         .contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
         .and.notify(callback);

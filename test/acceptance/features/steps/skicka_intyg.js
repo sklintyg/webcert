@@ -18,7 +18,7 @@
  */
 
 /* globals pages */
-/* globals browser, intyg, protractor */
+/* globals browser, intyg, logg */
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
