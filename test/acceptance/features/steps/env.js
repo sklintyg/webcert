@@ -39,16 +39,18 @@ module.exports = function() {
         
         var databaseTableINTYG = process.env.DATABASE_NAME + '.INTYG';
         var databaseTableSIGNATUR = process.env.DATABASE_NAME + '.SIGNATUR';
+        var foreignKeyChecks0 = 'SET FOREIGN_KEY_CHECKS = 0;';
+        var foreignKeyChecks1 = 'SET FOREIGN_KEY_CHECKS = 1;';
 
-        var query1 = 'SET FOREIGN_KEY_CHECKS = 0;\n'+ ' DELETE ' + databaseTableINTYG + ' FROM ' + databaseTableINTYG +
+        var query1 = 'SET FOREIGN_KEY_CHECKS =' + 0 + '; DELETE ' + databaseTableINTYG + ' FROM ' + databaseTableINTYG +
          ' INNER JOIN ' + databaseTableSIGNATUR + ' ON ' + databaseTableINTYG + '.INTYGS_ID=' + databaseTableSIGNATUR + '.INTYG_ID'+
-         ' WHERE ' + databaseTableINTYG + '.INTYGS_ID="' + intygsId + '"; \n SET FOREIGN_KEY_CHECKS = 1;';
+         ' WHERE ' + databaseTableINTYG + '.INTYGS_ID="' + intygsId + '"; SET FOREIGN_KEY_CHECKS =' + 1 + ';';
 
         var CERTIFICATE = 'intyg_ip40.CERTIFICATE';
         var ORIGINAL_CERTIFICATE = 'intyg_ip40.ORIGINAL_CERTIFICATE';
         var CERTIFICATE_STATE = 'intyg_ip40.CERTIFICATE_STATE';
 
-        var query2 = 'SET FOREIGN_KEY_CHECKS = 0;' + ' DELETE ' + CERTIFICATE + ' FROM ' + CERTIFICATE + ' INNER JOIN ' + ORIGINAL_CERTIFICATE +
+        var query2 = ' DELETE ' + CERTIFICATE + ' FROM ' + CERTIFICATE + ' INNER JOIN ' + ORIGINAL_CERTIFICATE +
          ' ON ' + CERTIFICATE +'.ID=' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID' + ' INNER JOIN ' + CERTIFICATE_STATE +
          ' ON ' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID=' + CERTIFICATE_STATE + '.CERTIFICATE_ID' + 
          ' WHERE ' + CERTIFICATE +'.ID="' + intygsId + '"; SET FOREIGN_KEY_CHECKS = 1;';
@@ -63,9 +65,7 @@ module.exports = function() {
                     conn.end();
                     if (err) { throw err; }
                 }); 
-        // querys.forEach( function (q){ 
-            
-        // });
+        // querys.forEach( function (q){ });
 
     }
 
@@ -82,7 +82,7 @@ module.exports = function() {
             });
 
         } else {
-            //removeCert(global.intyg.id);
+            removeCert(global.intyg.id);
             callback();
         }
     });
