@@ -5,7 +5,7 @@ Egenskap: Hantera FK7263-intyg
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 
-@RegisterMedicalCertificate @minaintyg 
+@RegisterMedicalCertificate @minaintyg
 Scenario: Skapa och signera ett intyg
 	När jag väljer patienten "19971019-2387"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg

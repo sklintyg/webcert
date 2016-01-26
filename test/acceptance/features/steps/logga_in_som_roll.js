@@ -65,7 +65,8 @@ function logInAsUserRole(userObj,roleName,callback){
         pages.welcome.loginByJSON(JSON.stringify(userObj));
         browser.ignoreSynchronization = false;
         browser.sleep(2000);
-        webcertBasePage.header.getText()
+        // webcertBasePage.header.getText()
+        expect(element(by.id('wcHeader')).getText())
         .to.eventually
         .contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
         .and.notify(callback);

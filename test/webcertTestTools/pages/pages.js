@@ -25,10 +25,10 @@
 
 var intygPath = './intyg/'; // should point to intyg folder
 
-var webcertBase = require('./webcert.base.page.js');
+//var webcertBase = require('./webcert.base.page.js');
 
 module.exports = {
-    'webcertBase': webcertBase,
+    'webcertBase': require('./webcert.base.page.js'),
     'welcome': require('./welcome.page.js'),
     'sokSkrivIntyg' : {
         'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),

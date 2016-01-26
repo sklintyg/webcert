@@ -31,13 +31,13 @@ module.exports = function () {
 
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
-        expect(webcertBasePage.header.getText()).to.eventually.contain('Logga ut').and.notify(callback);
+        expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
-        webcertBasePage.flikar.sokSkrivIntyg.click();
-        sokSkrivIntygPage.selectPersonnummer(personnummer);
 
+        element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+        sokSkrivIntygPage.selectPersonnummer(personnummer);
         //Patientuppgifter visas
         var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
         expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);

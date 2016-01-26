@@ -43,4 +43,4 @@ var WebcertBasePage = Class._extend({
     }
 });
 
-module.exports = WebcertBasePage;
+module.exports =  WebcertBasePage;
