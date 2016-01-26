@@ -26,9 +26,17 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-protractor-runner');
     grunt.loadNpmTasks('grunt-protractor-webdriver');
     grunt.loadNpmTasks('grunt-env');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
+        jshint:{
+            acceptanceFiles: ['acceptance/features/steps/*.js'],
+            options:{
+                force:true,
+                jshintrc:'../../common/build-tools/src/main/resources/jshint/.jshintrc'
+            },
+        },
         env: grunt.file.readJSON('./webcertTestTools/envConfig.json'),
         protractor: {
             options: {
@@ -93,8 +101,10 @@ module.exports = function(grunt) {
         }
 
 
-        grunt.task.run(['env:'+environment, 'protractor_webdriver', 'protractor:acc']);
+        grunt.task.run(['jshint:acceptanceFiles','env:'+environment, 'protractor_webdriver', 'protractor:acc']);
         
 
     });
+
+    grunt.registerTask('test', ['jshint']);
 };

@@ -35,7 +35,7 @@ var WebcertBasePage = Class._extend({
 
         this.flikar = {
         	sokSkrivIntyg: element(by.id('menu-skrivintyg'))
-        }
+        };
 
     },
     getDoctorText: function () {
