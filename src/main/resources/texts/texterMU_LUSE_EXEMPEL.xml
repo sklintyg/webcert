@@ -196,8 +196,8 @@ patientens besvär.</text>
 	KATEGORI 10: Kontakt
 	===============================================
 	-->
-	<text id="KAT_9.RBK">Vill du att Försäkringskassan kontaktar dig?</text>
-	<text id="KAT_9.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>		
+	<text id="KAT_10.RBK">Vill du att Försäkringskassan kontaktar dig?</text>
+	<text id="KAT_10.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
 
 	<text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
 	<text id="DFR_26.1.HLP">TBD</text>
