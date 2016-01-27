@@ -134,6 +134,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public Utlatande getUtlatandeFromJson(String utlatandeJson) {
                 return null;
             }
+            
+            @Override
+            public String transformToStatisticsService(String inputXml) throws ModuleException {
+                return inputXml;
+            }
 
         };
     }
