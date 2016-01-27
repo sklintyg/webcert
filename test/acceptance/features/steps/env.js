@@ -20,22 +20,11 @@
 /* globals browser, logg */
 'use strict';
 var sleep = require('sleep');
-var mysql = require('mysql');
+
+var checkDB = require('./check_db');
+
 module.exports = function() {
     this.setDefaultTimeout(100 * 1000);
-
-    function makeConnection() {
-        if (!process.env.DATABASE_PASSWORD) {
-            throw 'Miljövariabel DATABASE_PASSWORD saknas';
-        }
-        return mysql.createConnection({
-            host: process.env.DATABASE_HOST,
-            user: process.env.DATABASE_USER,
-            password: process.env.DATABASE_PASSWORD,
-            database: process.env.DATABASE_NAME,
-            multipleStatements: true
-        });
-    }
 
     function removeCert(intygsId,cb) {
         sleep.sleep(10);
@@ -60,7 +49,7 @@ module.exports = function() {
 
             var querys = [query2, query1];
             querys.forEach(function(q) {
-                var conn = makeConnection();
+                var conn = checkDB.makeConnection();
                 conn.connect();
                 conn.query(q,
                     function(err, rows, fields) {
