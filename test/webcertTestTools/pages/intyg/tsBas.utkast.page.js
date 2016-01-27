@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,helpers,protractor*/
+/*globals element,by,protractor*/
 'use strict';
 
 // NOTE: This file is loaded before helpers in protractor.conf.js onPrepare. Therefore helpers are not available in file scope.
@@ -58,20 +58,21 @@ var TsBasUtkast = BaseTsUtkast._extend({
                 hoger:element(by.id('synHogerOgaKontaktlins')),
                 vanster: element(by.id('synVasterOgaKontaktlins'))
             }
-        },
+        };
+        
         this.horselBalans = {
             aYes: element(by.id('horselbalansay')),
             aNo: element(by.id('horselbalansan')),
             bYes: element(by.id('horselbalansby')),
             bNo: element(by.id('horselbalansbn'))
-        },
+        };
         this.funktionsnedsattning = {
             aYes: element(by.id('funktionsnedsattningay')),
             aNo: element(by.id('funktionsnedsattningan')),
             aText: element(by.id('funktionsnedsattning')),
             bYes: element(by.id('funktionsnedsattningby')),
             bNo: element(by.id('funktionsnedsattningbn'))
-        },
+        };
         this.hjartKarl = {
             aYes: element(by.id('hjartkarlay')),
             aNo: element(by.id('hjartkarlan')),
@@ -80,7 +81,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             cYes: element(by.id('hjartkarlcy')),
             cNo: element(by.id('hjartkarlcn')),
             cText: element(by.id('beskrivningRiskfaktorer'))
-        },
+        };
         this.diabetes = {
             aYes: element(by.id('diabetesay')),
             aNo: element(by.id('diabetesan')),
@@ -89,24 +90,24 @@ var TsBasUtkast = BaseTsUtkast._extend({
             endastkost: element(by.id('diabetestreat1')),
             tabletter: element(by.id('diabetestreat2')),
             insulin: element(by.id('diabetestreat3'))
-        },
+        };
         this.neurologiska = {
             aYes: element(by.id('neurologiay')),
             aNo: element(by.id('neurologian'))
-        },
+        };
         this.epilepsi = {
             aYes: element(by.id('medvetandestorningay')),
             aText: element(by.id('beskrivningMedvetandestorning')),
             aNo: element(by.id('medvetandestorningan'))
-        },
+        };
         this.njursjukdom = {
             aYes: element(by.id('njuraray')),
             aNo: element(by.id('njuraran'))
-        },
+        };
         this.kognitivt = {
             aYes: element(by.id('kognitivtay')),
             aNo: element(by.id('kognitivtan'))
-        }
+        };
     },
     fillInSynfunktioner: function (utkast) {
         if (utkast.synDonder === 'Ja') {
@@ -344,7 +345,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
                 elm[1].sendKeys(protractor.Key.SPACE);
             }
         });
-    },
+    }
 });
 
 module.exports = new TsBasUtkast();

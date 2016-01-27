@@ -48,14 +48,14 @@ module.exports = {
         var utkastTemplate = template;
         if(typeof template === 'undefined') {
             utkastTemplate = {
-                "intygType": intygType,
-                "patientPersonnummer": "19121212-1212",
-                "patientFornamn": "Tolvan",
-                "patientEfternamn": "Tolvansson",
-                "patientPostadress": "Svensson, Storgatan 1, PL 1234",
-                "patientPostnummer": "12345",
-                "patientPostort": "Småmåla"
-            }
+                'intygType': intygType,
+                'patientPersonnummer': '19121212-1212',
+                'patientFornamn': 'Tolvan',
+                'patientEfternamn': 'Tolvansson',
+                'patientPostadress': 'Svensson, Storgatan 1, PL 1234',
+                'patientPostnummer': '12345',
+                'patientPostort': 'Småmåla'
+            };
         }
         return restUtil.createUtkast(intygType, utkastTemplate);
     },

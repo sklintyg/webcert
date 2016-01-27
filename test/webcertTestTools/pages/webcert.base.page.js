@@ -20,15 +20,14 @@
 /**
  * Created by bennysce on 17-12-15.
  */
-/*globals browser*/
 'use strict';
 
-var Class = require('jclass');
+var JClass = require('jclass');
 
 /**
  * Elements always shown in webcert are connected here. Header etc.
  */
-var WebcertBasePage = Class._extend({
+var WebcertBasePage = JClass._extend({
     init: function() {
         this.doctor = element(by.css('.logged-in'));
         this.header = element(by.id('wcHeader'));

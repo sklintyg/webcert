@@ -59,7 +59,7 @@ var TsDiabetesIntyg = BaseIntyg._extend({
     },
     get: function get(intygId) {
         get._super.call(this, intygId);
-    },
+    }
 });
 
 module.exports = new TsDiabetesIntyg();

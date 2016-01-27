@@ -20,7 +20,7 @@
 /**
  * Created by BESA on 2015-11-17.
  */
-/*globals*/
+/*globals JSON*/
 'use strict';
 var restClient = require('./restclient.util.js');
 var env = require('./../environment.js').envConfig;

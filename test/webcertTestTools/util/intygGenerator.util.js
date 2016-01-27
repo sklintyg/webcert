@@ -20,6 +20,8 @@
 /**
  * Created by BESA on 2015-11-23.
  */
+
+ /* globals JSON */
 'use strict';
 var fkIntyg = require('./../testdata/intyg.fk7263.json');
 
@@ -104,7 +106,7 @@ function _buildIntyg(intygOptions) {
         additionalInfo: additionalInfo,
         certificateStates: stateList,
         document: jsonDocument
-    }
+    };
 
 //    console.log("======================================================RESULTINTYG");
 //    console.log(resultIntyg);
@@ -148,8 +150,7 @@ function buildDocumentFromIntygTemplate(intyg, intygOptions) {
     return JSON.stringify(intyg);
 }
 
-function overrideFkDefaults(intyg, intygOptions) {
-    var issuedDate = intygOptions.issued;
+function addBaserasPaDates(intyg,issuedDate){
     if (intyg.undersokningAvPatienten) {
         intyg.undersokningAvPatienten = issuedDate;
     }
@@ -162,38 +163,47 @@ function overrideFkDefaults(intyg, intygOptions) {
     if (intyg.annanReferens) {
         intyg.annanReferens = issuedDate;
     }
-    if (intyg.nedsattMed100) {
-        if (!intyg.nedsattMed100.from) {
-            intyg.nedsattMed100.from = intygOptions.validFrom;
-        }
-        if (!intyg.nedsattMed100.tom) {
-            intyg.nedsattMed100.tom = intygOptions.validTo;
-        }
+
+    return intyg;
+
+}
+
+function overrideFkDefaults(intyg, intygOptions) {
+
+    intyg = addBaserasPaDates(intyg,intygOptions.issued);
+
+    //Nedsatt med 100
+    if (intyg.nedsattMed100 && !intyg.nedsattMed100.from) {
+        intyg.nedsattMed100.from = intygOptions.validFrom;
     }
-    if (intyg.nedsattMed75) {
-        if (!intyg.nedsattMed75.from) {
-            intyg.nedsattMed75.from = intygOptions.validFrom;
-        }
-        if (!intyg.nedsattMed75.tom) {
-            intyg.nedsattMed75.tom = intygOptions.validTo;
-        }
+    if (intyg.nedsattMed100 && !intyg.nedsattMed100.tom) {
+        intyg.nedsattMed100.tom = intygOptions.validTo;
     }
-    if (intyg.nedsattMed50) {
-        if (!intyg.nedsattMed50.from) {
-            intyg.nedsattMed50.from = intygOptions.validFrom;
-        }
-        if (!intyg.nedsattMed50.tom) {
-            intyg.nedsattMed50.tom = intygOptions.validTo;
-        }
+
+    //Nedsatt med 75
+    if (intyg.nedsattMed75 && !intyg.nedsattMed75.from) {
+        intyg.nedsattMed75.from = intygOptions.validFrom;
     }
-    if (intyg.nedsattMed25) {
-        if (!intyg.nedsattMed25.from) {
-            intyg.nedsattMed25.from = intygOptions.validFrom;
-        }
-        if (!intyg.nedsattMed25.tom) {
-            intyg.nedsattMed25.tom = intygOptions.validTo;
-        }
+    if (intyg.nedsattMed75 &&!intyg.nedsattMed75.tom) {
+        intyg.nedsattMed75.tom = intygOptions.validTo;
     }
+
+    //Nedsatt med 50
+    if (intyg.nedsattMed50 && !intyg.nedsattMed50.from) {
+        intyg.nedsattMed50.from = intygOptions.validFrom;
+    }
+    if (intyg.nedsattMed50 && !intyg.nedsattMed50.tom) {
+        intyg.nedsattMed50.tom = intygOptions.validTo;
+    }
+
+    //Nedatt med 25
+    if (intyg.nedsattMed25 && !intyg.nedsattMed25.from) {
+        intyg.nedsattMed25.from = intygOptions.validFrom;
+    }
+    if (intyg.nedsattMed25 && !intyg.nedsattMed25.tom) {
+        intyg.nedsattMed25.tom = intygOptions.validTo;
+    }
+
     intyg.giltighet.from = intygOptions.validFrom;
     intyg.giltighet.tom = intygOptions.validTo;
 }

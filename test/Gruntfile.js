@@ -37,7 +37,7 @@ module.exports = function(grunt) {
             'webcertTestTools/**/*.js',
             'webcertTestTools/*.js'],
             options: {
-                force: true,
+                force: false,
                 jshintrc: '../../common/build-tools/src/main/resources/jshint/.jshintrc'
             }
         },

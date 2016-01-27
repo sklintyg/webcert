@@ -20,14 +20,17 @@
 /**
  * Created by bennysce on 17/12/15.
  */
+ /* globals browser */
 'use strict';
 
 var intygTypeSelector = element(by.id('intygType'));
 var intygTypeButton = element(by.id('intygTypeFortsatt'));
-var sekretessmarkering = element(by.id('sekretessmarkering'));
-var namnFortsatt = element(by.id('namnFortsatt'));
+
 
 module.exports = {
+    sekretessmarkering: element(by.id('sekretessmarkering')),
+    namnFortsatt : element(by.id('namnFortsatt')),
+    
     get: function () {
         browser.get('web/dashboard#/create/choose-cert-type/index');
     },
