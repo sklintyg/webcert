@@ -21,7 +21,7 @@
 'use strict';
 var sleep = require('sleep');
 
-var checkDB = require('./check_db');
+var db = require('./db.js');
 
 module.exports = function() {
     this.setDefaultTimeout(100 * 1000);
@@ -49,7 +49,7 @@ module.exports = function() {
 
             var querys = [query2, query1];
             querys.forEach(function(q) {
-                var conn = checkDB.makeConnection();
+                var conn = db.makeConnection();
                 conn.connect();
                 conn.query(q,
                     function(err, rows, fields) {
