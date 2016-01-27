@@ -25,7 +25,6 @@
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
-var webcertBasePage = pages.webcertBase;
 
 module.exports = function () {
 
@@ -62,20 +61,20 @@ module.exports = function () {
     this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes' || intyg.typ === 'Transportstyrelsens läkarintyg') {
             logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
-            require('./check_tsCommon_values').checkTsCommonValues(intyg, callback);
+            require('./checkValues/ts.common.js').checkTsCommonValues(intyg, callback);
         }
 
         if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
             logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
-            require('./check_tsDiabetes_values').checkTsDiabetesValues(intyg, callback);
+            require('./checkValues/ts.diabetes.js').checkTsDiabetesValues(intyg, callback);
         }
         else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
             logg('-- Kontrollerar Transportstyrelsens läkarintyg --');
-            require('./check_tsBas_values').checkTsBasValues(intyg, callback);
+            require('./checkValues/ts.bas.js').checkTsBasValues(intyg, callback);
         }
         else if (intyg.typ === 'Läkarintyg FK 7263'){
             logg('-- Kontrollerar Läkarintyg FK 7263 --');
-            require('./check_fk_values').checkFKValues(intyg, callback);
+            require('./checkValues/fk.js').checkFKValues(intyg, callback);
         }
     });
 

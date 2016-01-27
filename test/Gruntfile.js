@@ -31,7 +31,7 @@ module.exports = function(grunt) {
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
         jshint: {
-            acc: ['acceptance/features/steps/*.js'],
+            acc: ['acceptance/features/steps/*.js','acceptance/features/steps/**/*.js'],
             options: {
                 force: true,
                 jshintrc: '../../common/build-tools/src/main/resources/jshint/.jshintrc'

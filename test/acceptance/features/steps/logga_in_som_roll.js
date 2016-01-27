@@ -22,7 +22,7 @@
 
 'use strict';
 
-var webcertBasePage = pages.webcertBase;
+// var webcertBasePage = pages.webcertBase;
 
 module.exports = function() {
 

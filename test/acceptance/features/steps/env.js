@@ -25,53 +25,71 @@ module.exports = function() {
     this.setDefaultTimeout(100 * 1000);
 
     function makeConnection() {
+        if (!process.env.DATABASE_PASSWORD) {
+            throw 'Miljövariabel DATABASE_PASSWORD saknas';
+        }
         return mysql.createConnection({
-            host  :     process.env.DATABASE_HOST,
-            user  :     process.env.DATABASE_USER,
-            password  : process.env.DATABASE_PASSWORD, 
-            database  : process.env.DATABASE_NAME,
+            host: process.env.DATABASE_HOST,
+            user: process.env.DATABASE_USER,
+            password: process.env.DATABASE_PASSWORD,
+            database: process.env.DATABASE_NAME,
             multipleStatements: true
         });
-         
     }
 
-    function removeCert(intygsId) {
+    function removeCert(intygsId,cb) {
         sleep.sleep(10);
-        if (typeof intygsId != "undefined") {
-        var databaseTableINTYG = process.env.DATABASE_NAME + '.INTYG';
-        var databaseTableSIGNATUR = process.env.DATABASE_NAME + '.SIGNATUR';
-         var foreignKeyChecks0 = 'SET FOREIGN_KEY_CHECKS = 0;';
-         var foreignKeyChecks1 = 'SET FOREIGN_KEY_CHECKS = 1;';
+        if (typeof intygsId !== 'undefined') {
+            var databaseTableINTYG = process.env.DATABASE_NAME + '.INTYG';
+            var databaseTableSIGNATUR = process.env.DATABASE_NAME + '.SIGNATUR';
+            var foreignKeyChecks0 = 'SET FOREIGN_KEY_CHECKS = 0;';
+            var foreignKeyChecks1 = 'SET FOREIGN_KEY_CHECKS = 1;';
 
-        var query1 = foreignKeyChecks0 + 'DELETE ' + databaseTableINTYG + ' FROM ' + databaseTableINTYG +
-         ' INNER JOIN ' + databaseTableSIGNATUR + ' ON ' + databaseTableINTYG + '.INTYGS_ID=' + databaseTableSIGNATUR + '.INTYG_ID'+
-         ' WHERE ' + databaseTableINTYG + '.INTYGS_ID="' + intygsId +'";' + foreignKeyChecks1;
+            var query1 = foreignKeyChecks0 + 'DELETE ' + databaseTableINTYG + ' FROM ' + databaseTableINTYG +
+                ' INNER JOIN ' + databaseTableSIGNATUR + ' ON ' + databaseTableINTYG + '.INTYGS_ID=' + databaseTableSIGNATUR + '.INTYG_ID' +
+                ' WHERE ' + databaseTableINTYG + '.INTYGS_ID="' + intygsId + '";' + foreignKeyChecks1;
 
-        var CERTIFICATE = 'intyg_ip40.CERTIFICATE';
-        var ORIGINAL_CERTIFICATE = 'intyg_ip40.ORIGINAL_CERTIFICATE';
-        var CERTIFICATE_STATE = 'intyg_ip40.CERTIFICATE_STATE';
+            var CERTIFICATE = 'intyg_ip40.CERTIFICATE';
+            var ORIGINAL_CERTIFICATE = 'intyg_ip40.ORIGINAL_CERTIFICATE';
+            var CERTIFICATE_STATE = 'intyg_ip40.CERTIFICATE_STATE';
 
-        var query2 = foreignKeyChecks0 + ' DELETE ' + CERTIFICATE + ' FROM ' + CERTIFICATE + ' INNER JOIN ' + ORIGINAL_CERTIFICATE +
-         ' ON ' + CERTIFICATE +'.ID=' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID' + ' INNER JOIN ' + CERTIFICATE_STATE +
-         ' ON ' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID=' + CERTIFICATE_STATE + '.CERTIFICATE_ID' + 
-         ' WHERE ' + CERTIFICATE +'.ID="' + intygsId + '"; ' + foreignKeyChecks1;
+            var query2 = foreignKeyChecks0 + ' DELETE ' + CERTIFICATE + ' FROM ' + CERTIFICATE + ' INNER JOIN ' + ORIGINAL_CERTIFICATE +
+                ' ON ' + CERTIFICATE + '.ID=' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID' + ' INNER JOIN ' + CERTIFICATE_STATE +
+                ' ON ' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID=' + CERTIFICATE_STATE + '.CERTIFICATE_ID' +
+                ' WHERE ' + CERTIFICATE + '.ID="' + intygsId + '"; ' + foreignKeyChecks1;
 
-        var querys = [query2, query1];
-        querys.forEach( function (q){ 
-            var conn = makeConnection();
-            conn.connect();
-            conn.query(q,
-                function(err, rows, fields) {
-                    if (typeof rows != 'undefined') { console.log(rows.count + 'affected.'); }
-                    conn.end();
-                    if (err) { throw err; }
-                }); 
-        });
+            var querys = [query2, query1];
+            querys.forEach(function(q) {
+                var conn = makeConnection();
+                conn.connect();
+                conn.query(q,
+                    function(err, rows, fields) {
+                        conn.end();
+                        if (typeof rows !== 'undefined') {
+                            logg(rows.count + 'affected.');
+                            cb();
+                        }
+                        if (err) {
+                             cb(err);
+                        }
+
+                    });
+            });
         }
     }
 
     //After scenario
     this.After(function(scenario, callback) {
+
+        //Ska intyg rensas bort efter scenario?
+        var rensaBortIntyg = true;
+        var tagArr = scenario.getTags();
+        for (var i = 0; i < tagArr.length; i++) {
+            if(tagArr[i].getName() === '@keepIntyg'){
+                rensaBortIntyg = false;
+            }
+        }
+
         if (scenario.isFailed()) {
             logg('scenario failed');
             browser.takeScreenshot().then(function(png) {
@@ -83,22 +101,27 @@ module.exports = function() {
             });
 
         } else {
-            removeCert(global.intyg.id);
-            callback();
+
+            if(process.env.DATABASE_PASSWORD && rensaBortIntyg){
+                removeCert(global.intyg.id, callback);
+            }
+            else{
+                logg('Behåller skapat testintyg');
+                callback();
+            }    
         }
     });
 
     this.Before(function(scenario, callback) {
-
         global.scenario = scenario;
         callback();
     });
 
-        global.logg = function(text){
-            console.log(text);
-            if(global){
-                global.scenario.attach(text);
-            }
-        };
+    global.logg = function(text) {
+        console.log(text);
+        if (global) {
+            global.scenario.attach(text);
+        }
+    };
 
 };
