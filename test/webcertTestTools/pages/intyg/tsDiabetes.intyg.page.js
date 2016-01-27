@@ -43,12 +43,15 @@ var TsDiabetesIntyg = BaseIntyg._extend({
         
         this.synIntyg = element(by.id('separatOgonlakarintyg'));
 
-        this.bed = element(by.id('bedomning'));
-		this.eKost = element(by.id('endastKost'));
-		this.tabl = element(by.id('tabletter'));
-		this.insul = element(by.id('insulin')); 
+
+        this.falt1 = {
+            bedomning : element(by.id('bedomning')),
+            endastKost : element(by.id('endastKost')),
+            tabletter : element(by.id('tabletter')),
+            insulin : element(by.id('insulin'))
+        };
         
-        this.komment = element(by.id('kommentar'));
+        this.kommentar = element(by.id('kommentar'));
         this.specKomp = element(by.id('lakareSpecialKompetens'));
         
         this.intygetAvser = element(by.id('intygAvser'));

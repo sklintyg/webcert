@@ -23,6 +23,66 @@
 'use strict';
 
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
+var helpers = require('./helpers.js');
+
+function checkDiabetes(intyg,cb){
+        if (intyg.diabetestyp === 'Typ 2' && intyg.diabetes === 'Ja') {
+        var typer = intyg.dTyper;
+        expect(tsBasIntygPage.diabetesTyp.getText()).to.eventually.equal(intyg.diabetestyp).then(function(value) {
+            logg('OK - Patient diabetes typ = ' + value);
+        }, function(reason) {
+            cb('FEL - Patient diabetes typ : ' + reason);
+        });
+        typer.forEach( function (_typ){
+            if (_typ === 'Endast kost') {
+                expect(tsBasIntygPage.kost.getText()).to.eventually.equal('Kost').then(function(value) {
+                    logg('OK - Endast kost = ' + value);
+                }, function(reason) {
+                    cb('FEL - Endast kost : ' + reason);
+                });
+            }else if (_typ === 'Tabletter'){
+                expect(tsBasIntygPage.tabletter.getText()).to.eventually.equal('Tabletter').then(function(value) {
+                    logg('OK - Tabletter = ' + value);
+                }, function(reason) {
+                    cb('FEL - Tabletter : ' + reason);
+                });
+            }else if (_typ === 'Insulin'){
+                expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('Insulin').then(function(value) {
+                    logg('OK - Insulin = ' + value);
+                }, function(reason) {
+                    cb('FEL - Insulin: ' + reason);
+                });
+            }
+        });
+    } else if (intyg.diabetestyp === 'Typ 1'){
+        expect(tsBasIntygPage.kost.getText()).to.eventually.equal('').then(function(value) {
+            logg('OK - Insulin = \"TOMT\"');
+                }, function(reason) {
+                    cb('FEL - Insulin: \"TOMT\"');
+                });
+        expect(tsBasIntygPage.tabletter.getText()).to.eventually.equal('').then(function(value) {
+            logg('OK - Insulin = \"TOMT\"');
+                }, function(reason) {
+                    cb('FEL - Insulin: \"TOMT\"');
+                });
+        expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('').then(function(value) {
+            logg('OK - Insulin = \"TOMT\"');
+                }, function(reason) {
+                    cb('FEL - Insulin : \"TOMT\"');
+                });
+    }
+}
+
+function checkKorrektionsglasensStyrka(styrkor,cb){
+    var _sum = (+ styrkor.homk - +styrkor.houk) +  ( + styrkor.vomk - + styrkor.vouk);
+    var overskrider8dioptrier = _sum < 8;
+
+    expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal(helpers.boolTillJaNej(overskrider8dioptrier)).then(function(value) {
+        logg('OK - Korrektionsglasens styrka överskrider 8 dioptrier = ' + value);
+    }, function(reason) {
+        cb('FEL - Korrektionsglasens styrka överskrider 8 dioptrier : ' + reason);
+    });
+}
 
 module.exports ={
 	checkTsBasValues:function(intyg, callback){
@@ -94,20 +154,9 @@ module.exports ={
         callback('FEL - Höger öga kontaktlins : ' + reason);
     });    
 
-    var _sum = (+ intyg.styrkor.homk - +intyg.styrkor.houk) +  ( + intyg.styrkor.vomk - + intyg.styrkor.vouk);
-    if (_sum < 8) {
-        expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Nej').then(function(value) {
-            logg('OK - Korrektionsglasens styrka = ' + value);
-        }, function(reason) {
-            callback('FEL - Korrektionsglasens styrka : ' + reason);
-        });
-    } else {
-        expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal('Ja').then(function(value) {
-            logg('OK - Korrektionsglasens styrka = ' + value);
-        }, function(reason) {
-            callback('FEL - Korrektionsglasens styrka : ' + reason);
-        });
-    }
+    //Kontrollera Fält 1 : Korrektionsglasens styrka
+    checkKorrektionsglasensStyrka(intyg.styrkor,callback);
+
     expect(tsBasIntygPage.horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel).then(function(value) {
         logg('OK - Hörsel balansbalans rubbningar = ' + value);
     }, function(reason) {
@@ -180,51 +229,8 @@ module.exports ={
         callback('FEL - Patient har Diabetes : ' + reason);
     });
 
-    if (intyg.diabetestyp === 'Typ 2' && intyg.diabetes === 'Ja') {
-        var typer = intyg.dTyper;
-        expect(tsBasIntygPage.diabetesTyp.getText()).to.eventually.equal(intyg.diabetestyp).then(function(value) {
-            logg('OK - Patient diabetes typ = ' + value);
-        }, function(reason) {
-            callback('FEL - Patient diabetes typ : ' + reason);
-        });
-        typer.forEach( function (_typ){
-            if (_typ === 'Endast kost') {
-                expect(tsBasIntygPage.kost.getText()).to.eventually.equal('Kost').then(function(value) {
-                    logg('OK - Endast kost = ' + value);
-                }, function(reason) {
-                    callback('FEL - Endast kost : ' + reason);
-                });
-            }else if (_typ === 'Tabletter'){
-                expect(tsBasIntygPage.tabeltter.getText()).to.eventually.equal('Tabletter').then(function(value) {
-                    logg('OK - Tabletter = ' + value);
-                }, function(reason) {
-                    callback('FEL - Tabletter : ' + reason);
-                });
-            }else if (_typ === 'Insulin'){
-                expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('Insulin').then(function(value) {
-                    logg('OK - Insulin = ' + value);
-                }, function(reason) {
-                    callback('FEL - Insulin: ' + reason);
-                });
-            }
-        });
-    } else if (intyg.diabetestyp === 'Typ 1'){
-        expect(tsBasIntygPage.kost.getText()).to.eventually.equal('').then(function(value) {
-            logg('OK - Insulin = \"TOMT\"');
-                }, function(reason) {
-                    callback('FEL - Insulin: \"TOMT\"');
-                });
-        expect(tsBasIntygPage.tabeltter.getText()).to.eventually.equal('').then(function(value) {
-            logg('OK - Insulin = \"TOMT\"');
-                }, function(reason) {
-                    callback('FEL - Insulin: \"TOMT\"');
-                });
-        expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('').then(function(value) {
-            logg('OK - Insulin = \"TOMT\"');
-                }, function(reason) {
-                    callback('FEL - Insulin : \"TOMT\"');
-                });
-    }
+    //kontrollera diabetes
+    checkDiabetes(intyg,callback);
 
     expect(tsBasIntygPage.neurologiskSjukdom.getText()).to.eventually.equal(intyg.neurologiska).then(function(value) {
         logg('OK - Neurologiska sjukdomar = ' + value);

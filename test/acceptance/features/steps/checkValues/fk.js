@@ -26,16 +26,8 @@
 var helpers = require('./helpers.js');
 var intygPage = pages.intyg.fk['7263'].intyg;
 
-function boolTillJaNej(val) {
-    if (val) {
-        return 'Ja';
-    } else {
-        return 'Nej';
-    }
-}
-
 function checkSmitta(isSmittskydd, cb) {
-    var smitta = boolTillJaNej(isSmittskydd);
+    var smitta = helpers.boolTillJaNej(isSmittskydd);
     expect(intygPage.field1.text.getText()).to.eventually.equal(smitta).then(function(value) {
         logg('OK - SMITTA = ' + value);
     }, function(reason) {
@@ -298,14 +290,14 @@ module.exports = {
         // }
 
         // Kontrollera FÄLT 11 : Resa till arbete med annat färdsätt
-        expect(intygPage.field11.text.getText()).to.eventually.contain(boolTillJaNej(intyg.rekommendationer.resor)).then(function(value) {
+        expect(intygPage.field11.text.getText()).to.eventually.contain(helpers.boolTillJaNej(intyg.rekommendationer.resor)).then(function(value) {
             logg('OK - Resor till arbete med annat färdsätt = ' + value);
         }, function(reason) {
             callback('FEL, Resor till arbete med annat färdsätt,' + reason);
         });
 
         // Kontrollera FÄLT 12 : Kontakt önskas med FK
-        var kontaktOnskas = boolTillJaNej(intyg.kontaktOnskasMedFK);
+        var kontaktOnskas = helpers.boolTillJaNej(intyg.kontaktOnskasMedFK);
         expect(intygPage.field12.text.getText()).to.eventually.equal(kontaktOnskas).then(function(value) {
             logg('OK - Kontakt med FK = ' + value);
         }, function(reason) {

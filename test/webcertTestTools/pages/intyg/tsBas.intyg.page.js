@@ -54,7 +54,7 @@ var TsBasIntyg = BaseIntyg._extend({
 
 	this.harDiabetes = element(by.id('harDiabetes'));
     this.kost = element(by.id('kost'));
-    this.tabeltter = element(by.id('tabletter'));
+    this.tabletter = element(by.id('tabletter'));
     this.insulin = element(by.id('insulin'));
     this.diabetesTyp = element(by.id('diabetesTyp'));
 
