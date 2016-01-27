@@ -128,7 +128,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetQuestion() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().pathParams("intygsTyp", "LISU", "version", "0.9").expect().statusCode(200)
+        given().pathParams("intygsTyp", "luse", "version", "0.9").expect().statusCode(200)
                 .when().get("api/utkast/questions/{intygsTyp}/{version}")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-texter.json"));
     }
