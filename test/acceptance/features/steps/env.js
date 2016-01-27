@@ -27,7 +27,7 @@ module.exports = function() {
     this.setDefaultTimeout(100 * 1000);
 
     function removeCert(intygsId,cb) {
-        sleep.sleep(10);
+        sleep.sleep(5);
         if (typeof intygsId !== 'undefined') {
             var databaseTableINTYG = process.env.DATABASE_NAME + '.INTYG';
             var databaseTableSIGNATUR = process.env.DATABASE_NAME + '.SIGNATUR';
@@ -55,7 +55,7 @@ module.exports = function() {
                     function(err, rows, fields) {
                         conn.end();
                         if (typeof rows !== 'undefined') {
-                            logg(rows.count + 'affected.');
+                            logg(rows[0] + ' affected.');
                             cb();
                         }
                         if (err) {
@@ -64,7 +64,7 @@ module.exports = function() {
 
                     });
             });
-        }
+        } else { cb(); }
     }
 
     //After scenario

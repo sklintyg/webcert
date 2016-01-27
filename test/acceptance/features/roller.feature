@@ -13,7 +13,7 @@ Scenario: Logga in och signera intyg som Läkare
 	Och signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
-@vardadmin
+# @vardadmin
 Scenario: Det ska inte gå att signera intyg som en vårdadministratör
 	Givet att jag är inloggad som vårdadministratör
 	När jag väljer patienten "19971019-2387"
