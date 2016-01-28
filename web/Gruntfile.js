@@ -267,7 +267,7 @@ module.exports = function(grunt) {
                 src: ['**/*.html'],
                 dest: __dirname + SJUKERSATTNING_DEST_DIR + '/templates.js',
                 options: {
-                    module: 'sjukersattning',
+                    module: 'luse',
                     url: function(url) {
                         return '/web/webjars/sjukersattning/webcert/' + url;
                     }
