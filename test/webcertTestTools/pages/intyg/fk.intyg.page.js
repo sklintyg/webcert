@@ -45,7 +45,11 @@ var Fk7263Intyg = BaseIntyg._extend({
             funktionsnedsattning : element(by.id('funktionsnedsattning'))
         };
         this.field4b = {
-        	undersokningAvPatienten : element(by.id('undersokningAvPatienten'))
+        	undersokningAvPatienten : element(by.id('undersokningAvPatienten')),
+            telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
+            journaluppgifter: element(by.id('journaluppgifter')),
+            annat: element(by.id('annanReferens'))
+
         };
         this.field5 = {
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))

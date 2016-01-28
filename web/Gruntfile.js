@@ -47,11 +47,13 @@ module.exports = function(grunt) {
     var TEST_DIR = 'src/test/js/';
     var DEST_DIR = 'target/webapp/app/';
 
-    var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
-        return file.replace(/\/app\//g, SRC_DIR);
-    });
-
-    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert);
+    var webcert = grunt.file.expand({cwd:SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
+    grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
+        map(function(file){ return '/app/'+file; }).
+        concat('/app/templates.js'), null, 4));
+    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert.map(function(file){
+        return SRC_DIR + file;
+    }));
 
     var COMMON_WEBCERT_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
     var COMMON_WEBCERT_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/webcert';
@@ -267,7 +269,7 @@ module.exports = function(grunt) {
                 src: ['**/*.html'],
                 dest: __dirname + SJUKERSATTNING_DEST_DIR + '/templates.js',
                 options: {
-                    module: 'sjukersattning',
+                    module: 'luse',
                     url: function(url) {
                         return '/web/webjars/sjukersattning/webcert/' + url;
                     }

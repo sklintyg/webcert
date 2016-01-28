@@ -23,9 +23,9 @@
 /*globals browser*/
 'use strict';
 
-var Class = require('jclass');
+var JClass = require('jclass');
 
-var BaseUtkast = Class._extend({
+var BaseUtkast = JClass._extend({
     init: function() {
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));

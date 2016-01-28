@@ -23,9 +23,9 @@
 /*globals browser*/
 'use strict';
 
-var Class = require('jclass');
+var JClass = require('jclass');
 
-var BaseIntyg = Class._extend({
+var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
         this.at = element(by.id('viewCertAndQA'));

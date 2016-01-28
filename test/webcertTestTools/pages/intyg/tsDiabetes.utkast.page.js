@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/12/15.
  */
-/*globals element,by*/
+/*globals element,by, protractor*/
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');

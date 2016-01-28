@@ -30,14 +30,25 @@ module.exports = function() {
     
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
         var qaTable = element(by.css('table.table-qa'));
-
         qaTable.all(by.cssContainingText('tr', intygstyp)).filter(function(elem, index) {
             return elem.getText().then(function(text) {
                 return (text.indexOf(status) > -1);
             });
         }).then(function(filteredElements) {
             if(!filteredElements[0]){
-                callback('TODO: Hantera fall då det inte redan finns något intyg att använda');
+                var wcTestTools = require('webcert-testtools');
+                var specHelper = wcTestTools.helpers.spec;
+                var testdataHelper = wcTestTools.helpers.testdata;
+                
+                var intygId = specHelper.generateTestGuid();
+                console.log('intygsId = '+ intygId);
+                
+                testdataHelper.createIntygFromTemplate('ts-bas', intygId).then(function(response) {
+                    global.JSON.parse(response.request.body);
+                }, function(error) {
+                    console.log('Error calling createIntyg');
+                }).then(callback);
+                //callback('TODO: Hantera fall då det inte redan finns något intyg att använda');
             }
             else{
                 filteredElements[0].element(by.cssContainingText('button', 'Visa')).click();

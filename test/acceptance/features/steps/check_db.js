@@ -21,22 +21,18 @@
 
 'use strict';
 
-var mysql = require('mysql');
+var db = require('./db.js');
 
 module.exports = function () {
+
 	this.Given(/^ska spår av utkastet inte finnas i databasen$/, function (callback) {
     
     if(!process.env.DATABASE_PASSWORD){
       callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:'+process.env.DATABASE_USER);
     }
     else{
+      var connection = db.makeConnection();
       var dbName = process.env.DATABASE_NAME;
-      var connection = mysql.createConnection({
-        host  : process.env.DATABASE_HOST,
-        user  : process.env.DATABASE_USER,
-        password  : process.env.DATABASE_PASSWORD,
-        database  : dbName
-      });
 
       connection.connect();
       connection.query('SELECT COUNT(*) AS Counter FROM '+dbName+'.INTYG WHERE '+dbName+'.INTYG.INTYGS_ID = \"'+intyg.id+'\";', function(err, rows, fields){

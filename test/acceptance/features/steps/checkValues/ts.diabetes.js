@@ -105,7 +105,7 @@ module.exports ={
         }
 
         // ============= PLACEHOLDERS:
-        expect(tsDiabIntyg.komment.getText()).to.eventually.equal('Ej angivet').then(function(value) {
+        expect(tsDiabIntyg.kommentar.getText()).to.eventually.equal('Ej angivet').then(function(value) {
             logg('OK - Kommentar = '+ value);
             }, function(reason) {
                 callback('FEL - Kommentar: '+ reason);
@@ -121,7 +121,7 @@ module.exports ={
         intyg.allmant.behandling.typer.forEach(function(typ) {
             if(typ === 'Endast kost')
             {
-                expect(tsDiabIntyg.eKost.getText()).to.eventually.equal('Ja').then(function(value) {
+                expect(tsDiabIntyg.falt1.endastKost.getText()).to.eventually.equal('Ja').then(function(value) {
                     logg('OK - '+typ+' = '+ value);
                     }, function(reason) {
                         callback('FEL - '+typ+' : '+ reason);
@@ -129,7 +129,7 @@ module.exports ={
             }
             else if(typ === 'Tabletter')
             {
-                expect(tsDiabIntyg.tabl.getText()).to.eventually.equal('Ja').then(function(value) {
+                expect(tsDiabIntyg.falt1.tabletter.getText()).to.eventually.equal('Ja').then(function(value) {
                     logg('OK - '+typ+' = '+ value);
                     }, function(reason) {
                         callback('FEL - '+typ+' : '+ reason);
@@ -137,7 +137,7 @@ module.exports ={
             }
             else if(typ === 'Insulin')
             {
-                expect(tsDiabIntyg.insul.getText()).to.eventually.equal('Ja').then(function(value) {
+                expect(tsDiabIntyg.falt1.insulin.getText()).to.eventually.equal('Ja').then(function(value) {
                     logg('OK - '+typ+' = '+ value);
                     }, function(reason) {
                         callback('FEL - '+typ+' : '+ reason);
@@ -145,7 +145,7 @@ module.exports ={
             }
         });
 
-        expect(tsDiabIntyg.bed.getText()).to.eventually.contain(selectedTypes).then(function(value) {
+        expect(tsDiabIntyg.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
             logg('OK - Bedömningen avser körkortstyper = '+ value);
             }, function(reason) {
                 callback('FEL - Bedömningen avser körkortstyper: '+ reason);

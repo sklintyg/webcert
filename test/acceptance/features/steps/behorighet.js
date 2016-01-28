@@ -18,14 +18,31 @@
  */
 
 'use strict';
-
+var protractor = global.protractor;
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {
         element(by.id('menu-skrivintyg')).click().then(callback);
     });
+
+    this.Given(/^går in på Ej signerade utkast$/, function (callback) {
+        element(by.id('menu-unsigned')).click().then(callback);
+    });
     
     this.Given(/^är kopieraknappen tillgänglig$/, function (callback) {
-        element(by.id('copyBtn')).click().then(callback);
-    });
+	    element(by.id('copyBtn')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^Vidarebeforda knappen synns$/, function (callback) {
+	  element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
+	  element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^ska intyget vara markerat som vidarebefodrad$/, function (callback) {
+	  // Write code here that turns the phrase above into concrete actions
+	  callback('TBI!');
+	});
 };

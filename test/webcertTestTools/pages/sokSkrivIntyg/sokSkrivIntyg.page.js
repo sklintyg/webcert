@@ -20,6 +20,8 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
+/* globals browser */
+
 'use strict';
 
 var WebcertBasePage = require('../webcert.base.page.js');
@@ -45,12 +47,7 @@ var SokSkrivIntyg = WebcertBasePage._extend({
     selectPersonnummer: function(pn) {
         this.setPersonnummer(pn);
         this.pnButton.click();
-    },
-    sekretessmarkering: this.sekretessmarkering,
-    puerror: this.puerror,
-    fornamn: this.fornamn,
-    efternamn: this.efternamn,
-    namnFortsatt: this.namnFortsatt
+    }
 });
 
-module.exports = new SokSkrivIntyg()
+module.exports = new SokSkrivIntyg();

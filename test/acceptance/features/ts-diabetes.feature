@@ -6,6 +6,7 @@ Egenskap: Hantera Transportstyrelsens diabetesintyg
 Bakgrund: Jag befinner mig på webcerts förstasida
     Givet att jag är inloggad som läkare
 
+@keepIntyg
 Scenario: Skapa och signera ett intyg
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
@@ -14,7 +15,7 @@ Scenario: Skapa och signera ett intyg
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
     
-
+@keepIntyg
 Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"

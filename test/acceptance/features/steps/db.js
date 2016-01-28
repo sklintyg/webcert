@@ -17,29 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by bennysce on 17-12-15.
- */
 'use strict';
+var mysql = require('mysql');
 
-var JClass = require('jclass');
-
-/**
- * Elements always shown in webcert are connected here. Header etc.
- */
-var WebcertBasePage = JClass._extend({
-    init: function() {
-        this.doctor = element(by.css('.logged-in'));
-        this.header = element(by.id('wcHeader'));
-
-        this.flikar = {
-        	sokSkrivIntyg: element(by.id('menu-skrivintyg'))
-        };
-
-    },
-    getDoctorText: function () {
-        return this.doctor.getText();
-    }
-});
-
-module.exports =  WebcertBasePage;
+module.exports = {
+  makeConnection: function () {
+      if (!process.env.DATABASE_PASSWORD) {
+          throw 'Miljövariabel DATABASE_PASSWORD saknas';
+      }
+      return mysql.createConnection({
+          host: process.env.DATABASE_HOST,
+          user: process.env.DATABASE_USER,
+          password: process.env.DATABASE_PASSWORD,
+          database: process.env.DATABASE_NAME,
+          multipleStatements: true
+      });
+  }
+};

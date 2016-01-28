@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,browser*/
+/*globals element,by, protractor*/
 'use strict';
 
 var pageHelpers = require('./../pageHelper.util.js');

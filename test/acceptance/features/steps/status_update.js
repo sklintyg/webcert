@@ -24,6 +24,7 @@ var soap = require('soap');
 var sleep = require('sleep');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
+var db = require('./db.js');
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
@@ -189,18 +190,6 @@ function assertDatabaseContents(intygsId, column, value, callback) {
     assertNumberOfEvents(query, 1, callback);
 }
 
-
-function makeConnection() {
-    var mysql = require('mysql');
-    return mysql.createConnection({
-        host  :     process.env.DATABASE_HOST,
-        user  :     process.env.DATABASE_USER,
-        password  : process.env.DATABASE_PASSWORD, 
-        database  : process.env.DATABASE_NAME
-    });
-     
-}
-
 function assertEvents(intygsId, event, numEvents, callback) {
     sleep.sleep(5);
     var databaseTable = 'webcert_requests.requests';
@@ -214,7 +203,7 @@ function assertEvents(intygsId, event, numEvents, callback) {
 function assertNumberOfEvents(query, numEvents, callback) {
     console.log('Assert number of events. Query: ' + query);
 
-    var conn = makeConnection();
+    var conn = db.makeConnection();
     conn.connect();
     conn.query(query,
                      function(err, rows, fields) {
