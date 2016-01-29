@@ -20,6 +20,7 @@
 'use strict';
 
 var shuffle = require('./../helpers/testdataHelper.js').shuffle;
+var specHelper = require('../helpers/helpers.js').spec;
 
 var testdata =  {
         smittskydd: [true, false]
@@ -177,10 +178,15 @@ module.exports = {
     data:testdata,
 
     sjukintyg: {
-        getRandom: function() {
+        getRandom: function(intygsID) {
             var isSmittskydd = shuffle(testdata.smittskydd)[0];
 
+            if(!intygsID){
+                intygsID = specHelper.generateTestGuid();
+            }
+
             return {
+                id:intygsID,
                 typ:'Läkarintyg FK 7263',
                 smittskydd: isSmittskydd,
                 baserasPa:random.baserasPa(isSmittskydd),

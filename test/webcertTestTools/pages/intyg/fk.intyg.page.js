@@ -20,6 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
+
 'use strict';
 
 var BaseIntyg = require('./base.intyg.page.js');
@@ -138,6 +139,9 @@ var Fk7263Intyg = BaseIntyg._extend({
     },
     get: function get(intygId) {
         get._super.call(this, intygId);
+    },
+    selectQuestionTopic: function(amne){
+        this.question.topic.element(by.cssContainingText('option', amne)).click();
     }
 });
 

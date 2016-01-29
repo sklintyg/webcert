@@ -20,6 +20,8 @@
 'use strict';
 
 var shuffle = require('./../helpers/testdataHelper.js').shuffle;
+var specHelper = require('../helpers/helpers.js').spec;
+
 
 module.exports = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
@@ -147,9 +149,15 @@ module.exports = {
         return bedomningsObj;
 
     },
-    getRandomTsDiabetesIntyg: function() {
+    getRandomTsDiabetesIntyg: function(intygsID) {
         var randomKorkortstyper = this.getRandomKorkortstyper();
+
+        if(!intygsID){
+            intygsID = specHelper.generateTestGuid();
+        }
+        
         return {
+            id:intygsID,
             typ:'Transportstyrelsens läkarintyg, diabetes',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),
@@ -167,9 +175,15 @@ module.exports = {
             bedomning: this.getRandomBedomning(randomKorkortstyper)
         };
     },
-    getRandomTsBasIntyg: function() {
+    getRandomTsBasIntyg: function(intygsID) {
         var randomKorkortstyper = this.getRandomKorkortstyperHogre();
+
+        if(!intygsID){
+            intygsID = specHelper.generateTestGuid();
+        }
+
         return {
+            id:intygsID,
             typ:'Transportstyrelsens läkarintyg',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: this.getRandomIdentitetStyrktGenom(),

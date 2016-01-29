@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals protractor*/
 'use strict';
-var protractor = global.protractor;
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {

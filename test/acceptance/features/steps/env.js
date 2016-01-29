@@ -55,7 +55,7 @@ module.exports = function() {
                     function(err, rows, fields) {
                         conn.end();
                         if (typeof rows !== 'undefined') {
-                            logg(rows[0] + ' affected.');
+                            logg(rows[0].affectedRows + ' row(s) affected.');
                             cb();
                         }
                         if (err) {

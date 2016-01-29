@@ -34,7 +34,7 @@ module.exports = function() {
         
 
         if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-            global.intyg = testdata.getRandomTsBasIntyg();
+            global.intyg = testdata.getRandomTsBasIntyg(intyg.id);
 
             tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
             // browser.ignoreSynchronization = true;
@@ -65,7 +65,7 @@ module.exports = function() {
             tsBasUtkastPage.fillInBedomning(intyg.bedomning);
             callback();
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            global.intyg = testdata.getRandomTsDiabetesIntyg();
+            global.intyg = testdata.getRandomTsDiabetesIntyg(intyg.id);
             
             tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
 
@@ -79,7 +79,7 @@ module.exports = function() {
 
             callback();
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            global.intyg = testdata.fk.sjukintyg.getRandom();
+            global.intyg = testdata.fk.sjukintyg.getRandom(intyg.id);
             
             fkUtkastPage.angeSmittskydd(intyg.smittskydd);
             browser.ignoreSynchronization = true;

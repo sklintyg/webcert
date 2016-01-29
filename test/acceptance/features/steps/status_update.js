@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor */
+/* global pages, browser, protractor, intyg, logg */
 
 'use strict';
 var soap = require('soap');
@@ -167,7 +167,7 @@ function getAnswerBody(personId, doctorHsa, doctorName, unitHsa, unitName, intyg
 }
 
 
-function assertDraftWithStatus(personId, intygsId, status, callback) {
+function assertDraftWithStatus(personId, intygsId, status, cb) {
     sleep.sleep(5);
 
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
@@ -176,10 +176,10 @@ function assertDraftWithStatus(personId, intygsId, status, callback) {
         databaseTable + '.STATUS="' + status + '" AND ' +
         databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
 
-    assertNumberOfEvents(query, 1, callback);
+    assertNumberOfEvents(query, 1, cb);
 }
 
-function assertDatabaseContents(intygsId, column, value, callback) {
+function assertDatabaseContents(intygsId, column, value, cb) {
     sleep.sleep(10);
 
     var databaseTable = process.env.DATABASE_NAME + '.INTYG';
@@ -187,38 +187,38 @@ function assertDatabaseContents(intygsId, column, value, callback) {
         databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
         databaseTable + '.' + column + '="' + value + '";';
 
-    assertNumberOfEvents(query, 1, callback);
+    assertNumberOfEvents(query, 1, cb);
 }
 
-function assertEvents(intygsId, event, numEvents, callback) {
+function assertEvents(intygsId, event, numEvents, cb) {
     sleep.sleep(5);
     var databaseTable = 'webcert_requests.requests';
     var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
         databaseTable + '.handelseKod = "' + event + '" AND ' +
         databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
 
-    assertNumberOfEvents(query, numEvents, callback);
+    assertNumberOfEvents(query, numEvents, cb);
 }
 
-function assertNumberOfEvents(query, numEvents, callback) {
-    console.log('Assert number of events. Query: ' + query);
-
+function assertNumberOfEvents(query, numEvents, cb) {
+    // console.log('Assert number of events. Query: ' + query);
     var conn = db.makeConnection();
     conn.connect();
     conn.query(query,
-                     function(err, rows, fields) {
-                         conn.end();
-                         
-                         if (err) { throw err; }
-                         
-                         if (rows[0].Counter !== numEvents) {
-                             callback('Incorrect number of events: ' + rows[0].Counter + ' (' + numEvents + ')');
-                         } else {
-                             callback();
-                         }
-                     });    
+     function(err, rows, fields) {
+        conn.end();
+        if (err) {  
+            cb(err); 
+        }
+        else if (rows[0].Counter !== numEvents) {
+         cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
+        } 
+        else {
+         logg('OK - Antal händelser i db '+ rows[0].Counter + '(' + numEvents+')');
+         cb();
+        }
+     });    
 }
-
 
 module.exports = function () {
 
@@ -387,22 +387,32 @@ module.exports = function () {
     });
     
     this.Given(/^när Försäkringskassan skickar ett svar$/, function (callback) {
+
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-answer/v1.0?wsdl';
         url = url.replace('https', 'http');
         
         soap.createClient(url, function(err, client) {
 
             if (err) {
+                console.log('HEHHEHEHEHEHEHHEHE');
                 callback(err);
             }
-            
-            var body = getAnswerBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                     'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id,
-                                     global.intyg.fragaId);
-            
-            client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
-                callback();
-            });
+            else{
+                var body = getAnswerBody(
+                    global.person.id,
+                    'IFV1239877878-1049',
+                    'Jan Nilsson',                  
+                    'IFV1239877878-1042',
+                    'WebCert Enhet 1', 
+                    intyg.id,
+                    intyg.fragaId
+                    );
+                
+                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+                    callback(err);
+                });
+            }
+
         });
     });
 
@@ -413,13 +423,11 @@ module.exports = function () {
         global.person.id = '19121212-1212';
 
         var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
-
+                                  'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
         soap.createClient(url, function(err, client) {
             if (err) {
                 callback(err);
             }
-            
             client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
                 console.log(body);
                 console.log(result);
