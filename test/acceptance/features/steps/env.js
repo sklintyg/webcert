@@ -27,8 +27,11 @@ module.exports = function() {
     this.setDefaultTimeout(100 * 1000);
 
     function removeCert(intygsId,cb) {
-        sleep.sleep(5);
-        if (typeof intygsId !== 'undefined') {
+        if (!intygsId) {
+            logg('Intygsid saknas');
+            cb();
+        }
+	else {
             var databaseTableINTYG = process.env.DATABASE_NAME + '.INTYG';
             var databaseTableSIGNATUR = process.env.DATABASE_NAME + '.SIGNATUR';
             var foreignKeyChecks0 = 'SET FOREIGN_KEY_CHECKS = 0;';
@@ -64,11 +67,12 @@ module.exports = function() {
 
                     });
             });
-        } else { cb(); }
+        }
     }
 
     //After scenario
     this.After(function(scenario, callback) {
+        callback();
 
         //Ska intyg rensas bort efter scenario?
         var rensaBortIntyg = true;
