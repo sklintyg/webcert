@@ -59,6 +59,7 @@ exports.config = {
 
         var wcTestTools = require('webcert-testtools');
 
+        global.wcTestTools = wcTestTools;
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
 

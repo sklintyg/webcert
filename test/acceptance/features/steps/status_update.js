@@ -232,16 +232,23 @@ module.exports = function () {
         url = url.replace('https', 'http');
                
         soap.createClient(url, function(err, client) {
-            
-            client.CreateDraftCertificate(body, function(err, result, body) {
-                if (result.result.resultCode !== 'OK') {
-                    callback('CreateDraftCertificate failed!');
-                }
-                global.intyg.id = result['utlatande-id'].attributes.extension;
-            });
+
+            if(err){
+                callback(err);
+            }
+            else{
+                client.CreateDraftCertificate(body, function(err, result, body) {
+                    if(err){
+                        callback(err);
+                    }
+                    else{
+                        console.log(result);
+                        callback();
+                    }
+                    global.intyg.id = result['utlatande-id'].attributes.extension;
+                });
+            }
         });
-        
-        callback();
     });
     
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function (callback) {

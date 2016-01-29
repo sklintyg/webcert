@@ -14,6 +14,9 @@
         "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
         "INTYGTJANST_URL": "https://intygstjanst.inera.nordicmedtest.se/inera-certificate"
     },
+    "qa": {
+        "WEBCERT_URL": "https://verifiering.webcert.intygstjanster.se/"
+    },
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
