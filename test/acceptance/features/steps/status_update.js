@@ -21,7 +21,6 @@
 
 'use strict';
 var soap = require('soap');
-var sleep = require('sleep');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./db_actions/db.js');
@@ -168,36 +167,38 @@ function getAnswerBody(personId, doctorHsa, doctorName, unitHsa, unitName, intyg
 
 
 function assertDraftWithStatus(personId, intygsId, status, cb) {
-    sleep.sleep(5);
+    setTimeout(function(){
+        var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+            databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
+            databaseTable + '.STATUS="' + status + '" AND ' +
+            databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
 
-    var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
-        databaseTable + '.STATUS="' + status + '" AND ' +
-        databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
-
-    assertNumberOfEvents(query, 1, cb);
+        assertNumberOfEvents(query, 1, cb);
+    }, 5000);
 }
 
 function assertDatabaseContents(intygsId, column, value, cb) {
-    sleep.sleep(10);
+    setTimeout(function(){
 
-    var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
-        databaseTable + '.' + column + '="' + value + '";';
+        var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+            databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
+            databaseTable + '.' + column + '="' + value + '";';
 
-    assertNumberOfEvents(query, 1, cb);
+        assertNumberOfEvents(query, 1, cb);
+    }, 5000);
 }
 
 function assertEvents(intygsId, event, numEvents, cb) {
-    sleep.sleep(5);
-    var databaseTable = 'webcert_requests.requests';
-    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.handelseKod = "' + event + '" AND ' +
-        databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
+    setTimeout(function(){
+        var databaseTable = 'webcert_requests.requests';
+        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+            databaseTable + '.handelseKod = "' + event + '" AND ' +
+            databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
 
-    assertNumberOfEvents(query, numEvents, cb);
+        assertNumberOfEvents(query, numEvents, cb);
+    }, 5000);
 }
 
 function assertNumberOfEvents(query, numEvents, cb) {
