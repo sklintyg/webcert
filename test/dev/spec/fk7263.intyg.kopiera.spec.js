@@ -54,6 +54,7 @@ describe('Generate fk intyg', function() {
     describe('copy fk intyg to new utkast', function() {
         it('should view fk intyg', function() {
             FkIntygPage.get(intygId);
+            expect(FkIntygPage.isAt()).toBeTruthy();
         });
 
         it('should copy intyg and view resulting utkast', function() {
