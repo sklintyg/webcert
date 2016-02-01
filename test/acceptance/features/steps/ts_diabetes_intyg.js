@@ -17,14 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global
-browser, intyg, logg
-*/
+/*global browser, intyg, logg,wcTestTools */
 'use strict';
 
 // function stringStartWith (string, prefix) {
 //     return string.slice(0, prefix.length) === prefix;
 // }
+
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = function() {
     
@@ -35,20 +36,11 @@ module.exports = function() {
                 return (text.indexOf(status) > -1);
             });
         }).then(function(filteredElements) {
+
+            //Om det inte finns några intyg att använda
             if(!filteredElements[0]){
-                var wcTestTools = require('webcert-testtools');
-                var specHelper = wcTestTools.helpers.spec;
-                var testdataHelper = wcTestTools.helpers.testdata;
-                
-                var intygId = specHelper.generateTestGuid();
-                console.log('intygsId = '+ intygId);
-                
-                testdataHelper.createIntygFromTemplate('ts-bas', intygId).then(function(response) {
-                    global.JSON.parse(response.request.body);
-                }, function(error) {
-                    console.log('Error calling createIntyg');
-                }).then(callback);
-                //callback('TODO: Hantera fall då det inte redan finns något intyg att använda');
+                createIntygWithStatus(intygstyp,status,callback);
+                //Gå in på intyg
             }
             else{
                 filteredElements[0].element(by.cssContainingText('button', 'Visa')).click();
@@ -73,3 +65,25 @@ module.exports = function() {
         callback();
     });
 };
+
+
+function createIntygWithStatus(typ,status,cb){
+    //TODO, FUNKTION EJ KLAR
+    cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
+
+
+    intyg.id = specHelper.generateTestGuid();
+    console.log('intyg.id = '+ intyg.id);
+
+    if(typ === 'Transportstyrelsens läkarintyg' && status === 'Signerat'){
+        testdataHelper.createIntygFromTemplate('ts-bas', intyg.id).then(function(response) {
+            console.log(response.request.body);
+
+        }, function(error) {
+            cb(error);
+        }).then(cb);
+}
+    else{
+        cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
+    }                      
+}

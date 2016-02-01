@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals protractor,logg*/
 'use strict';
-var protractor = global.protractor;
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {
@@ -45,4 +45,17 @@ module.exports = function () {
 	  // Write code here that turns the phrase above into concrete actions
 	  callback('TBI!');
 	});
+
+    this.Given(/^är signeraknappen tillgänglig$/, function(callback) {
+        expect(element(by.id('signera-utkast-button')).isPresent()).to.eventually.be.ok.then(function(value) {
+            logg('Signeringsknapp existerar ' + value);
+        }, function(reason) {
+            callback('FEL, Signeringsknapp finns inte på sidan,' + reason);
+        });
+        expect(element(by.id('signera-utkast-button')).isEnabled()).to.eventually.be.ok.then(function(value) {
+            logg('Signeringsknapp är klickbar' + value);
+        }, function(reason) {
+            callback('FEL, Signeringsknapp är inte klickbar,' + reason);
+        }).then(callback);
+    });
 };

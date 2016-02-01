@@ -2,7 +2,6 @@
   "name": "e2e-test",
   "version": "0.0.1",
   "dependencies": {
-    "sleep": "^3.0.0",
     "webcert-testtools": "file:webcertTestTools"
   },
   "devDependencies": {
