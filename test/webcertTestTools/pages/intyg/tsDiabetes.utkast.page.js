@@ -24,7 +24,6 @@
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
-var wcTestTools = require('./../pageHelper.util.js');
 var pageHelpers = require('./../pageHelper.util.js');
 
 var TsDiabetesUtkast = BaseUtkast._extend({
@@ -187,9 +186,8 @@ var TsDiabetesUtkast = BaseUtkast._extend({
     },
     fillInBedomning: function(bedomningObj) {
         this.bedomning.form.element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
-
-
-        wcTestTools.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
+        
+        pageHelpers.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
 
         if (bedomningObj.lamplighet) {
             if (bedomningObj.lamplighet === 'Ja') {

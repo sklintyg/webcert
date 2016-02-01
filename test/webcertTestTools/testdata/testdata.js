@@ -19,8 +19,8 @@
 
 'use strict';
 
-var shuffle = require('./../helpers/testdataHelper.js').shuffle;
-var specHelper = require('../helpers/helpers.js').spec;
+var testdataHelper = require('./../helpers/testdataHelper.js');
+var shuffle = testdataHelper.shuffle;
 
 
 module.exports = {
@@ -153,7 +153,7 @@ module.exports = {
         var randomKorkortstyper = this.getRandomKorkortstyper();
 
         if(!intygsID){
-            intygsID = specHelper.generateTestGuid();
+            intygsID = testdataHelper.generateTestGuid();
         }
         
         return {
@@ -179,7 +179,7 @@ module.exports = {
         var randomKorkortstyper = this.getRandomKorkortstyperHogre();
 
         if(!intygsID){
-            intygsID = specHelper.generateTestGuid();
+            intygsID = testdataHelper.generateTestGuid();
         }
 
         return {

@@ -29,7 +29,6 @@ var BaseUtkast = JClass._extend({
     init: function() {
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
-        this.pageHelper = null;
         this.radera = {
             knapp: element(by.id('ta-bort-utkast')),
             bekrafta: element(by.id('confirm-draft-delete-button'))

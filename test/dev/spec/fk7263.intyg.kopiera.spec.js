@@ -29,7 +29,7 @@ var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 
 describe('Generate fk intyg', function() {
 
-    var intygId = specHelper.generateTestGuid();
+    var intygId = testdataHelper.generateTestGuid();
 
     describe('prepare test with intyg', function() {
         it('should generate fk max intyg', function() {

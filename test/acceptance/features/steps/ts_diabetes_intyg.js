@@ -23,8 +23,6 @@
 // function stringStartWith (string, prefix) {
 //     return string.slice(0, prefix.length) === prefix;
 // }
-
-var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = function() {
@@ -72,7 +70,7 @@ function createIntygWithStatus(typ,status,cb){
     cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
 
 
-    intyg.id = specHelper.generateTestGuid();
+    intyg.id = testdataHelper.generateTestGuid();
     console.log('intyg.id = '+ intyg.id);
 
     if(typ === 'Transportstyrelsens läkarintyg' && status === 'Signerat'){

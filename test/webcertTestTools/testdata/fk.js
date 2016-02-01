@@ -20,7 +20,7 @@
 'use strict';
 
 var shuffle = require('./../helpers/testdataHelper.js').shuffle;
-var specHelper = require('../helpers/helpers.js').spec;
+var testdataHelper = require('../helpers/helpers.js').testdata;
 
 var testdata =  {
         smittskydd: [true, false]
@@ -182,7 +182,7 @@ module.exports = {
             var isSmittskydd = shuffle(testdata.smittskydd)[0];
 
             if(!intygsID){
-                intygsID = specHelper.generateTestGuid();
+                intygsID = testdataHelper.generateTestGuid();
             }
 
             return {
