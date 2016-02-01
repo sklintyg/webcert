@@ -55,19 +55,36 @@ module.exports = function() {
         };
         logInAsUserRole(userObj,'Läkare',callback);
     });
+
+    this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
+        var userObj = {
+            fornamn:    'Jan',
+            efternamn:  'Nilsson',
+            hsaId:      'IFV1239877878-1049',
+            enhetId:    'IFV1239877878-1042'
+        };
+        logInAsUserRole(userObj,'Läkare',callback, 'ROLE_LAKARE_UTHOPP');
+    });
 };
 
-
-function logInAsUserRole(userObj,roleName,callback){
+function logInAsUserRole(userObj,roleName,callback, setUserRole){
         logg('Loggar in som ' + userObj.fornamn+' '+userObj.efternamn + '..');
         browser.ignoreSynchronization = true;
         pages.welcome.get();
         pages.welcome.loginByJSON(JSON.stringify(userObj));
+        if (setUserRole) {
+            logg('Testability-api, sätter ny roll ' + userObj.fornamn+' '+userObj.efternamn + '..');
+            browser.get('api/testability/userrole/' + setUserRole);
+            browser.navigate().back();
+        }
         browser.ignoreSynchronization = false;
         browser.sleep(2000);
         // webcertBasePage.header.getText()
-        expect(element(by.id('wcHeader')).getText())
-        .to.eventually
-        .contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
-        .and.notify(callback);
+        expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
+	 .and.notify(callback);
+
+
+
+
 }
+

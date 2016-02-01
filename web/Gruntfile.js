@@ -47,14 +47,16 @@ module.exports = function(grunt) {
     var TEST_DIR = 'src/test/js/';
     var DEST_DIR = 'target/webapp/app/';
 
-    var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
-        return file.replace(/\/app\//g, SRC_DIR);
-    });
+    var webcert = grunt.file.expand({cwd:SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
+    grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
+        map(function(file){ return '/app/'+file; }).
+        concat('/app/templates.js'), null, 4));
+    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert.map(function(file){
+        return SRC_DIR + file;
+    }));
 
-    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert);
-
-    var COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
-    var COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/webcert';
+    var COMMON_WEBCERT_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
+    var COMMON_WEBCERT_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/webcert';
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
     var CSS_COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/css';
     var TSBAS_SRC_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
@@ -138,7 +140,7 @@ module.exports = function(grunt) {
                         __dirname + TSBAS_SRC_DIR + '/css/*.scss',
                         __dirname + TSDIABETES_SRC_DIR + '/css/*.scss',
                         __dirname + CSS_COMMON_SRC_DIR + '/*.scss',
-                        __dirname + COMMON_SRC_DIR + '/css/*.scss'
+                        __dirname + COMMON_WEBCERT_SRC_DIR + '/css/*.scss'
                 ],
                 tasks: ['sass:dev']
             },
@@ -149,7 +151,7 @@ module.exports = function(grunt) {
             html: {
                 files: [
                         __dirname + '/src/main/webapp/**/*.html',
-                        __dirname + COMMON_SRC_DIR + '/**/*.html',
+                        __dirname + COMMON_WEBCERT_SRC_DIR + '/**/*.html',
                         __dirname + FK7263_SRC_DIR + '/**/*.html',
                         __dirname + TSBAS_SRC_DIR + '/**/*.html',
                         __dirname + TSDIABETES_SRC_DIR + '/**/*.html',
@@ -197,9 +199,9 @@ module.exports = function(grunt) {
                     },
                     {
                         expand: true,
-                        cwd: __dirname + COMMON_SRC_DIR + '/css/',
+                        cwd: __dirname + COMMON_WEBCERT_SRC_DIR + '/css/',
                         src: ['*.scss'],
-                        dest: __dirname + COMMON_DEST_DIR + '/css',
+                        dest: __dirname + COMMON_WEBCERT_DEST_DIR + '/css',
                         ext: '.css'
                     },
                     {
@@ -230,9 +232,9 @@ module.exports = function(grunt) {
                 }
             },
             common: {
-                cwd: __dirname + COMMON_SRC_DIR,
+                cwd: __dirname + COMMON_WEBCERT_SRC_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + COMMON_DEST_DIR + '/templates.js',
+                dest: __dirname + COMMON_WEBCERT_DEST_DIR + '/templates.js',
                 options: {
                     module: 'common',
                     url: function(url) {
@@ -267,7 +269,7 @@ module.exports = function(grunt) {
                 src: ['**/*.html'],
                 dest: __dirname + SJUKERSATTNING_DEST_DIR + '/templates.js',
                 options: {
-                    module: 'sjukersattning',
+                    module: 'luse',
                     url: function(url) {
                         return '/web/webjars/sjukersattning/webcert/' + url;
                     }
@@ -307,17 +309,17 @@ module.exports = function(grunt) {
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/webcert',
-                                connect.static(__dirname + COMMON_SRC_DIR) // jshint ignore:line
+                                connect.static(__dirname + COMMON_WEBCERT_SRC_DIR) // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/webcert/templates.js',
-                                connect.static(__dirname + COMMON_DEST_DIR + '/templates.js') // jshint ignore:line
+                                connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/templates.js') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/webcert/css',
-                                connect.static(__dirname + COMMON_DEST_DIR + '/css') // jshint ignore:line
+                                connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/css') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(

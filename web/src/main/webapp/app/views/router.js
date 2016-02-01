@@ -142,49 +142,49 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.intyg.sjukpenning', {
+        state('webcert.intyg.lisu', {
             data: { defaultActive : 'index' },
-            url:'/intyg/sjukpenning/:certificateId?:patientId&:hospName&:signed',
+            url:'/intyg/lisu/:certificateId?:patientId&:hospName&:signed',
             onEnter: function($stateParams){
-                $stateParams.certificateType = 'sjukpenning';
+                $stateParams.certificateType = 'lisu';
             },
             views: {
                 'main@webcert.intyg' : {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'intyg@webcert.intyg.sjukpenning' : {
+                'intyg@webcert.intyg.lisu' : {
                     templateUrl: '/web/webjars/sjukpenning/webcert/views/intyg/intyg.html'
 
                 },
-                'fragaSvar@webcert.intyg.sjukpenning' : {
+                'fragaSvar@webcert.intyg.lisu' : {
                     templateUrl: '/web/webjars/sjukpenning/webcert/views/intyg/fragasvar/fragasvar.html'
                 },
-                'header@webcert.intyg.sjukpenning' : {
+                'header@webcert.intyg.lisu' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
         }).
-        state('webcert.intyg.sjukersattning', {
+        state('webcert.intyg.luse', {
             data: { defaultActive : 'index' },
-            url:'/intyg/sjukersattning/:certificateId?:patientId&:hospName&:signed',
+            url:'/intyg/luse/:certificateId?:patientId&:hospName&:signed',
             onEnter: function($stateParams){
-                $stateParams.certificateType = 'sjukersattning';
+                $stateParams.certificateType = 'luse';
             },
             views: {
                 'main@webcert.intyg' : {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'intyg@webcert.intyg.sjukersattning' : {
+                'intyg@webcert.intyg.luse' : {
                     templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/intyg.html'
 
                 },
-                'fragaSvar@webcert.intyg.sjukersattning' : {
+                'fragaSvar@webcert.intyg.luse' : {
                     templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/fragasvar/fragasvar.html'
                 },
-                'header@webcert.intyg.sjukersattning' : {
+                'header@webcert.intyg.luse' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }

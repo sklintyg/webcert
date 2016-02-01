@@ -58,7 +58,7 @@ module.exports = function () {
         expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
-    this.Then(/^jag ska se den data jag angett för intyget$/, function (callback) {
+    this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function (callback) {
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes' || intyg.typ === 'Transportstyrelsens läkarintyg') {
             logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
             require('./checkValues/ts.common.js').checkTsCommonValues(intyg, callback);

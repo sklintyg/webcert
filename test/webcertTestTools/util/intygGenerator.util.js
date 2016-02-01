@@ -146,6 +146,9 @@ function buildDocumentFromIntygTemplate(intyg, intygOptions) {
     if (intygOptions.intygType === 'fk7263') {
         overrideFkDefaults(intyg, intygOptions);
     }
+    else if(intygOptions.intygType === 'ts-bas'){
+        overridetsBasDefaults(intyg, intygOptions);
+    }
 
     return JSON.stringify(intyg);
 }
@@ -206,6 +209,16 @@ function overrideFkDefaults(intyg, intygOptions) {
 
     intyg.giltighet.from = intygOptions.validFrom;
     intyg.giltighet.tom = intygOptions.validTo;
+}
+
+function overridetsBasDefaults(intyg, intygOptions) {
+
+    intyg = addBaserasPaDates(intyg,intygOptions.issued);
+
+    console.log('Inside intygOptions.intygType === ' + intygOptions.intygType);
+    console.log('höger öga utan korrekt: ' +intygOptions.intygAvser.syn.hogerOga.utanKorrektion);
+    console.log('PatientId: ' +intygOptions.grundData.patient.personId);
+
 }
 
 module.exports = {

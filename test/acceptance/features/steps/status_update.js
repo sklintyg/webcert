@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor */
+/* global pages, browser, protractor, intyg, logg */
 
 'use strict';
 var soap = require('soap');
-var sleep = require('sleep');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var db = require('./db.js');
+var db = require('./db_actions/db.js');
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
@@ -167,58 +166,60 @@ function getAnswerBody(personId, doctorHsa, doctorName, unitHsa, unitName, intyg
 }
 
 
-function assertDraftWithStatus(personId, intygsId, status, callback) {
-    sleep.sleep(5);
+function assertDraftWithStatus(personId, intygsId, status, cb) {
+    setTimeout(function(){
+        var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+            databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
+            databaseTable + '.STATUS="' + status + '" AND ' +
+            databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
 
-    var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
-        databaseTable + '.STATUS="' + status + '" AND ' +
-        databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
-
-    assertNumberOfEvents(query, 1, callback);
+        assertNumberOfEvents(query, 1, cb);
+    }, 5000);
 }
 
-function assertDatabaseContents(intygsId, column, value, callback) {
-    sleep.sleep(10);
+function assertDatabaseContents(intygsId, column, value, cb) {
+    setTimeout(function(){
 
-    var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
-        databaseTable + '.' + column + '="' + value + '";';
+        var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+            databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +  
+            databaseTable + '.' + column + '="' + value + '";';
 
-    assertNumberOfEvents(query, 1, callback);
+        assertNumberOfEvents(query, 1, cb);
+    }, 5000);
 }
 
-function assertEvents(intygsId, event, numEvents, callback) {
-    sleep.sleep(5);
-    var databaseTable = 'webcert_requests.requests';
-    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-        databaseTable + '.handelseKod = "' + event + '" AND ' +
-        databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
+function assertEvents(intygsId, event, numEvents, cb) {
+    setTimeout(function(){
+        var databaseTable = 'webcert_requests.requests';
+        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+            databaseTable + '.handelseKod = "' + event + '" AND ' +
+            databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
 
-    assertNumberOfEvents(query, numEvents, callback);
+        assertNumberOfEvents(query, numEvents, cb);
+    }, 5000);
 }
 
-function assertNumberOfEvents(query, numEvents, callback) {
-    console.log('Assert number of events. Query: ' + query);
-
+function assertNumberOfEvents(query, numEvents, cb) {
+    // console.log('Assert number of events. Query: ' + query);
     var conn = db.makeConnection();
     conn.connect();
     conn.query(query,
-                     function(err, rows, fields) {
-                         conn.end();
-                         
-                         if (err) { throw err; }
-                         
-                         if (rows[0].Counter !== numEvents) {
-                             callback('Incorrect number of events: ' + rows[0].Counter + ' (' + numEvents + ')');
-                         } else {
-                             callback();
-                         }
-                     });    
+     function(err, rows, fields) {
+        conn.end();
+        if (err) {  
+            cb(err); 
+        }
+        else if (rows[0].Counter !== numEvents) {
+         cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
+        } 
+        else {
+         logg('OK - Antal händelser i db '+ rows[0].Counter + '(' + numEvents+')');
+         cb();
+        }
+     });    
 }
-
 
 module.exports = function () {
 
@@ -232,16 +233,23 @@ module.exports = function () {
         url = url.replace('https', 'http');
                
         soap.createClient(url, function(err, client) {
-            
-            client.CreateDraftCertificate(body, function(err, result, body) {
-                if (result.result.resultCode !== 'OK') {
-                    callback('CreateDraftCertificate failed!');
-                }
-                global.intyg.id = result['utlatande-id'].attributes.extension;
-            });
+
+            if(err){
+                callback(err);
+            }
+            else{
+                client.CreateDraftCertificate(body, function(err, result, body) {
+                    if(err){
+                        callback(err);
+                    }
+                    else{
+                        console.log(result);
+                        callback();
+                    }
+                    global.intyg.id = result['utlatande-id'].attributes.extension;
+                });
+            }
         });
-        
-        callback();
     });
     
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function (callback) {
@@ -387,22 +395,32 @@ module.exports = function () {
     });
     
     this.Given(/^när Försäkringskassan skickar ett svar$/, function (callback) {
+
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-answer/v1.0?wsdl';
         url = url.replace('https', 'http');
         
         soap.createClient(url, function(err, client) {
 
             if (err) {
+                console.log('HEHHEHEHEHEHEHHEHE');
                 callback(err);
             }
-            
-            var body = getAnswerBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                     'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id,
-                                     global.intyg.fragaId);
-            
-            client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
-                callback();
-            });
+            else{
+                var body = getAnswerBody(
+                    global.person.id,
+                    'IFV1239877878-1049',
+                    'Jan Nilsson',                  
+                    'IFV1239877878-1042',
+                    'WebCert Enhet 1', 
+                    intyg.id,
+                    intyg.fragaId
+                    );
+                
+                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+                    callback(err);
+                });
+            }
+
         });
     });
 
@@ -413,13 +431,11 @@ module.exports = function () {
         global.person.id = '19121212-1212';
 
         var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
-
+                                  'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
         soap.createClient(url, function(err, client) {
             if (err) {
                 callback(err);
             }
-            
             client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
                 console.log(body);
                 console.log(result);

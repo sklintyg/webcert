@@ -10,7 +10,7 @@ Scenario: En vårdadministratör ska kunna kopiera Läkarintyg FK 7263
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen tillgänglig
 
-# @vardadmin
+@vardadmin
 Scenario: En vårdadministratör ska kunna kopiera Transportstyrelsens läkarintyg 
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
@@ -54,15 +54,14 @@ Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transpo
 	Så ska signera-knappen inte vara synlig
 
 # PRIVILEGE_VIDAREBEFORDRA_UTKAST
-@vardadmin
-Scenario: Det ska gå att Vidarebefodra ett utkast, Läkarintyg FK 7263
+# @vardadmin
+Scenario: Det ska gå att Vidarebefodra ett utkast
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Ej signerade utkast 
-	# //*[@id="unsignedCertTable"]/table/tbody/tr[2]/td[2]/button
-	# //*[@id="selected"]
-	När jag clickar på Vidarebefodra
-	Och bekräftar vidarebefodran
-	Så ska intyget vara markerat som vidarebefodrad
+	Och Vidarebeforda knappen synns
+	Så avbryter jag vidarebefodran
+
+
 
 # PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR
 # PRIVILEGE_ATKOMST_ANDRA_ENHETER

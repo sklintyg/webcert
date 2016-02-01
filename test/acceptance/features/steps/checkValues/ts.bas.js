@@ -75,12 +75,12 @@ function checkDiabetes(intyg,cb){
 
 function checkKorrektionsglasensStyrka(styrkor,cb){
     var _sum = (+ styrkor.homk - +styrkor.houk) +  ( + styrkor.vomk - + styrkor.vouk);
-    var overskrider8dioptrier = _sum < 8;
+    var overskrider8dioptrier = _sum > 8;
 
     expect(tsBasIntygPage.korrektionsglasensStyrka.getText()).to.eventually.equal(helpers.boolTillJaNej(overskrider8dioptrier)).then(function(value) {
-        logg('OK - Korrektionsglasens styrka överskrider 8 dioptrier = ' + value);
+        logg('OK - Korrektionsglasens styrka ('+_sum +') överskrider 8 dioptrier = ' + value);
     }, function(reason) {
-        cb('FEL - Korrektionsglasens styrka överskrider 8 dioptrier : ' + reason);
+        cb('FEL - Korrektionsglasens styrka ('+_sum +') överskrider 8 dioptrier : ' + reason);
     });
 }
 

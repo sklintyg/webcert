@@ -32,5 +32,6 @@ module.exports = {
           database: process.env.DATABASE_NAME,
           multipleStatements: true
       });
-  }
+  },
+  removeCert: require('./removeCert').removeCert
 };

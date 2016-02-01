@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals protractor,logg*/
 'use strict';
-
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {
@@ -33,22 +33,29 @@ module.exports = function () {
 	    element(by.id('copyBtn')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
-	this.Given(/^jag clickar på Vidarebefodra$/, function (callback) {
-	  //*[@id="unsignedCertTable"]/table/tbody/tr[5]/td[2]/button
-	  //*[@id="unsignedCertTable"]/table/tbody/tr[6]/td[2]/button
+	this.Given(/^Vidarebeforda knappen synns$/, function (callback) {
 	  element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
-	  // callback.pending();
 	});
 
-	this.Given(/^bekräftar vidarebefodran$/, function (callback) {
-	  // Write code here that turns the phrase above into concrete actions
-	  //*[@id="unsignedCertTable"]/table/tbody/tr[2]/td[2]/button
-	  callback('TBI!');
-	  // element(by.id('selected')).sendKeys(protractor.Key.SPACE).then(callback);
+	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
+	  element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
 	this.Given(/^ska intyget vara markerat som vidarebefodrad$/, function (callback) {
 	  // Write code here that turns the phrase above into concrete actions
 	  callback('TBI!');
 	});
+
+    this.Given(/^är signeraknappen tillgänglig$/, function(callback) {
+        expect(element(by.id('signera-utkast-button')).isPresent()).to.eventually.be.ok.then(function(value) {
+            logg('Signeringsknapp existerar ' + value);
+        }, function(reason) {
+            callback('FEL, Signeringsknapp finns inte på sidan,' + reason);
+        });
+        expect(element(by.id('signera-utkast-button')).isEnabled()).to.eventually.be.ok.then(function(value) {
+            logg('Signeringsknapp är klickbar' + value);
+        }, function(reason) {
+            callback('FEL, Signeringsknapp är inte klickbar,' + reason);
+        }).then(callback);
+    });
 };
