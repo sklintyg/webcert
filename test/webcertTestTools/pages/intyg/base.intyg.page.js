@@ -43,8 +43,6 @@ var BaseIntyg = JClass._extend({
             button: element(by.id('copyBtn')),
             dialogConfirmButton: element(by.id('button1copy-dialog'))
         };
-
-
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
