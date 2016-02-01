@@ -44,6 +44,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
 import java.util.List;
 
@@ -133,6 +134,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             @Override
             public Utlatande getUtlatandeFromJson(String utlatandeJson) {
                 return null;
+            }
+            
+            @Override
+            public se.inera.intyg.common.support.model.common.internal.Utlatande getUtlatandeFromIntyg(Intyg intyg, String xml) throws Exception {
+                throw new Exception("Module Fk7263 does not support getUtlatandeFromIntyg.");
             }
 
         };
