@@ -78,8 +78,9 @@ function createIntygWithStatus(typ,status,cb){
     if(typ === 'Transportstyrelsens läkarintyg' && status === 'Signerat'){
         testdataHelper.createIntygFromTemplate('ts-bas', intyg.id).then(function(response) {
             console.log(response.request.body);
+
         }, function(error) {
-            cb('Error calling createIntyg');
+            cb(error);
         }).then(cb);
 }
     else{

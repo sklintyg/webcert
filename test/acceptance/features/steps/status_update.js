@@ -24,7 +24,7 @@ var soap = require('soap');
 var sleep = require('sleep');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var db = require('./db.js');
+var db = require('./db_actions/db.js');
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
