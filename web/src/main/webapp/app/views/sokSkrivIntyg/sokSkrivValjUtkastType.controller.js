@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
+    ['$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel', 'common.PatientModel',
         function($window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
             IntygProxy, UtkastProxy, IntygCopyRequestModel, PatientModel) {
@@ -37,7 +36,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 createErrorMessageKey: null,
                 inlineErrorMessageKey: null,
                 currentList: undefined,
-                unsigned : 'certlist-empty' // unsigned, unsigned-mixed,
+                unsigned: 'certlist-empty', // unsigned, unsigned-mixed,
+                luseDescriptionLabel: 'DFR_3.1',
+                lisuDescriptionLabel: 'XYZ123'
             };
 
             $scope.filterForm = {
@@ -64,8 +65,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             function onPageLoad() {
 
                 // Redirect to index if pnr and name isn't specified
-                if (!PatientModel.personnummer || !PatientModel.fornamn ||
-                    !PatientModel.efternamn) {
+                if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
                     $location.url(changePatientUrl, true);
                 }
 
@@ -89,28 +89,43 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 });
             }
 
-            function hasUnsigned(list){
-                if(!list){
+            function hasUnsigned(list) {
+                if (!list) {
                     return;
                 }
-                if(list.length === 0){
+                if (list.length === 0) {
                     $scope.viewState.unsigned = 'certlist-empty';
                     return;
                 }
                 var unsigned = true;
-                for(var i=0; i< list.length; i++){
+                for (var i = 0; i < list.length; i++) {
                     var item = list[i];
-                    if(item.status === 'DRAFT_COMPLETE' ){
+                    if (item.status === 'DRAFT_COMPLETE') {
                         unsigned = false;
                         break;
                     }
                 }
-                if(unsigned){
+                if (unsigned) {
                     $scope.viewState.unsigned = 'unsigned';
                 } else {
                     $scope.viewState.unsigned = 'signed';
                 }
             }
+
+            $scope.intygSelectorPrototypeData = [{
+                id: 0,
+                name: 'Byt gränsnitt'
+            }, {
+                id: 1,
+                name: 'A'
+            }, {
+                id: 2,
+                name: 'B'
+            }, {
+                id: 3,
+                name: 'C'
+            }];
+            $scope.selectedStatus = 0;
 
             /**
              * Watches
@@ -131,6 +146,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.changePatient = function() {
                 $location.path(changePatientUrl);
+            };
+
+            $scope.getDynamicText = function(key) {
+                return DynamicLabelService.getProperty(key);
             };
 
             $scope.createDraft = function() {
