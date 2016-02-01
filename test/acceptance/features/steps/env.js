@@ -19,8 +19,6 @@
 
 /* globals browser, logg */
 'use strict';
-var sleep = require('sleep');
-
 var db = require('./db.js');
 
 module.exports = function() {

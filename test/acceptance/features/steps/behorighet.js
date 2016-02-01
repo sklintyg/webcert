@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor*/
+/* globals protractor,logg*/
 'use strict';
 module.exports = function () {
 
