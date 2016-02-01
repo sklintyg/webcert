@@ -68,7 +68,7 @@ module.exports = function(grunt) {
     //var SJUKPENNING_SRC_DIR = '/../../intygstyper/fk/sjukpenning/src/main/resources/META-INF/resources/webjars/sjukpenning/webcert';
     //var SJUKPENNING_DEST_DIR = '/../../intygstyper/fk/sjukpenning/target/classes/META-INF/resources/webjars/sjukpenning/webcert';
     var SJUKERSATTNING_SRC_DIR = '/../../intygstyper/fk/sjukersattning/src/main/resources/META-INF/resources/webjars/sjukersattning/webcert';
-    var SJUKERSATTNING_DEST_DIR = '/../../intygstyper/fk/sjukersattning/target/classes/META-INF/resources/webjars/webjars/sjukersattning/webcert';
+    var SJUKERSATTNING_DEST_DIR = '/../../intygstyper/fk/sjukersattning/target/classes/META-INF/resources/webjars/sjukersattning/webcert';
 
     grunt.initConfig({
 
@@ -308,6 +308,11 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
+                                '/app/app-deps.js',
+                                connect.static(__dirname + DEST_DIR + '/app-deps.js') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
                                 '/web/webjars/common/webcert',
                                 connect.static(__dirname + COMMON_WEBCERT_SRC_DIR) // jshint ignore:line
                             ));
@@ -315,6 +320,11 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/web/webjars/common/webcert/templates.js',
                                 connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/templates.js') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/common/webcert/module-deps.json',
+                                connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/module-deps.json') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
@@ -338,6 +348,11 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
+                                '/web/webjars/fk7263/webcert/module-deps.json',
+                                connect.static(__dirname + FK7263_DEST_DIR + '/module-deps.json') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
                                 '/web/webjars/fk7263/webcert/css',
                                 connect.static(__dirname + FK7263_DEST_DIR + '/css') //jshint ignore:line
                             ));
@@ -350,6 +365,11 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/web/webjars/ts-bas/webcert/templates.js',
                                 connect.static(__dirname + TSBAS_DEST_DIR + '/templates.js') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-bas/webcert/module-deps.json',
+                                connect.static(__dirname + TSBAS_DEST_DIR + '/module-deps.json') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
@@ -368,6 +388,11 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
+                                '/web/webjars/ts-diabetes/webcert/module-deps.json',
+                                connect.static(__dirname + TSDIABETES_DEST_DIR + '/module-deps.json') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
                                 '/web/webjars/ts-diabetes/webcert/css',
                                 connect.static(__dirname + TSDIABETES_DEST_DIR + '/css') //jshint ignore:line
                             ));
@@ -380,6 +405,11 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/web/webjars/sjukersattning/webcert/templates.js',
                                 connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/templates.js') //jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/sjukersattning/webcert/module-deps.json',
+                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/module-deps.json') //jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
