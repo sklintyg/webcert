@@ -23,7 +23,7 @@
 /*globals helpers,pages*/
 'use strict';
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
+var testdataHelper = wcTestTools.helpers.restTestdata;
 var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 

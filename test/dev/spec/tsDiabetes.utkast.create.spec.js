@@ -24,7 +24,7 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
+var testdataHelper = wcTestTools.helpers.restTestdata;
 var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 var tsdIntygPage = wcTestTools.pages.intyg.ts.diabetes.intyg;
 

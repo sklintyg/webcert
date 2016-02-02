@@ -22,7 +22,7 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
+var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 
