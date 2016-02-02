@@ -46,6 +46,17 @@ module.exports = function() {
         logInAsUserRole(userObj,'Vårdadministratör',callback);
     });
 
+    this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function(callback) {
+        var userObj = {
+            fornamn:    'Åsa',
+            efternamn:  'Andersson',
+            hsaId:      'IFV1239877878-104B',
+            enhetId:    'IFV1239877878-1042',
+            lakare: true,
+            forskrivarKod: '2481632'
+        };
+        logInAsUserRole(userObj,'Läkare',callback, 'ROLE_VARDADMINISTRATOR_UTHOPP');
+    });
     this.Given(/^att jag är inloggad som läkare$/, function(callback) {
         var userObj = {
             fornamn:    'Jan',

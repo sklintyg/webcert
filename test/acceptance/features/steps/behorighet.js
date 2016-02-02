@@ -19,6 +19,7 @@
 
 /* globals protractor,logg*/
 'use strict';
+
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {
@@ -58,4 +59,24 @@ module.exports = function () {
             callback('FEL, Signeringsknapp är inte klickbar,' + reason);
         }).then(callback);
     });
+
+    this.Given(/^väljer att byta vårdenhet$/, function (callback) {
+	  element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^ska vårdenhet vara "([^"]*)"$/, function (arg1, callback) {
+	  // Write code here that turns the phrase above into concrete actions
+	  callback.pending();
+	});
+
+	this.Given(/^jag byter Vårdenhet$/, function (callback) {
+	  // Write code here that turns the phrase above into concrete actions
+	  callback.pending();
+	});
+
+	this.Given(/^väljer "([^"]*)"$/, function (arg1, callback) {
+	  // Write code here that turns the phrase above into concrete actions
+	  callback.pending();
+	});
+
 };
