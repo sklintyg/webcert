@@ -23,7 +23,7 @@
  */
 /*globals protractor */
 'use strict';
-var td = require('./../testdata/testdata.js');
+
 
 module.exports = {
     clickAll: function(elementArray, elementTextsArray) {
@@ -48,6 +48,7 @@ module.exports = {
 
             return result;
         }
+        var td = require('./../testdata/testdata.js');
         var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
         return foundHogreBehorigheter.length > 0;
     }
