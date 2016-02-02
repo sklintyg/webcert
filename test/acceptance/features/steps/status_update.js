@@ -402,7 +402,7 @@ module.exports = function () {
             }
             
             client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                callback();
+                callback(err);
             });
         });
     });
@@ -415,7 +415,6 @@ module.exports = function () {
         soap.createClient(url, function(err, client) {
 
             if (err) {
-                console.log('HEHHEHEHEHEHEHHEHE');
                 callback(err);
             }
             else{
