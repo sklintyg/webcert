@@ -65,7 +65,8 @@ exports.config = {
 
         global.person = {};
         global.intyg = {};
-        global.intygsid = {};
+        // global.intygsid = {};
+        global.user = {};
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
     }

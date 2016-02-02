@@ -67,6 +67,18 @@ module.exports = function() {
         logInAsUserRole(userObj,'Läkare',callback);
     });
 
+    this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function(callback) {
+        var userObj = {
+            fornamn:    'Åsa',
+            efternamn:  'Svensson',
+            hsaId:      'TSTNMT2321000156-100L',
+            enhetId:    'TSTNMT2321000156-1003'
+        };
+
+        global.user = userObj;
+        logInAsUserRole(userObj,'Läkare',callback,'ROLE_LAKARE_DJUPINTEGRERAD');
+    });
+
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
         var userObj = {
             fornamn:    'Jan',
