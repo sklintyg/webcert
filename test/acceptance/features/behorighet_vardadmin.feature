@@ -53,11 +53,5 @@ Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transpo
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
-# PRIVILEGE_VIDAREBEFORDRA_UTKAST
-#@vardadmin
-Scenario: Det ska gå att Vidarebefodra ett utkast
-	Givet att jag är inloggad som vårdadministratör
-	Och går in på Ej signerade utkast 
-	Och Vidarebeforda knappen synns
-	Så avbryter jag vidarebefodran
+
 
