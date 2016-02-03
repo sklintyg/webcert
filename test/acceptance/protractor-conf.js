@@ -69,5 +69,8 @@ exports.config = {
         global.user = {};
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
+
+        //Strunta i om servern inte kan bekräfta dess identitet
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
 };
