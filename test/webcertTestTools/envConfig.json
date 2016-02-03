@@ -17,6 +17,11 @@
     "qa": {
         "WEBCERT_URL": "https://verifiering.webcert.intygstjanster.se/"
     },
+    "ssh-tunnel": {
+        "WEBCERT_URL": "http://localhost:28080/",
+        "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "DATABASE_USER": "intyg_autotest"
+    },
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",

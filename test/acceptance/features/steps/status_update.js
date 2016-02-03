@@ -225,11 +225,24 @@ module.exports = function () {
 
     this.Given(/^att vårdsystemet skickat ett intygsutkast$/, function (callback) {
         global.person.id = '19121212-1212';
-        
-        var body = getDraftBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                'IFV1239877878-1042', 'WebCert Enhet 1');
 
-        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/create-draft-certificate/v1.0?wsdl';
+        global.user = {
+            fornamn:    'Åsa',
+            efternamn:  'Svensson',
+            hsaId:      'TSTNMT2321000156-100L',
+            enhetId:    'TSTNMT2321000156-1003'
+        };
+        
+        var body = getDraftBody(
+                global.person.id, 
+                global.user.hsaId, 
+                global.user.fornamn + '' + global.user.efternamn,
+                global.user.enhetId, 
+                'Enhetsnamn'
+                );
+
+        var path = '/services/create-draft-certificate/v1.0?wsdl';
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + path;
         url = url.replace('https', 'http');
                
         soap.createClient(url, function(err, client) {
@@ -244,9 +257,10 @@ module.exports = function () {
                     }
                     else{
                         console.log(result);
+                        global.intyg.id = result['utlatande-id'].attributes.extension;
                         callback();
                     }
-                    global.intyg.id = result['utlatande-id'].attributes.extension;
+                    
                 });
             }
         });
@@ -375,13 +389,19 @@ module.exports = function () {
     });
     
     this.Given(/^när Försäkringskassan ställer en fråga om intyget$/, function (callback) {
-        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-question/v1.0?wsdl';
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
         url = url.replace('https', 'http');
 
         global.person.id = '19121212-1212';
 
-        var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                   'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, 'Ovrigt');
+        var body = getQuestionBody(
+            global.person.id,
+            global.user.hsaId,
+            global.user.fornamn + '' + global.user.efternamn,
+            global.user.enhetId, 
+            'Enhetsnamn',
+             global.intyg.id,
+              'Ovrigt');
 
         soap.createClient(url, function(err, client) {
             if (err) {
@@ -389,30 +409,31 @@ module.exports = function () {
             }
             
             client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                callback();
+                console.log(body);
+                console.log(result);
+                callback(err);
             });
         });
     });
     
     this.Given(/^när Försäkringskassan skickar ett svar$/, function (callback) {
 
-        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-answer/v1.0?wsdl';
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
         url = url.replace('https', 'http');
         
         soap.createClient(url, function(err, client) {
 
             if (err) {
-                console.log('HEHHEHEHEHEHEHHEHE');
                 callback(err);
             }
             else{
                 var body = getAnswerBody(
                     global.person.id,
-                    'IFV1239877878-1049',
-                    'Jan Nilsson',                  
-                    'IFV1239877878-1042',
+                    global.user.hsaId,
+                    global.user.fornamn + '' + global.user.efternamn,                  
+                    global.user.enhetId,
                     'WebCert Enhet 1', 
-                    intyg.id,
+                    'Enhetsnamn',
                     intyg.fragaId
                     );
                 
@@ -424,25 +445,25 @@ module.exports = function () {
         });
     });
 
-    this.Given(/^när Försäkringskassan ställer en fråga om intyget \- "([^"]*)"$/, function (arg1, callback) {
-        var url = stripTrailingSlash(process.env.WEBCERT_URL) + ':8080/services/receive-question/v1.0?wsdl';
-        url = url.replace('https', 'http');
+    // this.Given(/^när Försäkringskassan ställer en fråga om intyget \- "([^"]*)"$/, function (arg1, callback) {
+    //     var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+    //     url = url.replace('https', 'http');
 
-        global.person.id = '19121212-1212';
+    //     global.person.id = '19121212-1212';
 
-        var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-                                  'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
-        soap.createClient(url, function(err, client) {
-            if (err) {
-                callback(err);
-            }
-            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                console.log(body);
-                console.log(result);
-                callback();
-            });
-        });
-    });
+    //     var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
+    //                               'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
+    //     soap.createClient(url, function(err, client) {
+    //         if (err) {
+    //             callback(err);
+    //         }
+    //         client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+    //             console.log(body);
+    //             console.log(result);
+    //             callback();
+    //         });
+    //     });
+    // });
 
     this.Given(/^när jag skickat ett signerat intyg till Försäkringskassan$/, function (callback) {
         fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
