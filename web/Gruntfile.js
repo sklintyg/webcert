@@ -55,20 +55,41 @@ module.exports = function(grunt) {
         return SRC_DIR + file;
     }));
 
-    var COMMON_WEBCERT_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
-    var COMMON_WEBCERT_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/webcert';
+    var modules = {
+        'common':             { base: 'common/web' },
+        'fk7263':             { base: 'intygstyper/fk7263' },
+        'ts-bas':             { base: 'intygstyper/ts-bas' },
+        'ts-diabetes':        { base: 'intygstyper/ts-diabetes' },
+        'sjukersattning':     { base: 'intygstyper/fk/sjukersattning' },
+        'sjukpenning-utokad': { base: 'intygstyper/fk/sjukpenning-utokad' }
+    };
+    Object.keys(modules).forEach(function(moduleName) {
+        var module = modules[moduleName];
+        module.name = moduleName;
+        module.src = '/../../'+module.base+'/src/main/resources/META-INF/resources/webjars/' + moduleName + '/webcert';
+        module.dest = '/../../'+module.base+'/target/classes/META-INF/resources/webjars/' + moduleName + '/webcert';
+    });
+
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
     var CSS_COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/css';
-    var TSBAS_SRC_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
-    var TSBAS_DEST_DIR = '/../../intygstyper/ts-bas/target/classes/META-INF/resources/webjars/ts-bas/webcert';
-    var TSDIABETES_SRC_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
-    var TSDIABETES_DEST_DIR = '/../../intygstyper/ts-diabetes/target/classes/META-INF/resources/webjars/ts-diabetes/webcert';
-    var FK7263_SRC_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
-    var FK7263_DEST_DIR = '/../../intygstyper/fk7263/target/classes/META-INF/resources/webjars/fk7263/webcert';
-    //var SJUKPENNING_SRC_DIR = '/../../intygstyper/fk/sjukpenning/src/main/resources/META-INF/resources/webjars/sjukpenning/webcert';
-    //var SJUKPENNING_DEST_DIR = '/../../intygstyper/fk/sjukpenning/target/classes/META-INF/resources/webjars/sjukpenning/webcert';
-    var SJUKERSATTNING_SRC_DIR = '/../../intygstyper/fk/sjukersattning/src/main/resources/META-INF/resources/webjars/sjukersattning/webcert';
-    var SJUKERSATTNING_DEST_DIR = '/../../intygstyper/fk/sjukersattning/target/classes/META-INF/resources/webjars/sjukersattning/webcert';
+
+    function buildListForAllModules(callback) {
+        var list = [];
+        Object.keys(modules).forEach(function(moduleName) {
+            var module = modules[moduleName];
+            list.push(callback(module));
+        });
+        return list;
+    }
+
+    function buildObjectForAllModules(callback) {
+        var obj = {};
+        Object.keys(modules).forEach(function(moduleName) {
+            var module = modules[moduleName];
+            obj[module.name] = callback(module);
+        });
+        return obj;
+    }
 
     grunt.initConfig({
 
@@ -134,14 +155,9 @@ module.exports = function(grunt) {
             //we want to reprocess so that we are able to reload
             //them for the browser in dev mode,
             'css': {
-                files: [
-                        __dirname + FK7263_SRC_DIR + '/css/*.scss',
-                        __dirname + SJUKERSATTNING_SRC_DIR + '/css/*.scss',
-                        __dirname + TSBAS_SRC_DIR + '/css/*.scss',
-                        __dirname + TSDIABETES_SRC_DIR + '/css/*.scss',
-                        __dirname + CSS_COMMON_SRC_DIR + '/*.scss',
-                        __dirname + COMMON_WEBCERT_SRC_DIR + '/css/*.scss'
-                ],
+                files: buildListForAllModules(function(module) {
+                        return __dirname + module.src + '/css/*.scss';
+                    }).concat([__dirname + CSS_COMMON_SRC_DIR + '/*.scss']),
                 tasks: ['sass:dev']
             },
             //js: {
@@ -149,14 +165,9 @@ module.exports = function(grunt) {
             //    tasks: ['jshint', 'uglify', 'injector', 'wiredep']
             //},
             html: {
-                files: [
-                        __dirname + '/src/main/webapp/**/*.html',
-                        __dirname + COMMON_WEBCERT_SRC_DIR + '/**/*.html',
-                        __dirname + FK7263_SRC_DIR + '/**/*.html',
-                        __dirname + TSBAS_SRC_DIR + '/**/*.html',
-                        __dirname + TSDIABETES_SRC_DIR + '/**/*.html',
-                        __dirname + SJUKERSATTNING_SRC_DIR + '/**/*.html'
-                ],
+                files: buildListForAllModules(function(module) {
+                        return __dirname + module.src + '/**/*.html';
+                    }).concat([__dirname + '/src/main/webapp/**/*.html']),
                 tasks: ['ngtemplates']
             }
         },
@@ -168,42 +179,15 @@ module.exports = function(grunt) {
             },
             dev: {
                 //Compile all
-                files: [
-                    {
+                files:buildListForAllModules(function(module) {
+                    return {
                         expand: true,
-                        cwd: __dirname + FK7263_SRC_DIR + '/css/',
+                        cwd: __dirname + module.src + '/css/',
                         src: ['*.scss'],
-                        dest: __dirname + FK7263_DEST_DIR + '/css',
+                        dest: __dirname + module.dest + '/css',
                         ext: '.css'
-                    },
-                    {
-                        expand: true,
-                        cwd: __dirname + TSBAS_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + TSBAS_DEST_DIR + '/css',
-                        ext: '.css'
-                    },
-                    {
-                        expand: true,
-                        cwd: __dirname + TSDIABETES_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + TSDIABETES_DEST_DIR + '/css',
-                        ext: '.css'
-                    },
-                    {
-                        expand: true,
-                        cwd: __dirname + SJUKERSATTNING_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + SJUKERSATTNING_DEST_DIR + '/css',
-                        ext: '.css'
-                    },
-                    {
-                        expand: true,
-                        cwd: __dirname + COMMON_WEBCERT_SRC_DIR + '/css/',
-                        src: ['*.scss'],
-                        dest: __dirname + COMMON_WEBCERT_DEST_DIR + '/css',
-                        ext: '.css'
-                    },
+                    };
+                }).concat([
                     {
                         expand: true,
                         cwd: __dirname + CSS_COMMON_SRC_DIR,
@@ -211,7 +195,7 @@ module.exports = function(grunt) {
                         dest: __dirname + CSS_COMMON_DEST_DIR,
                         ext: '.css'
                     }
-                ]
+                ])
             },
             dist: {
                 //What we do when we build a distribution. Don't include intygstyper here or common.
@@ -219,74 +203,30 @@ module.exports = function(grunt) {
             }
         },
 
-        ngtemplates: {
-            webcert: {
-                cwd: __dirname + '/src/main/webapp',
-                src: ['app/views/**/**.html', 'app/partials/**/**.html'],
-                dest: __dirname + '/target/webapp/app/templates.js',
+        ngtemplates: grunt.util._.extend(buildObjectForAllModules(function(module) {
+            return {
+                cwd: __dirname + module.src,
+                src: ['**/*.html'],
+                dest: __dirname + module.dest + '/templates.js',
                 options: {
-                    module: 'webcert',
+                    module: module.name,
                     url: function(url) {
-                        return '/' + url.replace('../', '/');
+                        return '/web/webjars/' + module.name + '/webcert/' + url;
                     }
                 }
-            },
-            common: {
-                cwd: __dirname + COMMON_WEBCERT_SRC_DIR,
-                src: ['**/*.html'],
-                dest: __dirname + COMMON_WEBCERT_DEST_DIR + '/templates.js',
-                options: {
-                    module: 'common',
-                    url: function(url) {
-                        return '/web/webjars/common/webcert/' + url;
-                    }
-                }
-            },
-            tsdiabetes: {
-                cwd: __dirname + TSDIABETES_SRC_DIR,
-                src: ['**/*.html'],
-                dest: __dirname + TSDIABETES_DEST_DIR + '/templates.js',
-                options: {
-                    module: 'ts-diabetes',
-                    url: function(url) {
-                        return '/web/webjars/ts-diabetes/webcert/' + url;
-                    }
-                }
-            },
-            tsbas: {
-                cwd: __dirname + TSBAS_SRC_DIR,
-                src: ['**/*.html'],
-                dest: __dirname + TSBAS_DEST_DIR + '/templates.js',
-                options: {
-                    module: 'ts-bas',
-                    url: function(url) {
-                        return '/web/webjars/ts-bas/webcert/' + url;
-                    }
-                }
-            },
-            sjukersattning: {
-                cwd: __dirname + SJUKERSATTNING_SRC_DIR,
-                src: ['**/*.html'],
-                dest: __dirname + SJUKERSATTNING_DEST_DIR + '/templates.js',
-                options: {
-                    module: 'luse',
-                    url: function(url) {
-                        return '/web/webjars/sjukersattning/webcert/' + url;
-                    }
-                }
-            },
-            fk7263: {
-                cwd: __dirname + FK7263_SRC_DIR,
-                src: ['**/*.html'],
-                dest: __dirname + FK7263_DEST_DIR + '/templates.js',
-                options: {
-                    module: 'fk7263',
-                    url: function(url) {
-                        return '/web/webjars/fk7263/webcert/' + url;
-                    }
+            };
+        }), { webcert : {
+            cwd: __dirname + '/src/main/webapp',
+            src: ['app/views/**/**.html', 'app/partials/**/**.html'],
+            dest: __dirname + '/target/webapp/app/templates.js',
+            options: {
+                module: 'webcert',
+                url: function (url) {
+                    return '/' + url.replace('../', '/');
                 }
             }
-        },
+        }}),
+
         connect: {
             server: {
                 options: {
@@ -313,109 +253,32 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
-                                '/web/webjars/common/webcert',
-                                connect.static(__dirname + COMMON_WEBCERT_SRC_DIR) // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/common/webcert/templates.js',
-                                connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/templates.js') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/common/webcert/module-deps.json',
-                                connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/module-deps.json') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/common/webcert/css',
-                                connect.static(__dirname + COMMON_WEBCERT_DEST_DIR + '/css') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
                                 '/web/webjars/common/css',
                                 connect.static(__dirname + CSS_COMMON_DEST_DIR) // jshint ignore:line
                             ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/fk7263/webcert',
-                                connect.static(__dirname + FK7263_SRC_DIR) // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/fk7263/webcert/templates.js',
-                                connect.static(__dirname + FK7263_DEST_DIR + '/templates.js') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/fk7263/webcert/module-deps.json',
-                                connect.static(__dirname + FK7263_DEST_DIR + '/module-deps.json') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/fk7263/webcert/css',
-                                connect.static(__dirname + FK7263_DEST_DIR + '/css') //jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-bas/webcert',
-                                connect.static(__dirname + TSBAS_SRC_DIR) // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-bas/webcert/templates.js',
-                                connect.static(__dirname + TSBAS_DEST_DIR + '/templates.js') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-bas/webcert/module-deps.json',
-                                connect.static(__dirname + TSBAS_DEST_DIR + '/module-deps.json') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-bas/webcert/css',
-                                connect.static(__dirname + TSBAS_DEST_DIR + '/css') //jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-diabetes/webcert',
-                                connect.static(__dirname + TSDIABETES_SRC_DIR) // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-diabetes/webcert/templates.js',
-                                connect.static(__dirname + TSDIABETES_DEST_DIR + '/templates.js') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-diabetes/webcert/module-deps.json',
-                                connect.static(__dirname + TSDIABETES_DEST_DIR + '/module-deps.json') // jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-diabetes/webcert/css',
-                                connect.static(__dirname + TSDIABETES_DEST_DIR + '/css') //jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/sjukersattning/webcert',
-                                connect.static(__dirname + SJUKERSATTNING_SRC_DIR) //jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/sjukersattning/webcert/templates.js',
-                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/templates.js') //jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/sjukersattning/webcert/module-deps.json',
-                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/module-deps.json') //jshint ignore:line
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/sjukersattning/webcert/css',
-                                connect.static(__dirname + SJUKERSATTNING_DEST_DIR + '/css')//jshint ignore:line
-                            ));
+                        Object.keys(modules).forEach(function(moduleName) {
+                            var module = modules[moduleName];
+                            middlewares.push(
+                                connect().use(
+                                        '/web/webjars/'+module+'/webcert',
+                                    connect.static(__dirname + module.src) //jshint ignore:line
+                                ));
+                            middlewares.push(
+                                connect().use(
+                                        '/web/webjars/'+module+'/webcert/templates.js',
+                                    connect.static(__dirname + module.dest + '/templates.js') //jshint ignore:line
+                                ));
+                            middlewares.push(
+                                connect().use(
+                                        '/web/webjars/'+module+'/webcert/module-deps.json',
+                                    connect.static(__dirname + module.dest + '/module-deps.json') //jshint ignore:line
+                                ));
+                            middlewares.push(
+                                connect().use(
+                                        '/web/webjars/'+module+'/webcert/css',
+                                    connect.static(__dirname + module.dest + '/css')//jshint ignore:line
+                                ));
+                        });
                         middlewares.push(proxy);
                         return middlewares;
                     }
