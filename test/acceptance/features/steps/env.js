@@ -25,7 +25,6 @@ module.exports = function() {
 
     //After scenario
     this.After(function(scenario, callback) {
-        callback();
 
         //Ska intyg rensas bort efter scenario?
         var rensaBortIntyg = true;

@@ -74,8 +74,6 @@ module.exports = function() {
             hsaId:      'TSTNMT2321000156-100L',
             enhetId:    'TSTNMT2321000156-1003'
         };
-
-        global.user = userObj;
         logInAsUserRole(userObj,'Läkare',callback,'ROLE_LAKARE_DJUPINTEGRERAD');
     });
 
@@ -92,6 +90,8 @@ module.exports = function() {
 
 function logInAsUserRole(userObj,roleName,callback, setUserRole){
         logg('Loggar in som ' + userObj.fornamn+' '+userObj.efternamn + '..');
+        global.user = userObj;
+        
         browser.ignoreSynchronization = true;
         pages.welcome.get();
         pages.welcome.loginByJSON(JSON.stringify(userObj));

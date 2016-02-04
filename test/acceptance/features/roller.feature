@@ -1,6 +1,6 @@
 # language: sv
 
-@smoke @roller
+@smoke @notReady
 Egenskap: Kontrollera att de olika rollerna kan logga in och utföra gällande privilegier
 
 Bakgrund: Jag befinner mig på webcerts förstasida

@@ -445,25 +445,25 @@ module.exports = function () {
         });
     });
 
-    // this.Given(/^när Försäkringskassan ställer en fråga om intyget \- "([^"]*)"$/, function (arg1, callback) {
-    //     var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-    //     url = url.replace('https', 'http');
+    this.Given(/^när Försäkringskassan ställer en fråga om intyget \- "([^"]*)"$/, function (arg1, callback) {
+        var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+        url = url.replace('https', 'http');
 
-    //     global.person.id = '19121212-1212';
+        global.person.id = '19121212-1212';
 
-    //     var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
-    //                               'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
-    //     soap.createClient(url, function(err, client) {
-    //         if (err) {
-    //             callback(err);
-    //         }
-    //         client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-    //             console.log(body);
-    //             console.log(result);
-    //             callback();
-    //         });
-    //     });
-    // });
+        var body = getQuestionBody(global.person.id, 'IFV1239877878-1049', 'Jan Nilsson',
+                                  'IFV1239877878-1042', 'WebCert Enhet 1', global.intyg.id, arg1);
+        soap.createClient(url, function(err, client) {
+            if (err) {
+                callback(err);
+            }
+            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                console.log(body);
+                console.log(result);
+                callback();
+            });
+        });
+    });
 
     this.Given(/^när jag skickat ett signerat intyg till Försäkringskassan$/, function (callback) {
         fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)

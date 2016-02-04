@@ -16,7 +16,7 @@ Scenario: Skapa och signera ett intyg
 	När jag går till Mina intyg för patienten "19971019-2387"
 	Så ska intyget finnas i Mina intyg
 	
-@SendMedicalCertificate @minaintyg @keepIntyg
+@SendMedicalCertificate @minaintyg @keepIntyg @intygTillFK
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag väljer patienten "19971019-2387"
     Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
