@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logg, wcTestTools, user, person */
+/*global browser, intyg, logg, wcTestTools, user, person, protractor, pages */
 'use strict';
 
 // function stringStartWith (string, prefix) {
 //     return string.slice(0, prefix.length) === prefix;
 // }
 var testdataHelper = wcTestTools.helpers.testdata;
-var restTestdataHelper = wcTestTools.helpers.restTestdata;
+// var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 function getIntygElement(intygstyp, status, cb) {
@@ -42,9 +42,14 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
     //Om det inte finns några intyg att använda
     if (!intygRadElement) {
-        logg('Hittade inget intyg, skapar ett nytt via rest..')
-        createIntygWithStatus(intygstyp, status, function() {
-            //Uppdatera sidan ocg gå in på patienten igen
+        logg('Hittade inget intyg, skapar ett nytt via rest..');
+        createIntygWithStatus(intygstyp, status, function(err) {
+
+            if(err){
+                cb(err);
+            }
+
+            //Uppdatera sidan och gå in på patienten igen
             browser.refresh();
             element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
             sokSkrivIntygPage.selectPersonnummer(person.id);
@@ -103,14 +108,15 @@ function createIntygWithStatus(typ, status, cb) {
     intyg.id = testdataHelper.generateTestGuid();
     console.log('intyg.id = ' + intyg.id);
 
-    if (typ === 'Transportstyrelsens läkarintyg' && status === 'Signerat') {
-        restTestdataHelper.createIntygFromTemplate('ts-bas', intyg.id).then(function(response) {
-            console.log(response.request.body);
+    // if (typ === 'Transportstyrelsens läkarintyg' && status === 'Signerat') {
+    //     restTestdataHelper.createIntygFromTemplate('ts-bas', intyg.id).then(function(response) {
+    //         console.log(response.request.body);
 
-        }, function(error) {
-            cb(error);
-        }).then(cb);
-    } else if (typ === 'Läkarintyg FK 7263' && status === 'Signerat') {
+    //     }, function(error) {
+    //         cb(error);
+    //     }).then(cb);
+    // } else 
+    if (typ === 'Läkarintyg FK 7263' && status === 'Signerat') {
 
         createIntygWithRest({
             personnr: person.id,

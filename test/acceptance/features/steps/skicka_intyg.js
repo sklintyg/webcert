@@ -43,7 +43,7 @@ module.exports = function() {
 
     	browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
-            intyg.id = intyg.id.replace('?signed', '');
+            intyg.id = intyg.id.split('?')[0];
         });
 
         fkIntygPage.skicka.knapp.click().then(function () {
