@@ -25,6 +25,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 
@@ -43,7 +44,7 @@ public class ModuleAPIControllerIT extends BaseRestIntegrationTest {
         given().expect().statusCode(200).when().get("api/modules/map").
                 then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json")).
-                body("", hasSize(4)).
+                body("", hasSize(greaterThan(0))).
                 body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
     }
 }
