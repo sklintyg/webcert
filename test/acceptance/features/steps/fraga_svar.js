@@ -23,7 +23,6 @@
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 module.exports = function() {
 this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function (amne, callback) {
-
         fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
         fkIntygPage.question.text.sendKeys('En '+amne+'-fråga');
         fkIntygPage.selectQuestionTopic(amne);
@@ -37,7 +36,3 @@ this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan
         });
     });
 };
-
-// this.Given(/^sedan klickar på skicka$/, function (callback) {
-
-// });

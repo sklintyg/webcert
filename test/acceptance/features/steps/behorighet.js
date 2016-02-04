@@ -17,8 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor,logg*/
+/* globals pages, protractor, logg*/
 'use strict';
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
+// var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {
@@ -58,4 +62,77 @@ module.exports = function () {
             callback('FEL, Signeringsknapp är inte klickbar,' + reason);
         }).then(callback);
     });
+
+	this.Given(/^väljer att byta vårdenhet$/, function (callback) {
+	  element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^vårdenhet ska vara "([^"]*)"$/, function (arg1, callback) {
+        expect(element(by.id('location')).getText()).to.eventually.contain(arg1).then(function(value) {
+            logg('OK - vårdenhet = ' + value);
+                }, function(reason) {
+                    callback('FEL - vårdenhet: ' + reason);
+                }).then(callback);
+	});
+
+	this.Given(/^jag väljer flik "([^"]*)"$/, function (arg1, callback) {
+	  expect(element(by.id('menu-skrivintyg')).getText()).to.eventually.contain(arg1).then(function(value) {
+		element(by.id('menu-skrivintyg')).click();
+        logg('OK - byta flik till = ' + value);
+                }, function(reason) {
+                    callback('FEL - byta flik till: ' + reason);
+                }).then(callback);
+	});
+
+
+	this.Given(/^jag väljer att byta vårdenhet$/, function (callback) {
+		element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^väljer "([^"]*)"$/, function (arg1, callback) {
+	   	element(by.id('wc-care-unit-clinic-selector-link')).click();
+	   	element(by.id('select-active-unit-IFV1239877878-1046-modal')).sendKeys(protractor.Key.SPACE).then(callback);
+	});
+
+	this.Given(/^synns inte signera knappen$/, function (callback) {
+		fkUtkastPage.signeraButton.isPresent().then(function (isVisible) {
+		    if (isVisible) {
+		        callback('FEL - Signera knapp synlig!');
+		    } else {
+				console.log('OK - Signera knapp ej synlig!');
+		    }
+		}).then(callback);
+	});
+
+	this.Given(/^synns Hämta personuppgifter knappen$/, function (callback) {
+  		fkUtkastPage.fetchPatientButton.isPresent().then(function (isVisible) {
+		    if (isVisible) {
+				console.log('OK - Hämta personuppgifter synlig!');
+		    } else {
+		        callback('FEL - Hämta personuppgifter ej synlig!');
+		    }
+		}).then(callback);
+	});
+
+	this.Given(/^meddelas jag om spärren$/, function (callback) {
+		expect(element(by.xpath('//*[@id=\"valj-intyg-typ\"]/div[1]/div/form/div[2]')).getText())
+		.to.eventually.contain('På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.').then(function(value) {
+			logg('OK - sekretessmarkeringe = ' + value);
+                }, function(reason) {
+                    callback('FEL - sekretessmarkeringe: ' + reason);
+                }).then(callback);
+	  
+	});
+
+	this.Given(/^jag kan inte gå in på att skapa ett "([^"]*)" intyg$/, function (arg1, callback) {
+   		sokSkrivIntygUtkastTypePage.intygTypeButton.isDisplayed().then(function (isVisible) {
+		    if (isVisible) {
+		        callback('FEL - '+arg1+' synlig!');
+		    } else {
+				console.log('OK -'+arg1+' ej synlig!');
+		    }
+		}).then(callback);
+	});
+
+
 };

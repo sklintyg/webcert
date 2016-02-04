@@ -24,17 +24,18 @@
 'use strict';
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
+var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 
 describe('Generate fk intyg', function() {
 
-    var intygId = specHelper.generateTestGuid();
+    var intygId = testdataHelper.generateTestGuid();
 
     describe('prepare test with intyg', function() {
         it('should generate fk max intyg', function() {
             browser.ignoreSynchronization = false;
-            testdataHelper.createIntygFromTemplate('fkMax', intygId).then(function(response) {
+            restTestdataHelper.createIntygFromTemplate('fkMax', intygId).then(function(response) {
                 var intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();
             }, function(error) {
@@ -86,9 +87,9 @@ describe('Generate fk intyg', function() {
 
     describe('remove test intyg', function() {
         it('should clean up all utkast after the test', function() {
-            testdataHelper.deleteIntyg(intygId);
-            testdataHelper.deleteUtkast(utkastId); // in case the test breaks before it is signed..
-            testdataHelper.deleteIntyg(utkastId);
+            restTestdataHelper.deleteIntyg(intygId);
+            restTestdataHelper.deleteUtkast(utkastId); // in case the test breaks before it is signed..
+            restTestdataHelper.deleteIntyg(utkastId);
         });
     });
 });

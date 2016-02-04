@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor*/
-/* globals browser, intyg, logg */
+/* globals pages, protractor, person, browser, intyg, logg*/
 
 'use strict';
 
@@ -28,13 +27,12 @@ var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 module.exports = function () {
 
-
     this.Then(/^vill jag vara inloggad$/, function (callback) {
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
-
+        person.id = personnummer;
         element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
         sokSkrivIntygPage.selectPersonnummer(personnummer);
         //Patientuppgifter visas

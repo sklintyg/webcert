@@ -25,7 +25,7 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
+var testdataHelper = wcTestTools.helpers.restTestdata;
 var tsdBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 var tsdBasIntygPage = wcTestTools.pages.intyg.ts.bas.intyg;
 

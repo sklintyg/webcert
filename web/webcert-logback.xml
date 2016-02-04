@@ -109,7 +109,7 @@
 
   <logger name="se.inera.intyg.intygstyper.ts_diabetes" level="info" />
 
-  <logger name="se.inera.certificate.modules.sjukpenning" level="debug" />
+  <logger name="se.inera.certificate.modules.sjukpenning_utokad" level="debug" />
 
   <logger name="se.inera.certificate.modules.sjukersattning" level="debug" />
 

@@ -140,6 +140,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public se.inera.intyg.common.support.model.common.internal.Utlatande getUtlatandeFromIntyg(Intyg intyg, String xml) throws Exception {
                 throw new Exception("Module Fk7263 does not support getUtlatandeFromIntyg.");
             }
+            
+            @Override
+            public String transformToStatisticsService(String inputXml) throws ModuleException {
+                return inputXml;
+            }
 
         };
     }

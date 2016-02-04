@@ -135,7 +135,11 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>sjukersattning</artifactId>
     </dependency>
-     
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>sjukpenning-utokad</artifactId>
+    </dependency>
+
     <!-- RIVTA Schemas -->
     <dependency>
       <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
@@ -626,13 +630,20 @@
                   </fileset>
                 </copy>
                 <copy
-                  todir="${project.build.directory}/webjardependencies/sjukersattning"
-                  verbose="false">
+                    todir="${project.build.directory}/webjardependencies/sjukersattning"
+                    verbose="false">
                   <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukersattning">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukersattning">
                   </fileset>
                 </copy>
-                <!-- 
+                <copy
+                    todir="${project.build.directory}/webjardependencies/sjukpenning-utokad"
+                    verbose="false">
+                  <fileset
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukpenning-utokad">
+                  </fileset>
+                </copy>
+                <!--
                 <copy
                   todir="${project.build.directory}/webjardependencies/ts-diabetes"
                   verbose="false">

@@ -22,7 +22,7 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
+var testdataHelper = wcTestTools.helpers.restTestdata;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
