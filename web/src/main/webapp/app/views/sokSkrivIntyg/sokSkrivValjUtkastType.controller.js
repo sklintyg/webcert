@@ -91,10 +91,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.protoCertTypes = [{'sortValue': 0, 'id': 'default', 'type': 'default', 'label': 'Välj typ av intyg'},
                                     {'sortValue': 1, 'id': 'fk7263', 'type': 'fk', 'label': 'Läkarintyg FK 7263'},
                                     {'sortValue': 2, 'id': 'luse', 'type': 'fk', 'label': 'Läkarintyg, sjukersättning'},
-                                    {'sortValue': 3, 'id': 'ts-bas', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg'},
-                                    {'sortValue': 4, 'id': 'ts-diabetes', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg, diabetes'},
-                                    {'sortValue': 5, 'id': 'ss-dod', 'type': 'ss', 'label': 'Rigor mortis'},
-                                    {'sortValue': 6, 'id': 'ss-dodextended', 'type': 'ss', 'label': 'Rigor mortis, uttökat'}];
+                                    {'sortValue': 3, 'id': 'lisu', 'type': 'fk', 'label': 'Läkarintyg för sjukpenning utökat'},
+                                    {'sortValue': 4, 'id': 'ts-bas', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg'},
+                                    {'sortValue': 5, 'id': 'ts-diabetes', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg, diabetes'},
+                                    {'sortValue': 6, 'id': 'ss-dod', 'type': 'ss', 'label': 'Rigor mortis'},
+                                    {'sortValue': 7, 'id': 'ss-dodextended', 'type': 'ss', 'label': 'Rigor mortis, uttökat'}];
 
             $scope.protoGroups = [{'id': 'default', 'type': 'default', 'label': 'Välj grupp för intyget'},
                 { 'id': 'fk', 'label': 'Försäkringskassans intyg'},
@@ -104,7 +105,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.current = {
                 selected : 'default',
-                group : 'default'
+                group : 'default',
+                testModeActive: false
             };
 
             $scope.selectedTemplate = $scope.prototypes.templates[0];
@@ -114,6 +116,23 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.resetPrototype = function(){
                 $scope.current.selected = 'default';
                 $scope.current.group = 'default';
+            }
+
+            $scope.testModeText = {
+                active : 'Avvaktivera testläge',
+                inactive : 'Aktivera testläge'
+            }
+
+            $scope.setTestMode = function(){
+                $scope.current.testModeActive = !$scope.current.testModeActive;
+                if($scope.current.testModeActive === false){
+                    console.log('reloading...');
+                    $scope.current.selected = 'default';
+                    $scope.current.group = 'default';
+                    $scope.selectedTemplate = $scope.prototypes.templates[0];
+                }
+
+
             }
 
             /*  --- PROTOTYPE CODE  END --- */
@@ -152,6 +171,12 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 });
 
                 $scope.$watch('current.selected', function(newValue,oldValue) {
+                    if(newValue !== oldValue){
+                        $scope.intygType = newValue;
+                    }
+                });
+
+                $scope.$watch('current.testModeActive', function(newValue,oldValue) {
                     if(newValue !== oldValue){
                         $scope.intygType = newValue;
                     }

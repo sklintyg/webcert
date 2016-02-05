@@ -3,7 +3,9 @@
     <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
       <div class="row">
         <div class="col-xs-12">
-        <button type="button" class="btn btn-link pull-right" onclick="activateTestMode();">Aktivera Testläge</button>
+        <button type="button" class="btn btn-link pull-right" ng-click="setTestMode();">
+          {{current.testModeActive ? testModeText.active : testModeText.inactive}}
+        </button>
         <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
           <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
           <h1>Sök/skriv intyg</h1>
@@ -17,14 +19,15 @@
             <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
           </div>
 
-          <div class="webcert-proto-area wc-prototype-chooser-default" ng-class="{'webcert-proto-selected': prototypes.hasSelected, 'webcert-proto-unselected': !prototypes.hasSelected  }">
+          <div class="webcert-proto-area wc-prototype-chooser-default" ng-show="current.testModeActive == true || current.selected == 'default' " ng-class="{'webcert-proto-selected': prototypes.hasSelected, 'webcert-proto-unselected': !prototypes.hasSelected  }">
 
-            <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector">
+            <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="current.testModeActive == true" >
 
             </select>
             <div class="slide-animate-container">
               <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
             </div>
+
           </div>
 
         </form>
