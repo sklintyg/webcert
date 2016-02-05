@@ -20,6 +20,7 @@
 /* globals pages, protractor, logg*/
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 // var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
@@ -60,6 +61,14 @@ module.exports = function () {
             logg('Signeringsknapp är klickbar' + value);
         }, function(reason) {
             callback('FEL, Signeringsknapp är inte klickbar,' + reason);
+        }).then(callback);
+    });
+
+    this.Given(/^ska makuleraknappen inte vara tillgänglig$/, function(callback) {
+        expect(fkIntygPage.makulera.btn.isPresent()).to.eventually.be.not.ok.then(function(value) {
+            logg('Makuleraknappen syns inte (ok)' + value);
+        }, function(reason) {
+            callback('FEL, Makuleraknappen finns tillgänglig,' + reason);
         }).then(callback);
     });
 
