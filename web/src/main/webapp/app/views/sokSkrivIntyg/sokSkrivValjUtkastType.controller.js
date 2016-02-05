@@ -176,11 +176,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     }
                 });
 
-                $scope.$watch('current.testModeActive', function(newValue,oldValue) {
-                    if(newValue !== oldValue){
-                        $scope.intygType = newValue;
-                    }
-                });
 
 
             }
