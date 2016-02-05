@@ -1,206 +1,299 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <texter typ="LISU" giltigFrom="2015-12-15" giltigTom="2016-04-01" version="0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
-<!--  
-Detta är ett EXEMPEL på Texter för Läkarintyg utökat. 
--->
+  <!--
+  Detta är ett EXEMPEL på Texter för Läkarintyg utökat.
+  -->
 
-	<!-- Text innan val av elektroniskt formulär -->
-	<text id="FRM_1.RBK">Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är ett underlag för beslut.</text>
-	<!-- Text efter val av elektroniskt formulär -->
-	<text id="FRM_2.RBK"/>
+  <!-- Text innan val av elektroniskt formulär -->
+  <text id="FRM_1.RBK">Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av
+    arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange
+    uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att
+    ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt
+    program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger
+    till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är
+    ett underlag för beslut.
+  </text>
+  <!-- Text efter val av elektroniskt formulär -->
+  <text id="FRM_2.RBK"/>
 
-	<!--
-	===============================================
-	KATEGORI 1: Grund för medicinskt underlag
-	===============================================
-	-->
-		<text id="KAT_1.RBK">Intyget är baserat på</text>
-		<text id="KAT_1.HLP">Motivera under "Övriga upplysningar" i de fall någon undersökning av patienten inte varit aktuell.</text>
-		
-		<text id="FRG_1.RBK">Välj typ av underlag för utlåtandet och datum</text>
-		<text id="FRG_1.HLP">TBD</text>		
-	
-		<text id="DFR_1.1.RBK">Typ av underlag för utlåtandet</text>
-		<text id="DFR_1.1.HLP">TBD</text>
-		
-		<!-- EXEMPEL på syftesspecifik text och hjälptext för typ av underlag ur kodverk KV_FKMU_0001 -->
-		<text id="KV_FKMU_0001.1.RBK">Min undersökning av patienten.</text>
-		<text id="KV_FKMU_0001.1.HLP">Här finns en hjälptext för min undersökning av patienten.</text>
-		<text id="KV_FKMU_0001.2.RBK">Min telefonkontakt med patienten</text>
-		<text id="KV_FKMU_0001.2.HLP">Här finns en hjälptext för min telefonkontakt med patienten.</text>
-		<text id="KV_FKMU_0001.3.RBK">Journaluppgifter från den</text>
-		<text id="KV_FKMU_0001.3.HLP">Här finns en hjälptext för journaluppgifter från den.</text>		
-		<text id="KV_FKMU_0001.4.RBK">Anhörigs beskrivning av patienten</text>
-		<text id="KV_FKMU_0001.4.HLP">Här finns en hjälptext för anhörigs beskrivning av patienten.</text>		
-		<text id="KV_FKMU_0001.5.RBK">Annat</text>
-		<text id="KV_FKMU_0001.5.HLP">Här finns en hjälptext för Annat.</text>		
+  <!--
+  ===============================================
+  KATEGORI 1: Grund för medicinskt underlag
+  ===============================================
+  -->
+  <text id="KAT_1.RBK">Intyget är baserat på</text>
+  <text id="KAT_1.HLP">Motivera under "Övriga upplysningar" i de fall någon undersökning av patienten inte varit
+    aktuell.
+  </text>
 
-			
-		<text id="DFR_1.2.RBK">Datum</text>
-		<text id="DFR_1.2.HLP">TBD</text>	
-		<text id="DFR_1.3.RBK">Annat underlag för utlåtandet</text>
-		<text id="DFR_1.3.HLP">TBD</text>	
+  <text id="FRG_1.RBK">Välj typ av underlag för utlåtandet och datum</text>
+  <text id="FRG_1.HLP">TBD</text>
 
-	<!--
-	===============================================
-	KATEGORI 2: Sysselsättning
-	===============================================
-	-->
-		<text id="KAT_2.RBK">I relation till vilken sysselsättning gör du den medicinska bedömningen?</text>
-		<text id="KAT_2.HLP">Om du kryssar i flera val är det viktigt att du tydliggör under punkt "Övriga upplysningar" om sjukskrivningens omfattning eller period skiljer sig åt mellan olika sysselsättningar.</text>
+  <text id="DFR_1.1.RBK">Typ av underlag för utlåtandet</text>
+  <text id="DFR_1.1.HLP">TBD</text>
 
-		<text id="DFR_28.1.RBK">Ange typ av sysselsättning</text>
-		<text id="DFR_28.1.HLP">TBD</text>
+  <!-- EXEMPEL på syftesspecifik text och hjälptext för typ av underlag ur kodverk KV_FKMU_0001 -->
+  <text id="KV_FKMU_0001.1.RBK">Min undersökning av patienten.</text>
+  <text id="KV_FKMU_0001.1.HLP">Här finns en hjälptext för min undersökning av patienten.</text>
+  <text id="KV_FKMU_0001.2.RBK">Min telefonkontakt med patienten</text>
+  <text id="KV_FKMU_0001.2.HLP">Här finns en hjälptext för min telefonkontakt med patienten.</text>
+  <text id="KV_FKMU_0001.3.RBK">Journaluppgifter från den</text>
+  <text id="KV_FKMU_0001.3.HLP">Här finns en hjälptext för journaluppgifter från den.</text>
+  <text id="KV_FKMU_0001.4.RBK">Anhörigs beskrivning av patienten</text>
+  <text id="KV_FKMU_0001.4.HLP">Här finns en hjälptext för anhörigs beskrivning av patienten.</text>
+  <text id="KV_FKMU_0001.5.RBK">Annat</text>
+  <text id="KV_FKMU_0001.5.HLP">Här finns en hjälptext för Annat.</text>
 
-		<text id="DFR_29.1.RBK">Ange yrke och arbetsuppgifter</text>
-		<text id="DFR_29.1.HLP">TBD</text>
+  <text id="DFR_1.2.RBK">Datum</text>
+  <text id="DFR_1.2.HLP">TBD</text>
+  <text id="DFR_1.3.RBK">Annat underlag för utlåtandet</text>
+  <text id="DFR_1.3.HLP">TBD</text>
 
-		<text id="DFR_30.1.RBK">Ange aktiviteter i det arbetsmarknadspolitiska programmet</text>
-		<text id="DFR_30.1.HLP">TBD</text>
-		
-	<!--
-	===============================================
-	KATEGORI 3: Diagnos
-	===============================================
-	-->
-		<text id="KAT_3.RBK">Diagnos/diagnoser som orsakar nedsatt arbetsförmåga</text>
-		<text id="KAT_3.HLP">Ange samtliga diagnoser som orsakar nedsatt arbetsförmåga. Huvuddiagnos för arbetsförmågans nedsättning anges först. Symptomdiagnoser kan godkännas en kortare period under medicinsk utredning.</text>
+  <!--
+  ===============================================
+  KATEGORI 2: Sysselsättning
+  ===============================================
+  -->
+  <text id="KAT_2.RBK">I relation till vilken sysselsättning gör du den medicinska bedömningen?</text>
+  <text id="KAT_2.HLP">Om du kryssar i flera val är det viktigt att du tydliggör under punkt "Övriga upplysningar" om
+    sjukskrivningens omfattning eller period skiljer sig åt mellan olika sysselsättningar.
+  </text>
 
-		<text id="DFR_6.1.RBK">Diagnostext</text>
-		<text id="DFR_6.1.HLP">TBD</text>	
+  <text id="KV_FKMU_0002.1.RBK">Nuvarande arbete</text>
+  <text id="KV_FKMU_0002.1.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0002.2.RBK">Arbetssökande</text>
+  <text id="KV_FKMU_0002.2.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0002.3.RBK">Föräldraledighet för vård av barn</text>
+  <text id="KV_FKMU_0002.3.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0002.4.RBK">Studier</text>
+  <text id="KV_FKMU_0002.4.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0002.5.RBK">Deltar i arbetmarknadspolitiskt program</text>
+  <text id="KV_FKMU_0002.5.HLP">Hjälp.</text>
 
-		<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
-		<text id="DFR_6.2.HLP">TBD</text>	
-		
-	<!--
-	===============================================
-	KATEGORI 4: Sjukdomens konsekvenser
-	===============================================
-	-->		
-		<text id="KAT_4.RBK">Sjukdomens konsekvenser för patienten</text>
-		<text id="KAT_4.HLP">TBD</text>
-	
-		<text id="DFR_35.1.RBK">Undersökningsfynd som är konsekvens av sjukdomen (funktionsnedsättning)</text>
-		<text id="DFR_35.1.HLP">Av läkaren observerade nedsättningar (direkt och indirekt) och avvikelse i status, rtg-fynd, lab, kliniskt fysiologiska undersökningar och ev. testresultat. Vid beskrivningen av funktionsnedsättningen vid psykisk sjukdom ingår förutom basalt psykiskt status även den värderade del av anamnes läkaren bedömer vara av sjukligt tillstånd.</text>		
-		
-		<text id="DFR_17.1.RBK">Vad kan patienten inte göra på grund av sin sjukdom? (aktivitetsbegränsning)</text>
-		<text id="DFR_17.1.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där svårigheter uppstår. Beskriv hur ofta dessa situationer uppstår och graden av patientens besvär.</text>			
-		
-	<!--
-	===============================================
-	KATEGORI 5: Medicinska behandlingar/åtgärder
-	===============================================
-	-->	
-	<text id="KAT_5.RBK">Medicinsk behandling</text>
-	<text id="KAT_5.HLP">TBD</text>	
+  <text id="DFR_28.1.RBK">Ange typ av sysselsättning</text>
+  <text id="DFR_28.1.HLP">TBD</text>
 
-	<text id="DFR_19.1.RBK">Pågående medicinska behandlingar/åtgärder och ansvarig vårdenhet.</text>
-	<text id="DFR_19.1.HLP">TBD</text>
+  <text id="DFR_29.1.RBK">Ange yrke och arbetsuppgifter</text>
+  <text id="DFR_29.1.HLP">TBD</text>
 
-	<text id="DFR_20.1.RBK">Planerade medicinska behandlingar/åtgärder. Ange om möjligt tidplan och ansvarig vårdenhet.</text>
-	<text id="DFR_20.1.HLP">TBD</text>
-	
-	<!--
-	===============================================
-	KATEGORI 6: Bedömning
-	===============================================
-	-->	
-	<text id="KAT_6.RBK">Bedömning</text>
-	<text id="KAT_6.HLP">TBD</text>			
-		
-	<text id="FRG_32.RBK">Din bedömning av patientens behov av sjukskrivning utifrån aktuell sysselsättning</text>
-	<text id="FRG_32.HLP">För den som studerar är det endast möjligt att sjukskriva på heltid.</text>		
-	
-	<text id="DFR_32.1.RBK">Väljd sjukskrivningsgrad (nedsättning av arbetsförmåga)</text>
-	<text id="DFR_32.1.HLP">TBD</text>		
-		
-	<text id="DFR_32.2.RBK">Från och med (år,månad,dag) till och med (år, månad, dag)</text>
-	<text id="DFR_32.2.HLP">TBD</text>		
+  <text id="DFR_30.1.RBK">Ange aktiviteter i det arbetsmarknadspolitiska programmet</text>
+  <text id="DFR_30.1.HLP">TBD</text>
 
-	<text id="DFR_37.1.RBK">Beskriv varför arbetsförmågan bedöms vara nedsatt längre tid än den som det försäkringsmedicinska beslutstödet anger.</text>
-	<text id="DFR_37.1.HLP">TBD</text>		
+  <!--
+  ===============================================
+  KATEGORI 3: Diagnos
+  ===============================================
+  -->
+  <text id="KAT_3.RBK">Diagnos/diagnoser som orsakar nedsatt arbetsförmåga</text>
+  <text id="KAT_3.HLP">Ange samtliga diagnoser som orsakar nedsatt arbetsförmåga. Huvuddiagnos för arbetsförmågans
+    nedsättning anges först. Symptomdiagnoser kan godkännas en kortare period under medicinsk utredning.
+  </text>
 
-	<text id="DFR_33.1.RBK">Finns det medicinska skäl att förlägga arbetstiden på något annat sätt än att arbeta i mindre omfattning varje dag?</text>
-	<text id="DFR_33.1.HLP">Frågorna besvaras endast vid partiellt nedsatt arbetsförmåga.</text>
-	
-	<text id="DFR_33.2.RBK">Beskriv medicinska skäl till annan förläggning av arbetstiden</text>
-	<text id="DFR_33.2.HLP">TBD</text>
-	
-	<text id="DFR_34.1.RBK">Kan resor till och från arbetet med annat färdmedel än normalt köra det möjligt för patienten att återgå till arbetet under sjukskrivningsperioden?</text>
-	<text id="DFR_34.1.HLP">Anges om resor till och från arbetet med annat färdmedel kan göra att patienten kan arbeta trots sjukdom. Resor kan endast bli aktuellt om patienten är helt sjukskriven. Det innebär dock inte att patienten måste arbeta hela sin arbetstid för att få arbetsresor.</text>
-	
-	<text id="DFR_23.1.RBK">Beskriv vad patienten kan göra trots sin sjukdom relaterat till sitt arbete</text>
-	<text id="DFR_23.1.HLP">Fundera alltid på om patienten skulle kunna utföra vissa arbetsuppgifter eller arbete om arbetet kan anpassas till patientens behov. Informationen är till för att hjälpa arbetsgivaren i att kunna anpassa patientens arbetssituation.</text>	
-	
-	<text id="DFR_39.1.RBK">Patienten bedöms kunna återgå helt till aktuell sysselsättning efter en sjukskrivingsperiod om 180 dagar</text>
-	<text id="DFR_39.1.HLP">En viktig information för att underlätta planeringen.</text>		
+  <text id="DFR_6.1.RBK">Diagnostext</text>
+  <text id="DFR_6.1.HLP">TBD</text>
 
-	<text id="DFR_39.2.RBK">Prognos för återgång i nuvarande sysselsättning är oklar (förtydliga i fritext)</text>
-	<text id="DFR_39.2.HLP">TBD</text>	
-	
-	<!--
-	===============================================
-	KATEGORI 7: Åtgärder
-	===============================================
-	-->	
-	<text id="KAT_6.RBK">Åtgärder</text>
-	<text id="KAT_6.HLP">TBD</text>		
-	
-	<text id="FRG_40.RBK">Förslag till åtgärder som skulle kunna underlätta återgång till arbetet</text>
-	<text id="FRG_40.HLP">TBD</text>		
-	
-	<text id="DFR_40.1.RBK">Vilka arbetslivsinriktade åtgärder skulle göra det lättare för patienten att återgå i arbete?</text>
-	<text id="DFR_40.1.HLP">TBD</text>
-	
-	<text id="DFR_40.2.RBK">Beskriv varför den/dessa arbetslivsinriktade åtgärder skulle kunna underlätta återgång i arbete.</text>
-	<text id="DFR_40.2.HLP">TBD</text>	
+  <text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+  <text id="DFR_6.2.HLP">TBD</text>
 
-	<text id="DFR_40.3.RBK">Beskriv varför arbetslivsinriktade åtgärder just nu inte skulle underlätta återgång i arbete.</text>
-	<text id="DFR_40.3.HLP">TBD</text>	
-	
-	<!--
-	===============================================
-	KATEGORI 8: Övrigt
-	===============================================
-	-->
-	<text id="KAT_8.RBK">Övriga upplysningar</text>
-	<text id="KAT_8.HLP">TBD</text>		
-		
-	<text id="DFR_25.1.RBK">Övriga upplysningar</text>
-	<text id="DFR_25.1.HLP">TBD</text>		
-	
-	<!--
-	===============================================
-	KATEGORI 9: Kontakt
-	===============================================
-	-->
-	<text id="KAT_9.RBK">Vill du att Försäkringskassan kontaktar dig?</text>
-	<text id="KAT_9.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>		
+  <!--
+  ===============================================
+  KATEGORI 4: Sjukdomens konsekvenser
+  ===============================================
+  -->
+  <text id="KAT_4.RBK">Sjukdomens konsekvenser för patienten</text>
+  <text id="KAT_4.HLP">TBD</text>
 
-	<text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
-	<text id="DFR_26.1.HLP">TBD</text>
+  <text id="DFR_35.1.RBK">Undersökningsfynd som är konsekvens av sjukdomen (funktionsnedsättning)</text>
+  <text id="DFR_35.1.HLP">Av läkaren observerade nedsättningar (direkt och indirekt) och avvikelse i status, rtg-fynd,
+    lab, kliniskt fysiologiska undersökningar och ev. testresultat. Vid beskrivningen av funktionsnedsättningen vid
+    psykisk sjukdom ingår förutom basalt psykiskt status även den värderade del av anamnes läkaren bedömer vara av
+    sjukligt tillstånd.
+  </text>
 
-	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
-	<text id="DFR_26.2.HLP">TBD</text>	
-	
-	<!-- 
-	===============================================
-	KATEGORI 9999: Tilläggsfrågor
-	===============================================
-	-->
-	<text id="KAT_9999.RBK">Tilläggsfrågor</text>
-	<text id="KAT_9999.HLP">TBD</text>
-	
-	<tillagg>
-		<tillaggsfraga id="9001">
-			<text id="DFR_9001.1.RBK">Vilken skostorlek har du?</text>
-			<text id="DFR_9001.1.HLP">Ange din skostorlek.</text>
-		</tillaggsfraga>
-		<tillaggsfraga id="9002">
-			<text id="DFR_9002.1.RBK">Hur lång är du?</text>
-			<text id="DFR_9002.1.HLP">Ange din längd i centimeter (cm).</text>
-		</tillaggsfraga>		
-	</tillagg>	
-	
+  <text id="DFR_17.1.RBK">Vad kan patienten inte göra på grund av sin sjukdom? (aktivitetsbegränsning)</text>
+  <text id="DFR_17.1.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där svårigheter
+    uppstår. Beskriv hur ofta dessa situationer uppstår och graden av patientens besvär.
+  </text>
+
+  <!--
+  ===============================================
+  KATEGORI 5: Medicinska behandlingar/åtgärder
+  ===============================================
+  -->
+  <text id="KAT_5.RBK">Medicinsk behandling</text>
+  <text id="KAT_5.HLP">TBD</text>
+
+  <text id="DFR_19.1.RBK">Pågående medicinska behandlingar/åtgärder och ansvarig vårdenhet.</text>
+  <text id="DFR_19.1.HLP">TBD</text>
+
+  <text id="DFR_20.1.RBK">Planerade medicinska behandlingar/åtgärder. Ange om möjligt tidplan och ansvarig vårdenhet.
+  </text>
+  <text id="DFR_20.1.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 6: Bedömning
+  ===============================================
+  -->
+  <text id="KAT_6.RBK">Bedömning</text>
+  <text id="KAT_6.HLP">TBD</text>
+
+  <text id="KV_FKMU_0003.1.RBK">Helt nedsatt</text>
+  <text id="KV_FKMU_0003.1.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0003.2.RBK">Nedsatt med 3/4</text>
+  <text id="KV_FKMU_0003.2.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0003.3.RBK">Nedsatt med hälften</text>
+  <text id="KV_FKMU_0003.3.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0003.4.RBK">Nedsatt med 1/4</text>
+  <text id="KV_FKMU_0003.4.HLP">Hjälp.</text>
+
+  <text id="KV_FKMU_0006.1.RBK">Med stor sannolikhet</text>
+  <text id="KV_FKMU_0006.1.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0006.2.RBK">Patienten bedöms kunna återgå i nuvarande sysselsättning, men sjukskrivningstiden är sannolikt längre än 180 dagar</text>
+  <text id="KV_FKMU_0006.2.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0006.3.RBK">Patienten kan sannolikt inte återgå i nuvarande sysselsättning</text>
+  <text id="KV_FKMU_0006.3.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0006.4.RBK">Prognos för återgång i nuvarande sysselsättning är oklar</text>
+  <text id="KV_FKMU_0006.4.HLP">Hjälp.</text>
+
+  <text id="FRG_32.RBK">Din bedömning av patientens behov av sjukskrivning utifrån aktuell sysselsättning</text>
+  <text id="FRG_32.HLP">För den som studerar är det endast möjligt att sjukskriva på heltid.</text>
+
+  <text id="DFR_32.1.RBK">Väljd sjukskrivningsgrad (nedsättning av arbetsförmåga)</text>
+  <text id="DFR_32.1.HLP">TBD</text>
+
+  <text id="DFR_32.2.RBK">Från och med (år,månad,dag) till och med (år, månad, dag)</text>
+  <text id="DFR_32.2.HLP">TBD</text>
+
+  <text id="DFR_37.1.RBK">Beskriv varför arbetsförmågan bedöms vara nedsatt längre tid än den som det
+    försäkringsmedicinska beslutstödet anger.
+  </text>
+  <text id="DFR_37.1.HLP">TBD</text>
+
+  <text id="DFR_33.1.RBK">Finns det medicinska skäl att förlägga arbetstiden på något annat sätt än att arbeta i mindre
+    omfattning varje dag?
+  </text>
+  <text id="DFR_33.1.HLP">Frågorna besvaras endast vid partiellt nedsatt arbetsförmåga.</text>
+
+  <text id="DFR_33.2.RBK">Beskriv medicinska skäl till annan förläggning av arbetstiden</text>
+  <text id="DFR_33.2.HLP">TBD</text>
+
+  <text id="DFR_34.1.RBK">Kan resor till och från arbetet med annat färdmedel än normalt köra det möjligt för patienten
+    att återgå till arbetet under sjukskrivningsperioden?
+  </text>
+  <text id="DFR_34.1.HLP">Anges om resor till och från arbetet med annat färdmedel kan göra att patienten kan arbeta
+    trots sjukdom. Resor kan endast bli aktuellt om patienten är helt sjukskriven. Det innebär dock inte att patienten
+    måste arbeta hela sin arbetstid för att få arbetsresor.
+  </text>
+
+  <text id="DFR_23.1.RBK">Beskriv vad patienten kan göra trots sin sjukdom relaterat till sitt arbete</text>
+  <text id="DFR_23.1.HLP">Fundera alltid på om patienten skulle kunna utföra vissa arbetsuppgifter eller arbete om
+    arbetet kan anpassas till patientens behov. Informationen är till för att hjälpa arbetsgivaren i att kunna anpassa
+    patientens arbetssituation.
+  </text>
+
+  <text id="DFR_39.1.RBK">Patienten bedöms kunna återgå helt till aktuell sysselsättning efter en sjukskrivingsperiod om
+    180 dagar
+  </text>
+  <text id="DFR_39.1.HLP">En viktig information för att underlätta planeringen.</text>
+
+  <text id="DFR_39.2.RBK">Prognos för återgång i nuvarande sysselsättning är oklar (förtydliga i fritext)</text>
+  <text id="DFR_39.2.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 7: Åtgärder
+  ===============================================
+  -->
+  <text id="KAT_7.RBK">Åtgärder</text>
+  <text id="KAT_7.HLP">TBD</text>
+
+  <text id="KV_FKMU_0004.1.RBK">Inte aktuellt</text>
+  <text id="KV_FKMU_0004.1.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.2.RBK">Arbetsträning</text>
+  <text id="KV_FKMU_0004.2.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.3.RBK">Arbetsanspassning</text>
+  <text id="KV_FKMU_0004.3.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.4.RBK">Söka nytt arbete</text>
+  <text id="KV_FKMU_0004.4.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.5.RBK">Besök på arbetsplatsen</text>
+  <text id="KV_FKMU_0004.5.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.6.RBK">Ergonomisk bedömning</text>
+  <text id="KV_FKMU_0004.6.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.7.RBK">Hjälpmedel</text>
+  <text id="KV_FKMU_0004.7.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.8.RBK">Konflikthantering</text>
+  <text id="KV_FKMU_0004.8.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.9.RBK">Kontakt med företagshälsovård</text>
+  <text id="KV_FKMU_0004.9.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.10.RBK">Omfördelning av arbetsuppgifter</text>
+  <text id="KV_FKMU_0004.10.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0004.11.RBK">Övrigt</text>
+  <text id="KV_FKMU_0004.11.HLP">Hjälp.</text>
+
+  <text id="FRG_40.RBK">Förslag till åtgärder som skulle kunna underlätta återgång till arbetet</text>
+  <text id="FRG_40.HLP">TBD</text>
+
+  <text id="DFR_40.1.RBK">Vilka arbetslivsinriktade åtgärder skulle göra det lättare för patienten att återgå i
+    arbete?
+  </text>
+  <text id="DFR_40.1.HLP">TBD</text>
+
+  <text id="DFR_40.2.RBK">Beskriv varför den/dessa arbetslivsinriktade åtgärder skulle kunna underlätta återgång i
+    arbete.
+  </text>
+  <text id="DFR_40.2.HLP">TBD</text>
+
+  <text id="DFR_40.3.RBK">Beskriv varför arbetslivsinriktade åtgärder just nu inte skulle underlätta återgång i
+    arbete.
+  </text>
+  <text id="DFR_40.3.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 8: Övrigt
+  ===============================================
+  -->
+  <text id="KAT_8.RBK">Övriga upplysningar</text>
+  <text id="KAT_8.HLP">TBD</text>
+
+  <text id="DFR_25.1.RBK">Övriga upplysningar</text>
+  <text id="DFR_25.1.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 9: Kontakt
+  ===============================================
+  -->
+  <text id="KAT_9.RBK">Vill du att Försäkringskassan kontaktar dig?</text>
+  <text id="KAT_9.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och
+    handläggningen kan påbörjas.
+  </text>
+
+  <text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
+  <text id="DFR_26.1.HLP">TBD</text>
+
+  <text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
+  <text id="DFR_26.2.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 9999: Tilläggsfrågor
+  ===============================================
+  -->
+  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
+  <text id="KAT_9999.HLP">TBD</text>
+
+  <tillagg>
+    <tillaggsfraga id="9001">
+      <text id="DFR_9001.1.RBK">Vilken skostorlek har du?</text>
+      <text id="DFR_9001.1.HLP">Ange din skostorlek.</text>
+    </tillaggsfraga>
+    <tillaggsfraga id="9002">
+      <text id="DFR_9002.1.RBK">Hur lång är du?</text>
+      <text id="DFR_9002.1.HLP">Ange din längd i centimeter (cm).</text>
+    </tillaggsfraga>
+  </tillagg>
+
 </texter>
