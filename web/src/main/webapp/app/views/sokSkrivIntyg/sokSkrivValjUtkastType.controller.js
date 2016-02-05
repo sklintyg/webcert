@@ -38,7 +38,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 currentList: undefined,
                 unsigned: 'certlist-empty', // unsigned, unsigned-mixed,
                 luseDescriptionLabel: 'DFR_3.1',
-                lisuDescriptionLabel: 'XYZ123'
+                lisuDescriptionLabel: 'XYZ123',
+
             };
 
             $scope.filterForm = {
@@ -57,12 +58,74 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             // Format: { id: 'default', label: '' }
             $scope.certTypes = [];
 
+            /*  --- PROTOTYPE CODE  START --- */
+            $scope.prototypes = {
+                selectedDefault: 0,
+                isHighlighted: false,
+                urlRoot: '/web/webjars/common/webcert/gui/sokskrivintyg/',
+                fileTemplateName: 'intygValjare',
+                templates: [
+                    {
+                        id: 0,
+                        name: 'Default',
+                        url: '/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.0.html'
+                    },
+                    {
+                        id: 1,
+                        name: 'variant-a',
+                        url: '/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.1.html'
+                    },
+                    {
+                        id: 2,
+                        name: 'variant-b',
+                        url: '/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.2.html'
+                    },
+                    {
+                        id: 3,
+                        name: 'variant-c',
+                        url: '/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.3.html'
+                    }
+                ]
+            };
+
+            $scope.protoCertTypes = [{'sortValue': 0, 'id': 'default', 'type': 'default', 'label': 'Välj typ av intyg'},
+                                    {'sortValue': 1, 'id': 'fk7263', 'type': 'fk', 'label': 'Läkarintyg FK 7263'},
+                                    {'sortValue': 2, 'id': 'luse', 'type': 'fk', 'label': 'Läkarintyg, sjukersättning'},
+                                    {'sortValue': 3, 'id': 'ts-bas', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg'},
+                                    {'sortValue': 4, 'id': 'ts-diabetes', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg, diabetes'},
+                                    {'sortValue': 5, 'id': 'ss-dod', 'type': 'ss', 'label': 'Rigor mortis'},
+                                    {'sortValue': 6, 'id': 'ss-dodextended', 'type': 'ss', 'label': 'Rigor mortis, uttökat'}];
+
+            $scope.protoGroups = [{'id': 'default', 'type': 'default', 'label': 'Välj grupp för intyget'},
+                { 'id': 'fk', 'label': 'Försäkringskassans intyg'},
+                {'id': 'ts', 'label': 'Transportstyrelsens intyg'},
+                {'id': 'ss', 'label': 'Socialstyrelsens intyg'}
+            ];
+
+            $scope.current = {
+                selected : 'default',
+                group : 'default'
+            };
+
+            $scope.selectedTemplate = $scope.prototypes.templates[0];
+
+            $scope.certReciever = null;
+
+            $scope.resetPrototype = function(){
+                $scope.current.selected = 'default';
+                $scope.current.group = 'default';
+            }
+
+            /*  --- PROTOTYPE CODE  END --- */
+
             /**
              * Private functions
              * @private
              */
 
-            function onPageLoad() {
+
+            function
+            onPageLoad() {
 
                 // Redirect to index if pnr and name isn't specified
                 if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
@@ -87,6 +150,14 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $log.debug('Query Error' + errorData);
                     $scope.viewState.activeErrorMessageKey = errorCode;
                 });
+
+                $scope.$watch('current.selected', function(newValue,oldValue) {
+                    if(newValue !== oldValue){
+                        $scope.intygType = newValue;
+                    }
+                });
+
+
             }
 
             function hasUnsigned(list) {
@@ -112,20 +183,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
             }
 
-            $scope.intygSelectorPrototypeData = [{
-                id: 0,
-                name: 'Byt gränsnitt'
-            }, {
-                id: 1,
-                name: 'A'
-            }, {
-                id: 2,
-                name: 'B'
-            }, {
-                id: 3,
-                name: 'C'
-            }];
-            $scope.selectedStatus = 0;
 
             /**
              * Watches
@@ -200,4 +257,5 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             onPageLoad();
-        }]);
+        }])
+;

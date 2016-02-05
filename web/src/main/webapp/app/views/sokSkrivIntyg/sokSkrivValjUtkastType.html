@@ -3,58 +3,30 @@
     <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
       <div class="row">
         <div class="col-xs-12">
-          <button type="button" class="btn btn-link pull-right" onclick="activateTestMode();">Aktivera Testläge</button>
-          <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
-            <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
-            <h1>Sök/skriv intyg</h1>
+        <button type="button" class="btn btn-link pull-right" onclick="activateTestMode();">Aktivera Testläge</button>
+        <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
+          <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
+          <h1>Sök/skriv intyg</h1>
+          <div class="form-group">
+            <label class="control-label">Patientuppgifter</label>
             <div class="form-group">
-              <label class="control-label">Patientuppgifter</label>
-              <div class="form-group">
-                <span id="patientNamn">{{fornamn}} {{mellannamn}} {{efternamn}}</span><br />
-                {{personnummer}}
-              </div>
-
-              <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
+              <span id="patientNamn">{{fornamn}} {{mellannamn}} {{efternamn}}</span><br />
+              {{personnummer}}
             </div>
 
-            <div
-                ng-class="selectedStatus == 0 ? 'webcert-proto-area default ' : 'webcert-proto-area webcert-proto-selected'">
-              <wc-prototype dropdown-type="button" selected-val="selectedStatus = selectedVal"
-                            preselected-value="selectedStatus"
-                            data-dropdown-data="intygSelectorPrototypeData"></wc-prototype>
+            <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
+          </div>
 
-              <p>Selected Value : {{selectedStatus}}</p>
-              <!--div class="form-group proto-selector">
-                <div class="btn-group">
-                  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
-                          aria-expanded="false">
-                    <span class="glyphicon glyphicon-random" aria-hidden="true"></span>
-                    Byt gränssnitt
-                    <span class="caret"></span>
-                    <span class="sr-only">Byt gränssnitt</span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a ng-click="OnProtoClick('a')">Prototyp - A -</a></li>
-                    <li><a ng-click="OnProtoClick('b')">Prototyp - B -</a></li>
-                    <li><a ng-click="OnProtoClick('c')">Prototyp - C -</a></li>
-                    <li><a ng-click="OnProtoClick('default')">Default</a></li>
-                  </ul>
-                </div-->
+          <div class="webcert-proto-area wc-prototype-chooser-default" ng-class="{'webcert-proto-selected': prototypes.hasSelected, 'webcert-proto-unselected': !prototypes.hasSelected  }">
+
+            <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector">
+
+            </select>
+            <div class="slide-animate-container">
+              <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
             </div>
+          </div>
 
-            <!-- Used for prototyping gui move to common.  -->
-
-            <!-- /web/webjars/common/webcert/gui/headers/wcHeader.partial.html -->
-            <wc-prototype-template
-                template-url="/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.default.html"
-                ng-show="prototype == 'default'"></wc-prototype-template>
-            <wc-prototype-template template-url="/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.a.html"
-                                   ng-show="prototype == 'a'"></wc-prototype-template>
-            <wc-prototype-template template-url="/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.b.html"
-                                   ng-show="prototype == 'b'"></wc-prototype-template>
-            <wc-prototype-template template-url="/web/webjars/common/webcert/gui/sokskrivintyg/intygValjare.c.html"
-                                   ng-show="prototype == 'c'"></wc-prototype-template>
-        </div>
         </form>
       </div>
     </div>
