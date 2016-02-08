@@ -26,7 +26,6 @@
 var testdataHelper = wcTestTools.helpers.testdata;
 // var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
-
 function getIntygElement(intygstyp, status, cb) {
     var qaTable = element(by.css('table.table-qa'));
     qaTable.all(by.cssContainingText('tr', intygstyp)).filter(function(elem, index) {
@@ -47,6 +46,29 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
             if(err){
                 cb(err);
+module.exports = function() {
+     
+    this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
+        var qaTable = element(by.css('table.table-qa'));
+        qaTable.all(by.cssContainingText('tr', intygstyp)).filter(function(elem, index) {
+            return elem.getText().then(function(text) {
+                return (text.indexOf(status) > -1);
+            });
+        }).then(function(filteredElements) {
+               
+            //Om det inte finns några intyg att använda
+            if(!filteredElements[0]){
+                createIntygWithStatus(intygstyp,status,callback);
+                //Gå in på intyg
+            }
+            else{
+                filteredElements[0].element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
+                 // Save INTYGS_ID:
+                browser.getCurrentUrl().then(function(text){
+                  intyg.id = text.split('/').slice(-1)[0];
+                  console.log(intyg.id);
+                });
+                callback();
             }
 
             //Uppdatera sidan och gå in på patienten igen

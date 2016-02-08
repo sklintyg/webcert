@@ -82,7 +82,9 @@ module.exports = function() {
             fornamn:    'Jan',
             efternamn:  'Nilsson',
             hsaId:      'IFV1239877878-1049',
-            enhetId:    'IFV1239877878-1042'
+            enhetId:    'IFV1239877878-1042',
+            lakare: true,
+            forskrivarKod: '2481632'
         };
         logInAsUserRole(userObj,'Läkare',callback, 'ROLE_LAKARE_UTHOPP');
     });

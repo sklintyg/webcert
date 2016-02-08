@@ -3,7 +3,7 @@
 # PRIVILEGE_NAVIGERING
 Egenskap: Behörigheter för en "uthoppad" vårdadministratör
 
-#@vardadmin_uthopp
+@vardadmin_uthopp
 Scenario: En vårdadministratör ska kunna byta vårdenhet 
    Givet att jag är inloggad som vårdadministratör
    #Givet att jag är inloggad som uthoppad vårdadministratör
@@ -16,7 +16,7 @@ Scenario: En vårdadministratör ska kunna byta vårdenhet
 
 # PRIVILEGE_VIDAREBEFORDRA_UTKAST
 # PRIVILEGE_ATKOMST_ANDRA_ENHETER
-#@vardadmin_uthopp
+@vardadmin_uthopp
 Scenario: Det ska gå att Vidarebefodra ett utkast
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
@@ -25,7 +25,7 @@ Scenario: Det ska gå att Vidarebefodra ett utkast
 	Så avbryter jag vidarebefodran
 
 # Skriva utkast, Läsa intyg/utkast
-#@vardadmin_uthopp
+@vardadmin_uthopp
 Scenario: Administratör kan ej signera intyg.
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
@@ -37,8 +37,7 @@ Scenario: Administratör kan ej signera intyg.
 
 # PRIVILEGE_HANTERA_PERSONUPPGIFTER
 # - Visar "Hämta personuppgifter"-knapp på utkast
-# - Information om personuppgifter som uppdateras på kopiera-dialog (ej djupintegration)
-#@vardadmin_uthopp
+@vardadmin_uthopp
 Scenario: Admin kan visa "Hämta personuppgifter"-knapp på utkast
 	Givet att jag är inloggad som vårdadministratör
 		När jag väljer flik "Sök/skriv intyg"
@@ -56,15 +55,9 @@ Scenario: Admin kan visa information om sekretessmarkerade personuppgifter
 		Och jag kan inte gå in på att skapa ett "Läkarintyg FK 7263" intyg
 		Så meddelas jag om spärren
 
-@vardadmin_uthopp
-Scenario: Admin kan visa information om sekretessmarkerade personuppgifter
-	Givet att jag är inloggad som vårdadministratör
-		När jag väljer flik "Sök/skriv intyg"
-		När jag väljer patienten "19121212-1212"
-
 # PRIVILEGE_HANTERA_MAILSVAR
 # Visar meddelande om att vårdenheter får mail om svar inkommer på en fråga.
-@vardadmin_uthopp
+#@vardadmin_uthopp
 Scenario: Det ska gå att Vidarebefodra ett utkast
 	#Givet att jag är inloggad som uthoppad vårdadministratör
 

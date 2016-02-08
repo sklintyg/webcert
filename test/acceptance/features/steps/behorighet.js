@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, logg*/
+/* globals pages, protractor, logg, browser */
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -77,7 +77,7 @@ module.exports = function () {
 	});
 
 	this.Given(/^vårdenhet ska vara "([^"]*)"$/, function (arg1, callback) {
-        expect(element(by.id('location')).getText()).to.eventually.contain(arg1).then(function(value) {
+        expect(element(by.css('.clearfix')).getText()).to.eventually.contain(arg1).then(function(value) {
             logg('OK - vårdenhet = ' + value);
                 }, function(reason) {
                     callback('FEL - vårdenhet: ' + reason);
@@ -142,6 +142,5 @@ module.exports = function () {
 		    }
 		}).then(callback);
 	});
-
 
 };
