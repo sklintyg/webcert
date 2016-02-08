@@ -26,6 +26,7 @@
 var testdataHelper = wcTestTools.helpers.testdata;
 // var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+
 function getIntygElement(intygstyp, status, cb) {
     var qaTable = element(by.css('table.table-qa'));
     qaTable.all(by.cssContainingText('tr', intygstyp)).filter(function(elem, index) {
@@ -46,6 +47,15 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
             if(err){
                 cb(err);
+            }
+        });
+    }
+        //Gå in på intyg
+    else {
+        intygRadElement.element(by.cssContainingText('button', 'Visa')).click();
+        cb();
+    }
+}
 module.exports = function() {
      
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
@@ -78,17 +88,12 @@ module.exports = function() {
 
             getIntygElement(intygstyp, status, function(el) {
                 el.element(by.cssContainingText('button', 'Visa')).click();
-                cb();
+                callback();
             });
         });
 
-    }
-    //Gå in på intyg
-    else {
-        intygRadElement.element(by.cssContainingText('button', 'Visa')).click();
-        cb();
-    }
-}
+    });
+};
 
 module.exports = function() {
 
