@@ -39,9 +39,18 @@ module.exports = function () {
 	});
 
 	this.Given(/^Vidarebeforda knappen synns$/, function (callback) {
-	  element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
+	element.all(by.id('unsignedCertTable')).then(function(items){
+		if(items.length >= 1){
+			logg('OK - antal rader större eller lika med 1');
+			element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
+		} else {
+			logg('FEL - antal rader mindre än 1');
+			callback('Inga element att vidarebefodra');
+		}
 	});
 
+	  // element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
+});
 	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
 	  element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
@@ -99,8 +108,9 @@ module.exports = function () {
 	});
 
 	this.Given(/^väljer "([^"]*)"$/, function (arg1, callback) {
-	   	element(by.id('wc-care-unit-clinic-selector-link')).click();
-	   	element(by.id('select-active-unit-IFV1239877878-1046-modal')).sendKeys(protractor.Key.SPACE).then(callback);
+	   	element(by.id('wc-care-unit-clinic-selector-link')).click().then(function(arg1){
+	   		element(by.id('select-active-unit-IFV1239877878-1045-modal')).sendKeys(protractor.Key.SPACE).then(callback);
+	   	});
 	});
 
 	this.Given(/^synns inte signera knappen$/, function (callback) {

@@ -3,7 +3,7 @@
 # PRIVILEGE_NAVIGERING
 Egenskap: Behörigheter för en "uthoppad" vårdadministratör
 
-@vardadmin_uthopp
+#@vardadmin_uthopp
 Scenario: En vårdadministratör ska kunna byta vårdenhet 
    Givet att jag är inloggad som vårdadministratör
    #Givet att jag är inloggad som uthoppad vårdadministratör
@@ -25,7 +25,7 @@ Scenario: Det ska gå att Vidarebefodra ett utkast
 	Så avbryter jag vidarebefodran
 
 # Skriva utkast, Läsa intyg/utkast
-@vardadmin_uthopp
+#@vardadmin_uthopp
 Scenario: Administratör kan ej signera intyg.
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
@@ -37,7 +37,7 @@ Scenario: Administratör kan ej signera intyg.
 
 # PRIVILEGE_HANTERA_PERSONUPPGIFTER
 # - Visar "Hämta personuppgifter"-knapp på utkast
-@vardadmin_uthopp
+#@vardadmin_uthopp
 Scenario: Admin kan visa "Hämta personuppgifter"-knapp på utkast
 	Givet att jag är inloggad som vårdadministratör
 		När jag väljer flik "Sök/skriv intyg"
