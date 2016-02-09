@@ -236,7 +236,7 @@ module.exports = function () {
     });
 
     this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function (callback) {
-        element(by.id('markAsHandledFkOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
+        element(by.id('markAsHandledWcOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
     });
     
     this.Given(/^Försäkringskassan ställer en "([^"]*)" fråga om intyget$/, function (amne, callback) {

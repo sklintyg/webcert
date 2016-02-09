@@ -39,18 +39,17 @@ module.exports = function () {
 	});
 
 	this.Given(/^Vidarebeforda knappen synns$/, function (callback) {
-	element.all(by.id('unsignedCertTable')).then(function(items){
-		if(items.length >= 1){
-			logg('OK - antal rader större eller lika med 1');
-			element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
-		} else {
-			logg('FEL - antal rader mindre än 1');
-			callback('Inga element att vidarebefodra');
-		}
+		element.all(by.id('unsignedCertTable')).then(function(items){
+			if(items.length >= 1){
+				logg('OK - antal rader större eller lika med 1');
+				element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
+			} else {
+				logg('FEL - antal rader mindre än 1');
+				callback('Inga element att vidarebefodra');
+			}
+		});
 	});
-
-	  // element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
-});
+	
 	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
 	  element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
@@ -152,5 +151,8 @@ module.exports = function () {
 		    }
 		}).then(callback);
 	});
-
+	this.Given(/^jag väntar$/, function (callback) {
+	  // Write code here that turns the phrase above into concrete actions
+	  // callback.pending();
+	});
 };

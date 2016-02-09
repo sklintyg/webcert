@@ -51,9 +51,7 @@ module.exports = function() {
             fornamn:    'Åsa',
             efternamn:  'Andersson',
             hsaId:      'IFV1239877878-104B',
-            enhetId:    'IFV1239877878-1042',
-            lakare: true,
-            forskrivarKod: '2481632'
+            enhetId:    'IFV1239877878-1042'
         };
         logInAsUserRole(userObj,'Läkare',callback, 'ROLE_VARDADMINISTRATOR_UTHOPP');
     });
