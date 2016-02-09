@@ -45,40 +45,8 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         logg('Hittade inget intyg, skapar ett nytt via rest..');
         createIntygWithStatus(intygstyp, status, function(err) {
 
-            if(err){
+            if (err) {
                 cb(err);
-            }
-        });
-    }
-        //Gå in på intyg
-    else {
-        intygRadElement.element(by.cssContainingText('button', 'Visa')).click();
-        cb();
-    }
-}
-module.exports = function() {
-     
-    this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
-        var qaTable = element(by.css('table.table-qa'));
-        qaTable.all(by.cssContainingText('tr', intygstyp)).filter(function(elem, index) {
-            return elem.getText().then(function(text) {
-                return (text.indexOf(status) > -1);
-            });
-        }).then(function(filteredElements) {
-               
-            //Om det inte finns några intyg att använda
-            if(!filteredElements[0]){
-                createIntygWithStatus(intygstyp,status,callback);
-                //Gå in på intyg
-            }
-            else{
-                filteredElements[0].element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
-                 // Save INTYGS_ID:
-                browser.getCurrentUrl().then(function(text){
-                  intyg.id = text.split('/').slice(-1)[0];
-                  console.log(intyg.id);
-                });
-                callback();
             }
 
             //Uppdatera sidan och gå in på patienten igen
@@ -88,38 +56,50 @@ module.exports = function() {
 
             getIntygElement(intygstyp, status, function(el) {
                 el.element(by.cssContainingText('button', 'Visa')).click();
-                callback();
+                cb();
             });
         });
 
-    });
-};
-
+    }
+    //Gå in på intyg
+    else {
+        intygRadElement.element(by.cssContainingText('button', 'Visa')).click();
+        cb();
+    }
+}
 module.exports = function() {
+
+
 
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
         getIntygElement(intygstyp, status, function(el) {
-            gotoIntyg(intygstyp, status, el, callback);
+            gotoIntyg(intygstyp, status, el, function() {
+                browser.getCurrentUrl().then(function(text) {
+                    intyg.id = text.split('/').slice(-1)[0];
+                    intyg.id = intyg.id.split('?')[0];
+                    callback();
+                });
+            });
         });
     });
 
-    this.Given(/^jag skickar intyget till "([^"]*)"$/, function(dest, callback) {
+    // this.Given(/^jag skickar intyget till "([^"]*)"$/, function(dest, callback) {
 
-        //Fånga intygets id
-        if (!global.intyg) {
-            global.intyg = {};
-        }
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            logg('Intygsid: ' + intyg.id);
-        });
+    //     //Fånga intygets id
+    //     if (!global.intyg) {
+    //         global.intyg = {};
+    //     }
+    //     browser.getCurrentUrl().then(function(text) {
+    //         intyg.id = text.split('/').slice(-1)[0];
+    //         logg('Intygsid: ' + intyg.id);
+    //     });
 
-        element(by.id('sendBtn')).click();
-        element(by.id('patientSamtycke')).click();
-        element(by.id('button1send-dialog')).click();
+    //     element(by.id('sendBtn')).click();
+    //     element(by.id('patientSamtycke')).click();
+    //     element(by.id('button1send-dialog')).click();
 
-        callback();
-    });
+    //     callback();
+    // });
 };
 
 
