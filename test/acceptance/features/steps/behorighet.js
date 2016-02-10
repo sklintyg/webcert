@@ -39,15 +39,11 @@ module.exports = function () {
 	});
 
 	this.Given(/^Vidarebeforda knappen synns$/, function (callback) {
-		element.all(by.id('unsignedCertTable')).then(function(items){
-			if(items.length >= 1){
-				logg('OK - antal rader större eller lika med 1');
-				element(by.xpath('//*[@id=\"unsignedCertTable\"]/table/tbody/tr[2]/td[2]/button')).sendKeys(protractor.Key.SPACE).then(callback);
-			} else {
-				logg('FEL - antal rader mindre än 1');
-				callback('Inga element att vidarebefodra');
-			}
-		});
+		element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info')).sendKeys(protractor.Key.SPACE).then(function(){
+			logg('OK - Vidarebeforda knappen hittad');
+		}, function(reason){
+			callback('FEL : '+ reason);
+		}).then(callback);
 	});
 	
 	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
@@ -133,7 +129,7 @@ module.exports = function () {
 	});
 
 	this.Given(/^meddelas jag om spärren$/, function (callback) {
-		expect(element(by.xpath('//*[@id=\"valj-intyg-typ\"]/div[1]/div/form/div[2]')).getText())
+		expect(element(by.id('sekretessmarkering')).getText())
 		.to.eventually.contain('På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.').then(function(value) {
 			logg('OK - sekretessmarkeringe = ' + value);
                 }, function(reason) {
