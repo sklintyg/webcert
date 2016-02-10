@@ -38,9 +38,17 @@ module.exports = function () {
 	    element(by.id('copyBtn')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
-	this.Given(/^Vidarebeforda knappen synns$/, function (callback) {
-		element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info')).sendKeys(protractor.Key.SPACE).then(function(){
+	this.Given(/^synns Vidarebefodra knappen$/, function (callback) {
+		expect(element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info')).isPresent()).to.become(true).then(function(){
 			logg('OK - Vidarebeforda knappen hittad');
+		}, function(reason){
+			callback('FEL : '+ reason);
+		}).then(callback);
+	});
+
+	this.Given(/^kopierar ett signerat intyg$/, function (callback) {
+		element(by.css('.btn.btn-info')).sendKeys(protractor.Key.SPACE).then(function(){
+			logg('OK - Kopiera knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
 		}).then(callback);
