@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -92,6 +93,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private MonitoringLogService monitoringLogService;
 
+    @Autowired
+    private IntygTextsService intygTextsService;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -119,6 +123,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         draftHolder.setContent(utkast.getModel());
+        draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
 
         return Response.ok(draftHolder).build();
     }

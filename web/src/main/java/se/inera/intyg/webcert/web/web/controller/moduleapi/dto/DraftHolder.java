@@ -43,6 +43,8 @@ public class DraftHolder {
     @JsonRawValue
     private String content;
 
+    private String latestTextVersion;
+
     public DraftHolder() {
 
     }
@@ -95,5 +97,13 @@ public class DraftHolder {
 
     public void setVardgivareNamn(String vardgivareNamn) {
         this.vardgivareNamn = vardgivareNamn;
+    }
+
+    public void setLatestTextVersion(String latestTextVersion) {
+        this.latestTextVersion = latestTextVersion;
+    }
+
+    public String getLatestTextVersion() {
+        return latestTextVersion;
     }
 }
