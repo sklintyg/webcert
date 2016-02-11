@@ -134,6 +134,7 @@ var Fk7263Intyg = BaseIntyg._extend({
             sendButton:        element(by.id('sendQuestionBtn'))
         };
         this.forwardBtn = element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info'));
+        this.intygStatus = element(by.id('intyg-vy-laddad'));
     },
     get: function get(intygId) {
         get._super.call(this, intygId);

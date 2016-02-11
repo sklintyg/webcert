@@ -28,3 +28,11 @@ Scenario: Djupintegrerad läkare kan kopiera ett intyg från tidigare intyg list
 	Så ska intygets status vara "Intyget är signerat"
 
 # PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA
+@djup_lakare
+Scenario: Djupintegrerad läkare besvarar kompleterings fråga
+   Givet att jag är inloggad som djupintegrerad läkare
+   När jag väljer patienten "19121212-1212"
+   Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+   Och Försäkringskassan ställer en "Kontakt" fråga om intyget
+   Och jag svarar på frågan
+   Så ska frågan vara hanterad

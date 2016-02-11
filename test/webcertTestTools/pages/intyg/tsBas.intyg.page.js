@@ -57,6 +57,8 @@ var TsBasIntyg = BaseIntyg._extend({
     this.tabletter = element(by.id('tabletter'));
     this.insulin = element(by.id('insulin'));
     this.diabetesTyp = element(by.id('diabetesTyp'));
+    
+    this.intygStatus = element(by.id('intyget-sparat-och-ej-komplett-meddelande'));
 
     this.neurologiskSjukdom = element(by.id('neurologiskSjukdom'));
 

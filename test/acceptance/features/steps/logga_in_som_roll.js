@@ -23,6 +23,7 @@
 'use strict';
 
 // var webcertBasePage = pages.webcertBase;
+var webcertBase = pages.webcertBase;
 
 module.exports = function() {
 
@@ -112,6 +113,7 @@ function logInAsUserRole(userObj,roleName,callback, newOrigin, newUserRole){
         browser.sleep(2000);
         // webcertBasePage.header.getText()
         expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
+        // expect(webcertBase.header.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
 	 .and.notify(callback);
 
 

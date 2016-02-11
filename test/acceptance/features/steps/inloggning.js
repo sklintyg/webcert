@@ -22,18 +22,23 @@
 'use strict';
 
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
+var fk7263Intyg = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+var webcertBase = pages.webcertBase;
+// webcertBase.flikarsokSkrivIntyg
 
 module.exports = function () {
 
     this.Then(/^vill jag vara inloggad$/, function (callback) {
-        expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
+        expect(webcertBase.header.getText()).to.eventually.contain('Logga ut').and.notify(callback);
+        // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
         person.id = personnummer;
-        element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+        webcertBase.flikar.sokSkrivIntyg.sendKeys(protractor.Key.SPACE);
+        // element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
         sokSkrivIntygPage.selectPersonnummer(personnummer);
         //Patientuppgifter visas
         var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
@@ -54,7 +59,8 @@ module.exports = function () {
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
+        expect(fk7263Intyg.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
+        // expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
     this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function (callback) {

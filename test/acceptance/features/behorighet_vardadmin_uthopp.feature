@@ -3,7 +3,7 @@
 # PRIVILEGE_NAVIGERING
 Egenskap: Behörigheter för en "uthoppad" vårdadministratör
 
-#@vardadmin_uthopp
+#@vardadmin_uthopp1
 Scenario: En vårdadministratör ska kunna byta vårdenhet 
    Givet att jag är inloggad som vårdadministratör
    #Givet att jag är inloggad som uthoppad vårdadministratör
@@ -16,7 +16,7 @@ Scenario: En vårdadministratör ska kunna byta vårdenhet
 
 # PRIVILEGE_VIDAREBEFORDRA_UTKAST
 # PRIVILEGE_ATKOMST_ANDRA_ENHETER
-@vardadmin_uthopp
+#@vardadmin_uthopp
 Scenario: Det ska gå att Vidarebefodra ett utkast
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
@@ -56,12 +56,12 @@ Scenario: Admin kan visa information om sekretessmarkerade personuppgifter
 
 # PRIVILEGE_HANTERA_MAILSVAR
 #@vardadmin_uthopp
-Scenario: Det ska gå att Vidarebefodra ett utkast
+#Scenario: Det ska gå att Vidarebefodra ett utkast
 	#Givet att jag är inloggad som uthoppad vårdadministratör
-	Givet att jag är inloggad som vårdadministratör
-	När jag väljer flik "Sök/skriv intyg"
-	När jag väljer patienten "19121212-1212"
-	Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
-	Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
-	Så jag markerar frågan från Försäkringskassan som hanterad
+	#Givet att jag är inloggad som vårdadministratör
+	#När jag väljer flik "Sök/skriv intyg"
+	#När jag väljer patienten "19121212-1212"
+	#Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+	#Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+	#Så jag markerar frågan från Försäkringskassan som hanterad
 

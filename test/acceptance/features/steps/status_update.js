@@ -25,6 +25,9 @@ var soapMessageBodies = require('./soap');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./db_actions/db.js');
+var tsBasintygtPage = pages.intyg.ts.bas.intyg;
+var basIntyg = pages.intyg.base.intyg;
+
 
 function stripTrailingSlash(str) {
     if(str.substr(-1) === '/') {
@@ -149,7 +152,7 @@ module.exports = function () {
     });
 
     this.Then(/^ska intygsutkastets status vara "([^"]*)"$/, function (statustext, callback) {
-        expect(element(by.id('intyget-sparat-och-ej-komplett-meddelande')).getText()).to.eventually.contain(statustext).and.notify(callback);
+        expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
     });
     
     this.Given(/^jag fyller i fältet "([^"]*)"$/, function (arg1, callback) {
@@ -232,11 +235,11 @@ module.exports = function () {
     });
 
     this.Given(/^jag markerar frågan som hanterad$/, function (callback) {
-        element(by.id('markAsHandledWcOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
+        element(basIntyg.handeledBtn + global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
     });
 
     this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function (callback) {
-        element(by.id('markAsHandledWcOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
+        element(basIntyg.handeledBtn + global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
     });
     
     this.Given(/^Försäkringskassan ställer en "([^"]*)" fråga om intyget$/, function (amne, callback) {

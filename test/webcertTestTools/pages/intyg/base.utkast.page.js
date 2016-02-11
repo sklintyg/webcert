@@ -34,6 +34,8 @@ var BaseUtkast = JClass._extend({
             bekrafta: element(by.id('confirm-draft-delete-button'))
         };
         this.newTextVersionAlert = element(by.id('newTextVersion'));
+        this.backBtn = element(by.id('tillbakaButton'));
+        
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);

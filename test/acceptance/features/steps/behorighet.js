@@ -23,7 +23,7 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var basePage = pages.webcertBase;
-var intygPage = pages.intyg.base.intyg;
+// var intygPage = pages.intyg.base.intyg;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
 
@@ -40,7 +40,6 @@ module.exports = function () {
     });
     
     this.Given(/^är kopieraknappen tillgänglig$/, function (callback) {
-		
 		expect(basePage.copyBtn).isPresent().to.become(true).then(function(){
 			logg('OK - Kopiera knappen hittad');
     		basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
@@ -50,7 +49,7 @@ module.exports = function () {
 	});
 
 	this.Given(/^synns Vidarebefodra knappen$/, function (callback) {
-		expect(fkIntygPage.forwardBtn).isPresent().to.become(true).then(function(){
+		expect(basePage.copyBtn).isPresent().to.become(true).then(function(){
 			logg('OK - Vidarebeforda knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
@@ -74,7 +73,7 @@ module.exports = function () {
 	});
 
 	this.Given(/^kopierar ett signerat intyg$/, function (callback) {
-		intygPage.copyBtn.sendKeys(protractor.Key.SPACE).then(function(){
+		expect(fkIntygPage.forwardBtn).isPresent().to.become(true).then(function(){		
 			logg('OK - Kopiera knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
@@ -109,7 +108,6 @@ module.exports = function () {
 
 	this.Given(/^vårdenhet ska vara "([^"]*)"$/, function (arg1, callback) {
         expect(basePage.careUnit.getText()).to.eventually.contain(arg1).then(function(value) {
-        // expect(element(by.css('.clearfix')).getText()).to.eventually.contain(arg1).then(function(value) {
             logg('OK - vårdenhet = ' + value);
                 }, function(reason) {
                     callback('FEL - vårdenhet: ' + reason);
@@ -118,9 +116,7 @@ module.exports = function () {
 
 	this.Given(/^jag väljer flik "([^"]*)"$/, function (arg1, callback) {
 	  expect(basePage.flikar.sokSkrivIntyg.getText()).to.eventually.contain(arg1).then(function(value) {
-	  // expect(element(by.id('menu-skrivintyg')).getText()).to.eventually.contain(arg1).then(function(value) {
 		element(basePage.flikar.sokSkrivIntyg).sendKeys(protractor.Key.SPACE);
-		// element(basePage.flikar.sokSkrivIntyg).click();
         logg('OK - byta flik till = ' + value);
                 }, function(reason) {
                     callback('FEL - byta flik till: ' + reason);
@@ -130,12 +126,10 @@ module.exports = function () {
 
 	this.Given(/^jag väljer att byta vårdenhet$/, function (callback) {
 		basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(callback);
-		// element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
 	this.Given(/^väljer "([^"]*)"$/, function (arg1, callback) {
 	   	basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(function(arg1){
-	   	// basePage.changeUnit.click().then(function(arg1){
 	   		element(by.id('select-active-unit-IFV1239877878-1045-modal')).sendKeys(protractor.Key.SPACE).then(callback);
 	   	});
 	});
@@ -162,7 +156,6 @@ module.exports = function () {
 
 	this.Given(/^meddelas jag om spärren$/, function (callback) {
 		expect(basePage.warnings.protectedInfo).getText()
-		// expect(element(by.id('sekretessmarkering')).getText())
 		.to.eventually.contain('På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.').then(function(value) {
 			logg('OK - sekretessmarkeringe = ' + value);
                 }, function(reason) {
@@ -191,7 +184,6 @@ module.exports = function () {
 	this.Given(/^jag svarar på "([^"]*)" på frågan$/, function (arg1, callback) {
         fkIntygPage.answer.text.sendKeys(arg1).then(function () {
         	basePage.QnA.respond.sendKeys(protractor.Key.SPACE).then(callback);
-        	// element(by.css('.btn.btn-success.ng-isolate-scope')).sendKeys(protractor.Key.SPACE).then(callback);
         });
 	});
 

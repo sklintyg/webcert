@@ -22,21 +22,20 @@
 'use strict';
 
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var basIntyg = pages.intyg.base.intyg;
+
 
 module.exports = function () {
 
     this.Given(/^jag raderar utkastet$/, function (callback) {
-        // browser.wait(EC.elementToBeClickable($('#makuleraBtn')), 10000);
         fkUtkastPage.radera.knapp.click();
         fkUtkastPage.radera.bekrafta.click()
         .then(callback);
     });
 
     this.Given(/^jag går tillbaka till start$/, function (callback) {
-        var back  = element(by.id('tillbakaButton'));
-        browser.driver.wait(protractor.until.elementIsVisible(back));
-
-        back.click().then(callback);
+        browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn));
+        basIntyg.backBtn.click().then(callback);
     });
 
     this.Given(/^ska intyget visa varningen "([^"]*)"$/, function (arg1, callback) {
