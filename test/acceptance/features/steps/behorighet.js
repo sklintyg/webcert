@@ -26,6 +26,8 @@ var basePage = pages.webcertBase;
 var intygPage = pages.intyg.base.intyg;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
+console.log(pages);
+
 // var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 module.exports = function () {
@@ -35,7 +37,7 @@ module.exports = function () {
     });
 
     this.Given(/^går in på Ej signerade utkast$/, function (callback) {
-    	basePage.flikar.notSigned.click().then(callback);
+    	unsignedPage.flikar.notSigned.click().then(callback);
     });
     
     this.Given(/^är kopieraknappen tillgänglig$/, function (callback) {
