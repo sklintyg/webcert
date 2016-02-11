@@ -16,6 +16,11 @@ Scenario: En uthoppsläkare ska inte kunna makulera intyg
    När jag väljer patienten "19971019-2387"
    Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Så ska makuleraknappen inte vara tillgänglig
-   
+@impl
+Scenario: En uthoppsläkare ska inte kunna filtrera osignerade intyg på läkare
+   Givet att jag är inloggad som uthoppsläkare
+   När går in på Ej signerade utkast
+   Och väljer att visa sökfilter 
+   Så ska sökfiltret Sparat av inte vara tillgängligt
 
 

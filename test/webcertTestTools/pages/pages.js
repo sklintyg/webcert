@@ -55,5 +55,6 @@ module.exports = {
                 intyg: require(intygPath + 'tsBas.intyg.page.js')
             }
         }
-    }
+    },
+    'unsignedPage' : require('./unsignedPage.js')
 };

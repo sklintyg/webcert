@@ -25,6 +25,7 @@ var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var basePage = pages.webcertBase;
 var intygPage = pages.intyg.base.intyg;
 var utkastPage = pages.intyg.base.utkast;
+var unsignedPage = pages.unsignedPage;
 // var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 module.exports = function () {
@@ -53,6 +54,22 @@ module.exports = function () {
 		}, function(reason){
 			callback('FEL : '+ reason);
 		}).then(callback);
+});
+
+    this.Given(/^väljer att visa sökfilter/, function (callback) {
+                unsignedPage.showSearchFilters().then(callback);
+    });
+
+    this.Given(/^ska sökfiltret Sparat av inte vara tillgängligt/, function (callback) {
+                expect(unsignedPage.filterSavedBy.form.isPresent()).to.eventually.be.not.ok.then(function(value) {
+                logg('Filter \"Sparat av\" inte tillgängligt för uthoppsläkare ' + value);
+                }, function(reason) {
+                        callback('FEL, Filter \"Sparat av\" tillgängligt för uthoppsläkare,' + reason);
+                }).then(callback);
+    });
+
+	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
+	  element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
 	this.Given(/^kopierar ett signerat intyg$/, function (callback) {
