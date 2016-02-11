@@ -22,24 +22,33 @@
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
+var basePage = pages.webcertBase;
+var intygPage = pages.intyg.base.intyg;
+var utkastPage = pages.intyg.base.utkast;
 // var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 module.exports = function () {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function (callback) {
-        element(by.id('menu-skrivintyg')).click().then(callback);
+    	basePage.flikar.sokSkrivIntyg.click().then(callback);
     });
 
     this.Given(/^går in på Ej signerade utkast$/, function (callback) {
-        element(by.id('menu-unsigned')).click().then(callback);
+    	basePage.flikar.notSigned.click().then(callback);
     });
     
     this.Given(/^är kopieraknappen tillgänglig$/, function (callback) {
-	    element(by.id('copyBtn')).sendKeys(protractor.Key.SPACE).then(callback);
+		
+		expect(basePage.copyBtn).isPresent().to.become(true).then(function(){
+			logg('OK - Kopiera knappen hittad');
+    		basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
+		}, function(reason){
+			callback('FEL : '+ reason);
+		}).then(callback);
 	});
 
 	this.Given(/^synns Vidarebefodra knappen$/, function (callback) {
-		expect(element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info')).isPresent()).to.become(true).then(function(){
+		expect(fkIntygPage.forwardBtn).isPresent().to.become(true).then(function(){
 			logg('OK - Vidarebeforda knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
@@ -47,29 +56,21 @@ module.exports = function () {
 	});
 
 	this.Given(/^kopierar ett signerat intyg$/, function (callback) {
-		element(by.css('.btn.btn-info')).sendKeys(protractor.Key.SPACE).then(function(){
+		intygPage.copyBtn.sendKeys(protractor.Key.SPACE).then(function(){
 			logg('OK - Kopiera knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
 		}).then(callback);
 	});
-	
-	this.Given(/^avbryter jag vidarebefodran$/, function (callback) {
-	  element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
-	});
-
-	this.Given(/^ska intyget vara markerat som vidarebefodrad$/, function (callback) {
-	  // Write code here that turns the phrase above into concrete actions
-	  callback('TBI!');
-	});
 
     this.Given(/^är signeraknappen tillgänglig$/, function(callback) {
-        expect(element(by.id('signera-utkast-button')).isPresent()).to.eventually.be.ok.then(function(value) {
+        expect(utkastPage.signeraButton.isPresent()).to.eventually.be.ok.then(function(value) {
             logg('Signeringsknapp existerar ' + value);
         }, function(reason) {
             callback('FEL, Signeringsknapp finns inte på sidan,' + reason);
         });
-        expect(element(by.id('signera-utkast-button')).isEnabled()).to.eventually.be.ok.then(function(value) {
+
+        expect(utkastPage.signeraButton.isEnabled()).to.eventually.be.ok.then(function(value) {
             logg('Signeringsknapp är klickbar' + value);
         }, function(reason) {
             callback('FEL, Signeringsknapp är inte klickbar,' + reason);
@@ -85,11 +86,12 @@ module.exports = function () {
     });
 
 	this.Given(/^väljer att byta vårdenhet$/, function (callback) {
-	  element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
+	  basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
 	this.Given(/^vårdenhet ska vara "([^"]*)"$/, function (arg1, callback) {
-        expect(element(by.css('.clearfix')).getText()).to.eventually.contain(arg1).then(function(value) {
+        expect(basePage.careUnit.getText()).to.eventually.contain(arg1).then(function(value) {
+        // expect(element(by.css('.clearfix')).getText()).to.eventually.contain(arg1).then(function(value) {
             logg('OK - vårdenhet = ' + value);
                 }, function(reason) {
                     callback('FEL - vårdenhet: ' + reason);
@@ -97,8 +99,10 @@ module.exports = function () {
 	});
 
 	this.Given(/^jag väljer flik "([^"]*)"$/, function (arg1, callback) {
-	  expect(element(by.id('menu-skrivintyg')).getText()).to.eventually.contain(arg1).then(function(value) {
-		element(by.id('menu-skrivintyg')).click();
+	  expect(basePage.flikar.sokSkrivIntyg.getText()).to.eventually.contain(arg1).then(function(value) {
+	  // expect(element(by.id('menu-skrivintyg')).getText()).to.eventually.contain(arg1).then(function(value) {
+		element(basePage.flikar.sokSkrivIntyg).sendKeys(protractor.Key.SPACE);
+		// element(basePage.flikar.sokSkrivIntyg).click();
         logg('OK - byta flik till = ' + value);
                 }, function(reason) {
                     callback('FEL - byta flik till: ' + reason);
@@ -107,11 +111,13 @@ module.exports = function () {
 
 
 	this.Given(/^jag väljer att byta vårdenhet$/, function (callback) {
-		element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
+		basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(callback);
+		// element(by.id('wc-care-unit-clinic-selector-link')).sendKeys(protractor.Key.SPACE).then(callback);
 	});
 
 	this.Given(/^väljer "([^"]*)"$/, function (arg1, callback) {
-	   	element(by.id('wc-care-unit-clinic-selector-link')).click().then(function(arg1){
+	   	basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(function(arg1){
+	   	// basePage.changeUnit.click().then(function(arg1){
 	   		element(by.id('select-active-unit-IFV1239877878-1045-modal')).sendKeys(protractor.Key.SPACE).then(callback);
 	   	});
 	});
@@ -137,7 +143,8 @@ module.exports = function () {
 	});
 
 	this.Given(/^meddelas jag om spärren$/, function (callback) {
-		expect(element(by.id('sekretessmarkering')).getText())
+		expect(basePage.warnings.protectedInfo).getText()
+		// expect(element(by.id('sekretessmarkering')).getText())
 		.to.eventually.contain('På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.').then(function(value) {
 			logg('OK - sekretessmarkeringe = ' + value);
                 }, function(reason) {
@@ -155,8 +162,23 @@ module.exports = function () {
 		    }
 		}).then(callback);
 	});
+
+	// ============== PLACEHOLDER TO PAUSE TESTS =================
 	this.Given(/^jag väntar$/, function (callback) {
 	  // Write code here that turns the phrase above into concrete actions
 	  // callback.pending();
 	});
+	// ===========================================================
+
+	this.Given(/^jag svarar på "([^"]*)" på frågan$/, function (arg1, callback) {
+        fkIntygPage.answer.text.sendKeys(arg1).then(function () {
+        	basePage.QnA.respond.sendKeys(protractor.Key.SPACE).then(callback);
+        	// element(by.css('.btn.btn-success.ng-isolate-scope')).sendKeys(protractor.Key.SPACE).then(callback);
+        });
+	});
+
+	this.Given(/^ska frågan vara hanterad$/, function (callback) {
+	  callback.pending();
+	});
+
 };
