@@ -53,7 +53,7 @@ module.exports = function() {
             hsaId:      'IFV1239877878-104B',
             enhetId:    'IFV1239877878-1042'
         };
-        logInAsUserRole(userObj,'Läkare',callback, 'ROLE_VARDADMINISTRATOR_UTHOPP');
+        logInAsUserRole(userObj,'Läkare',callback, 'UTHOPP', 'VARDADMINISTRATOR');
     });
     this.Given(/^att jag är inloggad som läkare$/, function(callback) {
         var userObj = {
@@ -74,7 +74,7 @@ module.exports = function() {
             lakare: true,
             forskrivarKod: '2481632'
         };
-        logInAsUserRole(userObj,'Läkare',callback,'ROLE_LAKARE_DJUPINTEGRERAD');
+        logInAsUserRole(userObj,'Läkare',callback,'DJUPINTEGRATION', 'LAKARE');
     });
 
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
@@ -85,22 +85,29 @@ module.exports = function() {
             enhetId:    'IFV1239877878-1042',
             lakare:     true
         };
-        logInAsUserRole(userObj,'Läkare',callback, 'ROLE_LAKARE_UTHOPP');
+        logInAsUserRole(userObj,'Läkare',callback, 'UTHOPP', 'LAKARE');
     });
 };
 
-function logInAsUserRole(userObj,roleName,callback, setUserRole){
+function logInAsUserRole(userObj,roleName,callback, newOrigin, newUserRole){
         logg('Loggar in som ' + userObj.fornamn+' '+userObj.efternamn + '..');
         global.user = userObj;
         
         browser.ignoreSynchronization = true;
         pages.welcome.get();
         pages.welcome.loginByJSON(JSON.stringify(userObj));
-        if (setUserRole) {
-            logg('Testability-api, sätter ny roll ' + userObj.fornamn+' '+userObj.efternamn + '..');
-            browser.get('api/testability/userrole/' + setUserRole);
+
+        if (newUserRole) {
+            logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn+' '+userObj.efternamn + '..');
+            browser.get('testability/user/role/' + newUserRole);
             browser.navigate().back();
         }
+        if (newOrigin) {
+            logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn+' '+userObj.efternamn + '..');
+            browser.get('testability/user/origin/' + newOrigin);
+            browser.navigate().back();
+        }
+
         browser.ignoreSynchronization = false;
         browser.sleep(2000);
         // webcertBasePage.header.getText()
@@ -111,4 +118,5 @@ function logInAsUserRole(userObj,roleName,callback, setUserRole){
 
 
 }
+
 

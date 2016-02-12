@@ -26,7 +26,6 @@ var basePage = pages.webcertBase;
 var intygPage = pages.intyg.base.intyg;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
-console.log(pages);
 
 // var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
