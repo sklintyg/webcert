@@ -113,6 +113,8 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
 
+        this.copyBtn = element(by.id('copyBtn'));
+        
         this.prognosGIAB = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
         this.prognosN = element(by.id('arbetsformataPrognosNej'));
         this.prognosJD = element(by.id('arbetsformataPrognosJaDelvis'));
@@ -131,6 +133,7 @@ var Fk7263Intyg = BaseIntyg._extend({
             kontakt:           element(by.cssContainingText('option', 'Kontakt')),
             sendButton:        element(by.id('sendQuestionBtn'))
         };
+        this.forwardBtn = element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info'));
     },
     get: function get(intygId) {
         get._super.call(this, intygId);

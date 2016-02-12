@@ -51,9 +51,7 @@ module.exports = function() {
             fornamn:    'Åsa',
             efternamn:  'Andersson',
             hsaId:      'IFV1239877878-104B',
-            enhetId:    'IFV1239877878-1042',
-            lakare: true,
-            forskrivarKod: '2481632'
+            enhetId:    'IFV1239877878-1042'
         };
         logInAsUserRole(userObj,'Läkare',callback, 'ROLE_VARDADMINISTRATOR_UTHOPP');
     });
@@ -72,7 +70,9 @@ module.exports = function() {
             fornamn:    'Åsa',
             efternamn:  'Svensson',
             hsaId:      'TSTNMT2321000156-100L',
-            enhetId:    'TSTNMT2321000156-1003'
+            enhetId:    'TSTNMT2321000156-1003',
+            lakare: true,
+            forskrivarKod: '2481632'
         };
         logInAsUserRole(userObj,'Läkare',callback,'ROLE_LAKARE_DJUPINTEGRERAD');
     });
@@ -82,7 +82,8 @@ module.exports = function() {
             fornamn:    'Jan',
             efternamn:  'Nilsson',
             hsaId:      'IFV1239877878-1049',
-            enhetId:    'IFV1239877878-1042'
+            enhetId:    'IFV1239877878-1042',
+            lakare:     true
         };
         logInAsUserRole(userObj,'Läkare',callback, 'ROLE_LAKARE_UTHOPP');
     });

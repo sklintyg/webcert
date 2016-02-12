@@ -48,6 +48,7 @@ module.exports = function () {
         // Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text){
           intyg.id = text.split('/').slice(-1)[0];
+          console.log(intyg.id);
         });
         callback();
     });

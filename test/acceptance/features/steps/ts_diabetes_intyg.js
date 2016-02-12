@@ -45,7 +45,7 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         logg('Hittade inget intyg, skapar ett nytt via rest..');
         createIntygWithStatus(intygstyp, status, function(err) {
 
-            if(err){
+            if (err) {
                 cb(err);
             }
 
@@ -67,32 +67,39 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         cb();
     }
 }
-
 module.exports = function() {
+
+
 
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function(intygstyp, status, callback) {
         getIntygElement(intygstyp, status, function(el) {
-            gotoIntyg(intygstyp, status, el, callback);
+            gotoIntyg(intygstyp, status, el, function() {
+                browser.getCurrentUrl().then(function(text) {
+                    intyg.id = text.split('/').slice(-1)[0];
+                    intyg.id = intyg.id.split('?')[0];
+                    callback();
+                });
+            });
         });
     });
 
-    this.Given(/^jag skickar intyget till "([^"]*)"$/, function(dest, callback) {
+    // this.Given(/^jag skickar intyget till "([^"]*)"$/, function(dest, callback) {
 
-        //Fånga intygets id
-        if (!global.intyg) {
-            global.intyg = {};
-        }
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            logg('Intygsid: ' + intyg.id);
-        });
+    //     //Fånga intygets id
+    //     if (!global.intyg) {
+    //         global.intyg = {};
+    //     }
+    //     browser.getCurrentUrl().then(function(text) {
+    //         intyg.id = text.split('/').slice(-1)[0];
+    //         logg('Intygsid: ' + intyg.id);
+    //     });
 
-        element(by.id('sendBtn')).click();
-        element(by.id('patientSamtycke')).click();
-        element(by.id('button1send-dialog')).click();
+    //     element(by.id('sendBtn')).click();
+    //     element(by.id('patientSamtycke')).click();
+    //     element(by.id('button1send-dialog')).click();
 
-        callback();
-    });
+    //     callback();
+    // });
 };
 
 

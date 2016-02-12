@@ -583,6 +583,10 @@ public class UtkastServiceImpl implements UtkastService {
             InternalModelResponse updatedInternal = moduleApi.updateBeforeSave(internalModel, hosPerson);
             utkast.setModel(updatedInternal.getInternalModel());
         } catch (ModuleException | ModuleNotFoundException e) {
+            if (e.getCause() != null && e.getCause().getCause() != null) {
+                // This error message is helpful when debugging save problems.
+                LOG.debug(e.getCause().getCause().getMessage());
+            }
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }
     }

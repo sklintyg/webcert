@@ -41,6 +41,10 @@ module.exports = {
                 intyg:require(intygPath + 'fk.intyg.page.js')
             }
         },
+        base:{
+            intyg: require(intygPath + 'base.intyg.page.js'),
+            utkas: require(intygPath + 'base.utkast.page.js')
+        },
         ts:{
             diabetes:{
                 utkast:require(intygPath + 'tsDiabetes.utkast.page.js'),
@@ -51,5 +55,6 @@ module.exports = {
                 intyg: require(intygPath + 'tsBas.intyg.page.js')
             }
         }
-    }
+    },
+    'unsignedPage' : require('./unsignedPage.js')
 };

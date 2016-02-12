@@ -33,7 +33,19 @@ var WebcertBasePage = JClass._extend({
         this.header = element(by.id('wcHeader'));
 
         this.flikar = {
-        	sokSkrivIntyg: element(by.id('menu-skrivintyg'))
+        	sokSkrivIntyg: element(by.id('menu-skrivintyg')),
+            notSigned: element(by.id('menu-unsigned'))
+        };
+        this.copyBtn = element(by.id('copyBtn'));
+
+        this.changeUnit = element(by.id('wc-care-unit-clinic-selector-link'));
+        this.careUnit = element(by.css('.clearfix'));
+        this.warnings = {
+            protectedInfo: element(by.id('sekretessmarkering'))
+        };
+
+        this.QnA = {
+            respond: element(by.css('.btn.btn-success.ng-isolate-scope'))
         };
 
     },
