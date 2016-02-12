@@ -211,7 +211,7 @@
                 $log.debug('+++ $viewContentLoading, rendered : ' + $window.rendered);
             });
 
-            $rootScope.$on('$viewContentLoaded', function(/*event*/) {
+            $rootScope.$on('$viewContentLoaded', function(event) {
                 $log.debug('$viewContentLoaded - fired after dom rendered',event);
                 $window.rendered = true;
                 $log.debug('--- $viewContentLoaded, rendered : ' + $window.rendered);

@@ -39,6 +39,9 @@ module.exports = {
             '7263':{
                 utkast:require(intygPath + 'fk.utkast.page.js'),
                 intyg:require(intygPath + 'fk.intyg.page.js')
+            },
+            'luse':{
+                utkast:require(intygPath + 'luse.utkast.page.js')
             }
         },
         base:{

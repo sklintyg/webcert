@@ -33,12 +33,16 @@ var BaseUtkast = JClass._extend({
             knapp: element(by.id('ta-bort-utkast')),
             bekrafta: element(by.id('confirm-draft-delete-button'))
         };
+        this.newTextVersionAlert = element(by.id('newTextVersion'));
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);
     },
     isAt: function() {
         return this.at.isDisplayed();
+    },
+    isSigneraButtonEnabled: function() {
+        return this.signeraButton.isEnabled();
     },
     whenSigneraButtonIsEnabled: function() {
         return browser.wait(this.signeraButton.isEnabled());
