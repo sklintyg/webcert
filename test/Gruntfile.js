@@ -101,10 +101,22 @@ module.exports = function(grunt) {
         } else {
             grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady']);
         }
-
-
         grunt.task.run(['jshint:acc', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
+    });
 
+    grunt.task.registerTask('acc-no-jshint', 'Task för att köra acceptanstest', function(environment, tags) {
 
+        if (!environment) {
+            var defaultEnv = 'ip30';
+            grunt.log.subhead('Ingen miljö vald, använder ' + defaultEnv + '-miljön..');
+            environment = defaultEnv;
+        }
+        if (tags) {
+            grunt.log.subhead('Kör tester taggade med: ' + tags);
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tags);
+        } else {
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady']);
+        }
+        grunt.task.run(['env:' + environment, 'protractor_webdriver', 'protractor:acc']);
     });
 };
