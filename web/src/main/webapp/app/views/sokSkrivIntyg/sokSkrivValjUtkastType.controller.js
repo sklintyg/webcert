@@ -131,8 +131,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $scope.current.group = 'default';
                     $scope.selectedTemplate = $scope.prototypes.templates[0];
                 }
-
-
             }
 
             /*  --- PROTOTYPE CODE  END --- */

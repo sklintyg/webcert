@@ -19,16 +19,26 @@
             <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
           </div>
 
-          <div class="webcert-proto-area wc-prototype-chooser-default" ng-class="{'webcert-proto-selected': prototypes.hasSelected, 'webcert-proto-unselected': !prototypes.hasSelected  }">
-
+          <wc-prototype>
             <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="current.testModeActive == true" >
-
             </select>
             <div class="slide-animate-container">
               <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
             </div>
+          </wc-prototype>
 
-          </div>
+
+
+          <!--div class="webcert-proto-area wc-prototype-chooser-default">
+
+        <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="current.testModeActive == true" >
+
+        </select>
+        <div class="slide-animate-container">
+          <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
+        </div>
+
+      </div-->
 
         </form>
       </div>
