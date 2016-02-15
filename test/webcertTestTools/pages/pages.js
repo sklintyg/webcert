@@ -24,11 +24,10 @@
 'use strict';
 
 var intygPath = './intyg/'; // should point to intyg folder
-
-//var webcertBase = require('./webcert.base.page.js');
+var WebcertBasePage = require('./webcert.base.page.js');
 
 module.exports = {
-    'webcertBase': require('./webcert.base.page.js'),
+    'webcertBase': new WebcertBasePage() ,
     'welcome': require('./welcome.page.js'),
     'sokSkrivIntyg' : {
         'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),

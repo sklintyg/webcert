@@ -127,7 +127,7 @@ module.exports = function(grunt) {
             grunt.log.subhead('Kör tester taggade med: ' + tags);
             grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tags);
         } else {
-            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady']);
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags',['~@notReady','~@waitingForFix']);
         }
         grunt.task.run(['jshint:acc', 'jsbeautifier:verify', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
     });
@@ -143,7 +143,7 @@ module.exports = function(grunt) {
             grunt.log.subhead('Kör tester taggade med: ' + tags);
             grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tags);
         } else {
-            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady']);
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady','~@waitingForFix']);
         }
         grunt.task.run(['env:' + environment, 'protractor_webdriver', 'protractor:acc']);
     });
