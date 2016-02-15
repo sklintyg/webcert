@@ -157,6 +157,9 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     templateUrl: '/web/webjars/sjukpenning-utokad/webcert/views/intyg/intyg.html'
 
                 },
+                'fragaSvar@webcert.intyg.lisu' : {
+                    templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/fragasvar/fragasvar.html'
+                },
                 'header@webcert.intyg.lisu' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
