@@ -25,7 +25,12 @@ module.exports = function() {
 
     this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
       var intygElement = element(by.id('certificate-' + intyg.id));
-      expect(intygElement.isPresent()).to.eventually.equal(true).and.notify(callback);
+      expect(intygElement.isPresent()).to.eventually.equal(true).then(function(value) {
+            logg('OK - Intyget visas i mina intyg = ' + value);
+        }, function(reason) {
+            callback('FEL, Intyget visas inte i mina intyg,' + reason);
+        })
+      .then(callback);
     });
 
     this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {

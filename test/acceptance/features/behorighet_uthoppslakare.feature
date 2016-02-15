@@ -1,5 +1,5 @@
 # language: sv
-@behorighet
+@behorighet @notReady
 Egenskap: Behörigheter för en uthoppsläkare
 
 Scenario: En uthoppsläkare ska kunna signera intyg

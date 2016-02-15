@@ -32,7 +32,7 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         this.field1 = {
     		title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
-    		text: element(by.css('div[field-number="1"]')).element(by.css('.text'))
+    		text: element(by.css('div[field-number="1"]')).element(by.css('.intyg-block__content'))
         };
 
         this.field2 = {
@@ -49,7 +49,8 @@ var Fk7263Intyg = BaseIntyg._extend({
         	undersokningAvPatienten : element(by.id('undersokningAvPatienten')),
             telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
-            annat: element(by.id('annanReferens'))
+            annat: element(by.id('annanReferens')),
+            annanReferensBeskrivning : element(by.id('annanReferensBeskrivning'))
 
         };
         this.field5 = {
@@ -64,7 +65,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
 
         this.field7 = {
-            text: element(by.id('field7')).element(by.css('.text'))
+            text: element(by.id('field7')).element(by.css('.intyg-block__content'))
         };
 
         this.field8b = {
@@ -88,17 +89,17 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         this.field10 = {
             title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="10"]')).element(by.css('.text'))
+            text: element(by.css('div[field-number="10"]')).element(by.css('.intyg-block__content'))
         };
 
         this.field11 = {
             title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="11"]')).element(by.css('.text'))
+            text: element(by.css('div[field-number="11"]')).element(by.css('.intyg-block__content'))
         };
 
         this.field12 = {
     		title: element(by.id('field12')).element(by.css('.title')),
-    		text: element(by.id('field12')).element(by.css('.text'))
+    		text: element(by.id('field12')).element(by.css('.intyg-block__content'))
         };
 
         this.field13 = {

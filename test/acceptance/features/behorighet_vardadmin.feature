@@ -1,5 +1,5 @@
 # language: sv
-@behorighet
+@behorighet @notReady
 Egenskap: Behörigheter för en vårdadministratör
 
 # @vardadmin

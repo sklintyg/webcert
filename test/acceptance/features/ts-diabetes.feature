@@ -1,6 +1,6 @@
 # language: sv
 
-@smoke @ts @diabetes
+@smoke @ts @diabetes @notReady
 Egenskap: Hantera Transportstyrelsens diabetesintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida

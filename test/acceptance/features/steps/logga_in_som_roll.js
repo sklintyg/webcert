@@ -23,7 +23,7 @@
 'use strict';
 
 // var webcertBasePage = pages.webcertBase;
-var webcertBase = pages.webcertBase;
+// var webcertBase = pages.webcertBase;
 
 module.exports = function() {
 
@@ -61,8 +61,9 @@ module.exports = function() {
             fornamn:    'Jan',
             efternamn:  'Nilsson',
             hsaId:      'IFV1239877878-1049',
-            enhetId:    'IFV1239877878-1042'
-        };
+            enhetId:    'IFV1239877878-1042',
+            lakare: true
+                    };
         logInAsUserRole(userObj,'Läkare',callback);
     });
 

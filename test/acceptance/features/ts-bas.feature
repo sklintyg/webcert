@@ -1,6 +1,6 @@
 # language: sv
 
-@smoke @webcert @ts @bas
+@smoke @webcert @ts @bas @notReady
 Egenskap: Hantera Transportstyrelsens basintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida

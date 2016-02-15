@@ -1,5 +1,5 @@
 # language: sv
-@smoke @fk7263
+@smoke @fk7263 @notReady
 Egenskap: Hantera FK7263-intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida

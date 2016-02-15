@@ -1,5 +1,5 @@
 # language: sv
-@fragasvar
+@fragasvar @notReady
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.

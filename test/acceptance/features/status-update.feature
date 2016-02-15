@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar
+@statusuppdateringar @notReady
 Egenskap: Statusuppdateringar skickas till vårdsystem med djupintegration
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.

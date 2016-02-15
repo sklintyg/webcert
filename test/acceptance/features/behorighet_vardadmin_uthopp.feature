@@ -1,5 +1,5 @@
 # language: sv
-@behorighet
+@behorighet @notReady
 # PRIVILEGE_NAVIGERING
 Egenskap: Behörigheter för en "uthoppad" vårdadministratör
 

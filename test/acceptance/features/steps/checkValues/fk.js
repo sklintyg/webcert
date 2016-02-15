@@ -92,11 +92,11 @@ function checkBaserasPa(baserasPa, cb) {
                 cb('FEL, Undersokning av patienten baseras på annat, ' + reason);
             }
         );
-        expect(intygPage.field13.kommentar.getText()).to.eventually.contain(baserasPa.annat.text).then(
+        expect(intygPage.field4b.annanReferensBeskrivning.getText()).to.eventually.contain(baserasPa.annat.text).then(
             function(value) {
-                logg('OK - Undersokning av patienten baseras på annat = ' + value);
+                logg('OK - Undersokning av patienten baseras på annat text = ' + value);
             }, function(reason) {
-                cb('FEL, Undersokning av patienten baseras på annat, ' + reason);
+                cb('FEL, Undersokning av patienten baseras på annat text, ' + reason);
             }
         );
     }
@@ -302,13 +302,13 @@ module.exports = {
             logg('OK - Kontakt med FK = ' + value);
         }, function(reason) {
             callback('FEL, Kontakt med FK,' + reason);
-        });
-
-        // TBI!
-        expect(intygPage.forsKod.getText()).to.eventually.equal('0000000 - 1234567890123').then(function(value) {
-            logg('OK - Forskrivarkod = ' + value);
-        }, function(reason) {
-            callback('FEL, Forskrivarkod,' + reason);
         }).then(callback);
+
+        // TBI! check förskrivarkod
+        // expect(intygPage.forsKod.getText()).to.eventually.equal('0000000 - 1234567890123').then(function(value) {
+        //     logg('OK - Forskrivarkod = ' + value);
+        // }, function(reason) {
+        //     callback('FEL, Forskrivarkod,' + reason);
+        // }).then(callback);
     }
 };
