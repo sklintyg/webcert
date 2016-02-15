@@ -25,6 +25,7 @@
 
 var intygPath = './intyg/'; // should point to intyg folder
 var WebcertBasePage = require('./webcert.base.page.js');
+var BaseUtkastPage = require(intygPath + 'base.utkast.page.js');
 
 module.exports = {
     'webcertBase': new WebcertBasePage() ,
@@ -45,7 +46,7 @@ module.exports = {
         },
         base:{
             intyg: require(intygPath + 'base.intyg.page.js'),
-            utkas: require(intygPath + 'base.utkast.page.js')
+            utkast: new BaseUtkastPage()
         },
         ts:{
             diabetes:{

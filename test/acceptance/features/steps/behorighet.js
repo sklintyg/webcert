@@ -26,7 +26,6 @@ var basePage = pages.webcertBase;
 // var intygPage = pages.intyg.base.intyg;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
-
 // var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 module.exports = function () {
@@ -40,7 +39,7 @@ module.exports = function () {
     });
     
     this.Given(/^är kopieraknappen tillgänglig$/, function (callback) {
-		expect(basePage.copyBtn).isPresent().to.become(true).then(function(){
+		expect(basePage.copyBtn.isPresent()).to.become(true).then(function(){
 			logg('OK - Kopiera knappen hittad');
     		basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
 		}, function(reason){
@@ -49,7 +48,7 @@ module.exports = function () {
 	});
 
 	this.Given(/^synns Vidarebefodra knappen$/, function (callback) {
-		expect(basePage.copyBtn).isPresent().to.become(true).then(function(){
+		expect(basePage.copyBtn.isPresent()).to.become(true).then(function(){
 			logg('OK - Vidarebeforda knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
@@ -73,7 +72,7 @@ module.exports = function () {
 	});
 
 	this.Given(/^kopierar ett signerat intyg$/, function (callback) {
-		expect(fkIntygPage.forwardBtn).isPresent().to.become(true).then(function(){		
+		expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function(){		
 			logg('OK - Kopiera knappen hittad');
 		}, function(reason){
 			callback('FEL : '+ reason);
