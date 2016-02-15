@@ -27,18 +27,46 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-protractor-webdriver');
     grunt.loadNpmTasks('grunt-env');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks("grunt-jsbeautifier");
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
         jshint: {
             acc: [
-            'acceptance/features/steps/*.js',
-            'acceptance/features/steps/**/*.js',
-            'webcertTestTools/**/*.js',
-            'webcertTestTools/*.js'],
+                'acceptance/features/steps/*.js',
+                'acceptance/features/steps/**/*.js',
+                'webcertTestTools/**/*.js',
+                'webcertTestTools/*.js'
+            ],
             options: {
                 force: false,
                 jshintrc: '../../common/build-tools/src/main/resources/jshint/.jshintrc'
+            }
+        },
+        jsbeautifier: {
+            verify: {
+                src: [
+                    'acceptance/features/steps/*.js',
+                    'acceptance/features/steps/**/*.js',
+                    'webcertTestTools/**/*.js',
+                    'webcertTestTools/*.js'
+                ],
+                options: {
+                    mode: 'VERIFY_ONLY',
+                    config: '.jsbeautifyrc'
+                }
+            },
+            modify: {
+                src: [
+                    'acceptance/features/steps/*.js',
+                    'acceptance/features/steps/**/*.js',
+                    'webcertTestTools/**/*.js',
+                    'webcertTestTools/*.js'
+                ],
+                options: {
+                    mode: 'VERIFY_AND_WRITE',
+                    config: '.jsbeautifyrc'
+                }
             }
         },
         env: grunt.file.readJSON('./webcertTestTools/envConfig.json'),
@@ -101,7 +129,7 @@ module.exports = function(grunt) {
         } else {
             grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady']);
         }
-        grunt.task.run(['jshint:acc', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
+        grunt.task.run(['jshint:acc', 'jsbeautifier:verify', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
     });
 
     grunt.task.registerTask('acc-no-jshint', 'Task för att köra acceptanstest', function(environment, tags) {
