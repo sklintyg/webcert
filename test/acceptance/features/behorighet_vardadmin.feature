@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @notReady
+@behorighet
 Egenskap: Behörigheter för en vårdadministratör
 
 # @vardadmin
@@ -35,7 +35,7 @@ Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Läkari
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
-@vardadmin, @hurr
+@vardadmin @notReady
 Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transportstyrelsens läkarintyg
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg

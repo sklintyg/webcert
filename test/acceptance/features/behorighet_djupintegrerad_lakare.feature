@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @notReady
+@behorighet
 # PRIVILEGE_NAVIGERING
 Egenskap: Behörigheter för en djupintegrerad läkare
 
@@ -20,7 +20,7 @@ Scenario: Djupintegrerad läkare kan kopiera och signera ett (kopierat)intyg
 	Och signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
-@djup_lakare
+@djup_lakare @notReady
 Scenario: Djupintegrerad läkare kan kopiera ett intyg från tidigare intyg listan (utan att gå in i intyget)
 	Givet att jag är inloggad som djupintegrerad läkare
 	När jag väljer patienten "19121212-1212"
@@ -28,7 +28,7 @@ Scenario: Djupintegrerad läkare kan kopiera ett intyg från tidigare intyg list
 	Så ska intygets status vara "Intyget är signerat"
 
 # PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA
-@djup_lakare
+@djup_lakare @notReady
 Scenario: Djupintegrerad läkare besvarar kompleterings fråga
    Givet att jag är inloggad som djupintegrerad läkare
    När jag väljer patienten "19121212-1212"
