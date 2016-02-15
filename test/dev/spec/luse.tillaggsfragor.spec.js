@@ -88,7 +88,6 @@ fdescribe('Luse tillaggsfragor variants', function() {
             proxy.onLoad.whenGET(/.*/).passThrough();
             LuseUtkastPage.get(intygsId);
 
-            expect(LuseUtkastPage.newTextVersionAlert.isPresent()).toBeFalsy();
             expect(LuseUtkastPage.getTillaggsfragaText(0)).toBe('Vilken skostorlek har du?');
             expect(LuseUtkastPage.getTillaggsfragaSvar(0)).toBe('50');
             expect(LuseUtkastPage.getTillaggsfragaText(1)).toBe('Hur lång är du?');
@@ -109,16 +108,12 @@ fdescribe('Luse tillaggsfragor variants', function() {
             LuseUtkastPage.get(intygsId);
 
             // En extrafråga har tagits bort, en annan ska ha tillkommit
-            expect(LuseUtkastPage.newTextVersionAlert.isPresent()).toBeTruthy();
             expect(LuseUtkastPage.getTillaggsfragaText(0)).toBe('Vilken skostorlek har du?');
             expect(LuseUtkastPage.getTillaggsfragaSvar(0)).toBe('50');
             expect(LuseUtkastPage.getTillaggsfragaText(1)).toBe('Det här är en ny extrafråga');
             expect(LuseUtkastPage.getTillaggsfragaSvar(1)).toBe('');
             expect(LuseUtkastPage.getTillaggsfraga(2).isPresent()).toBeFalsy();
 
-            expect(LuseUtkastPage.isSigneraButtonEnabled()).toBeFalsy();
-
-            LuseUtkastPage.angeTextversionConfirmed();
             expect(LuseUtkastPage.isSigneraButtonEnabled()).toBeTruthy();
         });
     });

@@ -35,9 +35,6 @@ var LuseUtkast = BaseUtkast._extend({
     isAt: function isAt() {
         return isAt._super.call(this);
     },
-    angeTextversionConfirmed: function() {
-        element(by.id('text-version-confirmed')).sendKeys(protractor.Key.SPACE);
-    },
     getTillaggsfraga: function(i) {
         return element(by.id('form_tillaggsfragor_' + i + '__svar'));
     },
