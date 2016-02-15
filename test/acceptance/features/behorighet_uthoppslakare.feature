@@ -2,6 +2,11 @@
 @behorighet @notReady
 Egenskap: Behörigheter för en uthoppsläkare
 
+Scenario: Inloggad som uthoppsläkare
+   Givet att jag är inloggad som uthoppsläkare
+   Så ska jag ha rollen "LAKARE"
+   Och jag ska ha origin "UTHOPP"
+
 Scenario: En uthoppsläkare ska kunna signera intyg
    Givet att jag är inloggad som uthoppsläkare
    När jag väljer patienten "19971019-2387"

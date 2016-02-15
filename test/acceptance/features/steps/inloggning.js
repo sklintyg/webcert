@@ -37,8 +37,11 @@ module.exports = function () {
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
         person.id = personnummer;
-        webcertBase.flikar.sokSkrivIntyg.sendKeys(protractor.Key.SPACE);
-        // element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+        
+        if (global.user.origin !== 'DJUPINTEGRATION') {
+            element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+            browser.sleep(1000);
+        }
         sokSkrivIntygPage.selectPersonnummer(personnummer);
         //Patientuppgifter visas
         var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
