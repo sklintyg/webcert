@@ -154,6 +154,7 @@
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
+            $rootScope.testModeActive = false;
 
             UserModel.setUser(user);
             UserModel.termsAccepted = user.privatLakareAvtalGodkand;

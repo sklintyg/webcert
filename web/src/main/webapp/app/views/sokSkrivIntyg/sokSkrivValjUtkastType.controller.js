@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    ['$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
+    ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel', 'common.PatientModel',
-        function($window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
+        function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
             IntygProxy, UtkastProxy, IntygCopyRequestModel, PatientModel) {
             'use strict';
 
@@ -38,8 +38,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 currentList: undefined,
                 unsigned: 'certlist-empty', // unsigned, unsigned-mixed,
                 luseDescriptionLabel: 'DFR_3.1',
-                lisuDescriptionLabel: 'XYZ123',
-
+                lisuDescriptionLabel: 'XYZ123'
             };
 
             $scope.filterForm = {
@@ -89,48 +88,44 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.protoCertTypes = [{'sortValue': 0, 'id': 'default', 'type': 'default', 'label': 'Välj typ av intyg'},
-                                    {'sortValue': 1, 'id': 'fk7263', 'type': 'fk', 'label': 'Läkarintyg FK 7263'},
-                                    {'sortValue': 2, 'id': 'luse', 'type': 'fk', 'label': 'Läkarintyg, sjukersättning'},
-                                    {'sortValue': 3, 'id': 'lisu', 'type': 'fk', 'label': 'Läkarintyg för sjukpenning utökat'},
-                                    {'sortValue': 4, 'id': 'ts-bas', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg'},
-                                    {'sortValue': 5, 'id': 'ts-diabetes', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg, diabetes'},
-                                    {'sortValue': 6, 'id': 'ss-dod', 'type': 'ss', 'label': 'Rigor mortis'},
-                                    {'sortValue': 7, 'id': 'ss-dodextended', 'type': 'ss', 'label': 'Rigor mortis, uttökat'}];
+                {'sortValue': 1, 'id': 'fk7263', 'type': 'fk', 'label': 'Läkarintyg FK 7263'},
+                {'sortValue': 2, 'id': 'luse', 'type': 'fk', 'label': 'Läkarintyg, sjukersättning'},
+                {'sortValue': 3, 'id': 'lisu', 'type': 'fk', 'label': 'Läkarintyg för sjukpenning utökat'},
+                {'sortValue': 4, 'id': 'ts-bas', 'type': 'ts', 'label': 'Transportstyrelsens läkarintyg'},
+                {
+                    'sortValue': 5,
+                    'id': 'ts-diabetes',
+                    'type': 'ts',
+                    'label': 'Transportstyrelsens läkarintyg, diabetes'
+                },
+                {'sortValue': 6, 'id': 'ss-dod', 'type': 'ss', 'label': 'Rigor mortis'},
+                {'sortValue': 7, 'id': 'ss-dodextended', 'type': 'ss', 'label': 'Rigor mortis, uttökat'}];
 
             $scope.protoGroups = [{'id': 'default', 'type': 'default', 'label': 'Välj grupp för intyget'},
-                { 'id': 'fk', 'label': 'Försäkringskassans intyg'},
+                {'id': 'fk', 'label': 'Försäkringskassans intyg'},
                 {'id': 'ts', 'label': 'Transportstyrelsens intyg'},
                 {'id': 'ss', 'label': 'Socialstyrelsens intyg'}
             ];
 
             $scope.current = {
-                selected : 'default',
-                group : 'default',
-                testModeActive: false
+                selected: 'default',
+                group: 'default'
             };
 
             $scope.selectedTemplate = $scope.prototypes.templates[0];
 
             $scope.certReciever = null;
 
-            $scope.resetPrototype = function(){
+            $scope.resetPrototype = function() {
                 $scope.current.selected = 'default';
                 $scope.current.group = 'default';
-            }
+            };
 
-            $scope.testModeText = {
-                active : 'Avvaktivera testläge',
-                inactive : 'Aktivera testläge'
-            }
-
-            $scope.setTestMode = function(){
-                $scope.current.testModeActive = !$scope.current.testModeActive;
-                if($scope.current.testModeActive === false){
-                    console.log('reloading...');
-                    $scope.current.selected = 'default';
-                    $scope.current.group = 'default';
-                    $scope.selectedTemplate = $scope.prototypes.templates[0];
-                }
+            if ( $rootScope.testModeActive === false) {
+                console.log('reloading...');
+                $scope.current.selected = 'default';
+                $scope.current.group = 'default';
+                $scope.selectedTemplate = $scope.prototypes.templates[0];
             }
 
             /*  --- PROTOTYPE CODE  END --- */
@@ -168,12 +163,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $scope.viewState.activeErrorMessageKey = errorCode;
                 });
 
-                $scope.$watch('current.selected', function(newValue,oldValue) {
-                    if(newValue !== oldValue){
+                $scope.$watch('current.selected', function(newValue, oldValue) {
+                    if (newValue !== oldValue) {
                         $scope.intygType = newValue;
                     }
                 });
-
 
 
             }

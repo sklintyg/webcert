@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-xs-12">
         <button type="button" class="btn btn-link pull-right" ng-click="setTestMode();">
-          {{current.testModeActive ? testModeText.active : testModeText.inactive}}
+          {{testModeActive ? testModeText.active : testModeText.inactive}}
         </button>
         <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
           <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
@@ -20,25 +20,12 @@
           </div>
 
           <wc-prototype>
-            <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="current.testModeActive == true" >
+            <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="testModeActive == true" >
             </select>
             <div class="slide-animate-container">
               <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
             </div>
           </wc-prototype>
-
-
-
-          <!--div class="webcert-proto-area wc-prototype-chooser-default">
-
-        <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="current.testModeActive == true" >
-
-        </select>
-        <div class="slide-animate-container">
-          <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
-        </div>
-
-      </div-->
 
         </form>
       </div>
