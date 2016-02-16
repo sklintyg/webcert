@@ -68,20 +68,14 @@ module.exports = function() {
     });
 
     this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function(callback) {
+
         var userObj = {
-            fornamn: 'Ivar',
-            efternamn: 'Integration',
-            hsaId: 'SE4815162344-1B01',
-            enhetId: 'SE4815162344-1A02',
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003',
             lakare: true,
             forskrivarKod: '2481632'
-            //     var userObj = {
-            // fornamn:    'Åsa',
-            // efternamn:  'Svensson',
-            // hsaId:      'TSTNMT2321000156-100L',
-            // enhetId:    'TSTNMT2321000156-1003',
-            // lakare: true,
-            // forskrivarKod: '2481632'
         };
         logInAsUserRole(userObj, 'Läkare', callback, 'DJUPINTEGRATION', 'LAKARE');
     });
@@ -100,7 +94,7 @@ module.exports = function() {
     this.Given(/^ska jag ha rollen "([^"]*)"$/, function(roll, callback) {
         checkUserRole().then(function(value) {
             var re = /\[\"(.*)\"\]/;
-            value = value.replace(re,'$1');
+            value = value.replace(re, '$1');
             expect(value).to.equal(roll);
             callback();
         });
@@ -111,42 +105,11 @@ module.exports = function() {
     });
 };
 
-function logInAsUserRole(userObj,roleName,callback, newOrigin, newUserRole){
-        logg('Loggar in som ' + userObj.fornamn+' '+userObj.efternamn + '..');
-        global.user = JSON.parse(JSON.stringify(userObj));
-        global.user.role = newUserRole || roleName;
-        global.user.origin = newOrigin || 'NORMAL';
-        browser.ignoreSynchronization = true;
-        pages.welcome.get();
-        pages.welcome.loginByJSON(JSON.stringify(userObj));
-
-        if (newUserRole) {
-            logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn+' '+userObj.efternamn + '..');
-            browser.get('testability/user/role/' + newUserRole);
-            browser.navigate().back();
-        }
-        if (newOrigin) {
-            logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn+' '+userObj.efternamn + '..');
-            browser.get('testability/user/origin/' + newOrigin);
-            browser.navigate().back();
-        }
-
-        browser.ignoreSynchronization = false;
-        browser.sleep(2000);
-        // webcertBasePage.header.getText()
-        expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
-        // expect(webcertBase.header.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
-	 .and.notify(callback);
-}
-
-function checkUserRole() {
-    return performUserCheck('role');
-}
-
 function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
     logg('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
-    global.user = userObj;
-
+    global.user = JSON.parse(JSON.stringify(userObj));
+    global.user.role = newUserRole || roleName;
+    global.user.origin = newOrigin || 'NORMAL';
     browser.ignoreSynchronization = true;
     pages.welcome.get();
     pages.welcome.loginByJSON(JSON.stringify(userObj));
@@ -170,6 +133,9 @@ function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
     .and.notify(callback);
 }
 
+function checkUserRole() {
+    return performUserCheck('role');
+}
 
 function checkUserOrigin() {
     return performUserCheck('origin');
@@ -179,9 +145,8 @@ function performUserCheck(userconfig) {
     browser.ignoreSynchronization = true;
     if (userconfig === 'role') {
         browser.get('testability/user/role/');
-    }
-    else if (userconfig === 'origin') {
-         browser.get('testability/user/origin/');
+    } else if (userconfig === 'origin') {
+        browser.get('testability/user/origin/');
     }
     var attribute = element(by.css('pre')).getText();
     browser.navigate().back();
