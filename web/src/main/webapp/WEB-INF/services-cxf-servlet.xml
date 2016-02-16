@@ -32,7 +32,7 @@
                 http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
   <context:annotation-config />
-  
+
   <import resource="classpath:fk-stub-context.xml" />
   <import resource="classpath:fmb-stub-context.xml" />
   <import resource="classpath:hsa-stub-context.xml" />
@@ -50,7 +50,7 @@
       <cxf:logging />
     </cxf:features>
   </cxf:bus>
-  
+
   <!-- ws endpoints -->
   <jaxws:endpoint address="/create-draft-certificate/v1.0" implementor="se.inera.intyg.webcert.web.integration.CreateDraftCertificateResponderImpl">
     <jaxws:outFaultInterceptors>
@@ -60,7 +60,7 @@
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
-  
+
   <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.intyg.webcert.web.integration.ReceiveQuestionResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
@@ -84,6 +84,14 @@
       <bean
           class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
         <constructor-arg value="transform/get-privatepractitioner-terms.xslt" />
+      </bean>
+    </jaxws:outFaultInterceptors>
+  </jaxws:endpoint>
+
+  <jaxws:endpoint address="/send-message-to-care/v1.0" implementor="se.inera.intyg.webcert.web.integration.SendMessageToCareResponderImpl">
+    <jaxws:outFaultInterceptors>
+      <bean class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/send-message-to-care.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>

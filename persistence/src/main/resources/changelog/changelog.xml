@@ -413,7 +413,7 @@
     <dropColumn tableName="FRAGASVAR" columnName="PATIENT_ID_ROOT"/>
     <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
-  
+
    <changeSet id="13" author="bb">
      <addColumn tableName="OMSANDNING">
       <column name="VERSION" type="bigint" defaultValue="0">
@@ -615,5 +615,90 @@
         tableName="BEFATTNINGSKODER_ROLL"/>
   </changeSet>
 
+  <changeSet id="24" author="ka">
+
+    <createTable tableName="ARENDE">
+      <column name="ID" type="bigint">
+        <constraints unique="true" nullable="false" />
+      </column>
+      <column name="TIMESTAMP" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="MEDDELANDE_ID" type="varchar(255)">
+      </column>
+      <column name="REFERENS_ID" type="varchar(255)">
+      </column>
+      <column name="SKICKAT_TIDPUNKT" type="datetime">
+      </column>
+      <column name="SKICKAT_AV" type="varchar(255)">
+      </column>
+      <column name="INTYGS_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="PATIENT_PERSON_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="AMNE" type="varchar(255)">
+      </column>
+      <column name="RUBRIK" type="varchar(255)">
+      </column>
+      <column name="MEDDELANDE" type="text">
+      </column>
+      <column name="PAMINNELSE_MEDDELANDE_ID" type="varchar(255)">
+      </column>
+      <column name="SVAR_PA_ID" type="varchar(255)">
+      </column>
+      <column name="SVAR_PA_REFERENS" type="varchar(255)">
+      </column>
+      <column name="SISTA_DATUM_FOR_SVAR" type="date">
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+      columnName="ID" incrementBy="1" startWith="1"
+      tableName="ARENDE" />
+
+    <createTable tableName="MEDICINSKT_ARENDE">
+      <column name="ARENDE_ID" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="FRAGE_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="INSTANS" type="int">
+      </column>
+      <column name="TEXT" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseColumnNames="ARENDE_ID"
+      baseTableName="MEDICINSKT_ARENDE" constraintName="MEDICINST_ARENDE_ARENDE"
+      referencedColumnNames="ID" referencedTableName="ARENDE" />
+
+    <createTable tableName="ARENDE_KONTAKT_INFO">
+      <column name="ARENDE_ID" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="KONTAKT_INFO" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseColumnNames="ARENDE_ID"
+      baseTableName="ARENDE_KONTAKT_INFO" constraintName="ARENDE_KONTAKT_INFO_ARENDE"
+      referencedColumnNames="ID" referencedTableName="ARENDE" />
+
+    <createIndex indexName="IDX_ARENDE_INTYGS_ID"
+      tableName="ARENDE" unique="false">
+      <column name="INTYGS_ID" />
+    </createIndex>
+
+    <createIndex indexName="IDX_ARENDE_TIMESTAMP"
+      tableName="ARENDE" unique="false">
+      <column name="TIMESTAMP" />
+    </createIndex>
+
+  </changeSet>
 
 </databaseChangeLog>
