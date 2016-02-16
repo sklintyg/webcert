@@ -113,22 +113,85 @@ module.exports = function () {
     } else if (intyg.typ === 'Läkarintyg FK 7263') {
       global.intyg = testdata.fk.sjukintyg.getRandom(intyg.id);
 
-      fkUtkastPage.angeSmittskydd(intyg.smittskydd);
+      //Ange smittskydd
+      fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function () {
+        logg('OK - angeSmittskydd :' + intyg.smittskydd);
+      }, function (reason) {
+        callback('FEL, angeSmittskydd,' + reason);
+      });
+
       browser.ignoreSynchronization = true;
 
-      fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
-      fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
-      fkUtkastPage.angeDiagnoser(intyg.diagnos);
-      fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
-      fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning);
-      fkUtkastPage.angeArbete(intyg.arbete);
-      fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
-      fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
+      //Ange baseras på
+      fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function () {
+        logg('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
+      }, function (reason) {
+        callback('FEL, angeIntygetBaserasPa,' + reason);
+      });
+
+      //Ange funktionsnedsättning
+      fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function () {
+        logg('OK - angeFunktionsnedsattning :' + JSON.stringify(intyg.funktionsnedsattning));
+      }, function (reason) {
+        callback('FEL, angeFunktionsnedsattning,' + reason);
+      });
+
+      //Ange diagnoser
+      fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function () {
+        logg('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
+      }, function (reason) {
+        callback('FEL, angeDiagnoser,' + reason);
+      });
+
+      //Ange aktuellt sjukdomsförlopp
+      fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp).then(function () {
+        logg('OK - angeAktuelltSjukdomsForlopp :' + JSON.stringify(intyg.aktuelltSjukdomsforlopp));
+      }, function (reason) {
+        callback('FEL, angeAktuelltSjukdomsForlopp,' + reason);
+      });
+
+      //Ange aktivitetsbegränsning
+      fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning).then(function () {
+        logg('OK - angeAktivitetsBegransning :' + JSON.stringify(intyg.aktivitetsBegransning));
+      }, function (reason) {
+        callback('FEL, angeAktivitetsBegransning,' + reason);
+      });
+
+      fkUtkastPage.angeArbete(intyg.arbete).then(function () {
+        logg('OK - angeArbete :' + JSON.stringify(intyg.arbete));
+      }, function (reason) {
+        callback('FEL, angeArbete,' + reason);
+      });
+      fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function () {
+        logg('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
+      }, function (reason) {
+        callback('FEL, angeArbetsformaga,' + reason);
+      });
+      fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB).then(function () {
+        logg('OK - angeArbetsformagaFMB :' + JSON.stringify(intyg.arbetsformagaFMB));
+      }, function (reason) {
+        callback('FEL, angeArbetsformagaFMB,' + reason);
+      });
+
       browser.ignoreSynchronization = false;
-      fkUtkastPage.angePrognos(intyg.prognos);
-      fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK);
-      fkUtkastPage.angeRekommendationer(intyg.rekommendationer);
-      callback();
+
+      fkUtkastPage.angePrognos(intyg.prognos).then(function () {
+        logg('OK - angePrognos :' + JSON.stringify(intyg.prognos));
+      }, function (reason) {
+        callback('FEL, angePrognos,' + reason);
+      });
+      fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function () {
+        logg('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
+      }, function (reason) {
+        callback('FEL, angeKontaktOnskasMedFK,' + reason);
+      });
+      fkUtkastPage.angeRekommendationer(intyg.rekommendationer).then(function () {
+          logg('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
+        }, function (reason) {
+          callback('FEL, angeRekommendationer,' + reason);
+        })
+        .then(callback());
+
     }
 
   });
