@@ -193,6 +193,8 @@ var TsDiabetesUtkast = BaseUtkast._extend({
   },
   fillInBedomning: function (bedomningObj) {
     var promisesArr = [];
+    console.log(bedomningObj);
+
     promisesArr.push(this.bedomning.form.element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE));
     promisesArr.push(pageHelpers.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter));
 

@@ -124,12 +124,30 @@ module.exports = {
 
     return behandlingObj;
   },
+  hasHogreKorkortsbehorigheter: function (korkortstyper) {
+    function findArrayElementsInArray(targetArray, compareArray) {
+      // find all elements in targetArray matching any elements in compareArray
+      var result = targetArray.filter(function (element) {
+        return (compareArray.indexOf(element) >= 0);
+      });
 
+      return result;
+    }
+    var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, this.korkortstyperHogreBehorighet);
+    return foundHogreBehorigheter.length > 0;
+  },
   getRandomBedomning: function (korkortstyper) {
+    //TODO: bör shuffla ja och nej,
+    var lamplighet = shuffle(['Ja', 'Nej'])[0];
+
+    if (!this.hasHogreKorkortsbehorigheter(korkortstyper)) {
+      lamplighet = null;
+    }
+
     var bedomningsObj = {
       stallningstagande: 'behorighet_bedomning',
       behorigheter: korkortstyper,
-      lamplighet: shuffle(['Ja', 'Nej'])[0]
+      lamplighet: lamplighet
     };
 
     //För vissa körkortstyper krävs det svar lämplighet

@@ -44,7 +44,7 @@ Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transpo
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
-@vardadmin
+@vardadmin @hurr
 Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transportstyrelsens läkarintyg, diabetes
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg
