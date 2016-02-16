@@ -27,7 +27,7 @@
 module.exports = {
   clickAll: function (elementArray, elementTextsArray) {
     // filter all elemenets matching elementTextsArray
-    elementArray.filter(function (elem) {
+    return elementArray.filter(function (elem) {
       return elem.getText().then(function (text) {
         return (elementTextsArray.indexOf(text) >= 0);
       });

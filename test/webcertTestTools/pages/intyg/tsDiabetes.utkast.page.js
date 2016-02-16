@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/12/15.
  */
-/*globals element,by, protractor*/
+/*globals element,by, protractor, Promise*/
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
@@ -102,10 +102,10 @@ var TsDiabetesUtkast = BaseUtkast._extend({
     //     }
     // });
 
-    pageHelpers.clickAll(this.korkortsTyperChecks, typer);
+    return pageHelpers.clickAll(this.korkortsTyperChecks, typer);
   },
   fillInIdentitetStyrktGenom: function (idtyp) {
-    this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
+    return this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
   },
 
   /**
@@ -122,80 +122,88 @@ var TsDiabetesUtkast = BaseUtkast._extend({
    */
   fillInAllmant: function (allmant) {
 
+    var promisesArr = [];
+
     // Ange år då diagnos ställts
     this.allmant.diabetesyear.sendKeys(allmant.year);
 
     var form = this.allmant.form;
 
     // Ange diabetestyp
-    form.element(by.cssContainingText('label.radio', allmant.typ)).sendKeys(protractor.Key.SPACE);
+    promisesArr.push(form.element(by.cssContainingText('label.radio', allmant.typ)).sendKeys(protractor.Key.SPACE));
 
     // Ange behandlingstyp
     var typer = allmant.behandling.typer;
     typer.forEach(function (typ) {
-      form.element(by.cssContainingText('label.checkbox', typ)).sendKeys(protractor.Key.SPACE);
+      promisesArr.push(form.element(by.cssContainingText('label.checkbox', typ)).sendKeys(protractor.Key.SPACE));
     });
 
     if (allmant.behandling.insulinYear) {
-      this.allmant.insulinbehandlingsperiod.sendKeys(allmant.behandling.insulinYear);
+      promisesArr.push(this.allmant.insulinbehandlingsperiod.sendKeys(allmant.behandling.insulinYear));
     }
+
+    return Promise.all(promisesArr);
+
   },
   fillInHypoglykemier: function (hypoglykemierObj) {
 
     //console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
-
+    var promisesArr = [];
     // a)
     if (hypoglykemierObj.a === 'Ja') {
-      this.hypoglykemier.a.yes.sendKeys(protractor.Key.SPACE);
+      promisesArr.push(this.hypoglykemier.a.yes.sendKeys(protractor.Key.SPACE));
     } else {
-      this.hypoglykemier.a.no.sendKeys(protractor.Key.SPACE);
+      promisesArr.push(this.hypoglykemier.a.no.sendKeys(protractor.Key.SPACE));
     }
 
     // b)
     if (hypoglykemierObj.b === 'Ja') {
-      this.hypoglykemier.b.yes.sendKeys(protractor.Key.SPACE);
+      promisesArr.push(this.hypoglykemier.b.yes.sendKeys(protractor.Key.SPACE));
     } else {
-      this.hypoglykemier.b.no.sendKeys(protractor.Key.SPACE);
+      promisesArr.push(this.hypoglykemier.b.no.sendKeys(protractor.Key.SPACE));
     }
 
     // f)
     if (hypoglykemierObj.f) {
       if (hypoglykemierObj.f === 'Ja') {
-        this.hypoglykemier.f.yes.sendKeys(protractor.Key.SPACE);
+        promisesArr.push(this.hypoglykemier.f.yes.sendKeys(protractor.Key.SPACE));
       } else {
-        this.hypoglykemier.f.no.sendKeys(protractor.Key.SPACE);
+        promisesArr.push(this.hypoglykemier.f.no.sendKeys(protractor.Key.SPACE));
       }
     }
 
     // g)
     if (hypoglykemierObj.g) {
       if (hypoglykemierObj.g === 'Ja') {
-        this.hypoglykemier.g.yes.sendKeys(protractor.Key.SPACE);
+        promisesArr.push(this.hypoglykemier.g.yes.sendKeys(protractor.Key.SPACE));
       } else {
-        this.hypoglykemier.g.no.sendKeys(protractor.Key.SPACE);
+        promisesArr.push(this.hypoglykemier.g.no.sendKeys(protractor.Key.SPACE));
       }
     }
+
+    return Promise.all(promisesArr);
   },
   fillInSynintyg: function (synintygObj) {
     // a)
     if (synintygObj.a === 'Ja') {
-      this.syn.a.yes.sendKeys(protractor.Key.SPACE);
+      return this.syn.a.yes.sendKeys(protractor.Key.SPACE);
     } else {
-      this.syn.a.no.sendKeys(protractor.Key.SPACE);
+      return this.syn.a.no.sendKeys(protractor.Key.SPACE);
     }
   },
   fillInBedomning: function (bedomningObj) {
-    this.bedomning.form.element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
-
-    pageHelpers.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter);
+    var promisesArr = [];
+    promisesArr.push(this.bedomning.form.element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE));
+    promisesArr.push(pageHelpers.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter));
 
     if (bedomningObj.lamplighet) {
       if (bedomningObj.lamplighet === 'Ja') {
-        this.bedomning.yes.sendKeys(protractor.Key.SPACE);
+        promisesArr.push(this.bedomning.yes.sendKeys(protractor.Key.SPACE));
       } else {
-        this.bedomning.no.sendKeys(protractor.Key.SPACE);
+        promisesArr.push(this.bedomning.no.sendKeys(protractor.Key.SPACE));
       }
     }
+    return Promise.all(promisesArr);
   }
 });
 

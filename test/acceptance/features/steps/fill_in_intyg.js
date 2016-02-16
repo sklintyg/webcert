@@ -18,7 +18,7 @@
  */
 
 /*global
-testdata, intyg, browser, pages*/
+testdata, intyg, browser, pages, logg, JSON*/
 'use strict';
 
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
@@ -66,17 +66,50 @@ module.exports = function () {
     } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
       global.intyg = testdata.getRandomTsDiabetesIntyg(intyg.id);
 
-      tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
+      //Ange körkortstyper
+      tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function () {
+        logg('OK - fillInKorkortstyper :' + intyg.korkortstyper.toString());
+      }, function (reason) {
+        callback('FEL, fillInKorkortstyper,' + reason);
+      });
 
-      tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+      //Ange Identitet styrkt genom
+      tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function () {
+        logg('OK - fillInIdentitetStyrktGenom :' + intyg.identitetStyrktGenom.toString());
+      }, function (reason) {
+        callback('FEL, fillInIdentitetStyrktGenom,' + reason);
+      });
+
       browser.ignoreSynchronization = true;
-      tsdUtkastPage.fillInAllmant(intyg.allmant);
-      tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
-      tsdUtkastPage.fillInSynintyg(intyg.synintyg);
-      tsdUtkastPage.fillInBedomning(intyg.bedomning);
+
+      //Ange allmänt
+      tsdUtkastPage.fillInAllmant(intyg.allmant).then(function () {
+        logg('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
+      }, function (reason) {
+        callback('FEL, fillInAllmant,' + reason);
+      });
+
+      //Ange hypoglykemier
+      tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier).then(function () {
+        logg('OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
+      }, function (reason) {
+        callback('FEL, fillInHypoglykemier,' + reason);
+      });
+
+      tsdUtkastPage.fillInSynintyg(intyg.synintyg).then(function () {
+        logg('OK - fillInSynintyg :' + JSON.stringify(intyg.synintyg));
+      }, function (reason) {
+        callback('FEL, fillInSynintyg,' + reason);
+      });
+
       browser.ignoreSynchronization = false;
 
-      callback();
+      tsdUtkastPage.fillInBedomning(intyg.bedomning).then(function () {
+        logg('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
+      }, function (reason) {
+        callback('FEL, fillInBedomning,' + reason);
+      }).then(callback);
+
     } else if (intyg.typ === 'Läkarintyg FK 7263') {
       global.intyg = testdata.fk.sjukintyg.getRandom(intyg.id);
 
