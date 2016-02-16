@@ -33,7 +33,7 @@ var proxy = new HttpBackend(browser);
 
 var texts = require('../../webcertTestTools/testdata/luse_questions.json');
 
-fdescribe('Luse tillaggsfragor variants', function() {
+describe('Luse tillaggsfragor variants', function() {
     it('Login through the welcome page with user', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();

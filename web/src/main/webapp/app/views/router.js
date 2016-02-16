@@ -81,8 +81,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.utkast', {
-        }).
         state('webcert.unsigned', {
             url: '/unsigned',
             views: {
@@ -103,6 +101,14 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
 
         }).
         state('webcert.intyg.fk', {
+            views: {
+                'main@webcert.intyg': {
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
+                    controller: 'webcert.ViewCertCtrl'
+                }
+            }
+        }.
+        state('webcert.intyg.fk7263', {
             data: { defaultActive : 'index' },
             url:'/intyg/fk7263/:certificateId?:patientId&:hospName&:signed',
             onEnter: function($stateParams){
@@ -113,14 +119,14 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'intyg@webcert.intyg.fk' : {
+                'intyg@webcert.intyg.fk7263' : {
                     templateUrl: '/web/webjars/fk7263/webcert/views/intyg/intyg.html'
 
                 },
-                'fragaSvar@webcert.intyg.fk' : {
+                'fragaSvar@webcert.intyg.fk7263' : {
                     templateUrl: '/web/webjars/fk7263/webcert/views/intyg/fragasvar/fragasvar.html'
                 },
-                'header@webcert.intyg.fk' : {
+                'header@webcert.intyg.fk7263' : {
                     templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
