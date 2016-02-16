@@ -16,6 +16,28 @@ Scenario: En uthoppsläkare ska kunna signera intyg
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
+@impl
+Scenario: En vårdadministratör ska inte kunna kopiera intyg Läkarintyg FK 7263 
+   Givet att jag är inloggad som uthoppsläkare
+   Och går in på Sök/skriv intyg
+   Och jag väljer patienten "19971019-2387"
+   Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+   Så är kopieraknappen inte tillgänglig
+
+Scenario: En uthoppsläkare ska inte kunna kopiera Transportstyrelsens läkarintyg 
+   Givet att jag är inloggad som uthoppsläkare
+   Och går in på Sök/skriv intyg
+   Och jag väljer patienten "19971019-2387"
+   Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
+   Så är kopieraknappen inte tillgänglig
+
+Scenario: En vårdadministratör ska inte kunna kopiera Transportstyrelsens läkarintyg, diabetes intyg
+   Givet att jag är inloggad som uthoppsläkare
+   Och går in på Sök/skriv intyg
+   Och jag väljer patienten "19971019-2387"
+   Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
+   Så är kopieraknappen inte tillgänglig
+
 Scenario: En uthoppsläkare ska inte kunna makulera intyg
    Givet att jag är inloggad som uthoppsläkare
    När jag väljer patienten "19971019-2387"

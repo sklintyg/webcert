@@ -47,6 +47,14 @@ module.exports = function () {
     }).then(callback);
   });
 
+  this.Given(/^är kopieraknappen inte tillgänglig$/, function (callback) {
+    expect(basePage.copyBtn.isPresent()).to.become(false).then(function () {
+      logg('OK - Kopiera knappen syns inte');
+    }, function (reason) {
+      callback('FEL : ' + reason);
+    }).then(callback);
+  });
+
   this.Given(/^synns Vidarebefodra knappen$/, function (callback) {
     expect(basePage.copyBtn.isPresent()).to.become(true).then(function () {
       logg('OK - Vidarebeforda knappen hittad');

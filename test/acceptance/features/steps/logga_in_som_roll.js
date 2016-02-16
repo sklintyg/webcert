@@ -107,6 +107,7 @@ module.exports = function () {
 
 function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
   logg('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+  // Fattigmans-kloning av användar-hashen.
   global.user = JSON.parse(JSON.stringify(userObj));
   global.user.role = newUserRole || roleName;
   global.user.origin = newOrigin || 'NORMAL';
