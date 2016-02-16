@@ -276,10 +276,10 @@ var FkUtkast = BaseUtkast._extend({
       }
     }
     if (arbete.arbetsloshet) {
-      this.arbete.arbetslos.checkbox.click();
+      this.arbete.arbetslos.checkbox.sendKeys(protractor.Key.SPACE);
     }
     if (arbete.foraldraledighet) {
-      this.arbete.foraldraledig.checkbox.click();
+      this.arbete.foraldraledig.checkbox.sendKeys(protractor.Key.SPACE);
     }
   },
   angeKontaktOnskasMedFK: function (kontaktOnskas) {
