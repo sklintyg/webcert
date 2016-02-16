@@ -23,27 +23,27 @@
 var BaseUtkast = require('./base.utkast.page.js');
 
 var LuseUtkast = BaseUtkast._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.at = element(by.css('.edit-form'));
-    },
-    
-    get: function get(intygId) {
-        get._super.call(this, 'luse', intygId);
-    },
-    isAt: function isAt() {
-        return isAt._super.call(this);
-    },
-    getTillaggsfraga: function(i) {
-        return element(by.id('form_tillaggsfragor_' + i + '__svar'));
-    },
-    getTillaggsfragaText: function(i) {
-        return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
-    },
-    getTillaggsfragaSvar: function(i) {
-        return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
-    }
+    this.at = element(by.css('.edit-form'));
+  },
+
+  get: function get(intygId) {
+    get._super.call(this, 'luse', intygId);
+  },
+  isAt: function isAt() {
+    return isAt._super.call(this);
+  },
+  getTillaggsfraga: function (i) {
+    return element(by.id('form_tillaggsfragor_' + i + '__svar'));
+  },
+  getTillaggsfragaText: function (i) {
+    return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
+  },
+  getTillaggsfragaSvar: function (i) {
+    return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
+  }
 });
 
 module.exports = new LuseUtkast();

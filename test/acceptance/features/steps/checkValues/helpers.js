@@ -22,57 +22,57 @@
 'use strict';
 
 module.exports = {
-    boolTillJaNej: function(val) {
-        if (val) {
-            return 'Ja';
-        } else {
-            return 'Nej';
-        }
-    },
-    testElement: function(_typ, _element) {
-        var ele = element(by.id(_element));
-        if (!_typ) {
-            _typ = 'Ej angivet';
-        }
-        logg('Kontrollerar ' + _element + ' : ' + _typ);
-        expect(ele.getText()).to.eventually.equal(_typ);
-    },
-
-    genericAssert: function(_val, _element) {
-        logg('genericAssert-function is deprecated, does not fail on error');
-        var ele = element(by.id(_element));
-        if (_val !== null) {
-            // logg('Kontrollerar '+_element+' : '+ _val);
-            expect(ele.getText()).to.eventually.equal(_val).then(function(value) {
-                logg('OK - ' + _element + ' = ' + value);
-            }, function(reason) {
-                logg('FEL, ' + _element + ', ' + reason);
-            });
-        }
-    },
-    getDateForAssertion: function(_date) {
-        var monthNames = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
-        var dateObj, month, day, year;
-        var regExp = /^0[0-9].*$/;
-        if (typeof _date === 'undefined') {
-            dateObj = new Date();
-            month = monthNames[dateObj.getUTCMonth()];
-            day = dateObj.getUTCDate().toString();
-            if (regExp.test(day)) {
-                day = day.replace('0', '');
-            }
-            year = dateObj.getUTCFullYear().toString();
-            return day.concat(' ', month, ' ', year);
-        } else {
-            var _split = _date.split('-');
-            month = monthNames[_split[1] - 1];
-            day = _split[2];
-            if (regExp.test(day)) {
-                day = day.replace('0', '');
-            }
-            year = _split[0];
-            return day.concat(' ', month, ' ', year);
-        }
+  boolTillJaNej: function (val) {
+    if (val) {
+      return 'Ja';
+    } else {
+      return 'Nej';
     }
+  },
+  testElement: function (_typ, _element) {
+    var ele = element(by.id(_element));
+    if (!_typ) {
+      _typ = 'Ej angivet';
+    }
+    logg('Kontrollerar ' + _element + ' : ' + _typ);
+    expect(ele.getText()).to.eventually.equal(_typ);
+  },
+
+  genericAssert: function (_val, _element) {
+    logg('genericAssert-function is deprecated, does not fail on error');
+    var ele = element(by.id(_element));
+    if (_val !== null) {
+      // logg('Kontrollerar '+_element+' : '+ _val);
+      expect(ele.getText()).to.eventually.equal(_val).then(function (value) {
+        logg('OK - ' + _element + ' = ' + value);
+      }, function (reason) {
+        logg('FEL, ' + _element + ', ' + reason);
+      });
+    }
+  },
+  getDateForAssertion: function (_date) {
+    var monthNames = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
+    var dateObj, month, day, year;
+    var regExp = /^0[0-9].*$/;
+    if (typeof _date === 'undefined') {
+      dateObj = new Date();
+      month = monthNames[dateObj.getUTCMonth()];
+      day = dateObj.getUTCDate().toString();
+      if (regExp.test(day)) {
+        day = day.replace('0', '');
+      }
+      year = dateObj.getUTCFullYear().toString();
+      return day.concat(' ', month, ' ', year);
+    } else {
+      var _split = _date.split('-');
+      month = monthNames[_split[1] - 1];
+      day = _split[2];
+      if (regExp.test(day)) {
+        day = day.replace('0', '');
+      }
+      year = _split[0];
+      return day.concat(' ', month, ' ', year);
+    }
+  }
 
 };

@@ -25,83 +25,79 @@ var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
 var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
-module.exports = function() {
+module.exports = function () {
 
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
-        if (!global.intyg.typ) {
-            callback('Intyg.typ odefinierad.');
-        }
-        
+  this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function (callback) {
+    if (!global.intyg.typ) {
+      callback('Intyg.typ odefinierad.');
+    }
 
-        if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-            global.intyg = testdata.getRandomTsBasIntyg(intyg.id);
+    if (intyg.typ === 'Transportstyrelsens läkarintyg') {
+      global.intyg = testdata.getRandomTsBasIntyg(intyg.id);
 
-            tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
-            // browser.ignoreSynchronization = true;
-            // Intyget avser
-            // Identiteten är styrkt genom
-            tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
-            // Synfunktioner
-            browser.ignoreSynchronization = true;
-            tsBasUtkastPage.fillInSynfunktioner(global.intyg);
-            tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
-            tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg);
-            tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg);
-            tsBasUtkastPage.fillInDiabetes(global.intyg);
-            tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
-            tsBasUtkastPage.fillInNeurologiskaSjukdomar(global.intyg);
-            tsBasUtkastPage.fillInEpilepsi(global.intyg);
-            tsBasUtkastPage.fillInNjursjukdomar(global.intyg);
-            tsBasUtkastPage.fillInDemens(global.intyg);
-            tsBasUtkastPage.fillInSomnOchVakenhet(global.intyg);
-            tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(global.intyg);
-            tsBasUtkastPage.fillInPsykiska(global.intyg);
-            tsBasUtkastPage.fillInAdhd(global.intyg);
-            tsBasUtkastPage.fillInSjukhusvard(global.intyg);
+      tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
+      // browser.ignoreSynchronization = true;
+      // Intyget avser
+      // Identiteten är styrkt genom
+      tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+      // Synfunktioner
+      browser.ignoreSynchronization = true;
+      tsBasUtkastPage.fillInSynfunktioner(global.intyg);
+      tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
+      tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg);
+      tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg);
+      tsBasUtkastPage.fillInDiabetes(global.intyg);
+      tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
+      tsBasUtkastPage.fillInNeurologiskaSjukdomar(global.intyg);
+      tsBasUtkastPage.fillInEpilepsi(global.intyg);
+      tsBasUtkastPage.fillInNjursjukdomar(global.intyg);
+      tsBasUtkastPage.fillInDemens(global.intyg);
+      tsBasUtkastPage.fillInSomnOchVakenhet(global.intyg);
+      tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(global.intyg);
+      tsBasUtkastPage.fillInPsykiska(global.intyg);
+      tsBasUtkastPage.fillInAdhd(global.intyg);
+      tsBasUtkastPage.fillInSjukhusvard(global.intyg);
 
-            tsBasUtkastPage.fillInOvrigMedicinering(global.intyg);
+      tsBasUtkastPage.fillInOvrigMedicinering(global.intyg);
 
-            browser.ignoreSynchronization = false;
-            tsBasUtkastPage.fillInBedomning(intyg.bedomning);
-            callback();
-        } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            global.intyg = testdata.getRandomTsDiabetesIntyg(intyg.id);
-            
-            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
+      browser.ignoreSynchronization = false;
+      tsBasUtkastPage.fillInBedomning(intyg.bedomning);
+      callback();
+    } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
+      global.intyg = testdata.getRandomTsDiabetesIntyg(intyg.id);
 
-            tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
-            browser.ignoreSynchronization = true;
-            tsdUtkastPage.fillInAllmant(intyg.allmant);
-            tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
-            tsdUtkastPage.fillInSynintyg(intyg.synintyg);
-            tsdUtkastPage.fillInBedomning(intyg.bedomning);
-            browser.ignoreSynchronization = false;
+      tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper);
 
-            callback();
-        } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            global.intyg = testdata.fk.sjukintyg.getRandom(intyg.id);
-            
-            fkUtkastPage.angeSmittskydd(intyg.smittskydd);
-            browser.ignoreSynchronization = true;
-            
-            fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
-            fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
-            fkUtkastPage.angeDiagnoser(intyg.diagnos);
-            fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
-            fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning);
-            fkUtkastPage.angeArbete(intyg.arbete);
-            fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
-            fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
-            browser.ignoreSynchronization = false;
-            fkUtkastPage.angePrognos(intyg.prognos);
-            fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK);
-            fkUtkastPage.angeRekommendationer(intyg.rekommendationer);
-            callback();
-        }
+      tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+      browser.ignoreSynchronization = true;
+      tsdUtkastPage.fillInAllmant(intyg.allmant);
+      tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier);
+      tsdUtkastPage.fillInSynintyg(intyg.synintyg);
+      tsdUtkastPage.fillInBedomning(intyg.bedomning);
+      browser.ignoreSynchronization = false;
 
-    });
+      callback();
+    } else if (intyg.typ === 'Läkarintyg FK 7263') {
+      global.intyg = testdata.fk.sjukintyg.getRandom(intyg.id);
 
-  
+      fkUtkastPage.angeSmittskydd(intyg.smittskydd);
+      browser.ignoreSynchronization = true;
 
+      fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa);
+      fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning);
+      fkUtkastPage.angeDiagnoser(intyg.diagnos);
+      fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp);
+      fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning);
+      fkUtkastPage.angeArbete(intyg.arbete);
+      fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga);
+      fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB);
+      browser.ignoreSynchronization = false;
+      fkUtkastPage.angePrognos(intyg.prognos);
+      fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK);
+      fkUtkastPage.angeRekommendationer(intyg.rekommendationer);
+      callback();
+    }
+
+  });
 
 };

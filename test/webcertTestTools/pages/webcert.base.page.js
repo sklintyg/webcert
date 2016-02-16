@@ -28,30 +28,30 @@ var JClass = require('jclass');
  * Elements always shown in webcert are connected here. Header etc.
  */
 var WebcertBasePage = JClass._extend({
-    init: function() {
-        this.doctor = element(by.css('.logged-in'));
-        this.header = element(by.id('wcHeader'));
+  init: function () {
+    this.doctor = element(by.css('.logged-in'));
+    this.header = element(by.id('wcHeader'));
 
-        this.flikar = {
-        	sokSkrivIntyg: element(by.id('menu-skrivintyg')),
-            notSigned: element(by.id('menu-unsigned'))
-        };
-        this.copyBtn = element(by.id('copyBtn'));
+    this.flikar = {
+      sokSkrivIntyg: element(by.id('menu-skrivintyg')),
+      notSigned: element(by.id('menu-unsigned'))
+    };
+    this.copyBtn = element(by.id('copyBtn'));
 
-        this.changeUnit = element(by.id('wc-care-unit-clinic-selector-link'));
-        this.careUnit = element(by.css('.clearfix'));
-        this.warnings = {
-            protectedInfo: element(by.id('sekretessmarkering'))
-        };
+    this.changeUnit = element(by.id('wc-care-unit-clinic-selector-link'));
+    this.careUnit = element(by.css('.clearfix'));
+    this.warnings = {
+      protectedInfo: element(by.id('sekretessmarkering'))
+    };
 
-        this.QnA = {
-            respond: element(by.css('.btn.btn-success.ng-isolate-scope'))
-        };
+    this.QnA = {
+      respond: element(by.css('.btn.btn-success.ng-isolate-scope'))
+    };
 
-    },
-    getDoctorText: function () {
-        return this.doctor.getText();
-    }
+  },
+  getDoctorText: function () {
+    return this.doctor.getText();
+  }
 });
 
-module.exports =  WebcertBasePage;
+module.exports = WebcertBasePage;

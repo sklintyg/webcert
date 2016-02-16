@@ -28,36 +28,36 @@ var WebcertBasePage = require('./webcert.base.page.js');
 var BaseUtkastPage = require(intygPath + 'base.utkast.page.js');
 
 module.exports = {
-    'webcertBase': new WebcertBasePage() ,
-    'welcome': require('./welcome.page.js'),
-    'sokSkrivIntyg' : {
-        'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),
-        'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js')
+  'webcertBase': new WebcertBasePage(),
+  'welcome': require('./welcome.page.js'),
+  'sokSkrivIntyg': {
+    'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),
+    'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js')
+  },
+  'intyg': {
+    fk: {
+      '7263': {
+        utkast: require(intygPath + 'fk.utkast.page.js'),
+        intyg: require(intygPath + 'fk.intyg.page.js')
+      },
+      'luse': {
+        utkast: require(intygPath + 'luse.utkast.page.js')
+      }
     },
-    'intyg': {
-        fk:{
-            '7263':{
-                utkast:require(intygPath + 'fk.utkast.page.js'),
-                intyg:require(intygPath + 'fk.intyg.page.js')
-            },
-            'luse':{
-                utkast:require(intygPath + 'luse.utkast.page.js')
-            }
-        },
-        base:{
-            intyg: require(intygPath + 'base.intyg.page.js'),
-            utkast: new BaseUtkastPage()
-        },
-        ts:{
-            diabetes:{
-                utkast:require(intygPath + 'tsDiabetes.utkast.page.js'),
-                intyg: require(intygPath + 'tsDiabetes.intyg.page.js')
-            },
-            bas:{
-                utkast:require(intygPath + 'tsBas.utkast.page.js'),
-                intyg: require(intygPath + 'tsBas.intyg.page.js')
-            }
-        }
+    base: {
+      intyg: require(intygPath + 'base.intyg.page.js'),
+      utkast: new BaseUtkastPage()
     },
-    'unsignedPage' : require('./unsignedPage.js')
+    ts: {
+      diabetes: {
+        utkast: require(intygPath + 'tsDiabetes.utkast.page.js'),
+        intyg: require(intygPath + 'tsDiabetes.intyg.page.js')
+      },
+      bas: {
+        utkast: require(intygPath + 'tsBas.utkast.page.js'),
+        intyg: require(intygPath + 'tsBas.intyg.page.js')
+      }
+    }
+  },
+  'unsignedPage': require('./unsignedPage.js')
 };

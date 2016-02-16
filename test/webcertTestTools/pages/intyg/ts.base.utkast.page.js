@@ -27,40 +27,40 @@ var pageHelpers = require('./../pageHelper.util.js');
 var BaseUtkast = require('./base.utkast.page.js');
 
 var BaseTsUtkast = BaseUtkast._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.intygType = null; // overridden by children
+    this.intygType = null; // overridden by children
 
-        this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
+    this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
 
-        this.identitetForm = element(by.id('identitetForm'));
+    this.identitetForm = element(by.id('identitetForm'));
 
-        this.bedomning = {
-            form: element(by.id('bedomningForm')),
-            yes: element(by.id('bedomningy')),
-            no: element(by.id('bedomningn'))
-        };
-        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
+    this.bedomning = {
+      form: element(by.id('bedomningForm')),
+      yes: element(by.id('bedomningy')),
+      no: element(by.id('bedomningn'))
+    };
+    this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
 
-        this.kommentar = element(by.id('kommentar'));
-    },
-    get: function get(intygId) {
-        get._super.call(this, this.intygType, intygId);
-    },
-    fillInKorkortstyper: function(typer) {
-        pageHelpers.clickAll(this.korkortsTyperChecks, typer);
-    },
-    fillInIdentitetStyrktGenom: function(idtyp) {
-        this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
-    },
-    fillInBedomning: function(bedomningObj) {
-        element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
-        pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
-    },
-    fillInOvrigKommentar: function(utkast) {
-        this.kommentar.sendKeys(utkast.kommentar);
-    }
+    this.kommentar = element(by.id('kommentar'));
+  },
+  get: function get(intygId) {
+    get._super.call(this, this.intygType, intygId);
+  },
+  fillInKorkortstyper: function (typer) {
+    pageHelpers.clickAll(this.korkortsTyperChecks, typer);
+  },
+  fillInIdentitetStyrktGenom: function (idtyp) {
+    this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
+  },
+  fillInBedomning: function (bedomningObj) {
+    element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE);
+    pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter);
+  },
+  fillInOvrigKommentar: function (utkast) {
+    this.kommentar.sendKeys(utkast.kommentar);
+  }
 });
 
 module.exports = BaseTsUtkast;

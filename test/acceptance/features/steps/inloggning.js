@@ -30,65 +30,62 @@ var webcertBase = pages.webcertBase;
 
 module.exports = function () {
 
-    this.Then(/^vill jag vara inloggad$/, function (callback) {
-        expect(webcertBase.header.getText()).to.eventually.contain('Logga ut').and.notify(callback);
-        // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
-    });
+  this.Then(/^vill jag vara inloggad$/, function (callback) {
+    expect(webcertBase.header.getText()).to.eventually.contain('Logga ut').and.notify(callback);
+    // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
+  });
 
-    this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
-        person.id = personnummer;
-        
-        if (global.user.origin !== 'DJUPINTEGRATION') {
-            element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
-            browser.sleep(1000);
-        }
-        sokSkrivIntygPage.selectPersonnummer(personnummer);
-        //Patientuppgifter visas
-        var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
-        expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);
-    });
+  this.When(/^jag väljer patienten "([^"]*)"$/, function (personnummer, callback) {
+    person.id = personnummer;
 
-    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
-        intyg.typ = intygsTyp;
-        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
-        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
-        
-        // Save INTYGS_ID:
-        browser.getCurrentUrl().then(function(text){
-          intyg.id = text.split('/').slice(-1)[0];
-          console.log(intyg.id);
-        });
-        callback();
-    });
+    if (global.user.origin !== 'DJUPINTEGRATION') {
+      element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+      browser.sleep(1000);
+    }
+    sokSkrivIntygPage.selectPersonnummer(personnummer);
+    //Patientuppgifter visas
+    var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
+    expect(patientUppgifter.getText()).to.eventually.contain(personnummer).and.notify(callback);
+  });
 
-    this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
-        expect(fk7263Intyg.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
-        // expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
-    });
+  this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function (intygsTyp, callback) {
+    intyg.typ = intygsTyp;
+    sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
+    sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
 
-    this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function (callback) {
-        if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes' || intyg.typ === 'Transportstyrelsens läkarintyg') {
-            logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
-            require('./checkValues/ts.common.js').checkTsCommonValues(intyg, callback);
-        }
-
-        if(intyg.typ === 'Transportstyrelsens läkarintyg, diabetes'){
-            logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
-            require('./checkValues/ts.diabetes.js').checkTsDiabetesValues(intyg, callback);
-        }
-        else if (intyg.typ === 'Transportstyrelsens läkarintyg'){
-            logg('-- Kontrollerar Transportstyrelsens läkarintyg --');
-            require('./checkValues/ts.bas.js').checkTsBasValues(intyg, callback);
-        }
-        else if (intyg.typ === 'Läkarintyg FK 7263'){
-            logg('-- Kontrollerar Läkarintyg FK 7263 --');
-            require('./checkValues/fk.js').checkFKValues(intyg, callback);
-        }
+    // Save INTYGS_ID:
+    browser.getCurrentUrl().then(function (text) {
+      intyg.id = text.split('/').slice(-1)[0];
+      console.log(intyg.id);
     });
+    callback();
+  });
 
-    this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
-        expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
-    });
+  this.Then(/^ska intygets status vara "([^"]*)"$/, function (statustext, callback) {
+    expect(fk7263Intyg.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
+    // expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
+  });
+
+  this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function (callback) {
+    if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes' || intyg.typ === 'Transportstyrelsens läkarintyg') {
+      logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
+      require('./checkValues/ts.common.js').checkTsCommonValues(intyg, callback);
+    }
+
+    if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
+      logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
+      require('./checkValues/ts.diabetes.js').checkTsDiabetesValues(intyg, callback);
+    } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
+      logg('-- Kontrollerar Transportstyrelsens läkarintyg --');
+      require('./checkValues/ts.bas.js').checkTsBasValues(intyg, callback);
+    } else if (intyg.typ === 'Läkarintyg FK 7263') {
+      logg('-- Kontrollerar Läkarintyg FK 7263 --');
+      require('./checkValues/fk.js').checkFKValues(intyg, callback);
+    }
+  });
+
+  this.Given(/^ska signera\-knappen inte vara synlig$/, function (callback) {
+    expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
+  });
 
 };
-

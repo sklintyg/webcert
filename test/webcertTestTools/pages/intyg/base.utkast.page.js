@@ -26,32 +26,32 @@
 var JClass = require('jclass');
 
 var BaseUtkast = JClass._extend({
-    init: function() {
-        this.at = null;
-        this.signeraButton = element(by.id('signera-utkast-button'));
-        this.radera = {
-            knapp: element(by.id('ta-bort-utkast')),
-            bekrafta: element(by.id('confirm-draft-delete-button'))
-        };
-        this.newTextVersionAlert = element(by.id('newTextVersion'));
-        this.backBtn = element(by.id('tillbakaButton'));
-        
-    },
-    get: function(intygType, intygId) {
-        browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);
-    },
-    isAt: function() {
-        return this.at.isDisplayed();
-    },
-    isSigneraButtonEnabled: function() {
-        return this.signeraButton.isEnabled();
-    },
-    whenSigneraButtonIsEnabled: function() {
-        return browser.wait(this.signeraButton.isEnabled());
-    },
-    signeraButtonClick: function() {
-        this.signeraButton.click();
-    }
+  init: function () {
+    this.at = null;
+    this.signeraButton = element(by.id('signera-utkast-button'));
+    this.radera = {
+      knapp: element(by.id('ta-bort-utkast')),
+      bekrafta: element(by.id('confirm-draft-delete-button'))
+    };
+    this.newTextVersionAlert = element(by.id('newTextVersion'));
+    this.backBtn = element(by.id('tillbakaButton'));
+
+  },
+  get: function (intygType, intygId) {
+    browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);
+  },
+  isAt: function () {
+    return this.at.isDisplayed();
+  },
+  isSigneraButtonEnabled: function () {
+    return this.signeraButton.isEnabled();
+  },
+  whenSigneraButtonIsEnabled: function () {
+    return browser.wait(this.signeraButton.isEnabled());
+  },
+  signeraButtonClick: function () {
+    this.signeraButton.click();
+  }
 });
 
 module.exports = BaseUtkast;

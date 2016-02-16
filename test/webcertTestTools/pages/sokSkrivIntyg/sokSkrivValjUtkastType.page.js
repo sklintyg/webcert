@@ -20,29 +20,28 @@
 /**
  * Created by bennysce on 17/12/15.
  */
- /* globals browser */
+/* globals browser */
 'use strict';
 
 var intygTypeSelector = element(by.id('intygType'));
 var intygTypeButton = element(by.id('intygTypeFortsatt'));
 
-
 module.exports = {
-    sekretessmarkering: element(by.id('sekretessmarkering')),
-    namnFortsatt : element(by.id('namnFortsatt')),
-    
-    get: function () {
-        browser.get('web/dashboard#/create/choose-cert-type/index');
-    },
-    isAt: function(){
-        return intygTypeSelector.isDisplayed();
-    },
-    // selectIntygType: function (index) {
-    //     intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
-    // },
-    selectIntygTypeByLabel: function (val) {
-        intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
-    },
-    intygTypeSelector: intygTypeSelector,
-    intygTypeButton: intygTypeButton
+  sekretessmarkering: element(by.id('sekretessmarkering')),
+  namnFortsatt: element(by.id('namnFortsatt')),
+
+  get: function () {
+    browser.get('web/dashboard#/create/choose-cert-type/index');
+  },
+  isAt: function () {
+    return intygTypeSelector.isDisplayed();
+  },
+  // selectIntygType: function (index) {
+  //     intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
+  // },
+  selectIntygTypeByLabel: function (val) {
+    intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
+  },
+  intygTypeSelector: intygTypeSelector,
+  intygTypeButton: intygTypeButton
 };

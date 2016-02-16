@@ -27,27 +27,27 @@
 var WebcertBasePage = require('../webcert.base.page.js');
 
 var SokSkrivIntyg = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.personnummer = element(by.id('pnr'));
-        this.pnButton = element(by.id('skapapersonnummerfortsatt'));
-        this.sekretessmarkering = element(by.id('sekretessmarkering'));
-        this.puerror = element(by.id('puerror'));
-        this.fornamn = element(by.id('fornamn'));
-        this.efternamn = element(by.id('efternamn'));
-        this.namnFortsatt = element(by.id('namnFortsatt'));
-    },
-    get: function() {
-        browser.get('web/dashboard#/create/choose-cert-type/index');
-    },
-    setPersonnummer: function(pn) {
-        this.personnummer.sendKeys(pn);
-    },
-    selectPersonnummer: function(pn) {
-        this.setPersonnummer(pn);
-        this.pnButton.click();
-    }
+    this.personnummer = element(by.id('pnr'));
+    this.pnButton = element(by.id('skapapersonnummerfortsatt'));
+    this.sekretessmarkering = element(by.id('sekretessmarkering'));
+    this.puerror = element(by.id('puerror'));
+    this.fornamn = element(by.id('fornamn'));
+    this.efternamn = element(by.id('efternamn'));
+    this.namnFortsatt = element(by.id('namnFortsatt'));
+  },
+  get: function () {
+    browser.get('web/dashboard#/create/choose-cert-type/index');
+  },
+  setPersonnummer: function (pn) {
+    this.personnummer.sendKeys(pn);
+  },
+  selectPersonnummer: function (pn) {
+    this.setPersonnummer(pn);
+    this.pnButton.click();
+  }
 });
 
 module.exports = new SokSkrivIntyg();

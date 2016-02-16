@@ -25,41 +25,40 @@
 var BaseIntyg = require('./base.intyg.page.js');
 
 var TsDiabetesIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'ts-diabetes';
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'ts-diabetes';
 
-        this.period = element(by.id('observationsperiod'));
-        this.insulPeriod = element(by.id('insulinBehandlingsperiod'));
-        this.dTyp = element(by.id('diabetestyp'));
-        
-        this.kunskapOmAtgarder = element(by.id('kunskapOmAtgarder'));
-        this.teckenNedsattHjarnfunktion = element(by.id('teckenNedsattHjarnfunktion'));
-        this.saknarFormagaKannaVarningstecken = element(by.id('saknarFormagaKannaVarningstecken'));
-        this.allvarligForekomst = element(by.id('allvarligForekomst'));
-        this.allvarligForekomstTrafiken = element(by.id('allvarligForekomstTrafiken'));
-        this.egenkontrollBlodsocker = element(by.id('egenkontrollBlodsocker'));
-        this.allvarligForekomstVakenTid = element(by.id('allvarligForekomstVakenTid'));
-        
-        this.synIntyg = element(by.id('separatOgonlakarintyg'));
+    this.period = element(by.id('observationsperiod'));
+    this.insulPeriod = element(by.id('insulinBehandlingsperiod'));
+    this.dTyp = element(by.id('diabetestyp'));
 
+    this.kunskapOmAtgarder = element(by.id('kunskapOmAtgarder'));
+    this.teckenNedsattHjarnfunktion = element(by.id('teckenNedsattHjarnfunktion'));
+    this.saknarFormagaKannaVarningstecken = element(by.id('saknarFormagaKannaVarningstecken'));
+    this.allvarligForekomst = element(by.id('allvarligForekomst'));
+    this.allvarligForekomstTrafiken = element(by.id('allvarligForekomstTrafiken'));
+    this.egenkontrollBlodsocker = element(by.id('egenkontrollBlodsocker'));
+    this.allvarligForekomstVakenTid = element(by.id('allvarligForekomstVakenTid'));
 
-        this.falt1 = {
-            bedomning : element(by.id('bedomning')),
-            endastKost : element(by.id('endastKost')),
-            tabletter : element(by.id('tabletter')),
-            insulin : element(by.id('insulin'))
-        };
-        
-        this.kommentar = element(by.id('kommentar'));
-        this.specKomp = element(by.id('lakareSpecialKompetens'));
-        
-        this.intygetAvser = element(by.id('intygAvser'));
-        this.idStarktGenom = element(by.id('identitet'));
-    },
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    }
+    this.synIntyg = element(by.id('separatOgonlakarintyg'));
+
+    this.falt1 = {
+      bedomning: element(by.id('bedomning')),
+      endastKost: element(by.id('endastKost')),
+      tabletter: element(by.id('tabletter')),
+      insulin: element(by.id('insulin'))
+    };
+
+    this.kommentar = element(by.id('kommentar'));
+    this.specKomp = element(by.id('lakareSpecialKompetens'));
+
+    this.intygetAvser = element(by.id('intygAvser'));
+    this.idStarktGenom = element(by.id('identitet'));
+  },
+  get: function get(intygId) {
+    get._super.call(this, intygId);
+  }
 });
 
 module.exports = new TsDiabetesIntyg();

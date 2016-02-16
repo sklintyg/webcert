@@ -24,32 +24,31 @@
 /*globals protractor */
 'use strict';
 
-
 module.exports = {
-    clickAll: function(elementArray, elementTextsArray) {
-        // filter all elemenets matching elementTextsArray
-        elementArray.filter(function(elem) {
-            return elem.getText().then(function(text) {
-                return (elementTextsArray.indexOf(text) >= 0);
-            });
-        }).then(function(filteredElements) {
-            //filteredElements is the list of filtered elements
-            for (var i = 0; i < filteredElements.length; i++) {
-                filteredElements[i].sendKeys(protractor.Key.SPACE);
-            }
-        });
-    },
-    hasHogreKorkortsbehorigheter: function(korkortstyper) {
-        function findArrayElementsInArray(targetArray, compareArray) {
-            // find all elements in targetArray matching any elements in compareArray
-            var result = targetArray.filter(function(element) {
-                return (compareArray.indexOf(element) >= 0);
-            });
+  clickAll: function (elementArray, elementTextsArray) {
+    // filter all elemenets matching elementTextsArray
+    elementArray.filter(function (elem) {
+      return elem.getText().then(function (text) {
+        return (elementTextsArray.indexOf(text) >= 0);
+      });
+    }).then(function (filteredElements) {
+      //filteredElements is the list of filtered elements
+      for (var i = 0; i < filteredElements.length; i++) {
+        filteredElements[i].sendKeys(protractor.Key.SPACE);
+      }
+    });
+  },
+  hasHogreKorkortsbehorigheter: function (korkortstyper) {
+    function findArrayElementsInArray(targetArray, compareArray) {
+      // find all elements in targetArray matching any elements in compareArray
+      var result = targetArray.filter(function (element) {
+        return (compareArray.indexOf(element) >= 0);
+      });
 
-            return result;
-        }
-        var td = require('./../testdata/testdata.js');
-        var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
-        return foundHogreBehorigheter.length > 0;
+      return result;
     }
+    var td = require('./../testdata/testdata.js');
+    var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
+    return foundHogreBehorigheter.length > 0;
+  }
 };

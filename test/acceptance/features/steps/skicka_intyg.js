@@ -23,36 +23,36 @@
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 
-module.exports = function() {
+module.exports = function () {
 
-    this.Given(/^jag skickar intyget till Transportstyrelsen/, function(callback) {
+  this.Given(/^jag skickar intyget till Transportstyrelsen/, function (callback) {
 
-        //Fånga intygets id
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            logg('Intygsid: ' + intyg.id);
-        });
-
-        fkIntygPage.skicka.knapp.click();
-        fkIntygPage.skicka.samtyckeCheckbox.click();
-        fkIntygPage.skicka.dialogKnapp.click();
-        callback();
+    //Fånga intygets id
+    browser.getCurrentUrl().then(function (text) {
+      intyg.id = text.split('/').slice(-1)[0];
+      logg('Intygsid: ' + intyg.id);
     });
 
-    this.Given(/^jag skickar intyget till Försäkringskassan$/, function(callback) {
+    fkIntygPage.skicka.knapp.click();
+    fkIntygPage.skicka.samtyckeCheckbox.click();
+    fkIntygPage.skicka.dialogKnapp.click();
+    callback();
+  });
 
-    	browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            intyg.id = intyg.id.split('?')[0];
-        });
+  this.Given(/^jag skickar intyget till Försäkringskassan$/, function (callback) {
 
-        fkIntygPage.skicka.knapp.click().then(function () {
-            fkIntygPage.skicka.samtyckeCheckbox.click().then(function () {
-                fkIntygPage.skicka.dialogKnapp.click().then(callback);
-            });
-        });
-
-        callback();
+    browser.getCurrentUrl().then(function (text) {
+      intyg.id = text.split('/').slice(-1)[0];
+      intyg.id = intyg.id.split('?')[0];
     });
+
+    fkIntygPage.skicka.knapp.click().then(function () {
+      fkIntygPage.skicka.samtyckeCheckbox.click().then(function () {
+        fkIntygPage.skicka.dialogKnapp.click().then(callback);
+      });
+    });
+
+    callback();
+  });
 
 };

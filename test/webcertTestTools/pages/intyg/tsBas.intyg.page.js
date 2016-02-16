@@ -25,9 +25,9 @@
 var BaseIntyg = require('./base.intyg.page.js');
 
 var TsBasIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'ts-bas';
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'ts-bas';
     this.vansterOgautanKorrektion = element(by.id('vansterOgautanKorrektion'));
     this.hogerOgautanKorrektion = element(by.id('hogerOgautanKorrektion'));
     this.vansterOgamedKorrektion = element(by.id('vansterOgamedKorrektion'));
@@ -45,19 +45,18 @@ var TsBasIntyg = BaseIntyg._extend({
     this.riskfaktorerStroke = element(by.id('riskfaktorerStroke'));
     this.beskrivningRiskfaktorer = element(by.id('beskrivningRiskfaktorer'));
 
-
     this.synfaltsdefekter = element(by.id('synfaltsdefekter'));
     this.nattblindhet = element(by.id('nattblindhet'));
     this.diplopi = element(by.id('diplopi'));
     this.nystagmus = element(by.id('nystagmus'));
     this.progressivOgonsjukdom = element(by.id('progressivOgonsjukdom'));
 
-	this.harDiabetes = element(by.id('harDiabetes'));
+    this.harDiabetes = element(by.id('harDiabetes'));
     this.kost = element(by.id('kost'));
     this.tabletter = element(by.id('tabletter'));
     this.insulin = element(by.id('insulin'));
     this.diabetesTyp = element(by.id('diabetesTyp'));
-    
+
     this.intygStatus = element(by.id('intyget-sparat-och-ej-komplett-meddelande'));
 
     this.neurologiskSjukdom = element(by.id('neurologiskSjukdom'));
@@ -75,7 +74,7 @@ var TsBasIntyg = BaseIntyg._extend({
 
     this.lakemedelOchDos = element(by.id('lakemedelOchDos'));
     this.psykiskSjukdom = element(by.id('psykiskSjukdom'));
-    
+
     this.psykiskUtvecklingsstorning = element(by.id('psykiskUtvecklingsstorning'));
     this.harSyndrom = element(by.id('harSyndrom'));
 
@@ -88,15 +87,14 @@ var TsBasIntyg = BaseIntyg._extend({
     this.medicineringbeskrivning = element(by.id('medicineringbeskrivning'));
     this.intygetAvser = element(by.id('intygAvser'));
     this.idStarktGenom = element(by.id('identitet'));
-    
+
     this.hogerOgakontaktlins = element(by.id('hogerOgakontaktlins'));
     this.vansterOgakontaktlins = element(by.id('vansterOgakontaktlins'));
 
-
-    },
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    }
+  },
+  get: function get(intygId) {
+    get._super.call(this, intygId);
+  }
 });
 
 module.exports = new TsBasIntyg();
