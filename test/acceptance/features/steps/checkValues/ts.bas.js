@@ -114,11 +114,13 @@ module.exports = {
     });
 
     expect(tsBasIntygPage.hogerOgautanKorrektion.getText()).to.eventually.equal(intyg.styrkor.houk.toString().replace('.', ',')).then(function (value) {
-      logg('OK - Höger Öga utan korrektion = ' + value);
-    }, function (reason) {
-      callback('FEL - Höger Öga utan korrektion : ' + reason);
-    });
+        logg('OK - Höger Öga utan korrektion = ' + value);
+      },
+      function (reason) {
+        callback('FEL - Höger Öga utan korrektion : ' + reason);
+      });
     expect(tsBasIntygPage.hogerOgamedKorrektion.getText()).to.eventually.equal(intyg.styrkor.homk.toString().replace('.', ',')).then(function (value) {
+
       logg('OK - Höger Öga med korrektion = ' + value);
     }, function (reason) {
       callback('FEL - Höger Öga med korrektion : ' + reason);
