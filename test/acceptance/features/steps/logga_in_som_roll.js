@@ -29,65 +29,72 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som tandläkare$/, function(callback) {
         var userObj = {
-            fornamn:    'Louise',
-            efternamn:  'Ericsson',
-            hsaId:      'TSTNMT2321000156-103B',
-            enhetId:    'TSTNMT2321000156-1039'
+            fornamn: 'Louise',
+            efternamn: 'Ericsson',
+            hsaId: 'TSTNMT2321000156-103B',
+            enhetId: 'TSTNMT2321000156-1039'
         };
-        logInAsUserRole(userObj,'Tandläkare',callback);
+        logInAsUserRole(userObj, 'Tandläkare', callback);
     });
 
     this.Given(/^att jag är inloggad som vårdadministratör$/, function(callback) {
         var userObj = {
-            fornamn:    'Lena',
-            efternamn:  'Karlsson',
-            hsaId:      'IFV1239877878-104N',
-            enhetId:    'IFV1239877878-1045'
+            fornamn: 'Lena',
+            efternamn: 'Karlsson',
+            hsaId: 'IFV1239877878-104N',
+            enhetId: 'IFV1239877878-1045'
         };
-        logInAsUserRole(userObj,'Vårdadministratör',callback);
+        logInAsUserRole(userObj, 'Vårdadministratör', callback);
     });
 
     this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function(callback) {
         var userObj = {
-            fornamn:    'Åsa',
-            efternamn:  'Andersson',
-            hsaId:      'IFV1239877878-104B',
-            enhetId:    'IFV1239877878-1042'
+            fornamn: 'Åsa',
+            efternamn: 'Andersson',
+            hsaId: 'IFV1239877878-104B',
+            enhetId: 'IFV1239877878-1042'
         };
-        logInAsUserRole(userObj,'Läkare',callback, 'UTHOPP', 'VARDADMINISTRATOR');
+        logInAsUserRole(userObj, 'Läkare', callback, 'UTHOPP', 'VARDADMINISTRATOR');
     });
     this.Given(/^att jag är inloggad som läkare$/, function(callback) {
         var userObj = {
-            fornamn:    'Jan',
-            efternamn:  'Nilsson',
-            hsaId:      'IFV1239877878-1049',
-            enhetId:    'IFV1239877878-1042',
+            fornamn: 'Jan',
+            efternamn: 'Nilsson',
+            hsaId: 'IFV1239877878-1049',
+            enhetId: 'IFV1239877878-1042',
             lakare: true
-                    };
-        logInAsUserRole(userObj,'Läkare',callback);
+        };
+        logInAsUserRole(userObj, 'Läkare', callback);
     });
 
     this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function(callback) {
         var userObj = {
-            fornamn:    'Åsa',
-            efternamn:  'Svensson',
-            hsaId:      'TSTNMT2321000156-100L',
-            enhetId:    'TSTNMT2321000156-1003',
+            fornamn: 'Ivar',
+            efternamn: 'Integration',
+            hsaId: 'SE4815162344-1B01',
+            enhetId: 'SE4815162344-1A02',
             lakare: true,
             forskrivarKod: '2481632'
+            //     var userObj = {
+            // fornamn:    'Åsa',
+            // efternamn:  'Svensson',
+            // hsaId:      'TSTNMT2321000156-100L',
+            // enhetId:    'TSTNMT2321000156-1003',
+            // lakare: true,
+            // forskrivarKod: '2481632'
         };
-        logInAsUserRole(userObj,'Läkare',callback,'DJUPINTEGRATION', 'LAKARE');
+        logInAsUserRole(userObj, 'Läkare', callback, 'DJUPINTEGRATION', 'LAKARE');
     });
 
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
         var userObj = {
-            fornamn:    'Jan',
-            efternamn:  'Nilsson',
-            hsaId:      'IFV1239877878-1049',
-            enhetId:    'IFV1239877878-1042',
-            lakare:     true
+            fornamn: 'Jan',
+            efternamn: 'Nilsson',
+            hsaId: 'IFV1239877878-1049',
+            enhetId: 'IFV1239877878-1042',
+            lakare: true
         };
-        logInAsUserRole(userObj,'Läkare',callback, 'UTHOPP', 'LAKARE');
+        logInAsUserRole(userObj, 'Läkare', callback, 'UTHOPP', 'LAKARE');
     });
 
     this.Given(/^ska jag ha rollen "([^"]*)"$/, function(roll, callback) {
@@ -135,6 +142,34 @@ function logInAsUserRole(userObj,roleName,callback, newOrigin, newUserRole){
 function checkUserRole() {
     return performUserCheck('role');
 }
+
+function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
+    logg('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+    global.user = userObj;
+
+    browser.ignoreSynchronization = true;
+    pages.welcome.get();
+    pages.welcome.loginByJSON(JSON.stringify(userObj));
+
+    if (newUserRole) {
+        logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+        browser.get('testability/user/role/' + newUserRole);
+        browser.navigate().back();
+    }
+    if (newOrigin) {
+        logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+        browser.get('testability/user/origin/' + newOrigin);
+        browser.navigate().back();
+    }
+
+    browser.ignoreSynchronization = false;
+    browser.sleep(2000);
+    // webcertBasePage.header.getText()
+    expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn)
+    // expect(webcertBase.header.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
+    .and.notify(callback);
+}
+
 
 function checkUserOrigin() {
     return performUserCheck('origin');
