@@ -31,8 +31,8 @@ Scenario: Djupintegrerad läkare kan kopiera ett intyg från tidigare intyg list
 @djup_lakare @notReady
 Scenario: Djupintegrerad läkare besvarar kompleterings fråga
 
-@djup_lakare
-Scenario: Djupintegr@djup_lakareerad läkare besvarar kompleterings fråga
+@djup_lakare @notReady
+Scenario: Djupintegrerad läkare besvarar kompleterings fråga
    Givet att jag är inloggad som djupintegrerad läkare
    När jag väljer patienten "19121212-1212"
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
