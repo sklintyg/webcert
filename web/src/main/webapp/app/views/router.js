@@ -23,12 +23,14 @@
 angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     'use strict';
 
+    var commonPath = '/web/webjars/common/webcert/';
+
     $stateProvider.
 
         state('webcert', {
             views: {
                 'header': {
-                    templateUrl: '/web/webjars/common/webcert/gui/headers/wcHeader.partial.html',
+                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
                     controller: 'common.wcHeaderController'
                 }
             }
@@ -79,6 +81,8 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
+        state('webcert.utkast', {
+        }).
         state('webcert.unsigned', {
             url: '/unsigned',
             views: {
@@ -117,7 +121,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     templateUrl: '/web/webjars/fk7263/webcert/views/intyg/fragasvar/fragasvar.html'
                 },
                 'header@webcert.intyg.fk' : {
-                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
@@ -137,55 +141,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     }
                 },
                 'header@webcert.intyg.ts' : {
-                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
-                    controller: 'common.IntygHeader'
-                }
-            }
-        }).
-        state('webcert.intyg.lisu', {
-            data: { defaultActive : 'index' },
-            url:'/intyg/lisu/:certificateId?:patientId&:hospName&:signed',
-            onEnter: function($stateParams){
-                $stateParams.certificateType = 'lisu';
-            },
-            views: {
-                'main@webcert.intyg' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
-                    controller: 'webcert.ViewCertCtrl'
-                },
-                'intyg@webcert.intyg.lisu' : {
-                    templateUrl: '/web/webjars/sjukpenning-utokad/webcert/views/intyg/intyg.html'
-
-                },
-                'fragaSvar@webcert.intyg.lisu' : {
-                    templateUrl: '/web/webjars/sjukpenning-utokad/webcert/views/intyg/fragasvar/fragasvar.html'
-                },
-                'header@webcert.intyg.lisu' : {
-                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
-                    controller: 'common.IntygHeader'
-                }
-            }
-        }).
-        state('webcert.intyg.luse', {
-            data: { defaultActive : 'index' },
-            url:'/intyg/luse/:certificateId?:patientId&:hospName&:signed',
-            onEnter: function($stateParams){
-                $stateParams.certificateType = 'luse';
-            },
-            views: {
-                'main@webcert.intyg' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
-                    controller: 'webcert.ViewCertCtrl'
-                },
-                'intyg@webcert.intyg.luse' : {
-                    templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/intyg.html'
-
-                },
-                'fragaSvar@webcert.intyg.luse' : {
-                    templateUrl: '/web/webjars/sjukersattning/webcert/views/intyg/fragasvar/fragasvar.html'
-                },
-                'header@webcert.intyg.luse' : {
-                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
@@ -199,7 +155,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'webcert.ViewCertCtrl'
                 },
                 'header@webcert.fragasvar' : {
-                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
@@ -213,7 +169,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'webcert.ViewCertCtrl'
                 },
                 'header@webcert.fragasvar-qaonly' : {
-                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
