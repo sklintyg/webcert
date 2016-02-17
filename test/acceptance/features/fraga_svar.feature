@@ -1,12 +1,14 @@
 # language: sv
-@fragasvar @notReady
+@fragasvar
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare
    Och att vårdsystemet skapat ett intygsutkast
    Och jag går in på intygsutkastet via djupintegrationslänk
-   Och jag skickat ett signerat intyg till Försäkringskassan
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan
   
 Scenario: FK skickar fråga (komplettering av läkarintyg)
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

@@ -26,7 +26,6 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./db_actions/db.js');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
-var basIntyg = pages.intyg.base.intyg;
 
 function stripTrailingSlash(str) {
   if (str.substr(-1) === '/') {
@@ -226,12 +225,9 @@ module.exports = function () {
     });
   });
 
-  this.Given(/^jag markerar frågan som hanterad$/, function (callback) {
-    element(by.id('markAsHandledWcOriginBtn-' + global.intyg.fragaId)).sendKeys(protractor.Key.SPACE).then(callback);
-  });
-
   this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function (callback) {
-    element(basIntyg.handeledBtn + global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
+    fkIntygPage.getMarkAsHandledButtonForQuestionID(global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
+    // element(basIntyg.handeledBtn + global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
   });
 
   this.Given(/^Försäkringskassan ställer en "([^"]*)" fråga om intyget$/, function (amne, callback) {
@@ -290,32 +286,32 @@ module.exports = function () {
     });
   });
 
-  this.Given(/^jag skickat ett signerat intyg till Försäkringskassan$/, function (callback) {
-    fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
-      .then(function () {
-        fk7263Utkast.diagnosKod.sendKeys('A00');
-      })
-      .then(function () {
-        fk7263Utkast.faktiskTjanstgoring.sendKeys('40');
-      })
-      .then(function () {
-        fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
-      })
-      .then(function () {
-        fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt');
-      })
-      .then(function () {
-        fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget');
-      }).then(function () {
-        fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare');
-      }).then(function () {
-        element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE);
-      }).then(function () {
-        fkIntygPage.skicka.knapp.click();
-      }).then(function () {
-        fkIntygPage.skicka.samtyckeCheckbox.click();
-      }).then(function () {
-        fkIntygPage.skicka.dialogKnapp.click();
-      }).then(callback);
-  });
+  // this.Given(/^jag skickat ett signerat intyg till Försäkringskassan$/, function (callback) {
+  //   fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
+  //     .then(function () {
+  //       fk7263Utkast.diagnosKod.sendKeys('A00');
+  //     })
+  //     .then(function () {
+  //       fk7263Utkast.faktiskTjanstgoring.sendKeys('40');
+  //     })
+  //     .then(function () {
+  //       fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
+  //     })
+  //     .then(function () {
+  //       fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt');
+  //     })
+  //     .then(function () {
+  //       fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget');
+  //     }).then(function () {
+  //       fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare');
+  //     }).then(function () {
+  //       element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE);
+  //     }).then(function () {
+  //       fkIntygPage.skicka.knapp.click();
+  //     }).then(function () {
+  //       fkIntygPage.skicka.samtyckeCheckbox.click();
+  //     }).then(function () {
+  //       fkIntygPage.skicka.dialogKnapp.click();
+  //     }).then(callback);
+  // });
 };

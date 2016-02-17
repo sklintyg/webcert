@@ -10,7 +10,7 @@ Scenario: Logga in och signera intyg som Läkare
 	När jag väljer patienten "19971019-2387"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
-	Och signerar intyget
+	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
 # @vardadmin
@@ -27,5 +27,5 @@ Scenario: Logga in och signera intyg som Tandläkare
 	När jag väljer patienten "19971019-2387"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
-	Och signerar intyget
+	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"

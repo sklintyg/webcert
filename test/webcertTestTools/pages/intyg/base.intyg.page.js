@@ -44,7 +44,6 @@ var BaseIntyg = JClass._extend({
       dialogConfirmButton: element(by.id('button1copy-dialog'))
     };
     this.copyBtn = element(by.css('.btn.btn-info'));
-    this.handeledBtn = element(by.id('markAsHandledWcOriginBtn-'));
     this.backBtn = element(by.id('tillbakaButton'));
     // element(by.css('.btn.btn-info'))
   },

@@ -142,6 +142,10 @@ var Fk7263Intyg = BaseIntyg._extend({
   },
   selectQuestionTopic: function (amne) {
     this.question.topic.element(by.cssContainingText('option', amne)).click();
+  },
+  getMarkAsHandledButtonForQuestionID: function (questionID) {
+
+    return element(by.id('markAsHandledFkOriginBtn-' + questionID));
   }
 });
 

@@ -17,7 +17,7 @@ Scenario: Djupintegrerad läkare kan kopiera och signera ett (kopierat)intyg
 	När jag väljer patienten "19121212-1212"
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag kopierar intyget
-	Och signerar intyget
+	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
 @djup_lakare @notReady

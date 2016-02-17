@@ -21,7 +21,7 @@
 'use strict';
 
 module.exports = function () {
-  this.setDefaultTimeout(100 * 1000);
+  this.setDefaultTimeout(200 * 1000);
 
   //After scenario
   this.After(function (scenario, callback) {

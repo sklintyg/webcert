@@ -18,7 +18,7 @@
  */
 
 /*global
-testdata, intyg, browser, pages, logg, JSON*/
+testdata, intyg, browser, pages, logg, JSON, Promise */
 'use strict';
 
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
@@ -111,86 +111,91 @@ module.exports = function () {
       }).then(callback);
 
     } else if (intyg.typ === 'Läkarintyg FK 7263') {
+      browser.ignoreSynchronization = true;
       global.intyg = testdata.fk.sjukintyg.getRandom(intyg.id);
 
+      var promisesArr = [];
       //Ange smittskydd
-      fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function () {
+      promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function () {
         logg('OK - angeSmittskydd :' + intyg.smittskydd);
       }, function (reason) {
         callback('FEL, angeSmittskydd,' + reason);
-      });
-
-      browser.ignoreSynchronization = true;
+      }));
 
       //Ange baseras på
-      fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function () {
+      promisesArr.push(fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function () {
         logg('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
       }, function (reason) {
         callback('FEL, angeIntygetBaserasPa,' + reason);
-      });
+      }));
 
       //Ange funktionsnedsättning
-      fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function () {
+      promisesArr.push(fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function () {
         logg('OK - angeFunktionsnedsattning :' + JSON.stringify(intyg.funktionsnedsattning));
       }, function (reason) {
         callback('FEL, angeFunktionsnedsattning,' + reason);
-      });
+      }));
 
       //Ange diagnoser
-      fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function () {
+      promisesArr.push(fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function () {
         logg('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
       }, function (reason) {
         callback('FEL, angeDiagnoser,' + reason);
-      });
+      }));
 
       //Ange aktuellt sjukdomsförlopp
-      fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp).then(function () {
+      promisesArr.push(fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp).then(function () {
         logg('OK - angeAktuelltSjukdomsForlopp :' + JSON.stringify(intyg.aktuelltSjukdomsforlopp));
       }, function (reason) {
         callback('FEL, angeAktuelltSjukdomsForlopp,' + reason);
-      });
+      }));
 
       //Ange aktivitetsbegränsning
-      fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning).then(function () {
+      promisesArr.push(fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning).then(function () {
         logg('OK - angeAktivitetsBegransning :' + JSON.stringify(intyg.aktivitetsBegransning));
       }, function (reason) {
         callback('FEL, angeAktivitetsBegransning,' + reason);
-      });
+      }));
 
-      fkUtkastPage.angeArbete(intyg.arbete).then(function () {
+      promisesArr.push(fkUtkastPage.angeArbete(intyg.arbete).then(function () {
         logg('OK - angeArbete :' + JSON.stringify(intyg.arbete));
       }, function (reason) {
         callback('FEL, angeArbete,' + reason);
-      });
-      fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function () {
+      }));
+      promisesArr.push(fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function () {
         logg('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
       }, function (reason) {
         callback('FEL, angeArbetsformaga,' + reason);
-      });
-      fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB).then(function () {
+      }));
+      promisesArr.push(fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB).then(function () {
         logg('OK - angeArbetsformagaFMB :' + JSON.stringify(intyg.arbetsformagaFMB));
       }, function (reason) {
         callback('FEL, angeArbetsformagaFMB,' + reason);
-      });
+      }));
 
-      browser.ignoreSynchronization = false;
-
-      fkUtkastPage.angePrognos(intyg.prognos).then(function () {
+      promisesArr.push(fkUtkastPage.angePrognos(intyg.prognos).then(function () {
         logg('OK - angePrognos :' + JSON.stringify(intyg.prognos));
       }, function (reason) {
         callback('FEL, angePrognos,' + reason);
-      });
-      fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function () {
+      }));
+      promisesArr.push(fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function () {
         logg('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
       }, function (reason) {
         callback('FEL, angeKontaktOnskasMedFK,' + reason);
+      }));
+
+      promisesArr.push(fkUtkastPage.angeRekommendationer(intyg.rekommendationer).then(function () {
+        logg('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
+      }, function (reason) {
+        callback('FEL, angeRekommendationer,' + reason);
+      }));
+
+      Promise.all(promisesArr).then(function (value) {
+        browser.ignoreSynchronization = false;
+        callback();
+      }, function (reason) {
+        callback(reason);
       });
-      fkUtkastPage.angeRekommendationer(intyg.rekommendationer).then(function () {
-          logg('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
-        }, function (reason) {
-          callback('FEL, angeRekommendationer,' + reason);
-        })
-        .then(callback());
 
     }
 

@@ -19,7 +19,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "2"
 
    Och jag fyller i resten av de nödvändiga fälten.
-   Och signerar intyget
+   Och jag signerar intyget
    Så ska statusuppdatering "HAN2" skickas till vårdsystemet. Totalt: "1"
 
    Och jag skickar intyget till Försäkringskassan
@@ -28,7 +28,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
 @makulera
 Scenario: Statusuppdateringar då intyg makuleras
    När jag fyller i alla nödvändiga fält för intyget
-   Och signerar intyget
+   Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
 
    Och jag makulerar intyget
@@ -43,7 +43,7 @@ Scenario: Statusuppdateringar då intyg raderas
 @fråga-från-fk
 Scenario: Statusuppdateringar med fråga från FK
    När jag fyller i alla nödvändiga fält för intyget
-   Och signerar intyget
+   Och jag signerar intyget
 
    Och jag skickar intyget till Försäkringskassan
    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
@@ -57,7 +57,7 @@ Scenario: Statusuppdateringar med fråga från FK
 @fråga-till-fk
 Scenario: Statusuppdateringar med fråga till FK
    När jag fyller i alla nödvändiga fält för intyget
-   Och signerar intyget
+   Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
 
    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
@@ -69,6 +69,6 @@ Scenario: Statusuppdateringar med fråga till FK
    Och Försäkringskassan skickar ett svar
    Så ska statusuppdatering "HAN7" skickas till vårdsystemet. Totalt: "1"
    
-   Och jag markerar frågan som hanterad
+   Och jag markerar frågan från Försäkringskassan som hanterad
    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    

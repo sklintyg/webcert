@@ -29,10 +29,6 @@ module.exports = function () {
     fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
 
   });
-  this.Given(/^signerar intyget$/, function (callback) {
-    fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
-
-  });
 
   this.Given(/^jag makulerar intyget$/, function (callback) {
 

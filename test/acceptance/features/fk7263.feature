@@ -10,7 +10,7 @@ Scenario: Skapa och signera ett intyg
 	När jag väljer patienten "19971019-2387"
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
-	Och signerar intyget
+	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
 	Så ska intygets status vara "Intyget är signerat"	
 	När jag går till Mina intyg för patienten "19971019-2387"
@@ -39,5 +39,5 @@ Scenario: Kopiera ett signerat intyg
 	När jag väljer patienten "19971019-2387"
     Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag kopierar intyget
-	Och signerar intyget
+	Och jag signerar intyget
     Så ska intygets status vara "Intyget är signerat"	

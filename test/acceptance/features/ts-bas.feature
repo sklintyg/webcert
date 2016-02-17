@@ -11,7 +11,7 @@ Scenario: Skapa och signera ett intyg till transportstyrelsen
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
-    Och signerar intyget
+    Och jag signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
     
