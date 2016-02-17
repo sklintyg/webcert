@@ -118,17 +118,16 @@ function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
   if (newUserRole) {
     logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
     browser.get('testability/user/role/' + newUserRole);
-    browser.sleep(2000);
     browser.navigate().back();
   }
   if (newOrigin) {
     logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
     browser.get('testability/user/origin/' + newOrigin);
-    browser.sleep(2000);
     browser.navigate().back();
   }
 
   browser.ignoreSynchronization = false;
+  browser.sleep(2000);
   // webcertBasePage.header.getText()
   expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn)
     // expect(webcertBase.header.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
@@ -151,8 +150,8 @@ function performUserCheck(userconfig) {
     browser.get('testability/user/origin/');
   }
   var attribute = element(by.css('pre')).getText();
-  browser.sleep(2000);
   browser.navigate().back();
+  browser.sleep(1000);
   browser.ignoreSynchronization = false;
   return attribute;
 }
