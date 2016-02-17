@@ -282,15 +282,33 @@ var FkUtkast = BaseUtkast._extend({
       return Promise.all(promisesArr);
     }
   },
-
   angeArbete: function (arbete) {
+    var arbeteCheckbox = this.arbete.nuvarandeArbete.checkbox;
+    var nuvarandeArbeteTextElement = this.arbete.nuvarandeArbete.text;
+
+    function checkArbeteCheckbox(){
+
+      return arbeteCheckbox.isSelected(function(isSelected){
+        if(isSelected){
+          return Promise.resolve('Is selected already');
+        }
+        else{
+          return arbeteCheckbox.sendKeys(protractor.Key.SPACE);
+        }
+      })
+
+    }
+
     var promisesArr = [];
     if (arbete.nuvarandeArbete) {
-      promisesArr.push(this.arbete.nuvarandeArbete.checkbox.sendKeys(protractor.Key.SPACE));
-      if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
-        promisesArr.push(this.arbete.nuvarandeArbete.text
-          .sendKeys(arbete.nuvarandeArbete.aktuellaArbetsuppgifter));
-      }
+      promisesArr.push(checkArbeteCheckbox().then(function(){
+        if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
+          return nuvarandeArbeteTextElement.sendKeys(arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
+        }
+        else{
+          return Promise.resolve('Success');
+        }
+      }));
     }
     if (arbete.arbetsloshet) {
       promisesArr.push(this.arbete.arbetslos.checkbox.sendKeys(protractor.Key.SPACE));
