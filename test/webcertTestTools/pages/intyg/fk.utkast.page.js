@@ -286,7 +286,7 @@ var FkUtkast = BaseUtkast._extend({
   angeArbete: function (arbete) {
     var promisesArr = [];
     if (arbete.nuvarandeArbete) {
-      promisesArr.push(this.arbete.nuvarandeArbete.checkbox.click());
+      promisesArr.push(this.arbete.nuvarandeArbete.checkbox.sendKeys(protractor.Key.SPACE));
       if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
         promisesArr.push(this.arbete.nuvarandeArbete.text
           .sendKeys(arbete.nuvarandeArbete.aktuellaArbetsuppgifter));
