@@ -295,7 +295,7 @@ var FkUtkast = BaseUtkast._extend({
         else{
           return arbeteCheckbox.sendKeys(protractor.Key.SPACE);
         }
-      })
+      });
 
     }
 

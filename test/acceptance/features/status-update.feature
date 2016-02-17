@@ -69,6 +69,6 @@ Scenario: Statusuppdateringar med fråga till FK
    Och Försäkringskassan skickar ett svar
    Så ska statusuppdatering "HAN7" skickas till vårdsystemet. Totalt: "1"
    
-   Och jag markerar frågan från Försäkringskassan som hanterad
+   Och jag markerar svaret från Försäkringskassan som hanterat
    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    

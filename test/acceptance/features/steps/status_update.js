@@ -227,8 +227,11 @@ module.exports = function () {
 
   this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function (callback) {
     fkIntygPage.getMarkAsHandledButtonForQuestionID(global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
-    // element(basIntyg.handeledBtn + global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
   });
+
+  this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function (callback) {
+    fkIntygPage.getMarkAsHandledButtonForAnswerByID(global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
+});
 
   this.Given(/^Försäkringskassan ställer en "([^"]*)" fråga om intyget$/, function (amne, callback) {
     var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
