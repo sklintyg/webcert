@@ -21,14 +21,17 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
-    ['$rootScope', '$state', '$scope', '$window', '$location', '$q', 'common.dialogService',
+    ['$rootScope', '$state', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
         'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
         'common.featureService',
-        function($rootScope, $state, $scope, $window, $location, $q, dialogService, UtkastProxy,
+        function($rootScope, $state, $stateParams, $scope, $window, $location, $q, dialogService, UtkastProxy,
             UserPreferencesService, fragaSvarCommonService, featureService) {
             'use strict';
 
             var certificateType = $state.current.data.intygType;
+            if ($stateParams.certificateType) {
+                certificateType = $stateParams.certificateType;
+            }
 
             $scope.widgetState = {
                 certificateType: certificateType,

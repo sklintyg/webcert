@@ -98,7 +98,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.main.html'
                 }
             }
-
         }).
         state('webcert.intyg.fk', {
             views: {
@@ -108,75 +107,19 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.intyg.fk7263', {
-            data: { defaultActive : 'index' },
-            url:'/intyg/fk7263/:certificateId?:patientId&:hospName&:signed',
-            onEnter: function($stateParams){
-                $stateParams.certificateType = 'fk7263';
-            },
-            views: {
-                'main@webcert.intyg' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
-                    controller: 'webcert.ViewCertCtrl'
-                },
-                'intyg@webcert.intyg.fk7263' : {
-                    templateUrl: '/web/webjars/fk7263/webcert/views/intyg/intyg.html'
-
-                },
-                'fragaSvar@webcert.intyg.fk7263' : {
-                    templateUrl: '/web/webjars/fk7263/webcert/views/intyg/fragasvar/fragasvar.html'
-                },
-                'header@webcert.intyg.fk7263' : {
-                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
-                    controller: 'common.IntygHeader'
-                }
-            }
-        }).
         state('webcert.intyg.ts', {
-            data: { defaultActive : 'index' },
-            url:'/intyg/{certificateType:ts.+}/:certificateId?:patientId&:hospName&:signed',
-
             views: {
                 'main@webcert.intyg' : {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.ts.html',
                     controller: 'webcert.ViewCertCtrl'
-                },
-                'intyg@webcert.intyg.ts' : {
-                    templateUrl: function($stateParams){
-                        return '/web/webjars/' + $stateParams.certificateType + '/webcert/views/intyg/intyg.html';
-                    }
-                },
-                'header@webcert.intyg.ts' : {
-                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
-                    controller: 'common.IntygHeader'
                 }
             }
         }).
         state('webcert.fragasvar', {
-            data: { defaultActive : 'unhandled-qa' },
-            url: '/fragasvar/:certificateType/:certificateId',
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.ViewCertCtrl'
-                },
-                'header@webcert.fragasvar' : {
-                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
-                    controller: 'common.IntygHeader'
-                }
-            }
-        }).
-        state('webcert.fragasvar-qaonly', {
-            data: { defaultActive : 'unhandled-qa' },
-            url: '/fragasvar/:certificateType/:certificateId',
-            views: {
-                'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
-                    controller: 'webcert.ViewCertCtrl'
-                },
-                'header@webcert.fragasvar-qaonly' : {
-                    templateUrl: commonPath + 'intyg/intyg-header/intyg-header.html',
-                    controller: 'common.IntygHeader'
                 }
             }
         }).

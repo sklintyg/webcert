@@ -6,7 +6,7 @@
       <div wc-authority feature="hanteraFragor" intygstyp="{{widgetState.certificateType}}">
         <a id="tillbakaButton" wc-authority="NAVIGERING" class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
         <h1 class="backlink-heading">Fråga och svar</h1>
-        <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
+        <div ui-view="fragasvar"></div>
       </div>
     </div>
     <!-- Certificate Left side end -->
@@ -19,7 +19,7 @@
           <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
         </h2>
       </div>
-      <div wc-insert-certificate certificate-type="{{widgetState.certificateType}}"></div>
+      <div ui-view="intyg"></div>
     </div>
 
   </div>
