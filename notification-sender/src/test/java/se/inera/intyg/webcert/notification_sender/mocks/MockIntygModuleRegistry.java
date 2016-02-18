@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.notification_sender.mocks;
 
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.model.Status;
@@ -38,15 +40,13 @@ import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder
 import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateXmlResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
-
-import java.util.List;
 
 
 public class MockIntygModuleRegistry implements IntygModuleRegistry {
@@ -144,6 +144,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             @Override
             public String transformToStatisticsService(String inputXml) throws ModuleException {
                 return inputXml;
+            }
+
+            @Override
+            public ValidateXmlResponse validateXml(String inputXml) throws ModuleException {
+                throw new UnsupportedOperationException();
             }
 
         };
