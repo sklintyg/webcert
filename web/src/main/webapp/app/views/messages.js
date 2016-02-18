@@ -70,7 +70,7 @@ var wcMessages = {
         'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
         'certificatetypes.lisu.typename': 'Läkarintyg för sjukpenning utökat',
-        'certificatetypes.luse.typename': 'Sjukersättning',
+        'certificatetypes.luse.typename': 'Läkarutlåtande för sjukersättning',
 
         //certificate help texts old
         'certificatetypes.ts-bas.helptext': '<p>Transportstyrelsens läkarintyg ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Transportstyrelsens läkarintyg kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.</p>Specialistintyg finns bl.a. för alkohol, läkemedel, synfunktion, Alkolås m.m. Se <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
