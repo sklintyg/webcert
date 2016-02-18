@@ -18,12 +18,13 @@
  */
 
 /*global
-testdata, intyg, browser, pages, logg, JSON, Promise */
+testdata, intyg, browser, pages, logg, JSON, Promise, protractor */
 'use strict';
 
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
 var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var luseUtkastPage = pages.intyg.fk['luse'].utkast;
 
 module.exports = function () {
 
@@ -196,8 +197,43 @@ module.exports = function () {
       }, function (reason) {
         callback(reason);
       });
+    } else if (intyg.typ === 'Läkarintyg, sjukersättning') {
 
+        browser.ignoreSynchronization = true;
+
+        luseUtkastPage.formly_1_date_undersokningAvPatienten_3.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.formly_1_date_kannedomOmPatient_8.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.underlagFinnsNo.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.diagnoseCode.sendKeys('A000');
+        luseUtkastPage.diagnosgrund.sendKeys('Ingen grund alls');
+        luseUtkastPage.nyBedomningDiagnosgrundNo.sendKeys(protractor.Key.SPACE);
+
+        luseUtkastPage.funktionsnedsattningIntellektuell.sendKeys('Problem...');
+        luseUtkastPage.funktionsnedsattningKommunikation.sendKeys('Inget tal');
+        luseUtkastPage.funktionsnedsattningKoncentration.sendKeys('Ingen koncentration');
+        luseUtkastPage.funktionsnedsattningPsykisk.sendKeys('Total');
+        luseUtkastPage.funktionsnedsattningSynHorselTal.sendKeys('Blind');
+        luseUtkastPage.funktionsnedsattningBalansKoordination.sendKeys('Svajig i benen');
+        luseUtkastPage.funktionsnedsattningAnnan.sendKeys('Ingen');
+        luseUtkastPage.aktivitetsbegransning.sendKeys('Total');
+        luseUtkastPage.avslutadBehandling.sendKeys('Ipren');
+        luseUtkastPage.pagaendeBehandling.sendKeys('Alvedon');
+        luseUtkastPage.planeradBehandling.sendKeys('Bamyl');
+        luseUtkastPage.substansintag.sendKeys('Snus');
+        luseUtkastPage.medicinskaForutsattningarForArbete.sendKeys('Inte speciellt');
+        luseUtkastPage.aktivitetsFormaga.sendKeys('Liten');
+        luseUtkastPage.ovrigt.sendKeys('Inget');
+        luseUtkastPage.kontaktMedFkNo.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.tillaggsfragor0svar.sendKeys('Question');
+        luseUtkastPage.tillaggsfragor1svar.sendKeys('Answer');
+        
+        browser.ignoreSynchronization = false;
+
+        browser.driver.wait(protractor.until.elementIsVisible(luseUtkastPage.signeraButton));
+        
+        callback();
     }
+
 
   });
 

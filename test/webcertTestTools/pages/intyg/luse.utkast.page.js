@@ -26,7 +26,37 @@ var LuseUtkast = BaseUtkast._extend({
   init: function init() {
     init._super.call(this);
 
-    this.at = element(by.css('.edit-form'));
+      this.at = element(by.css('.edit-form'));
+
+      this.formly_1_date_undersokningAvPatienten_3 = element(by.id('formly_1_date_undersokningAvPatienten_3'));
+      this.formly_1_date_kannedomOmPatient_8 = element(by.id('formly_1_date_kannedomOmPatient_8'));
+      this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
+      this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
+      this.diagnoseCode = element(by.id('diagnoseCode'));
+      this.diagnosgrund = element(by.id('diagnosgrund'));
+      this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
+      this.funktionsnedsattningIntellektuell = element(by.id('funktionsnedsattningIntellektuell'));
+      this.funktionsnedsattningKommunikation = element(by.id('funktionsnedsattningKommunikation'));
+      this.funktionsnedsattningKoncentration = element(by.id('funktionsnedsattningKoncentration'));
+      this.funktionsnedsattningPsykisk = element(by.id('funktionsnedsattningPsykisk'));
+      this.funktionsnedsattningSynHorselTal = element(by.id('funktionsnedsattningSynHorselTal'));
+      this.funktionsnedsattningBalansKoordination = element(by.id('funktionsnedsattningBalansKoordination'));
+      this.funktionsnedsattningAnnan = element(by.id('funktionsnedsattningAnnan'));
+      this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
+      this.avslutadBehandling = element(by.id('avslutadBehandling'));
+      this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
+      this.planeradBehandling = element(by.id('planeradBehandling'));
+      this.substansintag = element(by.id('substansintag'));
+      this.medicinskaForutsattningarForArbete = element(by.id('medicinskaForutsattningarForArbete'));
+      this.aktivitetsFormaga = element(by.id('aktivitetsFormaga'));
+      this.ovrigt = element(by.id('ovrigt'));
+      this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
+      this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
+      this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
+
+
+
+      
   },
 
   get: function get(intygId) {
