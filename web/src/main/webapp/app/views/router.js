@@ -107,7 +107,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'webcert.ViewCertCtrl'
                 }
             }
-        }.
+        }).
         state('webcert.intyg.fk7263', {
             data: { defaultActive : 'index' },
             url:'/intyg/fk7263/:certificateId?:patientId&:hospName&:signed',

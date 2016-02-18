@@ -21,6 +21,7 @@ describe('ViewCertCtrl', function() {
     'use strict';
 
     var UtkastProxy;
+    var $state;
     var $stateParams;
     var $httpBackend;
     var dialogService;
@@ -92,6 +93,8 @@ describe('ViewCertCtrl', function() {
 
         $stateParams = {qaOnly:false};
         $provide.value('$stateParams', $stateParams);
+        $state = {current:{}};
+        $provide.value('$state', $state);
 
         $provide.value('common.featureService', {
             features: {
@@ -124,7 +127,7 @@ describe('ViewCertCtrl', function() {
             userModel.roles = {LAKARE: 'Läkare'};
             userModel.isLakare = function(){return true;};
             userModel.isUthopp = function(){return false;};
-            $stateParams.certificateType = 'fk7263';
+            $state.current.data = 'fk7263'
 
             $controller = _$controller_;
             $controller('webcert.ViewCertCtrl',

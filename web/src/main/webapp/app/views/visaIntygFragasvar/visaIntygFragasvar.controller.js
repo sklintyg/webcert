@@ -21,15 +21,17 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
-    ['$rootScope', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
+    ['$rootScope', '$state', '$scope', '$window', '$location', '$q', 'common.dialogService',
         'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
         'common.featureService',
-        function($rootScope, $stateParams, $scope, $window, $location, $q, dialogService, UtkastProxy,
+        function($rootScope, $state, $scope, $window, $location, $q, dialogService, UtkastProxy,
             UserPreferencesService, fragaSvarCommonService, featureService) {
             'use strict';
 
+            var certificateType = $state.current.data.intygType;
+
             $scope.widgetState = {
-                certificateType: $stateParams.certificateType,
+                certificateType: certificateType,
                 fragaSvarAvailable: false,
                 skipShowUnhandledDialog: false,
                 setSkipShowUnhandledDialog: function(widgetState) {
@@ -111,7 +113,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
             $scope.$on('$destroy', unbindCheckHandledEvent);
 
 
-            UtkastProxy.getUtkastType($stateParams.certificateType, function(intygType) {
+            UtkastProxy.getUtkastType(certificateType, function(intygType) {
                 $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
                 $scope.widgetState.printStatus = intygType.printStatus;
             });
