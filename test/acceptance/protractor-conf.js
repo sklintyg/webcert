@@ -25,7 +25,7 @@ browser
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
     allScriptsTimeout: 30000,
-    // seleniumAddress: 'http://127.0.0.1:4444/wd/hub',
+    seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
 
     // path relative to the current config file
@@ -34,13 +34,15 @@ exports.config = {
         'features/*.feature'
     ],
     capabilities: {
+        // shardTestFiles: true,
+        // maxInstances: 2,
         browserName: 'firefox',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
         version: '',
         platform: 'ANY'
     },
-    maxSessions: 1,
+
     cucumberOpts: {
         format: ['json:./acceptance/report/acc_results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js']

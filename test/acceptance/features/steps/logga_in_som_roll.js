@@ -127,7 +127,7 @@ function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
   }
 
   browser.ignoreSynchronization = false;
-  browser.sleep(2000);
+  browser.sleep(3000);
   // webcertBasePage.header.getText()
   expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn)
     // expect(webcertBase.header.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn+ ' ' + userObj.efternamn)
