@@ -122,7 +122,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             if ( $rootScope.testModeActive === false) {
-                console.log('reloading...');
                 $scope.current.selected = 'default';
                 $scope.current.group = 'default';
                 $scope.selectedTemplate = $scope.prototypes.templates[0];
