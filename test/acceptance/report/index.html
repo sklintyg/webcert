@@ -23,12 +23,19 @@
     <!-- 3. Template -->
     <script id="tpl" type="text/template">
     {{#each this}}
-    <div class='panelcollapsed'>
-    <h2 class="{{status}}">{{name}}</h2>
-      <div class='panelcontent'>
-        <br>
+    <h3>{{name}}</h3>
+   
         {{#each elements}}
-          <div class='scenario'>
+        {{#if_eq this.keyword "Background"}}
+        {{else}}
+
+        <div class='panelcollapsed'>
+          <h2 class="{{status}}">{{name}}</h2>
+            <div class='panelcontent'>
+              <br>
+
+
+               <div class='scenario'>
           <b>{{keyword}}</b> <span class="{{status}}">{{name}}</span><br>
           {{#each steps}}
            <span class='step {{keyword}}'>
@@ -47,14 +54,15 @@
               {{/if_eq}}
               <br>
             {{/each}}
-          </span>
+            </span>
           {{/each}}
         </div>
-        {{/each}}
-      </div>
-    </div>
-    {{/each}}
+            </div>
+        </div>
 
+        {{/if_eq}}
+        {{/each}}
+    {{/each}}
     </script>
  
     <script>
