@@ -72,7 +72,6 @@
   <modules>
     <module>common</module>
     <module>persistence</module>
-    <module>log-messages</module>
     <module>log-sender</module>
     <module>notification-sender</module>
     <module>integration/pu-integration</module>
@@ -80,7 +79,6 @@
     <module>integration/fmb-integration</module>
     <module>specifications</module>
     <module>stubs/fk-stub</module>
-    <module>stubs/loggtjanst-stub</module>
     <module>stubs/intygstjanst-stub</module>
     <module>stubs/mail-stub</module>
     <module>stubs/notification-stub</module>
@@ -109,11 +107,7 @@
         <artifactId>mail-stub</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>loggtjanst-stub</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>notification-stub</artifactId>
@@ -219,6 +213,16 @@
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>common-services</artifactId>
+        <version>${common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.common</groupId>
+        <artifactId>log-messages</artifactId>
+        <version>${common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.common</groupId>
+        <artifactId>loggtjanst-stub</artifactId>
         <version>${common.version}</version>
       </dependency>
 

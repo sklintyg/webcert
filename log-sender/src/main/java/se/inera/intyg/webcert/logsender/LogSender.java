@@ -28,9 +28,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.webcert.logmessages.AbstractLogMessage;
-import se.inera.intyg.webcert.logmessages.Enhet;
-import se.inera.intyg.webcert.logmessages.Patient;
+import se.inera.intyg.common.logmessages.AbstractLogMessage;
+import se.inera.intyg.common.logmessages.Enhet;
+import se.inera.intyg.common.logmessages.Patient;
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
@@ -57,6 +57,7 @@ import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -135,6 +136,11 @@ public class LogSender {
         return logTypes;
     }
 
+    /**
+     * For WC 4.1 and RHS 1.0, adapted to handle lists of AbstractLogMessage too.
+     * @param message
+     * @return
+     */
     private LogType convert(Message message) {
         try {
             Object element = ((ObjectMessage) message).getObject();
@@ -143,6 +149,11 @@ public class LogSender {
                 AbstractLogMessage logMessage = (AbstractLogMessage) element;
                 return convert(logMessage);
 
+            } else if (element instanceof ArrayList) {
+                ArrayList<AbstractLogMessage> logMessages = (ArrayList<AbstractLogMessage>) element;
+                // TODO validate: All messages in List must originate from same user and system. Only patient info may differ.
+                return convertFromList(logMessages);
+
             } else {
                 throw new RuntimeException("Unrecognized message type " + element.getClass().getCanonicalName());
             }
@@ -150,6 +161,52 @@ public class LogSender {
         } catch (JMSException e) {
             throw new RuntimeException("Failed to read incoming JMS message", e);
         }
+    }
+
+    private LogType convertFromList(List<AbstractLogMessage> sources) {
+        AbstractLogMessage source = sources.get(0);
+        LogType logType = new LogType();
+
+        logType.setLogId(source.getLogId());
+
+        SystemType system = new SystemType();
+        system.setSystemId(source.getSystemId());
+        system.setSystemName(source.getSystemName());
+        logType.setSystem(system);
+
+        ActivityType activity = new ActivityType();
+        activity.setActivityType(source.getActivityType().getType());
+        activity.setStartDate(source.getTimestamp());
+        activity.setPurpose(source.getPurpose().getType());
+        activity.setActivityLevel(source.getActivityLevel());
+
+        if (StringUtils.isNotEmpty(source.getActivityArgs())) {
+            activity.setActivityArgs(source.getActivityArgs());
+        }
+
+        logType.setActivity(activity);
+
+        UserType user = new UserType();
+        user.setUserId(source.getUserId());
+        user.setName(source.getUserName());
+        user.setCareProvider(careProvider(source.getUserCareUnit()));
+        user.setCareUnit(careUnit(source.getUserCareUnit()));
+        logType.setUser(user);
+
+        logType.setResources(new ResourcesType());
+        logType.getResources().getResource().addAll(sources.stream().map(this::buildResource).collect(Collectors.toList()));
+
+        return logType;
+    }
+
+    private ResourceType buildResource(AbstractLogMessage source) {
+        ResourceType resource = new ResourceType();
+        resource.setResourceType(source.getResourceType());
+        resource.setCareProvider(careProvider(source.getResourceOwner()));
+        resource.setCareUnit(careUnit(source.getResourceOwner()));
+
+        resource.setPatient(patient(source.getPatient()));
+        return resource;
     }
 
     private LogType convert(AbstractLogMessage source) {
@@ -182,12 +239,8 @@ public class LogSender {
         logType.setUser(user);
 
         logType.setResources(new ResourcesType());
-        ResourceType resource = new ResourceType();
-        resource.setResourceType(source.getResourceType());
-        resource.setCareProvider(careProvider(source.getResourceOwner()));
-        resource.setCareUnit(careUnit(source.getResourceOwner()));
 
-        resource.setPatient(patient(source.getPatient()));
+        ResourceType resource = buildResource(source);
 
         logType.getResources().getResource().add(resource);
 

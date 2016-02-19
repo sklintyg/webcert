@@ -83,14 +83,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>mail-stub</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>loggtjanst-stub</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>log-messages</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>notification-sender</artifactId>
@@ -116,6 +109,14 @@
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>common-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>loggtjanst-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>log-messages</artifactId>
     </dependency>
 
     <!--Intygstyper -->

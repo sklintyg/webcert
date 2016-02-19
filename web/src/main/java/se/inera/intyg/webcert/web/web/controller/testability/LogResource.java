@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 
-import se.inera.intyg.webcert.logmessages.AbstractLogMessage;
+import se.inera.intyg.common.logmessages.AbstractLogMessage;
 
 @Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")
 @Path("/logMessages")

@@ -64,12 +64,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Node;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.logmessages.AbstractLogMessage;
-import se.inera.intyg.webcert.logmessages.Enhet;
-import se.inera.intyg.webcert.logmessages.IntygPrintMessage;
-import se.inera.intyg.webcert.logmessages.IntygReadMessage;
-import se.inera.intyg.webcert.logmessages.IntygSendMessage;
-import se.inera.intyg.webcert.logmessages.Patient;
+import se.inera.intyg.common.logmessages.AbstractLogMessage;
+import se.inera.intyg.common.logmessages.Enhet;
+import se.inera.intyg.common.logmessages.IntygPrintMessage;
+import se.inera.intyg.common.logmessages.IntygReadMessage;
+import se.inera.intyg.common.logmessages.IntygSendMessage;
+import se.inera.intyg.common.logmessages.Patient;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelogresponder.v1.ObjectFactory;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;

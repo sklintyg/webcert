@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.specifications.spec.util
 import se.inera.intyg.common.specifications.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.intyg.common.specifications.spec.util.jms.DestinationFixture
 import se.inera.intyg.common.specifications.spec.util.jms.JMSUtils
-import se.inera.intyg.webcert.logmessages.IntygReadMessage
+import se.inera.intyg.common.logmessages.IntygReadMessage
 
 import javax.jms.*
 

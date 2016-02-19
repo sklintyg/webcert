@@ -24,16 +24,16 @@ import static groovyx.net.http.ContentType.JSON
 import org.joda.time.LocalDateTime
 
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
-import se.inera.intyg.webcert.logmessages.Enhet
-import se.inera.intyg.webcert.logmessages.IntygCreateMessage
-import se.inera.intyg.webcert.logmessages.IntygDeleteMessage
-import se.inera.intyg.webcert.logmessages.IntygPrintMessage
-import se.inera.intyg.webcert.logmessages.IntygReadMessage
-import se.inera.intyg.webcert.logmessages.IntygRevokeMessage
-import se.inera.intyg.webcert.logmessages.IntygSendMessage
-import se.inera.intyg.webcert.logmessages.IntygSignMessage
-import se.inera.intyg.webcert.logmessages.IntygUpdateMessage
-import se.inera.intyg.webcert.logmessages.Patient
+import se.inera.intyg.common.logmessages.Enhet
+import se.inera.intyg.common.logmessages.IntygCreateMessage
+import se.inera.intyg.common.logmessages.IntygDeleteMessage
+import se.inera.intyg.common.logmessages.IntygPrintMessage
+import se.inera.intyg.common.logmessages.IntygReadMessage
+import se.inera.intyg.common.logmessages.IntygRevokeMessage
+import se.inera.intyg.common.logmessages.IntygSendMessage
+import se.inera.intyg.common.logmessages.IntygSignMessage
+import se.inera.intyg.common.logmessages.IntygUpdateMessage
+import se.inera.intyg.common.logmessages.Patient
 import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 /**
