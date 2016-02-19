@@ -28,20 +28,29 @@ var LuseUtkast = BaseUtkast._extend({
 
       this.at = element(by.css('.edit-form'));
 
-      this.formly_1_date_undersokningAvPatienten_3 = element(by.id('formly_1_date_undersokningAvPatienten_3'));
-      this.formly_1_date_kannedomOmPatient_8 = element(by.id('formly_1_date_kannedomOmPatient_8'));
+      this.baseratPa={
+        minUndersokningAvPatienten:{
+          checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3'))
+        },
+        kannedomOmPatient:{
+            checkbox:element(by.id('formly_1_date_kannedomOmPatient_8'))
+        }
+      };
+
       this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
       this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
       this.diagnoseCode = element(by.id('diagnoseCode'));
       this.diagnosgrund = element(by.id('diagnosgrund'));
       this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
-      this.funktionsnedsattningIntellektuell = element(by.id('funktionsnedsattningIntellektuell'));
-      this.funktionsnedsattningKommunikation = element(by.id('funktionsnedsattningKommunikation'));
-      this.funktionsnedsattningKoncentration = element(by.id('funktionsnedsattningKoncentration'));
-      this.funktionsnedsattningPsykisk = element(by.id('funktionsnedsattningPsykisk'));
-      this.funktionsnedsattningSynHorselTal = element(by.id('funktionsnedsattningSynHorselTal'));
-      this.funktionsnedsattningBalansKoordination = element(by.id('funktionsnedsattningBalansKoordination'));
-      this.funktionsnedsattningAnnan = element(by.id('funktionsnedsattningAnnan'));
+      this.funktionsnedsattning={
+        intellektuell : element(by.id('funktionsnedsattningIntellektuell')),
+        kommunikation : element(by.id('funktionsnedsattningKommunikation')),
+        koncentration : element(by.id('funktionsnedsattningKoncentration')),
+        psykisk : element(by.id('funktionsnedsattningPsykisk')),
+        synHorselTal : element(by.id('funktionsnedsattningSynHorselTal')),
+        balansKoordination : element(by.id('funktionsnedsattningBalansKoordination')),
+        annan : element(by.id('funktionsnedsattningAnnan'))
+      };
       this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
       this.avslutadBehandling = element(by.id('avslutadBehandling'));
       this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
@@ -53,10 +62,6 @@ var LuseUtkast = BaseUtkast._extend({
       this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
       this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
       this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
-
-
-
-      
   },
 
   get: function get(intygId) {

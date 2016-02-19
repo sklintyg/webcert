@@ -24,7 +24,7 @@ testdata, intyg, browser, pages, logg, JSON, Promise, protractor */
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
 var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
-var luseUtkastPage = pages.intyg.fk['luse'].utkast;
+var luseUtkastPage = pages.intyg.fk.luse.utkast;
 
 module.exports = function () {
 
@@ -201,20 +201,24 @@ module.exports = function () {
 
         browser.ignoreSynchronization = true;
 
-        luseUtkastPage.formly_1_date_undersokningAvPatienten_3.sendKeys(protractor.Key.SPACE);
-        luseUtkastPage.formly_1_date_kannedomOmPatient_8.sendKeys(protractor.Key.SPACE);
+        //Baserat på
+        luseUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.baseratPa.kannedomOmPatient.checkbox.sendKeys(protractor.Key.SPACE);
+        
         luseUtkastPage.underlagFinnsNo.sendKeys(protractor.Key.SPACE);
         luseUtkastPage.diagnoseCode.sendKeys('A000');
         luseUtkastPage.diagnosgrund.sendKeys('Ingen grund alls');
         luseUtkastPage.nyBedomningDiagnosgrundNo.sendKeys(protractor.Key.SPACE);
 
-        luseUtkastPage.funktionsnedsattningIntellektuell.sendKeys('Problem...');
-        luseUtkastPage.funktionsnedsattningKommunikation.sendKeys('Inget tal');
-        luseUtkastPage.funktionsnedsattningKoncentration.sendKeys('Ingen koncentration');
-        luseUtkastPage.funktionsnedsattningPsykisk.sendKeys('Total');
-        luseUtkastPage.funktionsnedsattningSynHorselTal.sendKeys('Blind');
-        luseUtkastPage.funktionsnedsattningBalansKoordination.sendKeys('Svajig i benen');
-        luseUtkastPage.funktionsnedsattningAnnan.sendKeys('Ingen');
+        //Funktionsnedsättning
+        luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys('Problem...');
+        luseUtkastPage.funktionsnedsattning.kommunikation.sendKeys('Inget tal');
+        luseUtkastPage.funktionsnedsattning.koncentration.sendKeys('Ingen koncentration');
+        luseUtkastPage.funktionsnedsattning.psykisk.sendKeys('Total');
+        luseUtkastPage.funktionsnedsattning.synHorselTal.sendKeys('Blind');
+        luseUtkastPage.funktionsnedsattning.balansKoordination.sendKeys('Svajig i benen');
+        luseUtkastPage.funktionsnedsattning.annan.sendKeys('Ingen');
+
         luseUtkastPage.aktivitetsbegransning.sendKeys('Total');
         luseUtkastPage.avslutadBehandling.sendKeys('Ipren');
         luseUtkastPage.pagaendeBehandling.sendKeys('Alvedon');

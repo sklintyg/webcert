@@ -1,5 +1,5 @@
 # language: sv
-@smoke @sjukers @notReady
+@smoke @sjukers @notReady @luse
 Egenskap: Hantera Läkarintyg, sjukersättning-intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
