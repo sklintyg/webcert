@@ -1,227 +1,274 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <texter typ="LUSE" giltigFrom="2015-12-15" version="0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
-	<!-- Text före val av elektroniskt formulär -->
-	<text id="FRM_1">Vad är sjukersättning?
-	Sjukersättning är en ersättning för personer mellan 30 och 64 år som har nedsatt arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning. Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukersättning. Man kan få sjukersättning om Försäkringskassan bedömer att arbetsförmågan är nedsatt med minst 25 procent för all överskådlig framtid och att alla rehabiliteringsmöjligheter är uttömda.
-</text>
-	<!-- Text efter val av elektroniskt formulär, visas tillsammans med formulärat -->
-	<text id="FRM_2">Vad är sjukersättning?
-	Sjukersättning är en ersättning för personer mellan 30 och 64 år som har nedsatt arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning. Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukersättning.
-	
-	Förutsättningar för att få sjukersättning
-	Försäkringskassan bedömer arbetsförmågan i förhållande till alla arbeten på hela arbetsmarknaden, alltså även till särskilt anpassade arbeten och anställningar med lönebidrag. Man kan få sjukersättning om Försäkringskassan bedömer att arbetsförmågan är nedsatt med minst 25 procent för all överskådlig framtid och att alla rehabiliteringsmöjligheter är uttömda. Den som ansöker om sjukersättning ska skicka med ett läkarutlåtande. I pågående sjukpenningärende kan också Försäkringskassan på eget initiativ begära ett läkarutlåtande från behandlande läkare.</text>
-	
-	<!--
-	===============================================
-	KATEGORI 1: Grund för medicinskt underlag
-	===============================================
-	-->
-		<text id="KAT_1.RBK">Utlåtandet är baserat på</text>
-		<text id="KAT_1.HLP">Motivera under "Övriga upplysningar" i de fall någon undersökning av patienten inte varit aktuell.</text>
-		
-		<text id="FRG_1.RBK">Välj typ av underlag för utlåtandet och datum</text>
-		<text id="FRG_1.HLP">TBD</text>		
-	
-		<text id="DFR_1.1.RBK">Typ av underlag för utlåtandet</text>
-		<text id="DFR_1.1.HLP">TBD</text>
-		
-		<!-- EXEMPEL på syftesspecifik text och hjälptext för typ av underlag ur kodverk -->
-		<text id="KV_FKMU_0001.1.RBK">Min undersökning av patienten.</text>
-		<text id="KV_FKMU_0001.1.HLP">Här finns en hjälptext för min undersökning av patienten.</text>
-		<text id="KV_FKMU_0001.2.RBK">Min telefonkontakt med patienten</text>
-		<text id="KV_FKMU_0001.2.HLP">Här finns en hjälptext för min telefonkontakt med patienten.</text>
-		<text id="KV_FKMU_0001.3.RBK">Journaluppgifter från den</text>
-		<text id="KV_FKMU_0001.3.HLP">Här finns en hjälptext för journaluppgifter från den.</text>		
-		<text id="KV_FKMU_0001.4.RBK">Anhörigs beskrivning av patienten</text>
-		<text id="KV_FKMU_0001.4.HLP">Här finns en hjälptext för anhörigs beskrivning av patienten.</text>		
-		<text id="KV_FKMU_0001.5.RBK">Annat</text>
-		<text id="KV_FKMU_0001.5.HLP">Här finns en hjälptext för Annat.</text>		
+  <!-- Text före val av elektroniskt formulär -->
+  <text id="FRM_1">Vad är sjukersättning? Sjukersättning är en ersättning för personer mellan 30 och 64 år som har
+    nedsatt arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning. Beroende på hur mycket arbetsförmågan
+    är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukersättning. Man kan få sjukersättning om
+    Försäkringskassan bedömer att arbetsförmågan är nedsatt med minst 25 procent för all överskådlig framtid och att
+    alla rehabiliteringsmöjligheter är uttömda.
+  </text>
+  <!-- Text efter val av elektroniskt formulär, visas tillsammans med formulärat -->
+  <text id="FRM_2">Vad är sjukersättning? Sjukersättning är en ersättning för personer mellan 30 och 64 år som har
+    nedsatt arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning. Beroende på hur mycket arbetsförmågan
+    är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukersättning.
 
-			
-		<text id="DFR_1.2.RBK">Datum</text>
-		<text id="DFR_1.2.HLP">TBD</text>	
-		<text id="DFR_1.3.RBK">Annat underlag för utlåtandet</text>
-		<text id="DFR_1.3.HLP">TBD</text>			
-	
-		<text id="DFR_2.1.RBK">Jag har känt patienten seden den</text>
-		<text id="DFR_2.1.HLP">TBD</text>
-		
-	<!--
-	===============================================
-	KATEGORI 2: Andra medicinska utredningar och underlag
-	===============================================
-	-->
-		<text id="KAT_2.RBK">Andra medicinska utredningar och underlag</text>
-		<text id="KAT_2.HLP">TBD</text>
-		
-		<text id="DFR_3.1.RBK">Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?</text>
-		<text id="DFR_3.1.HLP">TBD</text>			
-		
-		<text id="DFR_4.1.RBK">Ange utredning och underlag</text>
-		<text id="DFR_4.1.HLP">TBD</text>			
-				
-		<text id="DFR_4.2.RBK">Datum</text>		
-		
-		<text id="DFR_4.3.RBK">Var kan Försäkringskassan få information om utredningen?</text>	
-		<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>		
+    Förutsättningar för att få sjukersättning Försäkringskassan bedömer arbetsförmågan i förhållande till alla arbeten
+    på hela arbetsmarknaden, alltså även till särskilt anpassade arbeten och anställningar med lönebidrag. Man kan få
+    sjukersättning om Försäkringskassan bedömer att arbetsförmågan är nedsatt med minst 25 procent för all överskådlig
+    framtid och att alla rehabiliteringsmöjligheter är uttömda. Den som ansöker om sjukersättning ska skicka med ett
+    läkarutlåtande. I pågående sjukpenningärende kan också Försäkringskassan på eget initiativ begära ett läkarutlåtande
+    från behandlande läkare.
+  </text>
 
-	<!--
-	===============================================
-	KATEGORI 3: Sjukdomsförlopp
-	===============================================
-	-->
-		<text id="KAT_3.RBK">Sjukdomsförlopp</text>
-		<text id="KAT_3.HLP">TBD</text>
-		
-		<text id="DFR_5.1.RBK">Sjukdomsförlopp för aktuella sjukdomar av betydelse</text>
-		<text id="DFR_5.1.HLP">TBD</text>			
+  <!--
+  ===============================================
+  KATEGORI 1: Grund för medicinskt underlag
+  ===============================================
+  -->
+  <text id="KAT_1.RBK">Utlåtandet är baserat på</text>
+  <text id="KAT_1.HLP">Motivera under "Övriga upplysningar" i de fall någon undersökning av patienten inte varit
+    aktuell.
+  </text>
 
-	<!--
-	===============================================
-	KATEGORI 4: Diagnos
-	===============================================
-	-->
-		<text id="KAT_4.RBK">Diagnos/diagnoser som orsakar nedsatt arbetsförmåga</text>
-		<text id="KAT_4.HLP">Ange samtliga diagnoser som orsakar nedsatt arbetsförmåga.Huvuddiagnosen för arbetsförmågans nedsättning anges först.</text>
+  <text id="FRG_1.RBK">Välj typ av underlag för utlåtandet och datum</text>
+  <text id="FRG_1.HLP">TBD</text>
 
-		<text id="DFR_6.1.RBK">Diagnostext</text>
-		<text id="DFR_6.1.HLP">TBD</text>	
+  <text id="DFR_1.1.RBK">Typ av underlag för utlåtandet</text>
+  <text id="DFR_1.1.HLP">TBD</text>
 
-		<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
-		<text id="DFR_6.2.HLP">TBD</text>	
+  <!-- EXEMPEL på syftesspecifik text och hjälptext för typ av underlag ur kodverk -->
+  <text id="KV_FKMU_0001.1.RBK">Min undersökning av patienten.</text>
+  <text id="KV_FKMU_0001.1.HLP">Här finns en hjälptext för min undersökning av patienten.</text>
+  <text id="KV_FKMU_0001.2.RBK">Min telefonkontakt med patienten</text>
+  <text id="KV_FKMU_0001.2.HLP">Här finns en hjälptext för min telefonkontakt med patienten.</text>
+  <text id="KV_FKMU_0001.3.RBK">Journaluppgifter från den</text>
+  <text id="KV_FKMU_0001.3.HLP">Här finns en hjälptext för journaluppgifter från den.</text>
+  <text id="KV_FKMU_0001.4.RBK">Anhörigs beskrivning av patienten</text>
+  <text id="KV_FKMU_0001.4.HLP">Här finns en hjälptext för anhörigs beskrivning av patienten.</text>
+  <text id="KV_FKMU_0001.5.RBK">Annat</text>
+  <text id="KV_FKMU_0001.5.HLP">Här finns en hjälptext för Annat.</text>
 
-		<text id="DFR_7.1.RBK">När och var ställdes diagnosen/diagnoserna?</text>
-		<text id="DFR_7.1.HLP">TBD</text>	
+  <text id="KV_FKMU_0005.1.RBK">Neuropsykiatriskt utlåtande</text>
+  <text id="KV_FKMU_0005.1.HLP">TBD</text>
+  <text id="KV_FKMU_0005.2.RBK">Underlag från habiliteringen</text>
+  <text id="KV_FKMU_0005.2.HLP">TBD</text>
+  <text id="KV_FKMU_0005.3.RBK">Underlag från arbetsterapeut</text>
+  <text id="KV_FKMU_0005.3.HLP">TBD</text>
+  <text id="KV_FKMU_0005.4.RBK">Underlag från fysioterapeut</text>
+  <text id="KV_FKMU_0005.4.HLP">TBD</text>
+  <text id="KV_FKMU_0005.5.RBK">Underlag från logoped</text>
+  <text id="KV_FKMU_0005.5.HLP">TBD</text>
+  <text id="KV_FKMU_0005.6.RBK">Underlag från psykolog</text>
+  <text id="KV_FKMU_0005.6.HLP">TBD</text>
+  <text id="KV_FKMU_0005.7.RBK">Underlag från företagshälsovård</text>
+  <text id="KV_FKMU_0005.7.HLP">TBD</text>
+  <text id="KV_FKMU_0005.9.RBK">Underlag från skolhälsovård</text>
+  <text id="KV_FKMU_0005.9.HLP">TBD</text>
+  <text id="KV_FKMU_0005.10.RBK">Utredning av annan specialistklinik</text>
+  <text id="KV_FKMU_0005.10.HLP">TBD</text>
+  <text id="KV_FKMU_0005.11.RBK">Övrigt</text>
+  <text id="KV_FKMU_0005.11.HLP">TBD</text>
 
-		<text id="DFR_7.2.RBK">Finns det skäl att göra en ny bedömning av diagnosen/diagnoserna?</text>
-		<text id="DFR_7.2.HLP">Möjliga anledningar kan vara:
-- att det var länge sedan utredningen gjordes
-- att ny bedömning har rekommenderats i tidigare utlåtande eller
-- att den kliniska bilden avviker från vad som kan förväntas utifrån ställd diagnos</text>	
+  <text id="DFR_1.2.RBK">Datum</text>
+  <text id="DFR_1.2.HLP">TBD</text>
+  <text id="DFR_1.3.RBK">Annat underlag för utlåtandet</text>
+  <text id="DFR_1.3.HLP">TBD</text>
 
-	<!--
-	===============================================
-	KATEGORI 5: Funktionsnedsättning
-	===============================================
-	-->
-		<text id="KAT_5.RBK">Funktionsnedsättning - beskriv patientens funktionsnedsättning inom de områden som är relevanta för arbetsförmågan.</text>
-		<text id="KAT_5.HLP">Den information som Försäkringskassan efterfrågar inom de olika områdena är 
-de av läkaren observerade funktionsnedsättningar (direkt/indirekt) med avvikelser i 
-status men även sådana som framkommit hos psykolog eller i annan 
-medicinsk utredning.</text>	
-	
-	
-		<text id="DFR_8.1.RBK">Intellektuell funktion</text>
-		<text id="DFR_8.1.HLP">TBD</text>	
+  <text id="DFR_2.1.RBK">Jag har känt patienten seden den</text>
+  <text id="DFR_2.1.HLP">TBD</text>
 
-		<text id="DFR_9.1.RBK">Kommunikation och social interaktion</text>
-		<text id="DFR_9.1.HLP">TBD</text>	
-		
-		<text id="DFR_10.1.RBK">Uppmärksamhet och koncentration</text>
-		<text id="DFR_10.1.HLP">TBD</text>	
-		
-		<text id="DFR_11.1.RBK">Annan psykisk funktion</text>
-		<text id="DFR_11.1.HLP">TBD</text>	
-		
-		<text id="DFR_12.1.RBK">Syn, hörsel och tal</text>
-		<text id="DFR_12.1.HLP">TBD</text>	
-		
-		<text id="DFR_13.1.RBK">Balans/koordination, motorik och smärta</text>
-		<text id="DFR_13.1.HLP">TBD</text>	
-		
-		<text id="DFR_14.1.RBK">Annan kroppslig funktion</text>
-		<text id="DFR_14.1.HLP">TBD</text>	
-		
-	<!--
-	===============================================
-	KATEGORI 6: Aktivitetsbegränsning
-	===============================================
-	-->		
-	<text id="KAT_6.RBK">Aktivitetsbegränsning</text>
-	<text id="KAT_6.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där 
-svårigheter uppstår. Beskriv hur ofta dessa situationer uppstår och graden av 
-patientens besvär.</text>	
+  <!--
+  ===============================================
+  KATEGORI 2: Andra medicinska utredningar och underlag
+  ===============================================
+  -->
+  <text id="KAT_2.RBK">Andra medicinska utredningar och underlag</text>
+  <text id="KAT_2.HLP">TBD</text>
 
-	<text id="DFR_17.1.RBK">Vad har patienten svårt att göra på grund av den eller de funktionsnedsättningar som beskrivs ovan? Ge konkreta exempel</text>
-	<text id="DFR_17.1.HLP">TBD</text>	
+  <text id="DFR_3.1.RBK">Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?</text>
+  <text id="DFR_3.1.HLP">TBD</text>
 
-	<!--
-	===============================================
-	KATEGORI 7: Medicinska behandlingar/åtgärder
-	===============================================
-	-->	
-	<text id="KAT_7.RBK">Medicinsk behandling</text>
-	<text id="KAT_7.HLP">TBD</text>	
+  <text id="DFR_4.1.RBK">Ange utredning och underlag</text>
+  <text id="DFR_4.1.HLP">TBD</text>
 
-	<text id="DFR_18.1.RBK">Avslutade medicinska behandlingar/åtgärder. Ange också under vilka perioder de pågick och vilka resultat de gav.</text>
-	<text id="DFR_18.1.HLP">TBD</text>
+  <text id="DFR_4.2.RBK">Datum</text>
 
-	<text id="DFR_19.1.RBK">Pågående medicinska behandlingar/åtgärder och ansvarig vårdenhet.</text>
-	<text id="DFR_19.1.HLP">TBD</text>
+  <text id="DFR_4.3.RBK">Var kan Försäkringskassan få information om utredningen?</text>
+  <text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer
+    att bifoga utredningen till sin ansökan.
+  </text>
 
-	<text id="DFR_20.1.RBK">Planerade medicinska behandlingar/åtgärder. Ange om möjligt tidplan och ansvarig vårdenhet.</text>
-	<text id="DFR_20.1.HLP">TBD</text>
+  <!--
+  ===============================================
+  KATEGORI 3: Sjukdomsförlopp
+  ===============================================
+  -->
+  <text id="KAT_3.RBK">Sjukdomsförlopp</text>
+  <text id="KAT_3.HLP">TBD</text>
 
-	<text id="DFR_21.1.RBK">Substansintag (ordinerade läkemedel, alkohol, tobak och övriga substansintag)</text>
-	<text id="DFR_21.1.HLP">TBD</text>
+  <text id="DFR_5.1.RBK">Sjukdomsförlopp för aktuella sjukdomar av betydelse</text>
+  <text id="DFR_5.1.HLP">TBD</text>
 
-	<!--
-	===============================================
-	KATEGORI 8: Medicinska förutsättningar för arbete
-	===============================================
-	-->	
-	<text id="KAT_8.RBK">Medicinska förutsättningar för arbete</text>
-	<text id="KAT_8.HLP">TBD</text>	
+  <!--
+  ===============================================
+  KATEGORI 4: Diagnos
+  ===============================================
+  -->
+  <text id="KAT_4.RBK">Diagnos/diagnoser som orsakar nedsatt arbetsförmåga</text>
+  <text id="KAT_4.HLP">Ange samtliga diagnoser som orsakar nedsatt arbetsförmåga.Huvuddiagnosen för arbetsförmågans
+    nedsättning anges först.
+  </text>
 
-	<text id="DFR_22.1.RBK">Hur bedömer du att patientens medicinska förutsättningar för arbete, helt eller delvis, kan utvecklas över tid?</text>
-	<text id="DFR_22.1.HLP">TBD</text>
+  <text id="DFR_6.1.RBK">Diagnostext</text>
+  <text id="DFR_6.1.HLP">TBD</text>
 
-	<text id="DFR_23.1.RBK">Beskriv vad patienten kan göra trots sin sjukdom eller sina begränsningar.</text>
-	<text id="DFR_23.1.HLP">Beskriv här om patienten har särskilt goda resurser inom något område eller har några speciella förmågor som kan tas till vara.</text>
+  <text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+  <text id="DFR_6.2.HLP">TBD</text>
 
-	<!--
-	===============================================
-	KATEGORI 9: Övrigt
-	===============================================
-	-->
-	<text id="KAT_9.RBK">Övriga upplysningar</text>
-	<text id="KAT_9.HLP">TBD</text>		
-		
-	<text id="DFR_25.1.RBK">Övriga upplysningar</text>
-	<text id="DFR_25.1.HLP">TBD</text>	
+  <text id="DFR_7.1.RBK">När och var ställdes diagnosen/diagnoserna?</text>
+  <text id="DFR_7.1.HLP">TBD</text>
 
-	<!--
-	===============================================
-	KATEGORI 10: Kontakt
-	===============================================
-	-->
-	<text id="KAT_10.RBK">Vill du att Försäkringskassan kontaktar dig?</text>
-	<text id="KAT_10.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
+  <text id="DFR_7.2.RBK">Finns det skäl att göra en ny bedömning av diagnosen/diagnoserna?</text>
+  <text id="DFR_7.2.HLP">Möjliga anledningar kan vara: - att det var länge sedan utredningen gjordes - att ny bedömning
+    har rekommenderats i tidigare utlåtande eller - att den kliniska bilden avviker från vad som kan förväntas utifrån
+    ställd diagnos
+  </text>
 
-	<text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
-	<text id="DFR_26.1.HLP">TBD</text>
+  <!--
+  ===============================================
+  KATEGORI 5: Funktionsnedsättning
+  ===============================================
+  -->
+  <text id="KAT_5.RBK">Funktionsnedsättning - beskriv patientens funktionsnedsättning inom de områden som är relevanta
+    för arbetsförmågan.
+  </text>
+  <text id="KAT_5.HLP">Den information som Försäkringskassan efterfrågar inom de olika områdena är de av läkaren
+    observerade funktionsnedsättningar (direkt/indirekt) med avvikelser i status men även sådana som framkommit hos
+    psykolog eller i annan medicinsk utredning.
+  </text>
 
-	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
-	<text id="DFR_26.2.HLP">TBD</text>
+  <text id="DFR_8.1.RBK">Intellektuell funktion</text>
+  <text id="DFR_8.1.HLP">TBD</text>
 
-	<!-- 
-	===============================================
-	KATEGORI 9999: Tilläggsfrågor
-	===============================================
-	-->
-	<text id="KAT_9999.RBK">Tilläggsfrågor</text>
-	<text id="KAT_9999.HLP">TBD</text>
-	
-	<tillagg>
-		<tillaggsfraga id="9001">
-			<text id="DFR_9001.1.RBK">Vilken skostorlek har du?</text>
-			<text id="DFR_9001.1.HLP">Ange din skostorlek.</text>
-		</tillaggsfraga>
-		<tillaggsfraga id="9002">
-			<text id="DFR_9002.1.RBK">Hur lång är du?</text>
-			<text id="DFR_9002.1.HLP">Ange din längd i centimeter (cm).</text>
-		</tillaggsfraga>		
-	</tillagg>
+  <text id="DFR_9.1.RBK">Kommunikation och social interaktion</text>
+  <text id="DFR_9.1.HLP">TBD</text>
+
+  <text id="DFR_10.1.RBK">Uppmärksamhet och koncentration</text>
+  <text id="DFR_10.1.HLP">TBD</text>
+
+  <text id="DFR_11.1.RBK">Annan psykisk funktion</text>
+  <text id="DFR_11.1.HLP">TBD</text>
+
+  <text id="DFR_12.1.RBK">Syn, hörsel och tal</text>
+  <text id="DFR_12.1.HLP">TBD</text>
+
+  <text id="DFR_13.1.RBK">Balans/koordination, motorik och smärta</text>
+  <text id="DFR_13.1.HLP">TBD</text>
+
+  <text id="DFR_14.1.RBK">Annan kroppslig funktion</text>
+  <text id="DFR_14.1.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 6: Aktivitetsbegränsning
+  ===============================================
+  -->
+  <text id="KAT_6.RBK">Aktivitetsbegränsning</text>
+  <text id="KAT_6.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där svårigheter
+    uppstår. Beskriv hur ofta dessa situationer uppstår och graden av patientens besvär.
+  </text>
+
+  <text id="DFR_17.1.RBK">Vad har patienten svårt att göra på grund av den eller de funktionsnedsättningar som beskrivs
+    ovan? Ge konkreta exempel
+  </text>
+  <text id="DFR_17.1.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 7: Medicinska behandlingar/åtgärder
+  ===============================================
+  -->
+  <text id="KAT_7.RBK">Medicinsk behandling</text>
+  <text id="KAT_7.HLP">TBD</text>
+
+  <text id="DFR_18.1.RBK">Avslutade medicinska behandlingar/åtgärder. Ange också under vilka perioder de pågick och
+    vilka resultat de gav.
+  </text>
+  <text id="DFR_18.1.HLP">TBD</text>
+
+  <text id="DFR_19.1.RBK">Pågående medicinska behandlingar/åtgärder och ansvarig vårdenhet.</text>
+  <text id="DFR_19.1.HLP">TBD</text>
+
+  <text id="DFR_20.1.RBK">Planerade medicinska behandlingar/åtgärder. Ange om möjligt tidplan och ansvarig vårdenhet.
+  </text>
+  <text id="DFR_20.1.HLP">TBD</text>
+
+  <text id="DFR_21.1.RBK">Substansintag (ordinerade läkemedel, alkohol, tobak och övriga substansintag)</text>
+  <text id="DFR_21.1.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 8: Medicinska förutsättningar för arbete
+  ===============================================
+  -->
+  <text id="KAT_8.RBK">Medicinska förutsättningar för arbete</text>
+  <text id="KAT_8.HLP">TBD</text>
+
+  <text id="DFR_22.1.RBK">Hur bedömer du att patientens medicinska förutsättningar för arbete, helt eller delvis, kan
+    utvecklas över tid?
+  </text>
+  <text id="DFR_22.1.HLP">TBD</text>
+
+  <text id="DFR_23.1.RBK">Beskriv vad patienten kan göra trots sin sjukdom eller sina begränsningar.</text>
+  <text id="DFR_23.1.HLP">Beskriv här om patienten har särskilt goda resurser inom något område eller har några
+    speciella förmågor som kan tas till vara.
+  </text>
+
+  <!--
+  ===============================================
+  KATEGORI 9: Övrigt
+  ===============================================
+  -->
+  <text id="KAT_9.RBK">Övriga upplysningar</text>
+  <text id="KAT_9.HLP">TBD</text>
+
+  <text id="DFR_25.1.RBK">Övriga upplysningar</text>
+  <text id="DFR_25.1.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 10: Kontakt
+  ===============================================
+  -->
+  <text id="KAT_10.RBK">Vill du att Försäkringskassan kontaktar dig?</text>
+  <text id="KAT_10.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och
+    handläggningen kan påbörjas.
+  </text>
+
+  <text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
+  <text id="DFR_26.1.HLP">TBD</text>
+
+  <text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
+  <text id="DFR_26.2.HLP">TBD</text>
+
+  <!--
+  ===============================================
+  KATEGORI 9999: Tilläggsfrågor
+  ===============================================
+  -->
+  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
+  <text id="KAT_9999.HLP">TBD</text>
+
+  <tillagg>
+    <tillaggsfraga id="9001">
+      <text id="DFR_9001.1.RBK">Vilken skostorlek har du?</text>
+      <text id="DFR_9001.1.HLP">Ange din skostorlek.</text>
+    </tillaggsfraga>
+    <tillaggsfraga id="9002">
+      <text id="DFR_9002.1.RBK">Hur lång är du?</text>
+      <text id="DFR_9002.1.HLP">Ange din längd i centimeter (cm).</text>
+    </tillaggsfraga>
+  </tillagg>
 
 </texter>
