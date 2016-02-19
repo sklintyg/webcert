@@ -7,7 +7,7 @@ Scenario: Inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"
 
-Scenario: En uthoppsläkare ska kunna signera intyg
+Scenario: Kan signera intyg
    Givet att jag är inloggad som uthoppsläkare
    När jag väljer patienten "19971019-2387"
    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
@@ -17,34 +17,34 @@ Scenario: En uthoppsläkare ska kunna signera intyg
    Så ska jag se den data jag angett för intyget
 
 @impl
-Scenario: En vårdadministratör ska inte kunna kopiera intyg Läkarintyg FK 7263 
+Scenario: Kan inte kopiera intyg Läkarintyg FK 7263 
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19971019-2387"
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
-Scenario: En uthoppsläkare ska inte kunna kopiera Transportstyrelsens läkarintyg 
+Scenario: Kan inte kopiera Transportstyrelsens läkarintyg 
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19971019-2387"
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
-Scenario: En vårdadministratör ska inte kunna kopiera Transportstyrelsens läkarintyg, diabetes intyg
+Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19971019-2387"
    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
-Scenario: En uthoppsläkare ska inte kunna makulera intyg
+Scenario: Kan inte makulera intyg
    Givet att jag är inloggad som uthoppsläkare
    När jag väljer patienten "19971019-2387"
    Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Så ska makuleraknappen inte vara tillgänglig
 
-Scenario: En uthoppsläkare ska inte kunna filtrera osignerade intyg på läkare
+Scenario: Kan inte filtrera osignerade intyg på läkare
    Givet att jag är inloggad som uthoppsläkare
    När går in på Ej signerade utkast
    Och väljer att visa sökfilter 

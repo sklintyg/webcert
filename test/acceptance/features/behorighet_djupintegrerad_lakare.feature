@@ -4,7 +4,7 @@
 Egenskap: Behörigheter för en djupintegrerad läkare
 
 @djup_lakare
-Scenario: Logga in som djupintegrerad läkare.
+Scenario: Kan makulera sjukintyg
 	Givet att jag är inloggad som djupintegrerad läkare
 	När jag väljer patienten "19121212-1212"
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
@@ -12,7 +12,7 @@ Scenario: Logga in som djupintegrerad läkare.
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
 @djup_lakare
-Scenario: Djupintegrerad läkare kan kopiera och signera ett (kopierat)intyg
+Scenario: Kan kopiera och signera ett (kopierat)intyg
 	Givet att jag är inloggad som djupintegrerad läkare
 	När jag väljer patienten "19121212-1212"
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
@@ -21,7 +21,7 @@ Scenario: Djupintegrerad läkare kan kopiera och signera ett (kopierat)intyg
 	Så ska intygets status vara "Intyget är signerat"
 
 @djup_lakare @notReady
-Scenario: Djupintegrerad läkare kan kopiera ett intyg från tidigare intyg listan (utan att gå in i intyget)
+Scenario: Kan kopiera ett intyg från tidigare intyg listan (utan att gå in i intyget)
 	Givet att jag är inloggad som djupintegrerad läkare
 	När jag väljer patienten "19121212-1212"
 	Och kopierar ett signerat intyg

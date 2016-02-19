@@ -3,7 +3,7 @@
 Egenskap: Behörigheter för en vårdadministratör
 
 # @vardadmin
-Scenario: En vårdadministratör ska kunna kopiera Läkarintyg FK 7263 
+Scenario: Kan kopiera Läkarintyg FK 7263 
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19121212-1212"
@@ -11,7 +11,7 @@ Scenario: En vårdadministratör ska kunna kopiera Läkarintyg FK 7263
    Så är kopieraknappen tillgänglig
 
 #@vardadmin
-Scenario: En vårdadministratör ska kunna kopiera Transportstyrelsens läkarintyg 
+Scenario: Kan kopiera Transportstyrelsens läkarintyg 
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19121212-1212"
@@ -19,7 +19,7 @@ Scenario: En vårdadministratör ska kunna kopiera Transportstyrelsens läkarint
    Så är kopieraknappen tillgänglig
 
 #@vardadmin
-Scenario: En vårdadministratör ska kunna kopiera Transportstyrelsens läkarintyg, diabetes intyg
+Scenario: Kan kopiera Transportstyrelsens läkarintyg, diabetes intyg
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19121212-1212"
@@ -27,7 +27,7 @@ Scenario: En vårdadministratör ska kunna kopiera Transportstyrelsens läkarint
    Så är kopieraknappen tillgänglig
 
 #@vardadmin
-Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Läkarintyg FK 7263
+Scenario: Kan inte signera intyg som en vårdadministratör, Läkarintyg FK 7263
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg
 	När jag väljer patienten "19971019-2387"
@@ -36,7 +36,7 @@ Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Läkari
 	Så ska signera-knappen inte vara synlig
 
 @vardadmin @notReady
-Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transportstyrelsens läkarintyg
+Scenario: Kan inte signera Transportstyrelsens läkarintyg
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg
 	När jag väljer patienten "19971019-2387"
@@ -45,7 +45,7 @@ Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transpo
 	Så ska signera-knappen inte vara synlig
 
 @vardadmin
-Scenario: Det ska inte gå att signera intyg som en vårdadministratör, Transportstyrelsens läkarintyg, diabetes
+Scenario: Kan inte signera Transportstyrelsens läkarintyg, diabetes
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg
 	När jag väljer patienten "19971019-2387"

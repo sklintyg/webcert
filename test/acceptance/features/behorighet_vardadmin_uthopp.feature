@@ -1,10 +1,10 @@
 # language: sv
 @behorighet @notReady
 # PRIVILEGE_NAVIGERING
-Egenskap: Behörigheter för en "uthoppad" vårdadministratör
+Egenskap: Behörigheter för en uthoppad vårdadministratör
 
 #@vardadmin_uthopp1
-Scenario: En vårdadministratör ska kunna byta vårdenhet 
+Scenario: Kan byta vårdenhet 
    Givet att jag är inloggad som vårdadministratör
    #Givet att jag är inloggad som uthoppad vårdadministratör
    Och vårdenhet ska vara "WebCert-Vårdgivare2 - WebCert-Enhet2"
@@ -17,7 +17,7 @@ Scenario: En vårdadministratör ska kunna byta vårdenhet
 # PRIVILEGE_VIDAREBEFORDRA_UTKAST
 # PRIVILEGE_ATKOMST_ANDRA_ENHETER
 #@vardadmin_uthopp
-Scenario: Det ska gå att Vidarebefodra ett utkast
+Scenario: Kan vidarebefodra ett utkast
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
 	Och går in på Ej signerade utkast 
@@ -25,7 +25,7 @@ Scenario: Det ska gå att Vidarebefodra ett utkast
 
 # Skriva utkast, Läsa intyg/utkast
 #@vardadmin_uthopp
-Scenario: Administratör kan ej signera intyg.
+Scenario: Kan ej signera intyg.
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
 	När jag väljer flik "Sök/skriv intyg"
@@ -37,7 +37,7 @@ Scenario: Administratör kan ej signera intyg.
 # PRIVILEGE_HANTERA_PERSONUPPGIFTER
 # - Visar "Hämta personuppgifter"-knapp på utkast
 #@vardadmin_uthopp
-Scenario: Admin kan visa "Hämta personuppgifter"-knapp på utkast
+Scenario: Kan visa "Hämta personuppgifter"-knapp på utkast
 	Givet att jag är inloggad som vårdadministratör
 		När jag väljer flik "Sök/skriv intyg"
 		När jag väljer patienten "19971019-2387"
@@ -47,7 +47,7 @@ Scenario: Admin kan visa "Hämta personuppgifter"-knapp på utkast
 
 # - Visar information om sekretessmarkerade personuppgifter
 #@vardadmin_uthopp
-Scenario: Admin kan visa information om sekretessmarkerade personuppgifter
+Scenario: Kan visa information om sekretessmarkerade personuppgifter
 	Givet att jag är inloggad som vårdadministratör
 		När jag väljer flik "Sök/skriv intyg"
 		När jag väljer patienten "19080814-9819"

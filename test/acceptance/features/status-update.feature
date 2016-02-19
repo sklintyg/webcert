@@ -8,7 +8,7 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-fk
-Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
+Scenario: Intyg skickas till Försäkringskassan
    När jag fyller i fältet "Min undersökning av patienten"
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
 
@@ -26,7 +26,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
 
 @makulera
-Scenario: Statusuppdateringar då intyg makuleras
+Scenario: Intyg makuleras
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
@@ -35,13 +35,13 @@ Scenario: Statusuppdateringar då intyg makuleras
    Så ska statusuppdatering "HAN5" skickas till vårdsystemet. Totalt: "1"
 
 @radera
-Scenario: Statusuppdateringar då intyg raderas
+Scenario: Intyg raderas
    När jag fyller i alla nödvändiga fält för intyget
    Och jag raderar intyget
    Så ska statusuppdatering "HAN4" skickas till vårdsystemet. Totalt: "1"
 
 @fråga-från-fk
-Scenario: Statusuppdateringar med fråga från FK
+Scenario: Fråga från FK
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
 
@@ -55,7 +55,7 @@ Scenario: Statusuppdateringar med fråga från FK
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
 
 @fråga-till-fk
-Scenario: Statusuppdateringar med fråga till FK
+Scenario: Fråga till FK
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
