@@ -26,333 +26,337 @@
 var BaseUtkast = require('./base.utkast.page.js');
 
 var FkUtkast = BaseUtkast._extend({
-  init: function init() {
-    init._super.call(this);
+    init: function init() {
+        init._super.call(this);
 
-    this.at = element(by.css('.edit-form'));
-    this.smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]'));
-    this.smittskyddCheckbox = element(by.id('smittskydd'));
+        this.at = element(by.css('.edit-form'));
+        this.smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]'));
+        this.smittskyddCheckbox = element(by.id('smittskydd'));
 
-    this.nedsattMed25Checkbox = element(by.id('nedsattMed25'));
+        this.nedsattMed25Checkbox = element(by.id('nedsattMed25'));
 
-    this.signeraButton = element(by.id('signera-utkast-button'));
-    this.fetchPatientButton = element(by.id('fetchPatientButton'));
+        this.signeraButton = element(by.id('signera-utkast-button'));
+        this.fetchPatientButton = element(by.id('fetchPatientButton'));
 
-    this.travelRadioButtonJa = element(by.id('rekommendationRessatt'));
-    this.travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked'));
+        this.travelRadioButtonJa = element(by.id('rekommendationRessatt'));
+        this.travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked'));
 
-    this.capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
-    this.minUndersokning = element(by.id('basedOnExamination'));
-    this.diagnosKod = element(by.id('diagnoseCode'));
-    this.funktionsNedsattning = element(by.id('disabilities'));
-    this.aktivitetsBegransning = element(by.id('activityLimitation'));
-    this.nuvarandeArbete = element(by.id('currentWork'));
-    this.faktiskTjanstgoring = element(by.id('capacityForWorkActualWorkingHoursPerWeek'));
-    this.aktuelltSjukdomsForlopp = element(by.id('diseaseCause'));
-    this.arbetsformagaFMB = element(by.id('capacityForWorkText'));
-    this.prognos = {
-      JA: element(by.id('capacityForWork1')),
-      JA_DELVIS: element(by.id('capacityForWork2')),
-      NEJ: element(by.id('capacityForWork3')),
-      GAR_EJ_ATT_BEDOMA: element(by.id('capacityForWork4')),
-      fortydligande: element(by.id('capacityForWorkForecastText'))
-    };
-    this.rekommendationer = {
-      kontaktAf: element(by.id('rekommendationKontaktAf')),
-      kontaktFH: element(by.id('rekommendationKontaktForetagshalsovard')),
-      ovrigt: {
-        checkbox: element(by.id('rekommendationOvrigt')),
-        beskrivning: element(by.id('rekommendationOvrigtBeskrivning'))
-      },
-      rehab: {
-        JA: element(by.id('rehabYes')),
-        NEJ: element(by.id('rehabNo')),
-        GAR_EJ_ATT_BEDOMA: element(by.id('garej'))
-      }
-    };
-    this.arbete = {
-      nuvarandeArbete: {
-        checkbox: element(by.id('arbeteNuvarande')),
-        text: element(by.id('currentWork'))
-      },
-      arbetslos: {
-        checkbox: element(by.id('arbeteArbetslos'))
-      },
-      foraldraledig: {
-        checkbox: element(by.id('arbeteForaldraledig'))
-      }
-    };
+        this.capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
+        this.minUndersokning = element(by.id('basedOnExamination'));
+        this.diagnosKod = element(by.id('diagnoseCode'));
+        this.funktionsNedsattning = element(by.id('disabilities'));
+        this.aktivitetsBegransning = element(by.id('activityLimitation'));
+        this.nuvarandeArbete = element(by.id('currentWork'));
+        this.faktiskTjanstgoring = element(by.id('capacityForWorkActualWorkingHoursPerWeek'));
+        this.aktuelltSjukdomsForlopp = element(by.id('diseaseCause'));
+        this.arbetsformagaFMB = element(by.id('capacityForWorkText'));
+        this.prognos = {
+            JA: element(by.id('capacityForWork1')),
+            JA_DELVIS: element(by.id('capacityForWork2')),
+            NEJ: element(by.id('capacityForWork3')),
+            GAR_EJ_ATT_BEDOMA: element(by.id('capacityForWork4')),
+            fortydligande: element(by.id('capacityForWorkForecastText'))
+        };
+        this.rekommendationer = {
+            kontaktAf: element(by.id('rekommendationKontaktAf')),
+            kontaktFH: element(by.id('rekommendationKontaktForetagshalsovard')),
+            ovrigt: {
+                checkbox: element(by.id('rekommendationOvrigt')),
+                beskrivning: element(by.id('rekommendationOvrigtBeskrivning'))
+            },
+            rehab: {
+                JA: element(by.id('rehabYes')),
+                NEJ: element(by.id('rehabNo')),
+                GAR_EJ_ATT_BEDOMA: element(by.id('garej'))
+            }
+        };
+        this.arbete = {
+            nuvarandeArbete: {
+                checkbox: element(by.id('arbeteNuvarande')),
+                text: element(by.id('currentWork'))
+            },
+            arbetslos: {
+                checkbox: element(by.id('arbeteArbetslos'))
+            },
+            foraldraledig: {
+                checkbox: element(by.id('arbeteForaldraledig'))
+            }
+        };
 
-    this.nedsatt = {
-      med25: {
-        checkbox: element(by.id('nedsattMed25')),
-        from: element(by.id('nedsattMed25from')),
-        tom: element(by.id('nedsattMed25tom'))
-      },
-      med50: {
-        checkbox: element(by.id('nedsattMed50')),
-        from: element(by.id('nedsattMed50from')),
-        tom: element(by.id('nedsattMed50tom'))
-      },
-      med75: {
-        checkbox: element(by.id('nedsattMed75')),
-        from: element(by.id('nedsattMed75from')),
-        tom: element(by.id('nedsattMed75tom'))
-      },
-      med100: {
-        checkbox: element(by.id('nedsattMed100')),
-        from: element(by.id('nedsattMed100from')),
-        tom: element(by.id('nedsattMed100tom'))
-      }
-    };
-    this.baserasPa = {
-      minUndersokning: {
-        checkbox: element(by.id('basedOnExamination')),
-        datum: element(by.id('undersokningAvPatientenDate'))
-      },
-      minTelefonkontakt: {
-        checkbox: element(by.id('basedOnPhoneContact')),
-        datum: element(by.id('telefonkontaktMedPatientenDate'))
-      },
-      journaluppgifter: {
-        checkbox: element(by.id('basedOnJournal')),
-        datum: element(by.id('journaluppgifterDate'))
-      },
-      annat: {
-        checkbox: element(by.id('basedOnOther')),
-        datum: element(by.id('annanReferensDate')),
-        text: element(by.id('informationBasedOnOtherText'))
-      }
-    };
+        this.nedsatt = {
+            med25: {
+                checkbox: element(by.id('nedsattMed25')),
+                from: element(by.id('nedsattMed25from')),
+                tom: element(by.id('nedsattMed25tom'))
+            },
+            med50: {
+                checkbox: element(by.id('nedsattMed50')),
+                from: element(by.id('nedsattMed50from')),
+                tom: element(by.id('nedsattMed50tom'))
+            },
+            med75: {
+                checkbox: element(by.id('nedsattMed75')),
+                from: element(by.id('nedsattMed75from')),
+                tom: element(by.id('nedsattMed75tom'))
+            },
+            med100: {
+                checkbox: element(by.id('nedsattMed100')),
+                from: element(by.id('nedsattMed100from')),
+                tom: element(by.id('nedsattMed100tom'))
+            }
+        };
+        this.baserasPa = {
+            minUndersokning: {
+                checkbox: element(by.id('basedOnExamination')),
+                datum: element(by.id('undersokningAvPatientenDate'))
+            },
+            minTelefonkontakt: {
+                checkbox: element(by.id('basedOnPhoneContact')),
+                datum: element(by.id('telefonkontaktMedPatientenDate'))
+            },
+            journaluppgifter: {
+                checkbox: element(by.id('basedOnJournal')),
+                datum: element(by.id('journaluppgifterDate'))
+            },
+            annat: {
+                checkbox: element(by.id('basedOnOther')),
+                datum: element(by.id('annanReferensDate')),
+                text: element(by.id('informationBasedOnOtherText'))
+            }
+        };
 
-    this.diagnos = {
-      fortydligande: element(by.id('diagnoseClarification')),
-      samsjuklighetForeligger: element(by.id('diagnoseMultipleDiagnoses'))
-    };
-    this.kontaktFk = element(by.id('kontaktFk'));
+        this.diagnos = {
+            fortydligande: element(by.id('diagnoseClarification')),
+            samsjuklighetForeligger: element(by.id('diagnoseMultipleDiagnoses'))
+        };
+        this.kontaktFk = element(by.id('kontaktFk'));
 
-  },
+    },
 
-  get: function get(intygId) {
-    get._super.call(this, 'fk7263', intygId);
-  },
-  isAt: function isAt() {
-    return isAt._super.call(this);
-  },
-  whenSmittskyddIsDisplayed: function () {
-    return browser.wait(this.smittskyddLabel.isDisplayed());
-  },
-  getSmittskyddLabelText: function () {
-    return this.smittskyddLabel.getText();
-  },
-  smittskyddCheckboxClick: function () {
-    this.smittskyddCheckbox.sendKeys(protractor.Key.SPACE);
-  },
-  nedsattMed25CheckboxClick: function () {
-    this.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
-  },
-  travelRadioButtonJaClick: function () {
-    this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE);
-  },
-  getCheckedTravelRadioButtonValue: function () {
-    return this.travelRadioGroupChecked.getAttribute('value');
-  },
-  getCapacityForWorkForecastText: function () {
-    return this.capacityForWorkForecastText;
-  },
-  minUndersokningAvPatClick: function () {
-    this.minUndersokning.sendKeys(protractor.Key.SPACE);
-  },
-  angeDiagnosKod: function (kod) {
-    this.diagnosKod.sendKeys(kod);
-  },
-  angeFunktionsnedsattning: function (txt) {
-    if (!txt) {
-      return Promise.resolve('Success');
-    }
-    return this.funktionsNedsattning.sendKeys(txt);
-  },
-  angeAktivitetsBegransning: function (txt) {
-    if (txt) {
-      return this.aktivitetsBegransning.sendKeys(txt);
-    } else {
-      return Promise.resolve('Success');
-    }
-  },
-  angeNuvarandeArbete: function (txt) {
-    return this.nuvarandeArbete.sendKeys(txt);
-  },
-  angeFaktiskTjanstgoring: function (txt) {
-    return this.faktiskTjanstgoring.sendKeys(txt);
-  },
-  angeSmittskydd: function (isSmittskydd) {
-    if (isSmittskydd) {
-      return this.smittskyddCheckbox.sendKeys(protractor.Key.SPACE);
-    } else {
-      return Promise.resolve('Success');
-    }
-  },
-  angeIntygetBaserasPa: function (intygetBaserasPa) {
-    if (!intygetBaserasPa) {
-      return Promise.resolve('Success');
-    }
-
-    var promisesArr = [];
-    if (intygetBaserasPa.minUndersokning) {
-      // this.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE);
-      promisesArr.push(this.baserasPa.minUndersokning.datum.sendKeys(intygetBaserasPa.minUndersokning.datum));
-    }
-    if (intygetBaserasPa.minTelefonkontakt) {
-      // this.baserasPa.minTelefonkontakt.checkbox.sendKeys(protractor.Key.SPACE);
-      promisesArr.push(this.baserasPa.minTelefonkontakt.datum.sendKeys(intygetBaserasPa.minTelefonkontakt.datum));
-    }
-    if (intygetBaserasPa.journaluppgifter) {
-      // this.baserasPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
-      promisesArr.push(this.baserasPa.journaluppgifter.datum.sendKeys(intygetBaserasPa.journaluppgifter.datum));
-    }
-    if (intygetBaserasPa.annat) {
-      // this.baserasPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
-      promisesArr.push(this.baserasPa.annat.datum.sendKeys(intygetBaserasPa.annat.datum));
-      promisesArr.push(this.baserasPa.annat.text.sendKeys(intygetBaserasPa.annat.text));
-    }
-    return Promise.all(promisesArr);
-  },
-  angeDiagnoser: function (diagnos) {
-    var promisesArr = [];
-    if (diagnos.diagnoser) {
-      promisesArr.push(this.angeDiagnosKod(diagnos.diagnoser[0].ICD10));
-    }
-    if (diagnos.fortydligande) {
-      promisesArr.push(this.diagnos.fortydligande.sendKeys(diagnos.fortydligande));
-    }
-    if (diagnos.samsjuklighetForeligger) {
-      promisesArr.push(this.diagnos.samsjuklighetForeligger.sendKeys(diagnos.samsjuklighetForeligger));
-    }
-
-    return Promise.all(promisesArr);
-  },
-  angeArbetsformaga: function (arbetsformaga) {
-
-    var promisesArr = [];
-    if (arbetsformaga.nedsattMed25) {
-      // this.nedsatt.med25.checkbox.click();
-      promisesArr.push(this.nedsatt.med25.from.sendKeys(arbetsformaga.nedsattMed25.from));
-      promisesArr.push(this.nedsatt.med25.tom.sendKeys(arbetsformaga.nedsattMed25.tom));
-    }
-    if (arbetsformaga.nedsattMed50) {
-      // this.nedsatt.med50.checkbox.click();
-      promisesArr.push(this.nedsatt.med50.from.sendKeys(arbetsformaga.nedsattMed50.from));
-      promisesArr.push(this.nedsatt.med50.tom.sendKeys(arbetsformaga.nedsattMed50.tom));
-    }
-    if (arbetsformaga.nedsattMed75) {
-      // this.nedsatt.med75.checkbox.click();
-      promisesArr.push(this.nedsatt.med75.from.sendKeys(arbetsformaga.nedsattMed75.from));
-      promisesArr.push(this.nedsatt.med75.tom.sendKeys(arbetsformaga.nedsattMed75.tom));
-    }
-    if (arbetsformaga.nedsattMed100) {
-      // this.nedsatt.med100.checkbox.click();
-      promisesArr.push(this.nedsatt.med100.from.sendKeys(arbetsformaga.nedsattMed100.from));
-      promisesArr.push(this.nedsatt.med100.tom.sendKeys(arbetsformaga.nedsattMed100.tom));
-    }
-    return Promise.all(promisesArr);
-  },
-  angeAktuelltSjukdomsForlopp: function (txt) {
-    if (txt) {
-      return this.aktuelltSjukdomsForlopp.sendKeys(txt);
-    } else {
-      return Promise.resolve('Success');
-    }
-  },
-  angeArbetsformagaFMB: function (txt) {
-    return this.arbetsformagaFMB.sendKeys(txt);
-  },
-  angePrognos: function (prognos) {
-    if (prognos.val === 'Ja') {
-      return this.prognos.JA.sendKeys(protractor.Key.SPACE);
-    } else if (prognos.val === 'Ja, delvis') {
-      return this.prognos.JA_DELVIS.sendKeys(protractor.Key.SPACE);
-    } else if (prognos.val === 'Nej') {
-      return this.prognos.NEJ.sendKeys(protractor.Key.SPACE);
-    } else if (prognos.val === 'Går inte att bedöma') {
-      var promisesArr = [];
-      promisesArr.push(this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE));
-      if (prognos.fortydligande) {
-        promisesArr.push(this.prognos.fortydligande.sendKeys(prognos.fortydligande));
-      }
-      return Promise.all(promisesArr);
-    }
-  },
-  angeArbete: function (arbete) {
-    var arbeteCheckbox = this.arbete.nuvarandeArbete.checkbox;
-    var nuvarandeArbeteTextElement = this.arbete.nuvarandeArbete.text;
-
-    function checkArbeteCheckbox(){
-
-      return arbeteCheckbox.isSelected(function(isSelected){
-        if(isSelected){
-          return Promise.resolve('Is selected already');
+    get: function get(intygId) {
+        get._super.call(this, 'fk7263', intygId);
+    },
+    isAt: function isAt() {
+        return isAt._super.call(this);
+    },
+    whenSmittskyddIsDisplayed: function() {
+        return browser.wait(this.smittskyddLabel.isDisplayed());
+    },
+    getSmittskyddLabelText: function() {
+        return this.smittskyddLabel.getText();
+    },
+    smittskyddCheckboxClick: function() {
+        this.smittskyddCheckbox.sendKeys(protractor.Key.SPACE);
+    },
+    nedsattMed25CheckboxClick: function() {
+        this.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
+    },
+    travelRadioButtonJaClick: function() {
+        this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE);
+    },
+    getCheckedTravelRadioButtonValue: function() {
+        return this.travelRadioGroupChecked.getAttribute('value');
+    },
+    getCapacityForWorkForecastText: function() {
+        return this.capacityForWorkForecastText;
+    },
+    minUndersokningAvPatClick: function() {
+        this.minUndersokning.sendKeys(protractor.Key.SPACE);
+    },
+    angeDiagnosKod: function(kod) {
+        this.diagnosKod.sendKeys(kod);
+    },
+    angeFunktionsnedsattning: function(txt) {
+        if (!txt) {
+            return Promise.resolve('Success');
         }
-        else{
-          return arbeteCheckbox.sendKeys(protractor.Key.SPACE);
+        return this.funktionsNedsattning.sendKeys(txt);
+    },
+    angeAktivitetsBegransning: function(txt) {
+        if (txt) {
+            return this.aktivitetsBegransning.sendKeys(txt);
+        } else {
+            return Promise.resolve('Success');
         }
-      });
-
-    }
-
-    var promisesArr = [];
-    if (arbete.nuvarandeArbete) {
-      promisesArr.push(checkArbeteCheckbox().then(function(){
-        if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
-          return nuvarandeArbeteTextElement.sendKeys(arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
+    },
+    angeNuvarandeArbete: function(txt) {
+        return this.nuvarandeArbete.sendKeys(txt);
+    },
+    angeFaktiskTjanstgoring: function(txt) {
+        return this.faktiskTjanstgoring.sendKeys(txt);
+    },
+    angeSmittskydd: function(isSmittskydd) {
+        if (isSmittskydd) {
+            return this.smittskyddCheckbox.sendKeys(protractor.Key.SPACE);
+        } else {
+            return Promise.resolve('Success');
         }
-        else{
-          return Promise.resolve('Success');
+    },
+    angeIntygetBaserasPa: function(intygetBaserasPa) {
+        if (!intygetBaserasPa) {
+            return Promise.resolve('Success');
         }
-      }));
-    }
-    if (arbete.arbetsloshet) {
-      promisesArr.push(this.arbete.arbetslos.checkbox.sendKeys(protractor.Key.SPACE));
-    }
-    if (arbete.foraldraledighet) {
-      promisesArr.push(this.arbete.foraldraledig.checkbox.sendKeys(protractor.Key.SPACE));
-    }
 
-    return Promise.all(promisesArr);
-  },
-  angeKontaktOnskasMedFK: function (kontaktOnskas) {
-    if (kontaktOnskas) {
-      return this.kontaktFk.sendKeys(protractor.Key.SPACE);
-    } else {
-      return Promise.resolve('Success');
-    }
-  },
-  angeRekommendationer: function (rekommendationer) {
-    var promisesArr = [];
-    if (rekommendationer.resor) {
-      promisesArr.push(this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE));
-    }
-    if (rekommendationer.kontaktMedArbetsformedlingen) {
-      promisesArr.push(this.rekommendationer.kontaktAf.sendKeys(protractor.Key.SPACE));
-    }
-    if (rekommendationer.kontaktMedForetagshalsovard) {
-      promisesArr.push(this.rekommendationer.kontaktFH.sendKeys(protractor.Key.SPACE));
-    }
-    if (rekommendationer.ovrigt) {
-      promisesArr.push(this.rekommendationer.ovrigt.checkbox.sendKeys(protractor.Key.SPACE));
-      promisesArr.push(this.rekommendationer.ovrigt.beskrivning.sendKeys(rekommendationer.ovrigt));
-    }
+        var promisesArr = [];
+        if (intygetBaserasPa.minUndersokning) {
+            // this.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE);
+            promisesArr.push(this.baserasPa.minUndersokning.datum.sendKeys(intygetBaserasPa.minUndersokning.datum));
+        }
+        if (intygetBaserasPa.minTelefonkontakt) {
+            // this.baserasPa.minTelefonkontakt.checkbox.sendKeys(protractor.Key.SPACE);
+            promisesArr.push(this.baserasPa.minTelefonkontakt.datum.sendKeys(intygetBaserasPa.minTelefonkontakt.datum));
+        }
+        if (intygetBaserasPa.journaluppgifter) {
+            // this.baserasPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
+            promisesArr.push(this.baserasPa.journaluppgifter.datum.sendKeys(intygetBaserasPa.journaluppgifter.datum));
+        }
+        if (intygetBaserasPa.annat) {
+            // this.baserasPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
+            promisesArr.push(this.baserasPa.annat.datum.sendKeys(intygetBaserasPa.annat.datum));
+            promisesArr.push(this.baserasPa.annat.text.sendKeys(intygetBaserasPa.annat.text));
+        }
+        return Promise.all(promisesArr);
+    },
+    angeDiagnoser: function(diagnos) {
+        var promisesArr = [];
+        if (diagnos.diagnoser) {
+            promisesArr.push(this.angeDiagnosKod(diagnos.diagnoser[0].ICD10));
+        }
+        if (diagnos.fortydligande) {
+            promisesArr.push(this.diagnos.fortydligande.sendKeys(diagnos.fortydligande));
+        }
+        if (diagnos.samsjuklighetForeligger) {
+            promisesArr.push(this.diagnos.samsjuklighetForeligger.sendKeys(diagnos.samsjuklighetForeligger));
+        }
 
-    if (rekommendationer.arbetslivsinriktadRehab) {
-      if (rekommendationer.arbetslivsinriktadRehab === 'Ja') {
-        promisesArr.push(this.rekommendationer.rehab.JA.sendKeys(protractor.Key.SPACE));
-      } else if (rekommendationer.arbetslivsinriktadRehab === 'Nej') {
-        promisesArr.push(this.rekommendationer.rehab.NEJ.sendKeys(protractor.Key.SPACE));
-      } else if (rekommendationer.arbetslivsinriktadRehab === 'Går inte att bedöma') {
-        promisesArr.push(this.rekommendationer.rehab.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE));
-      }
+        return Promise.all(promisesArr);
+    },
+    angeArbetsformaga: function(arbetsformaga) {
+
+        var promisesArr = [];
+        if (arbetsformaga.nedsattMed25) {
+            // this.nedsatt.med25.checkbox.click();
+            promisesArr.push(this.nedsatt.med25.from.sendKeys(arbetsformaga.nedsattMed25.from));
+            promisesArr.push(this.nedsatt.med25.tom.sendKeys(arbetsformaga.nedsattMed25.tom));
+        }
+        if (arbetsformaga.nedsattMed50) {
+            // this.nedsatt.med50.checkbox.click();
+            promisesArr.push(this.nedsatt.med50.from.sendKeys(arbetsformaga.nedsattMed50.from));
+            promisesArr.push(this.nedsatt.med50.tom.sendKeys(arbetsformaga.nedsattMed50.tom));
+        }
+        if (arbetsformaga.nedsattMed75) {
+            // this.nedsatt.med75.checkbox.click();
+            promisesArr.push(this.nedsatt.med75.from.sendKeys(arbetsformaga.nedsattMed75.from));
+            promisesArr.push(this.nedsatt.med75.tom.sendKeys(arbetsformaga.nedsattMed75.tom));
+        }
+        if (arbetsformaga.nedsattMed100) {
+            // this.nedsatt.med100.checkbox.click();
+            promisesArr.push(this.nedsatt.med100.from.sendKeys(arbetsformaga.nedsattMed100.from));
+            promisesArr.push(this.nedsatt.med100.tom.sendKeys(arbetsformaga.nedsattMed100.tom));
+        }
+        return Promise.all(promisesArr);
+    },
+    angeAktuelltSjukdomsForlopp: function(txt) {
+        if (txt) {
+            return this.aktuelltSjukdomsForlopp.sendKeys(txt);
+        } else {
+            return Promise.resolve('Success');
+        }
+    },
+    angeArbetsformagaFMB: function(txt) {
+        return this.arbetsformagaFMB.sendKeys(txt);
+    },
+    angePrognos: function(prognos) {
+        console.log(prognos);
+        var prognosFortydligande = this.prognos.fortydligande;
+
+        if (prognos.val === 'Ja') {
+            return this.prognos.JA.sendKeys(protractor.Key.SPACE);
+        } else if (prognos.val === 'Ja, delvis') {
+            return this.prognos.JA_DELVIS.sendKeys(protractor.Key.SPACE);
+        } else if (prognos.val === 'Nej') {
+            return this.prognos.NEJ.sendKeys(protractor.Key.SPACE);
+        } else if (prognos.val === 'Går inte att bedöma') {
+            var promisesArr = [];
+            promisesArr.push(this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE).then(function() {
+                if (prognos.fortydligande) {
+                    return browser.driver.wait(protractor.until.elementIsVisible(prognosFortydligande)).then(prognosFortydligande.sendKeys(prognos.fortydligande));
+                } else {
+                    return Promise.resolve('Inget förtydligande');
+                }
+            }));
+            return Promise.all(promisesArr);
+        }
+    },
+    angeArbete: function(arbete) {
+        var arbeteCheckbox = this.arbete.nuvarandeArbete.checkbox;
+        var nuvarandeArbeteTextElement = this.arbete.nuvarandeArbete.text;
+
+        function checkArbeteCheckbox() {
+
+            return arbeteCheckbox.isSelected(function(isSelected) {
+                if (isSelected) {
+                    return Promise.resolve('Is selected already');
+                } else {
+                    return arbeteCheckbox.sendKeys(protractor.Key.SPACE);
+                }
+            });
+
+        }
+
+        var promisesArr = [];
+        if (arbete.nuvarandeArbete) {
+            promisesArr.push(checkArbeteCheckbox().then(function() {
+                if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
+                    return nuvarandeArbeteTextElement.sendKeys(arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
+                } else {
+                    return Promise.resolve('Success');
+                }
+            }));
+        }
+        if (arbete.arbetsloshet) {
+            promisesArr.push(this.arbete.arbetslos.checkbox.sendKeys(protractor.Key.SPACE));
+        }
+        if (arbete.foraldraledighet) {
+            promisesArr.push(this.arbete.foraldraledig.checkbox.sendKeys(protractor.Key.SPACE));
+        }
+
+        return Promise.all(promisesArr);
+    },
+    angeKontaktOnskasMedFK: function(kontaktOnskas) {
+        if (kontaktOnskas) {
+            return this.kontaktFk.sendKeys(protractor.Key.SPACE);
+        } else {
+            return Promise.resolve('Success');
+        }
+    },
+    angeRekommendationer: function(rekommendationer) {
+        var promisesArr = [];
+        if (rekommendationer.resor) {
+            promisesArr.push(this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE));
+        }
+        if (rekommendationer.kontaktMedArbetsformedlingen) {
+            promisesArr.push(this.rekommendationer.kontaktAf.sendKeys(protractor.Key.SPACE));
+        }
+        if (rekommendationer.kontaktMedForetagshalsovard) {
+            promisesArr.push(this.rekommendationer.kontaktFH.sendKeys(protractor.Key.SPACE));
+        }
+        if (rekommendationer.ovrigt) {
+            promisesArr.push(this.rekommendationer.ovrigt.checkbox.sendKeys(protractor.Key.SPACE));
+            promisesArr.push(this.rekommendationer.ovrigt.beskrivning.sendKeys(rekommendationer.ovrigt));
+        }
+
+        if (rekommendationer.arbetslivsinriktadRehab) {
+            if (rekommendationer.arbetslivsinriktadRehab === 'Ja') {
+                promisesArr.push(this.rekommendationer.rehab.JA.sendKeys(protractor.Key.SPACE));
+            } else if (rekommendationer.arbetslivsinriktadRehab === 'Nej') {
+                promisesArr.push(this.rekommendationer.rehab.NEJ.sendKeys(protractor.Key.SPACE));
+            } else if (rekommendationer.arbetslivsinriktadRehab === 'Går inte att bedöma') {
+                promisesArr.push(this.rekommendationer.rehab.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE));
+            }
+        }
+        return Promise.all(promisesArr);
     }
-    return Promise.all(promisesArr);
-  }
 });
 
 module.exports = new FkUtkast();
