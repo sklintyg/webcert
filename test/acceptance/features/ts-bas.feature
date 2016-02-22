@@ -1,13 +1,13 @@
 # language: sv
 
-@smoke @webcert @ts @bas @notReady
+@smoke @webcert @ts @bas
 Egenskap: Hantera Transportstyrelsens basintyg
 
-Bakgrund: Jag befinner mig på webcerts förstasida
+Bakgrund: Jag är inloggad
     Givet att jag är inloggad som läkare
 
-@tsbas @keepIntyg @tsBas
-Scenario: Skapa och signera ett intyg till transportstyrelsen
+@tsbas @keepIntyg
+Scenario: Skapa och signera ett intyg
     När jag väljer patienten "19121212-1212"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
@@ -22,6 +22,7 @@ När jag väljer patienten "19121212-1212"
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
+@notReady
 Scenario: Makulera ett skickat intyg
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Mottaget"

@@ -35,48 +35,132 @@ module.exports = function () {
 
     if (intyg.typ === 'Transportstyrelsens läkarintyg') {
       global.intyg = testdata.getRandomTsBasIntyg(intyg.id);
+      var promiseArr = [];
 
-      tsBasUtkastPage.fillInKorkortstyper(global.intyg.korkortstyper, 'intygetAvserForm');
-      // browser.ignoreSynchronization = true;
-      // Intyget avser
-      // Identiteten är styrkt genom
-      tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom);
+      promiseArr.push(tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function () {
+        logg('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
+      }, function (reason) {
+        callback('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
+      }));
+
+      promiseArr.push(tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function () {
+        logg('OK - fillInIdentitetStyrktGenom:' + intyg.identitetStyrktGenom.toString() );
+      }, function (reason) {
+        callback('FEL, fillInIdentitetStyrktGenom,' + reason);
+      }));
+
       // Synfunktioner
       browser.ignoreSynchronization = true;
-      tsBasUtkastPage.fillInSynfunktioner(global.intyg);
-      tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
-      tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg);
-      tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg);
-      tsBasUtkastPage.fillInDiabetes(global.intyg);
-      tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg);
-      tsBasUtkastPage.fillInNeurologiskaSjukdomar(global.intyg);
-      tsBasUtkastPage.fillInEpilepsi(global.intyg);
-      tsBasUtkastPage.fillInNjursjukdomar(global.intyg);
-      tsBasUtkastPage.fillInDemens(global.intyg);
-      tsBasUtkastPage.fillInSomnOchVakenhet(global.intyg);
-      tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(global.intyg);
-      tsBasUtkastPage.fillInPsykiska(global.intyg);
-      tsBasUtkastPage.fillInAdhd(global.intyg);
-      tsBasUtkastPage.fillInSjukhusvard(global.intyg);
+      promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(global.intyg).then(function () {
+        logg('OK - fillInSynfunktioner');
+      }, function (reason) {
+        callback('FEL, fillInSynfunktioner,' + reason);
+      }));
 
-      tsBasUtkastPage.fillInOvrigMedicinering(global.intyg);
+      promiseArr.push(tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function () {
+        logg('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
+      }, function (reason) {
+        callback('FEL, fillInHorselOchBalanssinne,'+ JSON.stringify(intyg.horsel) + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg.rorelseorganensFunktioner).then(function () {
+        logg('OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(global.intyg.rorelseorganensFunktioner));
+      }, function (reason) {
+        callback('FEL, fillInRorelseorganensFunktioner,'+ JSON.stringify(global.intyg.rorelseorganensFunktioner) + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg).then(function () {
+        logg('OK - fillInHjartOchKarlsjukdomar');
+      }, function (reason) {
+        callback('FEL, fillInHjartOchKarlsjukdomar,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInDiabetes(intyg.diabetes).then(function () {
+        logg('OK - fillInDiabetes: ' + JSON.stringify(intyg.diabetes));
+      }, function (reason) {
+        callback('FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
+      }));
+      // promiseArr.push(tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg).then(function () {
+      //   logg('OK - fillInHorselOchBalanssinne');
+      // }, function (reason) {
+      //   callback('FEL, fillInHorselOchBalanssinne,' + reason);
+      // }));
+      promiseArr.push(tsBasUtkastPage.fillInNeurologiskaSjukdomar(global.intyg).then(function () {
+        logg('OK - fillInNeurologiskaSjukdomar');
+      }, function (reason) {
+        callback('FEL, fillInNeurologiskaSjukdomar,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInEpilepsi(global.intyg).then(function () {
+        logg('OK - fillInEpilepsi');
+      }, function (reason) {
+        callback('FEL, fillInEpilepsi,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInNjursjukdomar(global.intyg).then(function () {
+        logg('OK - fillInNjursjukdomar');
+      }, function (reason) {
+        callback('FEL, fillInNjursjukdomar,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInDemens(global.intyg).then(function () {
+        logg('OK - fillInDemens');
+      }, function (reason) {
+        callback('FEL, fillInDemens,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInSomnOchVakenhet(global.intyg).then(function () {
+        logg('OK - fillInSomnOchVakenhet');
+      }, function (reason) {
+        callback('FEL, fillInSomnOchVakenhet,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(global.intyg).then(function () {
+        logg('OK - fillInAlkoholNarkotikaLakemedel');
+      }, function (reason) {
+        callback('FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInPsykiska(global.intyg).then(function () {
+        logg('OK - fillInPsykiska');
+      }, function (reason) {
+        callback('FEL, fillInPsykiska,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInAdhd(global.intyg).then(function () {
+        logg('OK - fillInAdhd');
+      }, function (reason) {
+        callback('FEL, fillInAdhd,' + reason);
+      }));
+      promiseArr.push(tsBasUtkastPage.fillInSjukhusvard(global.intyg).then(function () {
+        logg('OK - fillInSjukhusvard');
+      }, function (reason) {
+        callback('FEL, fillInSjukhusvard,' + reason);
+      }));
 
-      browser.ignoreSynchronization = false;
-      tsBasUtkastPage.fillInBedomning(intyg.bedomning);
-      callback();
+      promiseArr.push(tsBasUtkastPage.fillInOvrigMedicinering(global.intyg).then(function () {
+        logg('OK - fillInOvrigMedicinering');
+      }, function (reason) {
+        callback('FEL, fillInOvrigMedicinering,' + reason);
+      }));
+
+      promiseArr.push(tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function () {
+        logg('OK - fillInOvrigMedicinering');
+      }, function (reason) {
+        callback('FEL, fillInOvrigMedicinering,' + reason);
+      }));
+
+       Promise.all(promiseArr).then(function (value) {
+        browser.ignoreSynchronization = false;
+        callback();
+      }, function (reason) {
+        callback(reason);
+      });
+
+
     } else if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
       global.intyg = testdata.getRandomTsDiabetesIntyg(intyg.id);
 
       //Ange körkortstyper
       tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function () {
-        logg('OK - fillInKorkortstyper :' + intyg.korkortstyper.toString());
+        logg('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
       }, function (reason) {
         callback('FEL, fillInKorkortstyper,' + reason);
       });
 
       //Ange Identitet styrkt genom
       tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function () {
-        logg('OK - fillInIdentitetStyrktGenom :' + intyg.identitetStyrktGenom.toString());
+        logg('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
       }, function (reason) {
         callback('FEL, fillInIdentitetStyrktGenom,' + reason);
       });

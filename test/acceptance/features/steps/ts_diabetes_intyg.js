@@ -71,41 +71,22 @@ module.exports = function () {
 
   this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, function (intygstyp, status, callback) {
     getIntygElement(intygstyp, status, function (el) {
-      gotoIntyg(intygstyp, status, el, function () {
+      gotoIntyg(intygstyp, status, el, function (err) {
         browser.getCurrentUrl().then(function (text) {
           intyg.id = text.split('/').slice(-1)[0];
           intyg.id = intyg.id.split('?')[0];
-          callback();
+          callback(err);
         });
       });
     });
   });
-
-  // this.Given(/^jag skickar intyget till "([^"]*)"$/, function(dest, callback) {
-
-  //     //Fånga intygets id
-  //     if (!global.intyg) {
-  //         global.intyg = {};
-  //     }
-  //     browser.getCurrentUrl().then(function(text) {
-  //         intyg.id = text.split('/').slice(-1)[0];
-  //         logg('Intygsid: ' + intyg.id);
-  //     });
-
-  //     element(by.id('sendBtn')).click();
-  //     element(by.id('patientSamtycke')).click();
-  //     element(by.id('button1send-dialog')).click();
-
-  //     callback();
-  // });
 };
 
 var restUtil = require('../../../webcertTestTools/util/rest.util.js');
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
 function createIntygWithStatus(typ, status, cb) {
-  //TODO, FUNKTION EJ KLAR
-  // cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
+  //TODO, Hantera ts-intyg
 
   intyg.id = testdataHelper.generateTestGuid();
   console.log('intyg.id = ' + intyg.id);

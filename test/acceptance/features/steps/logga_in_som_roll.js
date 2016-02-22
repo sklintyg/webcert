@@ -58,11 +58,11 @@ module.exports = function () {
   });
   this.Given(/^att jag är inloggad som läkare$/, function (callback) {
     var userObj = {
-      fornamn: 'Jan',
-      efternamn: 'Nilsson',
-      hsaId: 'IFV1239877878-1049',
-      enhetId: 'IFV1239877878-1042',
-      lakare: true
+     'fornamn': 'Lennart',
+     'efternamn': 'Nilsson',
+     'hsaId': 'TSTNMT2321000156-1024',
+     'enhetId': 'TSTNMT2321000156-1003',
+     'lakare': true
     };
     logInAsUserRole(userObj, 'Läkare', callback);
   });

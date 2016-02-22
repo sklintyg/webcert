@@ -66,18 +66,22 @@ describe('Create and Sign ts-bas utkast', function() {
                 hoger: 'Ja',
                 vanster: 'Ja',
             },
-            horselYrsel: 'Ja',
-            horselSamtal: 'Ja',
-            rorOrgNedsattning: 'Ja',
-            rorOrgInUt: 'Ja',
+            horsel:{
+                yrsel: 'Ja',
+                samtal: 'Ja'
+            }
+            rorelseorganensFunktioner:{
+                nedsattning: 'Ja',
+                inUtUrFordon: ''
+            },
             hjartHjarna: 'Ja',
             hjartSkada: 'Ja',
             hjartRisk: 'Ja',
             diabetes: {
-                has: true,
+                hasDiabetes: true,
                 typ: wcTestTools.utkastTextmap.ts.diabetes.typ.typ1,
                 //year: Math.floor((Math.random() * 20) + 1980),
-                behandling: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost]
+                behandlingsTyper: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost]
             },
             neurologiska: 'Ja',
             epilepsi: 'Ja',
@@ -101,11 +105,11 @@ describe('Create and Sign ts-bas utkast', function() {
             tsdBasUtkastPage.fillInKorkortstyper(tsBasUtkast.korkortstyper); // Intyget avser
             tsdBasUtkastPage.fillInIdentitetStyrktGenom(wcTestTools.utkastTextmap.ts.identitetStyrktGenom.foretagstjanstekort);
             tsdBasUtkastPage.fillInSynfunktioner(tsBasUtkast);
-            tsdBasUtkastPage.fillInHorselOchBalanssinne(tsBasUtkast);
-            tsdBasUtkastPage.fillInRorelseorganensFunktioner(tsBasUtkast);
+            tsdBasUtkastPage.fillInHorselOchBalanssinne(tsBasUtkast.horsel);
+            tsdBasUtkastPage.fillInRorelseorganensFunktioner(tsBasUtkast.rorelseorganensFunktioner);
             tsdBasUtkastPage.fillInHjartOchKarlsjukdomar(tsBasUtkast);
-            tsdBasUtkastPage.fillInDiabetes(tsBasUtkast);
-            tsdBasUtkastPage.fillInHorselOchBalanssinne(tsBasUtkast);
+            tsdBasUtkastPage.fillInDiabetes(tsBasUtkast.diabetes);
+            tsdBasUtkastPage.fillInHorselOchBalanssinne(tsBasUtkast.horsel);
             tsdBasUtkastPage.fillInNeurologiskaSjukdomar(tsBasUtkast);
         });
 

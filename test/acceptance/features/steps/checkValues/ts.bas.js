@@ -26,9 +26,9 @@ var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 var helpers = require('./helpers.js');
 
 function checkDiabetes(intyg, cb) {
-  if (intyg.diabetestyp === 'Typ 2' && intyg.diabetes === 'Ja') {
-    var typer = intyg.dTyper;
-    expect(tsBasIntygPage.diabetesTyp.getText()).to.eventually.equal(intyg.diabetestyp).then(function (value) {
+  if (intyg.diabetes.typ === 'Typ 2' && intyg.diabetes === 'Ja') {
+    var typer = intyg.diabetes.behandlingsTyper;
+    expect(tsBasIntygPage.diabeteTyp.getText()).to.eventually.equal(intyg.diabetes.typ).then(function (value) {
       logg('OK - Patient diabetes typ = ' + value);
     }, function (reason) {
       cb('FEL - Patient diabetes typ : ' + reason);
@@ -54,16 +54,16 @@ function checkDiabetes(intyg, cb) {
         });
       }
     });
-  } else if (intyg.diabetestyp === 'Typ 1') {
+  } else if (intyg.diabetes.typ === 'Typ 1') {
     expect(tsBasIntygPage.kost.getText()).to.eventually.equal('').then(function (value) {
-      logg('OK - Insulin = \"TOMT\"');
+      logg('OK - Kost = \"TOMT\"');
     }, function (reason) {
-      cb('FEL - Insulin: \"TOMT\"');
+      cb('FEL - Kost: \"TOMT\"');
     });
     expect(tsBasIntygPage.tabletter.getText()).to.eventually.equal('').then(function (value) {
-      logg('OK - Insulin = \"TOMT\"');
+      logg('OK - Tabletter = \"TOMT\"');
     }, function (reason) {
-      cb('FEL - Insulin: \"TOMT\"');
+      cb('FEL - Tabletter: \"TOMT\"');
     });
     expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('').then(function (value) {
       logg('OK - Insulin = \"TOMT\"');
@@ -159,19 +159,19 @@ module.exports = {
     //Kontrollera Fält 1 : Korrektionsglasens styrka
     checkKorrektionsglasensStyrka(intyg.styrkor, callback);
 
-    expect(tsBasIntygPage.horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horselYrsel).then(function (value) {
-      logg('OK - Hörsel balansbalans rubbningar = ' + value);
+    expect(tsBasIntygPage.horselBalansbalansrubbningar.getText()).to.eventually.equal(intyg.horsel.yrsel).then(function (value) {
+      logg('OK - Hörsel- och balansrubbningar = ' + value);
     }, function (reason) {
-      callback('FEL - Hörsel balansbalans rubbningar : ' + reason);
+      callback('FEL - Hörsel- och balansrubbningar : ' + reason);
     });
 
-    expect(tsBasIntygPage.funktionsnedsattning.getText()).to.eventually.equal(intyg.rorOrgNedsattning).then(function (value) {
+    expect(tsBasIntygPage.funktionsnedsattning.getText()).to.eventually.equal(intyg.rorelseorganensFunktioner.nedsattning).then(function (value) {
       logg('OK - Rörelsehinder = ' + value);
     }, function (reason) {
       callback('FEL - Rörelsehinder : ' + reason);
     });
 
-    if (intyg.rorOrgNedsattning === 'Ja') {
+    if (intyg.rorelseorganensFunktioner.nedsattning === 'Ja') {
       expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal('Amputerad under höger knä.').then(function (value) {
         logg('OK - Rörelsehinder kommentar = ' + value);
       }, function (reason) {
@@ -185,7 +185,7 @@ module.exports = {
       });
     }
 
-    expect(tsBasIntygPage.funktionsnedsRorelseformaga.getText()).to.eventually.equal(intyg.rorOrgInUt).then(function (value) {
+    expect(tsBasIntygPage.funktionsnedsRorelseformaga.getText()).to.eventually.equal(intyg.rorelseorganensFunktioner.inUtUrFordon).then(function (value) {
       logg('OK - Rörelseförmågan = ' + value);
     }, function (reason) {
       callback('FEL - Rörelseförmågan : ' + reason);
@@ -223,7 +223,7 @@ module.exports = {
       });
     }
 
-    expect(tsBasIntygPage.harDiabetes.getText()).to.eventually.equal(intyg.diabetes).then(function (value) {
+    expect(tsBasIntygPage.harDiabetes.getText()).to.eventually.equal(intyg.diabetes.hasDiabetes).then(function (value) {
       logg('OK - Patient har Diabetes = ' + value);
     }, function (reason) {
       callback('FEL - Patient har Diabetes : ' + reason);
