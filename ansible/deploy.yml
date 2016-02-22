@@ -5,7 +5,7 @@
   vars:
     # repo - values: nightly, snapshots or releases
     repo: releases
-    version: 4.1.0-b46
+    version: 4.1.0-b47
     config_version: master
 
   roles:
