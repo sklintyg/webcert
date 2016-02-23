@@ -39,10 +39,10 @@ module.exports = function () {
 
   this.Given(/^att jag är inloggad som vårdadministratör$/, function (callback) {
     var userObj = {
-      fornamn: 'Lena',
-      efternamn: 'Karlsson',
-      hsaId: 'IFV1239877878-104N',
-      enhetId: 'IFV1239877878-1045'
+      fornamn: 'Åsa',
+      efternamn: 'Svensson',
+      hsaId: 'TSTNMT2321000156-100L',
+      enhetId: 'TSTNMT2321000156-1003'
     };
     logInAsUserRole(userObj, 'Vårdadministratör', callback);
   });
@@ -50,19 +50,20 @@ module.exports = function () {
   this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function (callback) {
     var userObj = {
       fornamn: 'Åsa',
-      efternamn: 'Andersson',
-      hsaId: 'IFV1239877878-104B',
-      enhetId: 'IFV1239877878-1042'
+      efternamn: 'Svensson',
+      hsaId: 'TSTNMT2321000156-100L',
+      enhetId: 'TSTNMT2321000156-1003'
     };
     logInAsUserRole(userObj, 'Läkare', callback, 'UTHOPP', 'VARDADMINISTRATOR');
   });
   this.Given(/^att jag är inloggad som läkare$/, function (callback) {
     var userObj = {
-     'fornamn': 'Lennart',
-     'efternamn': 'Nilsson',
-     'hsaId': 'TSTNMT2321000156-1024',
-     'enhetId': 'TSTNMT2321000156-1003',
-     'lakare': true
+      fornamn: 'Åsa',
+      efternamn: 'Svensson',
+      hsaId: 'TSTNMT2321000156-100L',
+      enhetId: 'TSTNMT2321000156-1003',
+      lakare: true,
+      forskrivarKod: '2481632'
     };
     logInAsUserRole(userObj, 'Läkare', callback);
   });
@@ -82,11 +83,12 @@ module.exports = function () {
 
   this.Given(/^att jag är inloggad som uthoppsläkare$/, function (callback) {
     var userObj = {
-      fornamn: 'Jan',
-      efternamn: 'Nilsson',
-      hsaId: 'IFV1239877878-1049',
-      enhetId: 'IFV1239877878-1042',
-      lakare: true
+      fornamn: 'Åsa',
+      efternamn: 'Svensson',
+      hsaId: 'TSTNMT2321000156-100L',
+      enhetId: 'TSTNMT2321000156-1003',
+      lakare: true,
+      forskrivarKod: '2481632'
     };
     logInAsUserRole(userObj, 'Läkare', callback, 'UTHOPP', 'LAKARE');
   });
@@ -118,12 +120,12 @@ function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
   if (newUserRole) {
     logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
     browser.get('testability/user/role/' + newUserRole);
-    browser.get('/web/dashboard');
+    browser.get('/web/dashboard#/create/choose-patient/index');
   }
   if (newOrigin) {
     logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
     browser.get('testability/user/origin/' + newOrigin);
-    browser.get('/web/dashboard');
+    browser.get('/web/dashboard#/create/choose-patient/index');
   }
 
   browser.ignoreSynchronization = false;

@@ -11,7 +11,7 @@ Scenario: Kan makulera sjukintyg
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
-@djup_lakare @hurr
+@djup_lakare
 Scenario: Kan kopiera och signera ett (kopierat)intyg
 	Givet att jag är inloggad som djupintegrerad läkare
 	När jag väljer patienten "19520727-2252"
