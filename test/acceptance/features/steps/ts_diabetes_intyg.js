@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logg, wcTestTools, user, person, protractor, pages */
+/*global browser, intyg, logg, wcTestTools, user, person, protractor, pages, Promise */
 'use strict';
 
 // function stringStartWith (string, prefix) {
@@ -44,14 +44,17 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
   if (!intygRadElement) {
     logg('Hittade inget intyg, skapar ett nytt via rest..');
     createIntygWithStatus(intygstyp, status, function (err) {
-
-      if (err) {
+      if(err){
         cb(err);
       }
 
       //Uppdatera sidan och gå in på patienten igen
       browser.refresh();
-      element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+
+      if(user.origin !== 'DJUPINTEGRATION'){
+        element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+      }
+      
       sokSkrivIntygPage.selectPersonnummer(person.id);
 
       getIntygElement(intygstyp, status, function (el) {
@@ -75,6 +78,7 @@ module.exports = function () {
         browser.getCurrentUrl().then(function (text) {
           intyg.id = text.split('/').slice(-1)[0];
           intyg.id = intyg.id.split('?')[0];
+          console.log('intyg.id:' + intyg.id);
           callback(err);
         });
       });
@@ -106,12 +110,12 @@ function createIntygWithStatus(typ, status, cb) {
       patientNamn: 'Test Testsson',
       //issuerId : '',
       issuer: user.fornamn + ' ' + user.efternamn,
-      issued: '2013-04-01',
-      validFrom: '2013-04-01',
-      validTo: '2013-04-11',
+      issued: '2015-04-01',
+      validFrom: '2015-04-01',
+      validTo: '2015-04-11',
       enhetId: user.enhetId,
       //enhet : '',
-      vardgivarId: 'IFV1239877878-1041',
+      vardgivarId: 'TSTNMT2321000156-1002',
       intygType: 'fk7263',
       intygId: intyg.id,
       sent: false,
@@ -124,12 +128,12 @@ function createIntygWithStatus(typ, status, cb) {
       patientNamn: 'Test Testsson',
       //issuerId : '',
       issuer: user.fornamn + ' ' + user.efternamn,
-      issued: '2013-04-01',
-      validFrom: '2013-04-01',
-      validTo: '2013-04-11',
+      issued: '2015-04-01',
+      validFrom: '2015-04-01',
+      validTo: '2015-04-11',
       enhetId: user.enhetId,
       //enhet : '',
-      vardgivarId: 'IFV1239877878-1041',
+      vardgivarId: 'TSTNMT2321000156-1002',
       intygType: 'fk7263',
       intygId: intyg.id,
       sent: true,
@@ -141,17 +145,29 @@ function createIntygWithStatus(typ, status, cb) {
 }
 
 function createIntygWithRest(intygOptions, cb) {
-  // user.lakare = true;
-  // user.forskrivarKod = '2481632';
+  var userObj={
+      fornamn: user.fornamn,
+      efternamn: user.efternamn,
+      hsaId: user.hsaId,
+      enhetId: user.enhetId,
+      lakare: user.lakare,
+      forskrivarKod:user.forskrivarKod
+  };
 
-  restUtil.login(user).then(function (data) {
+  restUtil.login(userObj).then(function (data) {
     console.log('Login OK');
-  });
-
-  restUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function (response) {
-    logg('Skapat intyg via REST-api');
-    cb();
+    return Promise.resolve('SUCCESS');
+  },function (error) {
+      cb(error);
+    }
+  ).then(function(){
+      restUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function (response) {
+      logg('Skapat intyg via REST-api');
+      cb();
   }, function (error) {
     cb(error);
   });
+  });
+
+  
 }

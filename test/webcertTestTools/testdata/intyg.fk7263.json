@@ -64,24 +64,24 @@
 
     "funktionsnedsattning" : "Kraftigt nedsatt rörlighet i överarmen pga skadan. Böj- och sträckförmågan är mycket dålig. Smärtar vid rörelse vilket ger att patienten inte kan använda armen särkilt mycket.",
     "aktivitetsbegransning" : "Patienten bör/kan inte använda armen förrän skadan läkt. Skadan förvärras vid för tidigt påtvingad belastning. Patienten kan inte lyfta armen utan den ska hållas riktad nedåt och i fast läge så mycket som möjligt under tiden för läkning.",
-    "prognosBedomning" : "arbetsformagaPrognosGarInteAttBedoma",
+    "prognosBedomning" : "arbetsformagaPrognosJa",
     "arbetsformagaPrognos" : "Skadan har förvärrats vid varje tillfälle patienten använt armen. Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg. Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.",
 
     "nedsattMed25":{
-        "from" :"2011-04-01",
-        "tom" :"2011-05-31"
+        "from" :"2017-04-01",
+        "tom" :"2017-05-31"
     },
     "nedsattMed50":{
-        "from" :"2011-03-07",
-        "tom" :"2011-03-31"
+        "from" :"2017-03-07",
+        "tom" :"2017-03-31"
     },
     "nedsattMed75":{
-        "from" :"2011-02-14",
-        "tom" :"2011-03-06"
+        "from" :"2017-02-14",
+        "tom" :"2017-03-06"
     },
     "nedsattMed100":{
-        "from" :"2011-01-26",
-        "tom" :"2011-02-13"
+        "from" :"2017-01-26",
+        "tom" :"2017-02-13"
     },
     "arbetsloshet" : true,
     "foraldrarledighet" : true

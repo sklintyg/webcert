@@ -118,12 +118,12 @@ function logInAsUserRole(userObj, roleName, callback, newOrigin, newUserRole) {
   if (newUserRole) {
     logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
     browser.get('testability/user/role/' + newUserRole);
-    browser.navigate().back();
+    browser.get('/web/dashboard');
   }
   if (newOrigin) {
     logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
     browser.get('testability/user/origin/' + newOrigin);
-    browser.navigate().back();
+    browser.get('/web/dashboard');
   }
 
   browser.ignoreSynchronization = false;
