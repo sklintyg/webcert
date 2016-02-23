@@ -150,7 +150,9 @@ public class LogSender {
                 return convert(logMessage);
 
             } else if (element instanceof ArrayList) {
+
                 ArrayList<AbstractLogMessage> logMessages = (ArrayList<AbstractLogMessage>) element;
+
                 // TODO validate: All messages in List must originate from same user and system. Only patient info may differ.
                 return convertFromList(logMessages);
 
@@ -195,7 +197,13 @@ public class LogSender {
 
         logType.setResources(new ResourcesType());
         logType.getResources().getResource().addAll(sources.stream().map(this::buildResource).collect(Collectors.toList()));
-
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("LogType built: ActivityType: {}, UserId: {}, SystemId: {} with {} resources: ",
+                    logType.getActivity().getActivityType(),
+                    logType.getUser().getUserId(),
+                    logType.getSystem().getSystemId(),
+                    logType.getResources().getResource().size());
+        }
         return logType;
     }
 
