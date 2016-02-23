@@ -95,12 +95,13 @@
               </tr>
               <tr ng-repeat="cert in viewState.currentList">
                 <td>
-                  <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)"
+                  <button type="button" class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)"
                           id="showBtn-{{cert.intygId}}">Visa
                   </button>
                 </td>
                 <td>
                   <button
+                      type="button"
                       ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
                       class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
                       intygstyp="{{cert.intygType}}"

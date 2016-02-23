@@ -1,5 +1,5 @@
 <div id="{{dialogId}}" class="modal-header">
-  <button class="close" ng-click="button2click()">×</button>
+  <button type="button" class="close" ng-click="button2click()">×</button>
   <h3 ng-focus="model.focus" tabindex="-1">
     <span message key="{{titleId}}"></span>
   </h3>
@@ -9,12 +9,12 @@
 </div>
 <div class="modal-footer">
   <div class="form-inline">
-    <button id="{{button1id}}" class="btn btn-success" ng-disabled="!model.acceptprogressdone"
+    <button type="button" id="{{button1id}}" class="btn btn-success" ng-disabled="!model.acceptprogressdone"
             ng-click="button1click()">
       <img ng-hide="model.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif" />
       <span message key="{{button1text}}"></span>
     </button>
-    <button id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+    <button type="button" id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
       <span message key="{{button2text}}"></span>
     </button>
     <div class="webcert-top-padding-section" ng-show="model.showerror">

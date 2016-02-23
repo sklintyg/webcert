@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <button class="close" ng-click="$dismiss()">×</button>
+  <button type="button" class="close" ng-click="$dismiss()">×</button>
   <h3>
     <span message key="modal.title.{{title}}"></span>
   </h3>
@@ -8,13 +8,13 @@
   {{bodyText}}
 </div>
 <div class="modal-footer">
-  <button id="buttonYes" class="btn btn-success" ng-click="yes()">
+  <button type="button" id="buttonYes" class="btn btn-success" ng-click="yes()">
     <span message key="common.yes"></span>
   </button>
-  <button id="buttonNo" class="btn btn-info" ng-click="no()">
+  <button type="button" id="buttonNo" class="btn btn-info" ng-click="no()">
     <span message key="common.no"></span>
   </button>
-  <button id="buttonNoDontAsk" class="btn btn-info" ng-click="noDontAsk()">
+  <button type="button" id="buttonNoDontAsk" class="btn btn-info" ng-click="noDontAsk()">
     <span message key="common.nodontask"></span>
   </button>
 </div>

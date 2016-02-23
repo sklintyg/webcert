@@ -26,7 +26,7 @@
           <div class="webcert-bottom-padding-section">
               <span ng-show="!widgetState.filteredYet && units[0].fragaSvar">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
               <span id="current-list-noResults-unit" ng-show="!widgetState.filteredYet && units[0].fragaSvar == 0">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
-            <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
+            <button type="button" id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                     ng-click="widgetState.filterFormCollapsed = !widgetState.filterFormCollapsed"
                     ng-switch="widgetState.filterFormCollapsed">
               <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
@@ -104,8 +104,8 @@
               <!-- buttons -->
               <div class="form-group" style="margin-top:10px;">
                 <div class="col-sm-offset-2 col-sm-10">
-                  <button id="filter-qa-btn" class="btn btn-default" ng-click="filterList()">Sök</button>
-                  <button class="btn btn-default" ng-click="resetFilterForm()" id="reset-search-form">
+                  <button type="button" id="filter-qa-btn" class="btn btn-default" ng-click="filterList()">Sök</button>
+                  <button type="button" class="btn btn-default" ng-click="resetFilterForm()" id="reset-search-form">
                     Återställ sökformuläret
                   </button>
                 </div>
@@ -156,12 +156,13 @@
                   </tr>
                   <tr ng-repeat="qa in widgetState.currentList">
                     <td>
-                      <button class="btn btn-info" title="Visar intyget och fråga-svar."
+                      <button type="button" class="btn btn-info" title="Visar intyget och fråga-svar."
                               ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa
                       </button>
                     </td>
                     <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
-                      <button class="btn btn-default vidarebefordra-btn"
+                      <button type="button"
+                              class="btn btn-default vidarebefordra-btn"
                               ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                               title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
                               ng-click="openMailDialog(qa)">
@@ -190,7 +191,7 @@
                 {{widgetState.totalCount}}
               </div>
               <div ng-show="widgetState.currentList.length < widgetState.totalCount">
-                <button id="hamtaFler" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
+                <button type="button" id="hamtaFler" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                         ng-disabled="widgetState.fetchingMoreInProgress">
                   <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
                   fler träffar

@@ -13,7 +13,7 @@
 
           <div class="webcert-bottom-padding-section">
                       <span ng-if="!widgetState.filteredYet">Nedan visas alla ej signerade utkast.<br></span>
-            <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
+            <button type="button" id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                     ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
                     ng-switch="widgetState.queryFormCollapsed">
               <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
@@ -94,8 +94,8 @@
               <!-- buttons -->
               <div class="form-group" style="margin-top:10px;">
                 <div class="col-sm-offset-2 col-sm-10">
-                  <button id="uc-filter-btn" class="btn btn-default" ng-click="filterDrafts()">Sök</button>
-                  <button class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökformuläret</button>
+                  <button type="button" id="uc-filter-btn" class="btn btn-default" ng-click="filterDrafts()">Sök</button>
+                  <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökformuläret</button>
                 </div>
               </div>
             </div>
@@ -153,12 +153,13 @@
                   </tr>
                   <tr ng-repeat="cert in widgetState.currentList">
                     <td>
-                      <button class="btn btn-info" title="Visar intyget" ng-click="openIntyg(cert)"
+                      <button type="button" class="btn btn-info" title="Visar intyget" ng-click="openIntyg(cert)"
                               id="showBtn-{{cert.intygId}}"> Visa
                       </button>
                     </td>
                     <td wc-authority="VIDAREBEFORDRA_UTKAST">
-                      <button class="btn btn-default vidarebefordra-btn"
+                      <button type="button"
+                              class="btn btn-default vidarebefordra-btn"
                               ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
                               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
                               ng-click="openMailDialog(cert)">
@@ -186,7 +187,7 @@
               </div>
               <div
                   ng-show="((filterForm.lastFilterQuery.startFrom + filterForm.lastFilterQuery.pageSize) < widgetState.totalCount)">
-                <button class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
+                <button type="button" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                         ng-disabled="widgetState.fetchingMoreInProgress">
                   <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
                   fler träffar
