@@ -29,7 +29,7 @@ var LuseUtkast = BaseUtkast._extend({
       this.at = element(by.css('.edit-form'));
 
       this.baseratPa={
-        minUndersokningAvPatienten:{  
+        minUndersokningAvPatienten:{
           checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3'))
         },
         kannedomOmPatient:{

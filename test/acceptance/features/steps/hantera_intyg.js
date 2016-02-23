@@ -23,34 +23,29 @@
 
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
-var utkastPage = pages.intyg.base.utkast;
 
-module.exports = function() {
-    this.Given(/^jag signerar intyget$/, function(callback) {
-        // fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
-        expect(utkastPage.signeraButton.isEnabled()).to.eventually.be.ok.then(function() {
-            console.log('Signeringsknapp är klickbar');
-        }, function(reason) {
-            callback('FEL, Signeringsknapp är inte klickbar, ' + reason);
-        }).then(callback);
+module.exports = function () {
+  this.Given(/^jag signerar intyget$/, function (callback) {
+    fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
+
+  });
+
+  this.Given(/^jag makulerar intyget$/, function (callback) {
+
+    browser.getCurrentUrl().then(function (text) {
+      intyg.id = text.split('/').slice(-1)[0];
+      intyg.id = intyg.id.split('?')[0];
     });
 
-    this.Given(/^jag makulerar intyget$/, function(callback) {
+    fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+    fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE);
+    fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
+  });
 
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            intyg.id = intyg.id.split('?')[0];
-        });
-
-        fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
+  this.Given(/^jag kopierar intyget$/, function (callback) {
+    fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function () {
+      fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE).then(callback);
     });
-
-    this.Given(/^jag kopierar intyget$/, function(callback) {
-        fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE).then(callback);
-        });
-    });
+  });
 
 };
