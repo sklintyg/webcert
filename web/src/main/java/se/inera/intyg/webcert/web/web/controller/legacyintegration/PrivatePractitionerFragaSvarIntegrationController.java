@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.common.support.common.enumerations.CertificateTypes.FK7263;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
 
 import java.net.URI;
 import java.util.HashMap;
