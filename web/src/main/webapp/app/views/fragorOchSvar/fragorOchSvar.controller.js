@@ -345,9 +345,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
             $scope.onVidareBefordradChange = function(qa) {
                 qa.updateInProgress = true;
-                $log.debug('onVidareBefordradChange: fragaSvarId: ' + qa.internReferens + ' intysTyp: ' +
-                qa.intygsReferens.intygsTyp);
-                fragaSvarCommonService.setVidareBefordradState(qa.internReferens, qa.intygsReferens.intygsTyp,
+                $log.debug('onVidareBefordradChange: fragaSvarId: ' + qa.meddelandeId + ' intysTyp: ' + qa.intygTyp);
+                fragaSvarCommonService.setVidareBefordradState(qa.meddelandeId, qa.intygTyp,
                     qa.vidarebefordrad, function(result) {
                         qa.updateInProgress = false;
 
@@ -363,10 +362,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     });
             };
 
-            $scope.openIntyg = function(intygsReferens) {
-                $log.debug('open intyg ' + intygsReferens.intygsId);
-                $location.url('/fragasvar/' + intygsReferens.intygsTyp.toLowerCase() + '/' +
-                intygsReferens.intygsId, true);
+            $scope.openIntyg = function(intygId, intygTyp) {
+                $log.debug('open intyg ' + intygId + ' of type ' + intygTyp);
+                $location.url('/fragasvar/' + intygTyp.toLowerCase() + '/' + intygId, true);
             };
 
             // Handle vidarebefordra dialog
