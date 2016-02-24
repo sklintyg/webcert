@@ -80,14 +80,14 @@ module.exports = {
 
     getRandomKorkortstyper: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(this.korkortstyper).slice(0, Math.floor(Math.random() * this.korkortstyper.length));
+        return shuffle(this.korkortstyper).slice(0, Math.floor(Math.random() * this.korkortstyper.length)+1);
     },
     getRandomFloat: function() {
         return parseFloat(Math.round((Math.random() * (2.0 - 1.0) + 1.0) * 10) / 10).toFixed(1);
     },
     getRandomKorkortstyperHogre: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length));
+        return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length)+1);
     },
     getRandomStyrka: function() {
         var styrkor = {
