@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor, intyg, logg */
+/* global wcTestTools, pages, browser, protractor, intyg, logg */
 
 'use strict';
 var soap = require('soap');
@@ -26,6 +26,7 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./db_actions/db.js');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
+var testdataHelper = wcTestTools.helpers.testdata;
 
 function stripTrailingSlash(str) {
   if (str.substr(-1) === '/') {
@@ -85,6 +86,10 @@ function assertNumberOfEvents(query, numEvents, cb) {
         cb();
       }
     });
+}
+
+function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
+  return expect(element(by.cssContainingText('.qa-block-handled', kontrollnr)).isPresent()).to.eventually.be.ok;
 }
 
 module.exports = function () {
@@ -202,9 +207,15 @@ module.exports = function () {
   });
 
   this.Given(/^jag svarar på frågan$/, function (callback) {
-    fkIntygPage.answer.text.sendKeys('Ett litet svar.').then(function () {
+    browser.refresh();
+    element(by.cssContainingText('.qa-panel', global.intyg.guidcheck)).element(by.css('textarea')).
+        sendKeys('Ett litet svar.' + global.intyg.guidcheck).then(function () {
       fkIntygPage.answer.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
     });
+  });
+
+  this.Given(/^kan jag se mitt svar under hanterade frågor$/, function (callback) {
+    kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck).notify(callback);
   });
 
   this.Given(/^jag fyller i en ny fråga till Försäkringskassan$/, function (callback) {
@@ -233,12 +244,14 @@ module.exports = function () {
     fkIntygPage.getMarkAsHandledButtonForAnswerByID(global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
 });
 
-  this.Given(/^Försäkringskassan ställer en "([^"]*)" fråga om intyget$/, function (amne, callback) {
+  this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function (amne, callback) {
     var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
     url = url.replace('https', 'http');
 
     global.person.id = '19121212-1212';
-
+    //Kontrollnr for tester. Anvand i bade fraga och svar
+    global.intyg.guidcheck = testdataHelper.generateTestGuid();
+    
     var body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
       global.person.id,
       global.user.hsaId,
@@ -246,7 +259,8 @@ module.exports = function () {
       global.user.enhetId,
       'Enhetsnamn',
       global.intyg.id,
-      amne);
+      amne, 
+      'nytt meddelande: ' + global.intyg.guidcheck);
 
     soap.createClient(url, function (err, client) {
       if (err) {

@@ -16,7 +16,6 @@ Scenario: Kan signera intyg
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
-@impl
 Scenario: Kan inte kopiera intyg Läkarintyg FK 7263 
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg
@@ -52,4 +51,12 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
    Och väljer att visa sökfilter 
    Så ska sökfiltret Sparat av inte vara tillgängligt
 
+Scenario: Ska kunna svara på frågor från Försäkringskassan
+   Givet att jag är inloggad som uthoppsläkare
+   Och går in på Sök/skriv intyg
+   Och jag väljer patienten "19121212-1212"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   Och Försäkringskassan har ställt en "Komplettering_av_lakarintyg" fråga om intyget
+   Och jag svarar på frågan
+   Så kan jag se mitt svar under hanterade frågor
 

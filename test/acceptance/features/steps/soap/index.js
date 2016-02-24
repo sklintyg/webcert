@@ -46,8 +46,12 @@ module.exports = {
       '</urn1:CreateDraftCertificate>';
   },
 
-  ReceiveMedicalCertificateQuestion: function (personId, doctorHsa, doctorName, unitHsa, unitName, intygsId, amne) {
+  ReceiveMedicalCertificateQuestion: function (personId, doctorHsa, doctorName, unitHsa, unitName, intygsId, amne, meddelande) {
     // Komplettering_av_lakarintyg, Makulering_av_lakarintyg, Avstamningsmote, Kontakt, Arbetstidsforlaggning, Paminnelse, Ovrigt
+
+    if (meddelande == undefined) {
+      meddelande = 'Testfråga';
+    }
 
     return '<urn:ReceiveMedicalCertificateQuestion ' +
       'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
@@ -84,7 +88,7 @@ module.exports = {
       '    <urn:fkMeddelanderubrik>Avstämningsmöte</urn:fkMeddelanderubrik>' +
       '    <urn:fkKomplettering>' +
       '      <urn1:falt>Test</urn1:falt>' +
-      '      <urn1:text>Testfråga</urn1:text>' +
+      '      <urn1:text>' + meddelande + '</urn1:text>' +
       '    </urn:fkKomplettering>' +
       '    <urn:fkSistaDatumForSvar>2015-01-28</urn:fkSistaDatumForSvar>' +
       '    <urn:lakarutlatande>' +
