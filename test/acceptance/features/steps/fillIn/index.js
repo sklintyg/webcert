@@ -20,11 +20,22 @@
 'use strict';
 
 module.exports = {
-	ts:{
-		bas:require('./tsBas.js').fillIn,
-		diabetes:require('./tsDiabetes.js').fillIn
-	},
-	fk:{
-		'7263':require('./fk7263.js').fillIn
+	fillIn:function(intyg,cb) {
+	    switch(intyg.typ) {
+		    case 'Transportstyrelsens läkarintyg':
+		        require('./ts.bas.js').fillIn(intyg, cb);
+		        break;
+		    case 'Transportstyrelsens läkarintyg, diabetes':
+		        require('./ts.diabetes.js').fillIn(intyg, cb);
+		        break;
+		    case 'Läkarintyg FK 7263':
+		        require('./fk.7263.js').fillIn(intyg, cb);
+		        break;
+		    case 'Läkarintyg FK 7263':
+		        require('./fk.LUSE.js').fillIn(intyg, cb);
+		        break;
+		    default:
+		        cb('Intyg.typ odefinierad.');
+		}
 	}
 };

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
@@ -17,18 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg*/
+/*global testdata */
 'use strict';
-var fillIn = require('./fillIn').fillIn;
-var generateIntygByType = require('./helpers.js').generateIntygByType;
 
-module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
-        if (!global.intyg.typ) {
-            callback('Intyg.typ odefinierad.');
-        } else {
-            global.intyg = generateIntygByType(intyg.typ, intyg.id);
-            fillIn(global.intyg, callback);
-        }
-    });
+module.exports = {
+	generateIntygByType:function(typ, id){
+	    if (typ === 'Transportstyrelsens läkarintyg') {
+	        return testdata.getRandomTsBasIntyg(id);
+	    } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
+	        return testdata.getRandomTsDiabetesIntyg(id);
+	    } else if (typ === 'Läkarintyg FK 7263') {
+	        return testdata.fk.sjukintyg.getRandom(id);
+	    } else if (typ === 'Läkarintyg, sjukersättning') {
+	        return false;
+	    }
+	}
 };

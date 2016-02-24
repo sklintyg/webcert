@@ -22,9 +22,9 @@
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = {
-	fillIn:function(intyg, cb){
+  fillIn:function(intyg,cb) {
 		browser.ignoreSynchronization = true;
-
+      console.log('eh');
       var promisesArr = [];
       //Ange smittskydd
       promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function () {
@@ -106,7 +106,5 @@ module.exports = {
         	browser.ignoreSynchronization = false;
         	cb();
        	});
-
-	}
-
+  }
 };
