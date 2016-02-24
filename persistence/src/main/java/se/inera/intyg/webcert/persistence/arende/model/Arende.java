@@ -22,11 +22,24 @@ package se.inera.intyg.webcert.persistence.arende.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+
+import se.inera.intyg.webcert.persistence.model.Status;
 
 @Entity
 @Table(name = "ARENDE")
@@ -91,6 +104,19 @@ public class Arende {
     @Column(name = "SISTA_DATUM_FOR_SVAR")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
+
+    @Column(name = "INTYG_TYP")
+    private String intygTyp;
+
+    @Column(name = "SIGNERAT_AV")
+    private String signeratAv;
+
+    @Column(name = "ENHET")
+    private String enhet;
+
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     public Long getId() {
         return id;
@@ -224,5 +250,37 @@ public class Arende {
 
     public void setSvarPaReferens(String svarPaReferens) {
         this.svarPaReferens = svarPaReferens;
+    }
+
+    public String getIntygTyp() {
+        return intygTyp;
+    }
+
+    public void setIntygTyp(String intygTyp) {
+        this.intygTyp = intygTyp;
+    }
+
+    public String getSigneratAv() {
+        return signeratAv;
+    }
+
+    public void setSigneratAv(String signeratAv) {
+        this.signeratAv = signeratAv;
+    }
+
+    public String getEnhet() {
+        return enhet;
+    }
+
+    public void setEnhet(String enhet) {
+        this.enhet = enhet;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

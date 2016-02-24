@@ -32,15 +32,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;

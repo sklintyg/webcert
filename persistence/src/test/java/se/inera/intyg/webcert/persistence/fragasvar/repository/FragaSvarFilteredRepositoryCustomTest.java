@@ -38,8 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 /**
  * Test for filtering FragaSvar.

@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.converter;
+
+import java.util.Optional;
+
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
+import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
+
+public final class IntygMetaDataConverter {
+
+    private IntygMetaDataConverter() {
+    }
+
+    public static Optional<IntygMetaData> convert(CertificateMetaType source) {
+        if (source == null) {
+            return Optional.empty();
+        }
+        IntygMetaData destination = new IntygMetaData();
+        destination.setIntygId(source.getCertificateId());
+        destination.setIntygTyp(source.getCertificateType());
+        destination.setSigneratAv(source.getIssuerName());
+        destination.setEnhet(source.getFacilityName());
+        return Optional.of(destination);
+    }
+}

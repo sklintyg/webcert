@@ -21,16 +21,25 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamSource;
@@ -49,6 +58,9 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareRequestType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponseType;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -58,6 +70,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -71,6 +84,7 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -80,6 +94,10 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
 /**
  * @author andreaskaltenbach
@@ -95,9 +113,11 @@ public class IntygServiceTest {
 
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
 
-
     @Mock
     private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
+
+    @Mock
+    private GetMedicalCertificateForCareResponderInterface getMedicalCertificateForCareResponderInterface;
 
     @Mock
     private IntygModuleFacade moduleFacade;
@@ -113,7 +133,7 @@ public class IntygServiceTest {
 
     @Mock
     private LogService logservice;
-    
+
     @Mock
     IntygModuleRegistry moduleRegistry;
 
@@ -290,7 +310,8 @@ public class IntygServiceTest {
         request.getEnhet().add("enhet-1");
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenThrow(
                 WebServiceException.class);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false, null, null));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+                buildDraftList(false, null, null));
 
         IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
         assertNotNull(intygItemListResponse);
@@ -364,7 +385,8 @@ public class IntygServiceTest {
 
     @Test
     public void testDraftAddedToListResponseIfUnique() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, null, null));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+                buildDraftList(true, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
@@ -376,7 +398,8 @@ public class IntygServiceTest {
 
     @Test
     public void testDraftNotAddedToListResponseIfNotUnique() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(false, null, null));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+                buildDraftList(false, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
@@ -389,7 +412,8 @@ public class IntygServiceTest {
 
     @Test
     public void testDraftAddedWithSkapadAvNameIfMatching() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, vardpersonReferens, null));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+                buildDraftList(true, vardpersonReferens, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
@@ -405,7 +429,8 @@ public class IntygServiceTest {
     @Test
     public void testDraftAddedWithSenastSparadAvNameIfMatching() throws Exception {
         vardpersonReferens.setNamn(SENAST_SPARAD_NAME);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, null, vardpersonReferens));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+                buildDraftList(true, null, vardpersonReferens));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
@@ -421,7 +446,8 @@ public class IntygServiceTest {
     @Test
     public void testDraftAddedWithHsaIdIfNoneMatching() throws Exception {
         vardpersonReferens.setNamn(SENAST_SPARAD_NAME);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(buildDraftList(true, null, null));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+                buildDraftList(true, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
@@ -471,6 +497,102 @@ public class IntygServiceTest {
             verifyZeroInteractions(logservice);
             throw e;
         }
+    }
+
+    @Test
+    public void testFetchIntygMetaData() {
+        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
+                buildIntygResponse(ResultCodeType.OK, null, true));
+
+        IntygMetaData intygMetaData = intygService.fetchIntygMetaData(CERTIFICATE_ID);
+        assertNotNull(intygMetaData);
+
+        ArgumentCaptor<GetMedicalCertificateForCareRequestType> captor = ArgumentCaptor.forClass(GetMedicalCertificateForCareRequestType.class);
+        verify(getMedicalCertificateForCareResponderInterface).getMedicalCertificateForCare(anyString(), captor.capture());
+
+        GetMedicalCertificateForCareRequestType request = captor.getValue();
+        assertNotNull(request);
+        assertEquals(CERTIFICATE_ID, request.getCertificateId());
+    }
+
+    @Test
+    public void testFetchIntygMetaDataInfo() {
+        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
+                buildIntygResponse(ResultCodeType.INFO, null, true));
+
+        IntygMetaData intygMetaData = intygService.fetchIntygMetaData(CERTIFICATE_ID);
+        assertNotNull(intygMetaData);
+
+        ArgumentCaptor<GetMedicalCertificateForCareRequestType> captor = ArgumentCaptor.forClass(GetMedicalCertificateForCareRequestType.class);
+        verify(getMedicalCertificateForCareResponderInterface).getMedicalCertificateForCare(anyString(), captor.capture());
+
+        GetMedicalCertificateForCareRequestType request = captor.getValue();
+        assertNotNull(request);
+        assertEquals(CERTIFICATE_ID, request.getCertificateId());
+    }
+
+    @Test
+    public void testFetchIntygMetaDataErrorRevoked() {
+        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
+                buildIntygResponse(ResultCodeType.ERROR, ErrorIdType.REVOKED, true));
+
+        try {
+            intygService.fetchIntygMetaData(CERTIFICATE_ID);
+            fail("Should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testFetchIntygMetaDataError() {
+        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
+                buildIntygResponse(ResultCodeType.ERROR, ErrorIdType.APPLICATION_ERROR, true));
+
+        try {
+            intygService.fetchIntygMetaData(CERTIFICATE_ID);
+            fail("Should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testFetchIntygMetaDataMissing() {
+        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
+                buildIntygResponse(ResultCodeType.OK, null, false));
+
+        try {
+            intygService.fetchIntygMetaData(CERTIFICATE_ID);
+            fail("Should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testFetchIntygMetaDataValidationError() {
+        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
+                buildIntygResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR, true));
+
+        try {
+            intygService.fetchIntygMetaData(CERTIFICATE_ID);
+            fail("Should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
+        }
+    }
+
+    private GetMedicalCertificateForCareResponseType buildIntygResponse(ResultCodeType resultCodeType, ErrorIdType errorId, boolean setMetaData) {
+        GetMedicalCertificateForCareResponseType r = new GetMedicalCertificateForCareResponseType();
+        if (setMetaData) {
+            r.setMeta(new CertificateMetaType());
+        }
+        ResultType rt = new ResultType();
+        rt.setResultCode(resultCodeType);
+        rt.setErrorId(errorId);
+        r.setResult(rt);
+        return r;
     }
 
     private IntygPdf buildPdfDocument() {

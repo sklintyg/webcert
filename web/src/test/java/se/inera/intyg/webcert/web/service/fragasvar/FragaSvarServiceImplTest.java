@@ -60,6 +60,7 @@ import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
@@ -36,7 +37,7 @@ import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.Resu
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;

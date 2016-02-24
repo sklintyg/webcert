@@ -23,10 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.service.exception.WebcertServiceException;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 
@@ -46,10 +49,24 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
         try {
             arendeService.processIncomingMessage(ArendeConverter.convert(request));
             result.setResultCode(ResultCodeType.OK);
-        } catch (WebcertServiceException e) { // TODO Error handling
+        } catch (WebCertServiceException e) {
             result.setResultCode(ResultCodeType.ERROR);
-            result.setResultText(e.getMessage());
-            LOG.error("Could not process incoming message to care. Cause is: {}", e.getMessage());
+            switch (e.getErrorCode()) {
+            case CERTIFICATE_REVOKED:
+                result.setErrorId(ErrorIdType.REVOKED);
+                result.setResultText("Certificate revoked");
+                LOG.warn("Could not process incoming message to care. Certificate is revoked.");
+                break;
+            case DATA_NOT_FOUND:
+                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+                result.setResultText("Certificate not found");
+                LOG.warn("Could not process incoming message to care. Certificate not found.");
+                break;
+            default:
+                result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+                result.setResultText(e.getMessage());
+                LOG.error("Could not process incoming message to care. Cause is: {}", e.getMessage());
+            }
         }
 
         response.setResult(result);

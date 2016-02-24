@@ -25,6 +25,8 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
+import se.inera.intyg.webcert.persistence.model.Status;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;

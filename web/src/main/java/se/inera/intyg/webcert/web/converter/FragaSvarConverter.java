@@ -20,8 +20,10 @@
 package se.inera.intyg.webcert.web.converter;
 
 import com.google.common.collect.ImmutableSet;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -34,8 +36,8 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,11 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package se.inera.intyg.webcert.persistence.model;
 
-package se.inera.intyg.webcert.web.service.exception;
+/**
+ * Possible statuses for a FragaSvar Entity.
+ *
+ * @author marced
+ *
+ */
+public enum Status {
 
-public class WebcertServiceException extends Exception {
+    /**
+     * The FragaSvar or Arende has been received from an external entity and needs to be answered.
+     */
+    PENDING_INTERNAL_ACTION,
 
-    private static final long serialVersionUID = -4134815099448543177L;
+    /**
+     * The FragaSvar or Arende has been sent to an external entity and awaits an answer.
+     */
+    PENDING_EXTERNAL_ACTION,
 
+    /**
+     * The FragaSvar or Arende has received an answer from the external entity.
+     */
+    ANSWERED,
+
+    /**
+     * The FragaSvar or Arende has been handled.
+     */
+    CLOSED;
 }

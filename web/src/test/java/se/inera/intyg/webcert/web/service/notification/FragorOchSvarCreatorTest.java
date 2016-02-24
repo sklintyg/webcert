@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 public class FragorOchSvarCreatorTest {
 

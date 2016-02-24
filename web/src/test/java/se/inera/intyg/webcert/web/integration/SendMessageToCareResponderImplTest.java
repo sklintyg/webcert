@@ -30,15 +30,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.service.exception.WebcertServiceException;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.SkickatAv;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Part;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,7 +63,7 @@ public class SendMessageToCareResponderImplTest {
     private SendMessageToCareResponderImpl responder;
 
     @Test
-    public void testSendRequestToService() throws WebcertServiceException {
+    public void testSendRequestToService() throws WebCertServiceException {
         when(arendeService.processIncomingMessage(any())).thenReturn(new Arende());
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
@@ -67,11 +71,30 @@ public class SendMessageToCareResponderImplTest {
     }
 
     @Test
-    public void testSendRequestToServiceFailed() throws WebcertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenThrow(new WebcertServiceException());
+    public void testSendRequestToServiceFailed() throws WebCertServiceException {
+        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, ""));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
-        assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+    }
+
+    @Test
+    public void testSendRequestToServiceFailedRevoked() throws WebCertServiceException {
+        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED, ""));
+        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+        assertNotNull(response.getResult());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdType.REVOKED, response.getResult().getErrorId());
+    }
+
+    @Test
+    public void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
+        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, ""));
+        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+        assertNotNull(response.getResult());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
     }
 
     private SendMessageToCareType createNewRequest() {

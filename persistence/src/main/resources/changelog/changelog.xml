@@ -701,4 +701,23 @@
 
   </changeSet>
 
+  <changeSet id="25" author="mn">
+
+    <addColumn tableName="ARENDE">
+      <column name="INTYG_TYP" type="varchar(255)" />
+      <column name="SIGNERAT_AV" type="varchar(255)" />
+      <column name="ENHET" type="varchar(255)" />
+      <column name="STATUS" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+
+    <createIndex indexName="IDX_ARENDE_ENHET_STATUS"
+      tableName="ARENDE" unique="false">
+      <column name="ENHET" />
+      <column name="STATUS" />
+    </createIndex>
+
+  </changeSet>
+
 </databaseChangeLog>

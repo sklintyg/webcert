@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
+import se.inera.intyg.webcert.persistence.model.Status;
+
 public class FragaSvarStatus {
 
     private Long fragaSvarId;

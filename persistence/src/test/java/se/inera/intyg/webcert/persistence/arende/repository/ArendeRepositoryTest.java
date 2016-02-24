@@ -31,7 +31,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.persistence.arende.model.*;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -61,6 +64,10 @@ public class ArendeRepositoryTest {
         assertEquals(read.getSkickatTidpunkt(), saved.getSkickatTidpunkt());
         assertEquals(read.getSvarPaId(), saved.getSvarPaId());
         assertEquals(read.getSvarPaReferens(), saved.getSvarPaReferens());
+        assertEquals(read.getIntygTyp(), saved.getIntygTyp());
+        assertEquals(read.getSigneratAv(), saved.getSigneratAv());
+        assertEquals(read.getEnhet(), saved.getEnhet());
+        assertEquals(read.getStatus(), saved.getStatus());
         assertEquals(read.getTimestamp(), saved.getTimestamp());
 
         assertEquals(read.getKomplettering(), saved.getKomplettering());
@@ -83,6 +90,10 @@ public class ArendeRepositoryTest {
         res.setSkickatTidpunkt(LocalDateTime.now().minusDays(3));
         res.setSvarPaId("SVAR_PA_ID");
         res.setSvarPaReferens("SVAR_PA_REFERENS");
+        res.setIntygTyp("INTYG_TYP");
+        res.setSigneratAv("SIGNERAT_AV");
+        res.setEnhet("ENHET");
+        res.setStatus(Status.PENDING_INTERNAL_ACTION);
         res.setTimestamp(LocalDateTime.now());
 
         res.getKomplettering().add(buildMedicinsktArende("1", 1, "text 1"));

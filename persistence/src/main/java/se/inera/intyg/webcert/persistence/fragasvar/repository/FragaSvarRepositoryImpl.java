@@ -21,9 +21,10 @@ package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
+
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Status;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,6 +34,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import java.util.List;
 
 /**

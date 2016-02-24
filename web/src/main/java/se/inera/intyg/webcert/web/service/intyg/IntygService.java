@@ -25,6 +25,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 
@@ -40,6 +41,11 @@ public interface IntygService {
      * an attempt to find an utkast stored in Webcert will be performed.
      */
     IntygContentHolder fetchIntygData(String intygId, String typ);
+
+    /**
+     * Fetches the intyg meta data from the Intygstjanst.
+     */
+    IntygMetaData fetchIntygMetaData(String intygId);
 
     /**
      * Returns all certificates for the given patient within all the given units.

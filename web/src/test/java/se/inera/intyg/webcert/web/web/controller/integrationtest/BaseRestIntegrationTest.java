@@ -43,6 +43,7 @@ import com.jayway.restassured.response.Response;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;

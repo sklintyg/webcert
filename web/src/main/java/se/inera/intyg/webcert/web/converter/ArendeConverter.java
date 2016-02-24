@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.converter;
 
 import java.util.stream.Collectors;
 
-import org.joda.time.LocalDateTime;
-
-import se.inera.intyg.webcert.persistence.arende.model.*;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.Komplettering;
 import se.riv.clinicalprocess.healthcond.certificate.v2.MeddelandeReferens;
@@ -52,7 +52,6 @@ public final class ArendeConverter {
             res.setSvarPaId(request.getSvarPa().getMeddelandeId());
             res.setSvarPaReferens(extractReferensId(request.getSvarPa()));
         }
-        res.setTimestamp(LocalDateTime.now());
         return res;
     }
 
