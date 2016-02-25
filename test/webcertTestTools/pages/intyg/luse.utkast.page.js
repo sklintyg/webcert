@@ -30,7 +30,9 @@ var LuseUtkast = BaseUtkast._extend({
 
       this.baseratPa={
         minUndersokningAvPatienten:{
-          checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3'))
+          checkbox3: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+          checkbox4: element(by.id('formly_1_date_journaluppgifter_4')),
+          checkbox5: element(by.id('formly_1_date_anhorigsBeskrivningAvPatienten_5'))
         },
         kannedomOmPatient:{
             checkbox:element(by.id('formly_1_date_kannedomOmPatient_8'))
@@ -59,7 +61,8 @@ var LuseUtkast = BaseUtkast._extend({
       this.medicinskaForutsattningarForArbete = element(by.id('medicinskaForutsattningarForArbete'));
       this.aktivitetsFormaga = element(by.id('aktivitetsFormaga'));
       this.ovrigt = element(by.id('ovrigt'));
-      this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
+      this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
+      // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
       this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
       this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
   },

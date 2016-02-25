@@ -31,7 +31,7 @@ function findArrayElementsInArray(targetArray, compareArray) {
     return result;
 }
 
-function arrayContains(array,compareArray) {
+function arrayContains(array, compareArray) {
     var found = findArrayElementsInArray(array, compareArray);
     return found.length > 0;
 }
@@ -75,19 +75,21 @@ module.exports = {
     adhdSyndrom: ['Ja', 'Nej'],
     sjukhusvard: ['Ja', 'Nej'],
     ovrigMedicin: ['Ja', 'Nej'],
+    mediciner: ['Ipren', 'Alvedon', 'Bamyl', 'Snus'],
+    funktionsnedsattningar: ['Problem...', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen'],
 
     fk: require('./fk.js'),
 
     getRandomKorkortstyper: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(this.korkortstyper).slice(0, Math.floor(Math.random() * this.korkortstyper.length)+1);
+        return shuffle(this.korkortstyper).slice(0, Math.floor(Math.random() * this.korkortstyper.length) + 1);
     },
     getRandomFloat: function() {
         return parseFloat(Math.round((Math.random() * (2.0 - 1.0) + 1.0) * 10) / 10).toFixed(1);
     },
     getRandomKorkortstyperHogre: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length)+1);
+        return shuffle(this.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * this.korkortstyperHogreBehorighet.length) + 1);
     },
     getRandomStyrka: function() {
         var styrkor = {
@@ -200,15 +202,15 @@ module.exports = {
     },
     getRandomHorselSamtal: function(korkortstyper) {
         var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
-        if (arrayContains(korkortstyper,besvarasOm)) {
+        if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(this.horselSamtal)[0];
         } else {
             return false;
         }
     },
-    getRandomInUtUrFordon:function(korkortstyper){
-      var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
-        if (arrayContains(korkortstyper,besvarasOm)) {
+    getRandomInUtUrFordon: function(korkortstyper) {
+        var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
+        if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(this.rorOrgInUt)[0];
         } else {
             return '';
@@ -247,9 +249,9 @@ module.exports = {
                 vanster: shuffle(this.synLinser)[0],
                 hoger: shuffle(this.synLinser)[0]
             },
-            rorelseorganensFunktioner:{
-                  nedsattning: shuffle(this.rorOrgNedsattning)[0],
-                  inUtUrFordon: this.getRandomInUtUrFordon(randomKorkortstyper)
+            rorelseorganensFunktioner: {
+                nedsattning: shuffle(this.rorOrgNedsattning)[0],
+                inUtUrFordon: this.getRandomInUtUrFordon(randomKorkortstyper)
             },
             hjartHjarna: shuffle(this.hjartHjarna)[0],
             hjartSkada: shuffle(this.hjartSkada)[0],
@@ -275,6 +277,45 @@ module.exports = {
             ovrigMedicin: shuffle(this.ovrigMedicin)[0],
             kommentar: this.comment,
             styrkor: this.getRandomStyrka()
+        };
+    },
+
+    randomTrueFalse: function() {
+        return shuffle([true, false])[0];
+    },
+
+    getRandomLuseIntyg: function(intygsID) {
+        return {
+            intygId: intygsID,
+            typ: 'Läkarutlåtande för sjukersättning',
+            diagnos: {
+                kod: shuffle(this.ICD10)[0],
+                bakgrund: 'En slumpmässig bakgrund'
+            },
+            annanUnderlag: this.randomTrueFalse(),
+            sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
+            nyDiagnosBedom: this.randomTrueFalse(),
+            funktionsnedsattning: {
+                //funktionsnedsattningar
+                intellektuell: shuffle(this.funktionsnedsattningar)[0],
+                kommunikation: shuffle(this.funktionsnedsattningar)[0],
+                koncentration: shuffle(this.funktionsnedsattningar)[0],
+                psykisk: shuffle(this.funktionsnedsattningar)[0],
+                synHorselTal: shuffle(this.funktionsnedsattningar)[0],
+                balansKoordination: shuffle(this.funktionsnedsattningar)[0],
+                annan: shuffle(this.funktionsnedsattningar)[0]
+            },
+            aktivitetsbegransning: 'Total',
+            avslutadBehandling: shuffle(this.mediciner)[0],
+            pagaendeBehandling: shuffle(this.mediciner)[0],
+            planeradBehandling: shuffle(this.mediciner)[0],
+            substansintag: shuffle(this.mediciner)[0],
+            medicinskaForutsattningarForArbete: 'Inte speciellt',
+            aktivitetsFormaga: 'Liten',
+            ovrigt: 'Inget',
+            kontaktMedFkNo: this.randomTrueFalse(),
+            tillaggsfragor0svar: 'Answer',
+            tillaggsfragor1svar: 'Question'
         };
     }
 };

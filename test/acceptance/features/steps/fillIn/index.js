@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 'use strict';
 
 module.exports = {
@@ -31,7 +30,7 @@ module.exports = {
 		    case 'Läkarintyg FK 7263':
 		        require('./fk.7263.js').fillIn(intyg, cb);
 		        break;
-		    case 'Läkarintyg FK 7263':
+		    case 'Läkarutlåtande för sjukersättning':
 		        require('./fk.LUSE.js').fillIn(intyg, cb);
 		        break;
 		    default:

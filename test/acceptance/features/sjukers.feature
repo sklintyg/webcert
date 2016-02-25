@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 @sjukers @notReady
 Scenario: Skapa och signera ett intyg
 	När jag väljer patienten "19971019-2387"
-	Och jag går in på att skapa ett "Läkarintyg, sjukersättning" intyg
+	Och jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget

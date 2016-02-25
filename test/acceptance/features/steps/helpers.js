@@ -29,8 +29,8 @@ module.exports = {
 	        return testdata.getRandomTsDiabetesIntyg(id);
 	    } else if (typ === 'Läkarintyg FK 7263') {
 	        return testdata.fk.sjukintyg.getRandom(id);
-	    } else if (typ === 'Läkarintyg, sjukersättning') {
-	        return false;
+	    } else if (typ === 'Läkarutlåtande för sjukersättning') {
+	        return testdata.getRandomLuseIntyg(id);
 	    }
 	}
 };

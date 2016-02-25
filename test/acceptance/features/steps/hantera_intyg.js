@@ -27,7 +27,6 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = function () {
   this.Given(/^jag signerar intyget$/, function (callback) {
     fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
-
   });
 
   this.Given(/^jag makulerar intyget$/, function (callback) {

@@ -23,38 +23,44 @@
 var luseUtkastPage = pages.intyg.fk.luse.utkast;
 module.exports = {
     fillIn: function(intyg, cb) {
+        logger.info('intyg.typ:' + intyg.typ);
 
         browser.ignoreSynchronization = true;
 
         //Baserat på
-        luseUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox3.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox4.sendKeys(protractor.Key.SPACE);
+        luseUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox5.sendKeys(protractor.Key.SPACE);
         luseUtkastPage.baseratPa.kannedomOmPatient.checkbox.sendKeys(protractor.Key.SPACE);
 
         luseUtkastPage.underlagFinnsNo.sendKeys(protractor.Key.SPACE);
-        luseUtkastPage.diagnoseCode.sendKeys('A000');
-        luseUtkastPage.diagnosgrund.sendKeys('Ingen grund alls');
+        luseUtkastPage.diagnoseCode.sendKeys(intyg.diagnos.kod);
+        luseUtkastPage.diagnoseCode.sendKeys(protractor.Key.TAB);
+        luseUtkastPage.diagnosgrund.sendKeys(intyg.diagnos.bakgrund);
         luseUtkastPage.nyBedomningDiagnosgrundNo.sendKeys(protractor.Key.SPACE);
 
         //Funktionsnedsättning
-        luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys('Problem...');
-        luseUtkastPage.funktionsnedsattning.kommunikation.sendKeys('Inget tal');
-        luseUtkastPage.funktionsnedsattning.koncentration.sendKeys('Ingen koncentration');
-        luseUtkastPage.funktionsnedsattning.psykisk.sendKeys('Total');
-        luseUtkastPage.funktionsnedsattning.synHorselTal.sendKeys('Blind');
-        luseUtkastPage.funktionsnedsattning.balansKoordination.sendKeys('Svajig i benen');
-        luseUtkastPage.funktionsnedsattning.annan.sendKeys('Ingen');
+        luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell);
+        luseUtkastPage.funktionsnedsattning.kommunikation.sendKeys(intyg.funktionsnedsattning.kommunikation);
+        // luseUtkastPage.funktionsnedsattning.koncentration.sendKeys(intyg.funktionsnedsattning.;
+        luseUtkastPage.funktionsnedsattning.psykisk.sendKeys(intyg.funktionsnedsattning.psykisk);
+        luseUtkastPage.funktionsnedsattning.synHorselTal.sendKeys(intyg.funktionsnedsattning.synHorselTal);
+        luseUtkastPage.funktionsnedsattning.balansKoordination.sendKeys(intyg.funktionsnedsattning.balansKoordination);
+        luseUtkastPage.funktionsnedsattning.annan.sendKeys(intyg.funktionsnedsattning.annan);
+        luseUtkastPage.sjukdomsforlopp.sendKeys(intyg.sjukdomsForlopp);
 
-        luseUtkastPage.aktivitetsbegransning.sendKeys('Total');
-        luseUtkastPage.avslutadBehandling.sendKeys('Ipren');
-        luseUtkastPage.pagaendeBehandling.sendKeys('Alvedon');
-        luseUtkastPage.planeradBehandling.sendKeys('Bamyl');
-        luseUtkastPage.substansintag.sendKeys('Snus');
-        luseUtkastPage.medicinskaForutsattningarForArbete.sendKeys('Inte speciellt');
-        luseUtkastPage.aktivitetsFormaga.sendKeys('Liten');
-        luseUtkastPage.ovrigt.sendKeys('Inget');
+        luseUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning);
+        luseUtkastPage.avslutadBehandling.sendKeys(intyg.avslutadBehandling);
+        luseUtkastPage.pagaendeBehandling.sendKeys(intyg.pagaendeBehandling);
+        luseUtkastPage.planeradBehandling.sendKeys(intyg.planeradBehandling);
+        luseUtkastPage.substansintag.sendKeys(intyg.substansintag);
+
+        luseUtkastPage.medicinskaForutsattningarForArbete.sendKeys(intyg.medicinskaForutsattningarForArbete);
+        luseUtkastPage.aktivitetsFormaga.sendKeys(intyg.aktivitetsFormaga);
+        luseUtkastPage.ovrigt.sendKeys(intyg.ovrigt);
         luseUtkastPage.kontaktMedFkNo.sendKeys(protractor.Key.SPACE);
-        luseUtkastPage.tillaggsfragor0svar.sendKeys('Question');
-        luseUtkastPage.tillaggsfragor1svar.sendKeys('Answer');
+        luseUtkastPage.tillaggsfragor0svar.sendKeys(intyg.tillaggsfragor0svar);
+        luseUtkastPage.tillaggsfragor1svar.sendKeys(intyg.tillaggsfragor1svar);
 
         browser.ignoreSynchronization = false;
 
