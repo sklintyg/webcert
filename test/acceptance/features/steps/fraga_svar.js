@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, protractor*/
+/* globals pages, intyg, protractor, logger*/
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -31,7 +31,7 @@ module.exports = function () {
 
     fkIntygPage.qaPanel.getAttribute('id').then(function (result) {
       intyg.fragaId = result.split('-')[1];
-      console.log('Frågans ID: ' + intyg.fragaId);
+      logger.debug('Frågans ID: ' + intyg.fragaId);
       callback();
     });
   });

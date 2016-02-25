@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, logg, should, JSON*/
+/* globals intyg, logger, should, JSON*/
 
 'use strict';
 
@@ -40,9 +40,9 @@ module.exports = function () {
           connection.end();
           should.not.exist(err);
 
-          logg('Intygs id: ' + intyg.id);
-          logg('Från databas:');
-          logg(JSON.stringify(rows));
+          logger.info('Intygs id: ' + intyg.id);
+          logger.info('Från databas:');
+          logger.info(JSON.stringify(rows));
 
           var radix = 10; //for parseInt
           expect(parseInt(rows[0].Counter, radix)).to.equal(0);

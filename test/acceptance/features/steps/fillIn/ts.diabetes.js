@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logg, pages, JSON, browser */
+/* globals logger, pages, JSON, browser */
 
 'use strict';
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
@@ -25,14 +25,14 @@ module.exports = {
     fillIn: function(intyg, cb) {
         //Ange körkortstyper
         tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function() {
-            logg('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
+            logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
         }, function(reason) {
             cb('FEL, fillInKorkortstyper,' + reason);
         });
 
         //Ange Identitet styrkt genom
         tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
-            logg('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
+            logger.info('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
         }, function(reason) {
             cb('FEL, fillInIdentitetStyrktGenom,' + reason);
         });
@@ -46,20 +46,20 @@ module.exports = {
 
         //Ange allmänt
         tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
-            logg('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
+            logger.info('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
         }, function(reason) {
             cb('FEL, fillInAllmant,' + reason);
         });
 
         //Ange hypoglykemier
         tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier).then(function() {
-            logg('OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
+            logger.info('OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
         }, function(reason) {
             cb('FEL, fillInHypoglykemier,' + reason);
         });
 
         tsdUtkastPage.fillInSynintyg(intyg.synintyg).then(function() {
-            logg('OK - fillInSynintyg :' + JSON.stringify(intyg.synintyg));
+            logger.info('OK - fillInSynintyg :' + JSON.stringify(intyg.synintyg));
         }, function(reason) {
             cb('FEL, fillInSynintyg,' + reason);
         });
@@ -67,7 +67,7 @@ module.exports = {
         browser.ignoreSynchronization = false;
 
         tsdUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
-            logg('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
+            logger.info('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
         }, function(reason) {
             cb('FEL, fillInBedomning,' + reason);
         }).then(cb);

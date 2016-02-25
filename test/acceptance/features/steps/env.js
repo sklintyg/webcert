@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, logg */
+/* globals browser, logger */
 'use strict';
 
 module.exports = function () {
@@ -36,7 +36,7 @@ module.exports = function () {
     }
 
     if (scenario.isFailed()) {
-      logg('scenario failed');
+      logger.info('scenario failed');
       browser.takeScreenshot().then(function (png) {
         //var base64Image = new Buffer(png, 'binary').toString('base64');
         var decodedImage = new Buffer(png, 'base64').toString('binary');
@@ -57,7 +57,7 @@ module.exports = function () {
         require('./db_actions/db.js').removeCert(global.intyg.id, callback);
         */
       } else {
-        logg('Behåller skapat testintyg');
+        logger.info('Behåller skapat testintyg');
         callback();
       }
     }
@@ -68,11 +68,10 @@ module.exports = function () {
     callback();
   });
 
-  global.logg = function (text) {
-    console.log(text);
-    if (global) {
-      global.scenario.attach(text);
+  logger.on('logging', function (transport, level, msg, meta) {
+    if (global.scenario) {
+      global.scenario.attach(msg);
     }
-  };
+  });
 
 };

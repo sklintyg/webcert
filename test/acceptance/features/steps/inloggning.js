@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, person, browser, intyg, logg*/
+/* globals pages, protractor, person, browser, intyg, logger*/
 
 'use strict';
 
@@ -30,9 +30,9 @@ var webcertBase = pages.webcertBase;
 
 module.exports = function() {
 
-    this.Then(/^vill jag vara inloggad$/, function(callback) {
-        expect(webcertBase.header.getText()).to.eventually.contain('Logga ut').and.notify(callback);
-        // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('Logga ut').and.notify(callback);
+    this.Then(/^vill jag vara inlogger.infoad$/, function(callback) {
+        expect(webcertBase.header.getText()).to.eventually.contain('logger.infoa ut').and.notify(callback);
+        // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('logger.infoa ut').and.notify(callback);
     });
 
     this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer, callback) {
@@ -49,7 +49,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
-        logg('intygstyp: ' + intygsTyp);
+        logger.info('intygstyp: ' + intygsTyp);
         intyg.typ = intygsTyp;
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
         sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
@@ -57,7 +57,7 @@ module.exports = function() {
         // Save INTYGS_ID:
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
-            console.log(intyg.id);
+            logger.debug(intyg.id);
         });
         callback();
     });
@@ -69,21 +69,21 @@ module.exports = function() {
 
     this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function(callback) {
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes' || intyg.typ === 'Transportstyrelsens läkarintyg') {
-            logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
+            logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
             require('./checkValues/ts.common.js').checkTsCommonValues(intyg, callback);
         }
 
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            logg('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
+            logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
             require('./checkValues/ts.diabetes.js').checkTsDiabetesValues(intyg, callback);
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-            logg('-- Kontrollerar Transportstyrelsens läkarintyg --');
+            logger.info('-- Kontrollerar Transportstyrelsens läkarintyg --');
             require('./checkValues/ts.bas.js').checkTsBasValues(intyg, callback);
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            logg('-- Kontrollerar Läkarintyg FK 7263 --');
+            logger.info('-- Kontrollerar Läkarintyg FK 7263 --');
             require('./checkValues/fk.js').checkFKValues(intyg, callback);
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-            logg('-- Kontrollerar Läkarutlåtande för sjukersättning --');
+            logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
             require('./checkValues/luse.js').checkLuseValues(intyg, callback);
         }
     });

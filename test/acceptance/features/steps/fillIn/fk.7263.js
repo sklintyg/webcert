@@ -17,86 +17,86 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logg, pages, JSON, browser, Promise */
+/* globals logger, pages, JSON, browser, Promise */
 
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = {
   fillIn:function(intyg,cb) {
 		browser.ignoreSynchronization = true;
-      console.log('eh');
+      logger.debug('eh');
       var promisesArr = [];
       //Ange smittskydd
       promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function () {
-        logg('OK - angeSmittskydd :' + intyg.smittskydd);
+        logger.info('OK - angeSmittskydd :' + intyg.smittskydd);
       }, function (reason) {
         cb('FEL, angeSmittskydd,' + reason);
       }));
 
       //Ange baseras på
       promisesArr.push(fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function () {
-        logg('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
+        logger.info('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
       }, function (reason) {
         cb('FEL, angeIntygetBaserasPa,' + reason);
       }));
 
       //Ange funktionsnedsättning
       promisesArr.push(fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function () {
-        logg('OK - angeFunktionsnedsattning :' + JSON.stringify(intyg.funktionsnedsattning));
+        logger.info('OK - angeFunktionsnedsattning :' + JSON.stringify(intyg.funktionsnedsattning));
       }, function (reason) {
         cb('FEL, angeFunktionsnedsattning,' + reason);
       }));
 
       //Ange diagnoser
       promisesArr.push(fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function () {
-        logg('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
+        logger.info('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
       }, function (reason) {
         cb('FEL, angeDiagnoser,' + reason);
       }));
 
       //Ange aktuellt sjukdomsförlopp
       promisesArr.push(fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp).then(function () {
-        logg('OK - angeAktuelltSjukdomsForlopp :' + JSON.stringify(intyg.aktuelltSjukdomsforlopp));
+        logger.info('OK - angeAktuelltSjukdomsForlopp :' + JSON.stringify(intyg.aktuelltSjukdomsforlopp));
       }, function (reason) {
         cb('FEL, angeAktuelltSjukdomsForlopp,' + reason);
       }));
 
       //Ange aktivitetsbegränsning
       promisesArr.push(fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning).then(function () {
-        logg('OK - angeAktivitetsBegransning :' + JSON.stringify(intyg.aktivitetsBegransning));
+        logger.info('OK - angeAktivitetsBegransning :' + JSON.stringify(intyg.aktivitetsBegransning));
       }, function (reason) {
         cb('FEL, angeAktivitetsBegransning,' + reason);
       }));
 
       promisesArr.push(fkUtkastPage.angeArbete(intyg.arbete).then(function () {
-        logg('OK - angeArbete :' + JSON.stringify(intyg.arbete));
+        logger.info('OK - angeArbete :' + JSON.stringify(intyg.arbete));
       }, function (reason) {
         cb('FEL, angeArbete,' + reason);
       }));
       promisesArr.push(fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function () {
-        logg('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
+        logger.info('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
       }, function (reason) {
         cb('FEL, angeArbetsformaga,' + reason);
       }));
       promisesArr.push(fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB).then(function () {
-        logg('OK - angeArbetsformagaFMB :' + JSON.stringify(intyg.arbetsformagaFMB));
+        logger.info('OK - angeArbetsformagaFMB :' + JSON.stringify(intyg.arbetsformagaFMB));
       }, function (reason) {
         cb('FEL, angeArbetsformagaFMB,' + reason);
       }));
 
       promisesArr.push(fkUtkastPage.angePrognos(intyg.prognos).then(function () {
-        logg('OK - angePrognos :' + JSON.stringify(intyg.prognos));
+        logger.info('OK - angePrognos :' + JSON.stringify(intyg.prognos));
       }, function (reason) {
         cb('FEL, angePrognos,' + reason);
       }));
       promisesArr.push(fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function () {
-        logg('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
+        logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
       }, function (reason) {
         cb('FEL, angeKontaktOnskasMedFK,' + reason);
       }));
 
       promisesArr.push(fkUtkastPage.angeRekommendationer(intyg.rekommendationer).then(function () {
-        logg('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
+        logger.info('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
       }, function (reason) {
         cb('FEL, angeRekommendationer,' + reason);
       }));

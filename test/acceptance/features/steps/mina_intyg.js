@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, intyg, logg */
+/* globals browser, intyg, logger */
 
 'use strict';
 
@@ -26,7 +26,7 @@ module.exports = function () {
   this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
     var intygElement = element(by.id('certificate-' + intyg.id));
     expect(intygElement.isPresent()).to.eventually.equal(true).then(function (value) {
-        logg('OK - Intyget visas i mina intyg = ' + value);
+        logger.info('OK - Intyget visas i mina intyg = ' + value);
       }, function (reason) {
         callback('FEL, Intyget visas inte i mina intyg,' + reason);
       })
@@ -45,7 +45,7 @@ module.exports = function () {
       // Om samtyckesruta visas
       element(by.id('consentTerms')).isPresent().then(function (result) {
         if (result) {
-          logg('Lämnar samtycke..');
+          logger.info('Lämnar samtycke..');
           element(by.id('giveConsentButton')).click().then(callback);
         } else {
           callback();

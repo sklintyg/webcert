@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, logg */
+/* globals pages, protractor, logger */
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -40,7 +40,7 @@ module.exports = function () {
 
   this.Given(/^är kopieraknappen tillgänglig$/, function (callback) {
     expect(basePage.copyBtn.isPresent()).to.become(true).then(function () {
-      logg('OK - Kopiera knappen hittad');
+      logger.info('OK - Kopiera knappen hittad');
       basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
     }, function (reason) {
       callback('FEL : ' + reason);
@@ -49,7 +49,7 @@ module.exports = function () {
 
   this.Given(/^är kopieraknappen inte tillgänglig$/, function (callback) {
     expect(basePage.copyBtn.isPresent()).to.become(false).then(function () {
-      logg('OK - Kopiera knappen syns inte');
+      logger.info('OK - Kopiera knappen syns inte');
     }, function (reason) {
       callback('FEL : ' + reason);
     }).then(callback);
@@ -57,7 +57,7 @@ module.exports = function () {
 
   this.Given(/^synns Vidarebefodra knappen$/, function (callback) {
     expect(basePage.copyBtn.isPresent()).to.become(true).then(function () {
-      logg('OK - Vidarebeforda knappen hittad');
+      logger.info('OK - Vidarebeforda knappen hittad');
     }, function (reason) {
       callback('FEL : ' + reason);
     }).then(callback);
@@ -69,7 +69,7 @@ module.exports = function () {
 
   this.Given(/^ska sökfiltret Sparat av inte vara tillgängligt/, function (callback) {
     expect(unsignedPage.filterSavedBy.form.isPresent()).to.eventually.be.not.ok.then(function (value) {
-      logg('Filter \"Sparat av\" inte tillgängligt för uthoppsläkare ' + value);
+      logger.info('Filter \"Sparat av\" inte tillgängligt för uthoppsläkare ' + value);
     }, function (reason) {
       callback('FEL, Filter \"Sparat av\" tillgängligt för uthoppsläkare,' + reason);
     }).then(callback);
@@ -81,7 +81,7 @@ module.exports = function () {
 
   this.Given(/^kopierar ett signerat intyg$/, function (callback) {
     expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function () {
-      logg('OK - Kopiera knappen hittad');
+      logger.info('OK - Kopiera knappen hittad');
     }, function (reason) {
       callback('FEL : ' + reason);
     }).then(callback);
@@ -89,13 +89,13 @@ module.exports = function () {
 
   this.Given(/^är signeraknappen tillgänglig$/, function (callback) {
     expect(utkastPage.signeraButton.isPresent()).to.eventually.be.ok.then(function (value) {
-      logg('Signeringsknapp existerar ' + value);
+      logger.info('Signeringsknapp existerar ' + value);
     }, function (reason) {
       callback('FEL, Signeringsknapp finns inte på sidan,' + reason);
     });
 
     expect(utkastPage.signeraButton.isEnabled()).to.eventually.be.ok.then(function (value) {
-      logg('Signeringsknapp är klickbar' + value);
+      logger.info('Signeringsknapp är klickbar' + value);
     }, function (reason) {
       callback('FEL, Signeringsknapp är inte klickbar,' + reason);
     }).then(callback);
@@ -103,7 +103,7 @@ module.exports = function () {
 
   this.Given(/^ska makuleraknappen inte vara tillgänglig$/, function (callback) {
     expect(fkIntygPage.makulera.btn.isPresent()).to.eventually.be.not.ok.then(function (value) {
-      logg('Makuleraknappen syns inte (ok)' + value);
+      logger.info('Makuleraknappen syns inte (ok)' + value);
     }, function (reason) {
       callback('FEL, Makuleraknappen finns tillgänglig,' + reason);
     }).then(callback);
@@ -115,7 +115,7 @@ module.exports = function () {
 
   this.Given(/^vårdenhet ska vara "([^"]*)"$/, function (arg1, callback) {
     expect(basePage.careUnit.getText()).to.eventually.contain(arg1).then(function (value) {
-      logg('OK - vårdenhet = ' + value);
+      logger.info('OK - vårdenhet = ' + value);
     }, function (reason) {
       callback('FEL - vårdenhet: ' + reason);
     }).then(callback);
@@ -124,7 +124,7 @@ module.exports = function () {
   this.Given(/^jag väljer flik "([^"]*)"$/, function (arg1, callback) {
     expect(basePage.flikar.sokSkrivIntyg.getText()).to.eventually.contain(arg1).then(function (value) {
       element(basePage.flikar.sokSkrivIntyg).sendKeys(protractor.Key.SPACE);
-      logg('OK - byta flik till = ' + value);
+      logger.info('OK - byta flik till = ' + value);
     }, function (reason) {
       callback('FEL - byta flik till: ' + reason);
     }).then(callback);
@@ -145,7 +145,7 @@ module.exports = function () {
       if (isVisible) {
         callback('FEL - Signera knapp synlig!');
       } else {
-        console.log('OK - Signera knapp ej synlig!');
+        logger.debug('OK - Signera knapp ej synlig!');
       }
     }).then(callback);
   });
@@ -153,7 +153,7 @@ module.exports = function () {
   this.Given(/^synns Hämta personuppgifter knappen$/, function (callback) {
     fkUtkastPage.fetchPatientButton.isPresent().then(function (isVisible) {
       if (isVisible) {
-        console.log('OK - Hämta personuppgifter synlig!');
+        logger.debug('OK - Hämta personuppgifter synlig!');
       } else {
         callback('FEL - Hämta personuppgifter ej synlig!');
       }
@@ -163,7 +163,7 @@ module.exports = function () {
   this.Given(/^meddelas jag om spärren$/, function (callback) {
     expect(basePage.warnings.protectedInfo).getText()
       .to.eventually.contain('På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.').then(function (value) {
-        logg('OK - sekretessmarkeringe = ' + value);
+        logger.info('OK - sekretessmarkeringe = ' + value);
       }, function (reason) {
         callback('FEL - sekretessmarkeringe: ' + reason);
       }).then(callback);
@@ -175,7 +175,7 @@ module.exports = function () {
       if (isVisible) {
         callback('FEL - ' + arg1 + ' synlig!');
       } else {
-        console.log('OK -' + arg1 + ' ej synlig!');
+        logger.debug('OK -' + arg1 + ' ej synlig!');
       }
     }).then(callback);
   });

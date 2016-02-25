@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global logg, JSON, browser, pages */
+/*global logger, JSON, browser, pages */
 'use strict';
 
 module.exports = {
     logInAsUserRole:function(userObj, roleName, newOrigin, newUserRole) {
-        logg('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+        logger.info('loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
         // Fattigmans-kloning av användar-hashen.
         global.user = JSON.parse(JSON.stringify(userObj));
         global.user.role = newUserRole;
@@ -33,12 +33,12 @@ module.exports = {
         pages.welcome.loginByJSON(JSON.stringify(userObj));
 
         if (newUserRole) {
-            logg('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+            logger.info('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
             browser.get('testability/user/role/' + newUserRole);
             browser.get('/web/dashboard#/create/choose-patient/index');
         }
         if (newOrigin) {
-            logg('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
+            logger.info('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
             browser.get('testability/user/origin/' + newOrigin);
             browser.get('/web/dashboard#/create/choose-patient/index');
         }

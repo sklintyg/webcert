@@ -22,6 +22,8 @@ browser
 */
 'use strict';
 
+var winston = require('winston');
+
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
     allScriptsTimeout: 30000,
@@ -47,7 +49,7 @@ exports.config = {
         format: ['json:./acceptance/report/acc_results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js']
     },
-    onPrepare: function () {
+    onPrepare: function() {
 
         //http://chaijs.com/
         global.chai = require('chai');
@@ -72,6 +74,21 @@ exports.config = {
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
 
+        //logger.infoing
+        global.logger = new(winston.Logger)({
+            transports: [
+                new(winston.transports.Console)({
+                    colorize:true,
+                    timestamp: formatLocalDate,
+                    formatter: function(options) {
+                        // Return string will be passed to logger.
+                        return options.timestamp() + ' ' + options.level.toUpperCase() + ' ' + (undefined !== options.message ? options.message : '') +
+                            (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta) : '');
+                    }
+                })
+            ]
+        });
+
         //Set window size
         browser.manage().window().setSize(1600, 1000);
 
@@ -79,3 +96,23 @@ exports.config = {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
 };
+
+
+
+function formatLocalDate() {
+    var now = new Date(),
+        tzo = -now.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function(num) {
+            var norm = Math.abs(Math.floor(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+    return now.getFullYear() 
+        + '-' + pad(now.getMonth()+1)
+        + '-' + pad(now.getDate())
+        + 'T' + pad(now.getHours())
+        + ':' + pad(now.getMinutes()) 
+        + ':' + pad(now.getSeconds()) 
+        + dif + pad(tzo / 60) 
+        + ':' + pad(tzo % 60);
+}

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logg, wcTestTools, user, person, protractor, pages, Promise */
+/*global browser, intyg, logger, wcTestTools, user, person, protractor, pages, Promise */
 'use strict';
 
 // function stringStartWith (string, prefix) {
@@ -45,7 +45,7 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
     //Om det inte finns några intyg att använda
     if (!intygRadElement) {
-        logg('Hittade inget intyg, skapar ett nytt..');
+        logger.info('Hittade inget intyg, skapar ett nytt..');
         createIntygWithStatus(intygstyp, status, function(err) {
             if (err) {
                 cb(err);
@@ -80,7 +80,7 @@ module.exports = function() {
                 browser.getCurrentUrl().then(function(text) {
                     intyg.id = text.split('/').slice(-1)[0];
                     intyg.id = intyg.id.split('?')[0];
-                    console.log('intyg.id:' + intyg.id);
+                    logger.info('intyg.id:' + intyg.id);
                     callback(err);
                 });
             });
@@ -95,7 +95,7 @@ function createIntygWithStatus(typ, status, cb) {
     //TODO, Hantera ts-intyg
 
     intyg.id = testdataHelper.generateTestGuid();
-    console.log('intyg.id = ' + intyg.id);
+    logger.debug('intyg.id = ' + intyg.id);
 
     if (typ.indexOf('Transportstyrelsen') > -1) {
         createTsIntyg(typ, status, cb);
@@ -152,13 +152,13 @@ function createIntygWithRest(intygOptions, cb) {
     };
 
     restUtil.login(userObj).then(function(data) {
-        console.log('Login OK');
+        logger.debug('Login OK');
         return Promise.resolve('SUCCESS');
     }, function(error) {
         cb(error);
     }).then(function() {
         restUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
-            logg('Skapat intyg via REST-api');
+            logger.info('Skapat intyg via REST-api');
             cb();
         }, function(error) {
             cb(error);

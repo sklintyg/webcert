@@ -18,7 +18,7 @@
  */
 
 /* globals pages*/
-/* globals logg */
+/* globals logger */
 
 'use strict';
 
@@ -34,7 +34,7 @@ module.exports = {
     selectedTypes = selectedTypes.join(', ').toUpperCase();
 
     expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function (value) {
-      logg('OK - Körkortstyper = ' + value);
+      logger.info('OK - Körkortstyper = ' + value);
     }, function (reason) {
       callback('FEL - Körkortstyper: ' + reason);
     });
@@ -42,13 +42,13 @@ module.exports = {
     if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
       var txt = 'Försäkran enligt 18 kap 4 §';
       expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(txt).then(function (value) {
-        logg('OK - Identitet styrkt genom = ' + value);
+        logger.info('OK - Identitet styrkt genom = ' + value);
       }, function (reason) {
         callback('FEL - Identitet styrkt genom: ' + reason);
       });
     } else {
       expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).then(function (value) {
-        logg('OK - Identitet styrkt genom = ' + value);
+        logger.info('OK - Identitet styrkt genom = ' + value);
       }, function (reason) {
         callback('FEL - Identitet styrkt genom: ' + reason);
       });

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logg */
+/* globals logger */
 
 'use strict';
 var mysql = require('mysql');
@@ -37,7 +37,7 @@ module.exports = {
   },
   removeCert: function (intygsId, cb) {
     if (!intygsId) {
-      logg('Intygsid saknas');
+      logger.info('Intygsid saknas');
       cb();
     } else {
       var databaseTableINTYG = process.env.DATABASE_NAME + '.INTYG';
@@ -66,7 +66,7 @@ module.exports = {
           function (err, rows, fields) {
             conn.end();
             if (typeof rows !== 'undefined') {
-              logg(rows[0].affectedRows + ' row(s) affected.');
+              logger.info(rows[0].affectedRows + ' row(s) affected.');
               cb();
             }
             if (err) {

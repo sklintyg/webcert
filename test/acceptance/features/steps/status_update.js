@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global wcTestTools, pages, browser, protractor, intyg, logg */
+/* global wcTestTools, pages, browser, protractor, intyg, logger */
 
 'use strict';
 var soap = require('soap');
@@ -71,7 +71,7 @@ function assertEvents(intygsId, event, numEvents, cb) {
 }
 
 function assertNumberOfEvents(query, numEvents, cb) {
-  // console.log('Assert number of events. Query: ' + query);
+  // logger.debug('Assert number of events. Query: ' + query);
   var conn = db.makeConnection();
   conn.connect();
   conn.query(query,
@@ -82,7 +82,7 @@ function assertNumberOfEvents(query, numEvents, cb) {
       } else if (rows[0].Counter !== numEvents) {
         cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
       } else {
-        logg('OK - Antal händelser i db ' + rows[0].Counter + '(' + numEvents + ')');
+        logger.info('OK - Antal händelser i db ' + rows[0].Counter + '(' + numEvents + ')');
         cb();
       }
     });
@@ -118,9 +118,9 @@ module.exports = function () {
           if (err) {
             callback(err);
           } else {
-            //console.log(result);
+            //logger.debug(result);
             intyg.id = result['utlatande-id'].attributes.extension;
-            logg('intyg.id: ' + intyg.id);
+            logger.info('intyg.id: ' + intyg.id);
             callback();
           }
 
@@ -139,7 +139,7 @@ module.exports = function () {
         if (isVisible) {
           fkIntygPage.qaPanel.getAttribute('id').then(function (result) {
             global.intyg.fragaId = result.split('-')[1];
-            logg('Fråga-id: ' + global.intyg.fragaId);
+            logger.info('Fråga-id: ' + global.intyg.fragaId);
             callback();
           });
         } else {
@@ -230,7 +230,7 @@ module.exports = function () {
     fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function () {
       fkIntygPage.qaPanel.getAttribute('id').then(function (result) {
         global.intyg.fragaId = result.split('-')[1];
-        logg('fråga-id: ' + global.intyg.fragaId);
+        logger.info('fråga-id: ' + global.intyg.fragaId);
         callback();
       });
     });
@@ -268,8 +268,8 @@ module.exports = function () {
       }
 
       client.ReceiveMedicalCertificateQuestion(body, function (err, result, body) {
-        // console.log(body);
-        // console.log(result);
+        // logger.debug(body);
+        // logger.debug(result);
         callback(err);
       });
     });

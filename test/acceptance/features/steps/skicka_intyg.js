@@ -18,7 +18,7 @@
  */
 
 /* globals pages */
-/* globals browser, intyg, logg */
+/* globals browser, intyg, logger */
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -30,7 +30,7 @@ module.exports = function () {
     //Fånga intygets id
     browser.getCurrentUrl().then(function (text) {
       intyg.id = text.split('/').slice(-1)[0];
-      logg('Intygsid: ' + intyg.id);
+      logger.info('Intygsid: ' + intyg.id);
     });
 
     fkIntygPage.skicka.knapp.click();
