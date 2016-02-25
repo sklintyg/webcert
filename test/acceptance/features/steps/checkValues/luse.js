@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages*/
 /* globals logg */
 
 'use strict';
@@ -41,14 +40,14 @@ function checkUtlatandeDatum(utlatandeText, cb) {
     }
 }
 
-function checkAndraMedUtrUnd(underlagFinnsNo, cb) {
-    // får för tilfället ett nej oavsett.
-    expect(element(by.id('underlagFinnsNo')).getText()).to.eventually.equal('Nej').then(function() {
-        logg('OK - ' + underlagFinnsNo);
-    }, function(reason) {
-        cb('FEL, Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?,' + reason);
-    });
-}
+// function checkAndraMedUtrUnd(underlagFinnsNo, cb) {
+//     // får för tilfället ett nej oavsett.
+//     expect(element(by.id('underlagFinnsNo')).getText()).to.eventually.equal('Nej').then(function() {
+//         logg('OK - ' + underlagFinnsNo);
+//     }, function(reason) {
+//         cb('FEL, Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?,' + reason);
+//     });
+// }
 
 function checkSjukForLopp(sjukdomsforlopp, cb) {
 

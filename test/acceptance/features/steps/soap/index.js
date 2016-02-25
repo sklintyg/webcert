@@ -49,7 +49,7 @@ module.exports = {
   ReceiveMedicalCertificateQuestion: function (personId, doctorHsa, doctorName, unitHsa, unitName, intygsId, amne, meddelande) {
     // Komplettering_av_lakarintyg, Makulering_av_lakarintyg, Avstamningsmote, Kontakt, Arbetstidsforlaggning, Paminnelse, Ovrigt
 
-    if (meddelande == undefined) {
+    if (typeof meddelande === 'undefined') {
       meddelande = 'Testfråga';
     }
 
