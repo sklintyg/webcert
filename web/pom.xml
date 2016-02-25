@@ -638,10 +638,10 @@
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/sjukpenning-utokad"
+                    todir="${project.build.directory}/webjardependencies/lisu"
                     verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukpenning-utokad">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/lisu">
                   </fileset>
                 </copy>
                 <!--
