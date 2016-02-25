@@ -208,9 +208,9 @@ module.exports = function () {
 
   this.Given(/^jag svarar på frågan$/, function (callback) {
     browser.refresh();
-    element(by.cssContainingText('.qa-panel', global.intyg.guidcheck)).element(by.css('textarea')).
-        sendKeys('Ett litet svar.' + global.intyg.guidcheck).then(function () {
-      fkIntygPage.answer.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
+    var qaElement = fkIntygPage.getQAElementByText(global.intyg.guidcheck);
+    qaElement.text.sendKeys('Ett svar till FK, ' + global.intyg.guidcheck).then(function () {
+      qaElement.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
     });
   });
 
@@ -220,7 +220,7 @@ module.exports = function () {
 
   this.Given(/^jag fyller i en ny fråga till Försäkringskassan$/, function (callback) {
     fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE).then(function () {
-      fkIntygPage.question.text.sendKeys('En liten fråga...').then(function () {
+      fkIntygPage.question.text.sendKeys('En fråga till FK, ').then(function () {
         fkIntygPage.question.kontakt.sendKeys(protractor.Key.SPACE).then(callback);
       });
     });

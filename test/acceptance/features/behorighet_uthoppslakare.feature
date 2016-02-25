@@ -16,6 +16,7 @@ Scenario: Kan signera intyg
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
+@hurr
 Scenario: Kan inte kopiera intyg Läkarintyg FK 7263 
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg
@@ -23,7 +24,6 @@ Scenario: Kan inte kopiera intyg Läkarintyg FK 7263
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
-@notReady
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg 
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg
@@ -31,7 +31,6 @@ Scenario: Kan inte kopiera Transportstyrelsens läkarintyg
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
-@notReady
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg

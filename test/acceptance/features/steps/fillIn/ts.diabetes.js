@@ -39,6 +39,11 @@ module.exports = {
 
         browser.ignoreSynchronization = true;
 
+        //Ange postadress osv
+        browser.element(by.id('patientPostadress')).sendKeys('Postadress 1');
+        browser.element(by.id('patientPostnummer')).sendKeys('66130');
+        browser.element(by.id('patientPostort')).sendKeys('postort');
+
         //Ange allmänt
         tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
             logg('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));

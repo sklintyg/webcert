@@ -24,7 +24,10 @@ var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
 module.exports = {
     fillIn: function(intyg, cb) {
 
+
         var promiseArr = [];
+
+
         promiseArr.push(tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
             logg('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
         }, function(reason) {
@@ -37,13 +40,20 @@ module.exports = {
             cb('FEL, fillInIdentitetStyrktGenom,' + reason);
         }));
 
-        // Synfunktioner
         browser.ignoreSynchronization = true;
+        
+        //Ange postadress osv
+        promiseArr.push(browser.element(by.id('patientPostadress')).sendKeys('Postadress 1'));
+        promiseArr.push(browser.element(by.id('patientPostnummer')).sendKeys('66130'));
+        promiseArr.push(browser.element(by.id('patientPostort')).sendKeys('postort'));
+
+        // Synfunktioner
         promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(global.intyg).then(function() {
             logg('OK - fillInSynfunktioner');
         }, function(reason) {
             cb('FEL, fillInSynfunktioner,' + reason);
         }));
+
 
         promiseArr.push(tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function() {
             logg('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));

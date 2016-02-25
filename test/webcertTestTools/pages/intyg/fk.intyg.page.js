@@ -148,6 +148,14 @@ var Fk7263Intyg = BaseIntyg._extend({
   },
   getMarkAsHandledButtonForAnswerByID: function (questionID) {
     return element(by.id('markAsHandledWcOriginBtn-' + questionID));
+  },
+  getQAElementByText:function(containingText){
+    var panel = element(by.cssContainingText('.qa-panel', containingText));
+    return {
+      panel:panel,
+      text: panel.element(by.css('textarea')),
+      sendButton: panel.element(by.css('.btn-success'))
+    };
   }
 });
 

@@ -187,14 +187,10 @@ module.exports = function () {
   });
   // ===========================================================
 
-  this.Given(/^jag svarar på "([^"]*)" på frågan$/, function (arg1, callback) {
-    fkIntygPage.answer.text.sendKeys(arg1).then(function () {
-      basePage.QnA.respond.sendKeys(protractor.Key.SPACE).then(callback);
-    });
-  });
-
-  this.Given(/^ska frågan vara hanterad$/, function (callback) {
-    callback.pending();
-  });
+  // this.Given(/^jag svarar på "([^"]*)" på frågan$/, function (arg1, callback) {
+  //   fkIntygPage.answer.text.sendKeys(arg1).then(function () {
+  //     basePage.QnA.respond.sendKeys(protractor.Key.SPACE).then(callback);
+  //   });
+  // });
 
 };

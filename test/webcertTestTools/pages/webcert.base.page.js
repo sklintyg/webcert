@@ -44,10 +44,6 @@ var WebcertBasePage = JClass._extend({
       protectedInfo: element(by.id('sekretessmarkering'))
     };
 
-    this.QnA = {
-      respond: element(by.css('.btn.btn-success.ng-isolate-scope'))
-    };
-
   },
   getDoctorText: function () {
     return this.doctor.getText();

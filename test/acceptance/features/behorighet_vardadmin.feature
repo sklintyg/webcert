@@ -11,7 +11,6 @@ Scenario: Kan kopiera Läkarintyg FK 7263
    Så är kopieraknappen tillgänglig
 
 #@vardadmin
-@notReady
 Scenario: Kan kopiera Transportstyrelsens läkarintyg 
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
@@ -19,7 +18,7 @@ Scenario: Kan kopiera Transportstyrelsens läkarintyg
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen tillgänglig
 
-@vardadmin @notReady
+@vardadmin 
 Scenario: Kan kopiera Transportstyrelsens läkarintyg, diabetes intyg
    Givet att jag är inloggad som vårdadministratör
    Och går in på Sök/skriv intyg
@@ -36,7 +35,7 @@ Scenario: Kan inte signera intyg som en vårdadministratör, Läkarintyg FK 7263
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
-@vardadmin @notReady
+@vardadmin
 Scenario: Kan inte signera Transportstyrelsens läkarintyg
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg
@@ -45,7 +44,7 @@ Scenario: Kan inte signera Transportstyrelsens läkarintyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
-@vardadmin @notReady
+@vardadmin
 Scenario: Kan inte signera Transportstyrelsens läkarintyg, diabetes
 	Givet att jag är inloggad som vårdadministratör
 	Och går in på Sök/skriv intyg
