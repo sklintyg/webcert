@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor */
+/* globals pages, browser, protractor, logger */
 
 'use strict';
 var luseUtkastPage = pages.intyg.fk.luse.utkast;

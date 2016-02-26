@@ -75,8 +75,8 @@ module.exports = {
     adhdSyndrom: ['Ja', 'Nej'],
     sjukhusvard: ['Ja', 'Nej'],
     ovrigMedicin: ['Ja', 'Nej'],
-    mediciner: ['Ipren', 'Alvedon', 'Bamyl', 'Snus'],
-    funktionsnedsattningar: ['Problem...', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen'],
+    // mediciner: ['Ipren', 'Alvedon', 'Bamyl', 'Snus'],
+    // funktionsnedsattningar: ['Problem...', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen'],
 
     fk: require('./fk.js'),
 
@@ -278,44 +278,44 @@ module.exports = {
             kommentar: this.comment,
             styrkor: this.getRandomStyrka()
         };
-    },
-
-    randomTrueFalse: function() {
-        return shuffle([true, false])[0];
-    },
-
-    getRandomLuseIntyg: function(intygsID) {
-        return {
-            intygId: intygsID,
-            typ: 'Läkarutlåtande för sjukersättning',
-            diagnos: {
-                kod: shuffle(this.ICD10)[0],
-                bakgrund: 'En slumpmässig bakgrund'
-            },
-            annanUnderlag: this.randomTrueFalse(),
-            sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
-            nyDiagnosBedom: this.randomTrueFalse(),
-            funktionsnedsattning: {
-                //funktionsnedsattningar
-                intellektuell: shuffle(this.funktionsnedsattningar)[0],
-                kommunikation: shuffle(this.funktionsnedsattningar)[0],
-                koncentration: shuffle(this.funktionsnedsattningar)[0],
-                psykisk: shuffle(this.funktionsnedsattningar)[0],
-                synHorselTal: shuffle(this.funktionsnedsattningar)[0],
-                balansKoordination: shuffle(this.funktionsnedsattningar)[0],
-                annan: shuffle(this.funktionsnedsattningar)[0]
-            },
-            aktivitetsbegransning: 'Total',
-            avslutadBehandling: shuffle(this.mediciner)[0],
-            pagaendeBehandling: shuffle(this.mediciner)[0],
-            planeradBehandling: shuffle(this.mediciner)[0],
-            substansintag: shuffle(this.mediciner)[0],
-            medicinskaForutsattningarForArbete: 'Inte speciellt',
-            aktivitetsFormaga: 'Liten',
-            ovrigt: 'Inget',
-            kontaktMedFkNo: this.randomTrueFalse(),
-            tillaggsfragor0svar: 'Answer',
-            tillaggsfragor1svar: 'Question'
-        };
     }
+
+    // randomTrueFalse: function() {
+    //     return shuffle([true, false])[0];
+    // },
+
+    // getRandomLuseIntyg: function(intygsID) {
+    //     return {
+    //         intygId: intygsID,
+    //         typ: 'Läkarutlåtande för sjukersättning',
+    //         diagnos: {
+    //             kod: shuffle(this.ICD10)[0],
+    //             bakgrund: 'En slumpmässig bakgrund'
+    //         },
+    //         annanUnderlag: this.randomTrueFalse(),
+    //         sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
+    //         nyDiagnosBedom: this.randomTrueFalse(),
+    //         funktionsnedsattning: {
+    //             //funktionsnedsattningar
+    //             intellektuell: shuffle(this.funktionsnedsattningar)[0],
+    //             kommunikation: shuffle(this.funktionsnedsattningar)[0],
+    //             koncentration: shuffle(this.funktionsnedsattningar)[0],
+    //             psykisk: shuffle(this.funktionsnedsattningar)[0],
+    //             synHorselTal: shuffle(this.funktionsnedsattningar)[0],
+    //             balansKoordination: shuffle(this.funktionsnedsattningar)[0],
+    //             annan: shuffle(this.funktionsnedsattningar)[0]
+    //         },
+    //         aktivitetsbegransning: 'Total',
+    //         avslutadBehandling: shuffle(this.mediciner)[0],
+    //         pagaendeBehandling: shuffle(this.mediciner)[0],
+    //         planeradBehandling: shuffle(this.mediciner)[0],
+    //         substansintag: shuffle(this.mediciner)[0],
+    //         medicinskaForutsattningarForArbete: 'Inte speciellt',
+    //         aktivitetsFormaga: 'Liten',
+    //         ovrigt: 'Inget',
+    //         kontaktMedFkNo: this.randomTrueFalse(),
+    //         tillaggsfragor0svar: 'Answer',
+    //         tillaggsfragor1svar: 'Question'
+    //     };
+    // }
 };

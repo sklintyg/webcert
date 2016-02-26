@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata */
+/*global testdata, luseTestdata*/
 'use strict';
 
 module.exports = {
@@ -30,7 +30,7 @@ module.exports = {
 	    } else if (typ === 'Läkarintyg FK 7263') {
 	        return testdata.fk.sjukintyg.getRandom(id);
 	    } else if (typ === 'Läkarutlåtande för sjukersättning') {
-	        return testdata.getRandomLuseIntyg(id);
+	        return luseTestdata.getRandomLuseIntyg(id);
 	    }
 	}
 };
