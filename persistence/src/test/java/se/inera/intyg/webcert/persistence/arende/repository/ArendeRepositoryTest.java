@@ -127,11 +127,27 @@ public class ArendeRepositoryTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    public void testFindByEnhet() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signerat", enhet, Status.PENDING_INTERNAL_ACTION));
+        repo.save(buildArende("signerat", enhet, Status.CLOSED));
+        repo.save(buildArende("signerat", "annan enhet", Status.PENDING_INTERNAL_ACTION));
+
+        List<Arende> result = repo.findByEnhet(Arrays.asList(enhet));
+        assertEquals(1, result.size());
+        assertEquals(enhet, result.get(0).getEnhet());
+    }
+
     private Arende buildArende() {
         return buildArende("SIGNERAT_AV", "ENHET");
     }
 
     private Arende buildArende(String signeratAv, String enhet) {
+        return buildArende(signeratAv, enhet, Status.PENDING_INTERNAL_ACTION);
+    }
+
+    private Arende buildArende(String signeratAv, String enhet, Status status) {
         Arende res = new Arende();
         res.setAmne(ArendeAmne.KONTKT);
         res.setIntygsId("INTYG_ID");
@@ -149,7 +165,7 @@ public class ArendeRepositoryTest {
         res.setIntygTyp("INTYG_TYP");
         res.setSigneratAv(signeratAv);
         res.setEnhet(enhet);
-        res.setStatus(Status.PENDING_INTERNAL_ACTION);
+        res.setStatus(status);
         res.setTimestamp(LocalDateTime.now());
 
         res.getKomplettering().add(buildMedicinsktArende("1", 1, "text 1"));

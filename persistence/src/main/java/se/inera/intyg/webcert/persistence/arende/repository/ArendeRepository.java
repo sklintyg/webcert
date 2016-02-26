@@ -36,4 +36,14 @@ public interface ArendeRepository extends JpaRepository<Arende, Long> {
      */
     @Query("SELECT DISTINCT signeratAv FROM Arende WHERE enhet IN (:idList) ORDER BY signeratAv ASC")
     List<String> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
+
+    /**
+     * List {@link Arende} entities in the repository with an enhet matching one of the
+     * supplied list of id's, that are not of status {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
+     *
+     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
+     * an empty list.
+     */
+    @Query("SELECT a FROM Arende AS a WHERE a.enhet IN (:idList) AND a.status <> 'CLOSED'")
+    List<Arende> findByEnhet(@Param("idList") List<String> enhetsIds);
 }

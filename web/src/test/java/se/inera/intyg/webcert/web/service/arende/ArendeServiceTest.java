@@ -83,4 +83,16 @@ public class ArendeServiceTest {
         List<String> res = service.listSignedByForUnits();
         assertEquals(repoResult, res);
     }
+
+    @Test
+    public void testListArendeForUnits() {
+        final List<String> selectedUnits = Arrays.asList("enhet1", "enhet2");
+        final List<Arende> repoResult = Arrays.asList(new Arende());
+        WebCertUser user = Mockito.mock(WebCertUser.class);
+        when(user.getIdsOfSelectedVardenhet()).thenReturn(selectedUnits);
+        when(webcertUserService.getUser()).thenReturn(user);
+        when(repo.findByEnhet(selectedUnits)).thenReturn(repoResult);
+        List<Arende> res = service.listArendeForUnits();
+        assertEquals(repoResult, res);
+    }
 }

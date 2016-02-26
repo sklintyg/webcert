@@ -35,4 +35,9 @@ public interface ArendeService {
      */
     List<String> listSignedByForUnits() throws WebCertServiceException;
 
+    /**
+     * List all arenden for units where the webcert user is logged in.
+     */
+    List<Arende> listArendeForUnits() throws WebCertServiceException;
+
 }

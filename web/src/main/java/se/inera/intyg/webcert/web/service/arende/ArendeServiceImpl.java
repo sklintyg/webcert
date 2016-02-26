@@ -73,4 +73,12 @@ public class ArendeServiceImpl implements ArendeService {
 
         return repo.findSigneratAvByEnhet(unitIds);
     }
+
+    @Override
+    public List<Arende> listArendeForUnits() throws WebCertServiceException {
+        WebCertUser user = webcertUserService.getUser();
+        List<String> unitIds = user.getIdsOfSelectedVardenhet();
+
+        return repo.findByEnhet(unitIds);
+    }
 }
