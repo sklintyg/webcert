@@ -2,7 +2,7 @@
 @behorighet
 Egenskap: Behörigheter för en uthoppsläkare
 
-Scenario: Inlogger.infoad som uthoppsläkare
+Scenario: Inloggad som uthoppsläkare
    Givet att jag är inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"

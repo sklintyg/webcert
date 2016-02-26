@@ -4,6 +4,7 @@ Egenskap: Radera intygsutkast
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
+	
 @removedraft
 Scenario: Radera ett utkast för läkarintyg fk7263
 När jag väljer patienten "19971019-2387"

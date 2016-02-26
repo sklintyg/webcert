@@ -46,7 +46,11 @@ module.exports = function () {
       element(by.id('consentTerms')).isPresent().then(function (result) {
         if (result) {
           logger.info('Lämnar samtycke..');
-          element(by.id('giveConsentButton')).click().then(callback);
+          element(by.id('giveConsentButton')).click()
+          .then(function(){
+            return browser.sleep(3000);
+          })
+          .then(callback);
         } else {
           callback();
         }

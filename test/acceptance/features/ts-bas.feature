@@ -3,7 +3,7 @@
 @smoke @webcert @ts @bas
 Egenskap: Hantera Transportstyrelsens basintyg
 
-Bakgrund: Jag är inlogger.infoad
+Bakgrund: Jag är inloggad
     Givet att jag är inloggad som läkare
 
 @tsbas @keepIntyg

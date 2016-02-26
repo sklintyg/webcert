@@ -1,6 +1,6 @@
 # language: sv
 
-@smoke @ts @diabetes @notReady
+@smoke @ts @diabetes
 Egenskap: Hantera Transportstyrelsens diabetesintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -15,7 +15,7 @@ Scenario: Skapa och signera ett intyg
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
     
-@keepIntyg
+@keepIntyg @waitingForFix
 Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
@@ -25,6 +25,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
     När jag går till Mina intyg för patienten "19121212-1212"
     Så ska intygets status i Mina intyg visa "Mottaget av Transportstyrelsens system"
 
+@waitingForFix
 Scenario: Makulera ett skickat intyg
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"
