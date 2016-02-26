@@ -34,16 +34,28 @@ module.exports = {
         return shuffle([true, false])[0];
     },
 
+    randomTextString: function() {
+        var text = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789';
+
+        for (var i = 0; i < 16; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    },
+
     getRandomLuseIntyg: function(intygsID) {
         return {
             intygId: intygsID,
             typ: 'Läkarutlåtande för sjukersättning',
             diagnos: {
                 kod: shuffle(this.ICD10)[0],
-                bakgrund: 'En slumpmässig bakgrund'
+                bakgrund: this.randomTextString()
+                // bakgrund: 'En slumpmässig bakgrund'
             },
             annanUnderlag: this.randomTrueFalse(),
-            sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
+            sjukdomsForlopp: this.randomTextString(),
+            // sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
             nyDiagnosBedom: this.randomTrueFalse(),
             funktionsnedsattning: {
                 //funktionsnedsattningar
@@ -55,17 +67,23 @@ module.exports = {
                 balansKoordination: shuffle(this.funktionsnedsattningar)[0],
                 annan: shuffle(this.funktionsnedsattningar)[0]
             },
-            aktivitetsbegransning: 'Total',
+            aktivitetsbegransning: this.randomTextString(),
+            // aktivitetsbegransning: 'Total',
             avslutadBehandling: shuffle(this.mediciner)[0],
             pagaendeBehandling: shuffle(this.mediciner)[0],
             planeradBehandling: shuffle(this.mediciner)[0],
             substansintag: shuffle(this.mediciner)[0],
-            medicinskaForutsattningarForArbete: 'Inte speciellt',
-            aktivitetsFormaga: 'Liten',
-            ovrigt: 'Inget',
+            medicinskaForutsattningarForArbete: this.randomTextString(),
+            // medicinskaForutsattningarForArbete: 'Inte speciellt',
+            aktivitetsFormaga: this.randomTextString(),
+            // aktivitetsFormaga: 'Liten',
+            ovrigt: this.randomTextString(),
+            // ovrigt: 'Inget',
             kontaktMedFkNo: this.randomTrueFalse(),
-            tillaggsfragor0svar: 'Answer',
-            tillaggsfragor1svar: 'Question'
+            tillaggsfragor0svar: this.randomTextString(),
+            // tillaggsfragor0svar: 'Answer',
+            tillaggsfragor1svar: this.randomTextString()
+            // tillaggsfragor1svar: 'Question'
         };
     }
 };

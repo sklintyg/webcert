@@ -25,6 +25,7 @@ module.exports = {
     fillIn: function(intyg, cb) {
         logger.info('intyg.typ:' + intyg.typ);
 
+
         browser.ignoreSynchronization = true;
 
         //Baserat på
@@ -34,25 +35,38 @@ module.exports = {
         luseUtkastPage.baseratPa.kannedomOmPatient.checkbox.sendKeys(protractor.Key.SPACE);
 
         luseUtkastPage.underlagFinnsNo.sendKeys(protractor.Key.SPACE);
+        // logger.info('Diagnoskod: ' + intyg.diagnos.kod);
         luseUtkastPage.diagnoseCode.sendKeys(intyg.diagnos.kod);
         luseUtkastPage.diagnoseCode.sendKeys(protractor.Key.TAB);
+        // logger.info('Diagnosbakgrund: ' + intyg.diagnos.bakgrund);
         luseUtkastPage.diagnosgrund.sendKeys(intyg.diagnos.bakgrund);
         luseUtkastPage.nyBedomningDiagnosgrundNo.sendKeys(protractor.Key.SPACE);
 
         //Funktionsnedsättning
+        // logger.info('funktionsnedsattning: ' + intyg.funktionsnedsattning.intellektuell);
         luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell);
+        // logger.info('kommunikation: ' + intyg.funktionsnedsattning.KOMMUNIKATION);
         luseUtkastPage.funktionsnedsattning.kommunikation.sendKeys(intyg.funktionsnedsattning.kommunikation);
         // luseUtkastPage.funktionsnedsattning.koncentration.sendKeys(intyg.funktionsnedsattning.;
+        // logger.info('psykisk: ' + intyg.funktionsnedsattning.psykisk);
         luseUtkastPage.funktionsnedsattning.psykisk.sendKeys(intyg.funktionsnedsattning.psykisk);
+        // logger.info('synHorselTal: ' + intyg.funktionsnedsattning.synHorselTal);
         luseUtkastPage.funktionsnedsattning.synHorselTal.sendKeys(intyg.funktionsnedsattning.synHorselTal);
+        // logger.info('balansKoordination: ' + intyg.funktionsnedsattning.balansKoordination);
         luseUtkastPage.funktionsnedsattning.balansKoordination.sendKeys(intyg.funktionsnedsattning.balansKoordination);
+        // logger.info('annan: ' + intyg.funktionsnedsattning.annan);
         luseUtkastPage.funktionsnedsattning.annan.sendKeys(intyg.funktionsnedsattning.annan);
+        // logger.info('sjukdomsforlopp: ' + intyg.sjukdomsforlopp);
         luseUtkastPage.sjukdomsforlopp.sendKeys(intyg.sjukdomsForlopp);
-
+        // logger.info('aktivitetsbegransning: ' + intyg.aktivitetsbegransning);
         luseUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning);
+        // logger.info('planeradBehandling: ' + intyg.planeradBehandling);
         luseUtkastPage.avslutadBehandling.sendKeys(intyg.avslutadBehandling);
+        // logger.info('planeradBehandling: ' + intyg.planeradBehandling);
         luseUtkastPage.pagaendeBehandling.sendKeys(intyg.pagaendeBehandling);
+        // logger.info('planeradBehandling: ' + intyg.planeradBehandling);
         luseUtkastPage.planeradBehandling.sendKeys(intyg.planeradBehandling);
+        // logger.info('substansintag: ' + intyg.substansintag);
         luseUtkastPage.substansintag.sendKeys(intyg.substansintag);
 
         luseUtkastPage.medicinskaForutsattningarForArbete.sendKeys(intyg.medicinskaForutsattningarForArbete);
