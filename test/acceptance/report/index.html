@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,128 +6,69 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
-    <script type="text/javascript" src="utils.js"></script>  
-  </head>
- 
-  <body>
 
-  <div style="float:right;">
-    <a href="javascript:expandAll()">Expand</a>
-    <a href="javascript:collapseAll()">Collapse</a>
-  </div>
- 
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous"> -->
+    <LINK href="bootstrap.css" rel="stylesheet" type="text/css">
+
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  </head>
+  
+  <body>
     <!-- 2. Anchor -->
-    <div id="anchor"></div>
- 
+    <div id="anchor" class='container'></div>
+
+    
     <!-- 3. Template -->
     <script id="tpl" type="text/template">
     {{#each this}}
     <h3>{{name}}</h3>
-   
-        {{#each elements}}
-        {{#if_eq this.keyword "Background"}}
-        {{else}}
+    
 
-        <div class='panelcollapsed'>
-          <h2 class="{{status}}">{{name}}</h2>
-            <div class='panelcontent'>
-              <br>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    {{#each elements}}
+    {{#if_eq this.keyword "Background"}}
+    {{else}}
+    <div class='panel panel-{{statusAsBoostrap}}'>
+      <div class="panel-heading">
+        <h3 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" 
+        data-target="#feature{{@../index}}_scenario{{@index}}" 
+            class="collapsed">
+          {{name}}
+        </a></h3>
 
-
-               <div class='scenario'>
-          <b>{{keyword}}</b> <span class="{{status}}">{{name}}</span><br>
-          {{#each steps}}
-           <span class='step {{keyword}}'>
-            <b class={{keyword}}>{{keyword}}</b><span class="{{result.status}}">{{name}}</span><br>
-            {{#if result.error_message}}
-            <span class='error_message text-attach'>{{result.error_message}}</span><br>
-            {{/if}}
-            {{#each embeddings}}
-
-              {{#if_eq this.mime_type "image/png"}}
-                <img src="data:image/png;base64,{{data}}" />
-
-              {{/if_eq}}
-              {{#if_eq this.mime_type "text/plain"}}
-                <span class='text-attach'>{{atobData}}</span>
-              {{/if_eq}}
-              <br>
-            {{/each}}
-            </span>
+      </div>
+      <div id="feature{{@../index}}_scenario{{@index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+      <div class='panel-body'>
+      <!--   <br> -->
+        <!-- <h4><b>{{keyword}}</b> {{name}}</h4> -->
+        {{#each steps}}
+        <span class='{{keyword}}'>
+          <span class="text-{{statusAsBoostrap}}"><b class={{keyword}}>{{keyword}}</b>{{name}}</span><br>
+          {{#if result.error_message}}
+          <span class='error_message text-attach'>{{result.error_message}}</span><br>
+          {{/if}}
+          {{#each embeddings}}
+          {{#if_eq this.mime_type "image/png"}}
+          <img src="data:image/png;base64,{{data}}" />
+          {{/if_eq}}
+          {{#if_eq this.mime_type "text/plain"}}
+          <span class='text-attach'>{{atobData}}</span>
+          {{/if_eq}}
+          <br>
           {{/each}}
-        </div>
-            </div>
-        </div>
-
-        {{/if_eq}}
+        </span>
         {{/each}}
+      </div>
+      </div>
+    </div>
+    {{/if_eq}}
+    {{/each}}
+    </div>
     {{/each}}
     </script>
- 
-    <script>
-
-    Handlebars.registerHelper('if_eq', function(a, b, opts) {
-    if(a == b) // Or === depending on your needs
-        return opts.fn(this);
-    else
-        return opts.inverse(this);
-    });
-
-    Handlebars.registerHelper('atobData', function() {
-      return atob(this.data);
-    });
-
-    //4a.function creation
-    var slingshot = function (tplId, anchor) {
-     $.getJSON('acc_results.json', function(features) {
-        var template = $(tplId).html();
-
-
-        //Loop features
-        var featureResult = '';
-        $.each(features, function( fIndex, feature ) {
-          featureResult = 'passed';
-          // Loop scenarios
-          $.each(feature.elements, function( eIndex, scenario ) {
-            if(scenario.type === 'background'){return;}
-            // Loop steps
-            var scenarioResult = 'passed';
-            $.each(scenario.steps, function( sIndex, step ) {
-              if(step.result && step.result.status !== 'passed'){
-                scenarioResult = step.result.status;
-                return false;
-              }
-            });
-            features[fIndex].elements[eIndex].status = scenarioResult;
-            
-            if(scenarioResult !== 'passed'){
-              featureResult = scenarioResult;
-              return false;
-            }
-          });
-
-          features[fIndex].status = featureResult;
-          console.log(features[fIndex]);
-        });
-        var stone = Handlebars.compile(template)(features);
-        $(anchor).append(stone);
-
-      $('img').click(function() {
-        $(this).toggleClass('bigger');
-      });
-      setUpPanels();
-
-
-     });
-
-
-  };
-
-
-
-    //4b.function firing
-    slingshot('#tpl', '#anchor'); // since url = 'data.json' , we can use both notations.
-    
-    </script>
+    <script type="text/javascript" src="index.js"></script>
   </body>
 </html>

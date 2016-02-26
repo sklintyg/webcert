@@ -1,4 +1,4 @@
-/*
+/*/*
  * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -21,43 +21,12 @@ html {
 overflow: -moz-scrollbars-vertical; 
 overflow-y: scroll;
 }
-
-a {
- color: #0084b4;
- text-decoration:none;
-}
-a:hover { text-decoration : underline; }
+/*a:hover { text-decoration : underline; }*/
 
 #anchor{
-  width: 800px ;
+  /*width: 1200px ;*/
 }
 
-.step{
-  padding:10px;
-}
-
-.passed{
-  background-color: #85e085 !important;
-}
-.failed{
-  background-color: #FFCCCC !important;
-}
-.skipped{
-  background-color: lightblue !important;
-}
-.pending{
-  background-color: yellow !important;
-}
-/*.feature{
-  padding: 5px;
-  border-style: solid;
-  border-width: 1px;
-  max-width:700px;
-}*/
-.scenario{
-  padding:3px;
-
-}
 .bigger {
 /*    height: 600px;*/
     max-width: 1000px !important;
@@ -66,14 +35,11 @@ img{
   max-width:200px;
 }
 
-.step.Before{
+.Before{
   display:none;
 }
 b.After{
   display:none;
-}
-.step.After{
-  /*display:none;*/
 }
 .text-attach{
   margin-left:30px;
@@ -81,51 +47,13 @@ b.After{
   font-size:small;
 }
 
-
-
-
-/* panel */
-.panel, .panelcollapsed 
-{
-  background: #eee;
-  margin: 5px;
-  padding: 0px 0px 5px;
-  border: 1px solid #999;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
+.panel-heading a:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e114";
+    float: right;
+    /*color: grey;*/
 }
-
-/* panel heading */
-.panel h2, .panelcollapsed h2 
-{
-  font-size: 18px;
-  font-weight: normal;
-  margin: 0px;
-  padding: 4px;
-  background: #CCC url(arrow-up.gif) no-repeat 770px;
-  border-bottom: 1px solid #999;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-top: 1px solid #FFF;
-  border-right: 1px solid #FFF;
-  border-left: 1px solid #FFF;
+.panel-heading a.collapsed:after {
+    content:"\e080";
 }
-
-/* panel heading on rollover */
-.panel h2:hover, .panelcollapsed h2:hover { background-color: #A9BCEF; }
-
-/* heading of a collapsed panel */
-.panelcollapsed h2 
-{
-  background: #CCC url(arrow-dn.gif) no-repeat 770px;
-  /*border-color: #CCC;*/
-}
-
-/* panel content - do not set borders or paddings */
-.panelcontent 
-{ 
-  overflow: hidden;
-}
-
-/* collapsed panel content */
-.panelcollapsed .panelcontent { display: none; }
+*/
