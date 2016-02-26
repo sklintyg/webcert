@@ -18,6 +18,8 @@
  */
 
 package se.inera.intyg.webcert.web.service.arende;
+import java.util.List;
+
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
@@ -27,5 +29,10 @@ public interface ArendeService {
      * Validates and decorates incoming arende with additional information.
      */
     Arende processIncomingMessage(Arende arende) throws WebCertServiceException;
+
+    /**
+     * List names of signing doctors for units where the webcert user is logged in.
+     */
+    List<String> listSignedByForUnits() throws WebCertServiceException;
 
 }

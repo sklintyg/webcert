@@ -19,10 +19,21 @@
 
 package se.inera.intyg.webcert.persistence.arende.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 public interface ArendeRepository extends JpaRepository<Arende, Long> {
 
+    /**
+     * List all unique signing doctors for the supplied units.
+     *
+     * @return a list of names
+     */
+    @Query("SELECT DISTINCT signeratAv FROM Arende WHERE enhet IN (:idList) ORDER BY signeratAv ASC")
+    List<String> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
 }

@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -40,6 +44,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private WebCertUserService webcertUserService;
 
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
@@ -57,5 +64,13 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setIntygTyp(intygMetaData.getIntygTyp());
         arende.setSigneratAv(intygMetaData.getSigneratAv());
         arende.setEnhet(intygMetaData.getEnhet());
+    }
+
+    @Override
+    public List<String> listSignedByForUnits() throws WebCertServiceException {
+        WebCertUser user = webcertUserService.getUser();
+        List<String> unitIds = user.getIdsOfSelectedVardenhet();
+
+        return repo.findSigneratAvByEnhet(unitIds);
     }
 }
