@@ -56,12 +56,12 @@ module.exports = function(grunt) {
     }));
 
     var modules = {
-        'common':             { base: 'common/web' },
-        'fk7263':             { base: 'intygstyper/fk7263' },
-        'ts-bas':             { base: 'intygstyper/ts-bas' },
-        'ts-diabetes':        { base: 'intygstyper/ts-diabetes' },
-        'sjukersattning':     { base: 'intygstyper/fk/sjukersattning', angularModule:'luse' },
-        'lisu':               { base: 'intygstyper/fk/sjukpenning-utokad', angularModule:'lisu' }
+        'common':      { base: 'common/web' },
+        'fk7263':      { base: 'intygstyper/fk7263' },
+        'ts-bas':      { base: 'intygstyper/ts-bas' },
+        'ts-diabetes': { base: 'intygstyper/ts-diabetes' },
+        'luse':        { base: 'intygstyper/fk/sjukersattning', angularModule:'luse' },
+        'lisu':        { base: 'intygstyper/fk/sjukpenning-utokad', angularModule:'lisu' }
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];

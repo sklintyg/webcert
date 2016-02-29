@@ -631,10 +631,10 @@
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/sjukersattning"
+                    todir="${project.build.directory}/webjardependencies/luse"
                     verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/sjukersattning">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/luse">
                   </fileset>
                 </copy>
                 <copy
