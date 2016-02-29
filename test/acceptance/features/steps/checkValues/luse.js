@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger */
+/* globals logger, pages */
 
 'use strict';
 
 var helpers = require('./helpers.js');
-// var intygPage = pages.intyg.fk['7263'].intyg;
+var lusePage = pages.intyg.luse.intyg;
 
 function checkUtlatandeDatum(utlatandeText, cb) {
     if (utlatandeText !== 'Annat underlag för utlåtandet') {
@@ -52,7 +52,6 @@ function checkUtlatandeDatum(utlatandeText, cb) {
 function checkSjukForLopp(sjukdomsforlopp, cb) {
 
     expect(element(by.cssContainingText('.ng-binding.ng-scope', sjukdomsforlopp)).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
-        // expect(element(by.cssContainingText('.intyg-field.ng-scope' ,'Sjukdomsförlopp för aktuella sjukdomar av betydelse')).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
         logger.info('OK - ' + sjukdomsforlopp);
     }, function(reason) {
         cb('FEL, Sjukdomsförlopp för aktuella sjukdomar av betydelse' + reason);
@@ -60,7 +59,7 @@ function checkSjukForLopp(sjukdomsforlopp, cb) {
 }
 
 function checkDiagnosNedArbFor(kod, cb) {
-    expect(element(by.id('diagnoseCode')).getText()).to.eventually.equal('A00').then(function() {
+    expect(lusePage.diagnoseCode.getText()).to.eventually.equal(kod).then(function() {
         logger.info('OK - ' + kod);
     }, function(reason) {
         cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
@@ -81,10 +80,10 @@ module.exports = {
 
         // checkSjukForLopp(intyg.sjukdomsForlopp, callback);
         // checkDiagnosNedArbFor(intyg.diagnos.kod, callback);
-        // callback();
+
         // expect(element(by.id('underlagFinnsNo')).getText()).to.eventually.equal('Nej').then(function() {
         //     logger.info('OK - Nej');
-            // logger.info('OK - ' + underlagFinnsNo);
+        // logger.info('OK - ' + underlagFinnsNo);
         // }, function(reason) {
         //     callback('FEL, Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?,' + reason);
         // }).then(callback);
