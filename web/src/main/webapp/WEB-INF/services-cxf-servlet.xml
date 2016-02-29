@@ -61,6 +61,15 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 
+  <jaxws:endpoint address="/create-draft-certificate/v2.0" implementor="se.inera.intyg.webcert.web.integration.v2.CreateDraftCertificateResponderImpl">
+    <jaxws:outFaultInterceptors>
+      <bean
+        class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/create-draft-certificate.xslt" />
+      </bean>
+    </jaxws:outFaultInterceptors>
+  </jaxws:endpoint>
+
   <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.intyg.webcert.web.integration.ReceiveQuestionResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
