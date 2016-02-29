@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+  xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:cxf="http://cxf.apache.org/core"
+  xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+      http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+      http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+      http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+      http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+      http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging />
+    </cxf:features>
+  </cxf:bus>
+
+  <jaxws:client id="storeLogClient"
+    serviceClass="se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface"
+    address="${loggtjanst.endpoint.url}">
+    <jaxws:properties>
+      <entry key="schema-validation-enabled" value="true" />
+    </jaxws:properties>
+  </jaxws:client>
+
+  <!--
+  <beans profile="dev,testability-api">
+    <jaxrs:server address="/logMessages">
+      <jaxrs:serviceBeans>
+        <bean class="se.inera.intyg.webcert.logsender.integration.test.LogResource" />
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider" />
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json" />
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  </beans>
+  -->
+
+  <beans profile="!dev">
+    <http:conduit
+      name="{urn:riv:ehr:log:store:StoreLog:1:rivtabp21}StoreLogResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true"
+        Connection="Keep-Alive" />
+      <http:tlsClientParameters disableCNCheck="true">
+
+        <sec:keyManagers keyPassword="${sakerhetstjanst.ws.key.manager.password}">
+          <sec:keyStore file="${sakerhetstjanst.ws.certificate.file}"
+            password="${sakerhetstjanst.ws.certificate.password}" type="${sakerhetstjanst.ws.certificate.type}" />
+        </sec:keyManagers>
+        <sec:trustManagers>
+          <sec:keyStore file="${sakerhetstjanst.ws.truststore.file}"
+            password="${sakerhetstjanst.ws.truststore.password}" type="${sakerhetstjanst.ws.truststore.type}" />
+        </sec:trustManagers>
+
+        <sec:cipherSuitesFilter>
+          <!-- these filters ensure that a cipher suite with export-suitable 
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change 
+            as this is vulnerable to man-in-the-middle attacks -->
+          <sec:include>.*_EXPORT_.*</sec:include>
+          <sec:include>.*_EXPORT1024_.*</sec:include>
+          <sec:include>.*_WITH_DES_.*</sec:include>
+          <sec:include>.*_WITH_AES_.*</sec:include>
+          <sec:include>.*_WITH_NULL_.*</sec:include>
+          <sec:exclude>.*_DH_anon_.*</sec:exclude>
+        </sec:cipherSuitesFilter>
+      </http:tlsClientParameters>
+    </http:conduit>
+  </beans>
+
+</beans>
