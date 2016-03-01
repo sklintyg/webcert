@@ -17,22 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.integration.registry;
+package se.inera.intyg.webcert.persistence.integreradenhet.model;
 
-import java.util.Optional;
+public enum SchemaVersion {
 
-import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
-import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+    V1(1),
+    V2(2);
 
-public interface IntegreradeEnheterRegistry {
+    private int version;
 
-    void putIntegreradEnhet(IntegreradEnhetEntry entry, SchemaVersion schemaVersion);
+    SchemaVersion(int version) {
+        this.version = version;
+    }
 
-    boolean isEnhetIntegrerad(String enhetHsaId);
-
-    void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry);
-
-    void deleteIntegreradEnhet(String hsaId);
-
-    Optional<SchemaVersion> getSchemaVersion(String enhetHsaId);
+    public boolean isGreaterThan(SchemaVersion schemaVersion) {
+        return this.version > schemaVersion.version;
+    }
 }

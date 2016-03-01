@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +37,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -48,15 +48,8 @@ import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.infrastructure.directory.v1.CommissionType;
 
@@ -119,12 +112,12 @@ public class CreateDraftCertificateResponderImplTest {
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(CommissionType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
         // Then
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(SchemaVersion.V1));
 
         // Assert response content
         assertNotNull(response);

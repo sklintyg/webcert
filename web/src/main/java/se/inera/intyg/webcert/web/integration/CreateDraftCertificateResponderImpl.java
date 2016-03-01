@@ -19,12 +19,15 @@
 
 package se.inera.intyg.webcert.web.integration;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -36,16 +39,11 @@ import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.riv.infrastructure.directory.v1.CommissionType;
-
-import java.util.List;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -193,13 +191,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
                 vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
 
-        boolean result = integreradeEnheterRegistry.addIfNotExistsIntegreradEnhet(integreradEnhet);
-
-        if (result) {
-            LOG.info("Added unit '{}' to registry of integrated units", vardenhet.getHsaId());
-        } else {
-            LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
-        }
+        integreradeEnheterRegistry.putIntegreradEnhet(integreradEnhet, SchemaVersion.V1);
     }
 
 }

@@ -19,12 +19,7 @@
 
 package se.inera.intyg.webcert.persistence.integreradenhet.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -59,6 +54,10 @@ public class IntegreradEnhet {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime senasteKontrollDatum;
 
+    @Column(name = "SCHEMA_VERSION")
+    @Enumerated(EnumType.STRING)
+    private SchemaVersion schemaVersion;
+
     @PrePersist
     void onPrePersist() {
         if (skapadDatum == null) {
@@ -74,7 +73,8 @@ public class IntegreradEnhet {
     @Override
     public String toString() {
         return "IntegreradEnhet [enhetsId=" + enhetsId + ", enhetsNamn=" + enhetsNamn + ", vardgivarId=" + vardgivarId + ", vardgivarNamn="
-                + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + "]";
+                + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", schemaVersion="
+                + schemaVersion + "]";
     }
 
     public String getEnhetsId() {
@@ -123,5 +123,13 @@ public class IntegreradEnhet {
 
     public void setSenasteKontrollDatum(LocalDateTime senasteKontrollDatum) {
         this.senasteKontrollDatum = senasteKontrollDatum;
+    }
+
+    public SchemaVersion getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public void setSchemaVersion(SchemaVersion schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 }

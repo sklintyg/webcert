@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.integration.registry;
 
+import java.util.Optional;
+
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 
 @Service
 public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistry {
@@ -47,13 +50,19 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      */
     @Override
     @Transactional("jpaTransactionManager")
-    public boolean addIfNotExistsIntegreradEnhet(IntegreradEnhetEntry entry) {
+    public void putIntegreradEnhet(IntegreradEnhetEntry entry, SchemaVersion schemaVersion) {
 
         String enhetsId = entry.getEnhetsId();
 
-        if (isEnhetIntegrerad(enhetsId)) {
+        IntegreradEnhet intEnhet = getIntegreradEnhet(enhetsId);
+        if (intEnhet != null) {
             LOG.debug("Unit {} is already registered", enhetsId);
-            return false;
+            if (schemaVersion.isGreaterThan(intEnhet.getSchemaVersion())) {
+                intEnhet.setSchemaVersion(schemaVersion);
+                integreradEnhetRepository.save(intEnhet);
+                LOG.debug("Unit {} schema version updated to {}", enhetsId, schemaVersion);
+            }
+            return;
         }
 
         IntegreradEnhet integreradEnhet = new IntegreradEnhet();
@@ -61,12 +70,11 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         integreradEnhet.setEnhetsNamn(entry.getEnhetsNamn());
         integreradEnhet.setVardgivarId(entry.getVardgivareId());
         integreradEnhet.setVardgivarNamn(entry.getVardgivareNamn());
+        integreradEnhet.setSchemaVersion(schemaVersion);
 
         IntegreradEnhet savedIntegreradEnhet = integreradEnhetRepository.save(integreradEnhet);
 
         LOG.debug("Added unit to registry: {}", savedIntegreradEnhet.toString());
-
-        return true;
     }
 
     /*
@@ -77,7 +85,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public boolean isEnhetIntegrerad(String enhetsHsaId) {
-        IntegreradEnhetEntry ie = getIntegreradEnhetEntry(enhetsHsaId);
+        IntegreradEnhet ie = getIntegreradEnhet(enhetsHsaId);
         return (ie != null);
     }
 
@@ -85,10 +93,11 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Transactional("jpaTransactionManager")
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry) {
 
-        IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(orgEnhetsHsaId);
+        IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
+        IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
 
         if ((orgEntry != null) && (orgEntry.compareTo(newEntry) != 0)) {
-            addIfNotExistsIntegreradEnhet(newEntry);
+            putIntegreradEnhet(newEntry, enhet.getSchemaVersion());
         }
     }
 
@@ -102,8 +111,17 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         }
     }
 
-    private IntegreradEnhetEntry getIntegreradEnhetEntry(String enhetsHsaId) {
+    @Override
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    public Optional<SchemaVersion> getSchemaVersion(String enhetsHsaId) {
+        IntegreradEnhet ie = getIntegreradEnhet(enhetsHsaId);
+        if (ie == null) {
+            return Optional.empty();
+        }
+        return Optional.of(ie.getSchemaVersion());
+    }
 
+    private IntegreradEnhet getIntegreradEnhet(String enhetsHsaId) {
         IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
 
         if (enhet == null) {
@@ -115,6 +133,13 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         enhet.setSenasteKontrollDatum(LocalDateTime.now());
         integreradEnhetRepository.save(enhet);
 
+        return enhet;
+    }
+
+    private IntegreradEnhetEntry getIntegreradEnhetEntry(IntegreradEnhet enhet) {
+        if (enhet == null) {
+            return null;
+        }
         return new IntegreradEnhetEntry(enhet.getEnhetsId(), enhet.getEnhetsNamn(), enhet.getVardgivarId(), enhet.getVardgivarNamn());
     }
 }

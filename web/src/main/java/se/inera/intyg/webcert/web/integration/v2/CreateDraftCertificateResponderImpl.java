@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -190,13 +191,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
                 vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
 
-        boolean result = integreradeEnheterRegistry.addIfNotExistsIntegreradEnhet(integreradEnhet);
-
-        if (result) {
-            LOG.info("Added unit '{}' to registry of integrated units", vardenhet.getHsaId());
-        } else {
-            LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
-        }
+        integreradeEnheterRegistry.putIntegreradEnhet(integreradEnhet, SchemaVersion.V2);
     }
 
 }

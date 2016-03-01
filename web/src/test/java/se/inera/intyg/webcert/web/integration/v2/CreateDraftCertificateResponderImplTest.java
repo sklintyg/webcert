@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.integration.v2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -104,11 +106,11 @@ public class CreateDraftCertificateResponderImplTest {
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(CommissionType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(SchemaVersion.V2));
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
@@ -165,11 +167,11 @@ public class CreateDraftCertificateResponderImplTest {
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(CommissionType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(SchemaVersion.V2));
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
@@ -193,11 +195,11 @@ public class CreateDraftCertificateResponderImplTest {
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(CommissionType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.FALSE);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(SchemaVersion.V2));
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
