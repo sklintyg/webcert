@@ -28,5 +28,5 @@
   <import resource="jms-context.xml" />
 
   <context:annotation-config />
-  
+
 </beans>

@@ -24,6 +24,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 
@@ -47,7 +48,12 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .transacted()
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
-                .marshal("jaxbMessageDataFormat")
+                .choice()
+                    .when(header(RouteHeaders.VERSION).isEqualTo(NotificationVersion.VERSION_2))
+                        .marshal("jaxbMessageDataFormatV2")
+                    .otherwise()
+                        .marshal("jaxbMessageDataFormat")
+                .end()
                 .to("sendNotificationWSEndpoint");
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
@@ -55,8 +61,14 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
-                .unmarshal("jaxbMessageDataFormat")
-                .to("bean:notificationWSClient");
+                .choice()
+                    .when(header(RouteHeaders.VERSION).isEqualTo(NotificationVersion.VERSION_2))
+                        .unmarshal("jaxbMessageDataFormatV2")
+                        .to("bean:notificationWSClientV2")
+                    .otherwise()
+                        .unmarshal("jaxbMessageDataFormat")
+                        .to("bean:notificationWSClient")
+                .end();
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())

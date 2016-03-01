@@ -35,6 +35,7 @@
   <import resource="mock-test-service-context.xml"/>
   <import resource="../integration-test-broker-context.xml"/>
 
-  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.intyg.webcert.notification_sender.mocks.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="certificateStatusUpdateForCareResponderV1" class="se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="certificateStatusUpdateForCareResponderV2" class="se.inera.intyg.webcert.notification_sender.mocks.v2.CertificateStatusUpdateForCareResponderStub"/>
 
 </beans>

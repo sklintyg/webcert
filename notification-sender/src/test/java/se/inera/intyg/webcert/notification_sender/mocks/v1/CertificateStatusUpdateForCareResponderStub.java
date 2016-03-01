@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.mocks;
+package se.inera.intyg.webcert.notification_sender.mocks.v1;
 
 import java.util.ArrayList;
 import java.util.List;

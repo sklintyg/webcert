@@ -27,9 +27,7 @@ import org.mockito.Mockito;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
 
@@ -47,7 +45,7 @@ public class NotificationTransformerTest {
     public void testSend() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, "FK7263", new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", new FragorOchSvar(0, 0, 0, 0));
+                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", new FragorOchSvar(0, 0, 0, 0), NotificationVersion.VERSION_1);
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
 

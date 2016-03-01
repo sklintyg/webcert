@@ -28,12 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
@@ -47,21 +43,6 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
     @Autowired
     private FragorOchSvarCreator fragorOchSvarCreator;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Override
-    public NotificationMessage createNotificationMessage(String intygsId, HandelseType handelse) {
-
-        Utkast utkast = utkastRepository.findOne(intygsId);
-
-        if (utkast == null) {
-            LOG.error("Could not retrieve utkast with id {}", intygsId);
-            return null;
-        }
-
-        return createNotificationMessage(utkast, handelse);
-    }
     /*
      * (non-Javadoc)
      *
@@ -69,7 +50,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
      * persistence.utkast.model.Utkast, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
      */
     @Override
-    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse) {
+    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, NotificationVersion version) {
 
         String intygsId = utkast.getIntygsId();
         String intygsTyp = utkast.getIntygsTyp();
@@ -86,19 +67,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
         String utkastJson = utkast.getModel();
 
-        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
-     * persistence.fragasvar.model.FragaSvar, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
-     */
-    @Override
-    public NotificationMessage createNotificationMessage(FragaSvar fragaSvar, HandelseType handelse) {
-        String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-        return createNotificationMessage(intygsId, handelse);
+        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, version);
     }
 
 }

@@ -50,6 +50,7 @@ public class NotificationTransformer {
         message.setHeader(RouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
         message.setHeader(RouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
         message.setHeader(RouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
+        message.setHeader(RouteHeaders.VERSION, notificationMessage.getVersion());
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp());
         message.setBody(moduleApi.createNotification(notificationMessage));
