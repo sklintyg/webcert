@@ -47,11 +47,13 @@ module.exports = function(grunt) {
     var TEST_DIR = 'src/test/js/';
     var DEST_DIR = 'target/webapp/app/';
 
-    var webcert = grunt.file.expand({cwd:SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
+    var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
-        map(function(file){ return '/app/'+file; }).
+        map(function(file) {
+            return '/app/' + file;
+        }).
         concat('/app/templates.js'), null, 4));
-    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert.map(function(file){
+    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert.map(function(file) {
         return SRC_DIR + file;
     }));
 
@@ -69,8 +71,9 @@ module.exports = function(grunt) {
         if (!module.angularModule) {
             module.angularModule = moduleName;
         }
-        module.src = '/../../'+module.base+'/src/main/resources/META-INF/resources/webjars/' + moduleName + '/webcert';
-        module.dest = '/../../'+module.base+'/target/classes/META-INF/resources/webjars/' + moduleName + '/webcert';
+        module.src =
+            '/../../' + module.base + '/src/main/resources/META-INF/resources/webjars/' + moduleName + '/webcert';
+        module.dest = '/../../' + module.base + '/target/classes/META-INF/resources/webjars/' + moduleName + '/webcert';
     });
 
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
@@ -96,17 +99,21 @@ module.exports = function(grunt) {
 
     grunt.registerTask('generateModuleDeps', function() {
         // Generate webcert app-deps.json
-        var files = grunt.file.expand({cwd:SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
+        var files = grunt.file.expand({cwd: SRC_DIR},
+            ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
         grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(files.
-            map(function(file){ return '/app/'+file; }).
+            map(function(file) {
+                return '/app/' + file;
+            }).
             concat('/app/templates.js'), null, 4));
 
         // Generate all module-deps.json
         Object.keys(modules).forEach(function(moduleName) {
             var module = modules[moduleName];
-            var files = grunt.file.expand({cwd: __dirname + module.src}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/module.js']).sort();
+            var files = grunt.file.expand({cwd: __dirname + module.src},
+                ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/module.js']).sort();
             grunt.file.write(__dirname + module.dest + '/module-deps.json', JSON.stringify(files.
-                map(function (file) {
+                map(function(file) {
                     return '/web/webjars/' + module.name + '/webcert/' + file;
                 }).
                 concat('/web/webjars/' + module.name + '/webcert/templates.js'), null, 4));
@@ -178,8 +185,8 @@ module.exports = function(grunt) {
             //them for the browser in dev mode,
             'css': {
                 files: buildListForAllModules(function(module) {
-                        return __dirname + module.src + '/css/*.scss';
-                    }).concat([__dirname + CSS_COMMON_SRC_DIR + '/*.scss']),
+                    return __dirname + module.src + '/css/*.scss';
+                }).concat([__dirname + CSS_COMMON_SRC_DIR + '/*.scss']),
                 tasks: ['sass:dev']
             },
             js: {
@@ -193,8 +200,8 @@ module.exports = function(grunt) {
             },
             html: {
                 files: buildListForAllModules(function(module) {
-                        return __dirname + module.src + '/**/*.html';
-                    }).concat([__dirname + '/src/main/webapp/**/*.html']),
+                    return __dirname + module.src + '/**/*.html';
+                }).concat([__dirname + '/src/main/webapp/**/*.html']),
                 tasks: ['ngtemplates']
             }
         },
@@ -206,7 +213,7 @@ module.exports = function(grunt) {
             },
             dev: {
                 //Compile all
-                files:buildListForAllModules(function(module) {
+                files: buildListForAllModules(function(module) {
                     return {
                         expand: true,
                         cwd: __dirname + module.src + '/css/',
@@ -242,13 +249,13 @@ module.exports = function(grunt) {
                     }
                 }
             };
-        }), { webcert : {
+        }), { webcert: {
             cwd: __dirname + '/src/main/webapp',
             src: ['app/views/**/**.html', 'app/partials/**/**.html'],
             dest: __dirname + '/target/webapp/app/templates.js',
             options: {
                 module: 'webcert',
-                url: function (url) {
+                url: function(url) {
                     return '/' + url.replace('../', '/');
                 }
             }
@@ -287,22 +294,22 @@ module.exports = function(grunt) {
                             var module = modules[moduleName];
                             middlewares.push(
                                 connect().use(
-                                        '/web/webjars/'+module.name+'/webcert',
+                                        '/web/webjars/' + module.name + '/webcert',
                                     connect.static(__dirname + module.src) //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
-                                        '/web/webjars/'+module.name+'/webcert/templates.js',
+                                        '/web/webjars/' + module.name + '/webcert/templates.js',
                                     connect.static(__dirname + module.dest + '/templates.js') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
-                                        '/web/webjars/'+module.name+'/webcert/module-deps.json',
+                                        '/web/webjars/' + module.name + '/webcert/module-deps.json',
                                     connect.static(__dirname + module.dest + '/module-deps.json') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
-                                        '/web/webjars/'+module.name+'/webcert/css',
+                                        '/web/webjars/' + module.name + '/webcert/css',
                                     connect.static(__dirname + module.dest + '/css')//jshint ignore:line
                                 ));
                         });
