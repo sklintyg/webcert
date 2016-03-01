@@ -16,28 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 'use strict';
 
+var testdataHelper = require('./../helpers/testdataHelper.js');
+var shuffle = testdataHelper.shuffle;
+
 module.exports = {
-	fillIn:function(intyg,cb) {
-	    switch(intyg.typ) {
-		    case 'Transportstyrelsens läkarintyg':
-		        require('./ts.bas.js').fillIn(intyg, cb);
-		        break;
-		    case 'Transportstyrelsens läkarintyg, diabetes':
-		        require('./ts.diabetes.js').fillIn(intyg, cb);
-		        break;
-		    case 'Läkarintyg FK 7263':
-		        require('./fk.7263.js').fillIn(intyg, cb);
-		        break;
-		    case 'Läkarutlåtande för sjukersättning':
-		        require('./fk.LUSE.js').fillIn(intyg, cb);
-		        break;
-		    case 'Läkarintyg för sjukpenning utökat':
-		        require('./fk.lisu.js').fillIn(intyg, cb);
-		        break;
-		    default:
-		        cb('Intyg.typ odefinierad.');
-		}
-	}
+    ICD10: ['A00', 'B00', 'C00', 'D00'],
+
+    getRandomLisuIntyg: function(intygsID) {
+        return {
+            intygId: intygsID,
+            typ: 'Läkarintyg för sjukpenning utökat',
+
+            diagnos: {
+                kod: shuffle(this.ICD10)[0],
+                bakgrund: testdataHelper.randomTextString()
+            },
+            aktivitetsbegransning: testdataHelper.randomTextString()
+        };
+    }
 };

@@ -37,5 +37,18 @@ module.exports = {
         }
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
+    },
+    randomTextString: function(stringlength) {
+        var text = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789';
+        var argtextlength = stringlength || 16;
+
+        for (var i = 0; i < argtextlength; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    },
+    randomTrueFalse: function() {
+        return this.shuffle([true, false])[0];
     }
 };

@@ -49,6 +49,10 @@ module.exports = {
             utkast: require(intygPath + 'luse.utkast.page.js'),
             intyg: require(intygPath + 'luse.intyg.page.js')
         },
+        lisu: {
+            utkast: require(intygPath + 'lisu.utkast.page.js')
+            //intyg: require(intygPath + 'lisu.intyg.page.js')
+        },
         ts: {
             diabetes: {
                 utkast: require(intygPath + 'tsDiabetes.utkast.page.js'),

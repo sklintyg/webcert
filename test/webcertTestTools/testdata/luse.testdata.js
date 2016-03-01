@@ -22,6 +22,7 @@
 var testdataHelper = require('./../helpers/testdataHelper.js');
 var shuffle = testdataHelper.shuffle;
 
+
 module.exports = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
 
@@ -30,19 +31,7 @@ module.exports = {
 
     fk: require('./fk.js'),
 
-    randomTrueFalse: function() {
-        return shuffle([true, false])[0];
-    },
 
-    randomTextString: function() {
-        var text = '';
-        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789';
-
-        for (var i = 0; i < 16; i++) {
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return text;
-    },
 
     getRandomLuseIntyg: function(intygsID) {
         return {
@@ -50,13 +39,13 @@ module.exports = {
             typ: 'Läkarutlåtande för sjukersättning',
             diagnos: {
                 kod: shuffle(this.ICD10)[0],
-                bakgrund: this.randomTextString()
+                bakgrund: testdataHelper.randomTextString()
                 // bakgrund: 'En slumpmässig bakgrund'
             },
-            annanUnderlag: this.randomTrueFalse(),
-            sjukdomsForlopp: this.randomTextString(),
+            annanUnderlag: testdataHelper.randomTrueFalse(),
+            sjukdomsForlopp: testdataHelper.randomTextString(),
             // sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
-            nyDiagnosBedom: this.randomTrueFalse(),
+            nyDiagnosBedom: testdataHelper.randomTrueFalse(),
             funktionsnedsattning: {
                 //funktionsnedsattningar
                 intellektuell: shuffle(this.funktionsnedsattningar)[0],
@@ -67,22 +56,22 @@ module.exports = {
                 balansKoordination: shuffle(this.funktionsnedsattningar)[0],
                 annan: shuffle(this.funktionsnedsattningar)[0]
             },
-            aktivitetsbegransning: this.randomTextString(),
+            aktivitetsbegransning: testdataHelper.randomTextString(),
             // aktivitetsbegransning: 'Total',
             avslutadBehandling: shuffle(this.mediciner)[0],
             pagaendeBehandling: shuffle(this.mediciner)[0],
             planeradBehandling: shuffle(this.mediciner)[0],
             substansintag: shuffle(this.mediciner)[0],
-            medicinskaForutsattningarForArbete: this.randomTextString(),
+            medicinskaForutsattningarForArbete: testdataHelper.randomTextString(),
             // medicinskaForutsattningarForArbete: 'Inte speciellt',
-            aktivitetsFormaga: this.randomTextString(),
+            aktivitetsFormaga: testdataHelper.randomTextString(),
             // aktivitetsFormaga: 'Liten',
-            ovrigt: this.randomTextString(),
+            ovrigt: testdataHelper.randomTextString(),
             // ovrigt: 'Inget',
-            kontaktMedFkNo: this.randomTrueFalse(),
-            tillaggsfragor0svar: this.randomTextString(),
+            kontaktMedFkNo: testdataHelper.randomTrueFalse(),
+            tillaggsfragor0svar: testdataHelper.randomTextString(),
             // tillaggsfragor0svar: 'Answer',
-            tillaggsfragor1svar: this.randomTextString()
+            tillaggsfragor1svar: testdataHelper.randomTextString()
             // tillaggsfragor1svar: 'Question'
         };
     }

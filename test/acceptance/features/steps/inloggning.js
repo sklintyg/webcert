@@ -85,6 +85,9 @@ module.exports = function() {
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
             logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
             require('./checkValues/luse.js').checkLuseValues(intyg, callback);
+        } else if (intyg.typ === 'Läkarintyg för sjukpenning utökat') {
+            logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
+            require('./checkValues/lisu.js').checkLuseValues(intyg, callback);
         }
     });
 

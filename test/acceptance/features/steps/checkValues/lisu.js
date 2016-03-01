@@ -16,28 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/* globals logger, pages */
+
 'use strict';
 
+var helpers = require('./helpers.js');
+var lusePage = pages.intyg.lisu.intyg;
+
 module.exports = {
-	fillIn:function(intyg,cb) {
-	    switch(intyg.typ) {
-		    case 'Transportstyrelsens läkarintyg':
-		        require('./ts.bas.js').fillIn(intyg, cb);
-		        break;
-		    case 'Transportstyrelsens läkarintyg, diabetes':
-		        require('./ts.diabetes.js').fillIn(intyg, cb);
-		        break;
-		    case 'Läkarintyg FK 7263':
-		        require('./fk.7263.js').fillIn(intyg, cb);
-		        break;
-		    case 'Läkarutlåtande för sjukersättning':
-		        require('./fk.LUSE.js').fillIn(intyg, cb);
-		        break;
-		    case 'Läkarintyg för sjukpenning utökat':
-		        require('./fk.lisu.js').fillIn(intyg, cb);
-		        break;
-		    default:
-		        cb('Intyg.typ odefinierad.');
-		}
-	}
+    checkLisuValues: function(intyg, callback) {
+        logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
+        callback();
+    }
 };

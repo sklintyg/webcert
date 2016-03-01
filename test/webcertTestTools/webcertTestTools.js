@@ -25,7 +25,7 @@ var luseTestdata = require('./testdata/luse.testdata.js');
 var intygTemplates = require('./testdata/intygTemplates.js');
 var pages = require('./pages/pages.js');
 var helpers = require('./helpers/helpers.js'); // The order is important. Helpers requires pages.
-
+var lisuTestdata = require('./testdata/lisu.testdata.js');
 module.exports = {
   envConfig: environment.envConfig,
   testdata: testdata,
@@ -33,5 +33,6 @@ module.exports = {
   intygTemplates: intygTemplates,
   pages: pages,
   helpers: helpers,
-  luseTestdata:luseTestdata
+  luseTestdata: luseTestdata,
+  lisuTestdata: lisuTestdata
 };

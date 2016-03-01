@@ -20,13 +20,11 @@
 /*globals element,by*/
 'use strict';
 
-var BaseUtkast = require('./base.utkast.page.js');
+var BaseSmiUtkast = require('./smi.base.utkast.page.js');
 
-var LuseUtkast = BaseUtkast._extend({
+var LuseUtkast = BaseSmiUtkast._extend({
   init: function init() {
     init._super.call(this);
-
-      this.at = element(by.css('.edit-form'));
 
       this.baseratPa={
         minUndersokningAvPatienten:{
@@ -41,7 +39,6 @@ var LuseUtkast = BaseUtkast._extend({
 
       this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
       this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
-      this.diagnoseCode = element(by.id('diagnoseCode'));
       this.diagnosgrund = element(by.id('diagnosgrund'));
       this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
       this.funktionsnedsattning={
@@ -53,7 +50,6 @@ var LuseUtkast = BaseUtkast._extend({
         balansKoordination : element(by.id('funktionsnedsattningBalansKoordination')),
         annan : element(by.id('funktionsnedsattningAnnan'))
       };
-      this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
       this.avslutadBehandling = element(by.id('avslutadBehandling'));
       this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
       this.planeradBehandling = element(by.id('planeradBehandling'));
@@ -72,15 +68,6 @@ var LuseUtkast = BaseUtkast._extend({
   },
   isAt: function isAt() {
     return isAt._super.call(this);
-  },
-  getTillaggsfraga: function (i) {
-    return element(by.id('form_tillaggsfragor_' + i + '__svar'));
-  },
-  getTillaggsfragaText: function (i) {
-    return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
-  },
-  getTillaggsfragaSvar: function (i) {
-    return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
   }
 });
 
