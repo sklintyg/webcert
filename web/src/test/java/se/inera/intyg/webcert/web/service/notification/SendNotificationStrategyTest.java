@@ -36,6 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -65,9 +66,9 @@ public class SendNotificationStrategyTest {
 
     @Before
     public void setupIntegreradeEnheter() {
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_1)).thenReturn(Boolean.TRUE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_2)).thenReturn(Boolean.FALSE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_3)).thenReturn(Boolean.TRUE);
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1)).thenReturn(Optional.of(SchemaVersion.V1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2)).thenReturn(Optional.empty());
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3)).thenReturn(Optional.of(SchemaVersion.V1));
     }
 
     @Before
@@ -86,7 +87,7 @@ public class SendNotificationStrategyTest {
         Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
         assertTrue(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_1);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1);
     }
 
     @Test
@@ -94,7 +95,7 @@ public class SendNotificationStrategyTest {
         Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
         assertFalse(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_2);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2);
     }
 
     @Test

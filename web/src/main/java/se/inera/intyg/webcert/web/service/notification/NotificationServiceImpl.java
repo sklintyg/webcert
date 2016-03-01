@@ -273,8 +273,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Optional<Utkast> getUtkast(String intygsId) {
-        Utkast utkast = utkastRepo.findOne(intygsId);
-        return (utkast == null) ? Optional.empty() : Optional.of(utkast);
+        return Optional.ofNullable(utkastRepo.findOne(intygsId));
     }
 
     String notificationMessageToJson(NotificationMessage notificationMessage) {

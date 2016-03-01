@@ -27,8 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @Component
 public class DefaultSendNotificationStrategyImpl implements SendNotificationStrategy {
@@ -38,7 +40,7 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    private final List<String> allowedIntygsTyper = Collections.singletonList("fk7263");
+    private final List<String> blacklisted = Arrays.asList(CertificateTypes.TSBAS.toString(), CertificateTypes.TSDIABETES.toString());
 
     /*
      * (non-Javadoc)
@@ -54,19 +56,20 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
             return Optional.empty();
         }
 
-        if (!isEnhetIntegrerad(utkast.getEnhetsId())) {
-            LOG.debug("Utkast '{}' belongs to a unit that is not integrated", utkast.getIntygsId());
+        Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(utkast.getEnhetsId());
+        if (!schemaVersion.isPresent()) {
+            LOG.debug("Utkast '{}' belongs to a unit '{}' that is not integrated", utkast.getIntygsId(), utkast.getEnhetsId());
             return Optional.empty();
         }
 
-        return Optional.of(NotificationVersion.VERSION_1);
+        Optional<NotificationVersion> ret = NotificationVersion.fromString(schemaVersion.get().name());
+        if (!ret.isPresent()) {
+            LOG.error("Schema version '{}' for unit '{}' is not valid", schemaVersion.get(), utkast.getEnhetsId());
+        }
+        return ret;
     }
 
     private boolean isIntygsTypAllowed(String intygsTyp) {
-        return allowedIntygsTyper.contains(intygsTyp.toLowerCase());
-    }
-
-    private boolean isEnhetIntegrerad(String enhetsId) {
-        return integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId);
+        return !blacklisted.contains(intygsTyp.toLowerCase());
     }
 }
