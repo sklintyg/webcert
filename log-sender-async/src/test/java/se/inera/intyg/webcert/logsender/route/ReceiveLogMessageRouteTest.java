@@ -1,0 +1,260 @@
+/*
+ * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.logsender.route;
+
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+
+import org.apache.camel.CamelContext;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.CamelTestContextBootstrapper;
+import org.apache.camel.test.spring.MockEndpointsAndSkip;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.common.logmessages.type.LogMessageConstants;
+import se.inera.intyg.common.logmessages.type.LogMessageType;
+import se.inera.intyg.webcert.common.common.Constants;
+
+import com.google.common.collect.ImmutableMap;
+import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
+
+@RunWith(CamelSpringJUnit4ClassRunner.class)
+@ContextConfiguration("/logsender/unit-test-certificate-sender-config.xml")
+@BootstrapWith(CamelTestContextBootstrapper.class)
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
+@MockEndpointsAndSkip("direct:aggregatorRoute|direct:logMessagePermanentErrorHandlerEndpoint|direct:logMessageTemporaryErrorHandlerEndpoint")
+public class ReceiveLogMessageRouteTest {
+
+    private static final String MESSAGE_BODY = "message";
+
+    @Autowired
+    CamelContext camelContext;
+
+    @Produce(uri = "direct://receiveLogMessageEndpoint")
+    private ProducerTemplate producerTemplate;
+
+    @EndpointInject(uri = "mock:direct:aggregatorRoute")
+    private MockEndpoint aggregatorRoute;
+
+    @EndpointInject(uri = "mock:direct:logMessagePermanentErrorHandlerEndpoint")
+    private MockEndpoint logMessagePermanentErrorHandlerEndpoint;
+
+    @EndpointInject(uri = "mock:direct:logMessageTemporaryErrorHandlerEndpoint")
+    private MockEndpoint logMessageTemporaryErrorHandlerEndpoint;
+
+    @Before
+    public void setup() {
+        MockEndpoint.resetMocks(camelContext);
+    }
+
+    @Test
+    @DirtiesContext
+    public void testNormalLogStoreRoute() throws InterruptedException {
+        // Given
+        aggregatorRoute.expectedMessageCount(5);
+        logMessagePermanentErrorHandlerEndpoint.expectedMessageCount(0);
+        logMessageTemporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        for (int a = 0; a < 5; a++) {
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+        }
+
+        // Then
+        assertIsSatisfied(aggregatorRoute);
+        assertIsSatisfied(logMessagePermanentErrorHandlerEndpoint);
+        assertIsSatisfied(logMessageTemporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    @DirtiesContext
+    public void testUnkownTypeLogStoreRoute() throws InterruptedException {
+        // Given
+        aggregatorRoute.expectedMessageCount(1);
+        logMessagePermanentErrorHandlerEndpoint.expectedMessageCount(0);
+        logMessageTemporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        for (int a = 0; a < 4; a++) {
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, "UNKOWN-TYPE"));
+        }
+        producerTemplate.sendBodyAndHeaders(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+
+        // Then
+        assertIsSatisfied(aggregatorRoute);
+        assertIsSatisfied(logMessagePermanentErrorHandlerEndpoint);
+        assertIsSatisfied(logMessageTemporaryErrorHandlerEndpoint);
+    }
+
+//    @Test
+//    public void testNormalSendRoute() throws InterruptedException {
+//        // Given
+//        storeProcessor.expectedMessageCount(0);
+//        sendProcessor.expectedMessageCount(1);
+//        revokeProcessor.expectedMessageCount(0);
+//        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+//        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+//
+//        // When
+//        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
+//
+//        // Then
+//        assertIsSatisfied(storeProcessor);
+//        assertIsSatisfied(sendProcessor);
+//        assertIsSatisfied(revokeProcessor);
+//        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+//        assertIsSatisfied(permanentErrorHandlerEndpoint);
+//    }
+//
+//    @Test
+//    public void testNormalRevokeRoute() throws InterruptedException {
+//        // Given
+//        storeProcessor.expectedMessageCount(0);
+//        sendProcessor.expectedMessageCount(0);
+//        revokeProcessor.expectedMessageCount(1);
+//        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+//        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+//
+//        // When
+//        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
+//
+//        // Then
+//        assertIsSatisfied(storeProcessor);
+//        assertIsSatisfied(sendProcessor);
+//        assertIsSatisfied(revokeProcessor);
+//        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+//        assertIsSatisfied(permanentErrorHandlerEndpoint);
+//    }
+//
+//    @Test
+//    public void testUnknownMessageType() throws InterruptedException {
+//        // Given
+//        storeProcessor.expectedMessageCount(0);
+//        sendProcessor.expectedMessageCount(0);
+//        revokeProcessor.expectedMessageCount(0);
+//        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+//        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+//
+//        // When
+//        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, "non-existant"));
+//
+//        // Then
+//        assertIsSatisfied(storeProcessor);
+//        assertIsSatisfied(sendProcessor);
+//        assertIsSatisfied(revokeProcessor);
+//        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+//        assertIsSatisfied(permanentErrorHandlerEndpoint);
+//    }
+//
+//    @Test
+//    public void testPermanentException() throws InterruptedException {
+//        // Given
+//        sendProcessor.whenAnyExchangeReceived(new Processor() {
+//            @Override
+//            public void process(Exchange exchange) throws Exception {
+//                throw new PermanentException();
+//            }
+//        });
+//
+//        storeProcessor.expectedMessageCount(0);
+//        sendProcessor.expectedMessageCount(1);
+//        revokeProcessor.expectedMessageCount(0);
+//        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+//        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+//
+//        // When
+//        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
+//
+//        // Then
+//        assertIsSatisfied(storeProcessor);
+//        assertIsSatisfied(sendProcessor);
+//        assertIsSatisfied(revokeProcessor);
+//        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+//        assertIsSatisfied(permanentErrorHandlerEndpoint);
+//    }
+//
+//    @Test(expected = CamelExecutionException.class)
+//    public void testTemporaryException() throws InterruptedException {
+//        // Given
+//        revokeProcessor.whenAnyExchangeReceived(new Processor() {
+//            @Override
+//            public void process(Exchange exchange) throws Exception {
+//                throw new TemporaryException();
+//            }
+//        });
+//
+//        storeProcessor.expectedMessageCount(0);
+//        sendProcessor.expectedMessageCount(0);
+//        revokeProcessor.expectedMessageCount(1);
+//        temporaryErrorHandlerEndpoint.expectedMessageCount(1);
+//        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+//
+//        // When
+//        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
+//
+//        // Then
+//        assertIsSatisfied(storeProcessor);
+//        assertIsSatisfied(sendProcessor);
+//        assertIsSatisfied(revokeProcessor);
+//        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+//        assertIsSatisfied(permanentErrorHandlerEndpoint);
+//    }
+//
+//    @Test
+//    public void testUnexpectedException() throws InterruptedException {
+//        // Given
+//        storeProcessor.whenAnyExchangeReceived(new Processor() {
+//            @Override
+//            public void process(Exchange exchange) throws Exception {
+//                throw new IllegalArgumentException();
+//            }
+//        });
+//
+//        storeProcessor.expectedMessageCount(1);
+//        sendProcessor.expectedMessageCount(0);
+//        revokeProcessor.expectedMessageCount(0);
+//        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+//        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+//
+//        // When
+//        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
+//
+//        // Then
+//        assertIsSatisfied(storeProcessor);
+//        assertIsSatisfied(sendProcessor);
+//        assertIsSatisfied(revokeProcessor);
+//        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+//        assertIsSatisfied(permanentErrorHandlerEndpoint);
+//    }
+}

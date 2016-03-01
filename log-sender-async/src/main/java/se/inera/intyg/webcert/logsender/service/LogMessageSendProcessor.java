@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.logsender.client.LogSenderClient;
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.inera.intyg.webcert.logsender.exception.PermanentException;
 import se.inera.intyg.webcert.logsender.exception.TemporaryException;
-import se.inera.intyg.webcert.logsender.model.LogTypeFactory;
+import se.inera.intyg.webcert.logsender.converter.LogTypeFactory;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 
@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 /**
  * Created by eriklupander on 2015-05-21.
  */
-public class LogMessageProcessor {
+public class LogMessageSendProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LogMessageProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LogMessageSendProcessor.class);
 
     @Autowired
     private LogSenderClient logSenderClient;

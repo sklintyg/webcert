@@ -23,8 +23,8 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="logSenderClient" class="se.inera.intyg.webcert.logsender.client.LogSenderClientImpl" />
-  <bean id="logTypeFactory" class="se.inera.intyg.webcert.logsender.model.LogTypeFactoryImpl" />
-  <bean id="logMessageProcessor" class="se.inera.intyg.webcert.logsender.service.LogMessageProcessor"/>
-  <bean id="aggregatedExchangeMessageProcessor" class="se.inera.intyg.webcert.logsender.service.AggregatedExchangeMessageProcessor"/>
+  <bean id="logTypeFactory" class="se.inera.intyg.webcert.logsender.converter.LogTypeFactoryImpl" />
+  <bean id="logMessageSendProcessor" class="se.inera.intyg.webcert.logsender.service.LogMessageSendProcessor"/>
+  <bean id="logMessageAggregationProcessor" class="se.inera.intyg.webcert.logsender.service.LogMessageAggregationProcessor"/>
 
 </beans>

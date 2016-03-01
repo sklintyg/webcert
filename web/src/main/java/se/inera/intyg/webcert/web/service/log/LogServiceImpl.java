@@ -19,11 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.log;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-
+import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.logmessages.AbstractLogMessage;
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.IntygCreateMessage;
@@ -44,11 +39,17 @@ import se.inera.intyg.common.logmessages.IntygSendMessage;
 import se.inera.intyg.common.logmessages.IntygSignMessage;
 import se.inera.intyg.common.logmessages.IntygUpdateMessage;
 import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.common.logmessages.type.LogMessageConstants;
+import se.inera.intyg.common.logmessages.type.LogMessageType;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -244,7 +245,9 @@ public class LogServiceImpl implements LogService {
 
         @Override
         public Message createMessage(Session session) throws JMSException {
-            return session.createObjectMessage(logMsg);
+            Message message = session.createObjectMessage(logMsg);
+            message.setStringProperty(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name());
+            return message;
         }
     }
 

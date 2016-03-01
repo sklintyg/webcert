@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.logsender.model;
+package se.inera.intyg.webcert.logsender.converter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

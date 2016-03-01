@@ -24,6 +24,7 @@ import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import se.inera.intyg.common.logmessages.type.LogMessageConstants;
 import se.inera.intyg.common.logmessages.type.LogMessageType;
@@ -32,6 +33,9 @@ import se.inera.intyg.webcert.logsender.exception.TemporaryException;
 
 public class LogSenderRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(LogSenderRouteBuilder.class);
+
+    @Value("${logsender.bulkSize}")
+    private String batchSize;
 
    /*
      * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
@@ -45,37 +49,37 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
     public void configure() throws Exception {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
-        // 1. Takes individual JMS messages and passes them to the aggregator route
-        //    if type is the expected one.
+        // 1. Takes individual JMS messages and passes them to the aggregator route if type is the expected one.
+        //    Separate direct:aggregate is used due to "when()" not scoping aggregation expressions properly if directly inlined. Should be possible to fix...
         from("receiveLogMessageEndpoint").routeId("transferLogMessage")
                 .choice()
                 .when(header(LogMessageConstants.LOG_TYPE).isEqualTo(LogMessageType.SINGLE.name()))
-                // Pass to new direct:aggregate due to when() expression not scoping aggregation expressions properly
-                // if directly inlined. Should be possible to fix...
-                .to("direct:aggregate").stop()
+                .to("direct:aggregatorRoute").stop()
                 .otherwise().log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
 
-        // 2. Aggregates 5 messages together and passes them to a custom bean which will transform the content
-        //    into a single list of AbstractLogMessage. Of course, the "5" will become parameterized.
-        //    The bean uses a JmsTemplate and writes to the JMS queue which the aggregatedJmsToProcessorRoute is
-        //    listening to.
-        from("direct:aggregate").routeId("aggregatorRoute")
+
+        // 2. Aggregates (n) messages together and passes them to a custom bean which will transform the content
+        //    into a single list of AbstractLogMessage.
+        //    The bean:logMessageAggregationProcessor outputs a List of AbstractLogMessage which is passed to a JMS queue.
+        from("direct:aggregatorRoute").routeId("aggregatorRoute")
                 .aggregate(new GroupedExchangeAggregationStrategy())
                 .constant(true)
-                .completionPredicate(header("CamelAggregatedSize").isEqualTo(5))
-                // Pass to Java Bean that transforms the GroupedExchange into something
-                // writable on JMS.
-                .to("bean:aggregatedExchangeMessageProcessor").stop();
+                .completionPredicate(header("CamelAggregatedSize").isEqualTo(Integer.parseInt(batchSize)))
+                .to("bean:logMessageAggregationProcessor")
+                .to("jms:queue:newAggregatedLogMessageQueue")
+                .stop();
+
 
         // 3. In a transaction, reads from jms/AggregatedLogSenderQueue and uses custom bean:logMessageProcessor
         //    to convert into ehr:logstore format and send. Exception handling delegates resends to AMQ.
-        from("receiveAggregatedLogMessageEndpoint").routeId("aggregatedJmsToProcessorRoute")
+        from("receiveAggregatedLogMessageEndpoint").routeId("aggregatedJmsToSenderRoute")
                 .onException(TemporaryException.class).to("direct:logMessageTemporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:logMessagePermanentErrorHandlerEndpoint").end()
                 .transacted()
-                .to("bean:logMessageProcessor").stop();
+                .to("bean:logMessageSendProcessor").stop();
 
 
+        // Error handling
         from("direct:logMessagePermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("ENTER - Permanent exception for LogMessage: ${header[JMSXGroupID]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
                 .stop();

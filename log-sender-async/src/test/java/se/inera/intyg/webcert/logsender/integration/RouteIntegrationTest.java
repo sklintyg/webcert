@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.logsender.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -52,15 +51,11 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import se.inera.intyg.common.logmessages.AbstractLogMessage;
-import se.inera.intyg.common.logmessages.ActivityPurpose;
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.Enhet;
-import se.inera.intyg.common.logmessages.Patient;
 import se.inera.intyg.common.logmessages.type.LogMessageConstants;
 import se.inera.intyg.common.logmessages.type.LogMessageType;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.logsender.client.mock.MockLogSenderClientClientImpl;
+import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 
 import com.google.common.base.Throwables;
 
@@ -218,7 +213,7 @@ public class RouteIntegrationTest {
         jmsTemplate.send(sendQueue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
                 try {
-                    ObjectMessage objectMessage = session.createObjectMessage(buildAbstractLogMessageList(activityType));
+                    ObjectMessage objectMessage = session.createObjectMessage(TestDataHelper.buildAbstractLogMessageList(activityType));
                     objectMessage.setStringProperty(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name());
                     return objectMessage;
                 } catch (Exception e) {
@@ -226,28 +221,7 @@ public class RouteIntegrationTest {
                 }
             }
 
-            private ArrayList<AbstractLogMessage> buildAbstractLogMessageList(ActivityType activityType) {
-                AbstractLogMessage abstractLogMessage = new AbstractLogMessage(activityType, ActivityPurpose.CARE_TREATMENT, "Intyg");
-                abstractLogMessage.setSystemId("webcert");
-                abstractLogMessage.setSystemName("webcert");
-                abstractLogMessage.setUserCareUnit(buildEnhet());
-                abstractLogMessage.setPatient(buildPatient());
-                abstractLogMessage.setResourceOwner(buildEnhet());
-                ArrayList<AbstractLogMessage> arrayList = new ArrayList<>();
-                arrayList.add(abstractLogMessage);
-                return arrayList;
-            }
 
-            private Patient buildPatient() {
-                Personnummer pnr = new Personnummer("19121212-1212");
-                Patient patient = new Patient(pnr, "Tolvan Tolvansson");
-                return patient;
-            }
-
-            private Enhet buildEnhet() {
-                Enhet enhet = new Enhet("enhet-1", "Enhet nr 1", "vardgivare-1" ,"Vårdgivare 1");
-                return enhet;
-            }
         });
     }
 
