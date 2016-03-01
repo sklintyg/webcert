@@ -18,19 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata, luseTestdata*/
+/*global testdata*/
 'use strict';
 
 module.exports = {
 	generateIntygByType:function(typ, id){
 	    if (typ === 'Transportstyrelsens läkarintyg') {
-	        return testdata.getRandomTsBasIntyg(id);
+	        return testdata.ts.bas.getRandom(id);
 	    } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
-	        return testdata.getRandomTsDiabetesIntyg(id);
+	        return testdata.ts.diabetes.getRandom(id);
 	    } else if (typ === 'Läkarintyg FK 7263') {
-	        return testdata.fk.sjukintyg.getRandom(id);
+	        return testdata.fk['7263'].getRandom(id);
 	    } else if (typ === 'Läkarutlåtande för sjukersättning') {
-	        return luseTestdata.getRandomLuseIntyg(id);
+	        return testdata.LUSE.getRandom(id);
 	    }
 	}
 };

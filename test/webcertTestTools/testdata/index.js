@@ -18,18 +18,15 @@
  */
 
 'use strict';
-var environment = require('./environment.js');
-var testdata = require('./testdata');
-var utkastTextmap = require('./testdata/utkastTextmap.js');
-var intygTemplates = require('./testdata/intygTemplates.js');
-var pages = require('./pages/pages.js');
-var helpers = require('./helpers/helpers.js'); // The order is important. Helpers requires pages.
 
 module.exports = {
-  envConfig: environment.envConfig,
-  testdata: testdata,
-  utkastTextmap: utkastTextmap,
-  intygTemplates: intygTemplates,
-  pages: pages,
-  helpers: helpers
+    fk: {
+        '7263': require('./fk.7263.js'),
+        LUSE: require('./fk.luse.js')
+    },
+    ts: {
+        bas: require('./ts.bas.js'),
+        diabetes: require('./ts.diabetes.js')
+    },
+    values:require('./testvalues.js')
 };

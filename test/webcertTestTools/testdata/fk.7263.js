@@ -200,35 +200,32 @@ var random = {
 
 };
 
+
+
 module.exports = {
-  data: testdata,
+    getRandom: function(intygsID) {
+        var isSmittskydd = shuffle(testdata.smittskydd)[0];
 
-  sjukintyg: {
-    getRandom: function (intygsID) {
-      var isSmittskydd = shuffle(testdata.smittskydd)[0];
-
-      if (!intygsID) {
-        intygsID = testdataHelper.generateTestGuid();
-      }
-
-      return {
-        id: intygsID,
-        typ: 'Läkarintyg FK 7263',
-        smittskydd: isSmittskydd,
-        baserasPa: random.baserasPa(isSmittskydd),
-        diagnos: random.diagnos(isSmittskydd),
-        aktuelltSjukdomsforlopp: random.aktuelltSjukdomsforlopp(isSmittskydd),
-        funktionsnedsattning: random.funktionsnedsattning(isSmittskydd),
-        aktivitetsBegransning: random.aktivitestbegransning(isSmittskydd),
-        arbete: random.arbete(isSmittskydd),
-        arbetsformaga: random.arbetsformaga(),
-        arbetsformagaFMB: random.arbetsformagaFMB(),
-        prognos: random.prognos(),
-        atgarder: random.atgarder(isSmittskydd),
-        rekommendationer: random.rekommendationer(isSmittskydd),
-        kontaktOnskasMedFK: random.kontaktOnskasMedFK(),
-        ovrigaUpplysningar: random.ovrigaUpplysningar()
-      };
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
+        return {
+            id: intygsID,
+            typ: 'Läkarintyg FK 7263',
+            smittskydd: isSmittskydd,
+            baserasPa: random.baserasPa(isSmittskydd),
+            diagnos: random.diagnos(isSmittskydd),
+            aktuelltSjukdomsforlopp: random.aktuelltSjukdomsforlopp(isSmittskydd),
+            funktionsnedsattning: random.funktionsnedsattning(isSmittskydd),
+            aktivitetsBegransning: random.aktivitestbegransning(isSmittskydd),
+            arbete: random.arbete(isSmittskydd),
+            arbetsformaga: random.arbetsformaga(),
+            arbetsformagaFMB: random.arbetsformagaFMB(),
+            prognos: random.prognos(),
+            atgarder: random.atgarder(isSmittskydd),
+            rekommendationer: random.rekommendationer(isSmittskydd),
+            kontaktOnskasMedFK: random.kontaktOnskasMedFK(),
+            ovrigaUpplysningar: random.ovrigaUpplysningar()
+        };
     }
-  }
 };

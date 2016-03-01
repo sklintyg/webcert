@@ -36,6 +36,8 @@ module.exports = {
     });
   },
   removeCert: function (intygsId, cb) {
+    var envName = 'ip30';
+
     if (!intygsId) {
       logger.info('Intygsid saknas');
       cb();
@@ -49,9 +51,9 @@ module.exports = {
         ' INNER JOIN ' + databaseTableSIGNATUR + ' ON ' + databaseTableINTYG + '.INTYGS_ID=' + databaseTableSIGNATUR + '.INTYG_ID' +
         ' WHERE ' + databaseTableINTYG + '.INTYGS_ID="' + intygsId + '";' + foreignKeyChecks1;
 
-      var CERTIFICATE = 'intyg_ip40.CERTIFICATE';
-      var ORIGINAL_CERTIFICATE = 'intyg_ip40.ORIGINAL_CERTIFICATE';
-      var CERTIFICATE_STATE = 'intyg_ip40.CERTIFICATE_STATE';
+      var CERTIFICATE = 'intyg_'+envName+'.CERTIFICATE';
+      var ORIGINAL_CERTIFICATE = 'intyg_'+envName+'.ORIGINAL_CERTIFICATE';
+      var CERTIFICATE_STATE = 'intyg_'+envName+'.CERTIFICATE_STATE';
 
       var query2 = foreignKeyChecks0 + ' DELETE ' + CERTIFICATE + ' FROM ' + CERTIFICATE + ' INNER JOIN ' + ORIGINAL_CERTIFICATE +
         ' ON ' + CERTIFICATE + '.ID=' + ORIGINAL_CERTIFICATE + '.CERTIFICATE_ID' + ' INNER JOIN ' + CERTIFICATE_STATE +

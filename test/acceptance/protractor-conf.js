@@ -65,7 +65,6 @@ exports.config = {
 
         global.wcTestTools = wcTestTools;
         global.testdata = wcTestTools.testdata;
-        global.luseTestdata = wcTestTools.luseTestdata;
         global.pages = wcTestTools.pages;
 
         global.person = {};
