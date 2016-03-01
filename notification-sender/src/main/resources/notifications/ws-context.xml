@@ -36,7 +36,7 @@
 
   <jaxws:client id="certificateStatusUpdateForCareClient"
     serviceClass="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface"
-    address="${certificatestatusupdateforcare.ws.endpoint.url}">
+    address="${certificatestatusupdateforcare.ws.endpoint.v1.url}">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="true" />
     </jaxws:properties>
