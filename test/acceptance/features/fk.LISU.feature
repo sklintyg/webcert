@@ -13,6 +13,6 @@ Scenario: Skapa och signera ett intyg
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
 	Så ska intygets status vara "Intyget är signerat"	
-	När jag går till Mina intyg för patienten "19971019-2387"
-	Så ska intyget finnas i Mina intyg
+	# När jag går till Mina intyg för patienten "19971019-2387"
+	# Så ska intyget finnas i Mina intyg
 

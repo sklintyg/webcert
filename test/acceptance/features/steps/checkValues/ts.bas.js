@@ -26,6 +26,8 @@ var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 var helpers = require('./helpers.js');
 
 function checkDiabetes(intyg, cb) {
+  logger.info('-- Kontrollerar Transportstyrelsens läkarintyg --');
+  
   if (intyg.diabetes.typ === 'Typ 2' && intyg.diabetes === 'Ja') {
     var typer = intyg.diabetes.behandlingsTyper;
     expect(tsBasIntygPage.diabeteTyp.getText()).to.eventually.equal(intyg.diabetes.typ).then(function (value) {
@@ -85,7 +87,7 @@ function checkKorrektionsglasensStyrka(styrkor, cb) {
 }
 
 module.exports = {
-  checkTsBasValues: function (intyg, callback) {
+  checkValues: function (intyg, callback) {
 
     expect(tsBasIntygPage.synfaltsdefekter.getText()).to.eventually.equal(intyg.synDonder).then(function (value) {
       logger.info('OK - Synfältsdefekter = ' + value);
@@ -355,7 +357,7 @@ module.exports = {
         logger.info('OK - Sjukhus Eller Läkarkontakt = ' + value);
       }, function (reason) {
         callback('FEL - Sjukhus Eller Läkarkontakt: ' + reason);
-      }).then(callback);
+      });
     }
 
     if (intyg.ovrigMedicin === 'Ja') {
@@ -363,7 +365,7 @@ module.exports = {
         logger.info('OK - Stadigvarande medicinering = ' + value);
       }, function (reason) {
         callback('FEL - Stadigvarande medicinering: ' + reason);
-      }).then(callback);
+      });
 
     } else if (intyg.ovrigMedicin === 'Nej') {
       expect(tsBasIntygPage.stadigvarandeMedicinering.getText()).to.eventually.equal('Nej').then(function (value) {

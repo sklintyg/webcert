@@ -26,6 +26,8 @@ var fk7263Intyg = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var webcertBase = pages.webcertBase;
+var checkValues = require('./checkValues');
+
 // webcertBase.flikarsokSkrivIntyg
 
 module.exports = function() {
@@ -68,27 +70,7 @@ module.exports = function() {
     });
 
     this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function(callback) {
-        if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes' || intyg.typ === 'Transportstyrelsens läkarintyg') {
-            logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
-            require('./checkValues/ts.common.js').checkTsCommonValues(intyg, callback);
-        }
-
-        if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
-            require('./checkValues/ts.diabetes.js').checkTsDiabetesValues(intyg, callback);
-        } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-            logger.info('-- Kontrollerar Transportstyrelsens läkarintyg --');
-            require('./checkValues/ts.bas.js').checkTsBasValues(intyg, callback);
-        } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            logger.info('-- Kontrollerar Läkarintyg FK 7263 --');
-            require('./checkValues/fk.js').checkFKValues(intyg, callback);
-        } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-            logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
-            require('./checkValues/luse.js').checkLuseValues(intyg, callback);
-        } else if (intyg.typ === 'Läkarintyg för sjukpenning utökat') {
-            logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
-            require('./checkValues/lisu.js').checkLuseValues(intyg, callback);
-        }
+        checkValues.forIntyg(intyg,callback);
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {

@@ -17,14 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages*/
-/* globals logger */
+/* globals logger, pages */
 
 'use strict';
 var tsDiabIntyg = pages.intyg.ts.diabetes.intyg;
 
 module.exports = {
-  checkTsDiabetesValues: function (intyg, callback) {
+  checkValues: function (intyg, callback) {
+    logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
+
     var selectedTypes = intyg.korkortstyper.sort(function (a, b) {
       var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'TRAKTOR', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'TAXI'];
       return allTypes.indexOf(a.toUpperCase()) - allTypes.indexOf(b.toUpperCase());

@@ -66,8 +66,9 @@
 //     });
 // }
 module.exports = {
-    checkLuseValues: function(intyg, callback) {
-        logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
+    checkValues: function(intyg, callback) {
+        logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
+        logger.warn('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
         callback();
         // checkUtlatandeDatum('Min undersökning av patienten.', callback);
         // checkUtlatandeDatum('Journaluppgifter från den', callback);

@@ -26,7 +26,8 @@ var winston = require('winston');
 
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
-    allScriptsTimeout: 30000,
+    allScriptsTimeout: 50000,
+    getPageTimeout:20000,
     seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
 

@@ -177,8 +177,9 @@ function checkArbetsformaga(arbetsformaga, cb) {
 }
 
 module.exports = {
-  checkFKValues: function (intyg, callback) {
-
+  checkValues: function (intyg, callback) {
+    logger.info('-- Kontrollerar Läkarintyg FK 7263 --');
+    
     // Kontrollera FÄLT 1 : Smittskydd
     checkSmitta(intyg.smittskydd, callback);
 

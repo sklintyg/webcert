@@ -25,8 +25,9 @@
 // var lusePage = pages.intyg.lisu.intyg;
 
 module.exports = {
-    checkLisuValues: function(intyg, callback) {
-        logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
+    checkValues: function(intyg, callback) {
+    	logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
+        logger.warn('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
         callback();
     }
 };
