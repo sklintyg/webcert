@@ -10,6 +10,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import java.util.ArrayList;
 
 /**
+ * Utility for creating test data for unit- and integration tests.
+ *
  * Created by eriklupander on 2016-03-01.
  */
 public class TestDataHelper {

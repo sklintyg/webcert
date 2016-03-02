@@ -246,8 +246,15 @@ public class LogServiceImpl implements LogService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createObjectMessage(logMsg);
-            message.setStringProperty(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name());
+            addLogTypeHeader(message);
             return message;
+        }
+
+        // The if is due to unit tests allowing session.createObjectMessage to return null.
+        private void addLogTypeHeader(Message message) throws JMSException {
+            if (message != null) {
+                message.setStringProperty(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name());
+            }
         }
     }
 

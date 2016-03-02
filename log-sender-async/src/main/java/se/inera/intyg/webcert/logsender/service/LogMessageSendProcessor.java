@@ -23,11 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.logmessages.AbstractLogMessage;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.client.LogSenderClient;
-import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
-import se.inera.intyg.webcert.logsender.exception.PermanentException;
-import se.inera.intyg.webcert.logsender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.converter.LogTypeFactory;
+import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 

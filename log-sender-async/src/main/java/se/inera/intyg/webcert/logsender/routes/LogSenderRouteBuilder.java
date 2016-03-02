@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.common.logmessages.type.LogMessageConstants;
 import se.inera.intyg.common.logmessages.type.LogMessageType;
 import se.inera.intyg.webcert.common.common.Constants;
-import se.inera.intyg.webcert.logsender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 public class LogSenderRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(LogSenderRouteBuilder.class);
@@ -37,14 +37,17 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
     @Value("${logsender.bulkSize}")
     private String batchSize;
 
-   /*
-     * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
-     * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
-     * MQ provider. The MQ provider will then, if properly configured, put the message back into the queue after
-     * the proper redelivery wait time has passed.
-     *
-     * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
-     */
+    @Value("${receiveAggregatedLogMessageEndpointUri}")
+    private String newAggregatedLogMessageQueue;
+
+    /*
+      * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
+      * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
+      * MQ provider. The MQ provider will then, if properly configured, put the message back into the queue after
+      * the proper redelivery wait time has passed.
+      *
+      * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
+      */
     @Override
     public void configure() throws Exception {
         errorHandler(transactionErrorHandler().logExhausted(false));
@@ -66,7 +69,7 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
                 .constant(true)
                 .completionPredicate(header("CamelAggregatedSize").isEqualTo(Integer.parseInt(batchSize)))
                 .to("bean:logMessageAggregationProcessor")
-                .to("jms:queue:newAggregatedLogMessageQueue")
+                .to(newAggregatedLogMessageQueue)
                 .stop();
 
 

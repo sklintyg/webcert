@@ -37,6 +37,10 @@
   <dependencies>
 
     <dependency>
+      <groupId>se.inera.intyg.webcert</groupId>
+      <artifactId>webcert-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>log-messages</artifactId>
     </dependency>

@@ -4,7 +4,7 @@ import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.logmessages.AbstractLogMessage;
-import se.inera.intyg.webcert.logsender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,14 @@ public class LogMessageAggregationProcessor {
         ArrayList<AbstractLogMessage> logMessageList = new ArrayList<>();
 
         for (Exchange oneExchange : grouped) {
-            logMessageList.addAll( (ArrayList<AbstractLogMessage>) oneExchange.getIn().getBody());
+            Object body = oneExchange.getIn().getBody();
+            if (body instanceof AbstractLogMessage) {
+                logMessageList.add( (AbstractLogMessage) body);
+            } else if (body instanceof ArrayList) {
+                logMessageList.addAll( (ArrayList<AbstractLogMessage>) body);
+            } else {
+                throw new PermanentException("Unknown log payload: " + body.getClass().getName());
+            }
         }
 
         return logMessageList;

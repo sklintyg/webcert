@@ -25,7 +25,6 @@ public class MockLogSenderClientClientImpl implements StoreLogResponderInterface
 
     @Override
     public StoreLogResponseType storeLog(String logicalAddress, StoreLogRequestType storeLogRequestType) {
-
         count.incrementAndGet();
 
         StoreLogResponseType resp = new StoreLogResponseType();
@@ -36,6 +35,8 @@ public class MockLogSenderClientClientImpl implements StoreLogResponderInterface
             resp.setResultType(resultType);
             return resp;
         }
+
+        increaseAttemptsPerMessage(storeLogRequestType);
 
         // Use the ActivityType.EMERGENCY_ACCESS to fake failures that should trigger a resend.
         if (storeLogRequestType.getLog().get(0).getActivity().getActivityType().equals(ActivityType.EMERGENCY_ACCESS.getType())) {
@@ -48,6 +49,15 @@ public class MockLogSenderClientClientImpl implements StoreLogResponderInterface
         store.add(storeLogRequestType.getLog().get(0).getLogId());
 
         return resp;
+    }
+
+    private void increaseAttemptsPerMessage(StoreLogRequestType storeLogRequestType) {
+        String key = storeLogRequestType.getLog().get(0).getLogId();
+        if (!attemptsPerMessage.containsKey(key)) {
+              attemptsPerMessage.put(key, new AtomicInteger(1));
+        } else {
+            attemptsPerMessage.get(key).incrementAndGet();
+        }
     }
 
     public int getNumberOfReceivedMessages() {

@@ -32,10 +32,10 @@
     <Arg>
       <Ref id="webAppContext"/>
     </Arg>
-    <Arg>jms/ConnectionFactory</Arg>
+    <Arg>jms/AsyncConnectionFactory</Arg>
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
-        <Arg>tcp://localhost:61616</Arg>
+        <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=3&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=6000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=4000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
       </New>
     </Arg>
   </New>
@@ -46,7 +46,7 @@
     <Arg>jms/LogSenderQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>new.logging.queue</Arg>
+        <Arg>logging.queue</Arg>
       </New>
     </Arg>
   </New>
@@ -57,7 +57,7 @@
     <Arg>jms/AggregatedLogSenderQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>new.aggregated.logging.queue</Arg>
+        <Arg>aggregated.logging.queue</Arg>
       </New>
     </Arg>
   </New>

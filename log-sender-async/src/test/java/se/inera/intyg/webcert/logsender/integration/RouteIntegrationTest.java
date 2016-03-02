@@ -68,8 +68,6 @@ public class RouteIntegrationTest {
 
     private static final int SECONDS_TO_WAIT = 10;
 
-    private static final String INTYGS_ID_1 = "intygsId1";
-
     @Autowired
     private JmsTemplate jmsTemplate;
 

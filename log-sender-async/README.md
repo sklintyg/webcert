@@ -7,7 +7,7 @@ Konfigurera lokalt
 För att koppla ihop lokal webcert med lokal logsender, gör följande:
 
 1. Starta en riktig ActiveMQ lokalt.
-2. Öppna jetty-web.xml och ändra så jms/ConnectionFactory går över TCP och port 61617:
+2. Öppna jetty-web.xml och ändra så jms/AsyncConnectionFactory går över TCP och port 61617:
 
 
      <New id="ConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">

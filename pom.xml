@@ -72,7 +72,7 @@
   <modules>
     <module>common</module>
     <module>persistence</module>
-    <module>log-sender</module>
+    <module>log-sender-async</module>
     <module>notification-sender</module>
     <module>integration/pu-integration</module>
     <module>integration/pp-integration</module>

@@ -52,10 +52,8 @@ import com.google.common.collect.ImmutableMap;
 @ContextConfiguration("/logsender/unit-test-certificate-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
-@MockEndpointsAndSkip("bean:logMessageAggregationProcessor|direct:logMessagePermanentErrorHandlerEndpoint|direct:logMessageTemporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:logMessageAggregationProcessor|direct:logMessagePermanentErrorHandlerEndpoint|direct:logMessageTemporaryErrorHandlerEndpoint|direct:receiveAggregatedLogMessageEndpoint")
 public class AggregatorRouteTest {
-
-    private static final String MESSAGE_BODY = "message";
 
     @Autowired
     CamelContext camelContext;
@@ -65,6 +63,9 @@ public class AggregatorRouteTest {
 
     @EndpointInject(uri = "mock:bean:logMessageAggregationProcessor")
     private MockEndpoint logMessageAggregationProcessor;
+
+    @EndpointInject(uri = "mock:direct:receiveAggregatedLogMessageEndpoint")
+    private MockEndpoint newAggregatedLogMessageQueue;
 
     @EndpointInject(uri = "mock:direct:logMessagePermanentErrorHandlerEndpoint")
     private MockEndpoint logMessagePermanentErrorHandlerEndpoint;
@@ -82,6 +83,7 @@ public class AggregatorRouteTest {
     public void testNormalLogStoreRoute() throws InterruptedException {
         // Given
         logMessageAggregationProcessor.expectedMessageCount(1);
+        newAggregatedLogMessageQueue.expectedMessageCount(1);
         logMessagePermanentErrorHandlerEndpoint.expectedMessageCount(0);
         logMessageTemporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -92,15 +94,17 @@ public class AggregatorRouteTest {
 
         // Then
         assertIsSatisfied(logMessageAggregationProcessor);
+        assertIsSatisfied(newAggregatedLogMessageQueue);
         assertIsSatisfied(logMessagePermanentErrorHandlerEndpoint);
         assertIsSatisfied(logMessageTemporaryErrorHandlerEndpoint);
     }
 
     @Test
     @DirtiesContext
-    public void testUnkownTypeLogStoreRoute() throws InterruptedException {
+    public void testNoMessagesReceivedWhenMessageCountLessThanBatchSize() throws InterruptedException {
         // Given
         logMessageAggregationProcessor.expectedMessageCount(0);
+        newAggregatedLogMessageQueue.expectedMessageCount(0);
         logMessagePermanentErrorHandlerEndpoint.expectedMessageCount(0);
         logMessageTemporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -111,6 +115,7 @@ public class AggregatorRouteTest {
 
         // Then
         assertIsSatisfied(logMessageAggregationProcessor);
+        assertIsSatisfied(newAggregatedLogMessageQueue);
         assertIsSatisfied(logMessagePermanentErrorHandlerEndpoint);
         assertIsSatisfied(logMessageTemporaryErrorHandlerEndpoint);
     }

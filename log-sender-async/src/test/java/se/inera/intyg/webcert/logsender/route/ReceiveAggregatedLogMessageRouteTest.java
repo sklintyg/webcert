@@ -23,6 +23,8 @@ import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 import java.util.Arrays;
 
+import javax.xml.ws.WebServiceException;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.EndpointInject;
@@ -49,13 +51,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import se.inera.intyg.common.logmessages.ActivityType;
 import se.inera.intyg.common.logmessages.type.LogMessageConstants;
 import se.inera.intyg.common.logmessages.type.LogMessageType;
-import se.inera.intyg.webcert.logsender.exception.PermanentException;
-import se.inera.intyg.webcert.logsender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 
 import com.google.common.collect.ImmutableMap;
-
-import javax.xml.ws.WebServiceException;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/logsender/unit-test-certificate-sender-config.xml")

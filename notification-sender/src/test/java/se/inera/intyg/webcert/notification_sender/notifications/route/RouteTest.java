@@ -19,28 +19,6 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.route;
 
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.junit.Assert.assertTrue;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.camel.*;
-import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-
-import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
-import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-
-
 //@RunWith(CamelSpringJUnit4ClassRunner.class)
 //@ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 //@MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSClient|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
