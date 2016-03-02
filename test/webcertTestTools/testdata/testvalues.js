@@ -17,16 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger */
-
 'use strict';
 
-// var helpers = require('./helpers.js');
-// var lusePage = pages.intyg.lisu.intyg;
-
 module.exports = {
-    checkLisuValues: function(intyg, callback) {
-        logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
-        callback();
-    }
+    ts:require('./testvalues.ts.js'),
+    fk: require('./testvalues.fk.js')
 };

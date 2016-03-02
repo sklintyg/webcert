@@ -53,9 +53,8 @@ module.exports = function () {
         Bortkommenterad pga att vi behöver några intyg att arbeta med.
         Vi kan aktivera denna funktion sen när vi löst problemet med att skapa 
         nya intyg då de behövs
-
-        require('./db_actions/db.js').removeCert(global.intyg.id, callback);
         */
+        // require('./db_actions/db.js').removeCert(global.intyg.id, callback);
       } else {
         logger.info('Behåller skapat testintyg');
         callback();

@@ -20,25 +20,16 @@
 'use strict';
 
 var testdataHelper = require('./../helpers/testdataHelper.js');
+var fkValues = require('./testvalues.js').fk;
 var shuffle = testdataHelper.shuffle;
 
-
 module.exports = {
-    ICD10: ['A00', 'B00', 'C00', 'D00'],
-
-    mediciner: ['Ipren', 'Alvedon', 'Bamyl', 'Snus'],
-    funktionsnedsattningar: ['Problem...', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen'],
-
-    fk: require('./fk.js'),
-
-
-
-    getRandomLuseIntyg: function(intygsID) {
+    getRandom: function(intygsID) {
         return {
-            intygId: intygsID,
+            id: intygsID,
             typ: 'Läkarutlåtande för sjukersättning',
             diagnos: {
-                kod: shuffle(this.ICD10)[0],
+                kod: shuffle(fkValues.ICD10)[0],
                 bakgrund: testdataHelper.randomTextString()
                 // bakgrund: 'En slumpmässig bakgrund'
             },
@@ -48,20 +39,20 @@ module.exports = {
             nyDiagnosBedom: testdataHelper.randomTrueFalse(),
             funktionsnedsattning: {
                 //funktionsnedsattningar
-                intellektuell: shuffle(this.funktionsnedsattningar)[0],
-                kommunikation: shuffle(this.funktionsnedsattningar)[0],
-                koncentration: shuffle(this.funktionsnedsattningar)[0],
-                psykisk: shuffle(this.funktionsnedsattningar)[0],
-                synHorselTal: shuffle(this.funktionsnedsattningar)[0],
-                balansKoordination: shuffle(this.funktionsnedsattningar)[0],
-                annan: shuffle(this.funktionsnedsattningar)[0]
+                intellektuell:      shuffle(fkValues.funktionsnedsattningar)[0],
+                kommunikation:      shuffle(fkValues.funktionsnedsattningar)[0],
+                koncentration:      shuffle(fkValues.funktionsnedsattningar)[0],
+                psykisk:            shuffle(fkValues.funktionsnedsattningar)[0],
+                synHorselTal:       shuffle(fkValues.funktionsnedsattningar)[0],
+                balansKoordination: shuffle(fkValues.funktionsnedsattningar)[0],
+                annan:              shuffle(fkValues.funktionsnedsattningar)[0]
             },
             aktivitetsbegransning: testdataHelper.randomTextString(),
             // aktivitetsbegransning: 'Total',
-            avslutadBehandling: shuffle(this.mediciner)[0],
-            pagaendeBehandling: shuffle(this.mediciner)[0],
-            planeradBehandling: shuffle(this.mediciner)[0],
-            substansintag: shuffle(this.mediciner)[0],
+            avslutadBehandling: shuffle(fkValues.mediciner)[0],
+            pagaendeBehandling: shuffle(fkValues.mediciner)[0],
+            planeradBehandling: shuffle(fkValues.mediciner)[0],
+            substansintag: shuffle(fkValues.mediciner)[0],
             medicinskaForutsattningarForArbete: testdataHelper.randomTextString(),
             // medicinskaForutsattningarForArbete: 'Inte speciellt',
             aktivitetsFormaga: testdataHelper.randomTextString(),

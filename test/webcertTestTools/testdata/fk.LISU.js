@@ -17,16 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger */
-
 'use strict';
 
-// var helpers = require('./helpers.js');
-// var lusePage = pages.intyg.lisu.intyg;
+var testdataHelper = require('./../helpers/testdataHelper.js');
+var shuffle = testdataHelper.shuffle;
+var fkValues = require('./testvalues.js').fk;
 
 module.exports = {
-    checkLisuValues: function(intyg, callback) {
-        logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
-        callback();
+    getRandom: function(intygsID) {
+        return {
+            intygId: intygsID,
+            typ: 'Läkarintyg för sjukpenning utökat',
+
+            diagnos: {
+                kod: shuffle(fkValues.ICD10)[0],
+                bakgrund: testdataHelper.randomTextString()
+            },
+            aktivitetsbegransning: testdataHelper.randomTextString()
+        };
     }
 };

@@ -17,28 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages */
+/* globals logger */
 
 'use strict';
 
-var helpers = require('./helpers.js');
-var lusePage = pages.intyg.luse.intyg;
+// var helpers = require('./helpers.js');
+// var lusePage = pages.intyg.luse.intyg;
 
-function checkUtlatandeDatum(utlatandeText, cb) {
-    if (utlatandeText !== 'Annat underlag för utlåtandet') {
-        expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(helpers.getDateForAssertion()).then(function(date) {
-            logger.info('OK - ' + utlatandeText + '  = ' + date);
-        }, function(reason) {
-            cb('FEL, Min undersökning av patienten,' + reason);
-        });
-    } else {
-        expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(utlatandeText).then(function(date) {
-            logger.info('OK - ' + utlatandeText + '  = ' + date);
-        }, function(reason) {
-            cb('FEL, Min undersökning av patienten,' + reason);
-        });
-    }
-}
+// function checkUtlatandeDatum(utlatandeText, cb) {
+//     if (utlatandeText !== 'Annat underlag för utlåtandet') {
+//         expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(helpers.getDateForAssertion()).then(function(date) {
+//             logger.info('OK - ' + utlatandeText + '  = ' + date);
+//         }, function(reason) {
+//             cb('FEL, Min undersökning av patienten,' + reason);
+//         });
+//     } else {
+//         expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(utlatandeText).then(function(date) {
+//             logger.info('OK - ' + utlatandeText + '  = ' + date);
+//         }, function(reason) {
+//             cb('FEL, Min undersökning av patienten,' + reason);
+//         });
+//     }
+// }
 
 // function checkAndraMedUtrUnd(underlagFinnsNo, cb) {
 //     // får för tilfället ett nej oavsett.
@@ -49,22 +49,22 @@ function checkUtlatandeDatum(utlatandeText, cb) {
 //     });
 // }
 
-function checkSjukForLopp(sjukdomsforlopp, cb) {
+// function checkSjukForLopp(sjukdomsforlopp, cb) {
 
-    expect(element(by.cssContainingText('.ng-binding.ng-scope', sjukdomsforlopp)).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
-        logger.info('OK - ' + sjukdomsforlopp);
-    }, function(reason) {
-        cb('FEL, Sjukdomsförlopp för aktuella sjukdomar av betydelse' + reason);
-    });
-}
+//     expect(element(by.cssContainingText('.ng-binding.ng-scope', sjukdomsforlopp)).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
+//         logger.info('OK - ' + sjukdomsforlopp);
+//     }, function(reason) {
+//         cb('FEL, Sjukdomsförlopp för aktuella sjukdomar av betydelse' + reason);
+//     });
+// }
 
-function checkDiagnosNedArbFor(kod, cb) {
-    expect(lusePage.diagnoseCode.getText()).to.eventually.equal(kod).then(function() {
-        logger.info('OK - ' + kod);
-    }, function(reason) {
-        cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
-    });
-}
+// function checkDiagnosNedArbFor(kod, cb) {
+//     expect(lusePage.diagnoseCode.getText()).to.eventually.equal(kod).then(function() {
+//         logger.info('OK - ' + kod);
+//     }, function(reason) {
+//         cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
+//     });
+// }
 module.exports = {
     checkLuseValues: function(intyg, callback) {
         logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');

@@ -19,22 +19,15 @@
 
 'use strict';
 
-var testdataHelper = require('./../helpers/testdataHelper.js');
-var shuffle = testdataHelper.shuffle;
-
 module.exports = {
-    ICD10: ['A00', 'B00', 'C00', 'D00'],
-
-    getRandomLisuIntyg: function(intygsID) {
-        return {
-            intygId: intygsID,
-            typ: 'Läkarintyg för sjukpenning utökat',
-
-            diagnos: {
-                kod: shuffle(this.ICD10)[0],
-                bakgrund: testdataHelper.randomTextString()
-            },
-            aktivitetsbegransning: testdataHelper.randomTextString()
-        };
-    }
+    fk: {
+        '7263': require('./fk.7263.js'),
+        LUSE: require('./fk.LUSE.js'),
+        LISU: require('./fk.LISU.js')
+    },
+    ts: {
+        bas: require('./ts.bas.js'),
+        diabetes: require('./ts.diabetes.js')
+    },
+    values:require('./testvalues.js')
 };
