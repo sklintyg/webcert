@@ -25,10 +25,10 @@ var intygTemplates = require('./testdata/intygTemplates.js');
 var pages = require('./pages/pages.js');
 var helpers = require('./helpers/helpers.js'); // The order is important. Helpers requires pages.
 module.exports = {
-  envConfig: environment.envConfig,
-  testdata: testdata,
-  utkastTextmap: utkastTextmap,
-  intygTemplates: intygTemplates,
-  pages: pages,
-  helpers: helpers
+    envConfig: environment.envConfig,
+    testdata: testdata,
+    utkastTextmap: utkastTextmap,
+    intygTemplates: intygTemplates,
+    pages: pages,
+    helpers: helpers
 };

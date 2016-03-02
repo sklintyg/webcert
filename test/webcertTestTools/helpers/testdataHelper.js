@@ -38,10 +38,10 @@ module.exports = {
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
     },
-    randomTrueFalse:function (){
+    randomTrueFalse: function() {
         return this.shuffle([true, false])[0];
     },
-    randomTextString:function() {
+    randomTextString: function() {
         var text = '';
         var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789';
 

@@ -39,20 +39,20 @@ module.exports = {
     },
     forIntyg: function(intyg, cb) {
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-        	tsCommonCheckValues(intyg, function(err){
-        		tsDiabetesCheckValues(intyg, cb);
-        	});
+            tsCommonCheckValues(intyg, function(err) {
+                tsDiabetesCheckValues(intyg, cb);
+            });
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-        	tsCommonCheckValues(intyg, function(err){
-        		tsBasCheckValues(intyg, cb);
-        	});
+            tsCommonCheckValues(intyg, function(err) {
+                tsBasCheckValues(intyg, cb);
+            });
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
             fk7263CheckValues(intyg, cb);
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
             fkLUSECheckValues(intyg, cb);
         } else if (intyg.typ === 'Läkarintyg för sjukpenning utökat') {
             fkLISUCheckValues(intyg, cb);
-        } else{
+        } else {
             cb('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }
     }

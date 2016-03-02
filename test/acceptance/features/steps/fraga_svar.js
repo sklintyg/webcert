@@ -21,18 +21,18 @@
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
-module.exports = function () {
-  this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function (amne, callback) {
-    fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
-    fkIntygPage.question.text.sendKeys('En ' + amne + '-fråga');
-    fkIntygPage.selectQuestionTopic(amne);
+module.exports = function() {
+    this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
+        fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.question.text.sendKeys('En ' + amne + '-fråga');
+        fkIntygPage.selectQuestionTopic(amne);
 
-    fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
 
-    fkIntygPage.qaPanel.getAttribute('id').then(function (result) {
-      intyg.fragaId = result.split('-')[1];
-      logger.debug('Frågans ID: ' + intyg.fragaId);
-      callback();
+        fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
+            intyg.fragaId = result.split('-')[1];
+            logger.debug('Frågans ID: ' + intyg.fragaId);
+            callback();
+        });
     });
-  });
 };

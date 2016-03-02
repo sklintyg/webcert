@@ -23,52 +23,52 @@
 var BaseSmiUtkast = require('./smi.base.utkast.page.js');
 
 var LuseUtkast = BaseSmiUtkast._extend({
-  init: function init() {
-    init._super.call(this);
+    init: function init() {
+        init._super.call(this);
 
-      this.baseratPa={
-        minUndersokningAvPatienten:{
-          checkbox3: element(by.id('formly_1_date_undersokningAvPatienten_3')),
-          checkbox4: element(by.id('formly_1_date_journaluppgifter_4')),
-          checkbox5: element(by.id('formly_1_date_anhorigsBeskrivningAvPatienten_5'))
-        },
-        kannedomOmPatient:{
-            checkbox:element(by.id('formly_1_date_kannedomOmPatient_8'))
-        }
-      };
+        this.baseratPa = {
+            minUndersokningAvPatienten: {
+                checkbox3: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+                checkbox4: element(by.id('formly_1_date_journaluppgifter_4')),
+                checkbox5: element(by.id('formly_1_date_anhorigsBeskrivningAvPatienten_5'))
+            },
+            kannedomOmPatient: {
+                checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
+            }
+        };
 
-      this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
-      this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
-      this.diagnosgrund = element(by.id('diagnosgrund'));
-      this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
-      this.funktionsnedsattning={
-        intellektuell : element(by.id('funktionsnedsattningIntellektuell')),
-        kommunikation : element(by.id('funktionsnedsattningKommunikation')),
-        koncentration : element(by.id('funktionsnedsattningKoncentration')),
-        psykisk : element(by.id('funktionsnedsattningPsykisk')),
-        synHorselTal : element(by.id('funktionsnedsattningSynHorselTal')),
-        balansKoordination : element(by.id('funktionsnedsattningBalansKoordination')),
-        annan : element(by.id('funktionsnedsattningAnnan'))
-      };
-      this.avslutadBehandling = element(by.id('avslutadBehandling'));
-      this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
-      this.planeradBehandling = element(by.id('planeradBehandling'));
-      this.substansintag = element(by.id('substansintag'));
-      this.medicinskaForutsattningarForArbete = element(by.id('medicinskaForutsattningarForArbete'));
-      this.aktivitetsFormaga = element(by.id('aktivitetsFormaga'));
-      this.ovrigt = element(by.id('ovrigt'));
-      this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
-      // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
-      this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
-      this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
-  },
+        this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
+        this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
+        this.diagnosgrund = element(by.id('diagnosgrund'));
+        this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
+        this.funktionsnedsattning = {
+            intellektuell: element(by.id('funktionsnedsattningIntellektuell')),
+            kommunikation: element(by.id('funktionsnedsattningKommunikation')),
+            koncentration: element(by.id('funktionsnedsattningKoncentration')),
+            psykisk: element(by.id('funktionsnedsattningPsykisk')),
+            synHorselTal: element(by.id('funktionsnedsattningSynHorselTal')),
+            balansKoordination: element(by.id('funktionsnedsattningBalansKoordination')),
+            annan: element(by.id('funktionsnedsattningAnnan'))
+        };
+        this.avslutadBehandling = element(by.id('avslutadBehandling'));
+        this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
+        this.planeradBehandling = element(by.id('planeradBehandling'));
+        this.substansintag = element(by.id('substansintag'));
+        this.medicinskaForutsattningarForArbete = element(by.id('medicinskaForutsattningarForArbete'));
+        this.aktivitetsFormaga = element(by.id('aktivitetsFormaga'));
+        this.ovrigt = element(by.id('ovrigt'));
+        this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
+        // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
+        this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
+        this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
+    },
 
-  get: function get(intygId) {
-    get._super.call(this, 'luse', intygId);
-  },
-  isAt: function isAt() {
-    return isAt._super.call(this);
-  }
+    get: function get(intygId) {
+        get._super.call(this, 'luse', intygId);
+    },
+    isAt: function isAt() {
+        return isAt._super.call(this);
+    }
 });
 
 module.exports = new LuseUtkast();

@@ -21,8 +21,8 @@
 
 var fkValues = {
     ICD10: ['A00', 'B00', 'C00', 'D00'],
-	mediciner:['Ipren', 'Alvedon', 'Bamyl', 'Snus'],
-	funktionsnedsattningar:['Problem...', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen']
+    mediciner: ['Ipren', 'Alvedon', 'Bamyl', 'Snus'],
+    funktionsnedsattningar: ['Problem...', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen']
 };
 
 module.exports = fkValues;

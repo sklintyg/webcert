@@ -70,7 +70,7 @@ module.exports = function() {
     });
 
     this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function(callback) {
-        checkValues.forIntyg(intyg,callback);
+        checkValues.forIntyg(intyg, callback);
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {

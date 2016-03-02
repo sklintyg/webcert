@@ -21,45 +21,45 @@
 
 'use strict';
 
-module.exports = function () {
+module.exports = function() {
 
-  this.Given(/^ska intyget finnas i Mina intyg$/, function (callback) {
-    var intygElement = element(by.id('certificate-' + intyg.id));
-    expect(intygElement.isPresent()).to.eventually.equal(true).then(function (value) {
-        logger.info('OK - Intyget visas i mina intyg = ' + value);
-      }, function (reason) {
-        callback('FEL, Intyget visas inte i mina intyg,' + reason);
-      })
-      .then(callback);
-  });
-
-  this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function (pnr, callback) {
-    browser.ignoreSynchronization = true;
-    browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
-    element(by.id('guid')).sendKeys(pnr);
-    element(by.css('input.btn')).click().then(function () {
-
-      // Detta behövs pga att Mina intyg är en extern sida
-      browser.sleep(2000);
-
-      // Om samtyckesruta visas
-      element(by.id('consentTerms')).isPresent().then(function (result) {
-        if (result) {
-          logger.info('Lämnar samtycke..');
-          element(by.id('giveConsentButton')).click()
-          .then(function(){
-            return browser.sleep(3000);
-          })
-          .then(callback);
-        } else {
-          callback();
-        }
-      });
+    this.Given(/^ska intyget finnas i Mina intyg$/, function(callback) {
+        var intygElement = element(by.id('certificate-' + intyg.id));
+        expect(intygElement.isPresent()).to.eventually.equal(true).then(function(value) {
+                logger.info('OK - Intyget visas i mina intyg = ' + value);
+            }, function(reason) {
+                callback('FEL, Intyget visas inte i mina intyg,' + reason);
+            })
+            .then(callback);
     });
-  });
 
-  this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function (status, callback) {
-    var intygElement = element(by.id('certificate-' + intyg.id));
-    expect(intygElement.getText()).to.eventually.contain(status).and.notify(callback);
-  });
+    this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
+        browser.ignoreSynchronization = true;
+        browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
+        element(by.id('guid')).sendKeys(pnr);
+        element(by.css('input.btn')).click().then(function() {
+
+            // Detta behövs pga att Mina intyg är en extern sida
+            browser.sleep(2000);
+
+            // Om samtyckesruta visas
+            element(by.id('consentTerms')).isPresent().then(function(result) {
+                if (result) {
+                    logger.info('Lämnar samtycke..');
+                    element(by.id('giveConsentButton')).click()
+                        .then(function() {
+                            return browser.sleep(3000);
+                        })
+                        .then(callback);
+                } else {
+                    callback();
+                }
+            });
+        });
+    });
+
+    this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status, callback) {
+        var intygElement = element(by.id('certificate-' + intyg.id));
+        expect(intygElement.getText()).to.eventually.contain(status).and.notify(callback);
+    });
 };

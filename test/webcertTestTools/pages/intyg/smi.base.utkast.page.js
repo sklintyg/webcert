@@ -35,18 +35,18 @@ var BaseSmiUtkast = BaseUtkast._extend({
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
         this.planeradBehandling = element(by.id('planeradBehandling'));
-        this.ovrigt = element(by.id('ovrigt'));      
+        this.ovrigt = element(by.id('ovrigt'));
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
     },
 
-    getTillaggsfraga: function (i) {
+    getTillaggsfraga: function(i) {
         return element(by.id('form_tillaggsfragor_' + i + '__svar'));
     },
-    getTillaggsfragaText: function (i) {
+    getTillaggsfragaText: function(i) {
         return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
     },
-    getTillaggsfragaSvar: function (i) {
+    getTillaggsfragaSvar: function(i) {
         return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
     }
 });

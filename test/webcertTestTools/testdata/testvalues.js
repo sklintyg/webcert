@@ -20,6 +20,6 @@
 'use strict';
 
 module.exports = {
-    ts:require('./testvalues.ts.js'),
+    ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js')
 };

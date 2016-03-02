@@ -21,7 +21,7 @@
 'use strict';
 
 module.exports = {
-    logInAsUserRole:function(userObj, roleName, newOrigin, newUserRole) {
+    logInAsUserRole: function(userObj, roleName, newOrigin, newUserRole) {
         logger.info('loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
         // Fattigmans-kloning av användar-hashen.
         global.user = JSON.parse(JSON.stringify(userObj));

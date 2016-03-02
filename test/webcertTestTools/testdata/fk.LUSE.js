@@ -31,7 +31,7 @@ module.exports = {
             diagnos: {
                 kod: shuffle(fkValues.ICD10)[0],
                 bakgrund: testdataHelper.randomTextString()
-                // bakgrund: 'En slumpmässig bakgrund'
+                    // bakgrund: 'En slumpmässig bakgrund'
             },
             annanUnderlag: testdataHelper.randomTrueFalse(),
             sjukdomsForlopp: testdataHelper.randomTextString(),
@@ -39,13 +39,13 @@ module.exports = {
             nyDiagnosBedom: testdataHelper.randomTrueFalse(),
             funktionsnedsattning: {
                 //funktionsnedsattningar
-                intellektuell:      shuffle(fkValues.funktionsnedsattningar)[0],
-                kommunikation:      shuffle(fkValues.funktionsnedsattningar)[0],
-                koncentration:      shuffle(fkValues.funktionsnedsattningar)[0],
-                psykisk:            shuffle(fkValues.funktionsnedsattningar)[0],
-                synHorselTal:       shuffle(fkValues.funktionsnedsattningar)[0],
+                intellektuell: shuffle(fkValues.funktionsnedsattningar)[0],
+                kommunikation: shuffle(fkValues.funktionsnedsattningar)[0],
+                koncentration: shuffle(fkValues.funktionsnedsattningar)[0],
+                psykisk: shuffle(fkValues.funktionsnedsattningar)[0],
+                synHorselTal: shuffle(fkValues.funktionsnedsattningar)[0],
                 balansKoordination: shuffle(fkValues.funktionsnedsattningar)[0],
-                annan:              shuffle(fkValues.funktionsnedsattningar)[0]
+                annan: shuffle(fkValues.funktionsnedsattningar)[0]
             },
             aktivitetsbegransning: testdataHelper.randomTextString(),
             // aktivitetsbegransning: 'Total',
@@ -63,7 +63,7 @@ module.exports = {
             tillaggsfragor0svar: testdataHelper.randomTextString(),
             // tillaggsfragor0svar: 'Answer',
             tillaggsfragor1svar: testdataHelper.randomTextString()
-            // tillaggsfragor1svar: 'Question'
+                // tillaggsfragor1svar: 'Question'
         };
     }
 };

@@ -41,7 +41,7 @@ module.exports = {
         }));
 
         browser.ignoreSynchronization = true;
-        
+
         //Ange postadress osv
         promiseArr.push(browser.element(by.id('patientPostadress')).sendKeys('Postadress 1'));
         promiseArr.push(browser.element(by.id('patientPostnummer')).sendKeys('66130'));

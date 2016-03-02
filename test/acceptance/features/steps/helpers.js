@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
@@ -22,17 +21,17 @@
 'use strict';
 
 module.exports = {
-	generateIntygByType:function(typ, id){
-	    if (typ === 'Transportstyrelsens läkarintyg') {
-	        return testdata.ts.bas.getRandom(id);
-	    } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
-	        return testdata.ts.diabetes.getRandom(id);
-	    } else if (typ === 'Läkarintyg FK 7263') {
-	        return testdata.fk['7263'].getRandom(id);
-	    } else if (typ === 'Läkarutlåtande för sjukersättning') {
-	        return testdata.fk.LUSE.getRandom(id);
-	    }else if (typ === 'Läkarintyg för sjukpenning utökat') {
-	        return testdata.fk.LISU.getRandom(id);
-	    }
-	}
+    generateIntygByType: function(typ, id) {
+        if (typ === 'Transportstyrelsens läkarintyg') {
+            return testdata.ts.bas.getRandom(id);
+        } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
+            return testdata.ts.diabetes.getRandom(id);
+        } else if (typ === 'Läkarintyg FK 7263') {
+            return testdata.fk['7263'].getRandom(id);
+        } else if (typ === 'Läkarutlåtande för sjukersättning') {
+            return testdata.fk.LUSE.getRandom(id);
+        } else if (typ === 'Läkarintyg för sjukpenning utökat') {
+            return testdata.fk.LISU.getRandom(id);
+        }
+    }
 };

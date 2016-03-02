@@ -51,7 +51,7 @@ module.exports = {
         },
         lisu: {
             utkast: require(intygPath + 'lisu.utkast.page.js')
-            //intyg: require(intygPath + 'lisu.intyg.page.js')
+                //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         ts: {
             diabetes: {

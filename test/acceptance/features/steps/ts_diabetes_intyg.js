@@ -169,41 +169,41 @@ function createIntygWithRest(intygOptions, cb) {
 }
 
 
-function createTsIntyg(typ,status,cb) {
-  var standardUser = global.user;
+function createTsIntyg(typ, status, cb) {
+    var standardUser = global.user;
 
-        var userObj = {
-            fornamn: 'Åsa',
-            efternamn: 'Svensson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003',
-            lakare: true,
-            forskrivarKod: '2481632'
-        };
-        require('./login.helpers.js').logInAsUserRole(userObj, 'Läkare')
-            .and.notify(function() {
-                sokSkrivIntygPage.selectPersonnummer(person.id);
-                sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
-                sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
-                global.intyg = require('./helpers').generateIntygByType(typ);
-                require('./fillIn').fillIn(intyg, function() {
-                    fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
-                    if (status === 'Mottaget') {
-                        fkIntygPage.skicka.knapp.click();
-                        fkIntygPage.skicka.samtyckeCheckbox.click();
-                        fkIntygPage.skicka.dialogKnapp.click();
-                    }
+    var userObj = {
+        fornamn: 'Åsa',
+        efternamn: 'Svensson',
+        hsaId: 'TSTNMT2321000156-100L',
+        enhetId: 'TSTNMT2321000156-1003',
+        lakare: true,
+        forskrivarKod: '2481632'
+    };
+    require('./login.helpers.js').logInAsUserRole(userObj, 'Läkare')
+        .and.notify(function() {
+            sokSkrivIntygPage.selectPersonnummer(person.id);
+            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
+            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
+            global.intyg = require('./helpers').generateIntygByType(typ);
+            require('./fillIn').fillIn(intyg, function() {
+                fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                if (status === 'Mottaget') {
+                    fkIntygPage.skicka.knapp.click();
+                    fkIntygPage.skicka.samtyckeCheckbox.click();
+                    fkIntygPage.skicka.dialogKnapp.click();
+                }
 
-                    var userObj = {
-                        fornamn: standardUser.fornamn,
-                        efternamn: standardUser.efternamn,
-                        hsaId: standardUser.hsaId,
-                        enhetId: standardUser.enhetId,
-                        lakare: standardUser.lakare,
-                        forskrivarKod: standardUser.forskrivarKod
-                    };
+                var userObj = {
+                    fornamn: standardUser.fornamn,
+                    efternamn: standardUser.efternamn,
+                    hsaId: standardUser.hsaId,
+                    enhetId: standardUser.enhetId,
+                    lakare: standardUser.lakare,
+                    forskrivarKod: standardUser.forskrivarKod
+                };
 
-                    require('./login.helpers.js').logInAsUserRole(userObj, standardUser.roleName, standardUser.origin, standardUser.role).and.notify(cb);
-                });
+                require('./login.helpers.js').logInAsUserRole(userObj, standardUser.roleName, standardUser.origin, standardUser.role).and.notify(cb);
             });
+        });
 }

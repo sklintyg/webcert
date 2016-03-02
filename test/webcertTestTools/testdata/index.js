@@ -29,5 +29,5 @@ module.exports = {
         bas: require('./ts.bas.js'),
         diabetes: require('./ts.diabetes.js')
     },
-    values:require('./testvalues.js')
+    values: require('./testvalues.js')
 };

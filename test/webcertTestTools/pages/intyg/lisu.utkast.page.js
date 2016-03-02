@@ -23,35 +23,35 @@
 var BaseSmiUtkast = require('./smi.base.utkast.page.js');
 
 var LisuUtkast = BaseSmiUtkast._extend({
-  init: function init() {
-    init._super.call(this);
+    init: function init() {
+        init._super.call(this);
 
-    this.baseratPa={
-      typAvUnderlag:{
-        undersokning: element(by.id('formly_1_date_undersokningAvPatienten_3')),
-        journal: element(by.id('formly_1_date_journaluppgifter_4')),
-        anhorig: element(by.id('formly_1_date_anhorigsBeskrivningAvPatienten_5')),
-        annat:  element(by.id('formly_1_date_annatGrundForMU_6')),
-        annatText: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_7'))
-      }
-    };
-  },
+        this.baseratPa = {
+            typAvUnderlag: {
+                undersokning: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+                journal: element(by.id('formly_1_date_journaluppgifter_4')),
+                anhorig: element(by.id('formly_1_date_anhorigsBeskrivningAvPatienten_5')),
+                annat: element(by.id('formly_1_date_annatGrundForMU_6')),
+                annatText: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_7'))
+            }
+        };
+    },
 
-  get: function get(intygId) {
-    get._super.call(this, 'luse', intygId);
-  },
-  isAt: function isAt() {
-    return isAt._super.call(this);
-  },
-  getTillaggsfraga: function (i) {
-    return element(by.id('form_tillaggsfragor_' + i + '__svar'));
-  },
-  getTillaggsfragaText: function (i) {
-    return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
-  },
-  getTillaggsfragaSvar: function (i) {
-    return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
-  }
+    get: function get(intygId) {
+        get._super.call(this, 'luse', intygId);
+    },
+    isAt: function isAt() {
+        return isAt._super.call(this);
+    },
+    getTillaggsfraga: function(i) {
+        return element(by.id('form_tillaggsfragor_' + i + '__svar'));
+    },
+    getTillaggsfragaText: function(i) {
+        return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
+    },
+    getTillaggsfragaSvar: function(i) {
+        return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
+    }
 });
 
 module.exports = new LisuUtkast();
