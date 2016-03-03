@@ -19,8 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -47,13 +46,16 @@ public class SendNotificationStrategyTest {
     private static final String INTYG_ID_1 = "intyg-1";
     private static final String INTYG_ID_2 = "intyg-2";
     private static final String INTYG_ID_3 = "intyg-3";
+    private static final String INTYG_ID_4 = "intyg-4";
 
     private static final String INTYG_FK = "fk7263";
+    private static final String INTYG_LUSE = "luse";
     private static final String INTYG_TS = "ts-bas";
 
     private static final String ENHET_1 = "SE12345678-1000";
     private static final String ENHET_2 = "SE12345678-2000";
     private static final String ENHET_3 = "SE12345678-3000";
+    private static final String ENHET_4 = "SE12345678-4000";
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
@@ -69,6 +71,7 @@ public class SendNotificationStrategyTest {
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1)).thenReturn(Optional.of(SchemaVersion.V1));
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2)).thenReturn(Optional.empty());
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3)).thenReturn(Optional.of(SchemaVersion.V1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4)).thenReturn(Optional.of(SchemaVersion.V2));
     }
 
     @Before
@@ -76,9 +79,11 @@ public class SendNotificationStrategyTest {
         Utkast utkast1 = createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1);
         Utkast utkast2 = createUtkast(INTYG_ID_2, INTYG_FK, ENHET_2);
         Utkast utkast3 = createUtkast(INTYG_ID_3, INTYG_TS, ENHET_3);
+        Utkast utkast4 = createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4);
         when(mockUtkastRepository.findOne(INTYG_ID_1)).thenReturn(utkast1);
         when(mockUtkastRepository.findOne(INTYG_ID_2)).thenReturn(utkast2);
         when(mockUtkastRepository.findOne(INTYG_ID_3)).thenReturn(utkast3);
+        when(mockUtkastRepository.findOne(INTYG_ID_4)).thenReturn(utkast4);
     }
 
     @Test
@@ -86,6 +91,7 @@ public class SendNotificationStrategyTest {
 
         Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
         assertTrue(res.isPresent());
+        assertEquals(NotificationVersion.VERSION_1, res.get());
 
         verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1);
     }
@@ -103,6 +109,14 @@ public class SendNotificationStrategyTest {
         Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
         assertFalse(res.isPresent());
         verifyZeroInteractions(mockIntegreradeEnheterRegistry);
+    }
+
+    @Test
+    public void testUtkastVersion2() {
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+        assertTrue(res.isPresent());
+        assertEquals(NotificationVersion.VERSION_2, res.get());
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4);
     }
 
     private Utkast createUtkast(String intygId, String intygsTyp, String enhetsId) {

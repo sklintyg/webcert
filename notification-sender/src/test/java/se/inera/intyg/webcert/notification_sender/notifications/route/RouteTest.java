@@ -30,8 +30,6 @@ import org.apache.camel.test.spring.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -324,16 +322,13 @@ public class RouteTest {
     }
 
     private void setupReturnTypeCreateNotification() throws Exception {
-        when(moduleApi.createNotification(any(NotificationMessage.class))).thenAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                NotificationMessage invocationMessage = (NotificationMessage) args[0];
-                if (invocationMessage != null && NotificationVersion.VERSION_2.equals(invocationMessage.getVersion())) {
-                    return new se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType();
-                } else {
-                    return new CertificateStatusUpdateForCareType();
-                }
+        when(moduleApi.createNotification(any(NotificationMessage.class))).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            NotificationMessage invocationMessage = (NotificationMessage) args[0];
+            if (invocationMessage != null && NotificationVersion.VERSION_2.equals(invocationMessage.getVersion())) {
+                return new se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType();
+            } else {
+                return new CertificateStatusUpdateForCareType();
             }
         });
     }

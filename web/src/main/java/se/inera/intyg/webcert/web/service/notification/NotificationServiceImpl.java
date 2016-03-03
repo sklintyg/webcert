@@ -243,7 +243,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    public void createAndSendNotification(Utkast utkast, HandelseType handelse) {
+    protected void createAndSendNotification(Utkast utkast, HandelseType handelse) {
 
         Optional<NotificationVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
@@ -255,8 +255,7 @@ public class NotificationServiceImpl implements NotificationService {
         send(notificationMessage, utkast.getEnhetsId());
     }
 
-    /* -- Package visibility -- */
-    void send(NotificationMessage notificationMessage, String enhetsId) {
+    private void send(NotificationMessage notificationMessage, String enhetsId) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
@@ -276,7 +275,7 @@ public class NotificationServiceImpl implements NotificationService {
         return Optional.ofNullable(utkastRepo.findOne(intygsId));
     }
 
-    String notificationMessageToJson(NotificationMessage notificationMessage) {
+    private String notificationMessageToJson(NotificationMessage notificationMessage) {
         try {
             return objectMapper.writeValueAsString(notificationMessage);
         } catch (JsonProcessingException e) {
@@ -285,7 +284,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    static final class NotificationMessageCreator implements MessageCreator {
+    private static final class NotificationMessageCreator implements MessageCreator {
 
         private final String value;
         private final String enhetsId;

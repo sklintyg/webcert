@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,8 +31,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationMessageFactoryImpl.class);
 
     private static final List<HandelseType> USES_FRAGOR_OCH_SVAR = Arrays.asList(HandelseType.FRAGA_FRAN_FK,
             HandelseType.SVAR_FRAN_FK, HandelseType.FRAGA_TILL_FK, HandelseType.FRAGA_FRAN_FK_HANTERAD,

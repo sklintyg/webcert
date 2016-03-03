@@ -36,13 +36,8 @@ import javax.jms.TextMessage;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -119,6 +114,7 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_ID, captNotMsg.getIntygsId());
         assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, captNotMsg.getHandelse());
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
+        assertEquals(NotificationVersion.VERSION_1, captNotMsg.getVersion());
     }
 
     private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
