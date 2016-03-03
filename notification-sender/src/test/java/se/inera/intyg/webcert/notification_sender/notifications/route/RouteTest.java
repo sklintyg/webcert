@@ -20,21 +20,27 @@
 package se.inera.intyg.webcert.notification_sender.notifications.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-
-import javax.xml.bind.JAXBException;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
 import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
 import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
@@ -42,18 +48,17 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
-@MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSClient|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
-
-    private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
-
-    private static final String NOTIFICATION_MESSAGE = "{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",\"utkast\":"
-            + INTYG_JSON + ",\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}";
 
     @Autowired
     CamelContext camelContext;
+
+    @Mock
+    private ModuleApi moduleApi;
+
+    @Autowired
+    private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
 
     @Produce(uri = "direct:receiveNotificationRequestEndpoint")
     private ProducerTemplate producerTemplate;
@@ -61,8 +66,8 @@ public class RouteTest {
     @EndpointInject(uri = "mock:bean:notificationWSClient")
     private MockEndpoint notificationWSClient;
 
-    @EndpointInject(uri = "mock:bean:notificationTransformer")
-    private MockEndpoint notificationTransformer;
+    @EndpointInject(uri = "mock:bean:notificationWSClientV2")
+    private MockEndpoint notificationWSClientV2;
 
     @EndpointInject(uri = "mock:direct:permanentErrorHandlerEndpoint")
     private MockEndpoint permanentErrorHandlerEndpoint;
@@ -71,74 +76,149 @@ public class RouteTest {
     private MockEndpoint temporaryErrorHandlerEndpoint;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
         MockEndpoint.resetMocks(camelContext);
-        notificationTransformer.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setBody(new CertificateStatusUpdateForCareType());
-            }
-        });
+        setupReturnTypeCreateNotification();
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+    }
+
+    @After
+    public void cleanup() {
+        Mockito.reset(moduleRegistry, moduleApi);
     }
 
     @Test
     public void testNormalRoute() throws InterruptedException {
         // Given
         notificationWSClient.expectedMessageCount(1);
+        notificationWSClientV2.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
         assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
     @Test
-    public void testTransformationException() throws InterruptedException {
+    public void testNormalRouteExplicitNotificationVersion1() throws InterruptedException {
         // Given
-        notificationTransformer.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new JAXBException("Testing transformation exception");
-            }
-        });
-
-        notificationWSClient.expectedMessageCount(0);
-        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+        notificationWSClient.expectedMessageCount(1);
+        notificationWSClientV2.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_1));
 
         // Then
         assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
     @Test
-    public void testRuntimeException() throws InterruptedException {
+    public void testNormalRouteNotificationVersion2() throws Exception {
         // Given
-        notificationTransformer.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new RuntimeException("Testing runtime exception");
-            }
-        });
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(1);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_2));
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testTransformationException() throws Exception {
+        // Given
+        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing checked exception"));
 
         notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(createNotificationMessage(null));
+
+        Mockito.verify(moduleRegistry).getModuleApi(anyString());
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testTransformationExceptionNotificationVersion2() throws Exception {
+        // Given
+        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing checked exception"));
+
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
         assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testRuntimeException() throws Exception {
+        // Given
+        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new RuntimeException("Testing runtime exception"));
+
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(null));
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testRuntimeExceptionNotificationVersion2() throws Exception {
+        // Given
+        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new RuntimeException("Testing runtime exception"));
+
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(null));
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
@@ -154,14 +234,41 @@ public class RouteTest {
         });
 
         notificationWSClient.expectedMessageCount(1);
+        notificationWSClientV2.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
         assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testTemporaryExceptionNotificationVersion2() throws Exception {
+        // Given
+        notificationWSClientV2.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                throw new TemporaryException("Testing application error, with exhausted retries");
+            }
+        });
+
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(1);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(1);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_2));
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
@@ -172,22 +279,74 @@ public class RouteTest {
         notificationWSClient.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                LOG.debug("Recieving");
                 throw new PermanentException("Testing technical error");
             }
         });
 
         notificationWSClient.expectedMessageCount(1);
+        notificationWSClientV2.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
         assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
+    @Test
+    public void testPermanentExceptionNotificationVersion2() throws Exception {
+        // Given
+        notificationWSClientV2.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                throw new PermanentException("Testing technical error");
+            }
+        });
+
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(1);
+        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_2));
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    private void setupReturnTypeCreateNotification() throws Exception {
+        when(moduleApi.createNotification(any(NotificationMessage.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                NotificationMessage invocationMessage = (NotificationMessage) args[0];
+                if (invocationMessage != null && NotificationVersion.VERSION_2.equals(invocationMessage.getVersion())) {
+                    return new se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType();
+                } else {
+                    return new CertificateStatusUpdateForCareType();
+                }
+            }
+        });
+    }
+
+    private String createNotificationMessage(NotificationVersion version) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",");
+        if (version != null) {
+            sb.append("\"version\":\"");
+            sb.append(version.name());
+            sb.append("\",");
+        }
+        sb.append("\"utkast\":{\"id\":\"1234\",\"typ\":\"fk7263\"},\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
+        return sb.toString();
+    }
 }

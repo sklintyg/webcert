@@ -32,7 +32,9 @@
 
   <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
-  <import resource="mock-test-service-context.xml"/>
+  <bean id="moduleRegistry" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.intyg.common.support.modules.registry.IntygModuleRegistry" />
+  </bean>
 
   <bean id="transactionManager" class="se.inera.intyg.webcert.notification_sender.mocks.MockTransactionManager"/>
 
