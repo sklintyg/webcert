@@ -76,6 +76,9 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         patient.setFornamn(patientType.getFornamn());
         patient.setMellannamn(patientType.getMellannamn());
         patient.setEfternamn(patientType.getEfternamn());
+        patient.setPostadress("REMOVE_BEFORE_PROD");
+        patient.setPostnummer("REMOVE_BEFORE_PROD");
+        patient.setPostort("REMOVE_BEFORE_PROD");
         return patient;
     }
 
