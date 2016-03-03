@@ -20,13 +20,10 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
@@ -70,12 +67,47 @@ public class NotificationTransformerTest {
         assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(RouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(RouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(RouteHeaders.LOGISK_ADRESS));
-        assertEquals(NotificationVersion.VERSION_1, message.getHeader(RouteHeaders.VERSION));
+        assertEquals(NotificationVersion.VERSION_1.name(), message.getHeader(RouteHeaders.VERSION));
 
         verify(message, times(1)).setHeader(eq(RouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
         verify(message, times(1)).setHeader(eq(RouteHeaders.INTYGS_ID), eq(INTYGS_ID));
         verify(message, times(1)).setHeader(eq(RouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
-        verify(message, times(1)).setHeader(eq(RouteHeaders.VERSION), eq(NotificationVersion.VERSION_1));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.VERSION), eq(NotificationVersion.VERSION_1.name()));
+
+        verify(moduleRegistry, times(1)).getModuleApi(eq(FK7263));
+        verify(moduleApi, times(1)).createNotification(any());
+    }
+
+    @Test
+    public void testSendBackwardsCompatibility() throws Exception {
+        // Given
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, "FK7263", new LocalDateTime(),
+                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null);
+        Message message = spy(new DefaultMessage());
+        message.setBody(notificationMessage);
+
+        IntygModuleRegistry moduleRegistry = mock(IntygModuleRegistry.class);
+        ModuleApi moduleApi = mock(ModuleApi.class);
+        when(moduleRegistry.getModuleApi(Mockito.anyString())).thenReturn(moduleApi);
+        when(moduleApi.createNotification(Mockito.any(NotificationMessage.class))).thenReturn(EXPECTED_BODY);
+
+        NotificationTransformer processor = new NotificationTransformer();
+        processor.setModuleRegistry(moduleRegistry);
+
+        // When
+        processor.process(message);
+
+        // Then
+        assertEquals(EXPECTED_BODY, message.getBody());
+        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(RouteHeaders.HANDELSE));
+        assertEquals(INTYGS_ID, message.getHeader(RouteHeaders.INTYGS_ID));
+        assertEquals(LOGISK_ADRESS, message.getHeader(RouteHeaders.LOGISK_ADRESS));
+        assertNull(message.getHeader(RouteHeaders.VERSION));
+
+        verify(message, times(1)).setHeader(eq(RouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.INTYGS_ID), eq(INTYGS_ID));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
+        verify(message, never()).setHeader(eq(RouteHeaders.VERSION), any());
 
         verify(moduleRegistry, times(1)).getModuleApi(eq(FK7263));
         verify(moduleApi, times(1)).createNotification(any());
