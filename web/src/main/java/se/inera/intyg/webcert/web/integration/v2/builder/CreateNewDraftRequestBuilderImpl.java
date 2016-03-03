@@ -47,7 +47,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, CommissionType miuOnUnit) {
         CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
 
-        utkastsRequest.setIntygType(intyg.getTypAvIntyg().getCode());
+        utkastsRequest.setIntygType(intyg.getTypAvIntyg().getCode().toLowerCase());
 
         se.inera.intyg.webcert.web.service.dto.Patient patient = createPatient(intyg.getPatient());
         utkastsRequest.setPatient(patient);

@@ -47,7 +47,7 @@ public class CreateDraftCertificateValidatorImplTest {
 
     @Test
     public void testValidate() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.TRUE);
+        when(moduleRegistry.moduleExists(CODE.toLowerCase())).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertFalse(result.hasErrors());
     }

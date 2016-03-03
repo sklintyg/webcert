@@ -45,7 +45,7 @@ import se.riv.infrastructure.directory.v1.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {
 
-    private static final String CERT_TYPE = "fk7263";
+    private static final String CERT_TYPE = "LUSE";
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
     private static final String CAREGIVER_HSAID = "SE0000112233";
@@ -76,7 +76,7 @@ public class CreateNewDraftRequestBuilderTest {
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), miu);
 
         assertNotNull(res);
-        assertEquals(CERT_TYPE, res.getIntygType());
+        assertEquals(CERT_TYPE.toLowerCase(), res.getIntygType());
         assertEquals(USER_HSAID, res.getHosPerson().getHsaId());
         assertNotNull(res.getHosPerson().getNamn());
         assertEquals(UNIT_HSAID, res.getVardenhet().getHsaId());

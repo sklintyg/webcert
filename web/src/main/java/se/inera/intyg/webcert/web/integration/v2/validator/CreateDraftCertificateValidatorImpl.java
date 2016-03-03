@@ -48,7 +48,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     private void validateTypAvIntyg(TypAvIntyg typAvIntygType, ResultValidator errors) {
         String intygsTyp = typAvIntygType.getCode();
 
-        if (!moduleRegistry.moduleExists(intygsTyp)) {
+        if (!moduleRegistry.moduleExists(intygsTyp.toLowerCase())) {
             errors.addError("Intyg {0} is not supported", intygsTyp);
         }
     }
