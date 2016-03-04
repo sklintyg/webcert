@@ -67,7 +67,7 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setTimestamp(LocalDateTime.now());
 
-        // TODO LOG THIS
+        monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
         return repo.save(arende);
     }
 

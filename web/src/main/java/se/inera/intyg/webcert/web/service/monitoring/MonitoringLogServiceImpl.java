@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.logging.HashUtility;
 import se.inera.intyg.common.util.logging.LogMarkers;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 @Service
 public class MonitoringLogServiceImpl implements MonitoringLogService {
@@ -168,6 +168,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.NOTIFICATION_SENT, hanType, unitId);
     }
 
+    @Override
+    public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, String subject) {
+        logEvent(MonitoringEvent.ARENDE_RECEIVED, subject, intygsId, intygsTyp, unitHsaId);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -203,7 +208,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
-        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'");
+        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'"),
+        ARENDE_RECEIVED("Received arende with subject '{}' for '{}' of type '{}' for unit '{}'");
 
         private final String msg;
 
@@ -215,4 +221,5 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             return msg;
         }
     }
+
 }
