@@ -42,8 +42,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.type.LogMessageConstants;
-import se.inera.intyg.common.logmessages.type.LogMessageType;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 
 import com.google.common.collect.ImmutableMap;
@@ -89,7 +87,7 @@ public class AggregatorRouteTest {
 
         // When
         for (int a = 0; a < 5; a++) {
-            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -110,7 +108,7 @@ public class AggregatorRouteTest {
 
         // When
         for (int a = 0; a < 4; a++) {
-            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of());
         }
 
         // Then

@@ -50,8 +50,8 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
         // 1. Aggregates (n) messages together and passes them to a custom bean which will transform the content
-        //    into a single list of PDLLogMessage.
-        //    The bean:logMessageAggregationProcessor outputs a List of PDLLogMessage which is passed to a JMS queue.
+        //    into a single list of PdlLogMessage.
+        //    The bean:logMessageAggregationProcessor outputs a List of PdlLogMessage which is passed to a JMS queue.
         from("receiveLogMessageEndpoint").routeId("aggregatorRoute")
                 .aggregate(new GroupedExchangeAggregationStrategy())
                 .constant(true)

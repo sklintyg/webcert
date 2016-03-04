@@ -34,9 +34,9 @@ import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.logmessages.ActivityPurpose;
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
-import se.inera.intyg.common.logmessages.base.PdlResource;
-import se.inera.intyg.common.logmessages.base.ResourceType;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.common.logmessages.PdlResource;
+import se.inera.intyg.common.logmessages.ResourceType;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
@@ -200,7 +200,7 @@ public class LogServiceImpl implements LogService {
     }
 
 
-    private PDLLogMessage populateLogMessage(LogRequest logRequest, PDLLogMessage logMsg, LogUser user) {
+    private PdlLogMessage populateLogMessage(LogRequest logRequest, PdlLogMessage logMsg, LogUser user) {
 
         populateWithCurrentUserAndCareUnit(logMsg, user);
 
@@ -228,7 +228,7 @@ public class LogServiceImpl implements LogService {
         return logMsg;
     }
 
-    private void populateWithCurrentUserAndCareUnit(PDLLogMessage logMsg, LogUser user) {
+    private void populateWithCurrentUserAndCareUnit(PdlLogMessage logMsg, LogUser user) {
         logMsg.setUserId(user.getUserId());
         logMsg.setUserName(user.getUserName());
 
@@ -236,7 +236,7 @@ public class LogServiceImpl implements LogService {
         logMsg.setUserCareUnit(vardenhet);
     }
 
-    private void send(PDLLogMessage logMsg) {
+    private void send(PdlLogMessage logMsg) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not log {} of Intyg '{}' since PDL logging is disabled!", logMsg.getActivityType(), logMsg.getActivityLevel());
@@ -249,11 +249,11 @@ public class LogServiceImpl implements LogService {
     }
 
     private static final class MC implements MessageCreator {
-        private final PDLLogMessage logMsg;
+        private final PdlLogMessage logMsg;
 
         private ObjectMapper objectMapper = new CustomObjectMapper();
 
-        private MC(PDLLogMessage log) {
+        private MC(PdlLogMessage log) {
             this.logMsg = log;
         }
 

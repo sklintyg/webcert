@@ -20,14 +20,14 @@
 package se.inera.intyg.webcert.common.service.log.template;
 
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
 
 public abstract class IntygPrintMessage {
 
     private static final long serialVersionUID = 6590364960205870820L;
 
-    public static PDLLogMessage build(String intygId, String printMethod) {
-        PDLLogMessage pdlLogMessage = new PDLLogMessage(ActivityType.PRINT);
+    public static PdlLogMessage build(String intygId, String printMethod) {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.PRINT);
         pdlLogMessage.setActivityLevel(intygId);
         pdlLogMessage.setActivityArgs(printMethod);
         return pdlLogMessage;

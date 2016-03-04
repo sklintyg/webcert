@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -97,11 +97,11 @@ public class LogMessageSendProcessor {
         }
     }
 
-    private PDLLogMessage jsonToPdlLogMessage(String body) {
+    private PdlLogMessage jsonToPdlLogMessage(String body) {
         try {
-            return objectMapper.readValue(body, PDLLogMessage.class);
+            return objectMapper.readValue(body, PdlLogMessage.class);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Could not parse PDLLogMessage from log message JSON: " + e.getMessage());
+            throw new IllegalArgumentException("Could not parse PdlLogMessage from log message JSON: " + e.getMessage());
         }
     }
 }

@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.util
 
-import se.inera.intyg.common.logmessages.base.PDLLogMessage
+import se.inera.intyg.common.logmessages.PdlLogMessage
 import se.inera.intyg.common.specifications.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.intyg.common.specifications.spec.util.jms.DestinationFixture
 import se.inera.intyg.common.specifications.spec.util.jms.JMSUtils
@@ -86,7 +86,7 @@ class LogConsumer {
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE)
             consumer = session.createConsumer(destination)
             message = (ObjectMessage) consumer.receive(timeout)
-            intygMsg = (PDLLogMessage) message.getObject();
+            intygMsg = (PdlLogMessage) message.getObject();
             userhsaid = intygMsg.getUserId();
         } finally {
             JMSUtils.closeQuitely(conn, session, consumer);

@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
-import se.inera.intyg.common.logmessages.base.PdlResource;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.common.logmessages.PdlResource;
 import se.riv.ehr.log.v1.ActivityType;
 import se.riv.ehr.log.v1.CareProviderType;
 import se.riv.ehr.log.v1.CareUnitType;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Encapsulates PDLLogMessage (internal format) -> LogType (ehr format) conversion.
+ * Encapsulates PdlLogMessage (internal format) -> LogType (ehr format) conversion.
  *
  * Created by eriklupander on 2016-02-29.
  */
@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 public class LogTypeFactoryImpl implements LogTypeFactory {
 
     @Override
-    public LogType convertFromList(List<PDLLogMessage> sources) {
+    public LogType convertFromList(List<PdlLogMessage> sources) {
 
-        PDLLogMessage source = sources.get(0);
+        PdlLogMessage source = sources.get(0);
         LogType logType = new LogType();
 
         logType.setLogId(source.getLogId());
@@ -53,7 +53,7 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
     }
 
     @Override
-    public LogType convert(PDLLogMessage source) {
+    public LogType convert(PdlLogMessage source) {
         LogType logType = new LogType();
         logType.setLogId(source.getLogId());
 
@@ -72,7 +72,7 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         return logType;
     }
 
-    private void buildUserType(PDLLogMessage source, LogType logType) {
+    private void buildUserType(PdlLogMessage source, LogType logType) {
         UserType user = new UserType();
         user.setUserId(source.getUserId());
         user.setName(source.getUserName());
@@ -81,14 +81,14 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         logType.setUser(user);
     }
 
-    private void buildSystemType(PDLLogMessage source, LogType logType) {
+    private void buildSystemType(PdlLogMessage source, LogType logType) {
         SystemType system = new SystemType();
         system.setSystemId(source.getSystemId());
         system.setSystemName(source.getSystemName());
         logType.setSystem(system);
     }
 
-    private void buildActivityType(PDLLogMessage source, LogType logType) {
+    private void buildActivityType(PdlLogMessage source, LogType logType) {
         ActivityType activity = new ActivityType();
         activity.setActivityType(source.getActivityType().getType());
         activity.setStartDate(source.getTimestamp());

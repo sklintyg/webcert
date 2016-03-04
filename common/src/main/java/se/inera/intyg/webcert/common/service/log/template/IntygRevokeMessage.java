@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.common.service.log.template;
 
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
 
 /**
  * @author andreaskaltenbach
@@ -29,8 +29,8 @@ public abstract class IntygRevokeMessage {
 
     private static final long serialVersionUID = 5186634858995110120L;
 
-    public static PDLLogMessage build(String intygId) {
-        PDLLogMessage pdlLogMessage = new PDLLogMessage(ActivityType.REVOKE);
+    public static PdlLogMessage build(String intygId) {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.REVOKE);
         pdlLogMessage.setActivityLevel(intygId);
         return pdlLogMessage;
     }

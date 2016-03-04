@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 import javax.jms.JMSException;
@@ -105,14 +105,14 @@ public class LogResource {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public PDLLogMessage getLogMessage() {
+    public PdlLogMessage getLogMessage() {
         long originalTimeout = jmsTemplate.getReceiveTimeout();
         try {
             jmsTemplate.setReceiveTimeout(timeOut);
             Message message = jmsTemplate.receive(queue);
             String body = ((TextMessage) message).getText();
 
-            return objectMapper.readValue(body, PDLLogMessage.class);
+            return objectMapper.readValue(body, PdlLogMessage.class);
         } catch (JMSException e) {
             throw new RuntimeException("Could not retreive log message: " + e.getMessage(), e);
         } catch (IOException e) {

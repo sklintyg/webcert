@@ -33,7 +33,7 @@ import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.logmessages.ActivityPurpose;
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
@@ -103,7 +103,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         String body = intygReadMessageCaptor.getValue();
 
-        PDLLogMessage intygReadMessage = objectMapper.readValue(body, PDLLogMessage.class);
+        PdlLogMessage intygReadMessage = objectMapper.readValue(body, PdlLogMessage.class);
         assertNotNull(intygReadMessage.getLogId());
         assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
         assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());

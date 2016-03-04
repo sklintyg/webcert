@@ -6,9 +6,9 @@ import se.inera.intyg.common.logmessages.ActivityPurpose;
 import se.inera.intyg.common.logmessages.ActivityType;
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
-import se.inera.intyg.common.logmessages.base.PdlResource;
-import se.inera.intyg.common.logmessages.base.ResourceType;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.common.logmessages.PdlResource;
+import se.inera.intyg.common.logmessages.ResourceType;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
@@ -32,8 +32,8 @@ public class TestDataHelper {
         }
     }
 
-    public static PDLLogMessage buildBasePdlLogMessageList(ActivityType activityType) {
-        PDLLogMessage pdlLogMessage = new PDLLogMessage();
+    public static PdlLogMessage buildBasePdlLogMessageList(ActivityType activityType) {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage();
 
         pdlLogMessage.setSystemId("webcert");
         pdlLogMessage.setSystemName("webcert");

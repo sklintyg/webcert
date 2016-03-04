@@ -49,8 +49,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.type.LogMessageConstants;
-import se.inera.intyg.common.logmessages.type.LogMessageType;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
@@ -94,7 +92,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -120,7 +118,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -146,7 +144,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -172,7 +170,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then

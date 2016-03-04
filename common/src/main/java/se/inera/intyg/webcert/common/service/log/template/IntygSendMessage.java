@@ -20,15 +20,15 @@
 package se.inera.intyg.webcert.common.service.log.template;
 
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
 
 /**
  * @author andreaskaltenbach
  */
 public abstract class IntygSendMessage {
 
-    public static PDLLogMessage build(String intygId, String additionalInfo) {
-        PDLLogMessage pdlLogMessage = new PDLLogMessage(ActivityType.SEND);
+    public static PdlLogMessage build(String intygId, String additionalInfo) {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.SEND);
         pdlLogMessage.setActivityLevel(intygId);
         pdlLogMessage.setActivityArgs(additionalInfo);
         return pdlLogMessage;
