@@ -19,28 +19,29 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import java.util.Enumeration;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.BrowserCallback;
+import org.springframework.jms.core.JmsTemplate;
+import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.BrowserCallback;
-import org.springframework.jms.core.JmsTemplate;
-
-import se.inera.intyg.common.logmessages.AbstractLogMessage;
+import java.io.IOException;
+import java.util.Enumeration;
 
 @Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")
 @Path("/logMessages")
@@ -49,6 +50,8 @@ public class LogResource {
     private static final int DEFAULT_TIMEOUT = 1000;
 
     private long timeOut = DEFAULT_TIMEOUT;
+
+    private ObjectMapper objectMapper = new CustomObjectMapper();
 
     LogResource() {
     }
@@ -102,14 +105,18 @@ public class LogResource {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public AbstractLogMessage getLogMessage() {
+    public PDLLogMessage getLogMessage() {
         long originalTimeout = jmsTemplate.getReceiveTimeout();
         try {
             jmsTemplate.setReceiveTimeout(timeOut);
             Message message = jmsTemplate.receive(queue);
-            return (AbstractLogMessage) ((ObjectMessage) message).getObject();
+            String body = ((TextMessage) message).getText();
+
+            return objectMapper.readValue(body, PDLLogMessage.class);
         } catch (JMSException e) {
             throw new RuntimeException("Could not retreive log message: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not parse log message: " + e.getMessage(), e);
         } finally {
             jmsTemplate.setReceiveTimeout(originalTimeout);
         }

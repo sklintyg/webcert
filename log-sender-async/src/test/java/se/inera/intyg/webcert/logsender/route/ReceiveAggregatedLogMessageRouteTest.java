@@ -94,7 +94,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
         }
 
         // Then
@@ -120,7 +120,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
         }
 
         // Then
@@ -146,7 +146,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
         }
 
         // Then
@@ -172,7 +172,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
         }
 
         // Then

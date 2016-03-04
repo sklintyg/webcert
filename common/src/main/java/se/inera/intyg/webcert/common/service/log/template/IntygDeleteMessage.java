@@ -17,18 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.logsender.exception;
+package se.inera.intyg.webcert.common.service.log.template;
+
+import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.common.logmessages.base.PDLLogMessage;
 
 /**
  * @author andreaskaltenbach
  */
-public class LoggtjanstExecutionException extends RuntimeException {
+public abstract class IntygDeleteMessage {
 
-    public LoggtjanstExecutionException() {
+    public static PDLLogMessage build(String intygId) {
+        PDLLogMessage pdlLogMessage = new PDLLogMessage(ActivityType.DELETE);
+        pdlLogMessage.setActivityLevel(intygId);
+        return pdlLogMessage;
     }
-
-    public LoggtjanstExecutionException(Throwable cause) {
-        super(cause);
-    }
-
 }

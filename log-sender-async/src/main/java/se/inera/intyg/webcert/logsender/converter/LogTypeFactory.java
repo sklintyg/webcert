@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.logsender.converter;
 
-import se.inera.intyg.common.logmessages.AbstractLogMessage;
+import se.inera.intyg.common.logmessages.base.PDLLogMessage;
 import se.riv.ehr.log.v1.LogType;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * Created by eriklupander on 2016-02-29.
  */
 public interface LogTypeFactory {
-    LogType convertFromList(List<AbstractLogMessage> sources);
+    LogType convertFromList(List<PDLLogMessage> sources);
 
-    LogType convert(AbstractLogMessage source);
+    LogType convert(PDLLogMessage source);
 }

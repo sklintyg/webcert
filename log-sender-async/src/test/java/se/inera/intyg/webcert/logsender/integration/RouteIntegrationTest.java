@@ -26,11 +26,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
@@ -42,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -52,8 +50,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.type.LogMessageConstants;
-import se.inera.intyg.common.logmessages.type.LogMessageType;
 import se.inera.intyg.webcert.logsender.client.mock.MockLogSenderClientClientImpl;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 
@@ -66,7 +62,7 @@ import com.google.common.base.Throwables;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIntegrationTest {
 
-    private static final int SECONDS_TO_WAIT = 10;
+    private static final int SECONDS_TO_WAIT = 5;
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -173,7 +169,7 @@ public class RouteIntegrationTest {
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
 
-        await().atMost(5, TimeUnit.SECONDS).until(new Callable<Boolean>() {
+        await().atMost(15, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 int numberOfDLQMessages = numberOfDLQMessages();
@@ -197,29 +193,21 @@ public class RouteIntegrationTest {
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
 
-        await().atMost(5, TimeUnit.SECONDS).until(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                int numberOfDLQMessages = numberOfDLQMessages();
-                System.out.println("numberOfDLQMessages: " + numberOfDLQMessages);
-                return (numberOfDLQMessages == 3);
-            }
+        await().atMost(15, TimeUnit.SECONDS).until(() -> {
+            int numberOfDLQMessages = numberOfDLQMessages();
+            System.out.println("numberOfDLQMessages: " + numberOfDLQMessages);
+            return (numberOfDLQMessages == 3);
         });
     }
 
     private void sendMessage(final ActivityType activityType) throws Exception {
-        jmsTemplate.send(sendQueue, new MessageCreator() {
-            public Message createMessage(Session session) throws JMSException {
-                try {
-                    ObjectMessage objectMessage = session.createObjectMessage(TestDataHelper.buildAbstractLogMessageList(activityType));
-                    objectMessage.setStringProperty(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name());
-                    return objectMessage;
-                } catch (Exception e) {
-                    throw Throwables.propagate(e);
-                }
+        jmsTemplate.send(sendQueue, session -> {
+            try {
+                TextMessage textMessage = session.createTextMessage(TestDataHelper.buildBasePdlLogMessageListAsJson(activityType));
+                return textMessage;
+            } catch (Exception e) {
+                throw Throwables.propagate(e);
             }
-
-
         });
     }
 

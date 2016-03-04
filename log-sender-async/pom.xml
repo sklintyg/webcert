@@ -235,7 +235,7 @@
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>
-              <value>${system.mode}</value>
+              <value>dev</value>
             </systemProperty>
             <systemProperty>
               <name>catalina.base</name>
@@ -255,7 +255,7 @@
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>
-              <value>9099</value>
+              <value>9097</value>
             </systemProperty>
             <systemProperty>
               <name>java.awt.headless</name>

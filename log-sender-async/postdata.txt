@@ -1,0 +1,83 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:ehr:log:store:StoreLogResponder:1" xmlns:urn2="urn:riv:ehr:log:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>1</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:StoreLogRequest>
+         <!--1 or more repetitions:-->
+         <urn1:Log>
+            <urn2:LogId>1?</urn2:LogId>
+            <urn2:System>
+               <urn2:SystemId>webcert</urn2:SystemId>
+               <!--Optional:-->
+               <urn2:SystemName>webcert</urn2:SystemName>
+               <!--You may enter ANY elements at this point-->
+            </urn2:System>
+            <urn2:Activity>
+               <urn2:ActivityType>webcert</urn2:ActivityType>
+               <!--Optional:-->
+               <urn2:ActivityLevel>webcert</urn2:ActivityLevel>
+               <!--Optional:-->
+               <urn2:ActivityArgs>webcert</urn2:ActivityArgs>
+               <urn2:StartDate>2016-03-03</urn2:StartDate>
+               <urn2:Purpose>webcert</urn2:Purpose>
+               <!--You may enter ANY elements at this point-->
+            </urn2:Activity>
+            <urn2:User>
+               <urn2:UserId>123</urn2:UserId>
+               <!--Optional:-->
+               <urn2:Name>Erik</urn2:Name>
+               <!--Optional:-->
+               <urn2:PersonId>191212121212</urn2:PersonId>
+               <!--Optional:-->
+               <urn2:Assignment></urn2:Assignment>
+               <!--Optional:-->
+               <urn2:Title>Titel</urn2:Title>
+               <urn2:CareProvider>
+                  <urn2:CareProviderId>123</urn2:CareProviderId>
+                  <!--Optional:-->
+                  <urn2:CareProviderName>456</urn2:CareProviderName>
+                  <!--You may enter ANY elements at this point-->
+               </urn2:CareProvider>
+               <urn2:CareUnit>
+                  <urn2:CareUnitId>1231</urn2:CareUnitId>
+                  <!--Optional:-->
+                  <urn2:CareUnitName>1212</urn2:CareUnitName>
+                  <!--You may enter ANY elements at this point-->
+               </urn2:CareUnit>
+               <!--You may enter ANY elements at this point-->
+            </urn2:User>
+            <urn2:Resources>
+               <!--1 or more repetitions:-->
+               <urn2:Resource>
+                  <urn2:ResourceType>test</urn2:ResourceType>
+                  <!--Optional:-->
+                  <urn2:Patient>
+                     <urn2:PatientId>121</urn2:PatientId>
+                     <!--Optional:-->
+                     <urn2:PatientName>121</urn2:PatientName>
+                     <!--You may enter ANY elements at this point-->
+                  </urn2:Patient>
+                  <urn2:CareProvider>
+                     <urn2:CareProviderId>1332</urn2:CareProviderId>
+                     <!--Optional:-->
+                     <urn2:CareProviderName>3242</urn2:CareProviderName>
+                     <!--You may enter ANY elements at this point-->
+                  </urn2:CareProvider>
+                  <!--Optional:-->
+                  <urn2:CareUnit>
+                     <urn2:CareUnitId>43242</urn2:CareUnitId>
+                     <!--Optional:-->
+                     <urn2:CareUnitName>54353</urn2:CareUnitName>
+                     <!--You may enter ANY elements at this point-->
+                  </urn2:CareUnit>
+                  <!--You may enter ANY elements at this point-->
+               </urn2:Resource>
+               <!--You may enter ANY elements at this point-->
+            </urn2:Resources>
+            <!--You may enter ANY elements at this point-->
+         </urn1:Log>
+         <!--You may enter ANY elements at this point-->
+      </urn1:StoreLogRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

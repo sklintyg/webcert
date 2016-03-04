@@ -20,10 +20,10 @@
 package se.inera.intyg.webcert.specifications.spec.api
 
 import org.joda.time.LocalDateTime
+import se.inera.intyg.common.logmessages.base.PDLLogMessage
 import se.inera.intyg.common.specifications.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.intyg.common.specifications.spec.util.jms.JMSUtils
 import se.inera.intyg.common.specifications.spec.util.jms.Producer
-import se.inera.intyg.common.logmessages.IntygReadMessage
 
 import javax.jms.Connection
 import javax.jms.Message
@@ -59,7 +59,7 @@ class LogMessageProducer extends Producer {
     def execute() {
         def m
         if (aktivitet == "läsaIntyg") {
-            m = new IntygReadMessage()
+            m = mew PDLLogMessage()
             m.systemId = "Fitnesse"
             m.timestamp = new LocalDateTime()
             m.userId = vardperson

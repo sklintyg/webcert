@@ -2,9 +2,10 @@ package se.inera.intyg.webcert.logsender.converter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.logmessages.AbstractLogMessage;
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.Patient;
+import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.base.PdlResource;
 import se.riv.ehr.log.v1.ActivityType;
 import se.riv.ehr.log.v1.CareProviderType;
 import se.riv.ehr.log.v1.CareUnitType;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Encapsulates AbstractLogMessage (internal format) -> LogType (ehr format) conversion.
+ * Encapsulates PDLLogMessage (internal format) -> LogType (ehr format) conversion.
  *
  * Created by eriklupander on 2016-02-29.
  */
@@ -27,9 +28,9 @@ import java.util.stream.Collectors;
 public class LogTypeFactoryImpl implements LogTypeFactory {
 
     @Override
-    public LogType convertFromList(List<AbstractLogMessage> sources) {
+    public LogType convertFromList(List<PDLLogMessage> sources) {
 
-        AbstractLogMessage source = sources.get(0);
+        PDLLogMessage source = sources.get(0);
         LogType logType = new LogType();
 
         logType.setLogId(source.getLogId());
@@ -39,13 +40,20 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         buildUserType(source, logType);
 
         logType.setResources(new ResourcesType());
-        logType.getResources().getResource().addAll(sources.stream().map(this::buildResource).collect(Collectors.toList()));
+
+        List<ResourceType> resourcesList = sources.stream()
+                .flatMap(basePdlLogMessage -> basePdlLogMessage.getPdlResourceList()
+                        .stream()
+                        .map(this::buildResource)
+                )
+                .collect(Collectors.toList());
+        logType.getResources().getResource().addAll(resourcesList);
 
         return logType;
     }
 
     @Override
-    public LogType convert(AbstractLogMessage source) {
+    public LogType convert(PDLLogMessage source) {
         LogType logType = new LogType();
         logType.setLogId(source.getLogId());
 
@@ -55,14 +63,16 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
         logType.setResources(new ResourcesType());
 
-        ResourceType resource = buildResource(source);
-
-        logType.getResources().getResource().add(resource);
+        List<ResourceType> resources = source.getPdlResourceList()
+                .stream()
+                .map(this::buildResource)
+                .collect(Collectors.toList());
+        logType.getResources().getResource().addAll(resources);
 
         return logType;
     }
 
-    private void buildUserType(AbstractLogMessage source, LogType logType) {
+    private void buildUserType(PDLLogMessage source, LogType logType) {
         UserType user = new UserType();
         user.setUserId(source.getUserId());
         user.setName(source.getUserName());
@@ -71,14 +81,14 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         logType.setUser(user);
     }
 
-    private void buildSystemType(AbstractLogMessage source, LogType logType) {
+    private void buildSystemType(PDLLogMessage source, LogType logType) {
         SystemType system = new SystemType();
         system.setSystemId(source.getSystemId());
         system.setSystemName(source.getSystemName());
         logType.setSystem(system);
     }
 
-    private void buildActivityType(AbstractLogMessage source, LogType logType) {
+    private void buildActivityType(PDLLogMessage source, LogType logType) {
         ActivityType activity = new ActivityType();
         activity.setActivityType(source.getActivityType().getType());
         activity.setStartDate(source.getTimestamp());
@@ -113,7 +123,7 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         return careProvider;
     }
 
-    private ResourceType buildResource(AbstractLogMessage source) {
+    private ResourceType buildResource(PdlResource source) {
         ResourceType resource = new ResourceType();
         resource.setResourceType(source.getResourceType());
         resource.setCareProvider(careProvider(source.getResourceOwner()));

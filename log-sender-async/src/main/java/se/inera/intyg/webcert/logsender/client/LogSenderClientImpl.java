@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.logsender.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
@@ -24,7 +25,8 @@ public class LogSenderClientImpl implements LogSenderClient {
     private String logicalAddress;
 
     @Autowired
-    private StoreLogResponderInterface loggTjanstResponder;
+    @Qualifier("storeLogClient")
+    private StoreLogResponderInterface storeLogClient;
 
     @Override
     public StoreLogResponseType sendLogMessage(List<LogType> logEntries) {
@@ -33,7 +35,7 @@ public class LogSenderClientImpl implements LogSenderClient {
         request.getLog().addAll(logEntries);
 
         try {
-            StoreLogResponseType response = loggTjanstResponder.storeLog(logicalAddress, request);
+            StoreLogResponseType response = storeLogClient.storeLog(logicalAddress, request);
             return response;
         } catch (WebServiceException e) {
             throw new LoggtjanstExecutionException(e);

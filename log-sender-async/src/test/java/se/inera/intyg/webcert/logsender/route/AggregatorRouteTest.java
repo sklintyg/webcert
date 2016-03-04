@@ -58,7 +58,7 @@ public class AggregatorRouteTest {
     @Autowired
     CamelContext camelContext;
 
-    @Produce(uri = "direct://aggregatorRoute")
+    @Produce(uri = "direct://receiveLogMessageEndpoint")
     private ProducerTemplate producerTemplate;
 
     @EndpointInject(uri = "mock:bean:logMessageAggregationProcessor")
@@ -89,7 +89,7 @@ public class AggregatorRouteTest {
 
         // When
         for (int a = 0; a < 5; a++) {
-            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
         }
 
         // Then
@@ -110,7 +110,7 @@ public class AggregatorRouteTest {
 
         // When
         for (int a = 0; a < 4; a++) {
-            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildAbstractLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of(LogMessageConstants.LOG_TYPE, LogMessageType.SINGLE.name()));
         }
 
         // Then

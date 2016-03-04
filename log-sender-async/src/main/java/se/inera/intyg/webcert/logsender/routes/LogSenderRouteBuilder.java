@@ -25,9 +25,6 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-
-import se.inera.intyg.common.logmessages.type.LogMessageConstants;
-import se.inera.intyg.common.logmessages.type.LogMessageType;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
@@ -52,19 +49,10 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
     public void configure() throws Exception {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
-        // 1. Takes individual JMS messages and passes them to the aggregator route if type is the expected one.
-        //    Separate direct:aggregate is used due to "when()" not scoping aggregation expressions properly if directly inlined. Should be possible to fix...
-        from("receiveLogMessageEndpoint").routeId("transferLogMessage")
-                .choice()
-                .when(header(LogMessageConstants.LOG_TYPE).isEqualTo(LogMessageType.SINGLE.name()))
-                .to("direct:aggregatorRoute").stop()
-                .otherwise().log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
-
-
-        // 2. Aggregates (n) messages together and passes them to a custom bean which will transform the content
-        //    into a single list of AbstractLogMessage.
-        //    The bean:logMessageAggregationProcessor outputs a List of AbstractLogMessage which is passed to a JMS queue.
-        from("direct:aggregatorRoute").routeId("aggregatorRoute")
+        // 1. Aggregates (n) messages together and passes them to a custom bean which will transform the content
+        //    into a single list of PDLLogMessage.
+        //    The bean:logMessageAggregationProcessor outputs a List of PDLLogMessage which is passed to a JMS queue.
+        from("receiveLogMessageEndpoint").routeId("aggregatorRoute")
                 .aggregate(new GroupedExchangeAggregationStrategy())
                 .constant(true)
                 .completionPredicate(header("CamelAggregatedSize").isEqualTo(Integer.parseInt(batchSize)))
@@ -73,7 +61,7 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
                 .stop();
 
 
-        // 3. In a transaction, reads from jms/AggregatedLogSenderQueue and uses custom bean:logMessageProcessor
+        // 2. In a transaction, reads from jms/AggregatedLogSenderQueue and uses custom bean:logMessageProcessor
         //    to convert into ehr:logstore format and send. Exception handling delegates resends to AMQ.
         from("receiveAggregatedLogMessageEndpoint").routeId("aggregatedJmsToSenderRoute")
                 .onException(TemporaryException.class).to("direct:logMessageTemporaryErrorHandlerEndpoint").end()

@@ -1,13 +1,19 @@
 package se.inera.intyg.webcert.logsender.helper;
 
-import se.inera.intyg.common.logmessages.AbstractLogMessage;
+import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.common.logmessages.ActivityPurpose;
 import se.inera.intyg.common.logmessages.ActivityType;
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.Patient;
+import se.inera.intyg.common.logmessages.base.PDLLogMessage;
+import se.inera.intyg.common.logmessages.base.PdlResource;
+import se.inera.intyg.common.logmessages.base.ResourceType;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
-import java.util.ArrayList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Utility for creating test data for unit- and integration tests.
@@ -16,16 +22,32 @@ import java.util.ArrayList;
  */
 public class TestDataHelper {
 
-    public static ArrayList<AbstractLogMessage> buildAbstractLogMessageList(ActivityType activityType) {
-        AbstractLogMessage abstractLogMessage = new AbstractLogMessage(activityType, ActivityPurpose.CARE_TREATMENT, "Intyg");
-        abstractLogMessage.setSystemId("webcert");
-        abstractLogMessage.setSystemName("webcert");
-        abstractLogMessage.setUserCareUnit(buildEnhet());
-        abstractLogMessage.setPatient(buildPatient());
-        abstractLogMessage.setResourceOwner(buildEnhet());
-        ArrayList<AbstractLogMessage> arrayList = new ArrayList<>();
-        arrayList.add(abstractLogMessage);
-        return arrayList;
+    private static final ObjectMapper objectMapper = new CustomObjectMapper();
+
+    public static String buildBasePdlLogMessageListAsJson(ActivityType activityType) {
+        try {
+            return objectMapper.writeValueAsString(buildBasePdlLogMessageList(activityType));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Could not build test data log message, JSON could not be produced: " + e.getMessage());
+        }
+    }
+
+    public static PDLLogMessage buildBasePdlLogMessageList(ActivityType activityType) {
+        PDLLogMessage pdlLogMessage = new PDLLogMessage();
+
+        pdlLogMessage.setSystemId("webcert");
+        pdlLogMessage.setSystemName("webcert");
+        pdlLogMessage.setUserCareUnit(buildEnhet());
+        pdlLogMessage.setActivityType(activityType);
+        pdlLogMessage.setTimestamp(LocalDateTime.now());
+        pdlLogMessage.setPurpose(ActivityPurpose.CARE_TREATMENT);
+        PdlResource pdlResource = new PdlResource();
+        pdlResource.setPatient(buildPatient());
+        pdlResource.setResourceOwner(buildEnhet());
+        pdlResource.setResourceType(ResourceType.RESOURCE_TYPE_INTYG.getResourceTypeName());
+        pdlLogMessage.getPdlResourceList().add(pdlResource);
+
+        return pdlLogMessage;
     }
 
     private static Patient buildPatient() {
