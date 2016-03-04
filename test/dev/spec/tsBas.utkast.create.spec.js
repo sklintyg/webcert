@@ -61,7 +61,7 @@ describe('Create and Sign ts-bas utkast', function() {
             synOgonsjukdom: 'Ja',
             synDubbel: 'Ja',
             synNystagmus: 'Ja',
-            styrkor: wcTestTools.testdata.getRandomStyrka(),
+            styrkor: wcTestTools.testdata.values.ts.getRandomStyrka(),
             linser: {
                 hoger: 'Ja',
                 vanster: 'Ja',

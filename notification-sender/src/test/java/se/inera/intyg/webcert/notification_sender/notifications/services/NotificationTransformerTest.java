@@ -19,6 +19,12 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.joda.time.LocalDateTime;
@@ -27,28 +33,22 @@ import org.mockito.Mockito;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class NotificationTransformerTest {
 
-    public static final String EXPECTED_BODY = "Body";
-    public static final String INTYGS_ID = "intyg1";
-    public static final String LOGISK_ADRESS = "address1";
+    private static final String EXPECTED_BODY = "Body";
+    private static final String INTYGS_ID = "intyg1";
+    private static final String LOGISK_ADRESS = "address1";
+    private static final String FK7263 = "FK7263";
 
     @Test
     public void testSend() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, "FK7263", new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", new FragorOchSvar(0, 0, 0, 0));
-        Message message = new DefaultMessage();
+                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), NotificationVersion.VERSION_1);
+        Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
         IntygModuleRegistry moduleRegistry = mock(IntygModuleRegistry.class);
@@ -64,9 +64,53 @@ public class NotificationTransformerTest {
 
         // Then
         assertEquals(EXPECTED_BODY, message.getBody());
-        assertEquals(message.getHeader(RouteHeaders.HANDELSE), HandelseType.INTYGSUTKAST_SKAPAT.value());
-        assertEquals(message.getHeader(RouteHeaders.INTYGS_ID), INTYGS_ID);
-        assertEquals(message.getHeader(RouteHeaders.LOGISK_ADRESS), LOGISK_ADRESS);
+        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(RouteHeaders.HANDELSE));
+        assertEquals(INTYGS_ID, message.getHeader(RouteHeaders.INTYGS_ID));
+        assertEquals(LOGISK_ADRESS, message.getHeader(RouteHeaders.LOGISK_ADRESS));
+        assertEquals(NotificationVersion.VERSION_1.name(), message.getHeader(RouteHeaders.VERSION));
+
+        verify(message, times(1)).setHeader(eq(RouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.INTYGS_ID), eq(INTYGS_ID));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.VERSION), eq(NotificationVersion.VERSION_1.name()));
+
+        verify(moduleRegistry, times(1)).getModuleApi(eq(FK7263));
+        verify(moduleApi, times(1)).createNotification(any());
+    }
+
+    @Test
+    public void testSendBackwardsCompatibility() throws Exception {
+        // Given
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, "FK7263", new LocalDateTime(),
+                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null);
+        Message message = spy(new DefaultMessage());
+        message.setBody(notificationMessage);
+
+        IntygModuleRegistry moduleRegistry = mock(IntygModuleRegistry.class);
+        ModuleApi moduleApi = mock(ModuleApi.class);
+        when(moduleRegistry.getModuleApi(Mockito.anyString())).thenReturn(moduleApi);
+        when(moduleApi.createNotification(Mockito.any(NotificationMessage.class))).thenReturn(EXPECTED_BODY);
+
+        NotificationTransformer processor = new NotificationTransformer();
+        processor.setModuleRegistry(moduleRegistry);
+
+        // When
+        processor.process(message);
+
+        // Then
+        assertEquals(EXPECTED_BODY, message.getBody());
+        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(RouteHeaders.HANDELSE));
+        assertEquals(INTYGS_ID, message.getHeader(RouteHeaders.INTYGS_ID));
+        assertEquals(LOGISK_ADRESS, message.getHeader(RouteHeaders.LOGISK_ADRESS));
+        assertNull(message.getHeader(RouteHeaders.VERSION));
+
+        verify(message, times(1)).setHeader(eq(RouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.INTYGS_ID), eq(INTYGS_ID));
+        verify(message, times(1)).setHeader(eq(RouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
+        verify(message, never()).setHeader(eq(RouteHeaders.VERSION), any());
+
+        verify(moduleRegistry, times(1)).getModuleApi(eq(FK7263));
+        verify(moduleApi, times(1)).createNotification(any());
     }
 
 }

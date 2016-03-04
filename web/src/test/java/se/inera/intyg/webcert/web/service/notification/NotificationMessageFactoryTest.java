@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,14 +29,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 /**
@@ -61,7 +54,8 @@ public class NotificationMessageFactoryTest {
     public void testCreateNotificationMessageForUtkast() {
 
         Utkast utkast = createUtkast(INTYGS_ID);
-        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelseType.INTYGSUTKAST_SIGNERAT);
+        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelseType.INTYGSUTKAST_SIGNERAT,
+                NotificationVersion.VERSION_1);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -72,42 +66,7 @@ public class NotificationMessageFactoryTest {
         assertEquals("SE12345678-1000", msg.getLogiskAdress());
         assertEquals("{model}", msg.getUtkast());
         assertNotNull(msg.getFragaSvar());
-    }
-
-    @Test
-    public void testCreateNotificationMessageForFragaSvar() {
-
-        Utkast utkast = createUtkast(INTYGS_ID);
-        when(mockUtkastRepository.findOne(INTYGS_ID)).thenReturn(utkast);
-
-        when(mockFragorOchSvarCreator.createFragorOchSvar(INTYGS_ID)).thenReturn(new FragorOchSvar(1, 0, 0, 0));
-
-        FragaSvar fs = createFragaSvar();
-        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(fs, HandelseType.FRAGA_TILL_FK);
-
-        assertNotNull(msg);
-        assertNotNull(msg.getHandelse());
-        assertEquals(HandelseType.FRAGA_TILL_FK, msg.getHandelse());
-        assertNotNull(msg.getHandelseTid());
-        assertEquals("1234", msg.getIntygsId());
-        assertEquals("fk7263", msg.getIntygsTyp());
-        assertEquals("SE12345678-1000", msg.getLogiskAdress());
-        assertEquals("{model}", msg.getUtkast());
-
-        assertNotNull(msg.getFragaSvar());
-        assertEquals(1, msg.getFragaSvar().getAntalFragor());
-    }
-
-    private FragaSvar createFragaSvar() {
-        FragaSvar fs = new FragaSvar();
-
-        IntygsReferens intygsRef = new IntygsReferens();
-        intygsRef.setIntygsId(INTYGS_ID);
-        intygsRef.setIntygsTyp("fk7263");
-
-        fs.setIntygsReferens(intygsRef);
-
-        return fs;
+        assertEquals(NotificationVersion.VERSION_1, msg.getVersion());
     }
 
     private Utkast createUtkast(String intygId) {

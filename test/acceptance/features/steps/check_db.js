@@ -23,31 +23,31 @@
 
 var db = require('./db_actions/db.js');
 
-module.exports = function () {
+module.exports = function() {
 
-  this.Given(/^ska spår av utkastet inte finnas i databasen$/, function (callback) {
+    this.Given(/^ska spår av utkastet inte finnas i databasen$/, function(callback) {
 
-    if (!process.env.DATABASE_PASSWORD) {
-      callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:' + process.env.DATABASE_USER);
-    } else {
-      var connection = db.makeConnection();
-      var dbName = process.env.DATABASE_NAME;
+        if (!process.env.DATABASE_PASSWORD) {
+            callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:' + process.env.DATABASE_USER);
+        } else {
+            var connection = db.makeConnection();
+            var dbName = process.env.DATABASE_NAME;
 
-      connection.connect();
-      connection.query('SELECT COUNT(*) AS Counter FROM ' + dbName + '.INTYG WHERE ' +
-        dbName + '.INTYG.INTYGS_ID = \"' + intyg.id + '\";',
-        function (err, rows, fields) {
-          connection.end();
-          should.not.exist(err);
+            connection.connect();
+            connection.query('SELECT COUNT(*) AS Counter FROM ' + dbName + '.INTYG WHERE ' +
+                dbName + '.INTYG.INTYGS_ID = \"' + intyg.id + '\";',
+                function(err, rows, fields) {
+                    connection.end();
+                    should.not.exist(err);
 
-          logger.info('Intygs id: ' + intyg.id);
-          logger.info('Från databas:');
-          logger.info(JSON.stringify(rows));
+                    logger.info('Intygs id: ' + intyg.id);
+                    logger.info('Från databas:');
+                    logger.info(JSON.stringify(rows));
 
-          var radix = 10; //for parseInt
-          expect(parseInt(rows[0].Counter, radix)).to.equal(0);
-        });
-      callback();
-    }
-  });
+                    var radix = 10; //for parseInt
+                    expect(parseInt(rows[0].Counter, radix)).to.equal(0);
+                });
+            callback();
+        }
+    });
 };

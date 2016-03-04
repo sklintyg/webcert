@@ -120,7 +120,7 @@
 
     // Global config of default date picker config (individual attributes can be
     // overridden per directive usage)
-    app.constant('datepickerConfig', {
+    app.constant('uibDatepickerConfig', {
         formatDay: 'dd',
         formatMonth: 'MMMM',
         formatYear: 'yyyy',
@@ -134,17 +134,24 @@
         startingDay: 1,
         yearRange: 20,
         minDate: null,
-        maxDate: null
+        maxDate: null,
+        shortcutPropagation: false
     });
 
-    app.constant('datepickerPopupConfig', {
+    app.constant('uibDatepickerPopupConfig', {
         datepickerPopup: 'yyyy-MM-dd',
         currentText: 'Idag',
         clearText: 'Rensa',
         closeText: 'OK',
         closeOnDateSelection: true,
-        appendToBody: false,
-        showButtonBar: true
+        appendToBody: true,
+        showButtonBar: true,
+        html5Types: {
+            date: 'yyyy-MM-dd',
+            'datetime-local': 'yyyy-MM-ddTHH:mm:ss.sss',
+            'month': 'yyyy-MM'
+        },
+        onOpenFocus: true
     });
 
     // Inject language resources

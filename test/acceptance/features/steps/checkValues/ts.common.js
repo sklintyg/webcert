@@ -17,41 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages*/
-/* globals logger */
+/* globals logger, pages, Promise */
 
 'use strict';
 
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 
 module.exports = {
-  checkTsCommonValues: function (intyg, callback) {
+    checkValues: function(intyg, callback) {
+        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
 
-    var selectedTypes = intyg.korkortstyper.sort(function (a, b) {
-      var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'TRAKTOR', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'TAXI'];
-      return allTypes.indexOf(a.toUpperCase()) - allTypes.indexOf(b.toUpperCase());
-    });
-    selectedTypes = selectedTypes.join(', ').toUpperCase();
+        var promiseArr = [];
 
-    expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function (value) {
-      logger.info('OK - Körkortstyper = ' + value);
-    }, function (reason) {
-      callback('FEL - Körkortstyper: ' + reason);
-    });
+        var selectedTypes = intyg.korkortstyper.sort(function(a, b) {
+            var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'TRAKTOR', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'TAXI'];
+            return allTypes.indexOf(a.toUpperCase()) - allTypes.indexOf(b.toUpperCase());
+        });
+        selectedTypes = selectedTypes.join(', ').toUpperCase();
 
-    if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
-      var txt = 'Försäkran enligt 18 kap 4 §';
-      expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(txt).then(function (value) {
-        logger.info('OK - Identitet styrkt genom = ' + value);
-      }, function (reason) {
-        callback('FEL - Identitet styrkt genom: ' + reason);
-      });
-    } else {
-      expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).then(function (value) {
-        logger.info('OK - Identitet styrkt genom = ' + value);
-      }, function (reason) {
-        callback('FEL - Identitet styrkt genom: ' + reason);
-      });
+        promiseArr.push(expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function(value) {
+            logger.info('OK - Körkortstyper = ' + value);
+        }, function(reason) {
+            callback('FEL - Körkortstyper: ' + reason);
+        }));
+
+        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
+            var txt = 'Försäkran enligt 18 kap 4 §';
+            promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(txt).then(function(value) {
+                logger.info('OK - Identitet styrkt genom = ' + value);
+            }, function(reason) {
+                callback('FEL - Identitet styrkt genom: ' + reason);
+            }));
+        } else {
+            promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).then(function(value) {
+                logger.info('OK - Identitet styrkt genom = ' + value);
+            }, function(reason) {
+                callback('FEL - Identitet styrkt genom: ' + reason);
+            }));
+        }
+
+        Promise.all(promiseArr).then(callback());
     }
-  }
 };

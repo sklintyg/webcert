@@ -20,7 +20,7 @@
 /* globals pages, browser, protractor, logger */
 
 'use strict';
-var luseUtkastPage = pages.intyg.fk.luse.utkast;
+var luseUtkastPage = pages.intyg.luse.utkast;
 module.exports = {
     fillIn: function(intyg, cb) {
         logger.info('intyg.typ:' + intyg.typ);

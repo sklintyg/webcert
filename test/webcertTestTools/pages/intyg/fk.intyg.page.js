@@ -26,137 +26,137 @@
 var BaseIntyg = require('./base.intyg.page.js');
 
 var Fk7263Intyg = BaseIntyg._extend({
-  init: function init() {
-    init._super.call(this);
-    this.intygType = 'fk7263';
+    init: function init() {
+        init._super.call(this);
+        this.intygType = 'fk7263';
 
-    this.field1 = {
-      title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
-      text: element(by.css('div[field-number="1"]')).element(by.css('.intyg-block__content'))
-    };
+        this.field1 = {
+            title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
+            text: element(by.css('div[field-number="1"]')).element(by.css('.intyg-block__content'))
+        };
 
-    this.field2 = {
-      diagnoskod: element(by.id('diagnosKod')),
-      diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
-    };
-    this.field3 = {
-      sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
-    };
-    this.field4 = {
-      funktionsnedsattning: element(by.id('funktionsnedsattning'))
-    };
-    this.field4b = {
-      undersokningAvPatienten: element(by.id('undersokningAvPatienten')),
-      telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
-      journaluppgifter: element(by.id('journaluppgifter')),
-      annat: element(by.id('annanReferens')),
-      annanReferensBeskrivning: element(by.id('annanReferensBeskrivning'))
+        this.field2 = {
+            diagnoskod: element(by.id('diagnosKod')),
+            diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
+        };
+        this.field3 = {
+            sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
+        };
+        this.field4 = {
+            funktionsnedsattning: element(by.id('funktionsnedsattning'))
+        };
+        this.field4b = {
+            undersokningAvPatienten: element(by.id('undersokningAvPatienten')),
+            telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
+            journaluppgifter: element(by.id('journaluppgifter')),
+            annat: element(by.id('annanReferens')),
+            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning'))
 
-    };
-    this.field5 = {
-      aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
-    };
+        };
+        this.field5 = {
+            aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
+        };
 
-    this.field6a = {
-      kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
-      kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
-      ovrigt: element(by.id('rekommendationOvrigt')),
-      rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigtBeskrivning'))
-    };
+        this.field6a = {
+            kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
+            kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
+            ovrigt: element(by.id('rekommendationOvrigt')),
+            rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigtBeskrivning'))
+        };
 
-    this.field7 = {
-      text: element(by.id('field7')).element(by.css('.intyg-block__content'))
-    };
+        this.field7 = {
+            text: element(by.id('field7')).element(by.css('.intyg-block__content'))
+        };
 
-    this.field8b = {
-      nedsat25: {
-        from: element(by.id('nedsattMed25from')),
-        tom: element(by.id('nedsattMed25tom'))
-      },
-      nedsat50: {
-        from: element(by.id('nedsattMed50from')),
-        tom: element(by.id('nedsattMed50tom'))
-      },
-      nedsat75: {
-        from: element(by.id('nedsattMed75from')),
-        tom: element(by.id('nedsattMed75tom'))
-      },
-      nedsat100: {
-        from: element(by.id('nedsattMed100from')),
-        tom: element(by.id('nedsattMed100tom'))
-      }
-    };
+        this.field8b = {
+            nedsat25: {
+                from: element(by.id('nedsattMed25from')),
+                tom: element(by.id('nedsattMed25tom'))
+            },
+            nedsat50: {
+                from: element(by.id('nedsattMed50from')),
+                tom: element(by.id('nedsattMed50tom'))
+            },
+            nedsat75: {
+                from: element(by.id('nedsattMed75from')),
+                tom: element(by.id('nedsattMed75tom'))
+            },
+            nedsat100: {
+                from: element(by.id('nedsattMed100from')),
+                tom: element(by.id('nedsattMed100tom'))
+            }
+        };
 
-    this.field10 = {
-      title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
-      text: element(by.css('div[field-number="10"]')).element(by.css('.intyg-block__content'))
-    };
+        this.field10 = {
+            title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
+            text: element(by.css('div[field-number="10"]')).element(by.css('.intyg-block__content'))
+        };
 
-    this.field11 = {
-      title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
-      text: element(by.css('div[field-number="11"]')).element(by.css('.intyg-block__content'))
-    };
+        this.field11 = {
+            title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
+            text: element(by.css('div[field-number="11"]')).element(by.css('.intyg-block__content'))
+        };
 
-    this.field12 = {
-      title: element(by.id('field12')).element(by.css('.title')),
-      text: element(by.id('field12')).element(by.css('.intyg-block__content'))
-    };
+        this.field12 = {
+            title: element(by.id('field12')).element(by.css('.title')),
+            text: element(by.id('field12')).element(by.css('.intyg-block__content'))
+        };
 
-    this.field13 = {
-      kommentar: element(by.id('field13')).element(by.id('kommentar'))
-    };
+        this.field13 = {
+            kommentar: element(by.id('field13')).element(by.id('kommentar'))
+        };
 
-    var panel = element(by.css('.qa-panel'));
+        var panel = element(by.css('.qa-panel'));
 
-    this.qaPanel = panel;
+        this.qaPanel = panel;
 
-    this.FMBprognos = element(by.id('arbetsformagaPrognos'));
+        this.FMBprognos = element(by.id('arbetsformagaPrognos'));
 
-    this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
+        this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
 
-    this.copyBtn = element(by.id('copyBtn'));
+        this.copyBtn = element(by.id('copyBtn'));
 
-    this.prognosGIAB = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
-    this.prognosN = element(by.id('arbetsformataPrognosNej'));
-    this.prognosJD = element(by.id('arbetsformataPrognosJaDelvis'));
-    this.prognosJ = element(by.id('arbetsformataPrognosJa'));
-    this.prognosFortyd = element(by.id('arbetsformagaPrognosGarInteAttBedomaBeskrivning'));
-    this.forsKod = element(by.id('forskrivarkodOchArbetsplatskod'));
-    this.answer = {
-      text: panel.element(by.css('textarea')),
-      sendButton: panel.element(by.css('.btn-success'))
-    };
+        this.prognosGIAB = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
+        this.prognosN = element(by.id('arbetsformataPrognosNej'));
+        this.prognosJD = element(by.id('arbetsformataPrognosJaDelvis'));
+        this.prognosJ = element(by.id('arbetsformataPrognosJa'));
+        this.prognosFortyd = element(by.id('arbetsformagaPrognosGarInteAttBedomaBeskrivning'));
+        this.forsKod = element(by.id('forskrivarkodOchArbetsplatskod'));
+        this.answer = {
+            text: panel.element(by.css('textarea')),
+            sendButton: panel.element(by.css('.btn-success'))
+        };
 
-    this.question = {
-      newQuestionButton: element(by.id('askQuestionBtn')),
-      text: element(by.id('newQuestionText')),
-      topic: element(by.id('new-question-topic')),
-      kontakt: element(by.cssContainingText('option', 'Kontakt')),
-      sendButton: element(by.id('sendQuestionBtn'))
-    };
-    this.forwardBtn = element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info'));
-    this.intygStatus = element(by.id('intyg-vy-laddad'));
-  },
-  get: function get(intygId) {
-    get._super.call(this, intygId);
-  },
-  selectQuestionTopic: function (amne) {
-    this.question.topic.element(by.cssContainingText('option', amne)).click();
-  },
-  getMarkAsHandledButtonForQuestionID: function (questionID) {
-    return element(by.id('markAsHandledFkOriginBtn-' + questionID));
-  },
-  getMarkAsHandledButtonForAnswerByID: function (questionID) {
-    return element(by.id('markAsHandledWcOriginBtn-' + questionID));
-  },
-  getQAElementByText:function(containingText){
-    var panel = element(by.cssContainingText('.qa-panel', containingText));
-    return {
-      panel:panel,
-      text: panel.element(by.css('textarea')),
-      sendButton: panel.element(by.css('.btn-success'))
-    };
-  }
+        this.question = {
+            newQuestionButton: element(by.id('askQuestionBtn')),
+            text: element(by.id('newQuestionText')),
+            topic: element(by.id('new-question-topic')),
+            kontakt: element(by.cssContainingText('option', 'Kontakt')),
+            sendButton: element(by.id('sendQuestionBtn'))
+        };
+        this.forwardBtn = element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info'));
+        this.intygStatus = element(by.id('intyg-vy-laddad'));
+    },
+    get: function get(intygId) {
+        get._super.call(this, intygId);
+    },
+    selectQuestionTopic: function(amne) {
+        this.question.topic.element(by.cssContainingText('option', amne)).click();
+    },
+    getMarkAsHandledButtonForQuestionID: function(questionID) {
+        return element(by.id('markAsHandledFkOriginBtn-' + questionID));
+    },
+    getMarkAsHandledButtonForAnswerByID: function(questionID) {
+        return element(by.id('markAsHandledWcOriginBtn-' + questionID));
+    },
+    getQAElementByText: function(containingText) {
+        var panel = element(by.cssContainingText('.qa-panel', containingText));
+        return {
+            panel: panel,
+            text: panel.element(by.css('textarea')),
+            sendButton: panel.element(by.css('.btn-success'))
+        };
+    }
 });
 
 module.exports = new Fk7263Intyg();

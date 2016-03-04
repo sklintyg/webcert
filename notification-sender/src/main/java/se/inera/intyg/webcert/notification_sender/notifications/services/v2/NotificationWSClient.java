@@ -17,21 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.services;
+package se.inera.intyg.webcert.notification_sender.notifications.services.v2;
 
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
+import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 
 public class NotificationWSClient {
 
@@ -43,7 +43,7 @@ public class NotificationWSClient {
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
             @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
-        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().getExtension());
+        LOG.debug("Sending status update with version 2 to '{}' for intyg '{}'", logicalAddress, request.getIntyg().getIntygsId().getExtension());
 
         CertificateStatusUpdateForCareResponseType response = null;
 

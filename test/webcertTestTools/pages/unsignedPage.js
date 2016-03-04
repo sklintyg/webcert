@@ -27,37 +27,37 @@
 var WebcertBasePage = require('./webcert.base.page.js');
 
 var UnsignedIntygPage = WebcertBasePage._extend({
-  init: function init() {
-    init._super.call(this);
+    init: function init() {
+        init._super.call(this);
 
-    this.visasokfilter = element(by.id('show-advanced-filter-btn'));
-    this.filterVidarebefordrad = {
-      form: element(by.id('filterFormVidarebefordrad')),
-      notifiedAll: element(by.id('notifiedAll')),
-      notified: element(by.id('notified')),
-      notifiedNot: element(by.id('notifiedNot'))
-    };
-    // form-group saknar id
-    this.filterUtkastComplete = {
-      completeAll: element(by.id('completeAll')),
-      completeNo: element(by.id('completeNo')),
-      completeYes: element(by.id('completeYes'))
-    };
+        this.visasokfilter = element(by.id('show-advanced-filter-btn'));
+        this.filterVidarebefordrad = {
+            form: element(by.id('filterFormVidarebefordrad')),
+            notifiedAll: element(by.id('notifiedAll')),
+            notified: element(by.id('notified')),
+            notifiedNot: element(by.id('notifiedNot'))
+        };
+        // form-group saknar id
+        this.filterUtkastComplete = {
+            completeAll: element(by.id('completeAll')),
+            completeNo: element(by.id('completeNo')),
+            completeYes: element(by.id('completeYes'))
+        };
 
-    this.filterSavedBy = {
-      form: element(by.id('filterFormSparatAv')),
-      select: element(by.id('uc-savedBy'))
-    };
-  },
-  get: function () {
-    return browser.get('/web/dashboard#/unsigned');
-  },
-  showSearchFilters: function () {
-    return this.visasokfilter.sendKeys(protractor.Key.SPACE);
-  },
-  hideSearchFilters: function () {
-    return this.visasokfilter.sendKeys(protractor.Key.SPACE);
-  }
+        this.filterSavedBy = {
+            form: element(by.id('filterFormSparatAv')),
+            select: element(by.id('uc-savedBy'))
+        };
+    },
+    get: function() {
+        return browser.get('/web/dashboard#/unsigned');
+    },
+    showSearchFilters: function() {
+        return this.visasokfilter.sendKeys(protractor.Key.SPACE);
+    },
+    hideSearchFilters: function() {
+        return this.visasokfilter.sendKeys(protractor.Key.SPACE);
+    }
 });
 
 module.exports = new UnsignedIntygPage();

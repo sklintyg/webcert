@@ -21,24 +21,24 @@
 
 'use strict';
 
-var helpers = require('./helpers.js');
-// var intygPage = pages.intyg.fk['7263'].intyg;
+// var helpers = require('./helpers.js');
+// var lusePage = pages.intyg.luse.intyg;
 
-function checkUtlatandeDatum(utlatandeText, cb) {
-    if (utlatandeText !== 'Annat underlag för utlåtandet') {
-        expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(helpers.getDateForAssertion()).then(function(date) {
-            logger.info('OK - ' + utlatandeText + '  = ' + date);
-        }, function(reason) {
-            cb('FEL, Min undersökning av patienten,' + reason);
-        });
-    } else {
-        expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(utlatandeText).then(function(date) {
-            logger.info('OK - ' + utlatandeText + '  = ' + date);
-        }, function(reason) {
-            cb('FEL, Min undersökning av patienten,' + reason);
-        });
-    }
-}
+// function checkUtlatandeDatum(utlatandeText, cb) {
+//     if (utlatandeText !== 'Annat underlag för utlåtandet') {
+//         expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(helpers.getDateForAssertion()).then(function(date) {
+//             logger.info('OK - ' + utlatandeText + '  = ' + date);
+//         }, function(reason) {
+//             cb('FEL, Min undersökning av patienten,' + reason);
+//         });
+//     } else {
+//         expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(utlatandeText).then(function(date) {
+//             logger.info('OK - ' + utlatandeText + '  = ' + date);
+//         }, function(reason) {
+//             cb('FEL, Min undersökning av patienten,' + reason);
+//         });
+//     }
+// }
 
 // function checkAndraMedUtrUnd(underlagFinnsNo, cb) {
 //     // får för tilfället ett nej oavsett.
@@ -49,26 +49,26 @@ function checkUtlatandeDatum(utlatandeText, cb) {
 //     });
 // }
 
-function checkSjukForLopp(sjukdomsforlopp, cb) {
+// function checkSjukForLopp(sjukdomsforlopp, cb) {
 
-    expect(element(by.cssContainingText('.ng-binding.ng-scope', sjukdomsforlopp)).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
-        // expect(element(by.cssContainingText('.intyg-field.ng-scope' ,'Sjukdomsförlopp för aktuella sjukdomar av betydelse')).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
-        logger.info('OK - ' + sjukdomsforlopp);
-    }, function(reason) {
-        cb('FEL, Sjukdomsförlopp för aktuella sjukdomar av betydelse' + reason);
-    });
-}
+//     expect(element(by.cssContainingText('.ng-binding.ng-scope', sjukdomsforlopp)).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
+//         logger.info('OK - ' + sjukdomsforlopp);
+//     }, function(reason) {
+//         cb('FEL, Sjukdomsförlopp för aktuella sjukdomar av betydelse' + reason);
+//     });
+// }
 
-function checkDiagnosNedArbFor(kod, cb) {
-    expect(element(by.id('diagnoseCode')).getText()).to.eventually.equal('A00').then(function() {
-        logger.info('OK - ' + kod);
-    }, function(reason) {
-        cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
-    });
-}
+// function checkDiagnosNedArbFor(kod, cb) {
+//     expect(lusePage.diagnoseCode.getText()).to.eventually.equal(kod).then(function() {
+//         logger.info('OK - ' + kod);
+//     }, function(reason) {
+//         cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
+//     });
+// }
 module.exports = {
-    checkLuseValues: function(intyg, callback) {
-        logger.info('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
+    checkValues: function(intyg, callback) {
+        logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
+        logger.warn('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
         callback();
         // checkUtlatandeDatum('Min undersökning av patienten.', callback);
         // checkUtlatandeDatum('Journaluppgifter från den', callback);
@@ -81,10 +81,10 @@ module.exports = {
 
         // checkSjukForLopp(intyg.sjukdomsForlopp, callback);
         // checkDiagnosNedArbFor(intyg.diagnos.kod, callback);
-        // callback();
+
         // expect(element(by.id('underlagFinnsNo')).getText()).to.eventually.equal('Nej').then(function() {
         //     logger.info('OK - Nej');
-            // logger.info('OK - ' + underlagFinnsNo);
+        // logger.info('OK - ' + underlagFinnsNo);
         // }, function(reason) {
         //     callback('FEL, Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?,' + reason);
         // }).then(callback);

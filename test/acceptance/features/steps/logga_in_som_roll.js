@@ -24,86 +24,86 @@ var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
 // var webcertBasePage = pages.webcertBase;
 // var webcertBase = pages.webcertBase;
 
-module.exports = function () {
+module.exports = function() {
 
-  this.Given(/^att jag är inloggad som tandläkare$/, function (callback) {
-    var userObj = {
-      fornamn: 'Louise',
-      efternamn: 'Ericsson',
-      hsaId: 'TSTNMT2321000156-103B',
-      enhetId: 'TSTNMT2321000156-1039'
-    };
-    logInAsUserRole(userObj, 'Tandläkare').and.notify(callback);
-  });
-
-  this.Given(/^att jag är inloggad som vårdadministratör$/, function (callback) {
-    var userObj = {
-      fornamn: 'Åsa',
-      efternamn: 'Svensson',
-      hsaId: 'TSTNMT2321000156-100L',
-      enhetId: 'TSTNMT2321000156-1003'
-    };
-    logInAsUserRole(userObj, 'Vårdadministratör').and.notify(callback);
-  });
-
-  this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function (callback) {
-    var userObj = {
-      fornamn: 'Åsa',
-      efternamn: 'Svensson',
-      hsaId: 'TSTNMT2321000156-100L',
-      enhetId: 'TSTNMT2321000156-1003'
-    };
-    logInAsUserRole(userObj, 'Vårdadministratör', 'UTHOPP', 'VARDADMINISTRATOR').then(callback);
-  });
-  this.Given(/^att jag är inloggad som läkare$/, function (callback) {
-    var userObj = {
-      fornamn: 'Åsa',
-      efternamn: 'Svensson',
-      hsaId: 'TSTNMT2321000156-100L',
-      enhetId: 'TSTNMT2321000156-1003',
-      lakare: true,
-      forskrivarKod: '2481632'
-    };
-    logInAsUserRole(userObj, 'Läkare').and.notify(callback);
-  });
-
-  this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function (callback) {
-
-    var userObj = {
-      fornamn: 'Åsa',
-      efternamn: 'Svensson',
-      hsaId: 'TSTNMT2321000156-100L',
-      enhetId: 'TSTNMT2321000156-1003',
-      lakare: true,
-      forskrivarKod: '2481632'
-    };
-    logInAsUserRole(userObj, 'Läkare', 'DJUPINTEGRATION', 'LAKARE').and.notify(callback);
-  });
-
-  this.Given(/^att jag är inloggad som uthoppsläkare$/, function (callback) {
-    var userObj = {
-      fornamn: 'Åsa',
-      efternamn: 'Svensson',
-      hsaId: 'TSTNMT2321000156-100L',
-      enhetId: 'TSTNMT2321000156-1003',
-      lakare: true,
-      forskrivarKod: '2481632'
-    };
-    logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);
-  });
-
-  this.Given(/^ska jag ha rollen "([^"]*)"$/, function (roll, callback) {
-    checkUserRole().then(function (value) {
-      var re = /\[\"(.*)\"\]/;
-      value = value.replace(re, '$1');
-      expect(value).to.equal(roll);
-      callback();
+    this.Given(/^att jag är inloggad som tandläkare$/, function(callback) {
+        var userObj = {
+            fornamn: 'Louise',
+            efternamn: 'Ericsson',
+            hsaId: 'TSTNMT2321000156-103B',
+            enhetId: 'TSTNMT2321000156-1039'
+        };
+        logInAsUserRole(userObj, 'Tandläkare').and.notify(callback);
     });
-  });
 
-  this.Given(/^jag ska ha origin "([^"]*)"/, function(origin, callback) {
-      expect(checkUserOrigin()).to.eventually.be.equal(origin).and.notify(callback);
-  });
+    this.Given(/^att jag är inloggad som vårdadministratör$/, function(callback) {
+        var userObj = {
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003'
+        };
+        logInAsUserRole(userObj, 'Vårdadministratör').and.notify(callback);
+    });
+
+    this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function(callback) {
+        var userObj = {
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003'
+        };
+        logInAsUserRole(userObj, 'Vårdadministratör', 'UTHOPP', 'VARDADMINISTRATOR').then(callback);
+    });
+    this.Given(/^att jag är inloggad som läkare$/, function(callback) {
+        var userObj = {
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003',
+            lakare: true,
+            forskrivarKod: '2481632'
+        };
+        logInAsUserRole(userObj, 'Läkare').and.notify(callback);
+    });
+
+    this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function(callback) {
+
+        var userObj = {
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003',
+            lakare: true,
+            forskrivarKod: '2481632'
+        };
+        logInAsUserRole(userObj, 'Läkare', 'DJUPINTEGRATION', 'LAKARE').and.notify(callback);
+    });
+
+    this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
+        var userObj = {
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003',
+            lakare: true,
+            forskrivarKod: '2481632'
+        };
+        logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);
+    });
+
+    this.Given(/^ska jag ha rollen "([^"]*)"$/, function(roll, callback) {
+        checkUserRole().then(function(value) {
+            var re = /\[\"(.*)\"\]/;
+            value = value.replace(re, '$1');
+            expect(value).to.equal(roll);
+            callback();
+        });
+    });
+
+    this.Given(/^jag ska ha origin "([^"]*)"/, function(origin, callback) {
+        expect(checkUserOrigin()).to.eventually.be.equal(origin).and.notify(callback);
+    });
 };
 
 function checkUserRole() {
@@ -115,11 +115,11 @@ function checkUserOrigin() {
 }
 
 function performUserCheck(userconfig) {
-  browser.ignoreSynchronization = true;
-  browser.get('testability/user/'+ userconfig +'/');
-  var attribute = element(by.css('pre')).getText();
-  browser.navigate().back();
-  browser.sleep(1000);
-  browser.ignoreSynchronization = false;
-  return attribute;
+    browser.ignoreSynchronization = true;
+    browser.get('testability/user/' + userconfig + '/');
+    var attribute = element(by.css('pre')).getText();
+    browser.navigate().back();
+    browser.sleep(1000);
+    browser.ignoreSynchronization = false;
+    return attribute;
 }

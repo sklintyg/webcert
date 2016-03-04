@@ -19,11 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,16 +32,16 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -77,11 +76,15 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private MonitoringLogService monitoringLog;
 
+    @Autowired
+    private UtkastRepository utkastRepo;
+
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftCreated(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftCreated(se.inera.
+     * intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -93,7 +96,8 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftSigned(se.inera.intyg.webcert.web.
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftSigned(se.inera.
+     * intyg.webcert.web.
      * persistence.utkast.model.Utkast)
      */
     @Override
@@ -105,7 +109,8 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftChanged(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftChanged(se.inera.
+     * intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -117,7 +122,8 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftDeleted(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftDeleted(se.inera.
+     * intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
@@ -128,126 +134,128 @@ public class NotificationServiceImpl implements NotificationService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForIntygSent(se.inera.intyg.webcert.web.
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForIntygSent(se.inera.
+     * intyg.webcert.web.
      * persistence.utkast.model.Utkast)
      */
     @Override
     public void sendNotificationForIntygSent(String intygsId) {
-        createAndSendNotification(intygsId, HandelseType.INTYG_SKICKAT_FK);
+        Optional<Utkast> utkast = getUtkast(intygsId);
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.INTYG_SKICKAT_FK);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForIntygRevoked(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForIntygRevoked(se.inera.
+     * intyg.webcert.web
      * .persistence.utkast.model.Utkast)
      */
     @Override
     public void sendNotificationForIntygRevoked(String intygsId) {
-        createAndSendNotification(intygsId, HandelseType.INTYG_MAKULERAT);
+        Optional<Utkast> utkast = getUtkast(intygsId);
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.INTYG_MAKULERAT);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.
+     * inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
-        createAndSendNotification(fragaSvar, HandelseType.FRAGA_FRAN_FK);
+        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.FRAGA_FRAN_FK);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.
+     * inera.intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
     public void sendNotificationForQuestionHandled(FragaSvar fragaSvar) {
-        createAndSendNotification(fragaSvar, HandelseType.FRAGA_FRAN_FK_HANTERAD);
+        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.FRAGA_FRAN_FK_HANTERAD);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.
+     * intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
     public void sendNotificationForQuestionSent(FragaSvar fragaSvar) {
-        createAndSendNotification(fragaSvar, HandelseType.FRAGA_TILL_FK);
+        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.FRAGA_TILL_FK);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera
+     * .intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
     public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
-        createAndSendNotification(fragaSvar, HandelseType.SVAR_FRAN_FK);
+        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.SVAR_FRAN_FK);
+        }
     }
 
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.
+     * intyg.webcert.web
      * .persistence.fragasvar.model.FragaSvar)
      */
     @Override
     public void sendNotificationForAnswerHandled(FragaSvar fragaSvar) {
-        createAndSendNotification(fragaSvar, HandelseType.SVAR_FRAN_FK_HANTERAD);
-    }
-
-    public void createAndSendNotification(String intygsId, HandelseType handelse) {
-
-        Utkast utkast = sendNotificationStrategy.decideNotificationForIntyg(intygsId);
-
-        if (utkast == null) {
-            LOGGER.debug("Will not send notification message for certificate '{}' and event '{}'", intygsId, handelse);
-            return;
+        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.SVAR_FRAN_FK_HANTERAD);
         }
-
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage, utkast.getEnhetsId());
     }
 
-    public void createAndSendNotification(Utkast utkast, HandelseType handelse) {
+    protected void createAndSendNotification(Utkast utkast, HandelseType handelse) {
 
-        utkast = sendNotificationStrategy.decideNotificationForIntyg(utkast);
+        Optional<NotificationVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
-        if (utkast == null) {
+        if (!version.isPresent()) {
             LOGGER.debug("Will not send notification message for event {}", handelse);
             return;
         }
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get());
         send(notificationMessage, utkast.getEnhetsId());
     }
 
-    public void createAndSendNotification(FragaSvar fragaSvar, HandelseType handelse) {
-
-        Utkast utkast = sendNotificationStrategy.decideNotificationForFragaSvar(fragaSvar);
-
-        if (utkast == null) {
-            LOGGER.debug("Will not send notification message for event {}", handelse);
-            return;
-        }
-
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage, utkast.getEnhetsId());
-    }
-
-    /* -- Package visibility -- */
-    void send(NotificationMessage notificationMessage, String enhetsId) {
+    private void send(NotificationMessage notificationMessage, String enhetsId) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
@@ -263,7 +271,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     }
 
-    String notificationMessageToJson(NotificationMessage notificationMessage) {
+    private Optional<Utkast> getUtkast(String intygsId) {
+        return Optional.ofNullable(utkastRepo.findOne(intygsId));
+    }
+
+    private String notificationMessageToJson(NotificationMessage notificationMessage) {
         try {
             return objectMapper.writeValueAsString(notificationMessage);
         } catch (JsonProcessingException e) {
@@ -272,7 +284,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    static final class NotificationMessageCreator implements MessageCreator {
+    private static final class NotificationMessageCreator implements MessageCreator {
 
         private final String value;
         private final String enhetsId;

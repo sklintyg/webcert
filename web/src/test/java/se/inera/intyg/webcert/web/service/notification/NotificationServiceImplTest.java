@@ -28,28 +28,23 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -91,16 +86,11 @@ public class NotificationServiceImplTest {
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
-            @Override
-            public Utkast answer(InvocationOnMock invocation) throws Throwable {
-                Object[] arguments = invocation.getArguments();
-                return (Utkast) arguments[0];
-            }
-        });
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(NotificationVersion.VERSION_1));
 
         NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
-        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT))).thenReturn(notMsg);
+        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
+                eq(NotificationVersion.VERSION_1))).thenReturn(notMsg);
 
         Utkast utkast = createUtkast();
         notificationService.createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_ANDRAT);
@@ -124,12 +114,14 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_ID, captNotMsg.getIntygsId());
         assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, captNotMsg.getHandelse());
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
+        assertEquals(NotificationVersion.VERSION_1, captNotMsg.getVersion());
     }
 
     private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);
-        NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs);
+        NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs,
+                NotificationVersion.VERSION_1);
         return notMsg;
     }
 

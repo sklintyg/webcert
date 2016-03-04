@@ -24,40 +24,40 @@
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var basIntyg = pages.intyg.base.intyg;
 
-module.exports = function () {
+module.exports = function() {
 
-  this.Given(/^jag raderar utkastet$/, function (callback) {
-    fkUtkastPage.radera.knapp.click();
-    fkUtkastPage.radera.bekrafta.click()
-      .then(callback);
-  });
+    this.Given(/^jag raderar utkastet$/, function(callback) {
+        fkUtkastPage.radera.knapp.click();
+        fkUtkastPage.radera.bekrafta.click()
+            .then(callback);
+    });
 
-  this.Given(/^jag går tillbaka till start$/, function (callback) {
-    browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn));
-    basIntyg.backBtn.click().then(callback);
-  });
+    this.Given(/^jag går tillbaka till start$/, function(callback) {
+        browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn));
+        basIntyg.backBtn.click().then(callback);
+    });
 
-  this.Given(/^ska intyget visa varningen "([^"]*)"$/, function (arg1, callback) {
-    expect(element(by.id('certificate-is-revoked-message-text')).getText())
-      .to.eventually.contain(arg1).and.notify(callback);
-  });
+    this.Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {
+        expect(element(by.id('certificate-is-revoked-message-text')).getText())
+            .to.eventually.contain(arg1).and.notify(callback);
+    });
 
-  //   this.Given(/^ska intyget "([^"]*)" med status "([^"]*)" inte synas mer$/, function (intyg, status, callback) {
-  //     var qaTable = element(by.css('table.table-qa'));
+    //   this.Given(/^ska intyget "([^"]*)" med status "([^"]*)" inte synas mer$/, function (intyg, status, callback) {
+    //     var qaTable = element(by.css('table.table-qa'));
 
-  //     qaTable.all(by.cssContainingText('tr', intyg)).filter(function(elem, index) {
-  //         return elem.getText().then(function(text) {
-  //             return (text.indexOf(status) > -1);
-  //         });
-  //     }).then(function(filteredElements) {
-  //         expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
-  //         callback();
-  //     });
-  // });
+    //     qaTable.all(by.cssContainingText('tr', intyg)).filter(function(elem, index) {
+    //         return elem.getText().then(function(text) {
+    //             return (text.indexOf(status) > -1);
+    //         });
+    //     }).then(function(filteredElements) {
+    //         expect(element(by.cssContainingText('button', 'Kopiera')).isPresent()).to.become(false).and.notify(callback);
+    //         callback();
+    //     });
+    // });
 
-  this.Given(/^ska intyget inte finnas i intygsöversikten$/, function (callback) {
-    element(by.id('intygFilterSamtliga')).click();
-    expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
-  });
+    this.Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
+        element(by.id('intygFilterSamtliga')).click();
+        expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
+    });
 
 };

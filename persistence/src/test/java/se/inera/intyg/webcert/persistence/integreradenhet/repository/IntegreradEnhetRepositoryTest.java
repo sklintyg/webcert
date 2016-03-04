@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -49,12 +50,14 @@ public class IntegreradEnhetRepositoryTest {
         enhet.setEnhetsNamn("Enhet 1");
         enhet.setVardgivarId("SE1234567890-2B01");
         enhet.setVardgivarNamn("Vardgivare 1");
+        enhet.setSchemaVersion(SchemaVersion.V1);
 
         IntegreradEnhet savedEnhet = repository.save(enhet);
 
         assertNotNull(savedEnhet);
         assertNotNull(savedEnhet.getSkapadDatum());
         assertNull(savedEnhet.getSenasteKontrollDatum());
+        assertNotNull(savedEnhet.getSchemaVersion());
     }
 
 }

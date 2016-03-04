@@ -27,5 +27,6 @@ public final class RouteHeaders {
     public static final String LOGISK_ADRESS = "logiskAdress";
     public static final String INTYGS_ID = "intygsId";
     public static final String HANDELSE = "handelse";
+    public static final String VERSION = "version";
 
 }

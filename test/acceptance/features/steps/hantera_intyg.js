@@ -24,27 +24,27 @@
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
-module.exports = function () {
-  this.Given(/^jag signerar intyget$/, function (callback) {
-    fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
-  });
-
-  this.Given(/^jag makulerar intyget$/, function (callback) {
-
-    browser.getCurrentUrl().then(function (text) {
-      intyg.id = text.split('/').slice(-1)[0];
-      intyg.id = intyg.id.split('?')[0];
+module.exports = function() {
+    this.Given(/^jag signerar intyget$/, function(callback) {
+        fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
-    fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-    fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE);
-    fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
-  });
+    this.Given(/^jag makulerar intyget$/, function(callback) {
 
-  this.Given(/^jag kopierar intyget$/, function (callback) {
-    fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function () {
-      fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE).then(callback);
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-1)[0];
+            intyg.id = intyg.id.split('?')[0];
+        });
+
+        fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
     });
-  });
+
+    this.Given(/^jag kopierar intyget$/, function(callback) {
+        fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
+            fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE).then(callback);
+        });
+    });
 
 };

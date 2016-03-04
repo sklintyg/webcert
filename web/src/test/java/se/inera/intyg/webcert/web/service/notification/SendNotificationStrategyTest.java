@@ -19,11 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,14 +34,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendNotificationStrategyTest {
@@ -51,11 +49,13 @@ public class SendNotificationStrategyTest {
     private static final String INTYG_ID_4 = "intyg-4";
 
     private static final String INTYG_FK = "fk7263";
+    private static final String INTYG_LUSE = "luse";
     private static final String INTYG_TS = "ts-bas";
 
     private static final String ENHET_1 = "SE12345678-1000";
     private static final String ENHET_2 = "SE12345678-2000";
     private static final String ENHET_3 = "SE12345678-3000";
+    private static final String ENHET_4 = "SE12345678-4000";
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
@@ -68,9 +68,10 @@ public class SendNotificationStrategyTest {
 
     @Before
     public void setupIntegreradeEnheter() {
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_1)).thenReturn(Boolean.TRUE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_2)).thenReturn(Boolean.FALSE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(ENHET_3)).thenReturn(Boolean.TRUE);
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1)).thenReturn(Optional.of(SchemaVersion.V1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2)).thenReturn(Optional.empty());
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3)).thenReturn(Optional.of(SchemaVersion.V1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4)).thenReturn(Optional.of(SchemaVersion.V2));
     }
 
     @Before
@@ -78,89 +79,44 @@ public class SendNotificationStrategyTest {
         Utkast utkast1 = createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1);
         Utkast utkast2 = createUtkast(INTYG_ID_2, INTYG_FK, ENHET_2);
         Utkast utkast3 = createUtkast(INTYG_ID_3, INTYG_TS, ENHET_3);
+        Utkast utkast4 = createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4);
         when(mockUtkastRepository.findOne(INTYG_ID_1)).thenReturn(utkast1);
         when(mockUtkastRepository.findOne(INTYG_ID_2)).thenReturn(utkast2);
         when(mockUtkastRepository.findOne(INTYG_ID_3)).thenReturn(utkast3);
+        when(mockUtkastRepository.findOne(INTYG_ID_4)).thenReturn(utkast4);
     }
 
     @Test
     public void testUtkastOk() {
 
-        Utkast res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
-        assertNotNull(res);
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
+        assertTrue(res.isPresent());
+        assertEquals(NotificationVersion.VERSION_1, res.get());
 
-        verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_1);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1);
     }
 
     @Test
     public void testUtkastUnitNotIntegrated() {
-        Utkast res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
-        assertNull("Should be null, since ENHET_2 is not integrated", res);
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
+        assertFalse(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_2);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2);
     }
 
     @Test
     public void testUtkastWrongType() {
-        Utkast res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
-        assertNull("Only fk7263 is permitted", res);
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
+        assertFalse(res.isPresent());
         verifyZeroInteractions(mockIntegreradeEnheterRegistry);
     }
 
     @Test
-    public void testWithFragaSvarOk() {
-
-        Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_1, INTYG_FK, ENHET_1));
-        assertNotNull(res);
-
-        verify(mockUtkastRepository).findOne(INTYG_ID_1);
-        verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_1);
-    }
-
-    @Test
-    public void testWithFragaSvarWrongType() {
-
-        Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_3, INTYG_TS, ENHET_3));
-        assertNull(res);
-
-        verify(mockUtkastRepository).findOne(INTYG_ID_3);
-        verifyZeroInteractions(mockIntegreradeEnheterRegistry);
-    }
-
-    @Test
-    public void testWithFragaSvarUnitNotIntegrated() {
-
-        Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_2, INTYG_FK, ENHET_2));
-        assertNull(res);
-
-        verify(mockUtkastRepository).findOne(INTYG_ID_2);
-        verify(mockIntegreradeEnheterRegistry).isEnhetIntegrerad(ENHET_2);
-    }
-
-    @Test
-    public void testWithFragaSvarUnitIntygNotPresent() {
-
-        Utkast res = sendStrategy.decideNotificationForFragaSvar(createFragaSvar(INTYG_ID_4, INTYG_FK, ENHET_1));
-        assertNull(res);
-
-        verify(mockUtkastRepository).findOne(INTYG_ID_4);
-        verifyZeroInteractions(mockIntegreradeEnheterRegistry);
-    }
-
-    private FragaSvar createFragaSvar(String intygsId, String intygsTyp, String enhetsId) {
-
-        FragaSvar fs = new FragaSvar();
-
-        IntygsReferens intygsRef = new IntygsReferens();
-        intygsRef.setIntygsId(intygsId);
-        intygsRef.setIntygsTyp(intygsTyp);
-
-        fs.setIntygsReferens(intygsRef);
-
-        fs.setVardperson(new Vardperson());
-        fs.getVardperson().setEnhetsId(enhetsId);
-
-        return fs;
+    public void testUtkastVersion2() {
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+        assertTrue(res.isPresent());
+        assertEquals(NotificationVersion.VERSION_2, res.get());
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4);
     }
 
     private Utkast createUtkast(String intygId, String intygsTyp, String enhetsId) {
