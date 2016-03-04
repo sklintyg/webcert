@@ -37,6 +37,14 @@
     insertbefore="</Context>"
     line="    <Resource name='jms/Queue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Logging Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.log.queue' />"
 
+- name: configure PDL aggregated logging queue
+  lineinfile:
+    dest="{{ tomcat_conf }}/context.xml"
+    regexp="    <Resource name='jms/AggregatedLogSenderQueue'"
+    insertbefore="</Context>"
+    line="    <Resource name='jms/AggregatedLogSenderQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.aggregated.webcert.log.queue' />"
+
+
 - name: configure notification queue
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"

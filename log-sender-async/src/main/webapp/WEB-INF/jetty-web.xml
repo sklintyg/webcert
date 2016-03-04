@@ -44,7 +44,7 @@
     <Arg>
       <Ref id="webAppContext"/>
     </Arg>
-    <Arg>jms/LogSenderQueue</Arg>
+    <Arg>jms/Queue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
         <Arg>logging.queue</Arg>
