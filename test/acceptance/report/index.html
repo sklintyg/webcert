@@ -28,9 +28,9 @@
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     {{#each elements}}
-    {{#if_eq this.keyword "Background"}}
+    {{#if_eq this.keyword "Bakgrund"}}
     {{else}}
-    <div class='panel panel-{{statusAsBoostrap}}'>
+    <div class='panel panel-{{statusAsBoostrap}} {{keyword}}'>
       <div class="panel-heading">
         <h3 class="panel-title">
         <a role="button" data-toggle="collapse" data-parent="#accordion" 
