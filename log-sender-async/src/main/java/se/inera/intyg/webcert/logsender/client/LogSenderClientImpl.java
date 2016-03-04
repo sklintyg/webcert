@@ -25,7 +25,6 @@ public class LogSenderClientImpl implements LogSenderClient {
     private String logicalAddress;
 
     @Autowired
-    @Qualifier("storeLogClient")
     private StoreLogResponderInterface storeLogClient;
 
     @Override
