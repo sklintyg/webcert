@@ -45,8 +45,8 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.intyg.webcert.common.common.Constants;
-import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
-import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 import com.google.common.collect.ImmutableMap;
 

@@ -19,15 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.log;
 
-import static org.joda.time.LocalDateTime.now;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -37,10 +29,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.logmessages.ActivityPurpose;
 import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.IntygReadMessage;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
@@ -48,11 +43,18 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 
 import javax.jms.Session;
 import java.util.Collections;
+
+import static org.joda.time.LocalDateTime.now;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by pehr on 13/11/13.
@@ -70,6 +72,8 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @InjectMocks
     private LogServiceImpl logService = new LogServiceImpl();
+
+    private ObjectMapper objectMapper = new CustomObjectMapper();
 
     @Test
     public void serviceSendsDocumentAndIdForCreate() throws Exception {
@@ -92,17 +96,18 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         MessageCreator messageCreator = messageCreatorCaptor.getValue();
 
         Session session = mock(Session.class);
-        ArgumentCaptor<IntygReadMessage> intygReadMessageCaptor = ArgumentCaptor.forClass(IntygReadMessage.class);
-        when(session.createObjectMessage(intygReadMessageCaptor.capture())).thenReturn(null);
+        ArgumentCaptor<String> intygReadMessageCaptor = ArgumentCaptor.forClass(String.class);
+        when(session.createTextMessage(intygReadMessageCaptor.capture())).thenReturn(null);
 
         messageCreator.createMessage(session);
 
-        IntygReadMessage intygReadMessage = intygReadMessageCaptor.getValue();
+        String body = intygReadMessageCaptor.getValue();
 
+        PdlLogMessage intygReadMessage = objectMapper.readValue(body, PdlLogMessage.class);
         assertNotNull(intygReadMessage.getLogId());
         assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
         assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());
-        assertEquals("Intyg", intygReadMessage.getResourceType());
+        assertEquals("Intyg", intygReadMessage.getPdlResourceList().get(0).getResourceType());
         assertEquals("abc123", intygReadMessage.getActivityLevel());
 
         assertEquals("HSAID", intygReadMessage.getUserId());
@@ -113,8 +118,8 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals("VARDGIVARE_ID", intygReadMessage.getUserCareUnit().getVardgivareId());
         assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
 
-        assertEquals("19121212-1212", intygReadMessage.getPatient().getPatientId().getPersonnummer());
-        assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
+        assertEquals("19121212-1212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId().getPersonnummer());
+        assertEquals("Hans Olof van der Test", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
 
         assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
         assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));

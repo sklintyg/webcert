@@ -19,27 +19,26 @@
 
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
-import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.client.RevokeCertificateServiceClient;
 import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+
+import javax.xml.ws.WebServiceException;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-05-22.

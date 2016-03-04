@@ -60,6 +60,10 @@
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>common-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>log-messages</artifactId>
+    </dependency>
 
     <!-- Test -->
     <dependency>

@@ -19,24 +19,23 @@
 
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
-import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
-import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+
+import javax.xml.ws.WebServiceException;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-05-22.

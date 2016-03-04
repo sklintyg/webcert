@@ -19,22 +19,14 @@
 
 package se.inera.intyg.webcert.specifications.spec.api
 
-import static groovyx.net.http.ContentType.JSON
-
 import org.joda.time.LocalDateTime
-
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
 import se.inera.intyg.common.logmessages.Enhet
-import se.inera.intyg.common.logmessages.IntygCreateMessage
-import se.inera.intyg.common.logmessages.IntygDeleteMessage
-import se.inera.intyg.common.logmessages.IntygPrintMessage
-import se.inera.intyg.common.logmessages.IntygReadMessage
-import se.inera.intyg.common.logmessages.IntygRevokeMessage
-import se.inera.intyg.common.logmessages.IntygSendMessage
-import se.inera.intyg.common.logmessages.IntygSignMessage
-import se.inera.intyg.common.logmessages.IntygUpdateMessage
 import se.inera.intyg.common.logmessages.Patient
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
 import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
+import se.inera.intyg.webcert.web.service.log.template.*
+
+import static groovyx.net.http.ContentType.JSON
 
 /**
  * @author andreaskaltenbach
@@ -59,28 +51,28 @@ class ProduceraLoggMeddelande extends RestClientFixture {
         def m
         switch(aktivitet) {
         case "Läsa":
-            m = new IntygReadMessage(intygId)
+            m = IntygReadMessage.build(intygId)
             break
         case "Skapa":
-            m = new IntygCreateMessage(intygId)
+            m = IntygCreateMessage.build(intygId)
             break
         case "Spara":
-            m = new IntygUpdateMessage(intygId)
+            m = IntygUpdateMessage.build(intygId)
             break
         case "Signera":
-            m = new IntygSignMessage(intygId)
+            m = IntygSignMessage.build(intygId)
             break
         case "Radera":
-            m = new IntygDeleteMessage(intygId)
+            m = IntygDeleteMessage.build(intygId)
             break
         case "Utskrift":
-            m = new IntygPrintMessage(intygId, "Intyg")
+            m = IntygPrintMessage.build(intygId, "Intyg")
             break
         case "Återkalla":
-            m = new IntygRevokeMessage(intygId)
+            m = IntygRevokeMessage.build(intygId)
             break
         case "SkickaTillMottagare":
-            m = new IntygSendMessage(intygId, "Mottagare")
+            m = IntygSendMessage.build(intygId, "Mottagare")
             break
         }
         m.systemId = systemId

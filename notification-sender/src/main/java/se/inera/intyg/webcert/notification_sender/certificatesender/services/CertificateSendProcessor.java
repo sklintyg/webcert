@@ -19,20 +19,19 @@
 
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import javax.xml.ws.WebServiceException;
-
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.common.Constants;
-import se.inera.intyg.webcert.notification_sender.exception.PermanentException;
-import se.inera.intyg.webcert.notification_sender.exception.TemporaryException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+
+import javax.xml.ws.WebServiceException;
 
 /**
  * Created by eriklupander on 2015-05-21.
