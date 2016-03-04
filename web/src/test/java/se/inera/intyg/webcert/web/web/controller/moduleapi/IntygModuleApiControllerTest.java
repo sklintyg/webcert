@@ -88,7 +88,7 @@ public class IntygModuleApiControllerTest {
         utlatande.setTyp(CERTIFICATE_TYPE);
 
         List<Status> status = new ArrayList<Status>();
-        status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
     }
 

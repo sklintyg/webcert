@@ -485,22 +485,22 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     private IntygContentHolder getIntygContentHolder() {
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
-        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
     }
 
     private IntygContentHolder getUnsentIntygContentHolder() {
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
-        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
     }
 
     private IntygContentHolder getRevokedIntygContentHolder() {
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
-        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
-        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED, "HV", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, true);
     }
 

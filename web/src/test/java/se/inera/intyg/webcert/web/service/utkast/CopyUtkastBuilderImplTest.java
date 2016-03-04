@@ -273,7 +273,7 @@ public class CopyUtkastBuilderImplTest {
 
     private IntygContentHolder createIntygContentHolder() throws Exception {
         List<Status> status = new ArrayList<>();
-        status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
