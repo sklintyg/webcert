@@ -68,7 +68,7 @@
 module.exports = {
     checkValues: function(intyg, callback) {
         logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
-        logger.warn('intyg med typ: ' + intyg.typ + 'skapa kontroll av data EJ KLAR!!');
+        logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
         callback();
         // checkUtlatandeDatum('Min undersökning av patienten.', callback);
         // checkUtlatandeDatum('Journaluppgifter från den', callback);
