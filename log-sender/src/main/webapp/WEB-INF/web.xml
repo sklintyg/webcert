@@ -67,7 +67,7 @@
   </resource-ref>
 
   <resource-ref>
-    <res-ref-name>jms/AggregatedQueue</res-ref-name>
+    <res-ref-name>jms/AggregatedLogSenderQueue</res-ref-name>
     <res-type>javax.jms.Queue</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>

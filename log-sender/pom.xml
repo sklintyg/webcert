@@ -29,7 +29,7 @@
     <version>0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>log-sender-async</artifactId>
+  <artifactId>log-sender</artifactId>
   <packaging>war</packaging>
 
   <name>Webcert (Log Sender)</name>
@@ -235,7 +235,7 @@
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>
-              <value>dev</value>
+              <value>${system.mode}</value>
             </systemProperty>
             <systemProperty>
               <name>catalina.base</name>
