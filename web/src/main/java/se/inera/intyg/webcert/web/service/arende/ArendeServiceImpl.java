@@ -26,12 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -43,27 +45,36 @@ public class ArendeServiceImpl implements ArendeService {
     private ArendeRepository repo;
 
     @Autowired
-    private IntygService intygService;
+    private UtkastRepository utkastRepository;
 
     @Autowired
     private WebCertUserService webcertUserService;
 
+    @Autowired
+    private MonitoringLogService monitoringLog;
+
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
-        IntygMetaData intygMetaData = intygService.fetchIntygMetaData(arende.getIntygsId());
-        decorateArende(arende, intygMetaData);
+        Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
+        if (utkast == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "Certificate " + arende.getIntygsId() + " not found.");
+        } else if (utkast.getSignatur() == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Certificate " + arende.getIntygsId() + " not signed.");
+        }
+        decorateArende(arende, utkast);
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setTimestamp(LocalDateTime.now());
 
-        // TODO Validate! Katarina will create validation for intygstjansten in common which we can reuse in webcert
         // TODO LOG THIS
         return repo.save(arende);
     }
 
-    private void decorateArende(Arende arende, IntygMetaData intygMetaData) {
-        arende.setIntygTyp(intygMetaData.getIntygTyp());
-        arende.setSigneratAv(intygMetaData.getSigneratAv());
-        arende.setEnhet(intygMetaData.getEnhet());
+    private void decorateArende(Arende arende, Utkast utkast) {
+        arende.setIntygTyp(utkast.getIntygsTyp());
+        arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
+        arende.setEnhet(utkast.getEnhetsId());
     }
 
     @Override

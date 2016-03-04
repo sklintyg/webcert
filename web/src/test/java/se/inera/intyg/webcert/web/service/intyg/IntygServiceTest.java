@@ -21,25 +21,11 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamSource;
@@ -51,53 +37,32 @@ import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareRequestType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponseType;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl;
+import se.inera.intyg.webcert.web.service.intyg.converter.*;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.v1.*;
 
 /**
  * @author andreaskaltenbach
@@ -496,90 +461,6 @@ public class IntygServiceTest {
             verify(intygRepository, times(2)).findOne(CERTIFICATE_ID);
             verifyZeroInteractions(logservice);
             throw e;
-        }
-    }
-
-    @Test
-    public void testFetchIntygMetaData() {
-        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
-                buildIntygResponse(ResultCodeType.OK, null, true));
-
-        IntygMetaData intygMetaData = intygService.fetchIntygMetaData(CERTIFICATE_ID);
-        assertNotNull(intygMetaData);
-
-        ArgumentCaptor<GetMedicalCertificateForCareRequestType> captor = ArgumentCaptor.forClass(GetMedicalCertificateForCareRequestType.class);
-        verify(getMedicalCertificateForCareResponderInterface).getMedicalCertificateForCare(anyString(), captor.capture());
-
-        GetMedicalCertificateForCareRequestType request = captor.getValue();
-        assertNotNull(request);
-        assertEquals(CERTIFICATE_ID, request.getCertificateId());
-    }
-
-    @Test
-    public void testFetchIntygMetaDataInfo() {
-        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
-                buildIntygResponse(ResultCodeType.INFO, null, true));
-
-        IntygMetaData intygMetaData = intygService.fetchIntygMetaData(CERTIFICATE_ID);
-        assertNotNull(intygMetaData);
-
-        ArgumentCaptor<GetMedicalCertificateForCareRequestType> captor = ArgumentCaptor.forClass(GetMedicalCertificateForCareRequestType.class);
-        verify(getMedicalCertificateForCareResponderInterface).getMedicalCertificateForCare(anyString(), captor.capture());
-
-        GetMedicalCertificateForCareRequestType request = captor.getValue();
-        assertNotNull(request);
-        assertEquals(CERTIFICATE_ID, request.getCertificateId());
-    }
-
-    @Test
-    public void testFetchIntygMetaDataErrorRevoked() {
-        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
-                buildIntygResponse(ResultCodeType.ERROR, ErrorIdType.REVOKED, true));
-
-        try {
-            intygService.fetchIntygMetaData(CERTIFICATE_ID);
-            fail("Should throw exception");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED, e.getErrorCode());
-        }
-    }
-
-    @Test
-    public void testFetchIntygMetaDataError() {
-        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
-                buildIntygResponse(ResultCodeType.ERROR, ErrorIdType.APPLICATION_ERROR, true));
-
-        try {
-            intygService.fetchIntygMetaData(CERTIFICATE_ID);
-            fail("Should throw exception");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getErrorCode());
-        }
-    }
-
-    @Test
-    public void testFetchIntygMetaDataMissing() {
-        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
-                buildIntygResponse(ResultCodeType.OK, null, false));
-
-        try {
-            intygService.fetchIntygMetaData(CERTIFICATE_ID);
-            fail("Should throw exception");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
-        }
-    }
-
-    @Test
-    public void testFetchIntygMetaDataValidationError() {
-        when(getMedicalCertificateForCareResponderInterface.getMedicalCertificateForCare(anyString(), any())).thenReturn(
-                buildIntygResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR, true));
-
-        try {
-            intygService.fetchIntygMetaData(CERTIFICATE_ID);
-            fail("Should throw exception");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
         }
     }
 

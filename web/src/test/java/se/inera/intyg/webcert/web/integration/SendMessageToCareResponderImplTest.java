@@ -36,12 +36,9 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.SkickatAv;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.Part;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
@@ -80,12 +77,12 @@ public class SendMessageToCareResponderImplTest {
     }
 
     @Test
-    public void testSendRequestToServiceFailedRevoked() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED, ""));
+    public void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
+        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ""));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.REVOKED, response.getResult().getErrorId());
+        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
     }
 
     @Test

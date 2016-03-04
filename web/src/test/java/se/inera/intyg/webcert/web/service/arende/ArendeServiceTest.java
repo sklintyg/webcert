@@ -2,8 +2,11 @@ package se.inera.intyg.webcert.web.service.arende;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -15,12 +18,15 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -33,10 +39,13 @@ public class ArendeServiceTest {
     private ArendeRepository repo;
 
     @Mock
-    private IntygService intygService;
+    private UtkastRepository utkastRepository;
 
     @Mock
     private WebCertUserService webcertUserService;
+
+    @Mock
+    private MonitoringLogService monitoringLog;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -53,16 +62,19 @@ public class ArendeServiceTest {
 
     @Test
     public void testProcessIncomingMessage() throws WebCertServiceException {
+        final String intygId = "intygsid";
         final String intygTyp = "intygTyp";
         final String signeratAv = "signeratAv";
         final String enhet = "enhet";
         Arende arende = new Arende();
+        arende.setIntygsId(intygId);
         when(repo.save(any(Arende.class))).thenReturn(arende);
-        IntygMetaData intygMetaData = new IntygMetaData();
-        intygMetaData.setIntygTyp(intygTyp);
-        intygMetaData.setSigneratAv(signeratAv);
-        intygMetaData.setEnhet(enhet);
-        when(intygService.fetchIntygMetaData(anyString())).thenReturn(intygMetaData);
+        Utkast utkast = new Utkast();
+        utkast.setIntygsTyp(intygTyp);
+        utkast.setEnhetsId(enhet);
+        utkast.setSignatur(mock(Signatur.class));
+        when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
+        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
         Arende res = service.processIncomingMessage(arende);
         assertNotNull(res);
         assertEquals(FIXED_TIME_MILLIS, res.getTimestamp().toDateTime().getMillis());
@@ -70,6 +82,30 @@ public class ArendeServiceTest {
         assertEquals(intygTyp, res.getIntygTyp());
         assertEquals(signeratAv, res.getSigneratAv());
         assertEquals(enhet, res.getEnhet());
+
+        verify(utkastRepository).findOne(intygId);
+    }
+
+    @Test
+    public void testProcessIncomingMessageCertificateNotFound() {
+        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        try {
+            service.processIncomingMessage(new Arende());
+            fail("Should throw");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testProcessIncomingMessageCertificateNotSigned() {
+        when(utkastRepository.findOne(anyString())).thenReturn(new Utkast());
+        try {
+            service.processIncomingMessage(new Arende());
+            fail("Should throw");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+        }
     }
 
     @Test

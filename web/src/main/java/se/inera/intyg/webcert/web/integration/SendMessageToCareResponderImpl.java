@@ -26,12 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 public class SendMessageToCareResponderImpl implements SendMessageToCareResponderInterface {
     private static final Logger LOG = LoggerFactory.getLogger(SendMessageToCareResponderImpl.class);
@@ -52,10 +48,10 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
         } catch (WebCertServiceException e) {
             result.setResultCode(ResultCodeType.ERROR);
             switch (e.getErrorCode()) {
-            case CERTIFICATE_REVOKED:
-                result.setErrorId(ErrorIdType.REVOKED);
-                result.setResultText("Certificate revoked");
-                LOG.warn("Could not process incoming message to care. Certificate is revoked.");
+            case INVALID_STATE:
+                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+                result.setResultText("Certificate not signed");
+                LOG.warn("Could not process incoming message to care. Certificate not signed.");
                 break;
             case DATA_NOT_FOUND:
                 result.setErrorId(ErrorIdType.VALIDATION_ERROR);

@@ -19,10 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
@@ -36,9 +33,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareRequestType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponseType;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -53,32 +48,21 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.converter.IntygMetaDataConverter;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
+import se.inera.intyg.webcert.web.service.intyg.converter.*;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygMetaData;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.*;
 
 /**
  * @author andreaskaltenbach
@@ -149,37 +133,6 @@ public class IntygServiceImpl implements IntygService {
         monitoringService.logIntygRead(intygsId, intygsTyp);
 
         return intygsData;
-    }
-
-    @Override
-    public IntygMetaData fetchIntygMetaData(String intygsId) {
-        GetMedicalCertificateForCareRequestType request = new GetMedicalCertificateForCareRequestType();
-        request.setCertificateId(intygsId);
-
-        GetMedicalCertificateForCareResponseType response = getMedicalCertificateForCareResponderInterface.
-                getMedicalCertificateForCare(logicalAddress, request);
-
-        switch (response.getResult().getResultCode()) {
-        case INFO:
-        case OK:
-            return IntygMetaDataConverter.convert(response.getMeta()).orElseThrow(
-                    () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Metadata for certificate " + intygsId
-                            + " not found"));
-        default:
-        case ERROR:
-            ErrorIdType errorId = response.getResult().getErrorId();
-            String resultText = response.getResult().getResultText();
-            if (ErrorIdType.REVOKED.equals(errorId)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED, "Certificate " + intygsId + " revoked.");
-            } else if (ErrorIdType.VALIDATION_ERROR.equals(errorId)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Validation error occured when retrieving certificate "
-                        + intygsId + ", " + resultText);
-            } else {
-                LOG.error("Error of type {} occured when retrieving certificate '{}': {}", errorId, intygsId, resultText);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Error of type " + errorId
-                        + " occured when retrieving certificate " + intygsId + ", " + resultText);
-            }
-        }
     }
 
     @Override
