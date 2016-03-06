@@ -107,7 +107,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<Arende> getArende(String intygsId) {
-        List<Arende> arendeList = repo.findByIntygsReferensIntygsId(intygsId);
+        List<Arende> arendeList = repo.findByIntygsId(intygsId);
 
         List<Arende> resultList = new ArrayList<>();
         Iterator<Arende> iterator = arendeList.iterator();
