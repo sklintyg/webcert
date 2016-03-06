@@ -28,6 +28,15 @@ import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 public interface ArendeRepository extends JpaRepository<Arende, Long> {
+    
+    /**
+     * Should return a list of {@link Arende} entities in the repository related to the specified intygsId.
+     *
+     * @param intygsId
+     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
+     * an empty list.
+     */
+    List<Arende> findByIntygsReferensIntygsId(String intygsId);
 
     /**
      * List all unique signing doctors for the supplied units.
