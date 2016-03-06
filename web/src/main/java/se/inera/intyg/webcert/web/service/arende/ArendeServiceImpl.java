@@ -19,6 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
+import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
@@ -53,6 +59,11 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private MonitoringLogService monitoringLog;
 
+    @Autowired
+    private TransportToArende transportToArende;
+
+    private static final ArendeTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeTimeStampComparator();
+
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
         Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
@@ -68,6 +79,7 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setTimestamp(LocalDateTime.now());
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
+
         return repo.save(arende);
     }
 
@@ -91,5 +103,36 @@ public class ArendeServiceImpl implements ArendeService {
         List<String> unitIds = user.getIdsOfSelectedVardenhet();
 
         return repo.findByEnhet(unitIds);
+    }
+
+    @Override
+    public List<Arende> getArende(String intygsId) {
+        List<Arende> arendeList = repo.findByIntygsReferensIntygsId(intygsId);
+
+        List<Arende> resultList = new ArrayList<>();
+        Iterator<Arende> iterator = arendeList.iterator();
+        while (iterator.hasNext()) {
+            Arende arende = iterator.next();
+            Arende latestDraft = transportToArende.convert(arende);
+            resultList.add(latestDraft);
+        }
+        Collections.sort(resultList, ARENDE_TIMESTAMP_COMPARATOR);
+        return resultList;
+    }
+
+    public static class ArendeTimeStampComparator implements Comparator<Arende> {
+
+        @Override
+        public int compare(Arende f1, Arende f2) {
+            if (f1.getTimestamp() == null && f2.getTimestamp() == null) {
+                return 0;
+            } else if (f1.getTimestamp() == null) {
+                return -1;
+            } else if (f2.getTimestamp() == null) {
+                return 1;
+            } else {
+                return f2.getTimestamp().compareTo(f1.getTimestamp());
+            }
+        }
     }
 }
