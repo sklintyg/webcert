@@ -36,7 +36,7 @@ public interface ArendeRepository extends JpaRepository<Arende, Long> {
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
      * an empty list.
      */
-    List<Arende> findByIntygsReferensIntygsId(String intygsId);
+    List<Arende> findByIntygsId(String intygsId);
 
     /**
      * List all unique signing doctors for the supplied units.
