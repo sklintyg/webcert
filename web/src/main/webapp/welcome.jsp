@@ -369,6 +369,27 @@
                 "lakare" : true,
                 "forskrivarKod": "9100009",
                 "befattningsKod": "204090"
+            },
+
+            // NMT test-läkare
+            {
+                "fornamn": "Erik",
+                "efternamn": "Nilsson",
+                "hsaId": "TSTNMT2321000156-105H",
+                "enhetId": "TSTNMT2321000156-105F",
+                "lakare" : true,
+                "forskrivarKod": "9300005",
+                "befattningsKod": "204090"
+            },
+
+            // Vikarierande examinerad läkare som ska finnas i demo-miljö och därmed i test-HSA
+            {
+                "fornamn": "Susanne",
+                "efternamn": "Karlsson",
+                "hsaId": "TSTNMT2321000156-105J",
+                "enhetId": "TSTNMT2321000156-105F",
+                "lakare" : false,
+                "forskrivarKod": "9300005"
             }
         ];
 
@@ -455,7 +476,9 @@
                     {id:29, hsaId: 'TSTNMT2321000156-100B_TSTNMT2321000156-1039', env: 'demo', name: 'Louise Ericsson (Tandläkare / Vård och Behandling)'},
                     {id:30, hsaId: 'TSTNMT2321000156-100F_TSTNMT2321000156-1039', env: 'demo', name: 'Leonie Koehl (Läkare inom EU/ESS/Schweiz / Vård och Behandling)'},
                     {id:31, hsaId: 'TSTNMT2321000156-100G_TSTNMT2321000156-1039', env: 'demo', name: 'Bill Smith (Läkare utom EU/ESS/Schweiz / Vård och Behandling)'},
-                    {id:32, hsaId: 'TSTNMT2321000156-100H_TSTNMT2321000156-1039', env: 'demo', name: 'Martin Johansson (Vikarierande examinerad läkare / Vård och Behandling)'}
+                    {id:32, hsaId: 'TSTNMT2321000156-100H_TSTNMT2321000156-1039', env: 'demo', name: 'Martin Johansson (Vikarierande examinerad läkare / Vård och Behandling)'},
+                    {id:33, hsaId: 'TSTNMT2321000156-105H_TSTNMT2321000156-105F', env: 'demo', name: 'Erik Nilsson (NMT Läkare / Vård och Behandling)'},
+                    {id:34, hsaId: 'TSTNMT2321000156-105J_TSTNMT2321000156-105F', env: 'demo', name: 'Susanne Karlsson (NMT Administratör / Vård och Behandling)'}
                   ]
                 };
 

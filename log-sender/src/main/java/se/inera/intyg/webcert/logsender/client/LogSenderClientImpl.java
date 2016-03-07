@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.logsender.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
@@ -28,6 +30,7 @@ import se.riv.ehr.log.v1.LogType;
 
 import javax.xml.ws.WebServiceException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for sending a list of {@link LogType} over the {@link StoreLogResponderInterface}.
@@ -37,6 +40,8 @@ import java.util.List;
  * Created by eriklupander on 2016-02-29.
  */
 public class LogSenderClientImpl implements LogSenderClient {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LogSenderClientImpl.class);
 
     @Value("${loggtjanst.logicalAddress}")
     private String logicalAddress;
@@ -52,6 +57,12 @@ public class LogSenderClientImpl implements LogSenderClient {
 
         try {
             StoreLogResponseType response = storeLogClient.storeLog(logicalAddress, request);
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Successfully sent {} PDL log entries for ID's: {}", logEntries.size(), logEntries.stream()
+                        .map(LogType::getLogId)
+                        .collect(Collectors.joining(", ")));
+            }
             return response;
         } catch (WebServiceException e) {
             throw new LoggtjanstExecutionException(e);
