@@ -28,13 +28,13 @@ import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 public interface ArendeRepository extends JpaRepository<Arende, Long> {
-    
+
     /**
      * Should return a list of {@link Arende} entities in the repository related to the specified intygsId.
      *
      * @param intygsId
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
+     *         an empty list.
      */
     List<Arende> findByIntygsId(String intygsId);
 
@@ -48,10 +48,11 @@ public interface ArendeRepository extends JpaRepository<Arende, Long> {
 
     /**
      * List {@link Arende} entities in the repository with an enhet matching one of the
-     * supplied list of id's, that are not of status {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
+     * supplied list of id's, that are not of status
+     * {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
      *
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
+     *         an empty list.
      */
     @Query("SELECT a FROM Arende AS a WHERE a.enhet IN (:idList) AND a.status <> 'CLOSED'")
     List<Arende> findByEnhet(@Param("idList") List<String> enhetsIds);

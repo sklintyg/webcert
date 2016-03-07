@@ -35,12 +35,12 @@ public class MedicinsktArende {
 
     @Column(name = "TEXT")
     private String text;
-    
+
     @Transient
     private int position;
-    
+
     @Transient
-    private String frageIdHandle;
+    private String jsonPropertyHandle;
 
     public String getFrageId() {
         return frageId;
@@ -120,11 +120,11 @@ public class MedicinsktArende {
         this.position = position;
     }
 
-    public String getFrageIdHandle() {
-        return frageIdHandle;
+    public String getJsonPropertyHandle() {
+        return jsonPropertyHandle;
     }
 
     public void setJsonPropertyHandle(String frageIdHandle) {
-        this.frageIdHandle = frageIdHandle;
+        this.jsonPropertyHandle = frageIdHandle;
     }
 }

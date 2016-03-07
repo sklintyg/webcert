@@ -109,12 +109,19 @@ public class ArendeServiceImpl implements ArendeService {
     public List<Arende> getArende(String intygsId) {
         List<Arende> arendeList = repo.findByIntygsId(intygsId);
 
+        WebCertUser user = webcertUserService.getUser();
+        List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
+
         List<Arende> resultList = new ArrayList<>();
         Iterator<Arende> iterator = arendeList.iterator();
         while (iterator.hasNext()) {
+
             Arende arende = iterator.next();
-            Arende latestDraft = transportToArende.convert(arende);
-            resultList.add(latestDraft);
+            if (arende.getEnhet() != null && hsaEnhetIds.contains(arende.getEnhet())) {
+                Arende latestDraft = transportToArende.convert(arende);
+                resultList.add(latestDraft);
+            }
+
         }
         Collections.sort(resultList, ARENDE_TIMESTAMP_COMPARATOR);
         return resultList;
