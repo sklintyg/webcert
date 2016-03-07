@@ -382,7 +382,6 @@
                 "befattningsKod": "204090"
             },
 
-            // Vikarierande examinerad läkare som ska finnas i demo-miljö och därmed i test-HSA
             {
                 "fornamn": "Susanne",
                 "efternamn": "Karlsson",
