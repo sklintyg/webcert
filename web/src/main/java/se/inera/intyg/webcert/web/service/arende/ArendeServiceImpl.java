@@ -109,6 +109,7 @@ public class ArendeServiceImpl implements ArendeService {
     public List<Arende> getArende(String intygsId) {
         List<Arende> arendeList = repo.findByIntygsId(intygsId);
 
+
         WebCertUser user = webcertUserService.getUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
@@ -121,7 +122,6 @@ public class ArendeServiceImpl implements ArendeService {
                 Arende latestDraft = transportToArende.convert(arende);
                 resultList.add(latestDraft);
             }
-
         }
         Collections.sort(resultList, ARENDE_TIMESTAMP_COMPARATOR);
         return resultList;

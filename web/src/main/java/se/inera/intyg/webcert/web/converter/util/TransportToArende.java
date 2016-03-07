@@ -64,6 +64,7 @@ public class TransportToArende {
             try {
                 arende.setJsonPropertyHandle(getJsonPropertyHandle(arende, intygsId, intygsTyp));
                 arende.setPosition(Math.max((arende.getInstans() - 1), 0));
+
             } catch (ModuleNotFoundException | ModuleException e) {
                 LOG.error("Module not found for certificate of type {}", intygsTyp);
                 Throwables.propagate(e);
