@@ -17,19 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.intyg.repository;
+package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -43,10 +37,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.persistence.intyg.repository.util.UtkastTestUtil;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -188,6 +181,18 @@ public class UtkastRepositoryTest {
         Utkast intyg3 = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.DRAFT_COMPLETE));
         UtkastStatus status = utkastRepository.getIntygsStatus(intyg3.getIntygsId());
         assertThat(status, is(UtkastStatus.DRAFT_COMPLETE));
+    }
+
+    @Test
+    public void testSaveRelation() {
+        final String relationIntygsId = "relationIntygsId";
+        final RelationKod relationKod = RelationKod.FRLANG;
+        Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, relationKod));
+        Utkast read = utkastRepository.findOne(saved.getIntygsId());
+
+        assertEquals(UtkastTestUtil.ENHET_1_ID, read.getEnhetsId());
+        assertEquals(relationIntygsId, read.getRelationIntygsId());
+        assertEquals(relationKod, read.getRelationKod());
     }
 
 }
