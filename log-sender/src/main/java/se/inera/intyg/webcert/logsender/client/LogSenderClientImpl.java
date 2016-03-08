@@ -26,7 +26,9 @@ import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
+import se.riv.ehr.log.store.v1.ResultType;
 import se.riv.ehr.log.v1.LogType;
+import se.riv.ehr.log.v1.ResultCodeType;
 
 import javax.xml.ws.WebServiceException;
 import java.util.List;
@@ -51,6 +53,15 @@ public class LogSenderClientImpl implements LogSenderClient {
 
     @Override
     public StoreLogResponseType sendLogMessage(List<LogType> logEntries) {
+
+        if (logEntries == null || logEntries.size() == 0) {
+            StoreLogResponseType response = new StoreLogResponseType();
+            ResultType resultType = new ResultType();
+            resultType.setResultCode(ResultCodeType.INFO);
+            resultType.setResultText("No log entries supplied, not invoking storeLog");
+            response.setResultType(resultType);
+            return response;
+        }
 
         StoreLogRequestType request = new StoreLogRequestType();
         request.getLog().addAll(logEntries);
