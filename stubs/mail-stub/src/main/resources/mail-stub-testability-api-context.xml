@@ -38,6 +38,8 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
+  <bean class="se.inera.intyg.webcert.mailstub.MailStore"/>
+
   <bean id="mailStubRestApi" class="se.inera.intyg.webcert.mailstub.MailStubRestApi" />
 
 </beans>
