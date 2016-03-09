@@ -96,7 +96,8 @@ public class SendMessageToCareResponderImplTest {
 
     private SendMessageToCareType createNewRequest() {
         SendMessageToCareType res = new SendMessageToCareType();
-        res.setAmne(ArendeAmne.KONTKT.toString());
+        res.setAmne(new Amneskod());
+        res.getAmne().setCode(ArendeAmne.KONTKT.toString());
         res.setIntygsId(createIntygsId(DEFAULT_INTYG_ID));
         res.setMeddelandeId(DEFAULT_MEDDELANDE_ID);
         res.setPatientPersonId(createPersonId(DEFAULT_PATIENT_ID));

@@ -70,15 +70,15 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     }
 
     private se.inera.intyg.webcert.web.service.dto.Patient createPatient(
-            se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Patient patientType) {
+            se.riv.clinicalprocess.healthcond.certificate.v2.Patient patientType) {
         se.inera.intyg.webcert.web.service.dto.Patient patient = new se.inera.intyg.webcert.web.service.dto.Patient();
         patient.setPersonnummer(new Personnummer(patientType.getPersonId().getExtension()));
         patient.setFornamn(patientType.getFornamn());
         patient.setMellannamn(patientType.getMellannamn());
         patient.setEfternamn(patientType.getEfternamn());
-        patient.setPostadress("REMOVE_BEFORE_PROD");
-        patient.setPostnummer("REMOVE_BEFORE_PROD");
-        patient.setPostort("REMOVE_BEFORE_PROD");
+        patient.setPostadress(patientType.getPostadress());
+        patient.setPostnummer(patientType.getPostnummer());
+        patient.setPostort(patientType.getPostort());
         return patient;
     }
 
