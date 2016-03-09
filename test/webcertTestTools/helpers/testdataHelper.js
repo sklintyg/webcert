@@ -49,5 +49,9 @@ module.exports = {
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         }
         return text;
+    },
+    dateFormat: function(date) {
+        var d = date.toISOString().slice(0, 10).replace(/-/g, '-');
+        return d;
     }
 };

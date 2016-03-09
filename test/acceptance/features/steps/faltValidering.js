@@ -32,7 +32,7 @@ module.exports = function() {
             return elm.getText();
         });
         alertTexts.then(function(result) {
-            expect(result.join()).to.have.string(arg1); 
+            expect(result.join()).to.have.string(arg1);
 
         });
         callback();

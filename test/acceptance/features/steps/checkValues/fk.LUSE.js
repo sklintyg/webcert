@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger */
+/* globals logger, pages, Promise */
 
 'use strict';
 
 // var helpers = require('./helpers.js');
-// var lusePage = pages.intyg.luse.intyg;
+var lusePage = pages.intyg.luse.intyg;
 
 // function checkUtlatandeDatum(utlatandeText, cb) {
 //     if (utlatandeText !== 'Annat underlag för utlåtandet') {
@@ -65,17 +65,81 @@
 //         cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
 //     });
 // }
+
+function ejAngivetIfNull(prop) {
+    if (prop) {
+        return prop;
+    }
+    return 'Ej angivet';
+}
+
+
+function checkBaseratPa(baseratPa) {
+    var minUndersokningText = ejAngivetIfNull((baseratPa.minUndersokningAvPatienten));
+    var journaluppgifterText = ejAngivetIfNull((baseratPa.journaluppgifter));
+    var anhorigBeskrivningText = ejAngivetIfNull((baseratPa.anhorigsBeskrivning));
+    var annatText = ejAngivetIfNull((baseratPa.annat));
+
+    return Promise.all([
+        expect(lusePage.baseratPa.minUndersokningAvPatienten.getText(), 'topic [answer]').to.eventually.equal(minUndersokningText),
+        expect(lusePage.baseratPa.journaluppgifter.getText()).to.eventually.equal(journaluppgifterText),
+        expect(lusePage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(anhorigBeskrivningText),
+        expect(lusePage.baseratPa.annat.getText()).to.eventually.equal(annatText)
+    ]);
+}
+
+// function checkAndraMedicinskaUtredningar(baseratPa) {
+//     var minUndersokningText = ejAngivetIfNull((baseratPa.minUndersokningAvPatienten));
+//     var journaluppgifterText = ejAngivetIfNull((baseratPa.journaluppgifter));
+//     var anhorigBeskrivningText = ejAngivetIfNull((baseratPa.anhorigsBeskrivning));
+//     var annatText = ejAngivetIfNull((baseratPa.annat));
+
+//     return Promise.all([
+//         expect(lusePage.baseratPa.minUndersokningAvPatienten.getText(), 'topic [answer]').to.eventually.equal(minUndersokningText),
+//         expect(lusePage.baseratPa.journaluppgifter.getText()).to.eventually.equal(journaluppgifterText),
+//         expect(lusePage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(anhorigBeskrivningText),
+//         expect(lusePage.baseratPa.annat.getText()).to.eventually.equal(annatText)
+//     ]);
+// }
+
 module.exports = {
     checkValues: function(intyg, callback) {
         logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
-        logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
-        callback();
-        // checkUtlatandeDatum('Min undersökning av patienten.', callback);
-        // checkUtlatandeDatum('Journaluppgifter från den', callback);
-        // checkUtlatandeDatum('Anhörigs beskrivning av patienten', callback);
-        // checkUtlatandeDatum('Annat', callback);
-        // checkUtlatandeDatum('Annat underlag för utlåtandet', callback);
-        // checkUtlatandeDatum('Jag har känt patienten seden den', callback);
+        logger.warn('intyg med typ: ' + intyg.typ + ' saknar vissa funktioner för kontroll av data');
+
+        Promise.all([
+
+            //Baserat på
+            checkBaseratPa(intyg.baseratPa)
+            .then(function(value) {
+                logger.info('OK - Baseras på');
+            }, function(reason) {
+                return Promise.reject('FEL, Baseras på: ' + reason);
+            })
+
+            // checkAndraMedicinskaUtredningar(intyg.baseratPa)
+            // .then(function(value) {
+            //     logger.info('OK - Baseras på');
+            // }, function(reason) {
+            //     return Promise.reject('FEL, Baseras på: ' + reason);
+            // })
+            ])
+            .then(function(value) {
+                logger.info('Alla kontroller utförda:' + value);
+                callback();
+            }, function(reason) {
+                callback(reason);
+            });
+
+
+
+
+        // checkUtlatandeDatum('Min undersökning av patienten.', cb);
+        // checkUtlatandeDatum('Journaluppgifter från den', cb);
+        // checkUtlatandeDatum('Anhörigs beskrivning av patienten', cb);
+        // checkUtlatandeDatum('Annat', cb);
+        // checkUtlatandeDatum('Annat underlag för utlåtandet', cb);
+        // checkUtlatandeDatum('Jag har känt patienten seden den', cb);
 
         // checkAndraMedUtrUnd('Nej', callback);
 

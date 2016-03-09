@@ -23,15 +23,26 @@ var testdataHelper = require('./../helpers/testdataHelper.js');
 var fkValues = require('./testvalues.js').fk;
 var shuffle = testdataHelper.shuffle;
 
+
+var today = new Date();
+
+
 module.exports = {
     getRandom: function(intygsID) {
         return {
             id: intygsID,
             typ: 'Läkarutlåtande för sjukersättning',
+            baseratPa: {
+                minUndersokningAvPatienten: today,
+                journaluppgifter: today,
+                anhorigsBeskrivning: today,
+                annat: today,
+                personligKannedom: today
+            },
+            andraMedicinskaUtredningar:fkValues.getRandomMedicinskaUtredningar(),
             diagnos: {
                 kod: shuffle(fkValues.ICD10)[0],
                 bakgrund: testdataHelper.randomTextString()
-                    // bakgrund: 'En slumpmässig bakgrund'
             },
             annanUnderlag: testdataHelper.randomTrueFalse(),
             sjukdomsForlopp: testdataHelper.randomTextString(),
@@ -49,9 +60,9 @@ module.exports = {
             },
             aktivitetsbegransning: testdataHelper.randomTextString(),
             // aktivitetsbegransning: 'Total',
-            avslutadBehandling: shuffle(fkValues.mediciner)[0],
-            pagaendeBehandling: shuffle(fkValues.mediciner)[0],
-            planeradBehandling: shuffle(fkValues.mediciner)[0],
+            avslutadBehandling: shuffle(fkValues.medicinskaBehandlingar)[0],
+            pagaendeBehandling: shuffle(fkValues.medicinskaBehandlingar)[0],
+            planeradBehandling: shuffle(fkValues.medicinskaBehandlingar)[0],
             substansintag: shuffle(fkValues.mediciner)[0],
             medicinskaForutsattningarForArbete: testdataHelper.randomTextString(),
             // medicinskaForutsattningarForArbete: 'Inte speciellt',

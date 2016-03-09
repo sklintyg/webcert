@@ -57,11 +57,6 @@ function randomPrognosFortydligande(val) {
     }
 }
 
-function dateFormat(date) {
-    var d = date.toISOString().slice(0, 10).replace(/-/g, '-');
-    return d;
-}
-
 var random = {
     baserasPa: function(smittskydd) {
         if (smittskydd) {
@@ -146,20 +141,20 @@ var random = {
 
         return {
             nedsattMed25: {
-                from: dateFormat(today),
-                tom: dateFormat(todayPlus5Days)
+                from: testdataHelper.dateFormat(today),
+                tom: testdataHelper.dateFormat(todayPlus5Days)
             },
             nedsattMed50: {
-                from: dateFormat(todayPlus6Days),
-                tom: dateFormat(todayPlus10Days)
+                from: testdataHelper.dateFormat(todayPlus6Days),
+                tom: testdataHelper.dateFormat(todayPlus10Days)
             },
             nedsattMed75: {
-                from: dateFormat(todayPlus11Days),
-                tom: dateFormat(todayPlus20Days)
+                from: testdataHelper.dateFormat(todayPlus11Days),
+                tom: testdataHelper.dateFormat(todayPlus20Days)
             },
             nedsattMed100: {
-                from: dateFormat(todayPlus21Days),
-                tom: dateFormat(todayPlus30Days)
+                from: testdataHelper.dateFormat(todayPlus21Days),
+                tom: testdataHelper.dateFormat(todayPlus30Days)
             }
         };
     },

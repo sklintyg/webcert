@@ -21,14 +21,14 @@
 
 'use strict';
 
-var BaseIntyg = require('./base.intyg.page.js');
+var BaseSmiIntygPage = require('./smi.base.intyg.page.js');
 
-var LuseIntyg = BaseIntyg._extend({
+var LuseIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
 
-        this.diagnoseCode = element(by.id('diagnoseCode'));
-        this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
+        // this.diagnoseCode = element(by.id('diagnoseCode'));
+        // this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
     },
 
     get: function get(intygId) {

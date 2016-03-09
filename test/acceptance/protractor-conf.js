@@ -27,7 +27,7 @@ var winston = require('winston');
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
     allScriptsTimeout: 50000,
-    getPageTimeout:20000,
+    getPageTimeout: 20000,
     seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
 
@@ -60,6 +60,7 @@ exports.config = {
         global.chai.use(global.chaiAsPromised);
 
         global.expect = global.chai.expect;
+        global.assert = global.chai.assert;
         global.should = global.chai.should();
 
         var wcTestTools = require('webcert-testtools');
@@ -79,7 +80,7 @@ exports.config = {
         global.logger = new(winston.Logger)({
             transports: [
                 new(winston.transports.Console)({
-                    colorize:true,
+                    colorize: true,
                     timestamp: formatLocalDate,
                     formatter: function(options) {
                         // Return string will be passed to logger.
@@ -108,12 +109,5 @@ function formatLocalDate() {
             var norm = Math.abs(Math.floor(num));
             return (norm < 10 ? '0' : '') + norm;
         };
-    return now.getFullYear() 
-        + '-' + pad(now.getMonth()+1)
-        + '-' + pad(now.getDate())
-        + 'T' + pad(now.getHours())
-        + ':' + pad(now.getMinutes()) 
-        + ':' + pad(now.getSeconds()) 
-        + dif + pad(tzo / 60) 
-        + ':' + pad(tzo % 60);
+    return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) + dif + pad(tzo / 60) + ':' + pad(tzo % 60);
 }
