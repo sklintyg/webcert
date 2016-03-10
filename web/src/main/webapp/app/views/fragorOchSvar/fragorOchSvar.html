@@ -157,7 +157,7 @@
                   <tr ng-repeat="qa in widgetState.currentList">
                     <td>
                       <button type="button" class="btn btn-info" title="Visar intyget och fråga-svar."
-                              ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa
+                              ng-click="openIntyg(qa.intygId, qa.intygTyp)" id="showqaBtn-{{qa.meddelandeId}}">Visa
                       </button>
                     </td>
                     <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
@@ -177,13 +177,11 @@
                                                 src="/img/ajax-loader-kit-16x16.gif"></span>
                     </td>
                     <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
-                    <td><span message key="qa.fragestallare.{{qa.frageStallare}}"></span></td>
-                    <td id="patientId-{{qa.internReferens}}" class="unbreakable">{{qa.intygsReferens.patientId}}</td>
-                    <td>{{qa.vardperson.namn}}</td>
-                    <td class="unbreakable table-qa-last">{{qa.senasteHandelseDatum |
-                      date:'shortDate'}}
+                    <td><span message key="qa.fragestallare.{{qa.fragestallare}}"></span></td>
+                    <td id="patientId-{{qa.meddelandeId}}" class="unbreakable">{{qa.patientId}}</td>
+                    <td>{{qa.signeratAv}}</td>
+                    <td class="unbreakable table-qa-last">{{qa.receivedDate | date:'shortDate'}}
                     </td>
-                    <!--td class="unbreakable table-qa-last">{{qa.sistaDatumForSvar}}</td-->
                 </table>
               </div>
               <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar

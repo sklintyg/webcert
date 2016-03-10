@@ -33,6 +33,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.TypAvIntyg;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Patient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateValidatorImplTest {

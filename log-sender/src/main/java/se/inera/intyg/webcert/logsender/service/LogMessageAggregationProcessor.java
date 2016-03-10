@@ -69,10 +69,13 @@ public class LogMessageAggregationProcessor {
         for (Exchange oneExchange : grouped) {
 
             // The JSON parsing here is actually unnecessary, it's just to make sure the received JSON is parsable.
-            // We should just pass the String body onto the list and pass it on.
+            // We could just pass the String body onto the list and pass it on.
             String body = (String) oneExchange.getIn().getBody();
-            PdlLogMessage pdlLogMessage = objectMapper.readValue(body, PdlLogMessage.class);
-            logMessageList.add(objectMapper.writeValueAsString(pdlLogMessage));
+            if (body != null) {
+                PdlLogMessage pdlLogMessage = objectMapper.readValue(body, PdlLogMessage.class);
+                logMessageList.add(objectMapper.writeValueAsString(pdlLogMessage));
+            }
+
         }
 
         return logMessageList;

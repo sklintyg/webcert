@@ -730,4 +730,19 @@
 
   </changeSet>
 
+  <changeSet id="27" author="mn">
+
+    <addColumn tableName="INTYG">
+      <column name="RELATION_INTYG_ID" type="varchar(255)" />
+      <column name="RELATION_KOD" type="varchar(32)" />
+    </addColumn>
+
+    <createIndex indexName="IDX_RELATION_KOD_INTYG_ID"
+      tableName="INTYG" unique="false">
+      <column name="RELATION_INTYG_ID" />
+      <column name="RELATION_KOD" />
+    </createIndex>
+
+  </changeSet>
+
 </databaseChangeLog>

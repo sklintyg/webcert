@@ -50,9 +50,11 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 import se.riv.infrastructure.directory.v1.CommissionType;
 
 @RunWith(MockitoJUnitRunner.class)
