@@ -37,7 +37,7 @@ public final class ArendeMetaDataConverter {
         res.setIntygTyp(fragaSvar.getIntygsReferens().getIntygsTyp());
         res.setMeddelandeId(Long.toString(fragaSvar.getInternReferens()));
         res.setReceivedDate(fragaSvar.getSenasteHandelseDatum());
-        res.setPatientId(fragaSvar.getIntygsReferens().getPatientNamn());
+        res.setPatientId(fragaSvar.getIntygsReferens().getPatientId().getPersonnummer());
         res.setSigneratAv(fragaSvar.getVardperson().getNamn());
         res.setStatus(fragaSvar.getStatus());
         res.setVidarebefordrad(fragaSvar.getVidarebefordrad());
