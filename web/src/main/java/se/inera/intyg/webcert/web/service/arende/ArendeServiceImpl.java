@@ -119,7 +119,7 @@ public class ArendeServiceImpl implements ArendeService {
 
             Arende arende = iterator.next();
             if (arende.getEnhet() != null && hsaEnhetIds.contains(arende.getEnhet())) {
-                Arende latestDraft = transportToArende.convert(arende);
+                Arende latestDraft = transportToArende.decorate(arende);
                 resultList.add(latestDraft);
             }
         }

@@ -54,16 +54,16 @@ public class TransportToArende {
     @Autowired
     private IntygServiceImpl intygService;
 
-    public Arende convert(Arende arende) {
-        convertToMedicinsktArende(arende.getKomplettering(), arende.getIntygsId(), arende.getIntygTyp());
+    public Arende decorate(Arende arende) {
+        decorateMedicinsktArende(arende.getKomplettering(), arende.getIntygsId(), arende.getIntygTyp());
         return arende;
     }
 
-    private List<MedicinsktArende> convertToMedicinsktArende(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
+    private List<MedicinsktArende> decorateMedicinsktArende(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
         for (MedicinsktArende arende : medicinskaArenden) {
             try {
                 arende.setJsonPropertyHandle(getJsonPropertyHandle(arende, intygsId, intygsTyp));
-                arende.setPosition(Math.max((arende.getInstans() - 1), 0));
+                arende.setPosition(getListPositionForInstanceId(arende));
 
             } catch (ModuleNotFoundException | ModuleException e) {
                 LOG.error("Module not found for certificate of type {}", intygsTyp);
@@ -102,16 +102,13 @@ public class TransportToArende {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private String calculateFrageIdHandleForGrundForMU(MedicinsktArende arende, String intygsTyp, Utlatande utlatande, ModuleApi moduleApi) {
-        Map<String, Object> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande);
+        Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande);
 
-        Object parameters = arendeParameters.get(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1);
-        if (parameters != null && parameters instanceof List<?>) {
+        List<String> filledPositions = arendeParameters.get(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1);
+        if (filledPositions != null) {
             try {
-                List<String> filledPositions = (List<String>) parameters;
-                int instanceId = (arende.getInstans() - 1);
-                return filledPositions.get(instanceId);
+                return filledPositions.get(getListPositionForInstanceId(arende));
             } catch (ClassCastException e) {
                 LOG.error("List does not contain string json properties as expected.");
                 Throwables.propagate(e);
@@ -122,6 +119,12 @@ public class TransportToArende {
             }
         }
         throw new IllegalArgumentException("The supplied Arende information for conversion to json parameters for Fraga1 must be a list of Strings.");
+    }
+
+    private int getListPositionForInstanceId(MedicinsktArende arende) {
+        Integer instanceId = arende.getInstans();
+        int result = (instanceId != null) ? instanceId : 0;
+        return Math.max(result - 1, 0);
     }
 
 }

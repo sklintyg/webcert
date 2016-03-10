@@ -153,7 +153,7 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             }
 
             @Override
-            public Map<String, Object> getModuleSpecificArendeParameters(Utlatande utlatande) {
+            public Map<String, List<String>> getModuleSpecificArendeParameters(Utlatande utlatande) {
                 throw new UnsupportedOperationException();
             }
 

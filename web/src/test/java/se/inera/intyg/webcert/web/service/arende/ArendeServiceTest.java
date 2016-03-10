@@ -163,9 +163,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arendeList.add(buildArende(3L, JANUARY, JANUARY));
 
         when(repo.findByIntygsId("intyg-1")).thenReturn(new ArrayList<>(arendeList));
-        when(transportToArende.convert(arendeList.get(0))).thenReturn(arendeList.get(0));
-        when(transportToArende.convert(arendeList.get(1))).thenReturn(arendeList.get(1));
-        when(transportToArende.convert(arendeList.get(2))).thenReturn(arendeList.get(2));
+        when(transportToArende.decorate(arendeList.get(0))).thenReturn(arendeList.get(0));
+        when(transportToArende.decorate(arendeList.get(1))).thenReturn(arendeList.get(1));
+        when(transportToArende.decorate(arendeList.get(2))).thenReturn(arendeList.get(2));
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 

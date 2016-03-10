@@ -106,7 +106,7 @@ public class TransportToArendeTest {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(intygService.fetchIntygData(any(String.class), any(String.class))).thenReturn(content);
 
-        converter.convert(arende);
+        converter.decorate(arende);
     }
 
     private SjukpenningUtokadUtlatande buildSjukpenningUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
