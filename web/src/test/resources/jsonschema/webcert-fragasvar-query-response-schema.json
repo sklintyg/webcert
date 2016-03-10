@@ -15,13 +15,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "internReferens": {
-            "type": "integer"
-          },
-          "externReferens": {
+          "meddelandeId": {
             "type": "string"
           },
-          "frageStallare": {
+          "fragestallare": {
             "type": "string"
           },
           "amne": {
@@ -36,121 +33,23 @@
               "OVRIGT"
             ]
           },
-          "frageText": {
+          "intygId": {
             "type": "string"
           },
-          "frageSigneringsDatum": {
+          "intygTyp": {
             "type": "string"
           },
-          "frageSkickadDatum": {
+          "patientId": {
             "type": "string"
           },
-          "senasteHandelse": {
+          "signeratAv": {
             "type": "string"
           },
-          "vardAktorHsaId": {
+          "enhetsnamn": {
             "type": "string"
           },
-          "vardAktorNamn": {
+          "vardgivarnamn": {
             "type": "string"
-          },
-          "externaKontakter": {
-            "type": "array",
-            "minItems": 0,
-            "uniqueItems": false,
-            "additionalItems": true,
-            "items": {}
-          },
-          "intygsReferens": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "intygsId": {
-                "type": "string"
-              },
-              "intygsTyp": {
-                "type": "string"
-              },
-              "patientId": {
-                "type": "string"
-              },
-              "patientNamn": {
-                "type": "string"
-              },
-              "signeringsDatum": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "intygsId",
-              "intygsTyp",
-              "patientId",
-              "patientNamn",
-              "signeringsDatum"
-            ]
-          },
-          "kompletteringar": {
-            "type": "array",
-            "minItems": 0,
-            "uniqueItems": false,
-            "additionalItems": true,
-            "items": {}
-          },
-          "vardperson": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "hsaId": {
-                "type": "string"
-              },
-              "namn": {
-                "type": "string"
-              },
-              "forskrivarKod": {
-                "type": "string"
-              },
-              "enhetsId": {
-                "type": "string"
-              },
-              "arbetsplatsKod": {
-                "type": "string"
-              },
-              "enhetsnamn": {
-                "type": "string"
-              },
-              "postadress": {
-                "type": "string"
-              },
-              "postnummer": {
-                "type": "string"
-              },
-              "postort": {
-                "type": "string"
-              },
-              "telefonnummer": {
-                "type": "string"
-              },
-              "vardgivarId": {
-                "type": "string"
-              },
-              "vardgivarnamn": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "hsaId",
-              "namn",
-              "forskrivarKod",
-              "enhetsId",
-              "arbetsplatsKod",
-              "enhetsnamn",
-              "postadress",
-              "postnummer",
-              "postort",
-              "telefonnummer",
-              "vardgivarId",
-              "vardgivarnamn"
-            ]
           },
           "status": {
             "type": "string",
@@ -164,22 +63,14 @@
           "vidarebefordrad": {
             "type": "boolean"
           },
-          "senasteHandelseDatum": {
+          "receivedDate": {
             "type": "string"
           }
         },
         "required": [
-          "internReferens",
-          "frageStallare",
-          "amne",
-          "frageText",
-          "frageSigneringsDatum",
-          "frageSkickadDatum",
-          "externaKontakter",
-          "intygsReferens",
-          "vardperson",
-          "vidarebefordrad",
-          "senasteHandelseDatum"
+            "meddelandeId",
+            "intygId",
+            "intygTyp"
         ]
       }
     }
