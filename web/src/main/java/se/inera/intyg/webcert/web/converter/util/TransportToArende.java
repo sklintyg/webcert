@@ -126,5 +126,4 @@ public class TransportToArende {
         int result = (instanceId != null) ? instanceId : 0;
         return Math.max(result - 1, 0);
     }
-
 }
