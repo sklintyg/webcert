@@ -5,5 +5,5 @@ CREDENTIALS_CFG="-Dcredentials.file={{ config_etc_folder }}/credentials.properti
 WEBCERT_CFG="-Dwebcert.config.folder={{ config_etc_folder }} -Dwebcert.config.file={{ config_etc_folder }}/webcert.properties -Dwebcert.logback.file={{ config_etc_folder }}/webcert-logback.xml"
 WEBCERT_RESOURCES="-Dwebcert.resources.folder={{ app_resources_folder }}"
 LOGSENDER_CFG="-Dlogsender.config.folder={{ config_etc_folder }} -Dlogsender.config.file={{ config_etc_folder }}/logsender.properties -Dlogsender.logback.file={{ config_etc_folder }}/logsender-logback.xml"
-AMQ_CFG="-Dorg.apache.activemq.SERIALIZABLE_PACKAGES=\"*\""
+AMQ_CFG="-Dorg.apache.activemq.SERIALIZABLE_PACKAGES=\\\"*\\\""
 export JAVA_OPTS="$JAVA_OPTS $ENV_CFG $JVM_CFG $DEBUG_CFG $CREDENTIALS_CFG $WEBCERT_CFG $WEBCERT_RESOURCES $LOGSENDER_CFG $AMQ_CFG"
