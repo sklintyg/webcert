@@ -45,7 +45,8 @@ var BaseSmiIntygPage = BaseUtkast._extend({
             minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
             anhorigsBeskrivning: element(by.id('anhorigsBeskrivningAvPatienten')),
-            annat: element(by.id('annatGrundForMUBeskrivning')),
+            annat: element(by.id('annatGrundForMU')),
+            annatBeskrivning: element(by.id('annatGrundForMUBeskrivning')),
             personligKannedom: element(by.id('kannedomOmPatient'))
         };
 

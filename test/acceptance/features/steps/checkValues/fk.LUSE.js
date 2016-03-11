@@ -79,12 +79,16 @@ function checkBaseratPa(baseratPa) {
     var journaluppgifterText = ejAngivetIfNull((baseratPa.journaluppgifter));
     var anhorigBeskrivningText = ejAngivetIfNull((baseratPa.anhorigsBeskrivning));
     var annatText = ejAngivetIfNull((baseratPa.annat));
+    var annatBeskrivningText = ejAngivetIfNull((baseratPa.annatBeskrivning));
+    var personligKannedomText = ejAngivetIfNull((baseratPa.personligKannedom));
 
     return Promise.all([
-        expect(lusePage.baseratPa.minUndersokningAvPatienten.getText(), 'topic [answer]').to.eventually.equal(minUndersokningText),
+        expect(lusePage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(minUndersokningText),
         expect(lusePage.baseratPa.journaluppgifter.getText()).to.eventually.equal(journaluppgifterText),
         expect(lusePage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(anhorigBeskrivningText),
-        expect(lusePage.baseratPa.annat.getText()).to.eventually.equal(annatText)
+        expect(lusePage.baseratPa.annat.getText()).to.eventually.equal(annatText),
+        expect(lusePage.baseratPa.annatBeskrivning.getText()).to.eventually.equal(annatBeskrivningText),
+        expect(lusePage.baseratPa.personligKannedom.getText()).to.eventually.equal(personligKannedomText)
     ]);
 }
 
@@ -108,21 +112,19 @@ module.exports = {
         logger.warn('intyg med typ: ' + intyg.typ + ' saknar vissa funktioner för kontroll av data');
 
         Promise.all([
-
-            //Baserat på
-            checkBaseratPa(intyg.baseratPa)
-            .then(function(value) {
-                logger.info('OK - Baseras på');
-            }, function(reason) {
-                return Promise.reject('FEL, Baseras på: ' + reason);
-            })
-
-            // checkAndraMedicinskaUtredningar(intyg.baseratPa)
-            // .then(function(value) {
-            //     logger.info('OK - Baseras på');
-            // }, function(reason) {
-            //     return Promise.reject('FEL, Baseras på: ' + reason);
-            // })
+                //Baserat på
+                checkBaseratPa(intyg.baseratPa)
+                .then(function(value) {
+                    logger.info('OK - Baseras på');
+                }, function(reason) {
+                    return Promise.reject('FEL, Baseras på: ' + reason);
+                })
+                // checkAndraMedicinskaUtredningar(intyg.baseratPa)
+                // .then(function(value) {
+                //     logger.info('OK - Baseras på');
+                // }, function(reason) {
+                //     return Promise.reject('FEL, Baseras på: ' + reason);
+                // })
             ])
             .then(function(value) {
                 logger.info('Alla kontroller utförda:' + value);
@@ -130,9 +132,6 @@ module.exports = {
             }, function(reason) {
                 callback(reason);
             });
-
-
-
 
         // checkUtlatandeDatum('Min undersökning av patienten.', cb);
         // checkUtlatandeDatum('Journaluppgifter från den', cb);

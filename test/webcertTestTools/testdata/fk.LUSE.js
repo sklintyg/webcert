@@ -24,7 +24,7 @@ var fkValues = require('./testvalues.js').fk;
 var shuffle = testdataHelper.shuffle;
 
 
-var today = new Date();
+var today = testdataHelper.dateFormat(new Date());
 
 
 module.exports = {
@@ -37,17 +37,21 @@ module.exports = {
                 journaluppgifter: today,
                 anhorigsBeskrivning: today,
                 annat: today,
+                annatBeskrivning: testdataHelper.randomTextString(),
                 personligKannedom: today
             },
-            andraMedicinskaUtredningar:fkValues.getRandomMedicinskaUtredningar(),
+            andraMedicinskaUtredningar: fkValues.getRandomMedicinskaUtredningar(),
             diagnos: {
-                kod: shuffle(fkValues.ICD10)[0],
-                bakgrund: testdataHelper.randomTextString()
+                diagnoser: [{
+                    kod: shuffle(fkValues.ICD10)[0],
+                    bakgrund: testdataHelper.randomTextString()
+                }],
+                narOchVarStalldesDiagnoserna: testdataHelper.randomTextString(),
+                nyBedomning: testdataHelper.randomTrueFalse()
             },
-            annanUnderlag: testdataHelper.randomTrueFalse(),
             sjukdomsForlopp: testdataHelper.randomTextString(),
             // sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
-            nyDiagnosBedom: testdataHelper.randomTrueFalse(),
+
             funktionsnedsattning: {
                 //funktionsnedsattningar
                 intellektuell: shuffle(fkValues.funktionsnedsattningar)[0],
@@ -59,22 +63,23 @@ module.exports = {
                 annan: shuffle(fkValues.funktionsnedsattningar)[0]
             },
             aktivitetsbegransning: testdataHelper.randomTextString(),
-            // aktivitetsbegransning: 'Total',
-            avslutadBehandling: shuffle(fkValues.medicinskaBehandlingar)[0],
-            pagaendeBehandling: shuffle(fkValues.medicinskaBehandlingar)[0],
-            planeradBehandling: shuffle(fkValues.medicinskaBehandlingar)[0],
-            substansintag: shuffle(fkValues.mediciner)[0],
-            medicinskaForutsattningarForArbete: testdataHelper.randomTextString(),
-            // medicinskaForutsattningarForArbete: 'Inte speciellt',
-            aktivitetsFormaga: testdataHelper.randomTextString(),
-            // aktivitetsFormaga: 'Liten',
+            medicinskbehandling: {
+                avslutad: shuffle(fkValues.medicinskaBehandlingar)[0],
+                pagaende: shuffle(fkValues.medicinskaBehandlingar)[0],
+                planerad: shuffle(fkValues.medicinskaBehandlingar)[0],
+                substansintag: shuffle(fkValues.mediciner)[0]
+            },
+            medicinskaForutsattningar: {
+                utecklasOverTid: testdataHelper.randomTextString(),
+                trotsBegransningar: testdataHelper.randomTextString()
+            },
             ovrigt: testdataHelper.randomTextString(),
-            // ovrigt: 'Inget',
-            kontaktMedFkNo: testdataHelper.randomTrueFalse(),
-            tillaggsfragor0svar: testdataHelper.randomTextString(),
-            // tillaggsfragor0svar: 'Answer',
-            tillaggsfragor1svar: testdataHelper.randomTextString()
-                // tillaggsfragor1svar: 'Question'
+            kontaktMedFk: testdataHelper.randomTrueFalse(),
+            tillaggsfragor: [{
+                svar: testdataHelper.randomTextString()
+            }, {
+                svar: testdataHelper.randomTextString()
+            }]
         };
     }
 };
