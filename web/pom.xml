@@ -27,7 +27,7 @@
   <parent>
     <groupId>se.inera.intyg.webcert</groupId>
     <artifactId>webcert</artifactId>
-    <version>4.1.0-b54</version>
+    <version>0-SNAPSHOT</version>
   </parent>
 
   <artifactId>webcert-web</artifactId>
