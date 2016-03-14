@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -27,13 +29,10 @@ import java.util.ArrayList;
 import org.apache.cxf.helpers.FileUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -55,6 +54,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 

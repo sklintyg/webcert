@@ -22,9 +22,8 @@ package se.inera.intyg.webcert.common.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
 
 /**
  * Exposes the SendCertificateToRecipient SOAP service.
@@ -33,6 +32,9 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetore
  */
 @Component
 public class SendCertificateServiceClientImpl implements SendCertificateServiceClient {
+
+    private static final String PERSON_ID_ROOT = "1.2.752.129.2.1.3.1";
+    private static final String MOTTAGARE_CODE_SYSTEM = "769bb12b-bd9f-4203-a5cd-fd14f2eb3b80";
 
     @Autowired
     private SendCertificateToRecipientResponderInterface sendService;
@@ -46,9 +48,18 @@ public class SendCertificateServiceClientImpl implements SendCertificateServiceC
         validateArgument(logicalAddress, "Cannot send certificate, argument 'logicalAddress' is null or empty.");
 
         SendCertificateToRecipientType request = new SendCertificateToRecipientType();
-        request.setUtlatandeId(intygsId);
-        request.setPersonId(personId);
-        request.setMottagareId(recipient);
+        PersonId patientPersonId = new PersonId();
+        patientPersonId.setRoot(PERSON_ID_ROOT);
+        patientPersonId.setExtension(personId);
+        request.setPatientPersonId(patientPersonId);
+        IntygId intygId = new IntygId();
+        intygId.setRoot("SE5565594230-B31");  // IT:s root since unit hsaId is not available
+        intygId.setExtension(intygsId);
+        request.setIntygsId(intygId);
+        Part part = new Part();
+        part.setCode(recipient);
+        part.setCodeSystem(MOTTAGARE_CODE_SYSTEM);
+        request.setMottagare(part);
 
         SendCertificateToRecipientResponseType response = sendService.sendCertificateToRecipient(logicalAddress, request);
 

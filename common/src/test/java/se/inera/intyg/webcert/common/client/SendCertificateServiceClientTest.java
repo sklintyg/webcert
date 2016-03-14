@@ -23,7 +23,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import javax.xml.ws.WebServiceException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,13 +36,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
-
-import javax.xml.ws.WebServiceException;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 
 /**
  * Created by eriklupander on 2015-06-04.

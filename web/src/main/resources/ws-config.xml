@@ -42,7 +42,7 @@
       address="${intygstjanst.listcertificatesforcare.endpoint.url}" />
 
     <jaxws:client id="sendCertificateClient"
-      serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface"
       address="${intygstjanst.sendcertificate.endpoint.url}" />
 
     <jaxws:client id="revokeCertificateClient"
