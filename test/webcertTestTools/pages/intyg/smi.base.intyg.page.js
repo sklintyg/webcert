@@ -50,10 +50,6 @@ var BaseSmiIntygPage = BaseUtkast._extend({
             personligKannedom: element(by.id('kannedomOmPatient'))
         };
 
-        this.andraMedicinskaUtredningar = {
-            field: element(by.cssContainingText('.intyg-field', 'andra medicinska utredningar'))
-        };
-
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
 
         this.diagnoser = {
@@ -65,31 +61,31 @@ var BaseSmiIntygPage = BaseUtkast._extend({
                 };
             },
             grund: element(by.id('diagnosgrund')),
-            nyBedomningDiagnosgrund: element(by.id('nyBedomningDiagnosgrund'))
+            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns det skäl att göra en ny bedömning av diagnosen/diagnoserna?'))
         };
 
         this.funktionsnedsattning = {
-            intellektuell: element('funktionsnedsattningIntellektuell'),
-            kommunikation: element('funktionsnedsattningKommunikation'),
-            uppmarksamhet: element('funktionsnedsattningKoncentration'),
-            annanPsykiskFunktion: element('funktionsnedsattningPsykisk'),
-            synHorselTal: element('funktionsnedsattningSynHorselTal'),
-            balans: element('funktionsnedsattningBalansKoordination'),
-            annanKropsligFunktion: element('funktionsnedsattningAnnan')
+            intellektuell: element(by.id('funktionsnedsattningIntellektuell')),
+            kommunikation: element(by.id('funktionsnedsattningKommunikation')),
+            uppmarksamhet: element(by.id('funktionsnedsattningKoncentration')),
+            annanPsykiskFunktion: element(by.id('funktionsnedsattningPsykisk')),
+            synHorselTal: element(by.id('funktionsnedsattningSynHorselTal')),
+            balans: element(by.id('funktionsnedsattningBalansKoordination')),
+            annanKropsligFunktion: element(by.id('funktionsnedsattningAnnan'))
         };
 
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
 
         this.behandling = {
-            avslutad: element('avslutadBehandling'),
-            pagaende: element('pagaendeBehandling'),
-            planerad: element('planeradBehandling'),
-            substansintag: element('substansintag')
+            avslutad: element(by.id('avslutadBehandling')),
+            pagaende: element(by.id('pagaendeBehandling')),
+            planerad: element(by.id('planeradBehandling')),
+            substansintag: element(by.id('substansintag'))
         };
 
         this.medicinskaForutsattningar = {
-            kanUtvecklasOverTid: element('medicinskaForutsattningarForArbete'),
-            kanGoraTrotsBegransning: element('aktivitetsFormaga')
+            kanUtvecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
+            kanGoraTrotsBegransning: element(by.id('aktivitetsFormaga'))
         };
 
         this.ovrigaUpplysningar = element(by.id('ovrigt'));

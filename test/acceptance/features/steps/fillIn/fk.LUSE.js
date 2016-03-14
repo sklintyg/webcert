@@ -26,6 +26,7 @@ module.exports = {
         logger.info('intyg.typ:' + intyg.typ);
         var promiseArr = [];
         console.log(intyg);
+
         browser.ignoreSynchronization = true;
 
         // //Baserat på
@@ -37,6 +38,7 @@ module.exports = {
             })
         );
 
+
         //Andra medicinska utredningar
         promiseArr.push(luseUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
             .then(function(value) {
@@ -45,7 +47,7 @@ module.exports = {
                 return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
             })
         );
-
+        
         //Sjukdomsförlopp
         promiseArr.push(luseUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
             .then(function(value) {
@@ -128,6 +130,7 @@ module.exports = {
         );
 
         Promise.all(promiseArr).then(function(value) {
+            browser.ignoreSynchronization = false;
             callback();
         }, function(reason) {
             callback(reason);

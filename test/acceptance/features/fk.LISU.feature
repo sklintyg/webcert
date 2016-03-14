@@ -1,5 +1,5 @@
 # language: sv
-@smoke @sjukpenning @lisu
+@smoke @sjukpenning @lisu @notReady
 Egenskap: Hantera Läkarintyg för sjukpenning utökat
 
 Bakgrund: Jag befinner mig på webcerts förstasida

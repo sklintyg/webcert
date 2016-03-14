@@ -28,9 +28,9 @@ module.exports = {
         browser.ignoreSynchronization = true;
 
         //Baserat på
-        lisuUtkastPage.baseratPa.typAvUnderlag.undersokning.sendKeys(protractor.Key.SPACE);
-        lisuUtkastPage.baseratPa.typAvUnderlag.journal.sendKeys(protractor.Key.SPACE);
-        lisuUtkastPage.baseratPa.typAvUnderlag.anhorig.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.baseratPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
+        //lisuUtkastPage.baseratPa.anhorigBeskrivning.checkbox.sendKeys(protractor.Key.SPACE);
 
         lisuUtkastPage.diagnoseCode.sendKeys(intyg.diagnos.kod);
         lisuUtkastPage.diagnoseCode.sendKeys(protractor.Key.TAB);

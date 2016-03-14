@@ -17,10 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element, by, Promise, protractor */
+/*globals element, by, Promise, protractor, browser */
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
+
+function sendKeysWithBackspaceFix(el, text) {
+    return el.sendKeys(text)
+        .then(function() {
+            return el.sendKeys(protractor.Key.BACK_SPACE);
+        })
+        .then(function() {
+            return el.sendKeys(text.substr(text.length - 1));
+        });
+}
+
 
 var BaseSmiUtkast = BaseUtkast._extend({
     init: function init() {
@@ -35,29 +46,6 @@ var BaseSmiUtkast = BaseUtkast._extend({
         this.ovrigt = element(by.id('ovrigt'));
         this.tillaggsfragor0svar = this.getTillaggsfraga(0);
         this.tillaggsfragor1svar = this.getTillaggsfraga(1);
-        this.baseratPa = {
-            minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
-                datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
-            },
-            journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_4')),
-                datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
-            },
-            anhorigBeskrivning: {
-                checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')),
-                datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
-            },
-            annat: {
-                beskrivning: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_7')),
-                checkbox: element(by.id('formly_1_date_annatGrundForMU_6')),
-                datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
-            },
-            kannedomOmPatient: {
-                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]')),
-                checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
-            }
-        };
 
         this.andraMedicinskaUtredningar = {
             finns: {
@@ -68,8 +56,8 @@ var BaseSmiUtkast = BaseUtkast._extend({
                 index = index + 1; //skip header-row
                 var row = element.all(by.css('tr.underlagRow')).get(index);
                 return {
-                    underlag: row.element(by.css('select')),
-                    datum: row.element(by.css('.ng-valid-date')),
+                    underlag: row.element(by.css('[name="andraUnderlag"]')),
+                    datum: row.element(by.css('[name="-Date"]')),
                     information: row.element(by.css('.input-full'))
                 };
 
@@ -102,28 +90,31 @@ var BaseSmiUtkast = BaseUtkast._extend({
     angeBaseratPa: function(baseratPa) {
         var promiseArr = [];
         if (baseratPa.minUndersokningAvPatienten) {
-            promiseArr.push(this.baseratPa.minUndersokningAvPatienten.datum.sendKeys(baseratPa.minUndersokningAvPatienten));
+            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten));
         }
         if (baseratPa.journaluppgifter) {
-            promiseArr.push(this.baseratPa.journaluppgifter.datum.sendKeys(baseratPa.journaluppgifter));
+            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.journaluppgifter.datum, baseratPa.journaluppgifter));
+
         }
         if (baseratPa.anhorigsBeskrivning) {
-            promiseArr.push(this.baseratPa.anhorigBeskrivning.datum.sendKeys(baseratPa.anhorigsBeskrivning));
+            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning));
+
         }
+
         if (baseratPa.annat) {
             var annatEl = this.baseratPa.annat;
             promiseArr.push(
-                annatEl.datum.sendKeys(baseratPa.annat)
+                sendKeysWithBackspaceFix(annatEl.datum, baseratPa.annat)
                 .then(function() {
                     return annatEl.beskrivning.sendKeys(baseratPa.annatBeskrivning);
                 })
             );
-
         }
 
         if (baseratPa.personligKannedom) {
-            promiseArr.push(this.baseratPa.kannedomOmPatient.datum.sendKeys(baseratPa.personligKannedom));
+            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.kannedomOmPatient.datum, baseratPa.personligKannedom));
         }
+
         return Promise.all(promiseArr);
 
     },
@@ -140,19 +131,7 @@ var BaseSmiUtkast = BaseUtkast._extend({
         }
 
         return chooseFinns(utredningar).then(function() {
-
-            function makeLogTextFunction() {
-                return function(text) {
-                    console.log(text);
-                };
-            }
-
-            function makeLogElementText() {
-                return function(elm) {
-                    return elm.getText().then(makeLogTextFunction());
-                };
-            }
-
+            browser.sleep(2000);
             var promiseArr = [];
             for (var i = 0; i < utredningar.length; i++) {
                 if (i !== 0) {
@@ -161,10 +140,13 @@ var BaseSmiUtkast = BaseUtkast._extend({
                 var row = utredningarElement.underlagRow(i);
 
                 //Skriv ut alla möjliga val, för debug
-                promiseArr.push(row.underlag.all(by.css('option')).map(makeLogElementText));
+                // promiseArr.push(row.underlag.getText(function(text){
+                //         logger.info('HURR:' + text);
+                //         return Promise.reject(text);
+                //     }));
 
-                promiseArr.push(row.underlag.element(by.cssContainingText('option', utredningar[i].underlag)).sendKeys(protractor.Key.SPACE));
-                promiseArr.push(row.datum.sendKeys(utredningar[i].datum));
+                promiseArr.push(row.underlag.element(by.cssContainingText('option', utredningar[i].underlag)).click());
+                promiseArr.push(sendKeysWithBackspaceFix(row.datum, utredningar[i].datum));
                 promiseArr.push(row.information.sendKeys(utredningar[i].infoOmUtredningen));
 
             }
@@ -183,7 +165,6 @@ var BaseSmiUtkast = BaseUtkast._extend({
                 el.sendKeys(protractor.Key.ENTER);
             };
         }
-
         //Ange diagnoser
         for (var i = 0; i < diagnoser.length; i++) {
             if (i !== 0) {
@@ -193,7 +174,6 @@ var BaseSmiUtkast = BaseUtkast._extend({
             promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 
         }
-
         //Ange när och var diagnoser ställts
         promiseArr.push(this.diagnos.narOchVarStalldesDiagnoser.sendKeys(diagnosObj.narOchVarStalldesDiagnoserna));
 
@@ -217,15 +197,16 @@ var BaseSmiUtkast = BaseUtkast._extend({
         }
     },
     angeTillaggsfragor: function(svarArr) {
+        // return this.getTillaggsfraga(0).sendKeys('hallå');
         var promiseArr = [];
         for (var i = 0; i < svarArr.length; i++) {
-            return this.getTillaggsfraga(i).sendKeys(svarArr[i].svar);
+            promiseArr.push(this.getTillaggsfraga(i).sendKeys(svarArr[i].svar));
         }
-        //return Promise.all(promiseArr);
+        return Promise.all(promiseArr);
 
     },
     getTillaggsfraga: function(i) {
-        return element(by.id('form_tillaggsfragor_' + i + '__svar'));
+        return element(by.id('tillaggsfragor[' + i + '].svar'));
     },
     getTillaggsfragaText: function(i) {
         return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();

@@ -25,6 +25,21 @@ var BaseSmiUtkast = require('./smi.base.utkast.page.js');
 var LisuUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
+
+        this.baseratPa = {
+            minUndersokningAvPatienten: {
+                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3'))
+            },
+            journaluppgifter: {
+                checkbox: element(by.id('formly_1_date_journaluppgifter_5'))
+            },
+            annat: {
+                checkbox: element(by.id('formly_1_date_annatGrundForMU_6'))
+            },
+            telefonkontakt: {
+                checkbox: element(by.id('formly_1_date_telefonkontaktMedPatienten_4'))
+            }
+        };
     },
     get: function get(intygId) {
         get._super.call(this, 'luse', intygId);

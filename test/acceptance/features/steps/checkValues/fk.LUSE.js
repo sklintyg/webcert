@@ -21,50 +21,17 @@
 
 'use strict';
 
-// var helpers = require('./helpers.js');
 var lusePage = pages.intyg.luse.intyg;
 
-// function checkUtlatandeDatum(utlatandeText, cb) {
-//     if (utlatandeText !== 'Annat underlag för utlåtandet') {
-//         expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(helpers.getDateForAssertion()).then(function(date) {
-//             logger.info('OK - ' + utlatandeText + '  = ' + date);
-//         }, function(reason) {
-//             cb('FEL, Min undersökning av patienten,' + reason);
-//         });
-//     } else {
-//         expect(element(by.cssContainingText('.intyg-field', utlatandeText)).getText()).to.eventually.contain(utlatandeText).then(function(date) {
-//             logger.info('OK - ' + utlatandeText + '  = ' + date);
-//         }, function(reason) {
-//             cb('FEL, Min undersökning av patienten,' + reason);
-//         });
-//     }
-// }
-
-// function checkAndraMedUtrUnd(underlagFinnsNo, cb) {
-//     // får för tilfället ett nej oavsett.
-//     expect(element(by.id('underlagFinnsNo')).getText()).to.eventually.equal('Nej').then(function() {
-//         logger.info('OK - ' + underlagFinnsNo);
-//     }, function(reason) {
-//         cb('FEL, Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?,' + reason);
-//     });
-// }
-
-// function checkSjukForLopp(sjukdomsforlopp, cb) {
-
-//     expect(element(by.cssContainingText('.ng-binding.ng-scope', sjukdomsforlopp)).getText()).to.eventually.equal(sjukdomsforlopp).then(function() {
-//         logger.info('OK - ' + sjukdomsforlopp);
-//     }, function(reason) {
-//         cb('FEL, Sjukdomsförlopp för aktuella sjukdomar av betydelse' + reason);
-//     });
-// }
-
-// function checkDiagnosNedArbFor(kod, cb) {
-//     expect(lusePage.diagnoseCode.getText()).to.eventually.equal(kod).then(function() {
-//         logger.info('OK - ' + kod);
-//     }, function(reason) {
-//         cb('FEL, Diagnoskod enligt ICD-10 SE' + reason);
-//     });
-// }
+function dateToText(prop) {
+    if (prop) {
+        var date = new Date(prop);
+        var monthNames = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
+        var month = monthNames[date.getUTCMonth()];
+        return date.getDate() + ' ' + month + ' ' + date.getFullYear();
+    }
+    return 'Ej angivet';
+}
 
 function ejAngivetIfNull(prop) {
     if (prop) {
@@ -73,14 +40,22 @@ function ejAngivetIfNull(prop) {
     return 'Ej angivet';
 }
 
+function boolTillJaNej(val) {
+    if (val) {
+        return 'Ja';
+    } else {
+        return 'Nej';
+    }
+}
+
 
 function checkBaseratPa(baseratPa) {
-    var minUndersokningText = ejAngivetIfNull((baseratPa.minUndersokningAvPatienten));
-    var journaluppgifterText = ejAngivetIfNull((baseratPa.journaluppgifter));
-    var anhorigBeskrivningText = ejAngivetIfNull((baseratPa.anhorigsBeskrivning));
-    var annatText = ejAngivetIfNull((baseratPa.annat));
-    var annatBeskrivningText = ejAngivetIfNull((baseratPa.annatBeskrivning));
-    var personligKannedomText = ejAngivetIfNull((baseratPa.personligKannedom));
+    var minUndersokningText = dateToText((baseratPa.minUndersokningAvPatienten));
+    var journaluppgifterText = dateToText((baseratPa.journaluppgifter));
+    var anhorigBeskrivningText = dateToText((baseratPa.anhorigsBeskrivning));
+    var annatText = dateToText((baseratPa.annat));
+    var annatBeskrivningText = ejAngivetIfNull(baseratPa.annatBeskrivning);
+    var personligKannedomText = dateToText((baseratPa.personligKannedom));
 
     return Promise.all([
         expect(lusePage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(minUndersokningText),
@@ -92,19 +67,90 @@ function checkBaseratPa(baseratPa) {
     ]);
 }
 
-// function checkAndraMedicinskaUtredningar(baseratPa) {
-//     var minUndersokningText = ejAngivetIfNull((baseratPa.minUndersokningAvPatienten));
-//     var journaluppgifterText = ejAngivetIfNull((baseratPa.journaluppgifter));
-//     var anhorigBeskrivningText = ejAngivetIfNull((baseratPa.anhorigsBeskrivning));
-//     var annatText = ejAngivetIfNull((baseratPa.annat));
+function checkAndraMedicinskaUtredningar(andraMedicinskaUtredningar) {
+    if (andraMedicinskaUtredningar) {
+        var promiseArr = [];
+        for (var i = 0; i < andraMedicinskaUtredningar.length; i++) {
+            var utredningEL = lusePage.andraMedicinskaUtredningar.getUtredning(i);
+            var utredningDatum = dateToText(andraMedicinskaUtredningar[i].datum);
+            promiseArr.push(expect(utredningEL.typ.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].underlag));
+            promiseArr.push(expect(utredningEL.datum.getText()).to.eventually.equal(utredningDatum));
+            promiseArr.push(expect(utredningEL.info.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].infoOmUtredningen));
+        }
+        return Promise.all(promiseArr);
+    } else if (!andraMedicinskaUtredningar) {
+        return expect(lusePage.andraMedicinskaUtredningar.field.getText()).to.eventually.contain('Nej');
+    }
+}
 
-//     return Promise.all([
-//         expect(lusePage.baseratPa.minUndersokningAvPatienten.getText(), 'topic [answer]').to.eventually.equal(minUndersokningText),
-//         expect(lusePage.baseratPa.journaluppgifter.getText()).to.eventually.equal(journaluppgifterText),
-//         expect(lusePage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(anhorigBeskrivningText),
-//         expect(lusePage.baseratPa.annat.getText()).to.eventually.equal(annatText)
-//     ]);
-// }
+function checkSjukdomsforlopp(forlopp) {
+    return expect(lusePage.sjukdomsforlopp.getText()).to.eventually.equal(forlopp);
+}
+
+function checkDiagnos(diagnos) {
+    var diagnoser = diagnos.diagnoser;
+    var nyBedomning = boolTillJaNej(diagnos.nyBedomning);
+    var promiseArr = [];
+    for (var i = 0; i < diagnoser.length; i++) {
+        promiseArr.push(expect(lusePage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.equal(diagnoser[i].kod));
+    }
+    promiseArr.push(expect(lusePage.diagnoser.grund.getText()).to.eventually.equal(diagnos.narOchVarStalldesDiagnoserna));
+    promiseArr.push(expect(lusePage.diagnoser.nyBedomningDiagnosgrund.getText()).to.eventually.contain(nyBedomning));
+
+    return Promise.all(promiseArr);
+
+}
+
+function checkFunktionsnedsattning(nedsattning) {
+    return Promise.all([
+        expect(lusePage.funktionsnedsattning.intellektuell.getText()).to.eventually.equal(nedsattning.intellektuell),
+        expect(lusePage.funktionsnedsattning.kommunikation.getText()).to.eventually.equal(nedsattning.kommunikation),
+        expect(lusePage.funktionsnedsattning.uppmarksamhet.getText()).to.eventually.equal(nedsattning.koncentration),
+        expect(lusePage.funktionsnedsattning.annanPsykiskFunktion.getText()).to.eventually.equal(nedsattning.psykisk),
+        expect(lusePage.funktionsnedsattning.synHorselTal.getText()).to.eventually.equal(nedsattning.synHorselTal),
+        expect(lusePage.funktionsnedsattning.balans.getText()).to.eventually.equal(nedsattning.balansKoordination),
+        expect(lusePage.funktionsnedsattning.annanKropsligFunktion.getText()).to.eventually.equal(nedsattning.annan)
+    ]);
+}
+
+function checkAktivitetsbegransning(begr) {
+    return expect(lusePage.aktivitetsbegransning.getText()).to.eventually.equal(begr);
+}
+
+
+function checkMedicinskBehandling(behandl) {
+    return Promise.all([
+        expect(lusePage.behandling.avslutad.getText()).to.eventually.equal(behandl.avslutad),
+        expect(lusePage.behandling.pagaende.getText()).to.eventually.equal(behandl.pagaende),
+        expect(lusePage.behandling.planerad.getText()).to.eventually.equal(behandl.planerad),
+        expect(lusePage.behandling.substansintag.getText()).to.eventually.equal(behandl.substansintag)
+    ]);
+}
+
+function checkMedicinskaForutsattningar(forutsattningar) {
+    return Promise.all([
+        expect(lusePage.medicinskaForutsattningar.kanUtvecklasOverTid.getText()).to.eventually.equal(forutsattningar.utecklasOverTid),
+        expect(lusePage.medicinskaForutsattningar.kanGoraTrotsBegransning.getText()).to.eventually.equal(forutsattningar.trotsBegransningar)
+    ]);
+}
+
+function checkOvrigaUpplysningar(ovriga) {
+    return expect(lusePage.ovrigaUpplysningar.getText()).to.eventually.equal(ovriga);
+}
+
+function checkKontaktMedFk(kontakt) {
+    return expect(lusePage.kontaktFK.onskas.getText()).to.eventually.equal(boolTillJaNej(kontakt));
+}
+
+function checkTillaggsfragor(fragor) {
+    var promiseArr = [];
+
+    for (var i = 0; i < fragor.length; i++) {
+        promiseArr.push(expect(lusePage.tillaggsfragor.getFraga(i).getText()).to.eventually.equal(fragor[i].svar));
+    }
+
+    return Promise.all(promiseArr);
+}
 
 module.exports = {
     checkValues: function(intyg, callback) {
@@ -112,44 +158,100 @@ module.exports = {
         logger.warn('intyg med typ: ' + intyg.typ + ' saknar vissa funktioner för kontroll av data');
 
         Promise.all([
-                //Baserat på
-                checkBaseratPa(intyg.baseratPa)
-                .then(function(value) {
-                    logger.info('OK - Baseras på');
-                }, function(reason) {
-                    return Promise.reject('FEL, Baseras på: ' + reason);
-                })
-                // checkAndraMedicinskaUtredningar(intyg.baseratPa)
-                // .then(function(value) {
-                //     logger.info('OK - Baseras på');
-                // }, function(reason) {
-                //     return Promise.reject('FEL, Baseras på: ' + reason);
-                // })
-            ])
+            //Baserat på
+            checkBaseratPa(intyg.baseratPa)
             .then(function(value) {
-                logger.info('Alla kontroller utförda:' + value);
+                logger.info('OK - Baseras på');
+            }, function(reason) {
+                return Promise.reject('FEL, Baseras på: ' + reason);
+            }),
+
+            //Medicinska utredningar
+            checkAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
+            .then(function(value) {
+                logger.info('OK - Andra medicinska utredningar');
+            }, function(reason) {
+                return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
+            }),
+
+            //Sjukdomsförlopp
+            checkSjukdomsforlopp(intyg.sjukdomsForlopp)
+            .then(function(value) {
+                logger.info('OK - Sjukdomsförlopp');
+            }, function(reason) {
+                return Promise.reject('FEL, Sjukdomsförlopp: ' + reason);
+            }),
+
+            //Diagnoser
+            checkDiagnos(intyg.diagnos)
+            .then(function(value) {
+                logger.info('OK - Diagnos');
+            }, function(reason) {
+                return Promise.reject('FEL, Diagnos: ' + reason);
+            }),
+
+            //Funktionsnedsättning
+            checkFunktionsnedsattning(intyg.funktionsnedsattning)
+            .then(function(value) {
+                logger.info('OK - Funktionsnedsättning');
+            }, function(reason) {
+                return Promise.reject('FEL, Funktionsnedsättning: ' + reason);
+            }),
+
+            //Aktivitestbegränsning
+            checkAktivitetsbegransning(intyg.aktivitetsbegransning)
+            .then(function(value) {
+                logger.info('OK - Aktivitestbegränsning');
+            }, function(reason) {
+                return Promise.reject('FEL, Aktivitestbegränsning: ' + reason);
+            }),
+
+            //Medicinsk behandling
+            checkMedicinskBehandling(intyg.medicinskbehandling)
+            .then(function(value) {
+                logger.info('OK - Medicinsk behandling');
+            }, function(reason) {
+                return Promise.reject('FEL, Medicinsk behandling: ' + reason);
+            }),
+
+            //Medicinska förutsättningar
+            checkMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
+            .then(function(value) {
+                logger.info('OK - Medicinska förutsättningar');
+            }, function(reason) {
+                return Promise.reject('FEL, Medicinska förutsättningar: ' + reason);
+            }),
+
+            //Övriga upplysningar
+            checkOvrigaUpplysningar(intyg.ovrigt)
+            .then(function(value) {
+                logger.info('OK - Övriga upplysningar');
+            }, function(reason) {
+                return Promise.reject('FEL, Övriga upplysningar: ' + reason);
+            }),
+
+            //Kontakt med FK
+            checkKontaktMedFk(intyg.kontaktMedFk)
+            .then(function(value) {
+                logger.info('OK - Kontakt med FK');
+            }, function(reason) {
+                return Promise.reject('FEL, Kontakt med FK: ' + reason);
+            }),
+
+            //Tilläggsfrågor
+            checkTillaggsfragor(intyg.tillaggsfragor)
+            .then(function(value) {
+                logger.info('OK - Tilläggsfrågor');
+            }, function(reason) {
+                return Promise.reject('FEL, Tilläggsfrågor: ' + reason);
+            })
+
+        ])
+            .then(function(value) {
+                logger.info('Alla kontroller utförda OK:' + value);
                 callback();
             }, function(reason) {
                 callback(reason);
             });
-
-        // checkUtlatandeDatum('Min undersökning av patienten.', cb);
-        // checkUtlatandeDatum('Journaluppgifter från den', cb);
-        // checkUtlatandeDatum('Anhörigs beskrivning av patienten', cb);
-        // checkUtlatandeDatum('Annat', cb);
-        // checkUtlatandeDatum('Annat underlag för utlåtandet', cb);
-        // checkUtlatandeDatum('Jag har känt patienten seden den', cb);
-
-        // checkAndraMedUtrUnd('Nej', callback);
-
-        // checkSjukForLopp(intyg.sjukdomsForlopp, callback);
-        // checkDiagnosNedArbFor(intyg.diagnos.kod, callback);
-
-        // expect(element(by.id('underlagFinnsNo')).getText()).to.eventually.equal('Nej').then(function() {
-        //     logger.info('OK - Nej');
-        // logger.info('OK - ' + underlagFinnsNo);
-        // }, function(reason) {
-        //     callback('FEL, Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?,' + reason);
-        // }).then(callback);
     }
 };
