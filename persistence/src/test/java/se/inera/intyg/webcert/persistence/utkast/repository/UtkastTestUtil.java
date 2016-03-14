@@ -17,17 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.intyg.repository.util;
+package se.inera.intyg.webcert.persistence.utkast.repository;
+
+import java.util.UUID;
 
 import org.joda.time.LocalDateTime;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-
-import java.util.UUID;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 
 public final class UtkastTestUtil {
 
@@ -79,6 +77,11 @@ public final class UtkastTestUtil {
                 PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, sparad);
     }
 
+    public static Utkast buildUtkast(String enhetsId, String relationIntygsId, RelationKod relationKod) {
+        return buildUtkast(UUID.randomUUID().toString(), enhetsId, UtkastStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
+                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null, relationIntygsId, relationKod);
+    }
+
     public static Utkast buildUtkast(String enhetsId, UtkastStatus status, String type, String hoSPersonId,
             String hoSPersonNamn, Personnummer personNummer, String personFornamn, String personMellannamn,
             String personEfternamn, String model, LocalDateTime senastSparadDatum) {
@@ -89,6 +92,14 @@ public final class UtkastTestUtil {
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String type,
             String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
             String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum) {
+        return buildUtkast(intygsId, enhetsId, status, type, hoSPersonId, hoSPersonNamn, personNummer, personFornamn, personMellannamn,
+                personEfternamn, model, senastSparadDatum, null, null);
+    }
+
+    public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String type,
+            String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
+            String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum, String relationIntygsId,
+            RelationKod relationKod) {
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygsId);
         intyg.setIntygsTyp(type);
@@ -111,6 +122,9 @@ public final class UtkastTestUtil {
         intyg.setStatus(status);
 
         intyg.setModel(model);
+
+        intyg.setRelationIntygsId(relationIntygsId);
+        intyg.setRelationKod(relationKod);
 
         return intyg;
     }

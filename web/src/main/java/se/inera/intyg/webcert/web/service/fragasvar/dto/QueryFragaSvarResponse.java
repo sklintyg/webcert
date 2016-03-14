@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
 import java.util.List;
 
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 
 public class QueryFragaSvarResponse {
     private int totalCount;
-    private List<FragaSvar> results;
+    private List<ArendeMetaData> results;
 
     public int getTotalCount() {
         return totalCount;
@@ -35,11 +35,11 @@ public class QueryFragaSvarResponse {
         this.totalCount = totalCount;
     }
 
-    public List<FragaSvar> getResults() {
+    public List<ArendeMetaData> getResults() {
         return results;
     }
 
-    public void setResults(List<FragaSvar> results) {
+    public void setResults(List<ArendeMetaData> results) {
         this.results = results;
     }
 }

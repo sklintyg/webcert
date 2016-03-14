@@ -23,17 +23,13 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.StatusType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
-import se.riv.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 
 /**
  * Created by eriklupander on 2015-06-10.
@@ -47,7 +43,7 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
     @StubLatencyAware
     @StubModeAware
     public SendCertificateToRecipientResponseType sendCertificateToRecipient(String logicalAddress, SendCertificateToRecipientType parameters) {
-        GetCertificateForCareResponseType fromStore = intygStore.getIntygForCertificateId(parameters.getUtlatandeId());
+        GetCertificateForCareResponseType fromStore = intygStore.getIntygForCertificateId(parameters.getIntygsId().getExtension());
 
         SendCertificateToRecipientResponseType responseType = new SendCertificateToRecipientResponseType();
 
@@ -67,7 +63,7 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
         sentStatus.setTarget("FK");
         sentStatus.setTimestamp(LocalDateTime.now());
         sentStatus.setType(StatusType.SENT);
-        intygStore.addStatus(parameters.getUtlatandeId(), sentStatus);
+        intygStore.addStatus(parameters.getIntygsId().getExtension(), sentStatus);
 
         ResultType resultType = new ResultType();
         resultType.setResultCode(ResultCodeType.OK);

@@ -19,14 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -63,9 +57,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.repository.VantarPa;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
-import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
-import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
+import se.inera.intyg.webcert.web.converter.*;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -78,7 +70,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
-
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 
 /**
  * @author andreaskaltenbach
@@ -336,6 +328,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Fetch from Intygstjansten. Note that if Intygstjansten is unresponsive, the Intyg will be loaded from WebCert
         // if possible.
         IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ);
+        System.err.println("TYP = " + intyg.getUtlatande().getTyp());
 
         // Get utfardande vardperson
         Vardperson vardPerson = FragaSvarConverter.convert(intyg.getUtlatande().getGrundData().getSkapadAv());
@@ -499,7 +492,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters) {
 
         FragaSvarFilter filter = createFragaSvarFilter(filterParameters);
-        List<FragaSvar> results = fragaSvarRepository.filterFragaSvar(filter);
+        List<ArendeMetaData> results = fragaSvarRepository.filterFragaSvar(filter).stream()
+                .map(ArendeMetaDataConverter::convert)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         int totalResultsCount = fragaSvarRepository.filterCountFragaSvar(filter);
 

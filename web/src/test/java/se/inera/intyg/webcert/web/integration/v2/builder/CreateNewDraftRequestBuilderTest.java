@@ -40,6 +40,7 @@ import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Patient;
 import se.riv.infrastructure.directory.v1.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,6 +54,9 @@ public class CreateNewDraftRequestBuilderTest {
     public static final String FORNAMN = "Adam";
     public static final String MELLANNAMN = "Cesarsson";
     public static final String EFTERNAMN = "Eriksson";
+    public static final String PATIENT_POSTADRESS = "postadress";
+    public static final String PATIENT_POSTNUMMER = "postnummer";
+    public static final String PATIENT_POSTORT = "postort";
     public static final String FULLSTANDIGT_NAMN = "Abel Baker";
     public static final String INVARTES_MEDICIN = "Invärtes medicin";
     public static final String TITLE_NAME = "Läkare";
@@ -92,6 +96,9 @@ public class CreateNewDraftRequestBuilderTest {
         assertEquals(FORNAMN, res.getPatient().getFornamn());
         assertEquals(MELLANNAMN, res.getPatient().getMellannamn());
         assertEquals(EFTERNAMN, res.getPatient().getEfternamn());
+        assertEquals(PATIENT_POSTADRESS, res.getPatient().getPostadress());
+        assertEquals(PATIENT_POSTNUMMER, res.getPatient().getPostnummer());
+        assertEquals(PATIENT_POSTORT, res.getPatient().getPostort());
     }
 
     @Test
@@ -167,6 +174,9 @@ public class CreateNewDraftRequestBuilderTest {
         patType.setFornamn(FORNAMN);
         patType.setMellannamn(MELLANNAMN);
         patType.setEfternamn(EFTERNAMN);
+        patType.setPostadress(PATIENT_POSTADRESS);
+        patType.setPostnummer(PATIENT_POSTNUMMER);
+        patType.setPostort(PATIENT_POSTORT);
         intyg.setPatient(patType);
 
         return intyg;

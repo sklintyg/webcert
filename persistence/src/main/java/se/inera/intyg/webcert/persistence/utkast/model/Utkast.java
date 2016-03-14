@@ -21,27 +21,12 @@ package se.inera.intyg.webcert.persistence.utkast.model;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
+
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 /**
@@ -133,6 +118,13 @@ public class Utkast {
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Signatur signatur;
+
+    @Column(name = "RELATION_INTYG_ID")
+    private String relationIntygsId;
+
+    @Column(name = "RELATION_KOD")
+    @Enumerated(EnumType.STRING)
+    private RelationKod relationKod;
 
     @PrePersist
     void onPrePersist() {
@@ -334,6 +326,22 @@ public class Utkast {
 
     public void setAterkalladDatum(LocalDateTime aterkalladDatum) {
         this.aterkalladDatum = aterkalladDatum;
+    }
+
+    public String getRelationIntygsId() {
+        return relationIntygsId;
+    }
+
+    public void setRelationIntygsId(String relationIntygsId) {
+        this.relationIntygsId = relationIntygsId;
+    }
+
+    public RelationKod getRelationKod() {
+        return relationKod;
+    }
+
+    public void setRelationKod(RelationKod relationKod) {
+        this.relationKod = relationKod;
     }
 
     private byte[] toBytes(String data) {

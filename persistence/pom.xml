@@ -42,6 +42,14 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>webcert-common</artifactId>
     </dependency>
+        <dependency>
+        <groupId>se.inera.intyg.intygstyper</groupId>
+        <artifactId>sjukersattning</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.intygstyper</groupId>
+        <artifactId>sjukpenning-utokad</artifactId>
+      </dependency>
 
     <!-- Logging -->
     <dependency>

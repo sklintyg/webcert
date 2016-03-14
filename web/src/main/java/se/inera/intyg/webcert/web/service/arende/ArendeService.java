@@ -40,4 +40,6 @@ public interface ArendeService {
      */
     List<Arende> listArendeForUnits() throws WebCertServiceException;
 
+    List<Arende> getArende(String intygsId);
+
 }

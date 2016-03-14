@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.notification_sender.mocks;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
@@ -148,6 +149,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
 
             @Override
             public ValidateXmlResponse validateXml(String inputXml) throws ModuleException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Map<String, List<String>> getModuleSpecificArendeParameters(Utlatande utlatande) {
                 throw new UnsupportedOperationException();
             }
 

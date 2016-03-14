@@ -45,7 +45,7 @@
     <intygstyper.version.range>(,2.5.0]</intygstyper.version.range>
 
     <!-- Schemas -->
-    <rivta-clinicalprocess.version>2.0.RC3.3</rivta-clinicalprocess.version>
+    <rivta-clinicalprocess.version>2.0.RC4.2</rivta-clinicalprocess.version>
     <rivta-insuranceprocess.version>3.1.0.1</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.1</rivta-itintegration-monitoring.version>
    <!-- <rivta-ehr-commission.version>1.0.0</rivta-ehr-commission.version>    -->
@@ -65,6 +65,9 @@
     <rivta-hsa-authorizationmanagement.version>1.0.RC4.1</rivta-hsa-authorizationmanagement.version>
     <rivta-hsa-employee.version>1.0.RC4.1</rivta-hsa-employee.version>
     <rivta-hsa-organization.version>1.1.RC5.1</rivta-hsa-organization.version>
+
+    <!-- Temporary override, remove when common-pom is released in new version -->
+    <activemq.version>5.13.0</activemq.version>
 
     <skip-coverage>true</skip-coverage>
   </properties>
