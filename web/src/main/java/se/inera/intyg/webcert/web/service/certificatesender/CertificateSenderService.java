@@ -27,6 +27,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 public interface CertificateSenderService {
 
     void storeCertificate(String intygsId, String intygsTyp, String jsonBody) throws CertificateSenderException;
-    void sendCertificate(String intygsId, Personnummer personId, String recipientId) throws CertificateSenderException;
+    void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) throws CertificateSenderException;
     void revokeCertificate(String intygsId, String xmlBody) throws CertificateSenderException;
 }

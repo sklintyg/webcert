@@ -70,7 +70,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString());
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
 
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
@@ -93,7 +93,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         // verify(omsandningRepository).save(any(Omsandning.class));
         // verify(omsandningRepository).delete(any(Omsandning.class));
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString());
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
         // verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));

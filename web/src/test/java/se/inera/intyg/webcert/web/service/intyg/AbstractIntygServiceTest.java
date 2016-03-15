@@ -56,6 +56,8 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
     protected static final String CONFIG_AS_JSON = "{config-as-json}";
@@ -93,6 +95,9 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
     @Mock
     protected CertificateSenderService certificateSenderService;
+
+    @Mock
+    protected ObjectMapper objectMapper;
 
     // Here we test the real converter
     @Spy

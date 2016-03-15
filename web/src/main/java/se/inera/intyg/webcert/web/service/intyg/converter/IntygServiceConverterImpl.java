@@ -35,10 +35,12 @@ import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Lakarutlatande
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.converter.ClinicalProcessCertificateMetaTypeConverter;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -46,6 +48,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -229,6 +232,43 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
+    }
+
+    @Override
+    public HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user) {
+        HoSPersonal hosPersonal = new HoSPersonal();
+        hosPersonal.setPersonId(user.getHsaId());
+        hosPersonal.setFullstandigtNamn(user.getNamn());
+        hosPersonal.setForskrivarKod(user.getForskrivarkod());
+        hosPersonal.setVardenhet(buildVardenhet(user));
+        return hosPersonal;
+    }
+
+    private Vardenhet buildVardenhet(WebCertUser user) {
+        Vardenhet vardenhet = new Vardenhet();
+        SelectableVardenhet sourceVardenhet = user.getValdVardenhet();
+        if (sourceVardenhet != null && sourceVardenhet instanceof AbstractVardenhet) {
+            AbstractVardenhet valdVardenhet = (AbstractVardenhet) sourceVardenhet;
+            vardenhet.setArbetsplatsKod(valdVardenhet.getArbetsplatskod());
+            vardenhet.setEnhetsid(valdVardenhet.getId());
+            vardenhet.setEnhetsnamn(valdVardenhet.getNamn());
+            vardenhet.setEpost(valdVardenhet.getEpost());
+            vardenhet.setPostadress(valdVardenhet.getPostadress());
+            vardenhet.setPostnummer(valdVardenhet.getPostnummer());
+            vardenhet.setPostort(valdVardenhet.getPostort());
+            vardenhet.setTelefonnummer(valdVardenhet.getTelefonnummer());
+        }
+        vardenhet.setVardgivare(buildVardgivare(user.getValdVardgivare()));
+        return vardenhet;
+    }
+
+    private Vardgivare buildVardgivare(SelectableVardenhet valdVardgivare) {
+        Vardgivare vardgivare = new Vardgivare();
+        if (valdVardgivare != null) {
+            vardgivare.setVardgivarid(valdVardgivare.getId());
+            vardgivare.setVardgivarnamn(valdVardgivare.getNamn());
+        }
+        return vardgivare;
     }
 
     @VisibleForTesting

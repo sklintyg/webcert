@@ -19,17 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
@@ -41,6 +40,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
@@ -48,6 +50,7 @@ import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl.Operation;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceConverterTest {
@@ -142,6 +145,56 @@ public class IntygServiceConverterTest {
         utkast.setModel(buf.toString());
         when(moduleApi.getUtlatandeFromJson(anyString())).thenThrow(new IOException());
         converter.buildUtlatandeFromUtkastModel(utkast);
+    }
+
+    @Test
+    public void testBuildHosPersonalFromWebCertUser() {
+        final String forskrivarkod = "forskrivarkod";
+        final String hsaId = "hsaid";
+        final String namn = "namn";
+        final String arbetsplatskod = "arbetsplatskod";
+        final String epost = "epost";
+        final String enhetsId = "enhetsId";
+        final String enhetsnamn = "enhetsnamn";
+        final String postadress = "postadress";
+        final String postnummer = "postnummer";
+        final String postort = "postort";
+        final String telefonnummer = "telefonnummer";
+        final String vardgivarId = "vardgivarId";
+        final String vardgivarnamn = "vardgivarnamn";
+        Vardenhet valdVardenhet = new Vardenhet();
+        valdVardenhet.setArbetsplatskod(arbetsplatskod);
+        valdVardenhet.setEpost(epost);
+        valdVardenhet.setId(enhetsId);
+        valdVardenhet.setNamn(enhetsnamn);
+        valdVardenhet.setPostadress(postadress);
+        valdVardenhet.setPostnummer(postnummer);
+        valdVardenhet.setPostort(postort);
+        valdVardenhet.setTelefonnummer(telefonnummer);
+        Vardgivare valdVardgivare = new Vardgivare();
+        valdVardgivare.setId(vardgivarId);
+        valdVardgivare.setNamn(vardgivarnamn);
+        WebCertUser user = new WebCertUser();
+        user.setForskrivarkod(forskrivarkod);
+        user.setHsaId(hsaId);
+        user.setNamn(namn);
+        user.setValdVardenhet(valdVardenhet);
+        user.setValdVardgivare(valdVardgivare);
+        HoSPersonal result = converter.buildHosPersonalFromWebCertUser(user);
+
+        assertEquals(forskrivarkod, result.getForskrivarKod());
+        assertEquals(hsaId, result.getPersonId());
+        assertEquals(namn, result.getFullstandigtNamn());
+        assertEquals(arbetsplatskod, result.getVardenhet().getArbetsplatsKod());
+        assertEquals(epost, result.getVardenhet().getEpost());
+        assertEquals(enhetsId, result.getVardenhet().getEnhetsid());
+        assertEquals(enhetsnamn, result.getVardenhet().getEnhetsnamn());
+        assertEquals(postadress, result.getVardenhet().getPostadress());
+        assertEquals(postnummer, result.getVardenhet().getPostnummer());
+        assertEquals(postort, result.getVardenhet().getPostort());
+        assertEquals(telefonnummer, result.getVardenhet().getTelefonnummer());
+        assertEquals(vardgivarId, result.getVardenhet().getVardgivare().getVardgivarid());
+        assertEquals(vardgivarnamn, result.getVardenhet().getVardgivare().getVardgivarnamn());
     }
 
     private Utlatande createUtlatandeFromJson() throws Exception {

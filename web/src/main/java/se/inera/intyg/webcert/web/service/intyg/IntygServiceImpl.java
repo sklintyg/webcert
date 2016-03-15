@@ -36,8 +36,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
@@ -63,6 +62,9 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -117,6 +119,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private UtkastIntygDecorator utkastIntygDecorator;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /* --------------------- Public scope --------------------- */
 
@@ -327,12 +332,14 @@ public class IntygServiceImpl implements IntygService {
         String intygsId = intyg.getId();
         String recipient = sendConfig.getRecipient();
         String intygsTyp = intyg.getTyp();
+        HoSPersonal skickatAv = serviceConverter.buildHosPersonalFromWebCertUser(webCertUserService.getUser());
 
         try {
             LOG.debug("Sending intyg {} of type {} to recipient {}", intygsId, intygsTyp, recipient);
 
             // Ask the certificateSenderService to post a 'send' message onto the queue.
-            certificateSenderService.sendCertificate(intygsId, intyg.getGrundData().getPatient().getPersonId(), recipient);
+            certificateSenderService.sendCertificate(intygsId, intyg.getGrundData().getPatient().getPersonId(),
+                    objectMapper.writeValueAsString(skickatAv), recipient);
 
             // Notify stakeholders when a certificate is sent
             notificationService.sendNotificationForIntygSent(intygsId);
@@ -344,6 +351,9 @@ public class IntygServiceImpl implements IntygService {
             return IntygServiceResult.FAILED;
         } catch (RuntimeException e) {
             LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        } catch (JsonProcessingException e) {
+            LOG.error("Error writing skickatAv as string when trying to send intyg " + intygsId, e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         } catch (CertificateSenderException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);

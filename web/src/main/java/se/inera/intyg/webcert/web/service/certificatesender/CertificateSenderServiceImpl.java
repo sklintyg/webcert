@@ -20,15 +20,11 @@
 package se.inera.intyg.webcert.web.service.certificatesender;
 
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import javax.jms.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
@@ -64,8 +60,8 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     }
 
     @Override
-    public void sendCertificate(String intygsId, Personnummer personId, String recipientId) {
-        jmsTemplate.send(new SendCertificateMessageCreator(intygsId, personId, recipientId, logicalAddress));
+    public void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) {
+        jmsTemplate.send(new SendCertificateMessageCreator(intygsId, personId, jsonBody, recipientId, logicalAddress));
     }
 
     @Override
@@ -103,19 +99,21 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
         private final String intygsId;
         private final Personnummer personId;
+        private final String body;
         private final String recipientId;
         private final String logicalAddress;
 
-        private SendCertificateMessageCreator(String intygsId, Personnummer personId, String recipientId, String logicalAddress) {
+        private SendCertificateMessageCreator(String intygsId, Personnummer personId, String body, String recipientId, String logicalAddress) {
             this.intygsId = intygsId;
             this.personId = personId;
+            this.body = body;
             this.recipientId = recipientId;
             this.logicalAddress = logicalAddress;
         }
 
         @Override
         public Message createMessage(Session session) throws JMSException {
-            Message message = session.createTextMessage();
+            Message message = session.createTextMessage(body);
             message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 

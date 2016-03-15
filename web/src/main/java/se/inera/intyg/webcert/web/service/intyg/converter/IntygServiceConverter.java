@@ -19,14 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import java.util.List;
+
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-
-import java.util.List;
 
 
 public interface IntygServiceConverter {
@@ -42,4 +44,6 @@ public interface IntygServiceConverter {
     List<se.inera.intyg.common.support.model.Status> buildStatusesFromUtkast(Utkast draft);
 
     Utlatande buildUtlatandeFromUtkastModel(Utkast utkast);
+
+    HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user);
 }
