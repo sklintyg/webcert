@@ -23,7 +23,7 @@ var wcMessages = {
         'webcert.header': 'Webcert',
         'webcert.description': 'Välkommen till Webcert.',
         'dashboard.title': 'Mina andra enheter',
-        'dashboard.unanswered.title': 'Frågor och svar',
+        'dashboard.unanswered.title': 'Meddelanden',
         'dashboard.unsigned.title': 'Ej signerade utkast',
         'dashboard.about.title': 'Om Webcert',
 
