@@ -27,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -37,17 +39,17 @@ import se.inera.intyg.common.support.modules.support.api.dto.InternalModelRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.integration.pu.model.Person;
-import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
@@ -75,7 +77,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -96,7 +98,11 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
-        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails);
+        // Set relation to null if not applicable
+        Relation relation = addRelation ? createRelation(orignalIntygsId, RelationKod.KOMPLT) : null;
+
+        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
+
         InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
                 new InternalModelHolder(signedIntygHolder.getContents()));
 
@@ -118,6 +124,10 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
             populatePatientDetailsFromPatient(utkast, patient);
         }
 
+        if (addRelation) {
+            enrichWithRelation(utkast, orignalIntygsId, RelationKod.KOMPLT);
+        }
+
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
@@ -132,7 +142,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -151,7 +161,11 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(orgUtkast.getIntygsTyp());
 
-        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails);
+        // Set relation to null if not applicable
+        Relation relation = addRelation ? createRelation(orignalIntygsId, RelationKod.KOMPLT) : null;
+
+        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
+
         InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
                 new InternalModelHolder(orgUtkast.getModel()));
 
@@ -172,6 +186,10 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
             populatePatientDetailsFromUtkast(utkast, orgUtkast);
         }
 
+        if (addRelation) {
+            enrichWithRelation(utkast, orignalIntygsId, RelationKod.KOMPLT);
+        }
+
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
@@ -181,7 +199,20 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return builderResponse;
     }
 
-    private CreateDraftCopyHolder createModuleRequestForCopying(CreateNewDraftCopyRequest copyRequest, Person person) {
+
+    private Relation createRelation(String orignalIntygsId, RelationKod relationKod) {
+        Relation relation = new Relation();
+        relation.setRelationIntygsId(orignalIntygsId);
+        relation.setRelationKod(relationKod);
+        return relation;
+    }
+
+    private void enrichWithRelation(Utkast utkast, String originalIntygsId, RelationKod relationKod) {
+        utkast.setRelationIntygsId(originalIntygsId);
+        utkast.setRelationKod(relationKod);
+    }
+
+    private CreateDraftCopyHolder createModuleRequestForCopying(CreateNewDraftCopyRequest copyRequest, Person person, Relation relation) {
 
         String newDraftCopyId = intygsIdStrategy.createId();
 
@@ -202,7 +233,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
                 reqHosPerson.getHsaId(),
                 reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
 
-        CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, hosPerson);
+        CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, hosPerson, relation);
 
         if (person != null) {
             se.inera.intyg.common.support.modules.support.api.dto.Patient patient = new se.inera.intyg.common.support.modules.support.api.dto.Patient(

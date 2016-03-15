@@ -27,11 +27,11 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 
 public interface CopyUtkastBuilder {
 
-    CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails)
+    CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails, boolean addRelation)
             throws ModuleNotFoundException,
             ModuleException;
 
-    CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails)
+    CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails, boolean addRelation)
             throws ModuleNotFoundException,
             ModuleException;
 

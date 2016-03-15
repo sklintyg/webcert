@@ -28,6 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.pu.model.Person;
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.inera.intyg.webcert.integration.pu.services.PUService;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
@@ -36,15 +43,9 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.integration.pu.model.Person;
-import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
-import se.inera.intyg.webcert.integration.pu.services.PUService;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -87,35 +88,15 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating copy of intyg '{}'", originalIntygId);
 
         try {
-
-            Person patientDetails = null;
-
-            if (!copyRequest.isDjupintegrerad()) {
-                patientDetails = refreshPatientDetails(copyRequest);
-            }
-
             CopyUtkastBuilderResponse builderResponse;
 
-            if (utkastRepository.exists(originalIntygId)) {
-                builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
-            } else {
-                builderResponse = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
-            }
+            builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId, false);
+
+            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
-
-            Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
-
-            monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
-
-            // notify
-            notificationService.sendNotificationForDraftCreated(savedUtkast);
-            LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
-
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
-            logService.logCreateIntyg(logRequest);
 
             return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
 
@@ -123,6 +104,66 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.dto.
+     * CreateNewDraftCopyRequest)
+     */
+    @Override
+    public CreateCompletionCopyResponse createCompletion(CreateNewDraftCopyRequest copyRequest) {
+        String originalIntygId = copyRequest.getOriginalIntygId();
+
+        LOG.debug("Creating completion to intyg '{}'", originalIntygId);
+
+        try {
+            CopyUtkastBuilderResponse builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId, true);
+
+            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+
+            return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+
+        } catch (ModuleException | ModuleNotFoundException me) {
+            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
+
+    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
+        Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
+
+        monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
+
+        // notify
+        notificationService.sendNotificationForDraftCreated(savedUtkast);
+        LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
+        logService.logCreateIntyg(logRequest);
+        return savedUtkast;
+    }
+
+    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId, boolean addRelation) throws ModuleNotFoundException, ModuleException {
+        Person patientDetails = null;
+
+        if (!copyRequest.isDjupintegrerad()) {
+            patientDetails = refreshPatientDetails(copyRequest);
+        }
+
+        CopyUtkastBuilderResponse builderResponse;
+        if (utkastRepository.exists(originalIntygId)) {
+            builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
+        } else {
+            builderResponse = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
+        }
+
+        return builderResponse;
     }
 
     private Person refreshPatientDetails(CreateNewDraftCopyRequest copyRequest) {
@@ -161,5 +202,4 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry);
 
     }
-
 }
