@@ -158,95 +158,95 @@ module.exports = {
         logger.warn('intyg med typ: ' + intyg.typ + ' saknar vissa funktioner för kontroll av data');
 
         Promise.all([
-            //Baserat på
-            checkBaseratPa(intyg.baseratPa)
-            .then(function(value) {
-                logger.info('OK - Baseras på');
-            }, function(reason) {
-                return Promise.reject('FEL, Baseras på: ' + reason);
-            }),
+                //Baserat på
+                checkBaseratPa(intyg.baseratPa)
+                .then(function(value) {
+                    logger.info('OK - Baseras på');
+                }, function(reason) {
+                    return Promise.reject('FEL, Baseras på: ' + reason);
+                }),
 
-            //Medicinska utredningar
-            checkAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
-            .then(function(value) {
-                logger.info('OK - Andra medicinska utredningar');
-            }, function(reason) {
-                return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
-            }),
+                //Medicinska utredningar
+                checkAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
+                .then(function(value) {
+                    logger.info('OK - Andra medicinska utredningar');
+                }, function(reason) {
+                    return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
+                }),
 
-            //Sjukdomsförlopp
-            checkSjukdomsforlopp(intyg.sjukdomsForlopp)
-            .then(function(value) {
-                logger.info('OK - Sjukdomsförlopp');
-            }, function(reason) {
-                return Promise.reject('FEL, Sjukdomsförlopp: ' + reason);
-            }),
+                //Sjukdomsförlopp
+                checkSjukdomsforlopp(intyg.sjukdomsForlopp)
+                .then(function(value) {
+                    logger.info('OK - Sjukdomsförlopp');
+                }, function(reason) {
+                    return Promise.reject('FEL, Sjukdomsförlopp: ' + reason);
+                }),
 
-            //Diagnoser
-            checkDiagnos(intyg.diagnos)
-            .then(function(value) {
-                logger.info('OK - Diagnos');
-            }, function(reason) {
-                return Promise.reject('FEL, Diagnos: ' + reason);
-            }),
+                //Diagnoser
+                checkDiagnos(intyg.diagnos)
+                .then(function(value) {
+                    logger.info('OK - Diagnos');
+                }, function(reason) {
+                    return Promise.reject('FEL, Diagnos: ' + reason);
+                }),
 
-            //Funktionsnedsättning
-            checkFunktionsnedsattning(intyg.funktionsnedsattning)
-            .then(function(value) {
-                logger.info('OK - Funktionsnedsättning');
-            }, function(reason) {
-                return Promise.reject('FEL, Funktionsnedsättning: ' + reason);
-            }),
+                //Funktionsnedsättning
+                checkFunktionsnedsattning(intyg.funktionsnedsattning)
+                .then(function(value) {
+                    logger.info('OK - Funktionsnedsättning');
+                }, function(reason) {
+                    return Promise.reject('FEL, Funktionsnedsättning: ' + reason);
+                }),
 
-            //Aktivitestbegränsning
-            checkAktivitetsbegransning(intyg.aktivitetsbegransning)
-            .then(function(value) {
-                logger.info('OK - Aktivitestbegränsning');
-            }, function(reason) {
-                return Promise.reject('FEL, Aktivitestbegränsning: ' + reason);
-            }),
+                //Aktivitestbegränsning
+                checkAktivitetsbegransning(intyg.aktivitetsbegransning)
+                .then(function(value) {
+                    logger.info('OK - Aktivitestbegränsning');
+                }, function(reason) {
+                    return Promise.reject('FEL, Aktivitestbegränsning: ' + reason);
+                }),
 
-            //Medicinsk behandling
-            checkMedicinskBehandling(intyg.medicinskbehandling)
-            .then(function(value) {
-                logger.info('OK - Medicinsk behandling');
-            }, function(reason) {
-                return Promise.reject('FEL, Medicinsk behandling: ' + reason);
-            }),
+                //Medicinsk behandling
+                checkMedicinskBehandling(intyg.medicinskbehandling)
+                .then(function(value) {
+                    logger.info('OK - Medicinsk behandling');
+                }, function(reason) {
+                    return Promise.reject('FEL, Medicinsk behandling: ' + reason);
+                }),
 
-            //Medicinska förutsättningar
-            checkMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
-            .then(function(value) {
-                logger.info('OK - Medicinska förutsättningar');
-            }, function(reason) {
-                return Promise.reject('FEL, Medicinska förutsättningar: ' + reason);
-            }),
+                //Medicinska förutsättningar
+                checkMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
+                .then(function(value) {
+                    logger.info('OK - Medicinska förutsättningar');
+                }, function(reason) {
+                    return Promise.reject('FEL, Medicinska förutsättningar: ' + reason);
+                }),
 
-            //Övriga upplysningar
-            checkOvrigaUpplysningar(intyg.ovrigt)
-            .then(function(value) {
-                logger.info('OK - Övriga upplysningar');
-            }, function(reason) {
-                return Promise.reject('FEL, Övriga upplysningar: ' + reason);
-            }),
+                //Övriga upplysningar
+                checkOvrigaUpplysningar(intyg.ovrigt)
+                .then(function(value) {
+                    logger.info('OK - Övriga upplysningar');
+                }, function(reason) {
+                    return Promise.reject('FEL, Övriga upplysningar: ' + reason);
+                }),
 
-            //Kontakt med FK
-            checkKontaktMedFk(intyg.kontaktMedFk)
-            .then(function(value) {
-                logger.info('OK - Kontakt med FK');
-            }, function(reason) {
-                return Promise.reject('FEL, Kontakt med FK: ' + reason);
-            }),
+                //Kontakt med FK
+                checkKontaktMedFk(intyg.kontaktMedFk)
+                .then(function(value) {
+                    logger.info('OK - Kontakt med FK');
+                }, function(reason) {
+                    return Promise.reject('FEL, Kontakt med FK: ' + reason);
+                }),
 
-            //Tilläggsfrågor
-            checkTillaggsfragor(intyg.tillaggsfragor)
-            .then(function(value) {
-                logger.info('OK - Tilläggsfrågor');
-            }, function(reason) {
-                return Promise.reject('FEL, Tilläggsfrågor: ' + reason);
-            })
+                //Tilläggsfrågor
+                checkTillaggsfragor(intyg.tillaggsfragor)
+                .then(function(value) {
+                    logger.info('OK - Tilläggsfrågor');
+                }, function(reason) {
+                    return Promise.reject('FEL, Tilläggsfrågor: ' + reason);
+                })
 
-        ])
+            ])
             .then(function(value) {
                 logger.info('Alla kontroller utförda OK:' + value);
                 callback();

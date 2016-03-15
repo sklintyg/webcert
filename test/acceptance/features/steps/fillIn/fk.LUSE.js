@@ -47,7 +47,7 @@ module.exports = {
                 return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
             })
         );
-        
+
         //Sjukdomsförlopp
         promiseArr.push(luseUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
             .then(function(value) {

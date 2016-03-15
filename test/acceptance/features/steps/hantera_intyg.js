@@ -27,7 +27,7 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = function() {
     this.Given(/^jag signerar intyget$/, function(callback) {
 
-        element(by.id('showCompleteButton')).click().then(function(){
+        element(by.id('showCompleteButton')).click().then(function() {
             fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
         });
     });
