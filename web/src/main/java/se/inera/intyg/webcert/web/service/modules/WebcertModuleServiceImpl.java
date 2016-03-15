@@ -19,11 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.modules;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.certificate.modules.fkparent.model.internal.Diagnos;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.common.support.modules.service.WebcertModuleService;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
@@ -46,7 +49,8 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.common.support.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String, int)
+     * @see se.inera.intyg.common.support.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String,
+     * int)
      */
     @Override
     public boolean validateDiagnosisCode(String codeFragment, String codeSystemStr) {
@@ -67,4 +71,12 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
 
         return (DiagnosResponseType.OK.equals(response.getResultat()));
     }
+
+    public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
+        DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);
+        List<se.inera.intyg.webcert.web.service.diagnos.model.Diagnos> diagnoser = response.getDiagnoser();
+        String result = (diagnoser == null || diagnoser.size() != 1) ? "" : diagnoser.get(0).getBeskrivning();
+        return result;
+    }
+
 }

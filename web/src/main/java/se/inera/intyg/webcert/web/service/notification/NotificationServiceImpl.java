@@ -22,7 +22,10 @@ package se.inera.intyg.webcert.web.service.notification;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +38,14 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -52,6 +62,9 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 public class NotificationServiceImpl implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+    @Autowired
+    private IntygModuleRegistryImpl moduleRegistry;
 
     @Autowired(required = false)
     @Qualifier("jmsNotificationTemplate")
@@ -250,8 +263,22 @@ public class NotificationServiceImpl implements NotificationService {
             LOGGER.debug("Will not send notification message for event {}", handelse);
             return;
         }
+
+        try {
+            decorateWithDisplayName(utkast);
+            
+        } catch (ModuleNotFoundException | ModuleException e) {
+            e.printStackTrace();
+        }
+
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get());
         send(notificationMessage, utkast.getEnhetsId());
+    }
+
+    private void decorateWithDisplayName(Utkast utkast) throws ModuleNotFoundException, ModuleException {
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+        String utlatande = moduleApi.decorateUtlatande(utkast.getModel());
+        utkast.setModel(utlatande);
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId) {
