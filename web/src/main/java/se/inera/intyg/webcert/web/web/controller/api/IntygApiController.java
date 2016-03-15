@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -133,6 +134,42 @@ public class IntygApiController extends AbstractApiController {
 
         LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(),
                 serviceResponse.getNewDraftIntygType() });
+
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+
+        return Response.ok().entity(response).build();
+    }
+
+    /**
+     * Create a copy that completes an existing certificate.
+     *
+     * @param request
+     * @param intygsTyp
+     * @param orgIntygsId
+     * @return
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/komplettera")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+        .features(WebcertFeature.KOPIERA_INTYG)
+        .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
+        .orThrow();
+
+        LOG.debug("Attempting to create a completion of {} with id '{}'", intygsTyp, orgIntygsId);
+
+        if (!request.isValid()) {
+            LOG.error("Request to create completion of '{}' is not valid", orgIntygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+        }
+
+        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
+        CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
+
+        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", new Object[] {serviceResponse.getNewDraftIntygId(),
+                serviceResponse.getNewDraftIntygType(), orgIntygsId});
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 

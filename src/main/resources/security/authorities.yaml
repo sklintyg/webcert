@@ -148,6 +148,8 @@ privileges:
     desc: Besvara fråga om komplettering
     intygstyper:
       - *ki010 # FK7263
+      - *ki040 # lisu 
+      - *ki050 # luse
     requestOrigins: # Implicit alla
   - &p070
     name: *kp070
