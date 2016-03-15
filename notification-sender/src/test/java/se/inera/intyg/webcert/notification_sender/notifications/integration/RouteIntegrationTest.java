@@ -57,8 +57,6 @@ public class RouteIntegrationTest {
     private static final int SECONDS_TO_WAIT = 10;
 
     private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
-    private static final String GROUP_ID_1 = "group1";
-    private static final String GROUP_ID_2 = "group2";
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -83,9 +81,9 @@ public class RouteIntegrationTest {
         NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_ANDRAT);
         NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", HandelseType.INTYGSUTKAST_SIGNERAT);
 
-        sendMessage(notificationMessage1, GROUP_ID_1);
-        sendMessage(notificationMessage2, GROUP_ID_1);
-        sendMessage(notificationMessage3, GROUP_ID_1);
+        sendMessage(notificationMessage1);
+        sendMessage(notificationMessage2);
+        sendMessage(notificationMessage3);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
@@ -95,43 +93,15 @@ public class RouteIntegrationTest {
     }
 
     @Test
-    public void ensureMessagesAreResentAndDoNotBlockEachOtherWithSameGroupId() throws Exception {
+    public void ensureMessagesAreResentAndDoNotBlockEachOther() throws Exception {
         final String intygsId1 = FALLERAT_MEDDELANDE + "2";
         final String intygsId2 = "korrekt-meddelande-1";
         NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelseType.INTYGSUTKAST_SKAPAT);
         NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelseType.INTYGSUTKAST_ANDRAT);
 
-        sendMessage(notificationMessage1, GROUP_ID_1);
+        sendMessage(notificationMessage1);
         LOG.info("Message 1 sent");
-        sendMessage(notificationMessage2, GROUP_ID_1);
-        LOG.info("Message 2 sent");
-
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfSuccessfulMessages = certificateStatusUpdateForCareResponderStub.getNumberOfSentMessages();
-            LOG.debug("Number of sucessful messages: {}", numberOfSuccessfulMessages);
-            if (numberOfSuccessfulMessages == 2) {
-                List<String> utlatandeIds = certificateStatusUpdateForCareResponderStub.getIntygsIdsInOrder();
-                LOG.debug("Number of utlatandeIds: {}", utlatandeIds.size());
-                LOG.debug("First ID: {}", utlatandeIds.get(0));
-                LOG.debug("Second ID: {}", utlatandeIds.get(1));
-                return (utlatandeIds.size() == 2 &&
-                        utlatandeIds.get(0).equals(intygsId2) &&
-                        utlatandeIds.get(1).equals(intygsId1));
-            }
-            return false;
-        });
-    }
-
-    @Test
-    public void ensureMessagesAreResentAndDoNotBlockEachOtherWithDifferentGroupIds() throws Exception {
-        final String intygsId1 = FALLERAT_MEDDELANDE + "2";
-        final String intygsId2 = "korrekt-meddelande-1";
-        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelseType.INTYGSUTKAST_SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelseType.INTYGSUTKAST_ANDRAT);
-
-        sendMessage(notificationMessage1, GROUP_ID_1);
-        LOG.info("Message 1 sent");
-        sendMessage(notificationMessage2, GROUP_ID_2);
+        sendMessage(notificationMessage2);
         LOG.info("Message 2 sent");
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
@@ -159,12 +129,10 @@ public class RouteIntegrationTest {
         return objectMapper.writeValueAsString(notificationMessage);
     }
 
-    private void sendMessage(final NotificationMessage message, final String groupId) throws Exception {
+    private void sendMessage(final NotificationMessage message) throws Exception {
         jmsTemplate.send(sendQueue, session -> {
             try {
-                TextMessage textMessage = session.createTextMessage(notificationMessageToJson(message));
-                textMessage.setStringProperty("JMSXGroupID", groupId);
-                return textMessage;
+                return session.createTextMessage(notificationMessageToJson(message));
             } catch (Exception e) {
                 throw Throwables.propagate(e);
             }
