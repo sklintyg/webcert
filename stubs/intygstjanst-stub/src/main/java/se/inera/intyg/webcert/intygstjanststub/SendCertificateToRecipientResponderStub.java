@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
+import org.apache.cxf.annotations.SchemaValidation;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,6 +35,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 /**
  * Created by eriklupander on 2015-06-10.
  */
+@SchemaValidation
 public class SendCertificateToRecipientResponderStub implements SendCertificateToRecipientResponderInterface {
 
     @Autowired

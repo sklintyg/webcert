@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.integration;
 
+import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
+@SchemaValidation
 public class SendMessageToCareResponderImpl implements SendMessageToCareResponderInterface {
     private static final Logger LOG = LoggerFactory.getLogger(SendMessageToCareResponderImpl.class);
 
