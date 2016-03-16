@@ -39,12 +39,19 @@ public interface ArendeRepository extends JpaRepository<Arende, Long> {
     List<Arende> findByIntygsId(String intygsId);
 
     /**
+     * Returns the {@link Arende} with the sought for meddelandeId.
+     * @param meddelandeId the meddelandeId which specifies the {@link Arende}
+     * @return the {@link Arende}
+     */
+    Arende findOneByMeddelandeId(String meddelandeId);
+
+    /**
      * List all unique signing doctors for the supplied units.
      *
      * @return a list of names
      */
-    @Query("SELECT DISTINCT signeratAv FROM Arende WHERE enhet IN (:idList) ORDER BY signeratAv ASC")
-    List<String> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
+    @Query("SELECT DISTINCT signeratAv, signeratAvName FROM Arende WHERE enhet IN (:idList) ORDER BY signeratAv ASC")
+    List<Object[]> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
 
     /**
      * List {@link Arende} entities in the repository with an enhet matching one of the

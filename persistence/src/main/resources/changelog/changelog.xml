@@ -745,4 +745,12 @@
 
   </changeSet>
 
+  <changeSet id="28" author="kja">
+    <addColumn tableName="ARENDE">
+      <column name="SIGNERAT_AV_NAME" type="varchar(255)" />
+      <column name="VIDAREBEFORDRAD" type="boolean" />
+      <column name="SENASTE_HANDELSE" type="datetime"/>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

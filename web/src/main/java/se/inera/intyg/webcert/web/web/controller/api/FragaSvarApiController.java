@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -49,6 +50,9 @@ public class FragaSvarApiController extends AbstractApiController {
     @Autowired
     private FragaSvarService fragaSvarService;
 
+    @Autowired
+    private ArendeService arendeService;
+
     @GET
     @Path("/sok")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -64,7 +68,8 @@ public class FragaSvarApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
-        List<Lakare> lakare = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
-        return Response.ok(lakare).build();
+        List<Lakare> fsLakare = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
+        List<Lakare> arendeLakare = arendeService.listSignedByForUnits();
+        return Response.ok(Lakare.merge(fsLakare, arendeLakare)).build();
     }
 }

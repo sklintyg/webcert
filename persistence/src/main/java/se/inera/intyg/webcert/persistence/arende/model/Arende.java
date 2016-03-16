@@ -111,12 +111,22 @@ public class Arende {
     @Column(name = "SIGNERAT_AV")
     private String signeratAv;
 
+    @Column(name = "SIGNERAT_AV_NAME")
+    private String signeratAvName;
+
     @Column(name = "ENHET")
     private String enhet;
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column(name = "SENASTE_HANDELSE")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime senasteHandelse;
+
+    @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
+    private Boolean vidarebefordrad = Boolean.FALSE;
 
     public Long getId() {
         return id;
@@ -286,5 +296,29 @@ public class Arende {
 
     public void setKomplettering(List<MedicinsktArende> kompletteringar) {
         this.komplettering = kompletteringar;
+    }
+
+    public String getSigneratAvName() {
+        return signeratAvName;
+    }
+
+    public void setSigneratAvName(String signeratAvName) {
+        this.signeratAvName = signeratAvName;
+    }
+
+    public LocalDateTime getSenasteHandelse() {
+        return senasteHandelse;
+    }
+
+    public void setSenasteHandelse(LocalDateTime senasteHandelse) {
+        this.senasteHandelse = senasteHandelse;
+    }
+
+    public Boolean getVidarebefordrad() {
+        return vidarebefordrad;
+    }
+
+    public void setVidarebefordrad(Boolean vidarebefordrad) {
+        this.vidarebefordrad = vidarebefordrad;
     }
 }

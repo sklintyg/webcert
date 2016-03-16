@@ -22,6 +22,7 @@ import java.util.List;
 
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
 
 public interface ArendeService {
 
@@ -33,7 +34,7 @@ public interface ArendeService {
     /**
      * List names of signing doctors for units where the webcert user is logged in.
      */
-    List<String> listSignedByForUnits() throws WebCertServiceException;
+    List<Lakare> listSignedByForUnits() throws WebCertServiceException;
 
     /**
      * List all arenden for units where the webcert user is logged in.

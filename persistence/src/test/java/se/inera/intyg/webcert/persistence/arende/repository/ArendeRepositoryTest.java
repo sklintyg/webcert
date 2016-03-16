@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.persistence.arende.repository;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -27,6 +29,7 @@ import java.util.List;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,11 @@ public class ArendeRepositoryTest {
 
     @Autowired
     private ArendeRepository repo;
+
+    @After
+    public void cleanup() {
+        repo.deleteAll();
+    }
 
     @Test
     public void testFindOne() {
@@ -77,62 +85,87 @@ public class ArendeRepositoryTest {
     }
 
     @Test
-    public void testFindSigneratAvByEnhet() {
-        final String signeratAv1 = "signerat av 1";
-        final String signeratAv2 = "signerat av 2";
-        final List<String> signeratAv = Arrays.asList(signeratAv1, signeratAv2);
-        final String enhet = "enhet";
-        repo.save(buildArende(signeratAv1, enhet));
-        repo.save(buildArende(signeratAv2, enhet));
+    public void testFindOneByMeddelandeId() {
+        final String meddelandeId = "meddelande2";
+        repo.save(buildArende("meddelande1"));
+        repo.save(buildArende(meddelandeId));
+        repo.save(buildArende("meddelande3"));
 
-        List<String> result = repo.findSigneratAvByEnhet(Arrays.asList(enhet));
-        assertEquals(signeratAv, result);
+        Arende arende = repo.findOneByMeddelandeId(meddelandeId);
+        assertNotNull(arende);
+        assertEquals(meddelandeId, arende.getMeddelandeId());
+
+        assertNull(repo.findOneByMeddelandeId("finns_ej"));
+    }
+
+    @Test
+    public void testFindSigneratAvByEnhet() {
+        final String signeratAv1HsaId = "signerat av 1 - hsa id";
+        final String signeratAv1Namn = "signerat av 1 - namn";
+        final String signeratAv2HsaId = "signerat av 2 - hsa id";
+        final String signeratAv2Namn = "signerat av 2 - namn";
+        final String[] expected1 = {signeratAv1HsaId, signeratAv1Namn};
+        final String[] expected2 = {signeratAv2HsaId, signeratAv2Namn};
+        final String enhet = "enhet";
+        repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet));
+        repo.save(buildArende(signeratAv2HsaId, signeratAv2Namn, enhet));
+
+        List<Object[]> result = repo.findSigneratAvByEnhet(Arrays.asList(enhet));
+
+        assertEquals(2, result.size());
+        assertEquals(expected1[0], result.get(0)[0]);
+        assertEquals(expected1[1], result.get(0)[1]);
+        assertEquals(expected2[0], result.get(1)[0]);
+        assertEquals(expected2[1], result.get(1)[1]);
     }
 
     @Test
     public void testFindSigneratAvByEnhetNoMatch() {
-        final String signeratAv1 = "signerat av 1";
-        final String signeratAv2 = "signerat av 2";
+        final String signeratAv1HsaId = "signerat av 1 - hsa id";
+        final String signeratAv1Namn = "signerat av 1 - namn";
+        final String signeratAv2HsaId = "signerat av 2 - hsa id";
+        final String signeratAv2Namn = "signerat av 2 - namn";
         final String enhet = "enhet";
-        repo.save(buildArende(signeratAv1, enhet));
-        repo.save(buildArende(signeratAv2, enhet));
+        repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet));
+        repo.save(buildArende(signeratAv2HsaId, signeratAv2Namn, enhet));
 
-        List<String> result = repo.findSigneratAvByEnhet(Arrays.asList("annan enhet"));
+        List<Object[]> result = repo.findSigneratAvByEnhet(Arrays.asList("annan enhet"));
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void testFindSigneratAvByEnhetMultipleUnits() {
-        final String signeratAv1 = "signerat av 1";
-        final String signeratAv2 = "signerat av 2";
-        final List<String> signeratAv = Arrays.asList(signeratAv1, signeratAv2);
+        final String signeratAv1HsaId = "signerat av 1 - hsa id";
+        final String signeratAv1Namn = "signerat av 1 - namn";
+        final String signeratAv2HsaId = "signerat av 2 - hsa id";
+        final String signeratAv2Namn = "signerat av 2 - namn";
+        final String[] expected = {signeratAv2HsaId, signeratAv2Namn};
         final String enhet1 = "enhet 1";
         final String enhet2 = "enhet 2";
-        repo.save(buildArende(signeratAv1, enhet1));
-        repo.save(buildArende(signeratAv2, enhet2));
+        repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet1));
+        repo.save(buildArende(signeratAv2HsaId, signeratAv2Namn, enhet2));
 
-        List<String> result = repo.findSigneratAvByEnhet(Arrays.asList(enhet1, enhet2, "annan enhet"));
-        assertEquals(signeratAv, result);
+        List<Object[]> result = repo.findSigneratAvByEnhet(Arrays.asList(enhet2, "annan enhet"));
+        assertEquals(1, result.size());
+        assertEquals(expected[0], result.get(0)[0]);
+        assertEquals(expected[1], result.get(0)[1]);
     }
 
     @Test
     public void testFindSigneratAvByEnhetNull() {
-        final String signeratAv1 = "signerat av 1";
-        final String signeratAv2 = "signerat av 2";
-        final String enhet = "enhet";
-        repo.save(buildArende(signeratAv1, enhet));
-        repo.save(buildArende(signeratAv2, enhet));
+        repo.save(buildArende("hsaid", "namn", "enhet"));
+        repo.save(buildArende("hsaid", "namn", "enhet"));
 
-        List<String> result = repo.findSigneratAvByEnhet(null);
+        List<Object[]> result = repo.findSigneratAvByEnhet(null);
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void testFindByEnhet() {
         final String enhet = "enhet";
-        repo.save(buildArende("signerat", enhet, Status.PENDING_INTERNAL_ACTION));
-        repo.save(buildArende("signerat", enhet, Status.CLOSED));
-        repo.save(buildArende("signerat", "annan enhet", Status.PENDING_INTERNAL_ACTION));
+        repo.save(buildArende(enhet, Status.PENDING_INTERNAL_ACTION));
+        repo.save(buildArende(enhet, Status.CLOSED));
+        repo.save(buildArende("annan enhet", Status.PENDING_INTERNAL_ACTION));
 
         List<Arende> result = repo.findByEnhet(Arrays.asList(enhet));
         assertEquals(1, result.size());
@@ -140,19 +173,28 @@ public class ArendeRepositoryTest {
     }
 
     private Arende buildArende() {
-        return buildArende("SIGNERAT_AV", "ENHET");
+        return buildArende("SIGNERAT_AV", "SIGNERAT_AV_NAMN", "ENHET");
     }
 
-    private Arende buildArende(String signeratAv, String enhet) {
-        return buildArende(signeratAv, enhet, Status.PENDING_INTERNAL_ACTION);
+    private Arende buildArende(String meddelandeId) {
+        return buildArende("SIGNERAT_AV", "SIGNERAT_AV_NAMN", "ENHET", Status.PENDING_INTERNAL_ACTION, meddelandeId);
     }
 
-    private Arende buildArende(String signeratAv, String enhet, Status status) {
+
+    private Arende buildArende(String enhet, Status status) {
+        return buildArende("HSA_ID", "NAME", enhet, status, "meddelande_id");
+    }
+
+    private Arende buildArende(String signeratAv, String signeratAvName, String enhet) {
+        return buildArende(signeratAv, signeratAvName, enhet, Status.PENDING_INTERNAL_ACTION, "meddelande_id");
+    }
+
+    private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String meddelandeId) {
         Arende res = new Arende();
         res.setAmne(ArendeAmne.KONTKT);
         res.setIntygsId("INTYG_ID");
         res.setMeddelande("MEDDELANDE");
-        res.setMeddelandeId("MEDDELANDE_ID");
+        res.setMeddelandeId(meddelandeId);
         res.setPaminnelseMeddelandeId("PAMINNELSE_MEDDELANDE_ID");
         res.setPatientPersonId("PATIENT_PERSON_ID");
         res.setReferensId("REFERENS_ID");
@@ -164,6 +206,7 @@ public class ArendeRepositoryTest {
         res.setSvarPaReferens("SVAR_PA_REFERENS");
         res.setIntygTyp("INTYG_TYP");
         res.setSigneratAv(signeratAv);
+        res.setSigneratAvName(signeratAvName);
         res.setEnhet(enhet);
         res.setStatus(status);
         res.setTimestamp(LocalDateTime.now());

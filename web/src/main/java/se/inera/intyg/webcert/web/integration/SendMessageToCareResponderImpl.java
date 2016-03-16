@@ -60,6 +60,11 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                 result.setResultText("Certificate not found");
                 LOG.warn("Could not process incoming message to care. Certificate not found.");
                 break;
+            case EXTERNAL_SYSTEM_PROBLEM:
+                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+                result.setResultText("Could not contact HSA");
+                LOG.warn("Could not process incoming message to care. HSA not reachable.");
+                break;
             default:
                 result.setErrorId(ErrorIdType.APPLICATION_ERROR);
                 result.setResultText(e.getMessage());

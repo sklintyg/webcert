@@ -19,19 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
-import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -39,9 +36,12 @@ import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -62,6 +62,9 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private TransportToArende transportToArende;
 
+    @Autowired
+    private HsaEmployeeService hsaEmployeeService;
+
     private static final ArendeTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeTimeStampComparator();
 
     @Override
@@ -74,27 +77,60 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Certificate " + arende.getIntygsId() + " not signed.");
         }
-        decorateArende(arende, utkast);
-        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
-        arende.setTimestamp(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        decorateArende(arende, utkast, now);
+
+        updateRelated(arende, now);
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
 
         return repo.save(arende);
     }
 
-    private void decorateArende(Arende arende, Utkast utkast) {
+    private void updateRelated(Arende arende, LocalDateTime now) {
+        if (arende.getSvarPaId() != null) {
+            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getSvarPaId())).ifPresent(a -> {
+                a.setSenasteHandelse(now);
+                a.setStatus(Status.ANSWERED);
+            });
+        } else if (arende.getPaminnelseMeddelandeId() != null) {
+            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId())).ifPresent(a -> a.setSenasteHandelse(now));
+        }
+    }
+
+    private void decorateArende(Arende arende, Utkast utkast, LocalDateTime now) {
+        arende.setTimestamp(now);
+        arende.setSenasteHandelse(now);
+        arende.setStatus(arende.getSvarPaId() == null ? Status.PENDING_INTERNAL_ACTION : Status.ANSWERED);
+        arende.setVidarebefordrad(Boolean.FALSE);
+
         arende.setIntygTyp(utkast.getIntygsTyp());
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
+        arende.setSigneratAvName(getSignedByName(utkast));
         arende.setEnhet(utkast.getEnhetsId());
     }
 
+    private String getSignedByName(Utkast utkast) {
+        return Optional.ofNullable(hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null))
+                .map(GetEmployeeIncludingProtectedPersonResponseType::getPersonInformation)
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                        "HSA did not respond with information"))
+                .stream()
+                .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
+                .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
+                        ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                        : pit.getMiddleAndSurName())
+                .findFirst().orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+    }
+
     @Override
-    public List<String> listSignedByForUnits() throws WebCertServiceException {
+    public List<Lakare> listSignedByForUnits() throws WebCertServiceException {
         WebCertUser user = webcertUserService.getUser();
         List<String> unitIds = user.getIdsOfSelectedVardenhet();
 
-        return repo.findSigneratAvByEnhet(unitIds);
+        return repo.findSigneratAvByEnhet(unitIds).stream()
+                .map(arr -> new Lakare((String) arr[0], (String) arr[1]))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -108,7 +144,6 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public List<Arende> getArende(String intygsId) {
         List<Arende> arendeList = repo.findByIntygsId(intygsId);
-
 
         WebCertUser user = webcertUserService.getUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();

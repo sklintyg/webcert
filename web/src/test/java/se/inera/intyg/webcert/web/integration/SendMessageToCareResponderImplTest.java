@@ -94,6 +94,15 @@ public class SendMessageToCareResponderImplTest {
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
     }
 
+    @Test
+    public void testSendRequestToServiceFailedExternalServiceProblem() throws WebCertServiceException {
+        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, ""));
+        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+        assertNotNull(response.getResult());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+    }
+
     private SendMessageToCareType createNewRequest() {
         SendMessageToCareType res = new SendMessageToCareType();
         res.setAmne(new Amneskod());

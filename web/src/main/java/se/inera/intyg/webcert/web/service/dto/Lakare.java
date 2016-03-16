@@ -19,13 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.dto;
 
+import java.util.*;
+
 public class Lakare {
 
     private String hsaId;
 
     private String name;
 
-    public Lakare() { }
+    public Lakare() {
+    }
 
     public Lakare(String hsaId, String name) {
         this.hsaId = hsaId;
@@ -40,4 +43,62 @@ public class Lakare {
         return name;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((hsaId == null) ? 0 : hsaId.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Lakare other = (Lakare) obj;
+        if (hsaId == null) {
+            if (other.hsaId != null) {
+                return false;
+            }
+        } else if (!hsaId.equals(other.hsaId)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Merges two lists of lakare to one.
+     *
+     * @return the sorted by name list of lakare
+     */
+    public static List<Lakare> merge(List<Lakare> a, List<Lakare> b) {
+        if (a == null && b == null) {
+            return new ArrayList<>();
+        } else if (a == null) {
+            return b;
+        } else if (b == null) {
+            return a;
+        }
+
+        Set<Lakare> lakarSet = new HashSet<>(a);
+        lakarSet.addAll(b);
+        List<Lakare> res = new ArrayList<>(lakarSet);
+        res.sort(Comparator.comparing(Lakare::getName));
+        return res;
+    }
 }

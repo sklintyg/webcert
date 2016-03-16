@@ -63,7 +63,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 
-
 @Service
 public class SignaturServiceImpl implements SignaturService {
 
@@ -214,7 +213,6 @@ public class SignaturServiceImpl implements SignaturService {
         }
         LOG.debug("Klientsignering ticket '{}' intyg '{}'", ticket.getId(), ticket.getIntygsId());
 
-
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
@@ -316,7 +314,9 @@ public class SignaturServiceImpl implements SignaturService {
      */
     private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
         VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+
         utkast.setSenastSparadAv(vardpersonReferens);
+
         try {
             InternalModelHolder internalModel = new InternalModelHolder(utkast.getModel());
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
