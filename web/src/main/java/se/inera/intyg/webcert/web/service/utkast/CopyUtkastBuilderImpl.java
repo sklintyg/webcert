@@ -116,16 +116,15 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         utkast.setIntygsTyp(intygsTyp);
         utkast.setStatus(utkastStatus);
         utkast.setModel(draftCopyJson);
+        if (addRelation) {
+            enrichWithRelation(utkast, relation);
+        }
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
         } else {
             se.inera.intyg.common.support.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData().getPatient();
             populatePatientDetailsFromPatient(utkast, patient);
-        }
-
-        if (addRelation) {
-            enrichWithRelation(utkast, orignalIntygsId, RelationKod.KOMPLT);
         }
 
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
@@ -179,6 +178,9 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         utkast.setIntygsTyp(orgUtkast.getIntygsTyp());
         utkast.setStatus(utkastStatus);
         utkast.setModel(draftCopyJson);
+        if (addRelation) {
+            enrichWithRelation(utkast, relation);
+        }
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -186,9 +188,6 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
             populatePatientDetailsFromUtkast(utkast, orgUtkast);
         }
 
-        if (addRelation) {
-            enrichWithRelation(utkast, orignalIntygsId, RelationKod.KOMPLT);
-        }
 
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
@@ -207,9 +206,9 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return relation;
     }
 
-    private void enrichWithRelation(Utkast utkast, String originalIntygsId, RelationKod relationKod) {
-        utkast.setRelationIntygsId(originalIntygsId);
-        utkast.setRelationKod(relationKod);
+    private void enrichWithRelation(Utkast utkast, Relation relation) {
+        utkast.setRelationIntygsId(relation.getRelationIntygsId());
+        utkast.setRelationKod(relation.getRelationKod());
     }
 
     private CreateDraftCopyHolder createModuleRequestForCopying(CreateNewDraftCopyRequest copyRequest, Person person, Relation relation) {

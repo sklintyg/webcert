@@ -133,6 +133,60 @@ public class CopyUtkastBuilderImplTest {
     }
 
     @Test
+    public void testPopulateCompletionFromSignedIntyg() throws Exception {
+        
+        IntygContentHolder ich = createIntygContentHolder();
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
+        
+        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        
+        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+        
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
+        
+        assertNotNull(builderResponse.getUtkastCopy());
+        assertNotNull(builderResponse.getUtkastCopy().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
+        assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
+    }
+
+    @Test
+    public void testPopulateCompletionFromOriginal() throws Exception {
+
+        Utkast orgUtkast = createOriginalUtkast();
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+
+        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+
+        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
+
+        assertNotNull(builderResponse.getUtkastCopy());
+        assertNotNull(builderResponse.getUtkastCopy().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
+        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
+    }
+
+    @Test
     public void testPopulateCopyUtkastFromSignedIntyg() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
