@@ -1,0 +1,40 @@
+{
+  "@class" : "se.inera.intyg.common.integration.hsa.model.Vardgivare",
+  "id" : "TSTNMT2321000156-105M",
+  "namn" : "Rehabstöd Vårdgivare 1",
+  "vardenheter" : [
+    {
+      "@class" : "se.inera.intyg.common.integration.hsa.model.Vardenhet",
+      "id" : "TSTNMT2321000156-105N",
+      "namn" : "Rehabstöd Enhet 1",
+      "epost" : "enhet1@rehabstod.invalid.se",
+      "telefonnummer" : "0101234567890",
+      "postadress" : "Lasarettsgatan 1",
+      "postnummer" : "12345",
+      "postort" : "Testhult",
+      "arbetsplatskod" : "1234567890"
+    },
+    {
+      "@class" : "se.inera.intyg.common.integration.hsa.model.Vardenhet",
+      "id" : "TSTNMT2321000156-105P",
+      "namn" : "Rehabstöd Enhet 2",
+      "epost" : "enhet1@rehabstod.invalid.se",
+      "telefonnummer" : "0101234567890",
+      "postadress" : "Lasarettsgatan 1",
+      "postnummer" : "12345",
+      "postort" : "Testhult",
+      "arbetsplatskod" : "1234567890"
+    },
+    {
+      "@class" : "se.inera.intyg.common.integration.hsa.model.Vardenhet",
+      "id" : "TSTNMT2321000156-105Q",
+      "namn" : "Rehabstöd Enhet 3",
+      "epost" : "enhet3@rehabstod.invalid.se",
+      "telefonnummer" : "0101234567890",
+      "postadress" : "Lasarettsgatan 1",
+      "postnummer" : "12345",
+      "postort" : "Testhult",
+      "arbetsplatskod" : "1234567890"
+    }
+  ]
+}

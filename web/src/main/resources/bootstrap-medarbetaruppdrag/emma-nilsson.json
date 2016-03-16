@@ -1,0 +1,15 @@
+{
+	"hsaId": "TSTNMT2321000156-105R",
+	"legitimeradeYrkesgrupper" : [
+		"Läkare"
+	],
+	"uppdrag": [
+		{
+			"vardgivare": "TSTNMT2321000156-105M",
+			"enhet": "TSTNMT2321000156-105N",
+			"andamal": [
+				"Vård och behandling"
+			]
+		}
+	]
+}

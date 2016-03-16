@@ -389,6 +389,39 @@
                 "enhetId": "TSTNMT2321000156-105F",
                 "lakare" : false,
                 "forskrivarKod": "9300005"
+            },
+
+            // Användare för Rehabstöd som ska finnas i:
+            // - Test HSA
+            // - Rehabstöd
+            // - Webcert
+            // - Intygstjänsten
+
+            // Läkare 1
+            {
+                "fornamn": "Emma",
+                "efternamn": "Nilsson",
+                "hsaId": "TSTNMT2321000156-105R",
+                "enhetId": "TSTNMT2321000156-105N",
+                "lakare" : true
+            },
+
+            // Läkare 2
+            {
+                "fornamn": "Anders",
+                "efternamn": "Karlsson",
+                "hsaId": "TSTNMT2321000156-105S",
+                "enhetId": "TSTNMT2321000156-105N",
+                "lakare" : true
+            },
+
+            // Läkare 3
+            {
+                "fornamn": "Ingrid",
+                "efternamn": "Nilsson Olsson",
+                "hsaId": "TSTNMT2321000156-105T",
+                "enhetId": "TSTNMT2321000156-105P",
+                "lakare" : true
             }
         ];
 
@@ -477,7 +510,10 @@
                     {id:31, hsaId: 'TSTNMT2321000156-100G_TSTNMT2321000156-1039', env: 'demo', name: 'Bill Smith (Läkare utom EU/ESS/Schweiz / Vård och Behandling)'},
                     {id:32, hsaId: 'TSTNMT2321000156-100H_TSTNMT2321000156-1039', env: 'demo', name: 'Martin Johansson (Vikarierande examinerad läkare / Vård och Behandling)'},
                     {id:33, hsaId: 'TSTNMT2321000156-105H_TSTNMT2321000156-105F', env: 'demo', name: 'Erik Nilsson (NMT Läkare / Vård och Behandling)'},
-                    {id:34, hsaId: 'TSTNMT2321000156-105J_TSTNMT2321000156-105F', env: 'demo', name: 'Susanne Karlsson (NMT Administratör / Vård och Behandling)'}
+                    {id:34, hsaId: 'TSTNMT2321000156-105J_TSTNMT2321000156-105F', env: 'demo', name: 'Susanne Karlsson (NMT Administratör / Vård och Behandling)'},
+                    {id:35, hsaId: 'TSTNMT2321000156-105R_TSTNMT2321000156-105N', env: 'demo', name: 'Emma Nilsson (Rehabstöd / Läkare 1 / Vård och Behandling)'},
+                    {id:36, hsaId: 'TSTNMT2321000156-105S_TSTNMT2321000156-105N', env: 'demo', name: 'Anders Karlsson (Rehabstöd / Läkare 2 / Vård och Behandling)'},
+                    {id:37, hsaId: 'TSTNMT2321000156-105T_TSTNMT2321000156-105P', env: 'demo', name: 'Ingrid Nilsson Olsson (Rehabstöd / Läkare 3 / Vård och Behandling)'}
                   ]
                 };
 
