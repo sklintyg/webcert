@@ -38,7 +38,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -266,9 +265,9 @@ public class NotificationServiceImpl implements NotificationService {
 
         try {
             decorateWithDisplayName(utkast);
-            
         } catch (ModuleNotFoundException | ModuleException e) {
-            e.printStackTrace();
+            LOGGER.error("Problem occured when trying to add description texts to diagnoses.", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not add description texts to diagnoses.");
         }
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get());

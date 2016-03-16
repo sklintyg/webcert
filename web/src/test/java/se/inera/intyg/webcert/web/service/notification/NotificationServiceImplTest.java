@@ -38,11 +38,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -74,6 +77,12 @@ public class NotificationServiceImplTest {
 
     @Mock
     private MonitoringLogService mockMonitoringLogService;
+    
+    @Mock
+    private IntygModuleRegistryImpl moduleRegistry;
+    
+    @Mock
+    private ModuleApi moduleApi;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -91,6 +100,7 @@ public class NotificationServiceImplTest {
         NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
                 eq(NotificationVersion.VERSION_1))).thenReturn(notMsg);
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
         notificationService.createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_ANDRAT);

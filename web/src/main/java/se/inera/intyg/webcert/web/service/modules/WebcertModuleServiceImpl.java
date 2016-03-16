@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.modules.fkparent.model.internal.Diagnos;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.common.support.modules.service.WebcertModuleService;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
@@ -72,6 +71,13 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
         return (DiagnosResponseType.OK.equals(response.getResultat()));
     }
 
+    /*
+     * The given code may represent a group of multiple diagnosis codes, and thus generate a list of matches instead of only one. 
+     * This means that the mapping is no longer 1:1. 
+     * In that case, as well as in the case where there is no match, description will be set to "" since we do not wish to interpret 
+     * what is being delivered to us - we only wish to forward the information. 
+     */
+    @Override
     public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
         DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);
         List<se.inera.intyg.webcert.web.service.diagnos.model.Diagnos> diagnoser = response.getDiagnoser();
