@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.integration.v2;
 
 import java.util.List;
 
+import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 import se.riv.infrastructure.directory.v1.CommissionType;
 
+@SchemaValidation
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);

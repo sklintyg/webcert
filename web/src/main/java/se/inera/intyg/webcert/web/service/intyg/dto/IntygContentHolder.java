@@ -19,10 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.intyg.dto;
 
-import java.util.List;
-
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
@@ -36,14 +37,14 @@ public class IntygContentHolder {
     private final Utlatande utlatande;
     private final List<Status> statuses;
     private final boolean revoked;
+    private final List<RelationItem> relations;
 
-
-    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked) {
-        super();
+    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, Optional<List<RelationItem>> relations) {
         this.contents = contents;
         this.utlatande = utlatande;
         this.statuses = statuses;
         this.revoked = revoked;
+        this.relations = relations.orElse(new ArrayList<>());
     }
 
     public String getContents() {
@@ -62,4 +63,7 @@ public class IntygContentHolder {
         return revoked;
     }
 
+    public List<RelationItem> getRelations() {
+        return relations;
+    }
 }

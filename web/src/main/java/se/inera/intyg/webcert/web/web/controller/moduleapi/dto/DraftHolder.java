@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -45,6 +48,8 @@ public class DraftHolder {
 
     private String latestTextVersion;
 
+    private List<RelationItem> relations;
+
     public DraftHolder() {
 
     }
@@ -53,11 +58,9 @@ public class DraftHolder {
         return version;
     }
 
-
     public void setVersion(long version) {
         this.version = version;
     }
-
 
     public boolean isVidarebefordrad() {
         return vidarebefordrad;
@@ -105,5 +108,12 @@ public class DraftHolder {
 
     public String getLatestTextVersion() {
         return latestTextVersion;
+    }
+
+    public List<RelationItem> getRelations() {
+        if (relations == null) {
+            relations = new ArrayList<>();
+        }
+        return relations;
     }
 }

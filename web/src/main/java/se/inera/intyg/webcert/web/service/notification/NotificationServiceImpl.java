@@ -244,7 +244,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelseType handelse) {
-
         Optional<NotificationVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
         if (!version.isPresent()) {
@@ -256,7 +255,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId) {
-
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
@@ -264,11 +262,10 @@ public class NotificationServiceImpl implements NotificationService {
 
         String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
-        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson, enhetsId));
+        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson));
 
         LOGGER.debug("Notification sent: {}", notificationMessage);
         monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId);
-
     }
 
     private Optional<Utkast> getUtkast(String intygsId) {
@@ -287,20 +284,14 @@ public class NotificationServiceImpl implements NotificationService {
     private static final class NotificationMessageCreator implements MessageCreator {
 
         private final String value;
-        private final String enhetsId;
 
-        private NotificationMessageCreator(String notificationMessage, String enhetsId) {
+        private NotificationMessageCreator(String notificationMessage) {
             this.value = notificationMessage;
-            this.enhetsId = enhetsId;
         }
 
         @Override
         public Message createMessage(Session session) throws JMSException {
-            TextMessage textMessage = session.createTextMessage(this.value);
-            // Using JMSXGroupID makes sure that ActiveMQ sends messages destined to the same recipient
-            // to the same consumer thread.
-            textMessage.setStringProperty("JMSXGroupID", enhetsId);
-            return textMessage;
+            return session.createTextMessage(this.value);
         }
     }
 

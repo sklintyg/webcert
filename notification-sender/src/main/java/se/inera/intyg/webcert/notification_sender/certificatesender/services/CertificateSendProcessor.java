@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import javax.xml.ws.WebServiceException;
 
+import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,14 +45,15 @@ public class CertificateSendProcessor {
     @Autowired
     private SendCertificateServiceClient sendServiceClient;
 
-    public void process(@Header(Constants.INTYGS_ID) String intygsId,
+    public void process(@Body String skickatAv,
+            @Header(Constants.INTYGS_ID) String intygsId,
             @Header(Constants.PERSON_ID) String personId,
             @Header(Constants.RECIPIENT) String recipient,
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
 
         SendCertificateToRecipientResponseType response;
         try {
-            response = sendServiceClient.sendCertificate(intygsId, personId, recipient, logicalAddress);
+            response = sendServiceClient.sendCertificate(intygsId, personId, skickatAv, recipient, logicalAddress);
 
             final ResultType result = response.getResult();
             final String resultText = result.getResultText();

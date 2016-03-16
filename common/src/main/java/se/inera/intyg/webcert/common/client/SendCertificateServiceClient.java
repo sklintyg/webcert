@@ -29,5 +29,6 @@ public interface SendCertificateServiceClient {
     /**
      * Instructs IT to send the intyg identified by the specified intygsId and personId to the specified recipient.
      */
-    SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String recipient, String logicalAddress);
+    SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
+            String logicalAddress);
 }

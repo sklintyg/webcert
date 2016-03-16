@@ -25,8 +25,6 @@ import static org.hamcrest.core.IsNot.not;
  */
 public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(IntygModuleApiControllerIT.class);
-
     @Test
     public void testGetFk7263Intyg() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);

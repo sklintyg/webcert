@@ -22,8 +22,11 @@ package se.inera.intyg.webcert.common.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.webcert.common.client.converter.SendCertificateToRecipientTypeConverter;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Exposes the SendCertificateToRecipient SOAP service.
@@ -33,33 +36,25 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
 @Component
 public class SendCertificateServiceClientImpl implements SendCertificateServiceClient {
 
-    private static final String PERSON_ID_ROOT = "1.2.752.129.2.1.3.1";
-    private static final String MOTTAGARE_CODE_SYSTEM = "769bb12b-bd9f-4203-a5cd-fd14f2eb3b80";
-
     @Autowired
     private SendCertificateToRecipientResponderInterface sendService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
-    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String recipient, String logicalAddress) {
+    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
+            String logicalAddress) {
 
         validateArgument(intygsId, "Cannot send certificate, argument 'intygsId' is null or empty.");
         validateArgument(personId, "Cannot send certificate, argument 'personId' is null or empty.");
+        validateArgument(skickatAvJson, "Cannot send certificate, argument 'skickatAvJson' is null or empty.");
         validateArgument(recipient, "Cannot send certificate, argument 'recipient' is null or empty.");
         validateArgument(logicalAddress, "Cannot send certificate, argument 'logicalAddress' is null or empty.");
 
-        SendCertificateToRecipientType request = new SendCertificateToRecipientType();
-        PersonId patientPersonId = new PersonId();
-        patientPersonId.setRoot(PERSON_ID_ROOT);
-        patientPersonId.setExtension(personId);
-        request.setPatientPersonId(patientPersonId);
-        IntygId intygId = new IntygId();
-        intygId.setRoot("SE5565594230-B31");  // IT:s root since unit hsaId is not available
-        intygId.setExtension(intygsId);
-        request.setIntygsId(intygId);
-        Part part = new Part();
-        part.setCode(recipient);
-        part.setCodeSystem(MOTTAGARE_CODE_SYSTEM);
-        request.setMottagare(part);
+        HoSPersonal skickatAv = parseJson(skickatAvJson);
+
+        SendCertificateToRecipientType request = SendCertificateToRecipientTypeConverter.convert(intygsId, personId, skickatAv, recipient);
 
         SendCertificateToRecipientResponseType response = sendService.sendCertificateToRecipient(logicalAddress, request);
 
@@ -69,6 +64,14 @@ public class SendCertificateServiceClientImpl implements SendCertificateServiceC
     private void validateArgument(String arg, String msg) {
         if (arg == null || arg.trim().length() == 0) {
             throw new IllegalArgumentException(msg);
+        }
+    }
+
+    private HoSPersonal parseJson(String skickatAvJson) {
+        try {
+            return objectMapper.readValue(skickatAvJson, HoSPersonal.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot send certificate, argument 'skickatAvJson' is invalid: " + e.getMessage());
         }
     }
 }

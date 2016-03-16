@@ -17,16 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.certificatesender;
+package se.inera.intyg.webcert.web.service.relation;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import java.util.List;
 
-/**
- * Created by eriklupander on 2015-05-20.
- */
-public interface CertificateSenderService {
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
-    void storeCertificate(String intygsId, String intygsTyp, String jsonBody) throws CertificateSenderException;
-    void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) throws CertificateSenderException;
-    void revokeCertificate(String intygsId, String xmlBody) throws CertificateSenderException;
+public interface RelationService {
+
+    /**
+     * Returns a list of relations going backwards in time, starting with the utkast/intyg specified by
+     * <code>intygsId</code>.
+     *
+     * @param intygsId
+     *            the starting point of the relations list
+     * @return a list of all the utkast/intyg which has a relation to <code>intygsId</code>
+     */
+    List<RelationItem> getRelations(String intygsId);
 }

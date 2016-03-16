@@ -59,6 +59,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.*;
@@ -120,6 +121,9 @@ public class IntygServiceTest {
 
     @Mock
     private MonitoringLogService mockMonitoringService;
+
+    @Mock
+    private RelationService relationService;
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
@@ -211,12 +215,25 @@ public class IntygServiceTest {
 
         intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
-        // ensure that correct call is made to moduleFacade
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        // Assert pdl log
         verify(logservice).logReadIntyg(any(LogRequest.class));
-        // Assert monitoring log
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService, times(0)).getRelations(any());
+    }
+
+    @Test
+    public void testFetchIntygDataWithRelation() throws Exception {
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new ArrayList<>());
+
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService).getRelations(eq(CERTIFICATE_ID));
     }
 
     @Test

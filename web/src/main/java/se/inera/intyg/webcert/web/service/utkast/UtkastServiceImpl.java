@@ -207,15 +207,16 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional(readOnly = true)
     public Utkast getDraft(String intygId) {
         Utkast utkast = getIntygAsDraft(intygId);
-        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+        if (utkast != null) {
+            abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
-        // Log read to PDL
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logReadIntyg(logRequest);
+            // Log read to PDL
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+            logService.logReadIntyg(logRequest);
 
-        // Log read to monitoring log
-        monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
-
+            // Log read to monitoring log
+            monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
+        }
         return utkast;
     }
 
@@ -592,6 +593,8 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     public enum Event {
-        CHANGED, CREATED, DELETED;
+        CHANGED,
+        CREATED,
+        DELETED;
     }
 }

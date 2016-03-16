@@ -5,6 +5,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -101,7 +102,7 @@ public class TransportToArendeTest {
     private void setupMocks(Arende arende, ModuleApi moduleApi, LocalDateTime timeStamp, Utlatande utlatande)
             throws ModuleNotFoundException {
         Status status = new Status(CertificateState.RECEIVED, intygsId, timeStamp);
-        IntygContentHolder content = new IntygContentHolder("", utlatande, Arrays.asList(status), false);
+        IntygContentHolder content = new IntygContentHolder("", utlatande, Arrays.asList(status), false, Optional.empty());
 
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(intygService.fetchIntygData(any(String.class), any(String.class))).thenReturn(content);

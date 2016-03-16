@@ -49,7 +49,7 @@ public class MockSendCertificateServiceClientImpl implements SendCertificateServ
     private List<String> store = new CopyOnWriteArrayList<>();
 
     @Override
-    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String recipient, String logicalAddress) {
+    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient, String logicalAddress) {
         count.incrementAndGet();
 
         if (intygsId.startsWith(FALLERAT_MEDDELANDE)) {

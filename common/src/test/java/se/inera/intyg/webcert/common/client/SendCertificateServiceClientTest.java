@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -30,15 +31,21 @@ import static org.mockito.Mockito.when;
 
 import javax.xml.ws.WebServiceException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by eriklupander on 2015-06-04.
@@ -48,6 +55,7 @@ public class SendCertificateServiceClientTest {
 
     private static final String INTYGS_ID = "intyg-1";
     private static final String PERSON_ID = "person-1";
+    private static final String SKICKAT_AV_JSON = createSkickatAvJson();
     private static final String RECIPIENT = "recipient-1";
     private static final String LOGICAL_ADDRESS = "logical-address-1";
 
@@ -57,9 +65,22 @@ public class SendCertificateServiceClientTest {
     @Mock
     SendCertificateToRecipientResponseType response;
 
+    @Mock
+    ObjectMapper objectMapper;
+
     @InjectMocks
     SendCertificateServiceClientImpl testee = new SendCertificateServiceClientImpl();
 
+    @Before
+    public void setup() throws Exception {
+        when(objectMapper.readValue(anyString(), eq(HoSPersonal.class))).then(new Answer<HoSPersonal>() {
+
+            @Override
+            public HoSPersonal answer(InvocationOnMock invocation) throws Throwable {
+                return new ObjectMapper().readValue((String) invocation.getArguments()[0], HoSPersonal.class);
+            }
+        });
+    }
 
     @Test
     public void testSendCertificateOk() {
@@ -68,7 +89,7 @@ public class SendCertificateServiceClientTest {
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenReturn(response);
-        SendCertificateToRecipientResponseType resp = testee.sendCertificate(INTYGS_ID, PERSON_ID, RECIPIENT, LOGICAL_ADDRESS);
+        SendCertificateToRecipientResponseType resp = testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
 
         assertEquals(ResultCodeType.OK, resp.getResult().getResultCode());
     }
@@ -77,7 +98,7 @@ public class SendCertificateServiceClientTest {
     public void testSendCertificateNoIntygsId() {
 
         try {
-            testee.sendCertificate(null, PERSON_ID, RECIPIENT, LOGICAL_ADDRESS);
+            testee.sendCertificate(null, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
         } catch (Exception e) {
             verifyZeroInteractions(sendService);
             throw e;
@@ -89,7 +110,7 @@ public class SendCertificateServiceClientTest {
     public void testSendCertificateNoPersonId() {
 
         try {
-            testee.sendCertificate(INTYGS_ID, null, RECIPIENT, LOGICAL_ADDRESS);
+            testee.sendCertificate(INTYGS_ID, null, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
         } catch (Exception e) {
             verifyZeroInteractions(sendService);
             throw e;
@@ -101,7 +122,7 @@ public class SendCertificateServiceClientTest {
     public void testSendCertificateNoRecipient() {
 
         try {
-            testee.sendCertificate(INTYGS_ID, PERSON_ID, null, LOGICAL_ADDRESS);
+            testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, null, LOGICAL_ADDRESS);
         } catch (Exception e) {
             verifyZeroInteractions(sendService);
             throw e;
@@ -113,7 +134,7 @@ public class SendCertificateServiceClientTest {
     public void testSendCertificateNoLogicalAddress() {
 
         try {
-            testee.sendCertificate(INTYGS_ID, PERSON_ID, RECIPIENT, null);
+            testee.sendCertificate(INTYGS_ID, SKICKAT_AV_JSON, PERSON_ID, RECIPIENT, null);
         } catch (Exception e) {
             verifyZeroInteractions(sendService);
             throw e;
@@ -129,7 +150,7 @@ public class SendCertificateServiceClientTest {
     public void testExceptionsAreForwardedAsIs() {
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenThrow(new WebServiceException("FOO BAR"));
-        testee.sendCertificate(INTYGS_ID, PERSON_ID, RECIPIENT, LOGICAL_ADDRESS);
+        testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
 
         verify(sendService, times(1)).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
@@ -138,5 +159,15 @@ public class SendCertificateServiceClientTest {
         ResultType roc = new ResultType();
         roc.setResultCode(resultCodeType);
         return roc;
+    }
+
+    private static String createSkickatAvJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"personId\":\"skapad av pid\",\"fullstandigtNamn\":\"fullständigt namn\",\"forskrivarKod\":");
+        sb.append("\"forskrivarKod\",\"befattningar\":[],\"specialiteter\":[],\"vardenhet\":{\"enhetsid\":\"enhetsid\",");
+        sb.append("\"enhetsnamn\":\"enhetsnamn\",\"postadress\":\"postadress\",\"postnummer\":\"postNummer\",\"postort\":");
+        sb.append("\"postOrt\",\"telefonnummer\":\"telefonNummer\",\"epost\":\"epost\",\"vardgivare\":{\"vardgivarid\":");
+        sb.append("\"vardgivarid\",\"vardgivarnamn\":\"vardgivarNamn\"},\"arbetsplatsKod\":\"arbetsplatsKod\"}}");
+        return sb.toString();
     }
 }
