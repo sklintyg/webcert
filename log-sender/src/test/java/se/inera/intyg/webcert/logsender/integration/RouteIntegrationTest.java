@@ -20,9 +20,10 @@
 package se.inera.intyg.webcert.logsender.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.util.Enumeration;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
@@ -50,9 +51,15 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.logsender.client.mock.MockLogSenderClientClientImpl;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.base.Throwables;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
@@ -98,15 +105,10 @@ public class RouteIntegrationTest {
             sendMessage(ActivityType.READ);
         }
 
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                int numberOfReceivedMessages = mockLogSenderClientClient.getNumberOfReceivedMessages();
-                System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
-                return (numberOfReceivedMessages == 1);
-            }
-        });
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(1));
     }
+
+
 
     @Test
     public void ensureStubReceivesTwoMessagesAfterTenHasBeenSent() throws Exception {
@@ -115,14 +117,7 @@ public class RouteIntegrationTest {
             sendMessage(ActivityType.READ);
         }
 
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                int numberOfReceivedMessages = mockLogSenderClientClient.getNumberOfReceivedMessages();
-                System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
-                return (numberOfReceivedMessages == 2);
-            }
-        });
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(2));
     }
 
     @Test
@@ -132,17 +127,67 @@ public class RouteIntegrationTest {
             sendMessage(ActivityType.READ);
         }
 
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                int numberOfReceivedMessages = mockLogSenderClientClient.getNumberOfReceivedMessages();
-                System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
-                return (numberOfReceivedMessages == 0);
-            }
-        });
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(0));
     }
 
-//    @Test
+    @Test
+    public void ensureStubReceivesOneMessagesAfterOneWithFiveResourcesHasBeenSent() throws Exception {
+
+        for (int a = 0; a < 1; a++) {
+            sendMessage(ActivityType.READ, 5);
+        }
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(1));
+    }
+
+    @Test
+    public void ensureStubReceivesFourMessagesAfterThreeTimesSevenHasBeenSent() throws Exception {
+
+        for (int a = 0; a < 3; a++) {
+            sendMessage(ActivityType.READ, 7);
+        }
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(4));
+    }
+
+    @Test
+    public void ensureStubReceivesZeroMessagesAfterFiveWithNoResourcesHasBeenSent() throws Exception {
+
+        for (int a = 0; a < 5; a++) {
+            sendMessage(ActivityType.READ, 0);
+        }
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(0));
+    }
+
+    @Test
+    public void ensureStubReceivesNoMessageAfterOneWithSixWhereOnIsInvalidHasBeenSent() throws Exception {
+        String body = buildPdlLogMessageWithInvalidResourceJson();
+        jmsTemplate.send(sendQueue, session -> {
+            try {
+                TextMessage textMessage = session.createTextMessage(body);
+                return textMessage;
+            } catch (Exception e) {
+                throw Throwables.propagate(e);
+            }
+        });
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(0));
+    }
+
+    private String buildPdlLogMessageWithInvalidResourceJson() throws IOException {
+        String bodyOfSix = TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ, 6);
+        ObjectNode jsonNode = (ObjectNode) new CustomObjectMapper().readTree(bodyOfSix);
+        ArrayNode pdlResourceList = (ArrayNode) jsonNode.get("pdlResourceList");
+
+        JsonNode invalidJsonNode = new TextNode("Some text that doesn't belong here");
+        ObjectNode resourceNode = (ObjectNode) pdlResourceList.get(2);
+        resourceNode.set("resourceOwner", invalidJsonNode);
+
+        return new CustomObjectMapper().writeValueAsString(jsonNode);
+    }
+
+    //    @Test
 //    public void ensureStubReceivesAllMessagesAfterResend() throws Exception {
 //        sendMessage(ActivityType.EMERGENCY_ACCESS);
 //        sendMessage(ActivityType.EMERGENCY_ACCESS);
@@ -169,14 +214,13 @@ public class RouteIntegrationTest {
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
 
-        await().atMost(15, TimeUnit.SECONDS).until(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                int numberOfDLQMessages = numberOfDLQMessages();
-                System.out.println("numberOfDLQMessages: " + numberOfDLQMessages);
-                return (numberOfDLQMessages == 1);
-            }
-        });
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> expectedDLQMessages(1));
+    }
+
+    private Boolean expectedDLQMessages(int expectedDlqMessages) throws Exception {
+        int numberOfDLQMessages = numberOfDLQMessages();
+        System.out.println("numberOfDLQMessages: " + numberOfDLQMessages);
+        return (numberOfDLQMessages == expectedDlqMessages);
     }
 
     @Test
@@ -193,22 +237,22 @@ public class RouteIntegrationTest {
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
 
-        await().atMost(15, TimeUnit.SECONDS).until(() -> {
-            int numberOfDLQMessages = numberOfDLQMessages();
-            System.out.println("numberOfDLQMessages: " + numberOfDLQMessages);
-            return (numberOfDLQMessages == 3);
-        });
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> expectedDLQMessages(3));
     }
 
-    private void sendMessage(final ActivityType activityType) throws Exception {
+    private void sendMessage(final ActivityType activityType, int numberOfResources) throws Exception {
         jmsTemplate.send(sendQueue, session -> {
             try {
-                TextMessage textMessage = session.createTextMessage(TestDataHelper.buildBasePdlLogMessageListAsJson(activityType));
+                TextMessage textMessage = session.createTextMessage(TestDataHelper.buildBasePdlLogMessageAsJson(activityType, numberOfResources));
                 return textMessage;
             } catch (Exception e) {
                 throw Throwables.propagate(e);
             }
         });
+    }
+
+    private void sendMessage(final ActivityType activityType) throws Exception {
+        sendMessage(activityType, 1);
     }
 
     private int numberOfDLQMessages() throws Exception {
@@ -228,21 +272,9 @@ public class RouteIntegrationTest {
         return count;
     }
 
-//    private void resetQueue() throws Exception {
-//        jmsTemplate.browse(sendQueue, new BrowserCallback<Object>() {
-//
-//            @Override
-//            public Object doInJms(Session session, QueueBrowser browser) throws JMSException {
-//
-//                MessageConsumer consumer = session.createConsumer(jmsTemplate.getDefaultDestination());
-//
-//                Enumeration<?> msgs = browser.getEnumeration();
-//                while (msgs.hasMoreElements()) {
-//                    consumer.receive();
-//                }
-//                return 0;
-//            }
-//        });
-//    }
-
+    private Boolean messagesReceived(int expected) {
+        int numberOfReceivedMessages = mockLogSenderClientClient.getNumberOfReceivedMessages();
+        System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
+        return (numberOfReceivedMessages == expected);
+    }
 }

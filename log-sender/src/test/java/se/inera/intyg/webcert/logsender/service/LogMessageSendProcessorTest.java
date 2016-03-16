@@ -101,15 +101,15 @@ public class LogMessageSendProcessorTest {
     }
 
     private List<String> buildGroupedMessages() {
-        String pdlLogMessage1 = TestDataHelper.buildBasePdlLogMessageListAsJson(ActivityType.READ);
-        String pdlLogMessage2 = TestDataHelper.buildBasePdlLogMessageListAsJson(ActivityType.PRINT);
+        String pdlLogMessage1 = TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ);
+        String pdlLogMessage2 = TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.PRINT);
         return Arrays.asList(pdlLogMessage1, pdlLogMessage2);
 
     }
 
     private List<String> buildInvalidGroupedMessages() {
-        String pdlLogMessage1 = TestDataHelper.buildBasePdlLogMessageListAsJson(ActivityType.READ);
-        String pdlLogMessage2 = TestDataHelper.buildBasePdlLogMessageListAsJson(ActivityType.PRINT);
+        String pdlLogMessage1 = TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ);
+        String pdlLogMessage2 = TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.PRINT);
         return Arrays.asList(pdlLogMessage1, pdlLogMessage2, "this-is-not-json");
 
     }

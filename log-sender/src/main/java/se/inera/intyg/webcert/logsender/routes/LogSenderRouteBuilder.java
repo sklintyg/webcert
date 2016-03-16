@@ -28,6 +28,12 @@ import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
+/**
+ * Defines the LogSender Camel route which accepts {@link se.inera.intyg.common.logmessages.PdlLogMessage} in JSON-
+ * serialized TextMessages.
+ *
+ * @author eriklupander
+ */
 public class LogSenderRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(LogSenderRouteBuilder.class);
 
@@ -49,10 +55,13 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
     public void configure() throws Exception {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
-        // 1. Aggregates (n) messages together and passes them to a custom bean which will transform the content
+        // 1. Starts by splitting any inbound PdlLogMessage instances having more than one PdlResource into separate
+        //    PdlLogMessage instances, one per each PdlResource.
+        //    Then the route Aggregates (n) messages together and passes them to a custom bean which will transform the content
         //    into a single list of PdlLogMessage.
         //    The bean:logMessageAggregationProcessor outputs a List of PdlLogMessage which is passed to a JMS queue.
         from("receiveLogMessageEndpoint").routeId("aggregatorRoute")
+                .split().method("logMessageSplitProcessor")
                 .aggregate(new GroupedExchangeAggregationStrategy())
                 .constant(true)
                 .completionPredicate(header("CamelAggregatedSize").isEqualTo(Integer.parseInt(batchSize)))

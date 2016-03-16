@@ -87,7 +87,7 @@ public class AggregatorRouteTest {
 
         // When
         for (int a = 0; a < 5; a++) {
-            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of());
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -108,7 +108,7 @@ public class AggregatorRouteTest {
 
         // When
         for (int a = 0; a < 4; a++) {
-            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ), ImmutableMap.<String, Object> of());
+            producerTemplate.sendBodyAndHeaders(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ), ImmutableMap.<String, Object> of());
         }
 
         // Then

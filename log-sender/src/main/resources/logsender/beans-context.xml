@@ -26,5 +26,5 @@
   <bean id="logTypeFactory" class="se.inera.intyg.webcert.logsender.converter.LogTypeFactoryImpl" />
   <bean id="logMessageSendProcessor" class="se.inera.intyg.webcert.logsender.service.LogMessageSendProcessor"/>
   <bean id="logMessageAggregationProcessor" class="se.inera.intyg.webcert.logsender.service.LogMessageAggregationProcessor"/>
-
+  <bean id="logMessageSplitProcessor" class="se.inera.intyg.webcert.logsender.service.LogMessageSplitProcessor"/>
 </beans>

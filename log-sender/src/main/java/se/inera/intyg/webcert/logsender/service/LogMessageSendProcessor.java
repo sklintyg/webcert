@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.logsender.converter.LogTypeFactory;
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
+import se.riv.ehr.log.v1.LogType;
 
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
@@ -61,13 +62,14 @@ public class LogMessageSendProcessor {
      */
     public void process(List<String> groupedLogEntries) throws Exception {
 
-        StoreLogResponseType response;
         try {
 
-            response = logSenderClient.sendLogMessage(groupedLogEntries.stream()
+            List<LogType> logMessages = groupedLogEntries.stream()
                     .map(this::jsonToPdlLogMessage)
                     .map(alm -> logTypeFactory.convert(alm))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+
+            StoreLogResponseType response = logSenderClient.sendLogMessage(logMessages);
 
             final ResultType result = response.getResultType();
             final String resultText = result.getResultText();

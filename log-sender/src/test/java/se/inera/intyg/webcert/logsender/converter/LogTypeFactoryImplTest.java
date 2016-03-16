@@ -20,7 +20,7 @@ public class LogTypeFactoryImplTest {
 
     @Test
     public void testConvertOk() {
-        PdlLogMessage pdlLogMessage = TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ);
+        PdlLogMessage pdlLogMessage = TestDataHelper.buildBasePdlLogMessage(ActivityType.READ);
         LogType logType = testee.convert(pdlLogMessage);
         assertEquals(logType.getActivity().getActivityType(), pdlLogMessage.getActivityType().getType());
         assertEquals(logType.getLogId(), pdlLogMessage.getLogId());

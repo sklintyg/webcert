@@ -26,36 +26,46 @@ public class LogMessageAggregationProcessorTest {
 
     @Test
     public void testOkGroupedExchange() throws Exception {
-        ArrayList<String> output = testee.process(buildGroupedExchange(1));
+        List<String> output = testee.process(buildGroupedExchange(1, 1));
         assertEquals(1, output.size());
+    }
+
+    /**
+     * Even though we have a splitter before this step, this step will forward with multiple
+     * resources - if they are for the same patient, it is valid.
+     */
+    @Test
+    public void testGroupedExchangeWithMultipleResources() throws Exception {
+        List<String> output = testee.process(buildGroupedExchange(3, 5));
+        assertEquals(3, output.size());
     }
 
     @Test(expected = PermanentException.class)
     public void testEmptyGroupedExchange() throws Exception {
-        testee.process(buildGroupedExchange(0));
+        testee.process(buildGroupedExchange(0, 1));
     }
 
-    private Exchange buildGroupedExchange(int size) {
+    private Exchange buildGroupedExchange(int exchangeSize, int resourcesPerMessageSize) {
         Exchange exchange = mock(Exchange.class);
-        List list = buildExchangeList(size);
+        List list = buildExchangeList(exchangeSize, resourcesPerMessageSize);
         when(exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class)).thenReturn(list);
         return exchange;
     }
 
-    private List buildExchangeList(int size) {
+    private List buildExchangeList(int exchangeSize, int resourcesPerMessageSize) {
         List<Exchange> exchangeList = new ArrayList<>();
-        for (int a = 0; a < size; a++) {
+        for (int a = 0; a < exchangeSize; a++) {
             Exchange exchange = mock(Exchange.class);
-            Message m = buildMockMessage();
+            Message m = buildMockMessage(resourcesPerMessageSize);
             when(exchange.getIn()).thenReturn(m);
             exchangeList.add(exchange);
         }
         return exchangeList;
     }
 
-    private Message buildMockMessage() {
+    private Message buildMockMessage(int resourcesPerMessageSize) {
         Message m = mock(Message.class);
-        when(m.getBody()).thenReturn(TestDataHelper.buildBasePdlLogMessageListAsJson(ActivityType.READ));
+        when(m.getBody()).thenReturn(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ, resourcesPerMessageSize));
         return m;
     }
 }

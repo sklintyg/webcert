@@ -92,7 +92,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -118,7 +118,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -144,7 +144,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
@@ -170,7 +170,7 @@ public class ReceiveAggregatedLogMessageRouteTest {
 
         // When
         for (int a = 0; a < 1; a++) {
-            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageList(ActivityType.READ)), ImmutableMap.<String, Object> of());
+            producerTemplate.sendBodyAndHeaders(Arrays.asList(TestDataHelper.buildBasePdlLogMessageAsJson(ActivityType.READ)), ImmutableMap.<String, Object> of());
         }
 
         // Then
