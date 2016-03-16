@@ -52,6 +52,7 @@ import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
@@ -96,6 +97,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private IntygTextsService intygTextsService;
 
+    @Autowired
+    private RelationService relationService;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -124,6 +128,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         draftHolder.setContent(utkast.getModel());
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
+        draftHolder.getRelations().addAll(relationService.getRelations(utkast.getIntygsId()));
 
         return Response.ok(draftHolder).build();
     }

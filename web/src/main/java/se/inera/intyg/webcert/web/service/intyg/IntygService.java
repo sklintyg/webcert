@@ -39,6 +39,16 @@ public interface IntygService {
     IntygContentHolder fetchIntygData(String intygId, String typ);
 
     /**
+     * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
+     *
+     * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
+     * an attempt to find an utkast stored in Webcert will be performed.
+     *
+     * Also includes a list of the relations the intyg has to other intyg.
+     */
+    IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ);
+
+    /**
      * Returns all certificates for the given patient within all the given units.
      *
      * @param enhetId

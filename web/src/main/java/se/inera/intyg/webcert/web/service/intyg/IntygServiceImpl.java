@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.*;
@@ -60,6 +59,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.*;
 
@@ -73,7 +73,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class IntygServiceImpl implements IntygService {
 
     public enum Event {
-        REVOKE, SEND;
+        REVOKE,
+        SEND;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
@@ -83,9 +84,6 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private ListCertificatesForCareResponderInterface listCertificateService;
-
-    @Autowired
-    private GetMedicalCertificateForCareResponderInterface getMedicalCertificateForCareResponderInterface;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -123,11 +121,33 @@ public class IntygServiceImpl implements IntygService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    /* --------------------- Public scope --------------------- */
+    @Autowired
+    private RelationService relationService;
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp) {
-        IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp);
+        return fetchIntygData(intygsId, intygsTyp, false);
+    }
+
+    @Override
+    public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp) {
+        return fetchIntygData(intygId, intygsTyp, true);
+    }
+
+    /**
+     * Returns the IntygContentHolder. Used both externally to frontend and internally in the modules.
+     *
+     * @param intygsId
+     *            the identifier of the intyg.
+     * @param intygsTyp
+     *            the typ of the intyg. Used to call the correct module.
+     * @param relations
+     *            If the relations between intyg should be populated. This can be expensive (several database
+     *            operations). Use sparsely.
+     * @return
+     */
+    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations) {
+        IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
         verifyEnhetsAuth(intygsData.getUtlatande(), true);
 
         // Log read to PDL
@@ -280,7 +300,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
-        IntygContentHolder intyg = getIntygData(intygsId, intygsTyp);
+        IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
         verifyEnhetsAuth(intyg.getUtlatande(), true);
         verifyIsSigned(intyg.getStatuses());
 
@@ -379,14 +399,19 @@ public class IntygServiceImpl implements IntygService {
      * Note that even when found, we check if we need to decorate the response with data from the utkast in order
      * to mitigate async send states. (E.g. a send may be in resend due to 3rd party issues, in that case decorate with
      * data about sent state from the Utkast)
+     *
+     * @param relations
      */
-    private IntygContentHolder getIntygData(String intygId, String typ) {
+    private IntygContentHolder getIntygData(String intygId, String typ, boolean relations) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
-            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(),
-                    certificate.isRevoked());
+            return new IntygContentHolder(internalIntygJsonModel,
+                    certificate.getUtlatande(),
+                    certificate.getMetaData().getStatus(),
+                    certificate.isRevoked(),
+                    relations ? Optional.of(relationService.getRelations(intygId)) : Optional.empty());
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
             // exception
@@ -414,29 +439,18 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        IntygContentHolder intyg;
-        if (utkast != null) {
-            intyg = buildIntygContentHolder(utkast);
-        } else {
-            intyg = getIntygData(intygId, intygTyp);
-        }
-        return intyg;
+        return (utkast != null) ? buildIntygContentHolder(utkast) : getIntygData(intygId, intygTyp, false);
     }
 
     private IntygContentHolder buildIntygContentHolder(Utkast utkast) {
         Utlatande utlatande = serviceConverter.buildUtlatandeFromUtkastModel(utkast);
         List<Status> statuses = serviceConverter.buildStatusesFromUtkast(utkast);
-        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null);
+        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null, Optional.empty());
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        if (utkast != null) {
-            return serviceConverter.buildUtlatandeFromUtkastModel(utkast);
-        } else {
-            IntygContentHolder intyg = getIntygData(intygId, typ);
-            return intyg.getUtlatande();
-        }
+        return (utkast != null) ? serviceConverter.buildUtlatandeFromUtkastModel(utkast) : getIntygData(intygId, typ, false).getUtlatande();
     }
 
     /**
@@ -495,5 +509,4 @@ public class IntygServiceImpl implements IntygService {
             utkastRepository.save(utkast);
         }
     }
-
 }

@@ -20,6 +20,28 @@
     },
     "content": {
       "type": "object"
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "intygsId": {
+            "type": "string"
+          },
+          "kod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "intygsId",
+          "status"
+        ]
+      }
     }
   },
   "additionalProperties": false,
@@ -29,6 +51,7 @@
     "status",
     "enhetsNamn",
     "vardgivareNamn",
+    "relations",
     "content"
   ]
 }

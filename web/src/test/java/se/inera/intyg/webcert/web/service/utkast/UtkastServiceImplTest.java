@@ -116,7 +116,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private Utkast signedUtkast;
     private HoSPerson hoSPerson;
 
-
     @Before
     public void setup() {
         hoSPerson = new HoSPerson();

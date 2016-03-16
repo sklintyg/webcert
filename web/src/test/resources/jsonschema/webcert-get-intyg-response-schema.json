@@ -45,11 +45,34 @@
     "revoked": {
       "id": "revoked",
       "type": "boolean"
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "intygsId": {
+            "type": "string"
+          },
+          "kod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "intygsId",
+          "status"
+        ]
+      }
     }
   },
   "required": [
     "contents",
     "statuses",
-    "revoked"
+    "revoked",
+    "relations"
   ]
 }

@@ -73,7 +73,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
 
-        IntygContentHolder intygAsExternal = intygService.fetchIntygData(intygsId, intygsTyp);
+        IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp);
 
         return Response.ok().entity(intygAsExternal).build();
     }
