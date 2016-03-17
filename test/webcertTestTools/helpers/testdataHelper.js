@@ -53,5 +53,27 @@ module.exports = {
     dateFormat: function(date) {
         var d = date.toISOString().slice(0, 10).replace(/-/g, '-');
         return d;
+    },
+    dateToText: function(prop) {
+        if (prop) {
+            var date = new Date(prop);
+            var monthNames = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
+            var month = monthNames[date.getUTCMonth()];
+            return date.getDate() + ' ' + month + ' ' + date.getFullYear();
+        }
+        return 'Ej angivet';
+    },
+    ejAngivetIfNull: function(prop) {
+        if (prop) {
+            return prop;
+        }
+        return 'Ej angivet';
+    },
+    boolTillJaNej: function(val) {
+        if (val) {
+            return 'Ja';
+        } else {
+            return 'Nej';
+        }
     }
 };

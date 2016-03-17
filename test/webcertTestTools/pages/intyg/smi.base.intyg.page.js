@@ -97,7 +97,7 @@ var BaseSmiIntygPage = BaseUtkast._extend({
 
         this.tillaggsfragor = {
             getFraga: function(index) {
-                index = index || 0;
+                index = index + 1 || 1;
                 return element(by.id('tillaggsfraga-900' + index));
             }
         };

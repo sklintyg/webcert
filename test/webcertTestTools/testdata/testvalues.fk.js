@@ -27,24 +27,35 @@ var fkValues = {
     medicinskaBehandlingar: ['Lågkaloridiet', 'Motionsrådgivning', 'Kostrådgivning', 'Kognitiv beteendeinriktad terapi', 'Elektrokonvulsiv behandling'],
     funktionsnedsattningar: ['Problem', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen'],
     getRandomMedicinskaUtredningar: function() {
-        return [{
-            underlag: shuffle([
-                'Neuropsykiatriskt utlåtande',
-                'Underlag från habiliteringen',
-                'Underlag från arbetsterapeut',
-                'Underlag från fysioterapeut',
-                'Underlag från logoped',
-                'Underlag från psykolog',
-                'Underlag från företagshälsovård',
-                'Underlag från skolhälsovård',
-                'Utredning av annan specialistklinik',
-                'Övrigt'
-            ])[0],
-            datum: '2016-02-09',
-            infoOmUtredningen: testdataHelper.randomTextString()
-        }];
+        return shuffle(
+            [
+                [
+                    getRandomUtredning(),
+                    getRandomUtredning()
+                ],
+                null
+            ])[0];
     }
 
 };
+
+function getRandomUtredning() {
+    return {
+        underlag: shuffle([
+            'Neuropsykiatriskt utlåtande',
+            'Underlag från habiliteringen',
+            'Underlag från arbetsterapeut',
+            'Underlag från fysioterapeut',
+            'Underlag från logoped',
+            'Underlag från psykolog',
+            'Underlag från företagshälsovård',
+            'Underlag från skolhälsovård',
+            'Utredning av annan specialistklinik',
+            'Övrigt'
+        ])[0],
+        datum: '2016-02-09',
+        infoOmUtredningen: testdataHelper.randomTextString()
+    }
+}
 
 module.exports = fkValues;

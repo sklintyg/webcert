@@ -122,36 +122,47 @@ var BaseSmiUtkast = BaseUtkast._extend({
     angeAndraMedicinskaUtredningar: function(utredningar) {
         var utredningarElement = this.andraMedicinskaUtredningar;
 
-        function chooseFinns(finns) {
-            if (finns) {
-                return utredningarElement.finns.JA.sendKeys(protractor.Key.SPACE);
-            } else {
-                return utredningarElement.finns.NEJ.sendKeys(protractor.Key.SPACE);
+        var fillIn = function fillInUtr(val, index) {
+
+            var laggTillUnderlag;
+            if (index !== 0) {
+                laggTillUnderlag = utredningarElement.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE);
             }
+
+            var row = utredningarElement.underlagRow(index);
+
+            return Promise.all([
+                laggTillUnderlag,
+                sendKeysWithBackspaceFix(row.datum, val.datum),
+                row.underlag.element(by.cssContainingText('option', val.underlag)).click(),
+                row.information.sendKeys(val.infoOmUtredningen)
+            ]);
+        };
+
+        if (utredningar) {
+            return utredningarElement.finns.JA.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    browser.sleep(2000);
+                    var actions = utredningar.map(fillIn);
+                    return actions;
+                    // var promiseArr = [];
+                    // for (var i = 0; i < utredningar.length; i++) {
+                    //     console.log('herp: ' + i);
+                    //     if (i !== 0) {
+                    //         promiseArr.push(utredningarElement.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE));
+                    //     }
+                    //     var row = utredningarElement.underlagRow(i);
+
+                    //     promiseArr.push(row.underlag.element(by.cssContainingText('option', utredningar[i].underlag)).click());
+                    //     promiseArr.push(sendKeysWithBackspaceFix(row.datum, utredningar[i].datum));
+                    //     promiseArr.push(row.information.sendKeys(utredningar[i].infoOmUtredningen));
+
+                    // }
+                    // return Promise.all(promiseArr);
+                });
+        } else {
+            return utredningarElement.finns.NEJ.sendKeys(protractor.Key.SPACE);
         }
-
-        return chooseFinns(utredningar).then(function() {
-            browser.sleep(2000);
-            var promiseArr = [];
-            for (var i = 0; i < utredningar.length; i++) {
-                if (i !== 0) {
-                    promiseArr.push(utredningarElement.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE));
-                }
-                var row = utredningarElement.underlagRow(i);
-
-                //Skriv ut alla möjliga val, för debug
-                // promiseArr.push(row.underlag.getText(function(text){
-                //         logger.info('HURR:' + text);
-                //         return Promise.reject(text);
-                //     }));
-
-                promiseArr.push(row.underlag.element(by.cssContainingText('option', utredningar[i].underlag)).click());
-                promiseArr.push(sendKeysWithBackspaceFix(row.datum, utredningar[i].datum));
-                promiseArr.push(row.information.sendKeys(utredningar[i].infoOmUtredningen));
-
-            }
-            return Promise.all(promiseArr);
-        });
     },
     angeSjukdomsforlopp: function(forlopp) {
         return this.sjukdomsforlopp.sendKeys(forlopp);

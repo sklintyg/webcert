@@ -132,6 +132,7 @@ var tsValues = {
             korkortstyper.indexOf('D1') > -1 ||
             korkortstyper.indexOf('D1E') > -1 ||
             korkortstyper.indexOf('D') > -1 ||
+            korkortstyper.indexOf('Taxi') > -1 ||
             korkortstyper.indexOf('DE') > -1
         ) {
             hypoObj.f = shuffle(['Ja', 'Nej'])[0];

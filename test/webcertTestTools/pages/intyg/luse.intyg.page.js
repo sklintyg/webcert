@@ -31,9 +31,9 @@ var LuseIntyg = BaseSmiIntygPage._extend({
             field: element(by.cssContainingText('.intyg-field', 'andra medicinska utredningar')),
             getUtredning: function(index) {
                 return {
-                    typ: element(by.id('underlag-0-typ')),
-                    datum: element(by.id('underlag-0-datum')),
-                    info: element(by.id('underlag-0-hamtasFran'))
+                    typ: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    info: element(by.id('underlag-' + index + '-hamtasFran'))
                 };
             }
         };

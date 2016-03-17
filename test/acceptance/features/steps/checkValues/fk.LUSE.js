@@ -22,40 +22,16 @@
 'use strict';
 
 var lusePage = pages.intyg.luse.intyg;
-
-function dateToText(prop) {
-    if (prop) {
-        var date = new Date(prop);
-        var monthNames = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
-        var month = monthNames[date.getUTCMonth()];
-        return date.getDate() + ' ' + month + ' ' + date.getFullYear();
-    }
-    return 'Ej angivet';
-}
-
-function ejAngivetIfNull(prop) {
-    if (prop) {
-        return prop;
-    }
-    return 'Ej angivet';
-}
-
-function boolTillJaNej(val) {
-    if (val) {
-        return 'Ja';
-    } else {
-        return 'Nej';
-    }
-}
+var testdataHelper = wcTestTools.helpers.testdata;
 
 
 function checkBaseratPa(baseratPa) {
-    var minUndersokningText = dateToText((baseratPa.minUndersokningAvPatienten));
-    var journaluppgifterText = dateToText((baseratPa.journaluppgifter));
-    var anhorigBeskrivningText = dateToText((baseratPa.anhorigsBeskrivning));
-    var annatText = dateToText((baseratPa.annat));
-    var annatBeskrivningText = ejAngivetIfNull(baseratPa.annatBeskrivning);
-    var personligKannedomText = dateToText((baseratPa.personligKannedom));
+    var minUndersokningText = testdataHelper.dateToText((baseratPa.minUndersokningAvPatienten));
+    var journaluppgifterText = testdataHelper.dateToText((baseratPa.journaluppgifter));
+    var anhorigBeskrivningText = testdataHelper.dateToText((baseratPa.anhorigsBeskrivning));
+    var annatText = testdataHelper.dateToText((baseratPa.annat));
+    var annatBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.annatBeskrivning);
+    var personligKannedomText = testdataHelper.dateToText((baseratPa.personligKannedom));
 
     return Promise.all([
         expect(lusePage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(minUndersokningText),
@@ -72,7 +48,7 @@ function checkAndraMedicinskaUtredningar(andraMedicinskaUtredningar) {
         var promiseArr = [];
         for (var i = 0; i < andraMedicinskaUtredningar.length; i++) {
             var utredningEL = lusePage.andraMedicinskaUtredningar.getUtredning(i);
-            var utredningDatum = dateToText(andraMedicinskaUtredningar[i].datum);
+            var utredningDatum = testdataHelper.dateToText(andraMedicinskaUtredningar[i].datum);
             promiseArr.push(expect(utredningEL.typ.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].underlag));
             promiseArr.push(expect(utredningEL.datum.getText()).to.eventually.equal(utredningDatum));
             promiseArr.push(expect(utredningEL.info.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].infoOmUtredningen));
@@ -89,7 +65,7 @@ function checkSjukdomsforlopp(forlopp) {
 
 function checkDiagnos(diagnos) {
     var diagnoser = diagnos.diagnoser;
-    var nyBedomning = boolTillJaNej(diagnos.nyBedomning);
+    var nyBedomning = testdataHelper.boolTillJaNej(diagnos.nyBedomning);
     var promiseArr = [];
     for (var i = 0; i < diagnoser.length; i++) {
         promiseArr.push(expect(lusePage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.equal(diagnoser[i].kod));
@@ -139,7 +115,7 @@ function checkOvrigaUpplysningar(ovriga) {
 }
 
 function checkKontaktMedFk(kontakt) {
-    return expect(lusePage.kontaktFK.onskas.getText()).to.eventually.equal(boolTillJaNej(kontakt));
+    return expect(lusePage.kontaktFK.onskas.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
 }
 
 function checkTillaggsfragor(fragor) {
