@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
@@ -37,6 +38,6 @@ public interface CopyUtkastService {
      * @param copyRequest
      * @return {@link CreateNewDraftCopyResponse}
      */
-    CreateCompletionCopyResponse createCompletion(CreateNewDraftCopyRequest copyRequest);
+    CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest);
 
 }

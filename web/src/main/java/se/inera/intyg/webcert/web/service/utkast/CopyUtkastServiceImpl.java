@@ -43,7 +43,9 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 
@@ -90,7 +92,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         try {
             CopyUtkastBuilderResponse builderResponse;
 
-            builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId, false);
+            builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
@@ -113,13 +115,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
      * CreateNewDraftCopyRequest)
      */
     @Override
-    public CreateCompletionCopyResponse createCompletion(CreateNewDraftCopyRequest copyRequest) {
+    public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
         String originalIntygId = copyRequest.getOriginalIntygId();
 
         LOG.debug("Creating completion to intyg '{}'", originalIntygId);
 
         try {
-            CopyUtkastBuilderResponse builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId, true);
+            CopyUtkastBuilderResponse builderResponse = buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
@@ -149,7 +151,24 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return savedUtkast;
     }
 
-    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId, boolean addRelation) throws ModuleNotFoundException, ModuleException {
+    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId) throws ModuleNotFoundException, ModuleException {
+        Person patientDetails = null;
+
+        if (!copyRequest.isDjupintegrerad()) {
+            patientDetails = refreshPatientDetails(copyRequest);
+        }
+
+        CopyUtkastBuilderResponse builderResponse;
+        if (utkastRepository.exists(originalIntygId)) {
+            builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false);
+        } else {
+            builderResponse = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
+        }
+
+        return builderResponse;
+    }
+
+    private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCopyRequest copyRequest, String originalIntygId, boolean addRelation) throws ModuleNotFoundException, ModuleException {
         Person patientDetails = null;
 
         if (!copyRequest.isDjupintegrerad()) {
@@ -166,7 +185,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return builderResponse;
     }
 
-    private Person refreshPatientDetails(CreateNewDraftCopyRequest copyRequest) {
+    private Person refreshPatientDetails(CreateCopyRequest copyRequest) {
 
         Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
 

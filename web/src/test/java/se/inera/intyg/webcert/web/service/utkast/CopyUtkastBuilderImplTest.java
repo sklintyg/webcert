@@ -19,12 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -40,7 +44,13 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.integration.pu.model.Person;
@@ -53,6 +63,8 @@ import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
@@ -82,6 +94,7 @@ public class CopyUtkastBuilderImplTest {
 
     private static final String HOSPERSON_ID = "SE12345678-0001";
     private static final String HOSPERSON_NAME = "Dr Börje Dengroth";
+    private static final String MEDDELANDE_ID = "13";
 
     @Mock
     private IntygService mockIntygService;
@@ -137,7 +150,7 @@ public class CopyUtkastBuilderImplTest {
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
         
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateCopyRequest copyRequest = buildCompletionRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
         
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
@@ -155,6 +168,7 @@ public class CopyUtkastBuilderImplTest {
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+
         assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
@@ -164,7 +178,7 @@ public class CopyUtkastBuilderImplTest {
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateCopyRequest copyRequest = buildCompletionRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
@@ -182,6 +196,7 @@ public class CopyUtkastBuilderImplTest {
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+
         assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
@@ -322,6 +337,10 @@ public class CopyUtkastBuilderImplTest {
 
     private CreateNewDraftCopyRequest buildCopyRequest() {
         return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson, vardenhet);
+    }
+
+    private CreateCompletionCopyRequest buildCompletionRequest() {
+        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, PATIENT_SSN, hoSPerson, vardenhet);
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {

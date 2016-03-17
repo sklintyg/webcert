@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
@@ -149,10 +150,11 @@ public class IntygApiController extends AbstractApiController {
      * @return
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/komplettera")
+    @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
+    public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId,
+            @PathParam("meddelandeId") String meddelandeId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
         .features(WebcertFeature.KOPIERA_INTYG)
         .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
@@ -165,7 +167,7 @@ public class IntygApiController extends AbstractApiController {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
+        CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", new Object[] {serviceResponse.getNewDraftIntygId(),
@@ -174,6 +176,27 @@ public class IntygApiController extends AbstractApiController {
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 
         return Response.ok().entity(response).build();
+    }
+
+    private CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
+            CopyIntygRequest copyRequest) {
+        HoSPerson hosPerson = createHoSPersonFromUser();
+        Vardenhet vardenhet = createVardenhetFromUser();
+        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
+
+        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patientPersonnummer, hosPerson, vardenhet);
+
+        if (copyRequest.containsNewPersonnummer()) {
+            LOG.debug("Adding new personnummer to request");
+            req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
+        }
+
+        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(WebCertUserOriginType.DJUPINTEGRATION).isVerified()) {
+            LOG.debug("Setting djupintegrerad flag on request to true");
+            req.setDjupintegrerad(true);
+        }
+
+        return req;
     }
 
     private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {

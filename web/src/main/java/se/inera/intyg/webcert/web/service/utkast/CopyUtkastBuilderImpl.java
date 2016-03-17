@@ -51,7 +51,8 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @Component
@@ -77,7 +78,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -99,7 +100,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
         // Set relation to null if not applicable
-        Relation relation = addRelation ? createRelation(orignalIntygsId, RelationKod.KOMPLT) : null;
+        Relation relation = addRelation ? createRelation((CreateCompletionCopyRequest) copyRequest, RelationKod.KOMPLT) : null;
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
@@ -110,15 +111,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = new Utkast();
-
-        utkast.setIntygsId(draftCopyHolder.getCertificateId());
-        utkast.setIntygsTyp(intygsTyp);
-        utkast.setStatus(utkastStatus);
-        utkast.setModel(draftCopyJson);
-        if (addRelation) {
-            enrichWithRelation(utkast, relation);
-        }
+        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), intygsTyp, addRelation, relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -126,8 +119,6 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
             se.inera.intyg.common.support.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData().getPatient();
             populatePatientDetailsFromPatient(utkast, patient);
         }
-
-        populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
@@ -141,14 +132,12 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
-
-        // TODO throw exception if not found
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
@@ -161,7 +150,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         ModuleApi moduleApi = moduleRegistry.getModuleApi(orgUtkast.getIntygsTyp());
 
         // Set relation to null if not applicable
-        Relation relation = addRelation ? createRelation(orignalIntygsId, RelationKod.KOMPLT) : null;
+        Relation relation = addRelation ? createRelation((CreateCompletionCopyRequest) copyRequest, RelationKod.KOMPLT) : null;
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
@@ -172,24 +161,13 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = new Utkast();
-
-        utkast.setIntygsId(draftCopyHolder.getCertificateId());
-        utkast.setIntygsTyp(orgUtkast.getIntygsTyp());
-        utkast.setStatus(utkastStatus);
-        utkast.setModel(draftCopyJson);
-        if (addRelation) {
-            enrichWithRelation(utkast, relation);
-        }
+        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), orgUtkast.getIntygsTyp(), addRelation, relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
         } else {
             populatePatientDetailsFromUtkast(utkast, orgUtkast);
         }
-
-
-        populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
@@ -198,11 +176,29 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return builderResponse;
     }
 
+    private Utkast buildUtkastCopy(CreateCopyRequest copyRequest, String utkastId, String utkastTyp, boolean addRelation, Relation relation,
+            String draftCopyJson, UtkastStatus utkastStatus) {
+        Utkast utkast = new Utkast();
 
-    private Relation createRelation(String orignalIntygsId, RelationKod relationKod) {
+        utkast.setIntygsId(utkastId);
+        utkast.setIntygsTyp(utkastTyp);
+        utkast.setStatus(utkastStatus);
+        utkast.setModel(draftCopyJson);
+
+        if (addRelation) {
+            enrichWithRelation(utkast, relation);
+        }
+
+        populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
+
+        return utkast;
+    }
+
+    private Relation createRelation(CreateCompletionCopyRequest request, RelationKod relationKod) {
         Relation relation = new Relation();
-        relation.setRelationIntygsId(orignalIntygsId);
+        relation.setRelationIntygsId(request.getOriginalIntygId());
         relation.setRelationKod(relationKod);
+        relation.setMeddelandeId(request.getMeddelandeId());
         return relation;
     }
 
@@ -211,7 +207,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         utkast.setRelationKod(relation.getRelationKod());
     }
 
-    private CreateDraftCopyHolder createModuleRequestForCopying(CreateNewDraftCopyRequest copyRequest, Person person, Relation relation) {
+    private CreateDraftCopyHolder createModuleRequestForCopying(CreateCopyRequest copyRequest, Person person, Relation relation) {
 
         String newDraftCopyId = intygsIdStrategy.createId();
 
@@ -251,7 +247,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return newDraftCopyHolder;
     }
 
-    private void populateUtkastWithVardenhetAndHoSPerson(Utkast utkast, CreateNewDraftCopyRequest copyRequest) {
+    private void populateUtkastWithVardenhetAndHoSPerson(Utkast utkast, CreateCopyRequest copyRequest) {
         Vardenhet vardenhet = copyRequest.getVardenhet();
 
         utkast.setEnhetsId(vardenhet.getHsaId());
@@ -317,7 +313,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return res;
     }
 
-    private void replacePatientPersonnummerWithNew(Utkast utkast, CreateNewDraftCopyRequest copyRequest) {
+    private void replacePatientPersonnummerWithNew(Utkast utkast, CreateCopyRequest copyRequest) {
         if (copyRequest.containsNyttPatientPersonnummer()) {
             utkast.setPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
             LOG.debug("Replaced patient SSN with new one");
