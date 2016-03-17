@@ -422,6 +422,21 @@
                 "hsaId": "TSTNMT2321000156-105T",
                 "enhetId": "TSTNMT2321000156-105P",
                 "lakare" : true
+            },
+
+            // C-bio
+            {
+                "fornamn": "Elin",
+                "efternamn": "Johansson",
+                "hsaId": "TSTNMT2321000156-1067",
+                "enhetId": "TSTNMT2321000156-1062",
+                "lakare" : true
+            },{
+                "fornamn": "Lars",
+                "efternamn": "Olsson",
+                "hsaId": "TSTNMT2321000156-1066",
+                "enhetId": "TSTNMT2321000156-1062",
+                "lakare" : false
             }
         ];
 
@@ -513,7 +528,11 @@
                     {id:34, hsaId: 'TSTNMT2321000156-105J_TSTNMT2321000156-105F', env: 'demo', name: 'Susanne Karlsson (NMT Administratör / Vård och Behandling)'},
                     {id:35, hsaId: 'TSTNMT2321000156-105R_TSTNMT2321000156-105N', env: 'demo', name: 'Emma Nilsson (Rehabstöd / Läkare 1 / Vård och Behandling)'},
                     {id:36, hsaId: 'TSTNMT2321000156-105S_TSTNMT2321000156-105N', env: 'demo', name: 'Anders Karlsson (Rehabstöd / Läkare 2 / Vård och Behandling)'},
-                    {id:37, hsaId: 'TSTNMT2321000156-105T_TSTNMT2321000156-105P', env: 'demo', name: 'Ingrid Nilsson Olsson (Rehabstöd / Läkare 3 / Vård och Behandling)'}
+                    {id:37, hsaId: 'TSTNMT2321000156-105T_TSTNMT2321000156-105P', env: 'demo', name: 'Ingrid Nilsson Olsson (Rehabstöd / Läkare 3 / Vård och Behandling)'},
+                      {id:38, hsaId: 'TSTNMT2321000156-1067_TSTNMT2321000156-1062', env: 'demo', name: 'Elin Johansson (Cambio / Läkare / Vård och Behandling)'},
+                      {id:39, hsaId: 'TSTNMT2321000156-1066_TSTNMT2321000156-1062', env: 'demo', name: 'Lars Olsson (Cambio / Administratör / Vård och Behandling)'}
+
+
                   ]
                 };
 

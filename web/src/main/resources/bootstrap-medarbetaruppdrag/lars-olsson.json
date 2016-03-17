@@ -1,0 +1,15 @@
+{
+    "hsaId": "TSTNMT2321000156-1066",
+	"forNamn": "Lars",
+	"efterNamn": "Olsson",
+    "uppdrag":[
+    	{
+    		"enhet": "TSTNMT2321000156-1062",
+            "andamal":["Vård och behandling"]
+    	},
+		{
+			"enhet": "TSTNMT2321000156-1063",
+			"andamal":["Vård och behandling"]
+		}
+    ]
+}
