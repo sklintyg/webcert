@@ -81,15 +81,15 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
 
         // Error handling
         from("direct:logMessagePermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
-                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Permanent exception for LogMessage: ${header[JMSXGroupID]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Permanent exception for LogMessage: ${header[" + Constants.LOG_ID + "], with message: ${exception.message}\n ${exception.stacktrace}").getText())
                 .stop();
 
         from("direct:logMessageTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
                 .choice()
                 .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
-                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Temporary exception (with redelivered == FALSE) for logMessage: ${header[JMSXGroupID]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Temporary exception for logMessage: ${header[" + Constants.LOG_ID + "], with message: ${exception.message}\n ${exception.stacktrace}").getText())
                 .otherwise()
-                .log(LoggingLevel.WARN, LOG, simple("ENTER - Temporary exception  (with redelivered == TRUE) for logMessage: ${header[JMSXGroupID]}, with message: ${exception.message}").getText())
+                .log(LoggingLevel.WARN, LOG, simple("ENTER - Temporary exception  (redelivered) for logMessage: ${header[" + Constants.LOG_ID + "]}, with message: ${exception.message}").getText())
                 .stop();
     }
 

@@ -41,6 +41,8 @@ public final class Constants {
     public static final String PERSON_ID = "PERSON_ID";
     public static final String RECIPIENT = "RECIPIENT";
 
+    public static final String LOG_ID = "LogId";
+
     public static final String JMSX_GROUP_ID = "JMSXGroupID";
     public static final String JMS_REDELIVERED = "JMSRedelivered";
 

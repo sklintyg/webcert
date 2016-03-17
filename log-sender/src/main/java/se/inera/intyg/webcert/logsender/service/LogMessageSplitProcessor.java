@@ -25,6 +25,7 @@ import org.apache.camel.impl.DefaultMessage;
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.logmessages.PdlResource;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class LogMessageSplitProcessor {
 
         if (body != null) {
             PdlLogMessage pdlLogMessage = objectMapper.readValue((String) body.getBody(), PdlLogMessage.class);
-
+            String originalId = pdlLogMessage.getLogId();
             if (pdlLogMessage.getPdlResourceList().size() == 0) {
                 throw new PermanentException("No resources in PDL log message, don't proceed.");
             }
@@ -74,6 +75,7 @@ public class LogMessageSplitProcessor {
                     copiedPdlLogMsg.getPdlResourceList().add(resource);
 
                     DefaultMessage message = new DefaultMessage();
+                    message.setHeader(Constants.LOG_ID, originalId);
                     message.setBody(objectMapper.writeValueAsString(copiedPdlLogMsg));
                     answer.add(message);
                 }
