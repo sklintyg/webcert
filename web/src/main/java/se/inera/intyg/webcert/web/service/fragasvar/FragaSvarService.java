@@ -19,15 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import org.joda.time.LocalDateTime;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
-
 import java.util.List;
 import java.util.Map;
+
+import org.joda.time.LocalDateTime;
+
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.model.Filter;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 
 /**
  * @author andreaskaltenbach
@@ -88,7 +89,7 @@ public interface FragaSvarService {
     /**
      * Returns all the question/answer matching filter criteria.
      */
-    QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters);
+    QueryFragaSvarResponse filterFragaSvar(Filter filter);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a FragaSvar is linked to) that matches the supplied id.

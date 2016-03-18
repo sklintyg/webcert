@@ -19,17 +19,22 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 import java.io.IOException;
 import java.util.*;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
+import javax.xml.soap.*;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.joda.time.LocalDateTime;
@@ -48,6 +53,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswe
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -55,20 +62,15 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
-import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.auth.authorities.*;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -792,17 +794,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         service.verifyEnhetsAuth("<doesnt-exist>");
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testFilterFragaSvarWithAuthFail() {
-        WebCertUser webCertUser = createUser();
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-
-        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
-        params.setEnhetId("no-auth");
-
-        service.filterFragaSvar(params);
-    }
-
     @Test
     public void testFilterFragaSvarWithEnhetsIdAsParam() {
 
@@ -813,18 +804,16 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         queryResults.add(buildFragaSvar(1L, MAY, null));
         queryResults.add(buildFragaSvar(2L, MAY, null));
 
-        when(fragasvarRepositoryMock.filterFragaSvar(any(FragaSvarFilter.class))).thenReturn(queryResults);
-        when(fragasvarRepositoryMock.filterCountFragaSvar(any(FragaSvarFilter.class))).thenReturn(queryResults.size());
+        when(fragasvarRepositoryMock.filterFragaSvar(any(Filter.class))).thenReturn(queryResults);
+        when(fragasvarRepositoryMock.filterCountFragaSvar(any(Filter.class))).thenReturn(queryResults.size());
 
-        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
-        params.setEnhetId(webCertUser.getValdVardenhet().getId());
+        Filter params = new Filter();
+        params.setEnhetsIds(Arrays.asList(webCertUser.getValdVardenhet().getId()));
 
         QueryFragaSvarResponse response = service.filterFragaSvar(params);
 
-        verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(true));
-
-        verify(fragasvarRepositoryMock).filterFragaSvar(any(FragaSvarFilter.class));
-        verify(fragasvarRepositoryMock).filterCountFragaSvar(any(FragaSvarFilter.class));
+        verify(fragasvarRepositoryMock).filterFragaSvar(any(Filter.class));
+        verify(fragasvarRepositoryMock).filterCountFragaSvar(any(Filter.class));
 
         assertNotNull(response);
         assertEquals(2, response.getResults().size());
@@ -839,17 +828,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         queryResults.add(buildFragaSvar(1L, MAY, null));
         queryResults.add(buildFragaSvar(2L, MAY, null));
 
-        when(fragasvarRepositoryMock.filterFragaSvar(any(FragaSvarFilter.class))).thenReturn(queryResults);
-        when(fragasvarRepositoryMock.filterCountFragaSvar(any(FragaSvarFilter.class))).thenReturn(queryResults.size());
+        when(fragasvarRepositoryMock.filterFragaSvar(any(Filter.class))).thenReturn(queryResults);
+        when(fragasvarRepositoryMock.filterCountFragaSvar(any(Filter.class))).thenReturn(queryResults.size());
 
-        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        QueryFragaSvarResponse response = service.filterFragaSvar(new Filter());
 
-        QueryFragaSvarResponse response = service.filterFragaSvar(params);
-
-        verify(webCertUserService).getUser();
-
-        verify(fragasvarRepositoryMock).filterFragaSvar(any(FragaSvarFilter.class));
-        verify(fragasvarRepositoryMock).filterCountFragaSvar(any(FragaSvarFilter.class));
+        verify(fragasvarRepositoryMock).filterFragaSvar(any(Filter.class));
+        verify(fragasvarRepositoryMock).filterCountFragaSvar(any(Filter.class));
 
         assertNotNull(response);
         assertEquals(2, response.getResults().size());

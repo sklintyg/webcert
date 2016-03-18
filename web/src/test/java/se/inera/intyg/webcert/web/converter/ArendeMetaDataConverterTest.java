@@ -8,6 +8,8 @@ import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
@@ -64,6 +66,45 @@ public class ArendeMetaDataConverterTest {
         assertNull(arende);
     }
 
+    @Test
+    public void testConvertArende() {
+        final ArendeAmne amne = ArendeAmne.KONTKT;
+        final String intygsId = "intygsId";
+        final String intygTyp = "luse";
+        final String meddelandeId = "meddelandeId";
+        final String patientPersonId = "patientPersonId";
+        final String signeratAvName = "signeratAvName";
+        final String skickatAv = "skickatAv";
+        final LocalDateTime skickatTidpunkt = LocalDateTime.now();
+        final Status status = Status.ANSWERED;
+        final Boolean vidarebefordrad = Boolean.TRUE;
+
+        Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt, status,
+                vidarebefordrad);
+        ArendeMetaData result = ArendeMetaDataConverter.convert(arende);
+
+        assertEquals(amne.name(), result.getAmne());
+        assertEquals(intygsId, result.getIntygId());
+        assertEquals(intygTyp, result.getIntygTyp());
+        assertEquals(meddelandeId, result.getMeddelandeId());
+        assertEquals(patientPersonId, result.getPatientId());
+        assertEquals(signeratAvName, result.getSigneratAv());
+        assertEquals(skickatAv, result.getFragestallare());
+        assertEquals(skickatTidpunkt, result.getReceivedDate());
+        assertEquals(status, result.getStatus());
+        assertEquals(true, result.isVidarebefordrad());
+    }
+
+    @Test
+    public void testConvertArendeVidarebefordradNull() {
+        Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName", "skickatAv",
+                LocalDateTime.now(), Status.ANSWERED,
+                null);
+        ArendeMetaData result = ArendeMetaDataConverter.convert(arende);
+
+        assertEquals(false, result.isVidarebefordrad());
+    }
+
     private FragaSvar createFragaSvar(String fragestallare, String intygsId, String intygsTyp, String patientId, Long internReferens,
             LocalDateTime senasteHandelse, String signeratAv, String enhetsnamn, String vardgivarnamn, Amne amne, Boolean vidarebefordrad,
             Status status) {
@@ -81,5 +122,21 @@ public class ArendeMetaDataConverterTest {
         res.setVidarebefordrad(vidarebefordrad);
         res.setStatus(status);
         return res;
+    }
+
+    private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
+            String signeratAvName, String skickatAv, LocalDateTime skickatTidpunkt, Status status, Boolean vidarebefordrad) {
+        Arende arende = new Arende();
+        arende.setAmne(amne);
+        arende.setIntygsId(intygsId);
+        arende.setIntygTyp(intygTyp);
+        arende.setMeddelandeId(meddelandeId);
+        arende.setPatientPersonId(patientPersonId);
+        arende.setSigneratAvName(signeratAvName);
+        arende.setSkickatAv(skickatAv);
+        arende.setSkickatTidpunkt(skickatTidpunkt);
+        arende.setStatus(status);
+        arende.setVidarebefordrad(vidarebefordrad);
+        return arende;
     }
 }

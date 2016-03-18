@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.converter;
 
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 
@@ -47,4 +48,22 @@ public final class ArendeMetaDataConverter {
         return res;
     }
 
+    public static ArendeMetaData convert(Arende arende) {
+        ArendeMetaData res = new ArendeMetaData();
+        res.setAmne(arende.getAmne().name());
+        res.setFragestallare(arende.getSkickatAv());
+        res.setIntygId(arende.getIntygsId());
+        res.setIntygTyp(arende.getIntygTyp());
+        res.setMeddelandeId(arende.getMeddelandeId());
+        res.setPatientId(arende.getPatientPersonId());
+        res.setReceivedDate(arende.getSkickatTidpunkt());
+        res.setSigneratAv(arende.getSigneratAvName());
+        res.setStatus(arende.getStatus());
+        res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
+        return res;
+    }
+
+    private static boolean getSafeBooleanValue(Boolean booleanObj) {
+        return (booleanObj != null) && booleanObj;
+    }
 }

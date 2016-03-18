@@ -23,6 +23,8 @@ import java.util.List;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 
 public interface ArendeService {
 
@@ -43,4 +45,5 @@ public interface ArendeService {
 
     List<Arende> getArende(String intygsId);
 
+    QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters);
 }

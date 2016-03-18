@@ -24,6 +24,7 @@ import org.joda.time.LocalDate;
 
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 
 import javax.persistence.EntityManager;
@@ -45,7 +46,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     @PersistenceContext
     private EntityManager entityManager;
 
-    private Predicate createPredicate(FragaSvarFilter filter, CriteriaBuilder builder, Root<FragaSvar> root) {
+    private Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<FragaSvar> root) {
         Predicate pred = builder.conjunction();
 
         pred = builder.and(pred, root.get("vardperson").get("enhetsId").in(filter.getEnhetsIds()));
@@ -112,7 +113,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     }
 
     @Override
-    public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter) {
+    public List<FragaSvar> filterFragaSvar(Filter filter) {
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<FragaSvar> cq = builder.createQuery(FragaSvar.class);
@@ -133,7 +134,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     }
 
     @Override
-    public int filterCountFragaSvar(FragaSvarFilter filter) {
+    public int filterCountFragaSvar(Filter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);

@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
-import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.persistence.model.*;
 
 /**
  * Test for filtering FragaSvar.
@@ -65,7 +65,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterFragaFromWC() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setQuestionFromWC(true);
 
@@ -80,7 +80,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testCountFilterFraga() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_2_ID);
 
         int res = fragasvarRepository.filterCountFragaSvar(filter);
@@ -93,7 +93,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterFragaWithPaging() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setPageSize(10);
         filter.setStartFrom(0);
@@ -108,7 +108,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterHsaId() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setHsaId(HSA_ID_2);
 
@@ -120,7 +120,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedFrom() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:10:00"));
 
@@ -132,7 +132,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedTo() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
 
@@ -149,7 +149,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedBetween() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:00:00"));
         filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
@@ -162,7 +162,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterVidarebefordrad() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVidarebefordrad(true);
 
@@ -177,7 +177,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterWaitingForReplyFromCare() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVantarPa(VantarPa.SVAR_FRAN_VARDEN);
 
@@ -192,7 +192,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterWaitingForReplyFromFK() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
 
@@ -207,7 +207,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterMarkAsHandled() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVantarPa(VantarPa.MARKERA_SOM_HANTERAD);
 
@@ -222,7 +222,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterVantaPaKomplettering() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVantarPa(VantarPa.KOMPLETTERING_FRAN_VARDEN);
 
@@ -237,7 +237,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterAllNotHandled() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVantarPa(VantarPa.ALLA_OHANTERADE);
 
@@ -253,7 +253,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedBetweenAndAwaitingReplyFromFK() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:03:00"));
         filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
@@ -271,7 +271,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterWithTwoEnheterAndAwaitingReplyFromFK() {
 
-        FragaSvarFilter filter = new FragaSvarFilter();
+        Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_2_ID);
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVantarPa(VantarPa.SVAR_FRAN_FK);

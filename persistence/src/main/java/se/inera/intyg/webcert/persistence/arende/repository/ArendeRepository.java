@@ -27,7 +27,7 @@ import org.springframework.data.repository.query.Param;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
-public interface ArendeRepository extends JpaRepository<Arende, Long> {
+public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRepositoryCustom {
 
     /**
      * Should return a list of {@link Arende} entities in the repository related to the specified intygsId.

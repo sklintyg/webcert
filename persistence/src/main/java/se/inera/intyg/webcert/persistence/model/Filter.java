@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.fragasvar.repository;
+package se.inera.intyg.webcert.persistence.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.joda.time.LocalDateTime;
 /**
  * Created by pehr on 10/21/13.
  */
-public class FragaSvarFilter {
+public class Filter {
 
     private List<String> enhetsIds = new ArrayList<String>();
 

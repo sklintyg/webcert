@@ -28,6 +28,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
+import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -36,9 +37,13 @@ import se.inera.intyg.webcert.web.auth.authorities.*;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.converter.util.TransportToArende;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
@@ -67,6 +72,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private HsaEmployeeService hsaEmployeeService;
+
+    @Mock
+    private WebCertUserService webCertUserService;
+
+    @Mock
+    private FragaSvarService fragaSvarService;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -317,20 +328,242 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(arendeList, result);
     }
 
-    private Arende buildArende(Long id, LocalDateTime fragaSkickadDatum, LocalDateTime svarSkickadDatum) {
+    @Test(expected = WebCertServiceException.class)
+    public void testFilterArendeWithAuthFail() {
+        WebCertUser webCertUser = createUser();
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        params.setEnhetId("no-auth");
+
+        service.filterArende(params);
+    }
+
+    @Test
+    public void testFilterArendeWithEnhetsIdAsParam() {
+
+        WebCertUser webCertUser = createUser();
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(1L, LocalDateTime.now(), null));
+        queryResults.add(buildArende(2L, LocalDateTime.now().minusDays(1), null));
+
+        when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.setTotalCount(0);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        params.setEnhetId(webCertUser.getValdVardenhet().getId());
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(true));
+
+        verify(repo).filterArende(any(Filter.class));
+        verify(repo).filterArendeCount(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(2, response.getResults().size());
+        assertEquals(3, response.getTotalCount());
+    }
+
+    @Test
+    public void testFilterArendeWithNoEnhetsIdAsParam() {
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(1L, LocalDateTime.now(), null));
+        queryResults.add(buildArende(2L, LocalDateTime.now().plusDays(1), null));
+
+        when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.setTotalCount(0);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(webCertUserService).getUser();
+
+        verify(repo).filterArende(any(Filter.class));
+        verify(repo).filterArendeCount(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(2, response.getResults().size());
+        assertEquals(3, response.getTotalCount());
+    }
+
+    @Test
+    public void testFilterArendeMergesFragaSvar() {
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(1L, LocalDateTime.now(), null));
+        queryResults.add(buildArende(2L, LocalDateTime.now().plusDays(1), null));
+
+        when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.getResults().add(buildArendeListItem("intyg1", LocalDateTime.now().minusDays(1)));
+        fsResponse.setTotalCount(1);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(webCertUserService).getUser();
+
+        verify(repo).filterArende(any(Filter.class));
+        verify(repo).filterArendeCount(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(3, response.getResults().size());
+        assertEquals(4, response.getTotalCount());
+    }
+
+    @Test
+    public void testFilterArendeInvalidStartPosition() {
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(1L, LocalDateTime.now(), null));
+        queryResults.add(buildArende(2L, LocalDateTime.now().plusDays(1), null));
+
+        when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.getResults().add(buildArendeListItem("intyg1", LocalDateTime.now().minusDays(1)));
+        fsResponse.setTotalCount(1);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        params.setStartFrom(5);
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(webCertUserService).getUser();
+
+        verify(repo).filterArende(any(Filter.class));
+        verify(repo).filterArendeCount(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(0, response.getResults().size());
+        assertEquals(4, response.getTotalCount());
+    }
+
+    @Test
+    public void testFilterArendeSelection() {
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(1L, LocalDateTime.now(), null));
+        queryResults.add(buildArende(2L, LocalDateTime.now().plusDays(1), null));
+
+        when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.getResults().add(buildArendeListItem("intyg1", LocalDateTime.now().minusDays(1)));
+        fsResponse.setTotalCount(1);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        params.setStartFrom(2);
+        params.setPageSize(10);
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(webCertUserService).getUser();
+
+        verify(repo).filterArende(any(Filter.class));
+        verify(repo).filterArendeCount(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(1, response.getResults().size());
+        assertEquals(4, response.getTotalCount());
+    }
+
+    @Test
+    public void testFilterArendeSortsArendeListItemsByReceivedDate() {
+        final String intygId1 = "intygid1";
+        final String intygId2 = "intygid2";
+        final String intygId3 = "intygid3";
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(1L, intygId3, LocalDateTime.now().plusDays(2), null));
+        queryResults.add(buildArende(2L, intygId2, LocalDateTime.now(), null));
+
+        when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size());
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.getResults().add(buildArendeListItem(intygId1, LocalDateTime.now().minusDays(1)));
+        fsResponse.setTotalCount(1);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        assertEquals(3, response.getResults().size());
+        assertEquals(intygId1, response.getResults().get(0).getIntygId());
+        assertEquals(intygId2, response.getResults().get(1).getIntygId());
+        assertEquals(intygId3, response.getResults().get(2).getIntygId());
+    }
+
+    private Arende buildArende(Long id, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {
+        return buildArende(id, "<intygsId>", skickadTidpunkt, timestamp);
+    }
+
+    private Arende buildArende(Long id, String intygId, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setAmne(ArendeAmne.OVRIGT);
         arende.setReferensId("<fk-extern-referens>");
         arende.setId(id);
         arende.setEnhet("enhet");
-        arende.setSkickatTidpunkt(fragaSkickadDatum);
+        arende.setSkickatTidpunkt(skickadTidpunkt);
         arende.setMeddelande("frageText");
-        arende.setTimestamp(svarSkickadDatum);
+        arende.setTimestamp(timestamp);
         List<MedicinsktArende> komplettering = new ArrayList<MedicinsktArende>();
-        arende.setIntygsId("<intygsId>");
+        arende.setIntygsId(intygId);
         arende.setPatientPersonId(PATIENT_ID.getPersonnummer());
         arende.setKomplettering(komplettering);
+        return arende;
+    }
+
+    private ArendeMetaData buildArendeListItem(String intygId, LocalDateTime receivedDate) {
+        ArendeMetaData arende = new ArendeMetaData();
+        arende.setIntygId(intygId);
+        arende.setReceivedDate(receivedDate);
         return arende;
     }
 

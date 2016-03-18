@@ -44,14 +44,16 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
-import se.inera.intyg.webcert.persistence.fragasvar.repository.*;
+import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.converter.*;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -86,8 +88,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT,
             Amne.OVRIGT);
-
-    private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     private static final FragaSvarSenasteHandelseDatumComparator SENASTE_HANDELSE_DATUM_COMPARATOR = new FragaSvarSenasteHandelseDatumComparator();
 
@@ -478,9 +478,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters) {
-
-        FragaSvarFilter filter = createFragaSvarFilter(filterParameters);
+    public QueryFragaSvarResponse filterFragaSvar(Filter filter) {
         List<ArendeMetaData> results = fragaSvarRepository.filterFragaSvar(filter).stream()
                 .map(ArendeMetaDataConverter::convert)
                 .filter(Objects::nonNull)
@@ -570,38 +568,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return fragaSvarRepository.save(fragaSvar);
     }
 
-    private FragaSvarFilter createFragaSvarFilter(QueryFragaSvarParameter params) {
-
-        FragaSvarFilter filter = new FragaSvarFilter();
-
-        if (StringUtils.isNotEmpty(params.getEnhetId())) {
-            verifyEnhetsAuth(params.getEnhetId(), true);
-            filter.getEnhetsIds().add(params.getEnhetId());
-        } else {
-            WebCertUser user = webCertUserService.getUser();
-            filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
-        }
-
-        if (StringUtils.isNotEmpty(params.getVantarPa())) {
-            filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
-        }
-
-        filter.setChangedFrom(params.getChangedFrom());
-        if (params.getChangedTo() != null) {
-            filter.setChangedTo(params.getChangedTo().plusDays(1));
-        }
-        filter.setHsaId(params.getHsaId());
-        filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
-        filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
-        filter.setReplyLatest(params.getReplyLatest());
-        filter.setVidarebefordrad(params.getVidarebefordrad());
-
-        filter.setPageSize((params.getPageSize() == null) ? DEFAULT_PAGE_SIZE : params.getPageSize());
-        filter.setStartFrom((params.getStartFrom() == null) ? Integer.valueOf(0) : params.getStartFrom());
-
-        return filter;
-    }
-
     private NotificationEvent determineNotificationEvent(FragaSvar fragaSvar) {
 
         FrageStallare frageStallare = FrageStallare.getByKod(fragaSvar.getFrageStallare());
@@ -624,10 +590,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         return null;
-    }
-
-    private boolean getSafeBooleanValue(Boolean booleanObj) {
-        return (booleanObj != null) && booleanObj;
     }
 
     private boolean isCertificateSentToFK(List<se.inera.intyg.common.support.model.Status> statuses) {

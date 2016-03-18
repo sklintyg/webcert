@@ -33,14 +33,21 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
+import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.ArendeMetaDataConverter;
+import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.TransportToArende;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 
 @Service
@@ -64,6 +71,12 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Autowired
     private HsaEmployeeService hsaEmployeeService;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
+
+    @Autowired
+    private FragaSvarService fragaSvarService;
 
     private static final ArendeTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeTimeStampComparator();
 
@@ -160,6 +173,53 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Collections.sort(resultList, ARENDE_TIMESTAMP_COMPARATOR);
         return resultList;
+    }
+
+    @Override
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
+        Filter filter;
+        if (StringUtils.isNotEmpty(filterParameters.getEnhetId())) {
+            verifyEnhetsAuth(filterParameters.getEnhetId(), true);
+            filter = FilterConverter.convert(filterParameters, Arrays.asList(filterParameters.getEnhetId()));
+        } else {
+            filter = FilterConverter.convert(filterParameters, webCertUserService.getUser().getIdsOfSelectedVardenhet());
+        }
+
+        int originalStartFrom = filter.getStartFrom();
+        int originalPageSize = filter.getPageSize();
+
+        // update page size and start from to be able to merge FragaSvar and Arende properly
+        filter.setStartFrom(Integer.valueOf(0));
+        filter.setPageSize(originalPageSize + originalStartFrom);
+
+        List<ArendeMetaData> results = repo.filterArende(filter).stream()
+                .map(ArendeMetaDataConverter::convert)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
+
+        int totalResultsCount = repo.filterArendeCount(filter) + fsResults.getTotalCount();
+
+        results.addAll(fsResults.getResults());
+        results.sort(Comparator.comparing(ArendeMetaData::getReceivedDate));
+
+        QueryFragaSvarResponse response = new QueryFragaSvarResponse();
+        if (originalStartFrom >= results.size()) {
+            response.setResults(new ArrayList<>());
+        } else {
+            response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
+        }
+        response.setTotalCount(totalResultsCount);
+
+        return response;
+    }
+
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
     }
 
     public static class ArendeTimeStampComparator implements Comparator<Arende> {

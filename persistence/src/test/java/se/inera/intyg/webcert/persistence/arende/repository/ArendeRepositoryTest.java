@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.persistence.arende.model.*;
-import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.persistence.model.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -76,9 +76,12 @@ public class ArendeRepositoryTest {
         assertEquals(read.getSvarPaReferens(), saved.getSvarPaReferens());
         assertEquals(read.getIntygTyp(), saved.getIntygTyp());
         assertEquals(read.getSigneratAv(), saved.getSigneratAv());
+        assertEquals(read.getSigneratAvName(), saved.getSigneratAvName());
         assertEquals(read.getEnhet(), saved.getEnhet());
         assertEquals(read.getStatus(), saved.getStatus());
         assertEquals(read.getTimestamp(), saved.getTimestamp());
+        assertEquals(read.getVidarebefordrad(), saved.getVidarebefordrad());
+        assertEquals(read.getSenasteHandelse(), saved.getSenasteHandelse());
 
         assertEquals(read.getKomplettering(), saved.getKomplettering());
         assertEquals(read.getKontaktInfo(), saved.getKontaktInfo());
@@ -104,8 +107,8 @@ public class ArendeRepositoryTest {
         final String signeratAv1Namn = "signerat av 1 - namn";
         final String signeratAv2HsaId = "signerat av 2 - hsa id";
         final String signeratAv2Namn = "signerat av 2 - namn";
-        final String[] expected1 = {signeratAv1HsaId, signeratAv1Namn};
-        final String[] expected2 = {signeratAv2HsaId, signeratAv2Namn};
+        final String[] expected1 = { signeratAv1HsaId, signeratAv1Namn };
+        final String[] expected2 = { signeratAv2HsaId, signeratAv2Namn };
         final String enhet = "enhet";
         repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet));
         repo.save(buildArende(signeratAv2HsaId, signeratAv2Namn, enhet));
@@ -139,7 +142,7 @@ public class ArendeRepositoryTest {
         final String signeratAv1Namn = "signerat av 1 - namn";
         final String signeratAv2HsaId = "signerat av 2 - hsa id";
         final String signeratAv2Namn = "signerat av 2 - namn";
-        final String[] expected = {signeratAv2HsaId, signeratAv2Namn};
+        final String[] expected = { signeratAv2HsaId, signeratAv2Namn };
         final String enhet1 = "enhet 1";
         final String enhet2 = "enhet 2";
         repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet1));
@@ -172,6 +175,327 @@ public class ArendeRepositoryTest {
         assertEquals(enhet, result.get(0).getEnhet());
     }
 
+    @Test
+    public void testFilterArendeByEnhet() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", "annan enhet", Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeIgnoresSvarAndPaminnelse() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, "svarPaId", "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testFilterArendeQuestionFromFK() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "FK", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setQuestionFromFK(true);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeQuestionFromWC() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "WC", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setQuestionFromWC(true);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeByHsaId() {
+        final String enhet = "enhet";
+        final String signeratAvHsaId = "hsaid1";
+        repo.save(buildArende(signeratAvHsaId, enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setHsaId(signeratAvHsaId);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeVidarebefordradTrue() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, LocalDateTime.now(), "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, null, LocalDateTime.now(), "MEDDELANDE_ID"));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVidarebefordrad(Boolean.TRUE);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeVidarebefordradFalse() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, LocalDateTime.now(), "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, null, LocalDateTime.now(), "MEDDELANDE_ID"));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVidarebefordrad(Boolean.FALSE);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeChangedFrom() {
+        final String enhet = "enhet";
+        final LocalDateTime changedFrom = LocalDateTime.now();
+        final LocalDateTime beforeChangedFrom = changedFrom.minusDays(1);
+        final LocalDateTime afterChangedFrom = changedFrom.plusDays(1);
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, changedFrom, "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, beforeChangedFrom, "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, null, afterChangedFrom, "MEDDELANDE_ID"));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setChangedFrom(changedFrom);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFilterArendeChangedTo() {
+        final String enhet = "enhet";
+        final LocalDateTime changedTo = LocalDateTime.now();
+        final LocalDateTime beforeChangedTo = changedTo.minusDays(1);
+        final LocalDateTime afterChangedTo = changedTo.plusDays(1);
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, changedTo, "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, beforeChangedTo, "MEDDELANDE_ID"));
+        repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
+                .minusDays(3), ArendeAmne.OVRIGT, null, afterChangedTo, "MEDDELANDE_ID"));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setChangedTo(changedTo);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeByReplyLatest() {
+        final String enhet = "enhet";
+        final LocalDate replyLatest = LocalDate.now();
+        final LocalDate beforeReplyLatest = replyLatest.minusDays(1);
+        final LocalDate afterReplyLatest = replyLatest.plusDays(1);
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", beforeReplyLatest));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", replyLatest));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", afterReplyLatest));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setReplyLatest(replyLatest);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFilterArendeAllaOhanterade() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVantarPa(VantarPa.ALLA_OHANTERADE);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    public void testFilterArendeHanterad() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVantarPa(VantarPa.HANTERAD);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeKomplettering() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3), ArendeAmne.KOMPLT));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.KOMPLT));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.OVRIGT));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVantarPa(VantarPa.KOMPLETTERING_FRAN_VARDEN);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeSvarFranVarden() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3), ArendeAmne.ARBTID));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.KOMPLT));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.OVRIGT));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.AVSTMN));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.ARBTID));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.KONTKT));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVantarPa(VantarPa.SVAR_FRAN_VARDEN);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(4, result.size());
+    }
+
+    @Test
+    public void testFilterArendeSvarFranFK() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendeMarkeraSomHanterad() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
+                ArendeAmne.PAMINN));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setVantarPa(VantarPa.MARKERA_SOM_HANTERAD);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFilterArendePaginated() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setStartFrom(0);
+        filter.setPageSize(1);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testFilterArendePaginated2() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setStartFrom(1);
+        filter.setPageSize(10);
+
+        List<Arende> result = repo.filterArende(filter);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFilterArendeCount() {
+        final String enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+
+        Filter filter = new Filter();
+        filter.setEnhetsIds(Arrays.asList(enhet));
+
+        int result = repo.filterArendeCount(filter);
+        assertEquals(3, result);
+    }
+
     private Arende buildArende() {
         return buildArende("SIGNERAT_AV", "SIGNERAT_AV_NAMN", "ENHET");
     }
@@ -179,7 +503,6 @@ public class ArendeRepositoryTest {
     private Arende buildArende(String meddelandeId) {
         return buildArende("SIGNERAT_AV", "SIGNERAT_AV_NAMN", "ENHET", Status.PENDING_INTERNAL_ACTION, meddelandeId);
     }
-
 
     private Arende buildArende(String enhet, Status status) {
         return buildArende("HSA_ID", "NAME", enhet, status, "meddelande_id");
@@ -190,19 +513,37 @@ public class ArendeRepositoryTest {
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String meddelandeId) {
+        return buildArende(signeratAv, signeratAvName, enhet, status, "PAMINNELSE_MEDDELANDE_ID", "SVAR_PA_ID", "SKICKAT_AV", LocalDate.now(),
+                ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), meddelandeId);
+    }
+
+    private Arende buildArende(String signeratAv, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId, String skickatAv,
+            LocalDate sistaDatumForSvar) {
+        return buildArende(signeratAv, enhet, status, paminnelseMeddelandeId, svarPaId, skickatAv, sistaDatumForSvar, ArendeAmne.KONTKT);
+    }
+
+    private Arende buildArende(String signeratAv, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId, String skickatAv,
+            LocalDate sistaDatumForSvar, ArendeAmne amne) {
+        return buildArende(signeratAv, "signeratAvName", enhet, status, paminnelseMeddelandeId, svarPaId, skickatAv, sistaDatumForSvar, amne,
+                Boolean.TRUE, LocalDateTime.now(), "MEDDELANDE_ID");
+    }
+
+    private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId,
+            String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
+            String meddelandeId) {
         Arende res = new Arende();
-        res.setAmne(ArendeAmne.KONTKT);
+        res.setAmne(amne);
         res.setIntygsId("INTYG_ID");
         res.setMeddelande("MEDDELANDE");
         res.setMeddelandeId(meddelandeId);
-        res.setPaminnelseMeddelandeId("PAMINNELSE_MEDDELANDE_ID");
+        res.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
         res.setPatientPersonId("PATIENT_PERSON_ID");
         res.setReferensId("REFERENS_ID");
         res.setRubrik("RUBRIK");
-        res.setSistaDatumForSvar(LocalDate.now().plusDays(3));
-        res.setSkickatAv("SKICKAT_AV");
+        res.setSistaDatumForSvar(sistaDatumForSvar);
+        res.setSkickatAv(skickatAv);
         res.setSkickatTidpunkt(LocalDateTime.now().minusDays(3));
-        res.setSvarPaId("SVAR_PA_ID");
+        res.setSvarPaId(svarPaId);
         res.setSvarPaReferens("SVAR_PA_REFERENS");
         res.setIntygTyp("INTYG_TYP");
         res.setSigneratAv(signeratAv);
@@ -210,6 +551,8 @@ public class ArendeRepositoryTest {
         res.setEnhet(enhet);
         res.setStatus(status);
         res.setTimestamp(LocalDateTime.now());
+        res.setVidarebefordrad(vidarebefordrad);
+        res.setSenasteHandelse(senasteHandelse);
 
         res.getKomplettering().add(buildMedicinsktArende("1", 1, "text 1"));
         res.getKomplettering().add(buildMedicinsktArende("2", null, "text 2"));

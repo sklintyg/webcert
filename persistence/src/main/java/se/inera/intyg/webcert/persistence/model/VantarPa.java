@@ -17,19 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.persistence.fragasvar.repository;
-
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.model.Filter;
-
-import java.util.List;
+package se.inera.intyg.webcert.persistence.model;
 
 /**
- * Created by pehr on 10/21/13.
+ * Created by pehr on 10/22/13.
+ * Filter Statuses -"waiting for:"
  */
-public interface FragaSvarFilteredRepositoryCustom {
-
-    List<FragaSvar> filterFragaSvar(Filter filter);
-
-    int filterCountFragaSvar(Filter filter);
+public enum VantarPa {
+    MARKERA_SOM_HANTERAD,
+    KOMPLETTERING_FRAN_VARDEN,
+    SVAR_FRAN_VARDEN,
+    SVAR_FRAN_FK,
+    HANTERAD,
+    ALLA_OHANTERADE,
+    ALLA
 }
