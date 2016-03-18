@@ -74,9 +74,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private HsaEmployeeService hsaEmployeeService;
 
     @Mock
-    private WebCertUserService webCertUserService;
-
-    @Mock
     private FragaSvarService fragaSvarService;
 
     @InjectMocks
@@ -278,19 +275,41 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String[] lakare1 = {"hsaid1", "namn1"};
         final String[] lakare2 = {"hsaid2", "namn2"};
         final String[] lakare3 = {"hsaid3", "namn3"};
+        final String[] lakare4 = {"hsaid4", "namn4"};
         final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3);
+        final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
 
         WebCertUser user = Mockito.mock(WebCertUser.class);
         when(user.getIdsOfSelectedVardenhet()).thenReturn(selectedUnits);
         when(webcertUserService.getUser()).thenReturn(user);
         when(repo.findSigneratAvByEnhet(selectedUnits)).thenReturn(repoResult);
+        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(Arrays.asList(new Lakare(lakare4[0],lakare4[1])));
 
-        List<Lakare> res = service.listSignedByForUnits();
+        List<Lakare> res = service.listSignedByForUnits(null);
 
-        assertEquals(repoResult.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
+        assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
 
         verify(webcertUserService).getUser();
         verify(repo).findSigneratAvByEnhet(selectedUnits);
+    }
+
+    @Test
+    public void testListSignedByForUnitsSpecifiedUnit() {
+        final List<String> selectedUnit = Arrays.asList("enhet1");
+        final String[] lakare1 = {"hsaid1", "namn1"};
+        final String[] lakare2 = {"hsaid2", "namn2"};
+        final String[] lakare3 = {"hsaid3", "namn3"};
+        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3);
+
+        when(webcertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(true);
+        when(repo.findSigneratAvByEnhet(selectedUnit)).thenReturn(repoResult);
+        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(new ArrayList<>());
+
+        List<Lakare> res = service.listSignedByForUnits(selectedUnit.get(0));
+
+        assertEquals(repoResult.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
+
+        verify(repo).findSigneratAvByEnhet(selectedUnit);
     }
 
     @Test
@@ -331,7 +350,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void testFilterArendeWithAuthFail() {
         WebCertUser webCertUser = createUser();
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(webcertUserService.getUser()).thenReturn(webCertUser);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setEnhetId("no-auth");
@@ -343,7 +362,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testFilterArendeWithEnhetsIdAsParam() {
 
         WebCertUser webCertUser = createUser();
-        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, LocalDateTime.now(), null));
@@ -363,7 +382,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(true));
+        verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
 
         verify(repo).filterArende(any(Filter.class));
         verify(repo).filterArendeCount(any(Filter.class));
@@ -376,7 +395,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testFilterArendeWithNoEnhetsIdAsParam() {
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, LocalDateTime.now(), null));
@@ -395,7 +414,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webCertUserService).getUser();
+        verify(webcertUserService).getUser();
 
         verify(repo).filterArende(any(Filter.class));
         verify(repo).filterArendeCount(any(Filter.class));
@@ -408,7 +427,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testFilterArendeMergesFragaSvar() {
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, LocalDateTime.now(), null));
@@ -428,7 +447,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webCertUserService).getUser();
+        verify(webcertUserService).getUser();
 
         verify(repo).filterArende(any(Filter.class));
         verify(repo).filterArendeCount(any(Filter.class));
@@ -441,7 +460,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testFilterArendeInvalidStartPosition() {
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, LocalDateTime.now(), null));
@@ -462,7 +481,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webCertUserService).getUser();
+        verify(webcertUserService).getUser();
 
         verify(repo).filterArende(any(Filter.class));
         verify(repo).filterArendeCount(any(Filter.class));
@@ -475,7 +494,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testFilterArendeSelection() {
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, LocalDateTime.now(), null));
@@ -497,7 +516,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webCertUserService).getUser();
+        verify(webcertUserService).getUser();
 
         verify(repo).filterArende(any(Filter.class));
         verify(repo).filterArendeCount(any(Filter.class));
@@ -513,7 +532,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String intygId2 = "intygid2";
         final String intygId3 = "intygid3";
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, intygId3, LocalDateTime.now().plusDays(2), null));

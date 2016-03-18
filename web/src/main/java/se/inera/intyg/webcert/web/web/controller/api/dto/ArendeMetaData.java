@@ -28,7 +28,7 @@ public class ArendeMetaData {
     private String meddelandeId;
     private String intygId;
     private String intygTyp;
-    private String signeratAv;
+    private String signeratAvNamn;
     private Status status;
     private String patientId;
     private LocalDateTime receivedDate;
@@ -62,12 +62,12 @@ public class ArendeMetaData {
         this.intygTyp = intygTyp;
     }
 
-    public String getSigneratAv() {
-        return signeratAv;
+    public String getSigneratAvNamn() {
+        return signeratAvNamn;
     }
 
-    public void setSigneratAv(String signeratAv) {
-        this.signeratAv = signeratAv;
+    public void setSigneratAvNamn(String signeratAvNamn) {
+        this.signeratAvNamn = signeratAvNamn;
     }
 
     public Status getStatus() {

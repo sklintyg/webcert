@@ -19,6 +19,10 @@
 
 package se.inera.intyg.webcert.persistence.arende.model;
 
+import java.util.Optional;
+
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+
 public enum ArendeAmne {
     ARBTID("Arbetstidsförläggning"),
     AVSTMN("Avstämningsmöte"),
@@ -35,5 +39,24 @@ public enum ArendeAmne {
 
     public String getDescription() {
         return description;
+    }
+
+    public static Optional<ArendeAmne> fromAmne(Amne amne) {
+        switch (amne) {
+        case KOMPLETTERING_AV_LAKARINTYG:
+            return Optional.of(KOMPLT);
+        case AVSTAMNINGSMOTE:
+            return Optional.of(AVSTMN);
+        case KONTAKT:
+            return Optional.of(KONTKT);
+        case ARBETSTIDSFORLAGGNING:
+            return Optional.of(ARBTID);
+        case PAMINNELSE:
+            return Optional.of(PAMINN);
+        case OVRIGT:
+            return Optional.of(OVRIGT);
+        default:
+            return Optional.empty();
+        }
     }
 }

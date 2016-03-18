@@ -36,7 +36,7 @@ public interface ArendeService {
     /**
      * List names of signing doctors for units where the webcert user is logged in.
      */
-    List<Lakare> listSignedByForUnits() throws WebCertServiceException;
+    List<Lakare> listSignedByForUnits(String enhetsId) throws WebCertServiceException;
 
     /**
      * List all arenden for units where the webcert user is logged in.

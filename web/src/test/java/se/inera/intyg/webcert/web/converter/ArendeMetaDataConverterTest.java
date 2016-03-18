@@ -42,10 +42,10 @@ public class ArendeMetaDataConverterTest {
         assertEquals(patientId, arende.getPatientId());
         assertEquals(Long.toString(internReferens), arende.getMeddelandeId());
         assertEquals(senasteHandelse, arende.getReceivedDate());
-        assertEquals(signeratAv, arende.getSigneratAv());
+        assertEquals(signeratAv, arende.getSigneratAvNamn());
         assertEquals(enhetsnamn, arende.getEnhetsnamn());
         assertEquals(vardgivarnamn, arende.getVardgivarnamn());
-        assertEquals(amne.name(), arende.getAmne());
+        assertEquals(ArendeAmne.fromAmne(amne).get().name(), arende.getAmne());
         assertEquals(vidarebefordrad, arende.isVidarebefordrad());
         assertEquals(status, arende.getStatus());
     }
@@ -88,7 +88,7 @@ public class ArendeMetaDataConverterTest {
         assertEquals(intygTyp, result.getIntygTyp());
         assertEquals(meddelandeId, result.getMeddelandeId());
         assertEquals(patientPersonId, result.getPatientId());
-        assertEquals(signeratAvName, result.getSigneratAv());
+        assertEquals(signeratAvName, result.getSigneratAvNamn());
         assertEquals(skickatAv, result.getFragestallare());
         assertEquals(skickatTidpunkt, result.getReceivedDate());
         assertEquals(status, result.getStatus());

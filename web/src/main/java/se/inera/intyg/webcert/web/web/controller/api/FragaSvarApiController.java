@@ -19,10 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-
-import java.util.List;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,10 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.swagger.annotations.Api;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -44,9 +39,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 public class FragaSvarApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarApiController.class);
-
-    @Autowired
-    private FragaSvarService fragaSvarService;
 
     @Autowired
     private ArendeService arendeService;
@@ -66,8 +58,6 @@ public class FragaSvarApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
-        List<Lakare> fsLakare = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
-        List<Lakare> arendeLakare = arendeService.listSignedByForUnits();
-        return Response.ok(Lakare.merge(fsLakare, arendeLakare)).build();
+        return Response.ok(arendeService.listSignedByForUnits(enhetsId)).build();
     }
 }

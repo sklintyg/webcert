@@ -73,9 +73,6 @@ public class ArendeServiceImpl implements ArendeService {
     private HsaEmployeeService hsaEmployeeService;
 
     @Autowired
-    private WebCertUserService webCertUserService;
-
-    @Autowired
     private FragaSvarService fragaSvarService;
 
     private static final ArendeTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeTimeStampComparator();
@@ -137,13 +134,24 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public List<Lakare> listSignedByForUnits() throws WebCertServiceException {
-        WebCertUser user = webcertUserService.getUser();
-        List<String> unitIds = user.getIdsOfSelectedVardenhet();
+    public List<Lakare> listSignedByForUnits(String enhetsId) throws WebCertServiceException {
 
-        return repo.findSigneratAvByEnhet(unitIds).stream()
+        List<String> enhetsIdParams = new ArrayList<>();
+        if (enhetsId != null) {
+            verifyEnhetsAuth(enhetsId, true);
+            enhetsIdParams.add(enhetsId);
+        } else {
+            enhetsIdParams.addAll(webcertUserService.getUser().getIdsOfSelectedVardenhet());
+        }
+
+        List<Lakare> arendeList = repo.findSigneratAvByEnhet(enhetsIdParams).stream()
                 .map(arr -> new Lakare((String) arr[0], (String) arr[1]))
                 .collect(Collectors.toList());
+
+        // We need to maintain backwards compatibility. When FragaSvar no longer exist remove this part and return above
+        // arendeList
+        List<Lakare> fragaSvarList = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
+        return Lakare.merge(arendeList, fragaSvarList);
     }
 
     @Override
@@ -183,7 +191,7 @@ public class ArendeServiceImpl implements ArendeService {
             verifyEnhetsAuth(filterParameters.getEnhetId(), true);
             filter = FilterConverter.convert(filterParameters, Arrays.asList(filterParameters.getEnhetId()));
         } else {
-            filter = FilterConverter.convert(filterParameters, webCertUserService.getUser().getIdsOfSelectedVardenhet());
+            filter = FilterConverter.convert(filterParameters, webcertUserService.getUser().getIdsOfSelectedVardenhet());
         }
 
         int originalStartFrom = filter.getStartFrom();
@@ -216,7 +224,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+        if (!webcertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
         }

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.converter;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 
@@ -39,10 +40,10 @@ public final class ArendeMetaDataConverter {
         res.setMeddelandeId(Long.toString(fragaSvar.getInternReferens()));
         res.setReceivedDate(fragaSvar.getSenasteHandelseDatum());
         res.setPatientId(fragaSvar.getIntygsReferens().getPatientId().getPersonnummer());
-        res.setSigneratAv(fragaSvar.getVardperson().getNamn());
+        res.setSigneratAvNamn(fragaSvar.getVardperson().getNamn());
         res.setStatus(fragaSvar.getStatus());
         res.setVidarebefordrad(fragaSvar.getVidarebefordrad());
-        res.setAmne(fragaSvar.getAmne().name());
+        res.setAmne(ArendeAmne.fromAmne(fragaSvar.getAmne()).map(ArendeAmne::name).orElse(fragaSvar.getAmne().name()));
         res.setEnhetsnamn(fragaSvar.getVardperson().getEnhetsnamn());
         res.setVardgivarnamn(fragaSvar.getVardperson().getVardgivarnamn());
         return res;
@@ -57,7 +58,7 @@ public final class ArendeMetaDataConverter {
         res.setMeddelandeId(arende.getMeddelandeId());
         res.setPatientId(arende.getPatientPersonId());
         res.setReceivedDate(arende.getSkickatTidpunkt());
-        res.setSigneratAv(arende.getSigneratAvName());
+        res.setSigneratAvNamn(arende.getSigneratAvName());
         res.setStatus(arende.getStatus());
         res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
         return res;

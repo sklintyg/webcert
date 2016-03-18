@@ -24,12 +24,12 @@
           "amne": {
             "type": "string",
             "enum": [
-              "KOMPLETTERING_AV_LAKARINTYG",
+              "KOMPLT",
               "MAKULERING_AV_LAKARINTYG",
-              "AVSTAMNINGSMOTE",
-              "KONTAKT",
-              "ARBETSTIDSFORLAGGNING",
-              "PAMINNELSE",
+              "AVSTMN",
+              "KONTKT",
+              "ARBTID",
+              "PAMINN",
               "OVRIGT"
             ]
           },
@@ -42,7 +42,7 @@
           "patientId": {
             "type": "string"
           },
-          "signeratAv": {
+          "signeratAvNamn": {
             "type": "string"
           },
           "enhetsnamn": {
