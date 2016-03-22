@@ -22,9 +22,14 @@
   --%>
 
 <!DOCTYPE html>
-<div class="container" style="margin-bottom: 8px">
+<div class="container-fluid" style="margin-bottom: 8px">
   <div class="row">
     <h4>Välj inloggning</h4>
+    <div class="alert alert-danger" ng-show="showELegWarning">
+      <h5>Har du Telia e-legitimation?</h5>
+      <p>Webbläsarna Chrome och Edge stödjer inte den metod som Telia e-legitimation använder för att skapa signaturer. För att kunna signera intyg i Webcert måste du därför välja en annan webbläsare.</p>
+      <p>Rekommenderad webbläsare är Internet Explorer 9 eller efterföljande versioner.</p>
+    </div>
   </div>
   <div class="row">
 
