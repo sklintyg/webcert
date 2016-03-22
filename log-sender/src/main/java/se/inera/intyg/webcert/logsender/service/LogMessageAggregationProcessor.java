@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.logsender.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 
 import java.util.List;
@@ -32,7 +30,8 @@ import java.util.stream.Collectors;
  * Accepts a Camel Exchange that must contain a {@link Exchange#GROUPED_EXCHANGE} of (n)
  * log messages that should be sent in a batch to the PDL-log service.
  *
- * The resulting list of {@link se.inera.intyg.common.logmessages.PdlLogMessage} is passed on so Camel can supply it to the next consumer.
+ * The resulting list of {@link se.inera.intyg.common.logmessages.PdlLogMessage} is passed on so Camel can
+ * supply it to the next consumer.
  *
  * Created by eriklupander on 2016-02-29.
  */
@@ -40,16 +39,13 @@ public class LogMessageAggregationProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogMessageAggregationProcessor.class);
 
-    private ObjectMapper objectMapper = new CustomObjectMapper();
-
     /**
      * Transforms the contents of the grouped exchange into a list of {@link se.inera.intyg.common.logmessages.PdlLogMessage}.
      *
      * @param exchange
      *      An exchange typically containing (n) number of exchanges that has been aggregated into a grouped exchange.
      * @return
-     *      An ArrayList<PdlLogMessage>. Note use of ArrayList implementation type due to serialization issues when
-     *      passed onto a JMS queue.
+     *      An List<String>. Note that the payload is JSON, simplifies readability if message ever ends up on a DLQ.
      * @throws PermanentException
      *      If the exchange could not be read or did not contain any grouped exchanges, just ignore.
      */
