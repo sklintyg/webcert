@@ -1,5 +1,5 @@
 # language: sv
-@behorighet
+@behorighet @hurr
 Egenskap: Behörigheter för en uthoppsläkare
 
 Scenario: Inloggad som uthoppsläkare
@@ -16,7 +16,6 @@ Scenario: Kan signera intyg
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
-@hurr
 Scenario: Kan inte kopiera intyg Läkarintyg FK 7263 
    Givet att jag är inloggad som uthoppsläkare
    Och går in på Sök/skriv intyg

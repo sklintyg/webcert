@@ -226,7 +226,13 @@ module.exports = function() {
     });
 
     this.Given(/^jag svarar på frågan$/, function(callback) {
-        fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck)
+        browser.refresh()
+            .then(function() {
+                return fetchMessageIds();
+            })
+            .then(function() {
+                return fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck);
+            })
             .then(callback);
     });
 
