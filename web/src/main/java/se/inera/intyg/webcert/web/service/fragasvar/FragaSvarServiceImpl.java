@@ -317,7 +317,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Fetch from Intygstjansten. Note that if Intygstjansten is unresponsive, the Intyg will be loaded from WebCert
         // if possible.
         IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ);
-        System.err.println("TYP = " + intyg.getUtlatande().getTyp());
 
         // Get utfardande vardperson
         Vardperson vardPerson = FragaSvarConverter.convert(intyg.getUtlatande().getGrundData().getSkapadAv());
