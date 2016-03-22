@@ -25,7 +25,9 @@ package se.inera.intyg.webcert.web.web.controller.util;
 public enum CertificateTypes {
     FK7263("fk7263"),
     TSBAS("ts-bas"),
-    TSDIABETES("ts-diabetes");
+    TSDIABETES("ts-diabetes"),
+    LUSE("luse"),
+    LISU("lisu");
 
     private final String text;
 

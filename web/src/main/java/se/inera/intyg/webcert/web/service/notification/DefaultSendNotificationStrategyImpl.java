@@ -32,6 +32,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
+import com.google.common.collect.ImmutableMap;
+
 @Component
 public class DefaultSendNotificationStrategyImpl implements SendNotificationStrategy {
 
@@ -41,6 +43,9 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     private final List<String> blacklisted = Arrays.asList(CertificateTypes.TSBAS.toString(), CertificateTypes.TSDIABETES.toString());
+
+    private final Map<String, SchemaVersion> certificateVersionMap = ImmutableMap.of(CertificateTypes.FK7263.toString(), SchemaVersion.V1,
+            CertificateTypes.LUSE.toString(), SchemaVersion.V2, CertificateTypes.LISU.toString(), SchemaVersion.V2);
 
     /*
      * (non-Javadoc)
@@ -62,6 +67,11 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
             return Optional.empty();
         }
 
+        if (!isSchemaVersionAllowed(utkast.getIntygsTyp(), schemaVersion.get())) {
+            LOG.debug("Schema version '{}' for unit '{}' is not valid for '{}'", schemaVersion.get(), utkast.getEnhetsId(), utkast.getIntygsTyp());
+            return Optional.empty();
+        }
+
         Optional<NotificationVersion> ret = NotificationVersion.fromString(schemaVersion.get().name());
         if (!ret.isPresent()) {
             LOG.error("Schema version '{}' for unit '{}' is not valid", schemaVersion.get(), utkast.getEnhetsId());
@@ -71,5 +81,9 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
 
     private boolean isIntygsTypAllowed(String intygsTyp) {
         return !blacklisted.contains(intygsTyp.toLowerCase());
+    }
+
+    private boolean isSchemaVersionAllowed(String intygsTyp, SchemaVersion schemaVersion) {
+        return schemaVersion.equals(certificateVersionMap.get(intygsTyp.toLowerCase()));
     }
 }

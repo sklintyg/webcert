@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -109,6 +111,24 @@ public class SendNotificationStrategyTest {
         Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
         assertFalse(res.isPresent());
         verifyZeroInteractions(mockIntegreradeEnheterRegistry);
+    }
+
+    @Test
+    public void testUtkastWrongSchemaVersionFk7263() {
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2)).thenReturn(Optional.of(SchemaVersion.V2));
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
+        assertFalse(res.isPresent());
+
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2);
+    }
+
+    @Test
+    public void testUtkastWrongSchemaVersionLuse() {
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4)).thenReturn(Optional.of(SchemaVersion.V1));
+        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+        assertFalse(res.isPresent());
+
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4);
     }
 
     @Test
