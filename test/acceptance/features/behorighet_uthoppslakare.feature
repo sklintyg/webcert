@@ -55,7 +55,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    Och går in på Sök/skriv intyg
    Och jag väljer patienten "19121212-1212"
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
-   Och Försäkringskassan har ställt en "Komplettering_av_lakarintyg" fråga om intyget
+   Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 

@@ -55,7 +55,7 @@ function getRandomUtredning() {
         ])[0],
         datum: '2016-02-09',
         infoOmUtredningen: testdataHelper.randomTextString()
-    }
+    };
 }
 
 module.exports = fkValues;

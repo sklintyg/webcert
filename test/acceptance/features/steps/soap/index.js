@@ -46,8 +46,7 @@ module.exports = {
             '</urn1:CreateDraftCertificate>';
     },
 
-    ReceiveMedicalCertificateQuestion: function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId, amne, meddelande) {
-        // Komplettering_av_lakarintyg, Makulering_av_lakarintyg, Avstamningsmote, Kontakt, Arbetstidsforlaggning, Paminnelse, Ovrigt
+    ReceiveMedicalCertificateQuestion: function(personId, user, unitName, intygsId, amne, meddelande) {
 
         if (typeof meddelande === 'undefined') {
             meddelande = 'Testfråga';
@@ -64,28 +63,28 @@ module.exports = {
             '    <urn:fkReferens-id>8e048a89</urn:fkReferens-id>' +
             '    <urn:amne>' + amne + '</urn:amne>' +
             '    <urn:fraga>' +
-            '      <urn1:meddelandeText>Fråga RT simulerar FK</urn1:meddelandeText>' +
+            '      <urn1:meddelandeText>NMT simulerar FK</urn1:meddelandeText>' +
             '      <urn1:signeringsTidpunkt>2014-11-28T10:18:10</urn1:signeringsTidpunkt>' +
             '    </urn:fraga>' +
             '    <urn:avsantTidpunkt>2014-11-28T10:18:10</urn:avsantTidpunkt>' +
             '    <urn:fkKontaktInfo>' +
-            '      <urn1:kontakt>NMT RT</urn1:kontakt>' +
+            '      <urn1:kontakt>Automatiska tester</urn1:kontakt>' +
             '    </urn:fkKontaktInfo>' +
             '    <urn:adressVard>' +
             '      <urn1:hosPersonal>' +
-            '        <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + doctorHsa + '"/>' +
-            '        <urn2:fullstandigtNamn>' + doctorName + '</urn2:fullstandigtNamn>' +
+            '        <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + user.hsaId + '"/>' +
+            '        <urn2:fullstandigtNamn>' + user.fornamn + '' + user.efternamn + '</urn2:fullstandigtNamn>' +
             '        <urn2:enhet>' +
-            '          <urn2:enhets-id extension="' + unitHsa + '" root="1.2.752.129.2.1.4.1"/>' +
+            '          <urn2:enhets-id extension="' + user.enhetId + '" root="1.2.752.129.2.1.4.1"/>' +
             '          <urn2:enhetsnamn>unitName</urn2:enhetsnamn>' +
             '          <urn2:vardgivare>' +
-            '            <urn2:vardgivare-id extension="' + unitHsa + '" root="1.2.752.129.2.1.4.1"/>' +
+            '            <urn2:vardgivare-id extension="' + user.enhetId + '" root="1.2.752.129.2.1.4.1"/>' +
             '            <urn2:vardgivarnamn>NMT</urn2:vardgivarnamn>' +
             '          </urn2:vardgivare>' +
             '        </urn2:enhet>' +
             '      </urn1:hosPersonal>' +
             '    </urn:adressVard>' +
-            '    <urn:fkMeddelanderubrik>Avstämningsmöte</urn:fkMeddelanderubrik>' +
+            '    <urn:fkMeddelanderubrik>' + amne + '</urn:fkMeddelanderubrik>' +
             '    <urn:fkKomplettering>' +
             '      <urn1:falt>Test</urn1:falt>' +
             '      <urn1:text>' + meddelande + '</urn1:text>' +

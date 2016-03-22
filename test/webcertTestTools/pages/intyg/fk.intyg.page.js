@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*globals protractor*/
+
 /**
  * Created by bennysce on 09/06/15.
  */
@@ -109,6 +111,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         var panel = element(by.css('.qa-panel'));
 
         this.qaPanel = panel;
+        this.qaPanels = element.all(by.css('.qa-panel'));
 
         this.FMBprognos = element(by.id('arbetsformagaPrognos'));
 
@@ -143,11 +146,8 @@ var Fk7263Intyg = BaseIntyg._extend({
     selectQuestionTopic: function(amne) {
         this.question.topic.element(by.cssContainingText('option', amne)).click();
     },
-    getMarkAsHandledButtonForQuestionID: function(questionID) {
-        return element(by.id('markAsHandledFkOriginBtn-' + questionID));
-    },
-    getMarkAsHandledButtonForAnswerByID: function(questionID) {
-        return element(by.id('markAsHandledWcOriginBtn-' + questionID));
+    getMarkAsHandledButtonForID: function(id) {
+        return element(by.id('qaunhandled-' + id)).element(by.css('input[type="checkbox"]'));
     },
     getQAElementByText: function(containingText) {
         var panel = element(by.cssContainingText('.qa-panel', containingText));
@@ -156,6 +156,14 @@ var Fk7263Intyg = BaseIntyg._extend({
             text: panel.element(by.css('textarea')),
             sendButton: panel.element(by.css('.btn-success'))
         };
+    },
+    sendAnswerForMessageID: function(id, text) {
+        return element(by.id('answerText-' + id)).sendKeys(text).then(function() {
+            element(by.id('sendAnswerBtn-' + id)).sendKeys(protractor.Key.SPACE);
+        });
+    },
+    markMessageAsHandled: function(id) {
+        return this.getMarkAsHandledButtonForID(id).sendKeys(protractor.Key.SPACE);
     }
 });
 

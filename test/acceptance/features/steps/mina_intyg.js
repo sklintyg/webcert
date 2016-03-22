@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, intyg, logger, Promise, person */
+/* globals browser, intyg, logger */
 
 'use strict';
 
-var miCheckValues = require('./checkValues/minaintyg')
+var miCheckValues = require('./checkValues/minaintyg');
 
 
 module.exports = function() {
@@ -29,10 +29,10 @@ module.exports = function() {
     this.Given(/^ska intyget finnas i Mina intyg$/, function(callback) {
         var intygElement = element(by.id('certificate-' + intyg.id));
         expect(intygElement.isPresent()).to.eventually.equal(true).then(function(value) {
-            logger.info('OK - Intyget visas i mina intyg = ' + value);
-        }, function(reason) {
-            callback('FEL, Intyget visas inte i mina intyg,' + reason);
-        })
+                logger.info('OK - Intyget visas i mina intyg = ' + value);
+            }, function(reason) {
+                callback('FEL, Intyget visas inte i mina intyg,' + reason);
+            })
             .then(callback);
     });
 
@@ -72,18 +72,17 @@ module.exports = function() {
     });
 
     this.Given(/^ska intygets information i Mina intyg vara den jag angett$/, function(callback) {
-        if(intyg.typ === 'Läkarutlåtande för sjukersättning'){
-          miCheckValues.fk.LUSE(intyg).then(function(value) {
-            logger.info('Alla kontroller utförda OK');
-            callback();
-        }, function(reason) {
-            callback(reason);
-        });  
-        }
-        else{
+        if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
+            miCheckValues.fk.LUSE(intyg).then(function(value) {
+                logger.info('Alla kontroller utförda OK');
+                callback();
+            }, function(reason) {
+                callback(reason);
+            });
+        } else {
             callback.pending();
         }
 
-        
+
     });
 };

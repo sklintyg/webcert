@@ -1,5 +1,5 @@
 # language: sv
-@fragasvar
+@meddelanden
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
@@ -9,7 +9,8 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
-  
+
+@notReady
 Scenario: Komplettering av läkarintyg
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"

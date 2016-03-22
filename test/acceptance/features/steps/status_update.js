@@ -129,6 +129,29 @@ module.exports = function() {
         });
     });
 
+    function fetchMessageIds() {
+        console.log('Hämtar meddelande-id:n');
+
+        if (!intyg.messages) {
+            intyg.messages = [];
+        }
+
+        var messageIdAttributes = fkIntygPage.qaPanels.map(function(elm) {
+            return elm.getAttribute('id');
+        });
+
+        return messageIdAttributes.then(function(attr) {
+            for (var i = 0; i < attr.length; i++) {
+                var messageId = attr[i].split('-')[1];
+
+                logger.info('Meddelande-id som finns på intyget: ' + messageId);
+                intyg.messages.push({
+                    id: messageId
+                });
+            }
+        });
+    }
+
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function(callback) {
         global.intyg.typ = 'Läkarintyg FK 7263';
 
@@ -137,11 +160,7 @@ module.exports = function() {
         browser.get(url).then(function() {
             fkIntygPage.qaPanel.isPresent().then(function(isVisible) {
                 if (isVisible) {
-                    fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-                        global.intyg.fragaId = result.split('-')[1];
-                        logger.info('Fråga-id: ' + global.intyg.fragaId);
-                        callback();
-                    });
+                    fetchMessageIds().then(callback);
                 } else {
                     callback();
                 }
@@ -207,11 +226,8 @@ module.exports = function() {
     });
 
     this.Given(/^jag svarar på frågan$/, function(callback) {
-        browser.refresh();
-        var qaElement = fkIntygPage.getQAElementByText(global.intyg.guidcheck);
-        qaElement.text.sendKeys('Ett svar till FK, ' + global.intyg.guidcheck).then(function() {
-            qaElement.sendButton.sendKeys(protractor.Key.SPACE).then(callback);
-        });
+        fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck)
+            .then(callback);
     });
 
     this.Given(/^kan jag se mitt svar under hanterade frågor$/, function(callback) {
@@ -228,40 +244,43 @@ module.exports = function() {
 
     this.Given(/^sedan klickar på skicka$/, function(callback) {
         fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-                global.intyg.fragaId = result.split('-')[1];
-                logger.info('fråga-id: ' + global.intyg.fragaId);
-                callback();
-            });
+            fetchMessageIds().then(callback);
         });
     });
 
     this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
-        fkIntygPage.getMarkAsHandledButtonForQuestionID(global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
+        fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });
 
     this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function(callback) {
-        fkIntygPage.getMarkAsHandledButtonForAnswerByID(global.intyg.fragaId).sendKeys(protractor.Key.SPACE).then(callback);
+        browser.refresh()
+            .then(function() {
+                return fetchMessageIds();
+            })
+            .then(function() {
+                return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+            })
+            .then(callback);
+
+
     });
 
     this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
         url = url.replace('https', 'http');
 
-        global.person.id = '19121212-1212';
+        // global.person.id = '19121212-1212';
+
         //Kontrollnr for tester. Anvand i bade fraga och svar
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
         var body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
             global.person.id,
-            global.user.hsaId,
-            global.user.fornamn + '' + global.user.efternamn,
-            global.user.enhetId,
+            global.user,
             'Enhetsnamn',
             global.intyg.id,
             amne,
             'nytt meddelande: ' + global.intyg.guidcheck);
-
         soap.createClient(url, function(err, client) {
             if (err) {
                 callback(err);
@@ -294,7 +313,7 @@ module.exports = function() {
                     'Enhetsnamn',
                     intyg.fragaId
                 );
-
+                console.log(body);
                 client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
                     callback(err);
                 });
@@ -302,33 +321,4 @@ module.exports = function() {
 
         });
     });
-
-    // this.Given(/^jag skickat ett signerat intyg till Försäkringskassan$/, function (callback) {
-    //   fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
-    //     .then(function () {
-    //       fk7263Utkast.diagnosKod.sendKeys('A00');
-    //     })
-    //     .then(function () {
-    //       fk7263Utkast.faktiskTjanstgoring.sendKeys('40');
-    //     })
-    //     .then(function () {
-    //       fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
-    //     })
-    //     .then(function () {
-    //       fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt');
-    //     })
-    //     .then(function () {
-    //       fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget');
-    //     }).then(function () {
-    //       fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare');
-    //     }).then(function () {
-    //       element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE);
-    //     }).then(function () {
-    //       fkIntygPage.skicka.knapp.click();
-    //     }).then(function () {
-    //       fkIntygPage.skicka.samtyckeCheckbox.click();
-    //     }).then(function () {
-    //       fkIntygPage.skicka.dialogKnapp.click();
-    //     }).then(callback);
-    // });
 };
