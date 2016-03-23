@@ -105,7 +105,7 @@
         Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens
         webbplats.</p>
       <p>
-        <a href='http://www.pts.se/sv/Privat/Internet/Integritet1/Fragor-och-svar-om-kakor-for-anvandare/'
+        <a href='https://www.pts.se/sv/Privat/Internet/Integritet1/Fragor-och-svar-om-kakor-for-anvandare2/'
            target='_blank'>Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a>
       </p>
     </div>
