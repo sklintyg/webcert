@@ -21,11 +21,17 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
     ['$location', '$scope', 'common.PatientModel', 'common.PatientProxy', 'common.PersonIdValidatorService',
         function($location, $scope, PatientModel, PatientProxy, personIdValidator) {
             'use strict';
-
-            $scope.widgetState = {
+            var widgetState = {
                 waiting: false,
                 errorid: undefined
             };
+
+            $scope.widgetState = angular.copy(widgetState);
+
+            $scope.$watch('personnummer', function personnummerWatch () {
+                if (!$scope.widgetState.errorid) { return; }
+                $scope.widgetState = angular.copy(widgetState);
+            });
 
             $scope.focusPnr = true; // focus pnr input
             $scope.personnummer = PatientModel.personnummer;
