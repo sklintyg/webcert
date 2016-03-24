@@ -22,8 +22,6 @@ package se.inera.intyg.webcert.persistence.arende.model;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import org.springframework.data.annotation.Transient;
-
 @Embeddable
 public class MedicinsktArende {
 
@@ -35,12 +33,6 @@ public class MedicinsktArende {
 
     @Column(name = "TEXT")
     private String text;
-
-    @Transient
-    private int position;
-
-    @Transient
-    private String jsonPropertyHandle;
 
     public String getFrageId() {
         return frageId;
@@ -112,19 +104,4 @@ public class MedicinsktArende {
         return true;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    public String getJsonPropertyHandle() {
-        return jsonPropertyHandle;
-    }
-
-    public void setJsonPropertyHandle(String frageIdHandle) {
-        this.jsonPropertyHandle = frageIdHandle;
-    }
 }

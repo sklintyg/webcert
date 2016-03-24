@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.converter.util.TransportToArende;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransportToArendeTest {
@@ -56,6 +57,8 @@ public class TransportToArendeTest {
 
     @Mock
     private IntygServiceImpl intygService;
+    private Status status;
+    private se.inera.intyg.webcert.persistence.model.Status webcertStatus = se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION;;
 
     @Test
     public void testConvertToArendeForSjukersattning() throws ModuleNotFoundException {
@@ -67,15 +70,17 @@ public class TransportToArendeTest {
         SjukersattningUtlatande utlatande = buildSjukersattningsUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
                 SKAPADAV_PERSON_ID,
                 timeStamp);
-        setupMocks(arende, moduleApi, timeStamp, utlatande);
+        ArendeView result = setupMocks(arende, moduleApi, timeStamp, utlatande);
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_ANHORIGS_BESKRIVNING_SVAR_JSON_ID_1,
-                arende.getKomplettering().get(0).getJsonPropertyHandle());
-        assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2, arende.getKomplettering().get(1).getJsonPropertyHandle());
-        assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4, arende.getKomplettering().get(2).getJsonPropertyHandle());
-        assertEquals(0, arende.getKomplettering().get(0).getPosition());
-        assertEquals(0, arende.getKomplettering().get(1).getPosition());
-        assertEquals(2, arende.getKomplettering().get(2).getPosition());
+                result.getKompletteringar().get(0).getJsonPropertyHandle());
+        assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2,
+                result.getKompletteringar().get(1).getJsonPropertyHandle());
+        assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
+                result.getKompletteringar().get(2).getJsonPropertyHandle());
+        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
+        assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
     }
 
     @Test
@@ -88,26 +93,28 @@ public class TransportToArendeTest {
         SjukpenningUtokadUtlatande utlatande = buildSjukpenningUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
                 SKAPADAV_PERSON_ID,
                 timeStamp);
-        setupMocks(arende, moduleApi, timeStamp, utlatande);
+        ArendeView result = setupMocks(arende, moduleApi, timeStamp, utlatande);
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
-                arende.getKomplettering().get(0).getJsonPropertyHandle());
-        assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2, arende.getKomplettering().get(1).getJsonPropertyHandle());
-        assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4, arende.getKomplettering().get(2).getJsonPropertyHandle());
-        assertEquals(0, arende.getKomplettering().get(0).getPosition());
-        assertEquals(0, arende.getKomplettering().get(1).getPosition());
-        assertEquals(2, arende.getKomplettering().get(2).getPosition());
+                result.getKompletteringar().get(0).getJsonPropertyHandle());
+        assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2,
+                result.getKompletteringar().get(1).getJsonPropertyHandle());
+        assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
+                result.getKompletteringar().get(2).getJsonPropertyHandle());
+        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
+        assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
     }
 
-    private void setupMocks(Arende arende, ModuleApi moduleApi, LocalDateTime timeStamp, Utlatande utlatande)
+    private ArendeView setupMocks(Arende arende, ModuleApi moduleApi, LocalDateTime timeStamp, Utlatande utlatande)
             throws ModuleNotFoundException {
-        Status status = new Status(CertificateState.RECEIVED, intygsId, timeStamp);
+        status = new Status(CertificateState.RECEIVED, intygsId, timeStamp);
         IntygContentHolder content = new IntygContentHolder("", utlatande, Arrays.asList(status), false, Optional.empty());
 
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(intygService.fetchIntygData(any(String.class), any(String.class))).thenReturn(content);
 
-        converter.decorate(arende);
+        return converter.convert(arende);
     }
 
     private SjukpenningUtokadUtlatande buildSjukpenningUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
@@ -162,6 +169,9 @@ public class TransportToArendeTest {
     private Arende buildArende() {
         Arende arende = new Arende();
         arende.setAmne(ArendeAmne.OVRIGT);
+        arende.setIntygsId(intygsId);
+        arende.setStatus(webcertStatus);
+        arende.setMeddelandeId("meddelandeId");
         MedicinsktArende medArende1 = buildMedicinsktArende("1", 1, "arende1");
         MedicinsktArende medArende2 = buildMedicinsktArende("2", 1, "arende1");
         MedicinsktArende medArende4 = buildMedicinsktArende("4", 3, "arende1");

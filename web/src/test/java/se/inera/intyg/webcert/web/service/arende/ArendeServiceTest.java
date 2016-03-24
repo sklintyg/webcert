@@ -46,12 +46,16 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final long FIXED_TIME_MILLIS = 1456329300599L;
     private static final LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
+    private static final LocalDateTime FEBRUARY = new LocalDateTime("2013-02-12T11:22:11");
     private static final LocalDateTime DECEMBER_YEAR_9999 = new LocalDateTime("9999-12-11T10:22:00");
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
 
@@ -327,24 +331,65 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testGetArendeForIntyg() {
         List<Arende> arendeList = new ArrayList<>();
-        arendeList.add(buildArende(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
-        arendeList.add(buildArende(2L, new LocalDateTime(), new LocalDateTime()));
-        arendeList.add(buildArende(3L, JANUARY, JANUARY));
+        List<ArendeView> arendeViewList = new ArrayList<>();
+        
+       arendeList.add(buildArende(1L, FEBRUARY, FEBRUARY));
+        arendeList.add(buildArende(2L, JANUARY, JANUARY));
+        arendeList.add(buildArende(3L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        arendeList.add(buildArende(4L, FEBRUARY, FEBRUARY));
+        arendeViewList.add(buildArendeView(arendeList.get(0), arendeList.get(0).getMeddelandeId(), null, null, FEBRUARY)); //fraga
+        arendeViewList.add(buildArendeView(arendeList.get(1), "meddelandeId2", arendeList.get(0).getMeddelandeId(), null, JANUARY)); //svar
+        arendeViewList.add(buildArendeView(arendeList.get(2), "meddelandeId3", null, arendeList.get(0).getMeddelandeId(), DECEMBER_YEAR_9999)); //paminnelse
+        arendeViewList.add(buildArendeView(arendeList.get(3), "meddelandeId4", null, null, FEBRUARY)); //fraga
 
-        when(repo.findByIntygsId("intyg-1")).thenReturn(new ArrayList<>(arendeList));
-        when(transportToArende.decorate(arendeList.get(0))).thenReturn(arendeList.get(0));
-        when(transportToArende.decorate(arendeList.get(1))).thenReturn(arendeList.get(1));
-        when(transportToArende.decorate(arendeList.get(2))).thenReturn(arendeList.get(2));
+        when(repo.findByIntygsId("intyg-1")).thenReturn(arendeList);
+        when(transportToArende.convert(arendeList.get(0))).thenReturn(arendeViewList.get(0));
+        when(transportToArende.convert(arendeList.get(1))).thenReturn(arendeViewList.get(1));
+        when(transportToArende.convert(arendeList.get(2))).thenReturn(arendeViewList.get(2));
+        when(transportToArende.convert(arendeList.get(3))).thenReturn(arendeViewList.get(3));
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 
-        List<Arende> result = service.getArende("intyg-1");
+        List<ArendeConversationView> result = service.getArenden("intyg-1");
 
         verify(repo).findByIntygsId("intyg-1");
         verify(webcertUserService).getUser();
 
-        assertEquals(3, result.size());
-        assertEquals(arendeList, result);
+        assertEquals(2, result.size());
+        assertEquals(1, result.get(0).getPaminnelser().size());
+        assertEquals(arendeViewList.get(0), result.get(0).getFraga());
+        assertEquals(arendeViewList.get(1), result.get(0).getSvar());
+        assertEquals(arendeViewList.get(2), result.get(0).getPaminnelser().get(0));
+        assertEquals(arendeViewList.get(3), result.get(1).getFraga());
+        assertEquals(DECEMBER_YEAR_9999, result.get(0).getSenasteHandelse());
+        assertEquals(FEBRUARY, result.get(1).getSenasteHandelse());
+    }
+
+    private ArendeView buildArendeView(Arende arende, String meddelandeId, String svarPaId, String paminnelseMeddelandeId, LocalDateTime timestamp) {
+        ArendeType arendeType = null;
+        if(paminnelseMeddelandeId !=null){
+            arendeType = ArendeType.PAMINNELSE;
+        }else if(svarPaId !=null){
+            arendeType = ArendeType.SVAR;
+        }else{
+            arendeType = ArendeType.FRAGA;
+        }
+        ArendeView view = ArendeView.builder().
+                setAmne(ArendeAmne.ARBTID).
+                setArendeType(arendeType).
+                setInternReferens(meddelandeId).
+                setIntygId("intyg-1").
+                setStatus(Status.PENDING_INTERNAL_ACTION).
+                setMeddelandeRubrik("rubrik").
+                setSvarPaId(svarPaId).
+                setTimestamp(timestamp).
+                setVidarebefordrad(false).
+                setPaminnelseMeddelandeId(paminnelseMeddelandeId).
+                setSvarPaId(svarPaId).
+                
+                build();
+        
+        return view;
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -567,6 +612,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setAmne(ArendeAmne.OVRIGT);
         arende.setReferensId("<fk-extern-referens>");
+        arende.setMeddelandeId("meddelandeId");
         arende.setId(id);
         arende.setEnhet("enhet");
         arende.setSkickatTidpunkt(skickadTidpunkt);
@@ -583,6 +629,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArendeMetaData arende = new ArendeMetaData();
         arende.setIntygId(intygId);
         arende.setReceivedDate(receivedDate);
+
         return arende;
     }
 

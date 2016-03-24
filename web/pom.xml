@@ -254,6 +254,13 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>com.google.auto.value</groupId>
+      <artifactId>auto-value</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.eclipse.jetty</groupId>

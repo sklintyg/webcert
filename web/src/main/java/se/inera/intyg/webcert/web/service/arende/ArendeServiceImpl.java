@@ -21,6 +21,13 @@ package se.inera.intyg.webcert.web.service.arende;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -50,6 +57,10 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+
 @Service
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
@@ -75,7 +86,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private FragaSvarService fragaSvarService;
 
-    private static final ArendeTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeTimeStampComparator();
+    private static final ArendeConversationViewTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeConversationViewTimeStampComparator();
 
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
@@ -163,24 +174,69 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public List<Arende> getArende(String intygsId) {
+    public List<ArendeConversationView> getArenden(String intygsId) {
         List<Arende> arendeList = repo.findByIntygsId(intygsId);
 
         WebCertUser user = webcertUserService.getUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
-        List<Arende> resultList = new ArrayList<>();
         Iterator<Arende> iterator = arendeList.iterator();
         while (iterator.hasNext()) {
-
             Arende arende = iterator.next();
-            if (arende.getEnhet() != null && hsaEnhetIds.contains(arende.getEnhet())) {
-                Arende latestDraft = transportToArende.decorate(arende);
-                resultList.add(latestDraft);
+            if (arende.getEnhet() != null && !hsaEnhetIds.contains(arende.getEnhet())) {
+                arendeList.remove(arende);
             }
         }
-        Collections.sort(resultList, ARENDE_TIMESTAMP_COMPARATOR);
-        return resultList;
+        List<ArendeView> arendeViews = new ArrayList<>();
+        for (Arende arende : arendeList) {
+            ArendeView latestDraft = transportToArende.convert(arende);
+            arendeViews.add(latestDraft);
+        }
+        List<ArendeConversationView> arendeConversations = buildArendeConversations(arendeViews);
+        Collections.sort(arendeConversations, ARENDE_TIMESTAMP_COMPARATOR);
+
+        return arendeConversations;
+    }
+
+    private List<ArendeConversationView> buildArendeConversations(List<ArendeView> arendeViews) {
+        List<ArendeConversationView> arendeConversations = new ArrayList<>();
+        Map<String, List<ArendeView>> threads = new HashMap<>();
+        String meddelandeId = null;
+        for (ArendeView arende : arendeViews) { // divide into threads
+            meddelandeId = getMeddelandeId(arende);
+            if (threads.get(meddelandeId) == null) {
+                threads.put(meddelandeId, new ArrayList<ArendeView>());
+            }
+            threads.get(meddelandeId).add(arende);
+        }
+
+        for (String meddelandeIdd : threads.keySet()) {
+            List<ArendeView> arendeConversationContent = threads.get(meddelandeIdd);
+            List<ArendeView> paminnelser = new ArrayList<>();
+            ArendeView fraga = null, svar = null;
+            LocalDateTime senasteHandelse = null;
+            for (ArendeView view : arendeConversationContent) {
+                if (view.getArendeType() == ArendeType.FRAGA) {
+                    fraga = view;
+                } else if (view.getArendeType() == ArendeType.SVAR) {
+                    svar = view;
+                } else {
+                    paminnelser.add(view);
+                }
+                if (senasteHandelse == null || senasteHandelse.isBefore(view.getTimestamp())) {
+                    senasteHandelse = view.getTimestamp();
+                }
+            }
+            arendeConversations.add(ArendeConversationView.builder().setSenasteHandelse(senasteHandelse).setFraga(fraga).setSvar(svar)
+                    .setPaminnelser(paminnelser).build());
+        }
+        return arendeConversations;
+    }
+
+    private String getMeddelandeId(ArendeView arende) {
+        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
+        String meddelandeId = (referenceId != null) ? referenceId : arende.getInternReferens();
+        return meddelandeId;
     }
 
     @Override
@@ -230,18 +286,18 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
-    public static class ArendeTimeStampComparator implements Comparator<Arende> {
+    public static class ArendeConversationViewTimeStampComparator implements Comparator<ArendeConversationView> {
 
         @Override
-        public int compare(Arende f1, Arende f2) {
-            if (f1.getTimestamp() == null && f2.getTimestamp() == null) {
+        public int compare(ArendeConversationView f1, ArendeConversationView f2) {
+            if (f1.getSenasteHandelse() == null && f2.getSenasteHandelse() == null) {
                 return 0;
-            } else if (f1.getTimestamp() == null) {
+            } else if (f1.getSenasteHandelse() == null) {
                 return -1;
-            } else if (f2.getTimestamp() == null) {
+            } else if (f2.getSenasteHandelse() == null) {
                 return 1;
             } else {
-                return f2.getTimestamp().compareTo(f1.getTimestamp());
+                return f2.getSenasteHandelse().compareTo(f1.getSenasteHandelse());
             }
         }
     }

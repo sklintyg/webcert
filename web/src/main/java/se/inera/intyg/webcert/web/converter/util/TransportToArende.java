@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.converter.util;
 import static se.inera.certificate.modules.fkparent.model.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1;
 import static se.inera.certificate.modules.fkparent.model.converter.RespConstants.TILLAGGSFRAGOR_SVAR_JSON_ID;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,9 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 
 @Component
 public class TransportToArende {
@@ -54,23 +58,47 @@ public class TransportToArende {
     @Autowired
     private IntygServiceImpl intygService;
 
-    public Arende decorate(Arende arende) {
-        decorateMedicinsktArende(arende.getKomplettering(), arende.getIntygsId(), arende.getIntygTyp());
-        return arende;
+    public ArendeView convert(Arende arende) {
+        List<MedicinsktArendeView> kompletteringar = convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
+                arende.getIntygTyp());
+        ArendeView.Builder template = ArendeView.builder();
+        template.setAmne(arende.getAmne());
+        template.setArendeType(getArendeType(arende));
+        template.setEnhetsnamn(arende.getEnhet());
+        template.setExternaKontakter(arende.getKontaktInfo());
+        template.setFrageStallare(arende.getSkickatAv());
+        template.setInternReferens(arende.getMeddelandeId());
+        template.setIntygId(arende.getIntygsId());
+        template.setKompletteringar(kompletteringar);
+        template.setMeddelande(arende.getMeddelande());
+        template.setMeddelandeRubrik(arende.getRubrik());
+        template.setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId());
+        template.setSistaDatumForSvar(arende.getSistaDatumForSvar());
+        template.setStatus(arende.getStatus());
+        template.setSvarPaId(arende.getSvarPaId());
+        template.setSvarSkickadDatum(arende.getSkickatTidpunkt());
+        template.setTimestamp(arende.getTimestamp());
+        template.setVidarebefordrad(false); // TODO waiting for arende
+
+        return template.build();
     }
 
-    private List<MedicinsktArende> decorateMedicinsktArende(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
+    private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
+        List<MedicinsktArendeView> medicinskaArendenViews = new ArrayList<>();
         for (MedicinsktArende arende : medicinskaArenden) {
             try {
-                arende.setJsonPropertyHandle(getJsonPropertyHandle(arende, intygsId, intygsTyp));
-                arende.setPosition(getListPositionForInstanceId(arende));
+                String jsonPropertyHandle = getJsonPropertyHandle(arende, intygsId, intygsTyp);
+                Integer position = getListPositionForInstanceId(arende);
+                MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
+                        .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
+                medicinskaArendenViews.add(view);
 
             } catch (ModuleNotFoundException | ModuleException e) {
                 LOG.error("Module not found for certificate of type {}", intygsTyp);
                 Throwables.propagate(e);
             }
         }
-        return medicinskaArenden;
+        return medicinskaArendenViews;
     }
 
     private String getJsonPropertyHandle(MedicinsktArende arende, String intygsId, String intygsTyp)
@@ -125,5 +153,15 @@ public class TransportToArende {
         Integer instanceId = arende.getInstans();
         int result = (instanceId != null) ? instanceId : 0;
         return Math.max(result - 1, 0);
+    }
+
+    private static ArendeType getArendeType(Arende arende) {
+        if (arende.getPaminnelseMeddelandeId() != null) {
+            return ArendeType.PAMINNELSE;
+        } else if (arende.getSvarPaId() != null) {
+            return ArendeType.SVAR;
+        } else {
+            return ArendeType.FRAGA;
+        }
     }
 }

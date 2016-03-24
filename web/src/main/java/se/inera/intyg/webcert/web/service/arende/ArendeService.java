@@ -25,6 +25,7 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 
 public interface ArendeService {
 
@@ -43,7 +44,7 @@ public interface ArendeService {
      */
     List<Arende> listArendeForUnits() throws WebCertServiceException;
 
-    List<Arende> getArende(String intygsId);
+    List<ArendeConversationView> getArenden(String intygsId);
 
     QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters);
 }

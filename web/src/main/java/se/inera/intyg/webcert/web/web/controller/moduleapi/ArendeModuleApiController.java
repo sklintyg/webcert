@@ -28,9 +28,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 
 public class ArendeModuleApiController extends AbstractApiController {
 
@@ -40,8 +40,10 @@ public class ArendeModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public List<Arende> arendeForIntyg(@PathParam("intygsId") String intygsId) {
-        return arendeService.getArende(intygsId);
+    public List<ArendeConversationView> arendeForIntyg(@PathParam("intygsId") String intygsId) {
+        List<ArendeConversationView> arenden = arendeService.getArenden(intygsId);
+
+        return arenden;
     }
 
 }
