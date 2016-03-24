@@ -128,7 +128,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(utkastRepository).findOne(intygId);
     }
 
-
     @Test
     public void testProcessIncomingMessageNoGivenName() throws WebCertServiceException {
         final String intygId = "intygsid";
@@ -276,10 +275,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testListSignedByForUnits() {
         final List<String> selectedUnits = Arrays.asList("enhet1", "enhet2");
-        final String[] lakare1 = {"hsaid1", "namn1"};
-        final String[] lakare2 = {"hsaid2", "namn2"};
-        final String[] lakare3 = {"hsaid3", "namn3"};
-        final String[] lakare4 = {"hsaid4", "namn4"};
+        final String[] lakare1 = { "hsaid1", "namn1" };
+        final String[] lakare2 = { "hsaid2", "namn2" };
+        final String[] lakare3 = { "hsaid3", "namn3" };
+        final String[] lakare4 = { "hsaid4", "namn4" };
         final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3);
         final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
 
@@ -287,7 +286,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(user.getIdsOfSelectedVardenhet()).thenReturn(selectedUnits);
         when(webcertUserService.getUser()).thenReturn(user);
         when(repo.findSigneratAvByEnhet(selectedUnits)).thenReturn(repoResult);
-        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(Arrays.asList(new Lakare(lakare4[0],lakare4[1])));
+        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(Arrays.asList(new Lakare(lakare4[0], lakare4[1])));
 
         List<Lakare> res = service.listSignedByForUnits(null);
 
@@ -300,9 +299,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testListSignedByForUnitsSpecifiedUnit() {
         final List<String> selectedUnit = Arrays.asList("enhet1");
-        final String[] lakare1 = {"hsaid1", "namn1"};
-        final String[] lakare2 = {"hsaid2", "namn2"};
-        final String[] lakare3 = {"hsaid3", "namn3"};
+        final String[] lakare1 = { "hsaid1", "namn1" };
+        final String[] lakare2 = { "hsaid2", "namn2" };
+        final String[] lakare3 = { "hsaid3", "namn3" };
         final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3);
 
         when(webcertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(true);
@@ -332,15 +331,15 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testGetArendeForIntyg() {
         List<Arende> arendeList = new ArrayList<>();
         List<ArendeView> arendeViewList = new ArrayList<>();
-        
-       arendeList.add(buildArende(1L, FEBRUARY, FEBRUARY));
+
+        arendeList.add(buildArende(1L, FEBRUARY, FEBRUARY));
         arendeList.add(buildArende(2L, JANUARY, JANUARY));
         arendeList.add(buildArende(3L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         arendeList.add(buildArende(4L, FEBRUARY, FEBRUARY));
-        arendeViewList.add(buildArendeView(arendeList.get(0), arendeList.get(0).getMeddelandeId(), null, null, FEBRUARY)); //fraga
-        arendeViewList.add(buildArendeView(arendeList.get(1), "meddelandeId2", arendeList.get(0).getMeddelandeId(), null, JANUARY)); //svar
-        arendeViewList.add(buildArendeView(arendeList.get(2), "meddelandeId3", null, arendeList.get(0).getMeddelandeId(), DECEMBER_YEAR_9999)); //paminnelse
-        arendeViewList.add(buildArendeView(arendeList.get(3), "meddelandeId4", null, null, FEBRUARY)); //fraga
+        arendeViewList.add(buildArendeView(arendeList.get(0), arendeList.get(0).getMeddelandeId(), null, null, FEBRUARY)); // fraga
+        arendeViewList.add(buildArendeView(arendeList.get(1), "meddelandeId2", arendeList.get(0).getMeddelandeId(), null, JANUARY)); // svar
+        arendeViewList.add(buildArendeView(arendeList.get(2), "meddelandeId3", null, arendeList.get(0).getMeddelandeId(), DECEMBER_YEAR_9999)); // paminnelse
+        arendeViewList.add(buildArendeView(arendeList.get(3), "meddelandeId4", null, null, FEBRUARY)); // fraga
 
         when(repo.findByIntygsId("intyg-1")).thenReturn(arendeList);
         when(transportToArende.convert(arendeList.get(0))).thenReturn(arendeViewList.get(0));
@@ -367,28 +366,19 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private ArendeView buildArendeView(Arende arende, String meddelandeId, String svarPaId, String paminnelseMeddelandeId, LocalDateTime timestamp) {
         ArendeType arendeType = null;
-        if(paminnelseMeddelandeId !=null){
+        if (paminnelseMeddelandeId != null) {
             arendeType = ArendeType.PAMINNELSE;
-        }else if(svarPaId !=null){
+        } else if (svarPaId != null) {
             arendeType = ArendeType.SVAR;
-        }else{
+        } else {
             arendeType = ArendeType.FRAGA;
         }
-        ArendeView view = ArendeView.builder().
-                setAmne(ArendeAmne.ARBTID).
-                setArendeType(arendeType).
-                setInternReferens(meddelandeId).
-                setIntygId("intyg-1").
-                setStatus(Status.PENDING_INTERNAL_ACTION).
-                setMeddelandeRubrik("rubrik").
-                setSvarPaId(svarPaId).
-                setTimestamp(timestamp).
-                setVidarebefordrad(false).
-                setPaminnelseMeddelandeId(paminnelseMeddelandeId).
-                setSvarPaId(svarPaId).
-                
-                build();
-        
+        ArendeView view = ArendeView.builder().setAmne(ArendeAmne.ARBTID).setArendeType(arendeType).setInternReferens(meddelandeId)
+                .setIntygId("intyg-1").setStatus(Status.PENDING_INTERNAL_ACTION).setMeddelandeRubrik("rubrik").setSvarPaId(svarPaId)
+                .setTimestamp(timestamp).setVidarebefordrad(false).setPaminnelseMeddelandeId(paminnelseMeddelandeId).setSvarPaId(svarPaId).
+
+        build();
+
         return view;
     }
 

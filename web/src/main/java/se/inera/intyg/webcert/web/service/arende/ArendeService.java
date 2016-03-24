@@ -18,6 +18,7 @@
  */
 
 package se.inera.intyg.webcert.web.service.arende;
+
 import java.util.List;
 
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
