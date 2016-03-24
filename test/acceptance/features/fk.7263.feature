@@ -37,7 +37,11 @@ Scenario: Makulera ett skickat intyg
 @kopiera
 Scenario: Kopiera ett signerat intyg
 	När jag väljer patienten "19971019-2387"
-    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
 	Och jag kopierar intyget
 	Och jag signerar intyget
-    Så ska intygets status vara "Intyget är signerat"	
+    Så ska intygets status vara "Intyget är signerat"
+    Och jag ska se den data jag angett för intyget
+
