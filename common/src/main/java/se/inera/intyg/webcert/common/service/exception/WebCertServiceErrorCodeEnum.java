@@ -30,5 +30,6 @@ public enum WebCertServiceErrorCodeEnum {
     UNKNOWN_INTERNAL_PROBLEM,           // All others
     DATA_NOT_FOUND,                     // Certificate (or other resource) not found
     CERTIFICATE_REVOKED,
-    CONCURRENT_MODIFICATION
+    CONCURRENT_MODIFICATION,
+    GRP_PROBLEM
 }

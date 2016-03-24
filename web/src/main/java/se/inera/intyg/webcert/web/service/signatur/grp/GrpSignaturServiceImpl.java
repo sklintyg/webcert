@@ -19,16 +19,19 @@
 
 package se.inera.intyg.webcert.web.service.signatur.grp;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import se.funktionstjanster.grp.v1.AuthenticateRequestType;
-import se.funktionstjanster.grp.v1.GrpFault;
-import se.funktionstjanster.grp.v1.GrpServicePortType;
-import se.funktionstjanster.grp.v1.OrderResponseType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.funktionstjanster.grp.v1.*;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
@@ -45,13 +48,17 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Service
 public class GrpSignaturServiceImpl implements GrpSignaturService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GrpSignaturServiceImpl.class);
+
     static final String BANK_ID_PROVIDER = "bankid"; // As specified in CGI GRP docs
 
     /** Assigned to us by the GRP provider (e.g. CGI). Used in the 'policy' attribute of auth and collect requests. */
     @Value("${cgi.grp.serviceId}")
     private String serviceId;
 
-    /** Note that this value must be fetched from a props file encoded in ISO-8859-1 if it contains non ascii-7 chars.*/
+    /**
+     * Note that this value must be fetched from a props file encoded in ISO-8859-1 if it contains non ascii-7 chars.
+     */
     @Value("${cgi.grp.displayName}")
     private String displayName;
 
@@ -96,12 +103,19 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         try {
             orderResponse = grpService.authenticate(authRequest);
         } catch (GrpFault grpFault) {
-            // TODO FIX
             signaturTicketTracker.updateStatus(draftHash.getId(), SignaturTicket.Status.OKAND);
-            throw new RuntimeException(grpFault.getMessage());
+
+            Optional<FaultStatusType> status = Optional.ofNullable(grpFault.getFaultInfo()).map(GrpFaultType::getFaultStatus);
+            if (status.isPresent()) {
+                LOG.warn("Fault signing utkast with id {} with GRP. FaultStatus: {}", intygId, status.get().name());
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, status.get().name());
+            } else {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, grpFault.getMessage());
+            }
         }
 
-        // If we could init the authentication, we create a SignaturTicket, reusing the mechanism already present for SITHS
+        // If we could init the authentication, we create a SignaturTicket, reusing the mechanism already present for
+        // SITHS
         String orderRef = orderResponse.getOrderRef();
 
         String transactionId = validateOrderResponseTxId(authRequest, orderResponse);
