@@ -61,5 +61,16 @@
       </New>
     </Arg>
   </New>
+  <New id="DLQ.aggregatedQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref id="webAppContext"/>
+    </Arg>
+    <Arg>jms/AggregatedLogSenderDLQ</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>DLQ.aggregated.logging.queue</Arg>
+      </New>
+    </Arg>
+  </New>
 </Configure>
 

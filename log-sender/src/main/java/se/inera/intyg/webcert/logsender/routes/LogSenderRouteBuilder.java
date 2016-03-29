@@ -25,8 +25,10 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logsender.exception.BatchValidationException;
 
 /**
  * Defines the LogSender Camel route which accepts {@link se.inera.intyg.common.logmessages.PdlLogMessage} in JSON-
@@ -42,6 +44,9 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
 
     @Value("${receiveAggregatedLogMessageEndpointUri}")
     private String newAggregatedLogMessageQueue;
+
+    @Value("${receiveAggregatedLogMessageDLQUri}")
+    private String newAggregatedLogMessageDLQ;
 
     /*
       * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
@@ -74,6 +79,7 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
         //    to convert into ehr:logstore format and send. Exception handling delegates resends to AMQ.
         from("receiveAggregatedLogMessageEndpoint").routeId("aggregatedJmsToSenderRoute")
                 .onException(TemporaryException.class).to("direct:logMessageTemporaryErrorHandlerEndpoint").end()
+                .onException(BatchValidationException.class).handled(true).to("direct:logMessageBatchValidationErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:logMessagePermanentErrorHandlerEndpoint").end()
                 .transacted()
                 .to("bean:logMessageSendProcessor").stop();
@@ -82,6 +88,11 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
         // Error handling
         from("direct:logMessagePermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("ENTER - Permanent exception for LogMessage batch: ${exception.message}\n ${exception.stacktrace}").getText())
+                .stop();
+
+        from("direct:logMessageBatchValidationErrorHandlerEndpoint").routeId("batchValidationErrorLogging")
+                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Batch validation exception for LogMessage batch: ${exception.message}\n ${exception.stacktrace}").getText())
+                .to(newAggregatedLogMessageDLQ)
                 .stop();
 
         from("direct:logMessageTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")

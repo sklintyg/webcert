@@ -30,7 +30,7 @@
 
     <camel:routeBuilder ref="logMessageRouteBuilder"/>
 
-    <!-- Endpoint connected to AMQ to recieve messages on -->
+    <!-- Endpoint connected to AMQ to receive messages on -->
     <camel:endpoint id="receiveLogMessageEndpoint" uri="${receiveLogMessageEndpointUri}"/>
     <camel:endpoint id="receiveAggregatedLogMessageEndpoint" uri="${receiveAggregatedLogMessageEndpointUri}"/>
 

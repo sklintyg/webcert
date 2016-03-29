@@ -19,18 +19,17 @@
 
 package se.inera.intyg.webcert.web.web.controller.monitoring;
 
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
+import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
-import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 /**
  * RESTinterface for checking the general health status of the application.
@@ -66,33 +65,6 @@ public class HealthCheckApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_XML)
     public Response checkJMS() {
         HealthStatus status = healthCheck.checkJMS();
-        String xmlResponse = buildXMLResponse(status);
-        return Response.ok(xmlResponse).build();
-    }
-
-    @GET
-    @Path("/hsa-authorizationmanagement")
-    @Produces(MediaType.APPLICATION_XML)
-    public Response checkHSA() {
-        HealthStatus status = healthCheck.checkHsaAuthorizationmanagement();
-        String xmlResponse = buildXMLResponse(status);
-        return Response.ok(xmlResponse).build();
-    }
-
-    @GET
-    @Path("/hsa-employee")
-    @Produces(MediaType.APPLICATION_XML)
-    public Response checkHsaEmployee() {
-        HealthStatus status = healthCheck.checkHsaEmployee();
-        String xmlResponse = buildXMLResponse(status);
-        return Response.ok(xmlResponse).build();
-    }
-
-    @GET
-    @Path("/hsa-organization")
-    @Produces(MediaType.APPLICATION_XML)
-    public Response checkHsaOrganization() {
-        HealthStatus status = healthCheck.checkHsaOrganization();
         String xmlResponse = buildXMLResponse(status);
         return Response.ok(xmlResponse).build();
     }

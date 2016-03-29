@@ -19,17 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import java.sql.Time;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -41,11 +30,20 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
+
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.sql.Time;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Service for getting the health status of the application.
@@ -80,78 +78,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
 
     @Autowired
-    @Qualifier("pingForConfigurationResponderInterfaceAuthorizationmanagement")
-    private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceAuthorizationmanagement;
-
-    @Autowired
-    @Qualifier("pingForConfigurationResponderInterfaceEmployee")
-    private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceEmployee;
-
-    @Autowired
-    @Qualifier("pingForConfigurationResponderInterfaceOrganization")
-    private PingForConfigurationResponderInterface pingForConfigurationResponderInterfaceOrganization;
-
-    @Value("${infrastructure.directory.logicalAddress}")
-    private String infrastructureDirectoryLogicalAddress;
-
-    @Autowired
     private SessionRegistry sessionRegistry;
-
-    @Override
-    public HealthStatus checkHsaAuthorizationmanagement() {
-        boolean ok;
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        try {
-            PingForConfigurationResponseType pingResponse =
-                    pingForConfigurationResponderInterfaceAuthorizationmanagement.pingForConfiguration(infrastructureDirectoryLogicalAddress, buildPingRequest(infrastructureDirectoryLogicalAddress));
-
-            ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
-        } catch (Exception e) {
-            ok = false;
-        }
-        stopWatch.stop();
-        HealthStatus status = createStatusWithTiming(ok, stopWatch);
-        logStatus("getHsaAuthorizationManagementStatus", status);
-        return status;
-    }
-
-    @Override
-    public HealthStatus checkHsaEmployee() {
-        boolean ok;
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        try {
-
-            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceEmployee.pingForConfiguration(infrastructureDirectoryLogicalAddress, buildPingRequest(infrastructureDirectoryLogicalAddress));
-
-            ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
-        } catch (Exception e) {
-            ok = false;
-        }
-        stopWatch.stop();
-        HealthStatus status = createStatusWithTiming(ok, stopWatch);
-        logStatus("getHsaStatus", status);
-        return status;
-    }
-
-    @Override
-    public HealthStatus checkHsaOrganization() {
-        boolean ok;
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        try {
-            PingForConfigurationResponseType pingResponse = pingForConfigurationResponderInterfaceOrganization.pingForConfiguration(infrastructureDirectoryLogicalAddress, buildPingRequest(infrastructureDirectoryLogicalAddress));
-
-            ok = pingResponse !=  null && pingResponse.getPingDateTime() !=  null;
-        } catch (Exception e) {
-            ok = false;
-        }
-        stopWatch.stop();
-        HealthStatus status = createStatusWithTiming(ok, stopWatch);
-        logStatus("getHsaStatus", status);
-        return status;
-    }
 
     private PingForConfigurationType buildPingRequest(String logicalAddress) {
         PingForConfigurationType param = new PingForConfigurationType();

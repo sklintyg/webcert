@@ -1,11 +1,13 @@
 package se.inera.intyg.webcert.logsender.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 
@@ -24,9 +26,12 @@ public class LogMessageAggregationProcessorTest {
 
     private LogMessageAggregationProcessor testee = new LogMessageAggregationProcessor();
 
+    private ObjectMapper objectMapper = new CustomObjectMapper();
+
     @Test
     public void testOkGroupedExchange() throws Exception {
-        List<String> output = testee.process(buildGroupedExchange(1, 1));
+        String body = testee.process(buildGroupedExchange(1, 1));
+        List<String> output = objectMapper.readValue(body, ArrayList.class);
         assertEquals(1, output.size());
     }
 
@@ -36,7 +41,8 @@ public class LogMessageAggregationProcessorTest {
      */
     @Test
     public void testGroupedExchangeWithMultipleResources() throws Exception {
-        List<String> output = testee.process(buildGroupedExchange(3, 5));
+        String body = testee.process(buildGroupedExchange(3, 5));
+        List<String> output = objectMapper.readValue(body, ArrayList.class);
         assertEquals(3, output.size());
     }
 

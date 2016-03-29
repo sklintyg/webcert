@@ -18,10 +18,13 @@
  */
 package se.inera.intyg.webcert.logsender.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Body;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.logmessages.PdlResource;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
@@ -40,6 +43,8 @@ import java.util.List;
  * Created by eriklupander on 2016-03-16.
  */
 public class LogMessageSplitProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LogMessageSplitProcessor.class);
 
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -61,23 +66,25 @@ public class LogMessageSplitProcessor {
         if (body != null) {
             PdlLogMessage pdlLogMessage = objectMapper.readValue((String) body.getBody(), PdlLogMessage.class);
             if (pdlLogMessage.getPdlResourceList().size() == 0) {
-                throw new PermanentException("No resources in PDL log message, don't proceed.");
-            }
-
-            if (pdlLogMessage.getPdlResourceList().size() == 1) {
+                LOG.error("No resources in PDL log message {}, not proceeding.", pdlLogMessage.getLogId());
+                throw new PermanentException("No resources in PDL log message, discarding message.");
+            } else if (pdlLogMessage.getPdlResourceList().size() == 1) {
                 answer.add(body);
             } else {
-
-                for (PdlResource resource : pdlLogMessage.getPdlResourceList()) {
-                    PdlLogMessage copiedPdlLogMsg = pdlLogMessage.copy(false);
-                    copiedPdlLogMsg.getPdlResourceList().add(resource);
-
-                    DefaultMessage message = new DefaultMessage();
-                    message.setBody(objectMapper.writeValueAsString(copiedPdlLogMsg));
-                    answer.add(message);
-                }
+                splitIntoOnePdlLogMessagePerResource(answer, pdlLogMessage);
             }
         }
         return answer;
+    }
+
+    private void splitIntoOnePdlLogMessagePerResource(List<Message> answer, PdlLogMessage pdlLogMessage) throws JsonProcessingException {
+        for (PdlResource resource : pdlLogMessage.getPdlResourceList()) {
+            PdlLogMessage copiedPdlLogMsg = pdlLogMessage.copy(false);
+            copiedPdlLogMsg.getPdlResourceList().add(resource);
+
+            DefaultMessage message = new DefaultMessage();
+            message.setBody(objectMapper.writeValueAsString(copiedPdlLogMsg));
+            answer.add(message);
+        }
     }
 }

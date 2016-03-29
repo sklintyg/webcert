@@ -20,24 +20,24 @@
 package se.inera.intyg.webcert.logsender.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.apache.camel.test.spring.CamelTestContextBootstrapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
@@ -66,8 +66,10 @@ import com.google.common.base.Throwables;
 @ContextConfiguration("/logsender/integration-test-certificate-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteIntegrationTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RouteIntegrationTest.class);
 
     private static final int SECONDS_TO_WAIT = 5;
 
@@ -79,7 +81,12 @@ public class RouteIntegrationTest {
     private Queue sendQueue;
 
     @Autowired
-    private Queue dlq;
+    @Qualifier("newAggregatedLogMessageQueue")
+    private Queue newAggregatedLogMessageQueue;
+
+    @Autowired
+    @Qualifier("newAggregatedLogMessageDLQ")
+    private Queue newAggregatedLogMessageDLQ;
 
     @Autowired
     private MockLogSenderClientClientImpl mockLogSenderClientClient;
@@ -91,11 +98,11 @@ public class RouteIntegrationTest {
     @Before
     public void resetStub() throws Exception {
         mockLogSenderClientClient.reset();
+    }
 
-        // Stopping and startng the camelContext clears out the aggregator between tests.
-        // Not too elegant but works. stopRoute/startRoute does not work.
-        camelContext.stop();
-        camelContext.start();
+    @After
+    public void after() {
+       // emptyDLQ();
     }
 
     @Test
@@ -141,13 +148,13 @@ public class RouteIntegrationTest {
     }
 
     @Test
-    public void ensureStubReceivesFourMessagesAfterThreeTimesSevenHasBeenSent() throws Exception {
+    public void ensureStubReceivesSixMessagesAfterThreeTimesTenHasBeenSent() throws Exception {
 
         for (int a = 0; a < 3; a++) {
-            sendMessage(ActivityType.READ, 7);
+            sendMessage(ActivityType.READ, 10);
         }
 
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(4));
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> messagesReceived(6));
     }
 
     @Test
@@ -208,6 +215,7 @@ public class RouteIntegrationTest {
 //
     @Test
     public void ensureMessageEndsUpInDLQ() throws Exception {
+
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
@@ -225,11 +233,6 @@ public class RouteIntegrationTest {
 
     @Test
     public void ensureTwoMessagesEndsUpInDLQ() throws Exception {
-        sendMessage(ActivityType.EMERGENCY_ACCESS);
-        sendMessage(ActivityType.EMERGENCY_ACCESS);
-        sendMessage(ActivityType.EMERGENCY_ACCESS);
-        sendMessage(ActivityType.EMERGENCY_ACCESS);
-        sendMessage(ActivityType.EMERGENCY_ACCESS);
 
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
@@ -237,7 +240,34 @@ public class RouteIntegrationTest {
         sendMessage(ActivityType.EMERGENCY_ACCESS);
         sendMessage(ActivityType.EMERGENCY_ACCESS);
 
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> expectedDLQMessages(3));
+        sendMessage(ActivityType.EMERGENCY_ACCESS);
+        sendMessage(ActivityType.EMERGENCY_ACCESS);
+        sendMessage(ActivityType.EMERGENCY_ACCESS);
+        sendMessage(ActivityType.EMERGENCY_ACCESS);
+        sendMessage(ActivityType.EMERGENCY_ACCESS);
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> expectedDLQMessages(2));
+    }
+
+    @Test
+    public void ensureMessageEndsUpInDlqWithOneInvalidSystemInBatch() throws Exception {
+
+        sendMessage(ActivityType.READ, 2);
+
+        jmsTemplate.send(sendQueue, session -> {
+            try {
+                PdlLogMessage pdlLogMessage = TestDataHelper.buildBasePdlLogMessage(ActivityType.READ, 1);
+                pdlLogMessage.setSystemId("invalid");
+                TextMessage textMessage = session.createTextMessage(new CustomObjectMapper().writeValueAsString(pdlLogMessage));
+                return textMessage;
+            } catch (Exception e) {
+                throw Throwables.propagate(e);
+            }
+        });
+
+        sendMessage(ActivityType.READ, 2);
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> expectedDLQMessages(1));
     }
 
     private void sendMessage(final ActivityType activityType, int numberOfResources) throws Exception {
@@ -256,18 +286,14 @@ public class RouteIntegrationTest {
     }
 
     private int numberOfDLQMessages() throws Exception {
-        Integer count = (Integer) jmsTemplate.browse(dlq, new BrowserCallback<Object>() {
-
-            @Override
-            public Object doInJms(Session session, QueueBrowser browser) throws JMSException {
-                int counter = 0;
-                Enumeration<?> msgs = browser.getEnumeration();
-                while (msgs.hasMoreElements()) {
-                    msgs.nextElement();
-                    counter++;
-                }
-                return counter;
+        Integer count = (Integer) jmsTemplate.browse(newAggregatedLogMessageDLQ, (BrowserCallback<Object>) (session, browser) -> {
+            int counter = 0;
+            Enumeration<?> msgs = browser.getEnumeration();
+            while (msgs.hasMoreElements()) {
+                msgs.nextElement();
+                counter++;
             }
+            return counter;
         });
         return count;
     }

@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.client.LogSenderClient;
 import se.inera.intyg.webcert.logsender.converter.LogTypeFactory;
+import se.inera.intyg.webcert.logsender.exception.BatchValidationException;
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
@@ -36,6 +36,7 @@ import se.riv.ehr.log.v1.LogType;
 
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,14 +58,19 @@ public class LogMessageSendProcessor {
     /**
      * Note use of Camel "boxing" of the body.
      *
+     * The body must be a String with a JSON encoded array of {@link PdlLogMessage}(s)
+     *
      * @param groupedLogEntries
+     *      A String containing a JSON encoded array of {@link PdlLogMessage}(s)
      * @throws Exception
      */
-    public void process(List<String> groupedLogEntries) throws Exception {
+    public void process(String groupedLogEntries) throws Exception {
 
         try {
 
-            List<LogType> logMessages = groupedLogEntries.stream()
+            List<String> groupedList = objectMapper.readValue(groupedLogEntries, ArrayList.class);
+
+            List<LogType> logMessages = groupedList.stream()
                     .map(this::jsonToPdlLogMessage)
                     .map(alm -> logTypeFactory.convert(alm))
                     .collect(Collectors.toList());
@@ -79,17 +85,18 @@ public class LogMessageSendProcessor {
                     break;
                 case ERROR:
                 case VALIDATION_ERROR:
-                    LOG.warn("Error occured when trying to send log messages '{}'", resultText);
-                    throw new PermanentException("Unhandled error: " + resultText);
+                    LOG.error("Loggtjänsten rejected PDL message batch with {}, batch will be moved to DLQ. Result text: '{}'", result.getResultCode().value(), resultText);
+                    throw new BatchValidationException("Loggtjänsten rejected PDL message batch with error: " + resultText + ". Batch will be moved directly to DLQ.");
                 case INFO:
-                    LOG.warn("Warning occured when trying to send log messages '{}'. Will not requeue.", resultText);
+                    LOG.warn("Warning of type INFO occured when sending PDL log message batch: '{}'. Will not requeue.", resultText);
                     break;
                 default:
                     throw new TemporaryException(resultText);
             }
+
         } catch (IllegalArgumentException e) {
-            LOG.error(e.getMessage());
-            throw new PermanentException("Unparsable Log message: " + e.getMessage());
+            LOG.error(e.getMessage() + ". Moving batch to DLQ.");
+            throw new BatchValidationException("Unparsable Log message: " + e.getMessage());
         } catch (LoggtjanstExecutionException e) {
             LOG.warn("Call to send log message caused a LoggtjanstExecutionException: {}. Will retry", e.getMessage());
             throw new TemporaryException(e.getMessage());

@@ -38,9 +38,7 @@
 
 		<c:set var="dbStatus" value="${healthcheck.checkDB()}" />
 		<c:set var="jmsStatus" value="${healthcheck.checkJMS()}" />
-		<c:set var="hsaAuthorizationmanagementStatus" value="${healthcheck.checkHsaAuthorizationmanagement()}" />
-		<c:set var="hsaEmployeeStatus" value="${healthcheck.checkHsaEmployee()}" />
-		<c:set var="hsaOrganizationStatus" value="${healthcheck.checkHsaOrganization()}" />
+
 		<c:set var="intygstjanstStatus"
 			value="${healthcheck.checkIntygstjanst()}" />
 		<c:set var="signatureQueueStatus"
@@ -67,24 +65,10 @@
 						<td id="jmsMeasurement">${jmsStatus.measurement}ms</td>
 						<td id="jmsStatus" class="${jmsStatus.ok ? "text-success" : "text-danger"}">${jmsStatus.ok ? "OK" : "FAIL"}</td>
 					</tr>
-
-					<!-- New HSA over NTjP -->
 					<tr>
-						<td>Koppling HSA authorizationmanagement</td>
-						<td id="hsaAuthorizationmanagementMeasurement">${hsaAuthorizationmanagementStatus.measurement}ms</td>
-						<td id="hsaAuthorizationmanagementStatus" class="${hsaAuthorizationmanagementStatus.ok ? "text-success" : "text-danger"}">${hsaAuthorizationmanagementStatus.ok ? "OK" : "FAIL"}</td>
+						<td>Koppling HSA</td>
+						<td>Ej implementerat</td>
 					</tr>
-					<tr>
-						<td>Koppling HSA employee</td>
-						<td id="hsaEmployeeMeasurement">${hsaEmployeeStatus.measurement}ms</td>
-						<td id="hsaEmployeeStatus" class="${hsaEmployeeStatus.ok ? "text-success" : "text-danger"}">${hsaEmployeeStatus.ok ? "OK" : "FAIL"}</td>
-					</tr>
-					<tr>
-						<td>Koppling HSA organization</td>
-						<td id="hsaOrganizationMeasurement">${hsaOrganizationStatus.measurement}ms</td>
-						<td id="hsaOrganizationStatus" class="${hsaOrganizationStatus.ok ? "text-success" : "text-danger"}">${hsaOrganizationStatus.ok ? "OK" : "FAIL"}</td>
-					</tr>
-					<!-- End new HSA over NTjP -->
 
 					<tr>
 						<td>Koppling till Intygstjänst</td>
