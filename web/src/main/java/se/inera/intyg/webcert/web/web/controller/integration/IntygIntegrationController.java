@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
 
 import java.net.URI;
 import java.util.HashMap;
