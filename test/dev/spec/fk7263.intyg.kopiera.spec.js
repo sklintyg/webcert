@@ -59,19 +59,19 @@ describe('Generate fk intyg', function() {
         });
 
         it('should copy intyg and view resulting utkast', function() {
-            FkIntygPage.copyBtn().click();
+            FkIntygPage.copyBtn.click();
             FkIntygPage.copyDialogConfirmBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
         });
 
         it('fill missing text capacityForWorkForecastText', function() {
-
             // Save id so it can be removed in cleanup stage.
             browser.getCurrentUrl().then(function(url) {
                 utkastId = url.split('/').pop();
             });
 
             browser.ignoreSynchronization = true;
+            FkUtkastPage.angePrognos({ val: 'Går inte att bedöma' });
             FkUtkastPage.getCapacityForWorkForecastText().sendKeys('Litet förtydligande');
             expect(FkUtkastPage.getCapacityForWorkForecastText().getAttribute('value')).toContain('Litet förtydligande');
         });
