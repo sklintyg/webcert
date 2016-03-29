@@ -64,7 +64,7 @@ describe('Create and Sign ts-bas utkast', function() {
             styrkor: wcTestTools.testdata.values.ts.getRandomStyrka(),
             linser: {
                 hoger: 'Ja',
-                vanster: 'Ja',
+                vanster: 'Ja'
             },
             horsel:{
                 yrsel: 'Ja',
@@ -72,7 +72,7 @@ describe('Create and Sign ts-bas utkast', function() {
             },
             rorelseorganensFunktioner:{
                 nedsattning: 'Ja',
-                inUtUrFordon: ''
+                inUtUrFordon: 'Ja'
             },
             hjartHjarna: 'Ja',
             hjartSkada: 'Ja',
