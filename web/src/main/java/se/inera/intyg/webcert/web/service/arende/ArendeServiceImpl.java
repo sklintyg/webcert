@@ -19,15 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.util.*;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -54,12 +56,11 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
-import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
-
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -227,8 +228,8 @@ public class ArendeServiceImpl implements ArendeService {
                     senasteHandelse = view.getTimestamp();
                 }
             }
-            arendeConversations.add(ArendeConversationView.builder().setSenasteHandelse(senasteHandelse).setFraga(fraga).setSvar(svar)
-                    .setPaminnelser(paminnelser).build());
+
+            arendeConversations.add(ArendeConversationView.create(fraga, svar, senasteHandelse, paminnelser));
         }
         return arendeConversations;
     }

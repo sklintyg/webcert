@@ -172,6 +172,7 @@ public class TransportToArendeTest {
         arende.setIntygsId(intygsId);
         arende.setStatus(webcertStatus);
         arende.setMeddelandeId("meddelandeId");
+        arende.setTimestamp(LocalDateTime.now());
         MedicinsktArende medArende1 = buildMedicinsktArende("1", 1, "arende1");
         MedicinsktArende medArende2 = buildMedicinsktArende("2", 1, "arende1");
         MedicinsktArende medArende4 = buildMedicinsktArende("4", 3, "arende1");

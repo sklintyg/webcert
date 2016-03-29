@@ -38,30 +38,13 @@ public abstract class ArendeConversationView {
     @Nullable
     public abstract LocalDateTime getSenasteHandelse();
 
-    @Nullable
     public abstract ImmutableList<ArendeView> getPaminnelser();
 
-    public abstract Builder toBuilder();
-
-    public static Builder builder() {
-        return new AutoValue_ArendeConversationView.Builder();
+    public static ArendeConversationView create(ArendeView fraga,
+            ArendeView svar,
+            LocalDateTime senasteHandelse,
+            List<ArendeView> paminnelser) {
+        return new AutoValue_ArendeConversationView(fraga, svar, senasteHandelse, ImmutableList.copyOf(paminnelser));
     }
 
-    @AutoValue.Builder
-    public abstract static class Builder {
-        public abstract ArendeConversationView build();
-
-        public abstract Builder setFraga(ArendeView fraga);
-
-        public abstract Builder setSvar(ArendeView svar);
-
-        public abstract Builder setSenasteHandelse(LocalDateTime senasteHandelse);
-
-        public Builder setPaminnelser(List<ArendeView> paminnelser) {
-            return setPaminnelser(ImmutableList.copyOf(paminnelser));
-        }
-
-        /* package private */
-        abstract Builder setPaminnelser(ImmutableList<ArendeView> paminnelser);
-    }
 }

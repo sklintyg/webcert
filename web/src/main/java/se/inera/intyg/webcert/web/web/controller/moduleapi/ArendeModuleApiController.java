@@ -19,21 +19,28 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.swagger.annotations.Api;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 
+@Path("/arende")
+@Api(value = "arende", description = "REST API - moduleapi - arende", produces = MediaType.APPLICATION_JSON)
 public class ArendeModuleApiController extends AbstractApiController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArendeModuleApiController.class);
     @Autowired
     private ArendeService arendeService;
 
@@ -44,6 +51,29 @@ public class ArendeModuleApiController extends AbstractApiController {
         List<ArendeConversationView> arenden = arendeService.getArenden(intygsId);
 
         return arenden;
+    }
+
+    @GET
+    @Path("/ping")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response getPing() {
+        String xmlResponse = buildXMLResponse(true, 0, null);
+        LOGGER.debug("Pinged Intygstjänsten, got: " + xmlResponse);
+        return Response.ok(xmlResponse).build();
+    }
+
+    private String buildXMLResponse(boolean ok, long time, Map<String, String> additionalValues) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<pingdom_http_custom_check>");
+        sb.append("<status>" + (ok ? "OK" : "FAIL") + "</status>");
+        sb.append("<response_time>" + time + "</response_time>");
+        if (additionalValues != null) {
+            sb.append("<additional_data>");
+            additionalValues.forEach((k, v) -> sb.append("<" + k + ">" + v + "</" + k + ">"));
+            sb.append("</additional_data>");
+        }
+        sb.append("</pingdom_http_custom_check>");
+        return sb.toString();
     }
 
 }

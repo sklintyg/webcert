@@ -33,36 +33,21 @@ import se.inera.intyg.webcert.persistence.model.Status;
 
 @AutoValue
 public abstract class ArendeView {
-    //
-    // public static final String KOMPLETTERINGAR = "kompletteringar"; //kompletteringar i Arende
-    // public static final String INTERN_REFERENS = "internReferens"; //Meddelandeid
-    // public static final String STATUS = "status";
-    // public static final String AMNE = "amne";
-    // public static final String MEDDELANDE_RUBRIK = "meddelandeRubrik";
-    // public static final String SISTA_DATUM_FOR_SVAR = "sistaDatumForSvar";
-    // public static final String VIDAREBEFORDRAD = "vidarebefordrad";//TODO to be added to Arende.
-    // public static final String FRAGESTALLARE = "frageStallare";// skickatAv
-    // public static final String VARDAKTOR_NAMN = "vardAktorNamn";//TODO to be added to Arende
-    // public static final String EXTERNA_KONTAKTER = "externaKontakter";//kontaktinfo
-    // public static final String MEDDELANDE = "meddelande";//frågetext/svarstext/meddelande
-    // public static final String SVAR_SKICKAD_DATUM = "svarSkickadDatum"; //TODO finns ej i ärende, kolla upp
-    // public static final String ENHETSNAMN = "enhetsnamn";
-    // public static final String VARDGIVARNAMN = "vardgivarnamn";//TODO samma som vardaktorNamn?
-    // public static final String INTYGS_ID = "intygId";
+
     public enum ArendeType {
         FRAGA,
         SVAR,
         PAMINNELSE
     }
 
-    @Nullable
     public abstract ImmutableList<MedicinsktArendeView> getKompletteringar();
 
     public abstract String getInternReferens();
 
     public abstract Status getStatus();
 
-    abstract ArendeAmne getAmne();
+    @Nullable
+    public abstract ArendeAmne getAmne();
 
     @Nullable
     public abstract String getMeddelandeRubrik();
@@ -93,7 +78,6 @@ public abstract class ArendeView {
     @Nullable
     public abstract String getVardgivarnamn();
 
-    @Nullable
     public abstract LocalDateTime getTimestamp();
 
     @Nullable
