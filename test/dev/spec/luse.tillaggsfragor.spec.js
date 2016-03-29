@@ -25,7 +25,7 @@
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var LuseUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);
