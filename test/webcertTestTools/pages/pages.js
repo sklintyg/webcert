@@ -37,8 +37,8 @@ module.exports = {
     'intyg': {
         fk: {
             '7263': {
-                utkast: require(intygPath + 'fk.utkast.page.js'),
-                intyg: require(intygPath + 'fk.intyg.page.js')
+                utkast: require(intygPath + 'fk.7263.utkast.page.js'),
+                intyg: require(intygPath + 'fk.7263.intyg.page.js')
             }
         },
         base: {
