@@ -77,7 +77,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private UtkastRepository utkastRepository;
 
     /**
-     * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
+     * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
      *
      * @param intygId
@@ -86,7 +86,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
-        return redirectToIntyg(uriInfo, intygId, FK7263.toString(), alternatePatientSSn, responsibleHospName);
+        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName);
     }
 
     /**
@@ -108,6 +108,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         if (utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED)) {
             isUtkast = true;
+        }
+
+        if (typ == null) {
+            typ = utkast.getIntygsTyp();
         }
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
