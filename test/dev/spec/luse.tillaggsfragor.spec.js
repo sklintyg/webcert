@@ -18,15 +18,14 @@
  */
 
 /*globals browser */
-/*globals pages */
-/*globals describe,it,helpers */
+/*globals wcTestTools */
+/*globals describe,it */
 /*globals afterEach,beforeEach */
 /*globals $httpBackend */
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
-var LuseUtkastPage = wcTestTools.pages.intyg.fk.luse.utkast;
+var LuseUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);

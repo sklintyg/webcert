@@ -17,14 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+'use strict';
+/*global wcTestTools*/
+
 var restHelper = wcTestTools.helpers.testdata;
 
 describe('Generate fk utkast', function() {
-
     it('should generate an fk7263 utkast', function() {
         restHelper.createUtkast('fk7263').then(function(response){
             var utkast = response.body;
-            intygsId = utkast.intygsId;
+            var intygsId = utkast.intygsId;
             expect(intygsId).not.toBe(null);
         });
     });

@@ -18,7 +18,7 @@
  */
 
 'use strict';
-
+/*global wcTestTools*/
 var testdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Clean intyg via rest', function() {

@@ -17,19 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages */
-/*globals describe,it,helpers */
+/*globals describe,it,wcTestTools,browser */
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.restTestdata;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
-var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 
 describe('Create and Sign FK utkast', function() {
-
-    var utkastId = null;
 
     describe('Login through the welcome page', function() {
         it('with user', function() {

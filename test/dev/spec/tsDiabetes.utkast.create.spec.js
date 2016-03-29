@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals describe,it */
+/*globals describe,it,wcTestTools,browser */
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;

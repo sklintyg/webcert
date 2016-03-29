@@ -21,7 +21,7 @@
  * Created by bennysce on 09/06/15.
  */
 
-/*globals pages,describe,it,helpers,utkastTextmap */
+/*globals wcTestTools,describe,it,browser */
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;
@@ -69,7 +69,7 @@ describe('Create and Sign ts-bas utkast', function() {
             horsel:{
                 yrsel: 'Ja',
                 samtal: 'Ja'
-            }
+            },
             rorelseorganensFunktioner:{
                 nedsattning: 'Ja',
                 inUtUrFordon: ''
@@ -97,7 +97,7 @@ describe('Create and Sign ts-bas utkast', function() {
             adhdSyndrom: 'Ja',
             sjukhusvard: 'Ja',
             ovrigMedicin: 'Ja',
-            kommentar: 'Inget att rapportera'    
+            kommentar: 'Inget att rapportera'
         };
 
         it('first half', function() {

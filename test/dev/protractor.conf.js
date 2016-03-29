@@ -18,7 +18,7 @@
  */
 
 // conf.js
-/*globals browser,global,exports,process*/
+/*globals browser,global,exports*/
 /**
  * Setup :
  * <webcert/test/> : npm install

@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages */
-/*globals describe,it,helpers */
+/*globals describe,it,wcTestTools,browser */
 'use strict';
 
 var specHelper = wcTestTools.helpers.spec;

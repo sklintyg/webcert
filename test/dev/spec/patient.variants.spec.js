@@ -18,8 +18,7 @@
  */
 
 /*globals browser */
-/*globals pages */
-/*globals describe,it,helpers */
+/*globals describe,it,wcTestTools */
 /*globals afterEach,beforeEach */
 'use strict';
 
@@ -83,7 +82,11 @@ describe('Patient lookup variants', function() {
 
         it('should not be possible to create utkast when patient has sekretessmarkering', function () {
             SokSkrivIntygPage.get();
-            proxy.whenGET(new RegExp('/api\/person\/' + patientId + '\?.*')).respond(200, '{"person":{"personnummer":"19121212-1212","sekretessmarkering":true,"fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla"},"status":"FOUND"}');
+            proxy
+                .whenGET(new RegExp('/api\/person\/' + patientId + '\?.*'))
+                .respond(200,
+                    '{"person":{"personnummer":"19121212-1212","sekretessmarkering":true,"fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla"},"status":"FOUND"}' // jshint ignore:line
+                );
             proxy.whenPOST(/.*/).passThrough();
             proxy.whenGET(/.*/).passThrough();
             SokSkrivIntygPage.selectPersonnummer(patientId);
@@ -94,7 +97,11 @@ describe('Patient lookup variants', function() {
 
         it('should be possible to select intygtype when patient exists without sekretessmarkering', function () {
             SokSkrivIntygPage.get();
-            proxy.whenGET(new RegExp('/api\/person\/' + patientId + '\?.*')).respond(200, '{"person":{"personnummer":"19121212-1212","sekretessmarkering":false,"fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla"},"status":"FOUND"}');
+            proxy
+                .whenGET(new RegExp('/api\/person\/' + patientId + '\?.*'))
+                .respond(200,
+                    '{"person":{"personnummer":"19121212-1212","sekretessmarkering":false,"fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla"},"status":"FOUND"}' // jshint ignore:line
+                );
             proxy.whenPOST(/.*/).passThrough();
             proxy.whenGET(/.*/).passThrough();
             SokSkrivIntygPage.selectPersonnummer(patientId);

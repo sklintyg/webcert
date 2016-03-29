@@ -18,7 +18,7 @@
  */
 
 'use strict';
-
+/*global JSON*/
 var restUtil = require('../../../webcertTestTools/util/rest.util.js');
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
