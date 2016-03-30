@@ -141,7 +141,7 @@ public class TransportToArende {
                 LOG.error("List does not contain string json properties as expected.");
                 Throwables.propagate(e);
                 return null;
-            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 LOG.error("The instance number in MedicinsktArende must be an integer > 0.");
                 return null;
             }

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -13,6 +15,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import se.inera.certificate.modules.fkparent.model.converter.RespConstants;
 import se.inera.certificate.modules.sjukersattning.model.internal.SjukersattningUtlatande;
@@ -33,6 +38,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
@@ -62,7 +68,7 @@ public class TransportToArendeTest {
 
     @Test
     public void testConvertToArendeForSjukersattning() throws ModuleNotFoundException {
-        Arende arende = buildArende();
+        Arende arende = buildArende("luse");
 
         SjukersattningModuleApi moduleApi = new SjukersattningModuleApi();
         LocalDateTime timeStamp = LocalDateTime.now().minusDays(2);
@@ -82,10 +88,19 @@ public class TransportToArendeTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
     }
+    
+    @Test
+    public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException{
+        Arende arende = buildArende("lisu");
+        StringWriter jsonWriter = new StringWriter();
+        CustomObjectMapper objectMapper = new CustomObjectMapper();
+        objectMapper.writeValue(jsonWriter, arende);
+        System.out.println(jsonWriter.toString());
+    }
 
     @Test
     public void testConvertToArendeForSjukpenning() throws ModuleNotFoundException {
-        Arende arende = buildArende();
+        Arende arende = buildArende("lisu");
 
         SjukpenningUtokadModuleApi moduleApi = new SjukpenningUtokadModuleApi();
         LocalDateTime timeStamp = LocalDateTime.now().minusDays(2);
@@ -166,13 +181,15 @@ public class TransportToArendeTest {
         return grundData;
     }
 
-    private Arende buildArende() {
+    private Arende buildArende(String intygstyp) {
         Arende arende = new Arende();
         arende.setAmne(ArendeAmne.OVRIGT);
         arende.setIntygsId(intygsId);
         arende.setStatus(webcertStatus);
         arende.setMeddelandeId("meddelandeId");
+        arende.setPatientPersonId("191212121212");
         arende.setTimestamp(LocalDateTime.now());
+        arende.setIntygTyp(intygstyp);
         MedicinsktArende medArende1 = buildMedicinsktArende("1", 1, "arende1");
         MedicinsktArende medArende2 = buildMedicinsktArende("2", 1, "arende1");
         MedicinsktArende medArende4 = buildMedicinsktArende("4", 3, "arende1");

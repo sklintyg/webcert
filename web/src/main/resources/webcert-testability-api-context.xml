@@ -29,6 +29,7 @@
     
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.ArendeResource" />
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.QuestionResource" />
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.LogResource" />
       <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntygResource" />
