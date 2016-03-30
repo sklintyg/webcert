@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.util.List;
@@ -54,7 +72,7 @@ public class ArendeResource {
     @Produces(MediaType.APPLICATION_XML)
     public Response getPing() {
         String xmlResponse = buildXMLResponse(true, 0, null);
-    //    LOGGER.debug("Pinged Intygstjänsten, got: " + xmlResponse);
+        // LOGGER.debug("Pinged Intygstjänsten, got: " + xmlResponse);
         return Response.ok(xmlResponse).build();
     }
 
@@ -71,7 +89,7 @@ public class ArendeResource {
         sb.append("</pingdom_http_custom_check>");
         return sb.toString();
     }
-    
+
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -86,7 +104,7 @@ public class ArendeResource {
         arendeRepository.save(arende);
         return Response.ok(arende).build();
     }
-    
+
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
