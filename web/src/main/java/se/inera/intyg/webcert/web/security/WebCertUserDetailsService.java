@@ -220,7 +220,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         webcertUser.setRoles(AuthoritiesResolverUtil.toMap(role));
         webcertUser.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
-        // Förskrivarkod is sensitiv information, not allowed to store real value
+        // Förskrivarkod is sensitive information, not allowed to store real value
         webcertUser.setForskrivarkod("0000000");
 
         // Set user's authentication scheme

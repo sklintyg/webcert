@@ -156,8 +156,8 @@ public class IntygApiController extends AbstractApiController {
         CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
 
-        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", new Object[] {serviceResponse.getNewDraftIntygId(),
-                serviceResponse.getNewDraftIntygType(), orgIntygsId});
+        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", serviceResponse.getNewDraftIntygId(),
+                serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 
