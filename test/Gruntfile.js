@@ -125,8 +125,12 @@ module.exports = function(grunt) {
         }
         // Ange taggar som grunt.option istället for argument till task. Flexiblare nar det galler att
         // kombinera OCH och ELLER operatorer.
+        // https://github.com/cucumber/cucumber/wiki/Tags
         if (grunt.option("tags")) {
             var tagsArray = grunt.option("tags").split(',');
+            tagsArray.forEach(function (tag, index) {
+                tagsArray[index] = tagsArray[index].replace(" ",",");
+            });
 	        grunt.config.set('protractor.acc.options.args.cucumberOpts.tags',tagsArray);
         }
         else {

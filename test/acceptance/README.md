@@ -37,9 +37,9 @@ för att köra alla tester som är taggade med @smoke OCH inte @notReady
 ```
 
 #### För att använda logiskt ELLER med taggar, använd --tags och ange en sträng med mellanslagsseparerade taggar. Exempel i 
-ip20-mijö som är taggade med @smoke ELLER som är taggade med  @behorighet.
+ip20-mijö som är taggade med @smoke ELLER som är taggade med @behorighet.
  ```sh
- grunt acc:ip20 --tags='@smoke,~@notReady @behorighet'
+ grunt acc:ip20 --tags='@smoke @behorighet'
 ```
 
 #### För att blanda logiskt ELLER och logiskt OCH med taggar, använd --tags och ange en sträng med mellanslagsseparerade och kommaseparade taggar. Exempel i 
