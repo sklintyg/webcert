@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
@@ -615,8 +615,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         return arende;
     }
 
-    private ArendeMetaData buildArendeListItem(String intygId, LocalDateTime receivedDate) {
-        ArendeMetaData arende = new ArendeMetaData();
+    private ArendeListItem buildArendeListItem(String intygId, LocalDateTime receivedDate) {
+        ArendeListItem arende = new ArendeListItem();
         arende.setIntygId(intygId);
         arende.setReceivedDate(receivedDate);
 

@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.converter.ArendeMetaDataConverter;
+import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.TransportToArende;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
@@ -258,8 +258,8 @@ public class ArendeServiceImpl implements ArendeService {
         filter.setStartFrom(Integer.valueOf(0));
         filter.setPageSize(originalPageSize + originalStartFrom);
 
-        List<ArendeMetaData> results = repo.filterArende(filter).stream()
-                .map(ArendeMetaDataConverter::convert)
+        List<ArendeListItem> results = repo.filterArende(filter).stream()
+                .map(ArendeListItemConverter::convert)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
@@ -267,7 +267,7 @@ public class ArendeServiceImpl implements ArendeService {
         int totalResultsCount = repo.filterArendeCount(filter) + fsResults.getTotalCount();
 
         results.addAll(fsResults.getResults());
-        results.sort(Comparator.comparing(ArendeMetaData::getReceivedDate));
+        results.sort(Comparator.comparing(ArendeListItem::getReceivedDate));
 
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
         if (originalStartFrom >= results.size()) {

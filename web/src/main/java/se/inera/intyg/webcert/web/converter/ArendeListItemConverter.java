@@ -22,18 +22,18 @@ package se.inera.intyg.webcert.web.converter;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
-public final class ArendeMetaDataConverter {
+public final class ArendeListItemConverter {
 
-    private ArendeMetaDataConverter() {
+    private ArendeListItemConverter() {
     }
 
-    public static ArendeMetaData convert(FragaSvar fragaSvar) {
+    public static ArendeListItem convert(FragaSvar fragaSvar) {
         if (fragaSvar.getIntygsReferens() == null || fragaSvar.getVardperson() == null) {
             return null;
         }
-        ArendeMetaData res = new ArendeMetaData();
+        ArendeListItem res = new ArendeListItem();
         res.setFragestallare(fragaSvar.getFrageStallare());
         res.setIntygId(fragaSvar.getIntygsReferens().getIntygsId());
         res.setIntygTyp(fragaSvar.getIntygsReferens().getIntygsTyp());
@@ -49,8 +49,8 @@ public final class ArendeMetaDataConverter {
         return res;
     }
 
-    public static ArendeMetaData convert(Arende arende) {
-        ArendeMetaData res = new ArendeMetaData();
+    public static ArendeListItem convert(Arende arende) {
+        ArendeListItem res = new ArendeListItem();
         res.setAmne(arende.getAmne().name());
         res.setFragestallare(arende.getSkickatAv());
         res.setIntygId(arende.getIntygsId());

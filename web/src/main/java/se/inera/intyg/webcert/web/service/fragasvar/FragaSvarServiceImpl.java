@@ -61,7 +61,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 /**
  * @author andreaskaltenbach
@@ -478,8 +478,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public QueryFragaSvarResponse filterFragaSvar(Filter filter) {
-        List<ArendeMetaData> results = fragaSvarRepository.filterFragaSvar(filter).stream()
-                .map(ArendeMetaDataConverter::convert)
+        List<ArendeListItem> results = fragaSvarRepository.filterFragaSvar(filter).stream()
+                .map(ArendeListItemConverter::convert)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 

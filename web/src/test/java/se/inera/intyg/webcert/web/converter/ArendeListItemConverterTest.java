@@ -12,9 +12,9 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeMetaData;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
-public class ArendeMetaDataConverterTest {
+public class ArendeListItemConverterTest {
 
     @Test
     public void testConvert() {
@@ -33,7 +33,7 @@ public class ArendeMetaDataConverterTest {
 
         FragaSvar fs = createFragaSvar(fragestallare, intygId, intygTyp, patientId, internReferens, senasteHandelse, signeratAv, enhetsnamn,
                 vardgivarnamn, amne, vidarebefordrad, status);
-        ArendeMetaData arende = ArendeMetaDataConverter.convert(fs);
+        ArendeListItem arende = ArendeListItemConverter.convert(fs);
 
         assertNotNull(arende);
         assertEquals(fragestallare, arende.getFragestallare());
@@ -54,7 +54,7 @@ public class ArendeMetaDataConverterTest {
     public void testConvertEmptyIntygReferens() {
         FragaSvar fs = new FragaSvar();
         fs.setVardperson(new Vardperson());
-        ArendeMetaData arende = ArendeMetaDataConverter.convert(fs);
+        ArendeListItem arende = ArendeListItemConverter.convert(fs);
         assertNull(arende);
     }
 
@@ -62,7 +62,7 @@ public class ArendeMetaDataConverterTest {
     public void testConvertEmptyVardperson() {
         FragaSvar fs = new FragaSvar();
         fs.setIntygsReferens(new IntygsReferens());
-        ArendeMetaData arende = ArendeMetaDataConverter.convert(fs);
+        ArendeListItem arende = ArendeListItemConverter.convert(fs);
         assertNull(arende);
     }
 
@@ -81,7 +81,7 @@ public class ArendeMetaDataConverterTest {
 
         Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt, status,
                 vidarebefordrad);
-        ArendeMetaData result = ArendeMetaDataConverter.convert(arende);
+        ArendeListItem result = ArendeListItemConverter.convert(arende);
 
         assertEquals(amne.name(), result.getAmne());
         assertEquals(intygsId, result.getIntygId());
@@ -100,7 +100,7 @@ public class ArendeMetaDataConverterTest {
         Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName", "skickatAv",
                 LocalDateTime.now(), Status.ANSWERED,
                 null);
-        ArendeMetaData result = ArendeMetaDataConverter.convert(arende);
+        ArendeListItem result = ArendeListItemConverter.convert(arende);
 
         assertEquals(false, result.isVidarebefordrad());
     }

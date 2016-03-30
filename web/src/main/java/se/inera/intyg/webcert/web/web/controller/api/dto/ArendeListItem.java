@@ -23,7 +23,7 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.webcert.persistence.model.Status;
 
-public class ArendeMetaData {
+public class ArendeListItem {
 
     private String meddelandeId;
     private String intygId;
