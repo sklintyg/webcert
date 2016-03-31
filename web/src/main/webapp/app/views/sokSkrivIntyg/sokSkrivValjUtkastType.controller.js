@@ -18,9 +18,9 @@
  */
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
-        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel', 'common.PatientModel',
+        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.PatientModel',
         function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
-            IntygProxy, UtkastProxy, IntygCopyRequestModel, PatientModel) {
+            IntygProxy, UtkastProxy, IntygFornyaRequestModel, PatientModel) {
             'use strict';
 
             /**
@@ -249,15 +249,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
             };
 
-            $scope.copyIntyg = function(cert) {
+            $scope.fornyaIntyg = function(cert) {
                 $scope.viewState.createErrorMessageKey = null;
 
                 // We don't have the required info about issuing unit in the supplied 'cert' object, always set to true.
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygService.copy($scope.viewState,
-                    IntygCopyRequestModel.build({
+                CommonIntygService.fornya($scope.viewState,
+                    IntygFornyaRequestModel.build({
                         intygId: cert.intygId,
                         intygType: cert.intygType,
                         patientPersonnummer: $scope.personnummer,
