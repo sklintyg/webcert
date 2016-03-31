@@ -68,6 +68,9 @@ public abstract class ArendeView {
     public abstract String getMeddelande();
 
     @Nullable
+    public abstract String getSigneratAv();
+
+    @Nullable
     public abstract LocalDateTime getSvarSkickadDatum();
 
     public abstract String getIntygId();
@@ -133,6 +136,8 @@ public abstract class ArendeView {
         public abstract Builder setTimestamp(LocalDateTime timestamp);
 
         public abstract Builder setArendeType(ArendeType arendeType);
+
+        public abstract Builder setSigneratAv(String signeratAv);
 
         public abstract Builder setSvarPaId(String svarPaId);
 

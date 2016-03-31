@@ -78,6 +78,7 @@ public class TransportToArende {
         template.setSvarPaId(arende.getSvarPaId());
         template.setSvarSkickadDatum(arende.getSkickatTidpunkt());
         template.setTimestamp(arende.getTimestamp());
+        template.setSigneratAv(arende.getSigneratAv());
         template.setVidarebefordrad(arende.getVidarebefordrad());
 
         return template.build();

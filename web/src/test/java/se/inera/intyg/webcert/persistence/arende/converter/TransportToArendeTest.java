@@ -190,6 +190,10 @@ public class TransportToArendeTest {
         arende.setPatientPersonId("191212121212");
         arende.setTimestamp(LocalDateTime.now());
         arende.setIntygTyp(intygstyp);
+        
+        arende.setSkickatAv("Fragestallare");
+        arende.setRubrik("rubrik");
+        arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
         MedicinsktArende medArende1 = buildMedicinsktArende("1", 1, "arende1");
         MedicinsktArende medArende2 = buildMedicinsktArende("2", 1, "arende1");
         MedicinsktArende medArende4 = buildMedicinsktArende("4", 3, "arende1");
