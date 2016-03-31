@@ -18,10 +18,11 @@
  */
 
 /*globals browser */
-/*globals describe,it,wcTestTools */
+/*globals describe,it */
 /*globals afterEach,beforeEach */
 'use strict';
 
+var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;

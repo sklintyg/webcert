@@ -18,8 +18,7 @@
  */
 
 'use strict';
-/*global wcTestTools*/
-
+var wcTestTools = require('webcert-testtools');
 var restHelper = wcTestTools.helpers.testdata;
 
 describe('Generate fk utkast', function() {

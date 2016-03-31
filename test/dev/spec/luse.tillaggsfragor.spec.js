@@ -18,12 +18,12 @@
  */
 
 /*globals browser */
-/*globals wcTestTools */
 /*globals describe,it */
 /*globals afterEach,beforeEach */
 /*globals $httpBackend */
 'use strict';
 
+var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 

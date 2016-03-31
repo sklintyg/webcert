@@ -18,7 +18,7 @@
  */
 
 'use strict';
-/*global wcTestTools*/
+var wcTestTools = require('webcert-testtools');
 var testdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Clean utkast via rest', function() {
