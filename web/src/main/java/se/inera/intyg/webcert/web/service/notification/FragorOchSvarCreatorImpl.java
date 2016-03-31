@@ -26,9 +26,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 @Component
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
@@ -41,6 +48,8 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
 
+    @Autowired
+    private ArendeRepository arendeRepository;
     /*
      * (non-Javadoc)
      *
@@ -48,15 +57,43 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
      * createFragorOchSvar(java.lang.String)
      */
     @Override
-    public FragorOchSvar createFragorOchSvar(String intygsId) {
+    public FragorOchSvar createFragorOchSvar(String intygsId, NotificationVersion version) {
+        FragorOchSvar fs = null;
 
-        List<FragaSvarStatus> fsStatuses = fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId);
-
-        FragorOchSvar fs = performCount(fsStatuses);
+        if (version.equals(NotificationVersion.VERSION_1)) {
+            fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
+        } else if (version.equals(NotificationVersion.VERSION_2)) {
+            fs = performArendeCount(arendeRepository.findByIntygsId(intygsId));
+        }
 
         LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
 
         return fs;
+    }
+
+    @VisibleForTesting
+    FragorOchSvar performArendeCount(List<Arende> arenden) {
+      int antalSvar = 0;
+      int antalHanteradeSvar = 0;
+      int antalFragor = 0;
+      int antalHanteradeFragor = 0;
+
+      for (Arende arende : arenden) {
+          if (arende.getSkickatAv().equalsIgnoreCase(FRAGESTALLARE_WEBCERT)) {
+              if (!Strings.isNullOrEmpty(arende.getMeddelande())) {
+                  antalSvar++;
+                  if (arende.getStatus().equals(Status.CLOSED)) {
+                      antalHanteradeSvar++;
+                  }
+              }
+          } else if (arende.getSkickatAv().equalsIgnoreCase(FRAGESTALLARE_FK)) {
+              antalFragor++;
+              if (arende.getStatus().equals(Status.CLOSED)) {
+                  antalHanteradeFragor++;
+              }
+          }
+      }
+      return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
     }
 
     public FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {

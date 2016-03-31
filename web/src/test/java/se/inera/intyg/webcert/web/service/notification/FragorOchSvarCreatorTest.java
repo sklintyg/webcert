@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.Test;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.model.Status;
 
@@ -168,4 +169,97 @@ public class FragorOchSvarCreatorTest {
 
     }
 
+    @Test
+    public void testCountArendeOhanteradFraga() {
+        List<Arende> arenden = Arrays
+                .asList(buildArendeFkFragaOpen());
+        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        assertNotNull(fos);
+        assertEquals("Antal frågor", 1, fos.getAntalFragor());
+        assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
+        assertEquals("Antal svar", 0, fos.getAntalSvar());
+        assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+    }
+
+    @Test
+    public void testCountArendeHanteradFraga() {
+        List<Arende> arenden = Arrays
+                .asList(buildArendeFkFragaClosed());
+        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        assertNotNull(fos);
+        assertEquals("Antal frågor", 1, fos.getAntalFragor());
+        assertEquals("Antal hanterade frågor", 1, fos.getAntalHanteradeFragor());
+        assertEquals("Antal svar", 0, fos.getAntalSvar());
+        assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+    }
+
+    @Test
+    public void testCountArendeOhanteratSvar() {
+        List<Arende> arenden = Arrays
+                .asList(buildArendeWcSvarOpen());
+        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        assertNotNull(fos);
+        assertEquals("Antal frågor", 0, fos.getAntalFragor());
+        assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
+        assertEquals("Antal svar", 1, fos.getAntalSvar());
+        assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+    }
+
+    @Test
+    public void testCountArendeHanteratSvar() {
+        List<Arende> arenden = Arrays
+                .asList(buildArendeWcSvarClosed());
+        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        assertNotNull(fos);
+        assertEquals("Antal frågor", 0, fos.getAntalFragor());
+        assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
+        assertEquals("Antal svar", 1, fos.getAntalSvar());
+        assertEquals("Antal hanterade svar", 1, fos.getAntalHanteradeSvar());
+    }
+
+    @Test
+    public void testCountArendeAll() {
+        List<Arende> arenden = Arrays
+                .asList(buildArendeWcSvarClosed(), buildArendeWcSvarOpen(), buildArendeFkFragaOpen(), buildArendeFkFragaClosed());
+
+        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        assertNotNull(fos);
+        assertEquals("Antal frågor", 2, fos.getAntalFragor());
+        assertEquals("Antal hanterade frågor", 1, fos.getAntalHanteradeFragor());
+        assertEquals("Antal svar", 2, fos.getAntalSvar());
+        assertEquals("Antal hanterade svar", 1, fos.getAntalHanteradeSvar());
+
+    }
+
+    private Arende buildArendeWcSvarClosed() {
+        Arende wcSvarClosed = new Arende();
+        wcSvarClosed.setSkickatAv("WC");
+        wcSvarClosed.setMeddelande("MEDDELANDE");
+        wcSvarClosed.setStatus(Status.CLOSED);
+        return wcSvarClosed;
+    }
+
+    private Arende buildArendeWcSvarOpen() {
+        Arende wcSvarOpen = new Arende();
+        wcSvarOpen.setSkickatAv("WC");
+        wcSvarOpen.setMeddelande("MEDDELANDE");
+        wcSvarOpen.setStatus(Status.PENDING_INTERNAL_ACTION);
+        return wcSvarOpen;
+    }
+
+    private Arende buildArendeFkFragaClosed() {
+        Arende fkSvarClosed = new Arende();
+        fkSvarClosed.setSkickatAv("FK");
+        fkSvarClosed.setMeddelande("MEDDELANDE");
+        fkSvarClosed.setStatus(Status.CLOSED);
+        return fkSvarClosed;
+    }
+
+    private Arende buildArendeFkFragaOpen() {
+        Arende fkSvarOpen = new Arende();
+        fkSvarOpen.setSkickatAv("FK");
+        fkSvarOpen.setMeddelande("MEDDELANDE");
+        fkSvarOpen.setStatus(Status.PENDING_INTERNAL_ACTION);
+        return fkSvarOpen;
+    }
 }

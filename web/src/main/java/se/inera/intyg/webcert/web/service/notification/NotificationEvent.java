@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.notification;
 
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
-
-public interface FragorOchSvarCreator {
-
-    FragorOchSvar createFragorOchSvar(String intygsId, NotificationVersion version);
-
+public enum NotificationEvent {
+    QUESTION_SENT_TO_FK,
+    ANSWER_SENT_TO_FK,
+    QUESTION_FROM_FK_HANDLED,
+    QUESTION_FROM_FK_UNHANDLED,
+    ANSWER_FROM_FK_HANDLED,
+    ANSWER_FROM_FK_UNHANDLED;
 }

@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
@@ -84,4 +85,28 @@ public interface NotificationService {
      */
     void sendNotificationForAnswerHandled(FragaSvar fragaSvar);
 
+    /**
+     * New question received from FK (HAN6).
+     */
+    void sendNotificationForQuestionReceived(Arende arende);
+
+    /**
+     * Question from FK handled (HAN9).
+     */
+    void sendNotificationForQuestionHandled(Arende arende);
+
+    /**
+     * New question sent to FK (HAN8).
+     */
+    void sendNotificationForQuestionSent(Arende arende);
+
+    /**
+     * New answer received from FK (HAN7).
+     */
+    void sendNotificationForAnswerRecieved(Arende arende);
+
+    /**
+     * Answer from FK handled (HAN10).
+     */
+    void sendNotificationForAnswerHandled(Arende arende);
 }

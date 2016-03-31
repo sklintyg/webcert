@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.*;
@@ -46,6 +47,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -61,6 +63,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -78,6 +81,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
+
+    /** LISU, LUSE.*/
+    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(CertificateTypes.LISU.toString(), CertificateTypes.LUSE.toString());
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
@@ -111,6 +117,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private FragaSvarService fragaSvarService;
+
+    @Autowired
+    private ArendeService arendeService;
 
     @Autowired
     private CertificateSenderService certificateSenderService;
@@ -280,6 +289,9 @@ public class IntygServiceImpl implements IntygService {
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getUser());
 
+        // Check if Utlatande is a completion, in that case, close pending QA / Arende as handled.
+        handleCompletion(intyg);
+
         monitoringService.logIntygSent(intygsId, recipient);
 
         // send PDL log event
@@ -290,6 +302,25 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithSendDateAndRecipient(intygsId, recipient);
 
         return sendIntygToCertificateSender(sendConfig, intyg);
+    }
+
+    private void handleCompletion(Utlatande intyg) {
+        Relation relation = intyg.getGrundData().getRelation();
+        if (relation == null) {
+            return;
+        }
+        if (relation.getRelationKod() == null || !relation.getRelationKod().equals(RelationKod.KOMPLT)) {
+            return;
+        }
+
+        // Of course we have to handle FK7263 as a special case.
+        if (intyg.getTyp().equals(CertificateTypes.FK7263.toString())) {
+            LOG.info("Set fragaSvar komplettering as handled for {}", intyg.getId());
+            fragaSvarService.closeQuestionAsHandled(Long.parseLong(relation.getMeddelandeId()));
+        } else if (FK_NEXT_GENERATION.contains(intyg.getTyp().toLowerCase())) {
+            LOG.info("Set Arende komplettering as handled for {}", intyg.getId());
+            arendeService.closeArendeAsHandled(relation.getMeddelandeId());
+        }
     }
 
     /*

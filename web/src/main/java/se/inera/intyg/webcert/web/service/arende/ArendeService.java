@@ -48,4 +48,10 @@ public interface ArendeService {
     List<ArendeConversationView> getArenden(String intygsId);
 
     QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters);
+
+    /**
+     * Close Arende and set status 'CLOSED'.
+     * @return
+     */
+    Arende closeArendeAsHandled(String meddelandeId);
 }
