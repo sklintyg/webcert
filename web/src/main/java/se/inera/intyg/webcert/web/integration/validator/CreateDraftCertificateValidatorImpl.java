@@ -24,11 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 
 
@@ -72,11 +68,19 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         if ((patient.getFornamn() == null) || patient.getFornamn().isEmpty()) {
             errors.addError("At least one fornamn is required");
         }
+
+        if (patient.getPersonId() == null || StringUtils.isBlank(patient.getPersonId().getExtension())) {
+            errors.addError("personId is required");
+        }
     }
 
     private void validateSkapadAv(HosPersonal skapadAv, ResultValidator errors) {
         if (StringUtils.isBlank(skapadAv.getFullstandigtNamn())) {
             errors.addError("Physicians full name is required");
+        }
+
+        if (skapadAv.getPersonalId() == null || StringUtils.isBlank(skapadAv.getPersonalId().getExtension())) {
+            errors.addError("Physicians hsaId is required");
         }
 
         validateEnhet(skapadAv.getEnhet(), errors);
@@ -85,8 +89,14 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     private void validateEnhet(Enhet enhet, ResultValidator errors) {
         if (enhet == null) {
             errors.addError("Enhet is missing");
-        } else if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
-            errors.addError("enhetsnamn is required");
+        } else {
+            if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
+                errors.addError("enhetsnamn is required");
+            }
+
+            if (enhet.getEnhetsId() == null || StringUtils.isBlank(enhet.getEnhetsId().getExtension())) {
+                errors.addError("enhetsId is required");
+            }
         }
     }
 
