@@ -148,9 +148,15 @@ module.exports = function(grunt) {
         },
 
         karma: {
-            webcert: {
+            ci: {
                 configFile: 'src/main/resources/karma.conf.ci.js',
                 reporters: ['mocha']
+            },
+            watch: {
+                configFile: 'src/main/resources/karma.conf.ci.js',
+                reporters: ['mocha'],
+                autoWatch: true,
+                singleRun: false
             }
         },
 
@@ -342,7 +348,8 @@ module.exports = function(grunt) {
      * that webcert depends on*/
     grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
-    grunt.registerTask('test', ['karma']);
+    grunt.registerTask('test', ['karma:ci']);
+    grunt.registerTask('test:watch', ['karma:watch']);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
 };
