@@ -31,15 +31,6 @@ class HealthCheckPage extends AbstractPage {
         dbStatus {$("#dbStatus").text()}
         jmsMeasurement {$("#jmsMeasurement").text()}
         jmsStatus {$("#jmsStatus").text()}
-        hsaAuthorizationmanagementMeasurement {$("#hsaAuthorizationmanagementMeasurement").text()}
-        hsaAuthorizationmanagementStatus {$("#hsaAuthorizationmanagementStatus").text()}
-
-        hsaEmployeeMeasurement {$("#hsaEmployeeMeasurement").text()}
-        hsaEmployeeStatus {$("#hsaEmployeeStatus").text()}
-
-        hsaOrganizationMeasurement {$("#hsaOrganizationMeasurement").text()}
-        hsaOrganizationStatus {$("#hsaOrganizationStatus").text()}
-
         intygstjanstMeasurement {$("#intygstjanstMeasurement").text()}
         intygstjanstStatus {$("#intygstjanstStatus").text()}
         signatureQueueMeasurement {$("#signatureQueueMeasurement").text()}

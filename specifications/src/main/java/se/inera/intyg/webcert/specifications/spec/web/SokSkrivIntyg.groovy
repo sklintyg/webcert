@@ -553,7 +553,7 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
     String kopieraKnappHarText() {
         def text
         Browser.drive {
-            text = page.kopieraKnapp.attr("title")
+            text = page.kopieraKnapp.attr("uib-popover")
         }
         return text
     }
