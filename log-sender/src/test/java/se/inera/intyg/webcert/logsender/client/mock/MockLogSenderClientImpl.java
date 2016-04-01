@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by eriklupander on 2016-02-29.
  */
-public class MockLogSenderClientClientImpl implements StoreLogResponderInterface {
+public class MockLogSenderClientImpl implements StoreLogResponderInterface {
 
     private AtomicInteger count = new AtomicInteger(0);
 

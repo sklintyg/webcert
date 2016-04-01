@@ -48,6 +48,9 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
     @Value("${receiveAggregatedLogMessageDLQUri}")
     private String newAggregatedLogMessageDLQ;
 
+    @Value("${logsender.bulkTimeout}")
+    private Long batchAggregationTimeout;
+
     /*
       * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
       * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
@@ -69,6 +72,7 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
                 .split().method("logMessageSplitProcessor")
                 .aggregate(new GroupedExchangeAggregationStrategy())
                 .constant(true)
+                .completionInterval(batchAggregationTimeout)
                 .completionPredicate(header("CamelAggregatedSize").isEqualTo(Integer.parseInt(batchSize)))
                 .to("bean:logMessageAggregationProcessor")
                 .to(newAggregatedLogMessageQueue)
