@@ -43,6 +43,7 @@ class MailHarSkickats extends RestClientFixture {
     }
 
     def execute() {
+        sleep(1000)
         def restClient = createRestClient("${baseUrl}services/")
         List<OutgoingMail> sentMails = restClient.get(path: 'mail-stub/mails').data
         if (sentMails == null || sentMails.isEmpty()) {
