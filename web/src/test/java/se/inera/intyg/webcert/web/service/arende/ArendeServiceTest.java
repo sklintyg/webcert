@@ -105,6 +105,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende arende = new Arende();
         arende.setIntygsId(intygId);
         when(repo.save(any(Arende.class))).thenReturn(arende);
+
         Utkast utkast = new Utkast();
         utkast.setIntygsTyp(intygTyp);
         utkast.setEnhetsId(enhet);
@@ -140,6 +141,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende arende = new Arende();
         arende.setIntygsId(intygId);
         when(repo.save(any(Arende.class))).thenReturn(arende);
+
         Utkast utkast = new Utkast();
         utkast.setIntygsTyp(intygTyp);
         utkast.setEnhetsId(enhet);
@@ -264,6 +266,17 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testProcessIncomingMessageCertificateNotSigned() {
         when(utkastRepository.findOne(anyString())).thenReturn(new Utkast());
+        try {
+            service.processIncomingMessage(new Arende());
+            fail("Should throw");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testProcessIncomingMessageMeddelandeIdNotUnique() {
+        when(repo.findOneByMeddelandeId(anyString())).thenReturn(new Arende());
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -617,7 +630,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setRubrik("rubrik");
         arende.setSkickatAv("Avsandare");
         arende.setVidarebefordrad(false);
-        
+
         return arende;
     }
 

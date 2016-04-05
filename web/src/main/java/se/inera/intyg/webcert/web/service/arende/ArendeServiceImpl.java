@@ -100,6 +100,10 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
+        if (repo.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "meddelandeId not unique");
+        }
+
         Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
         if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,

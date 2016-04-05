@@ -772,4 +772,10 @@
   <changeSet id="33" author="me">
     <dropTable tableName="ROLLER" />
   </changeSet>
+
+  <changeSet id="34" author="kja">
+    <addUniqueConstraint
+      columnNames="MEDDELANDE_ID"
+      tableName="ARENDE" />
+  </changeSet>
 </databaseChangeLog>

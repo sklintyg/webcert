@@ -51,19 +51,11 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
             result.setResultCode(ResultCodeType.ERROR);
             switch (e.getErrorCode()) {
             case INVALID_STATE:
-                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                result.setResultText("Certificate not signed");
-                LOG.warn("Could not process incoming message to care. Certificate not signed.");
-                break;
             case DATA_NOT_FOUND:
-                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                result.setResultText("Certificate not found");
-                LOG.warn("Could not process incoming message to care. Certificate not found.");
-                break;
             case EXTERNAL_SYSTEM_PROBLEM:
                 result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                result.setResultText("Could not contact HSA");
-                LOG.warn("Could not process incoming message to care. HSA not reachable.");
+                result.setResultText(e.getMessage());
+                LOG.warn("{}: {}", e.getErrorCode().name(), e.getMessage());
                 break;
             default:
                 result.setErrorId(ErrorIdType.APPLICATION_ERROR);

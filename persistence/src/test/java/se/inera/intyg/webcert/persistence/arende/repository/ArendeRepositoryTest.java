@@ -24,8 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -249,11 +248,11 @@ public class ArendeRepositoryTest {
     public void testFilterArendeVidarebefordradTrue() {
         final String enhet = "enhet";
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, LocalDateTime.now(), "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, LocalDateTime.now(), UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, null, LocalDateTime.now(), "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, null, LocalDateTime.now(), UUID.randomUUID().toString()));
 
         Filter filter = new Filter();
         filter.setEnhetsIds(Arrays.asList(enhet));
@@ -267,11 +266,11 @@ public class ArendeRepositoryTest {
     public void testFilterArendeVidarebefordradFalse() {
         final String enhet = "enhet";
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, LocalDateTime.now(), "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, LocalDateTime.now(), UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, null, LocalDateTime.now(), "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, null, LocalDateTime.now(), UUID.randomUUID().toString()));
 
         Filter filter = new Filter();
         filter.setEnhetsIds(Arrays.asList(enhet));
@@ -288,11 +287,11 @@ public class ArendeRepositoryTest {
         final LocalDateTime beforeChangedFrom = changedFrom.minusDays(1);
         final LocalDateTime afterChangedFrom = changedFrom.plusDays(1);
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, changedFrom, "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, changedFrom, UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, beforeChangedFrom, "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, beforeChangedFrom, UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, null, afterChangedFrom, "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, null, afterChangedFrom, UUID.randomUUID().toString()));
 
         Filter filter = new Filter();
         filter.setEnhetsIds(Arrays.asList(enhet));
@@ -309,11 +308,11 @@ public class ArendeRepositoryTest {
         final LocalDateTime beforeChangedTo = changedTo.minusDays(1);
         final LocalDateTime afterChangedTo = changedTo.plusDays(1);
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, changedTo, "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.TRUE, changedTo, UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, beforeChangedTo, "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, Boolean.FALSE, beforeChangedTo, UUID.randomUUID().toString()));
         repo.save(buildArende("signeratAv", "signeratAvName", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now()
-                .minusDays(3), ArendeAmne.OVRIGT, null, afterChangedTo, "MEDDELANDE_ID"));
+                .minusDays(3), ArendeAmne.OVRIGT, null, afterChangedTo, UUID.randomUUID().toString()));
 
         Filter filter = new Filter();
         filter.setEnhetsIds(Arrays.asList(enhet));
@@ -505,11 +504,11 @@ public class ArendeRepositoryTest {
     }
 
     private Arende buildArende(String enhet, Status status) {
-        return buildArende("HSA_ID", "NAME", enhet, status, "meddelande_id");
+        return buildArende("HSA_ID", "NAME", enhet, status, UUID.randomUUID().toString());
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet) {
-        return buildArende(signeratAv, signeratAvName, enhet, Status.PENDING_INTERNAL_ACTION, "meddelande_id");
+        return buildArende(signeratAv, signeratAvName, enhet, Status.PENDING_INTERNAL_ACTION, UUID.randomUUID().toString());
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String meddelandeId) {
@@ -525,7 +524,7 @@ public class ArendeRepositoryTest {
     private Arende buildArende(String signeratAv, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId, String skickatAv,
             LocalDate sistaDatumForSvar, ArendeAmne amne) {
         return buildArende(signeratAv, "signeratAvName", enhet, status, paminnelseMeddelandeId, svarPaId, skickatAv, sistaDatumForSvar, amne,
-                Boolean.TRUE, LocalDateTime.now(), "MEDDELANDE_ID");
+                Boolean.TRUE, LocalDateTime.now(), UUID.randomUUID().toString());
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId,
