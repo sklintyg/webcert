@@ -24,7 +24,7 @@ var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var db = require('./db_actions/db.js');
+var db = require('./dbActions');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
 var testdataHelper = wcTestTools.helpers.testdata;
 
@@ -104,17 +104,21 @@ module.exports = function() {
             global.user.enhetId,
             'Enhetsnamn'
         );
+        console.log(body);
 
         var path = '/services/create-draft-certificate/v1.0?wsdl';
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + path;
         url = url.replace('https', 'http');
 
         soap.createClient(url, function(err, client) {
-
+            console.log(url);
             if (err) {
                 callback(err);
             } else {
-                client.CreateDraftCertificate(body, function(err, result, body) {
+                client.CreateDraftCertificate(body, function(err, result, resBody) {
+
+                    console.log(resBody);
+
                     if (err) {
                         callback(err);
                     } else {

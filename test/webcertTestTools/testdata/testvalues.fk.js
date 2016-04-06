@@ -35,6 +35,9 @@ var fkValues = {
                 ],
                 null
             ])[0];
+    },
+    getRandomDiagnoskod: function() {
+        return shuffle(this.ICD10)[0];
     }
 
 };

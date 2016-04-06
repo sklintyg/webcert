@@ -164,7 +164,7 @@ var FkUtkast = BaseUtkast._extend({
         this.minUndersokning.sendKeys(protractor.Key.SPACE);
     },
     angeDiagnosKod: function(kod) {
-        this.diagnosKod.sendKeys(kod);
+        return this.diagnosKod.sendKeys(kod);
     },
     angeFunktionsnedsattning: function(txt) {
         if (!txt) {

@@ -18,7 +18,7 @@
  */
 
 /*global
-browser
+browser, JSON
 */
 'use strict';
 

@@ -21,7 +21,7 @@
 
 'use strict';
 
-var db = require('./db_actions/db.js');
+var db = require('./dbActions');
 
 module.exports = function() {
 

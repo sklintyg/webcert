@@ -17,27 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools */
+/*globals protractor, wcTestTools, browser, intyg */
 
 'use strict';
-var fillIn = require('./fillIn').fillIn;
-var generateIntygByType = require('./helpers.js').generateIntygByType;
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
-var td = wcTestTools.testdata;
 module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
-        if (!global.intyg.typ) {
-            callback('Intyg.typ odefinierad.');
-        } else {
-            global.intyg = generateIntygByType(intyg.typ, intyg.id);
-            fillIn(global.intyg, callback);
-        }
+
+    this.Given(/^jag går tillbaka$/, function(callback) {
+        fkUtkastPage.backBtn.sendKeys(protractor.Key.SPACE)
+            .then(function() {
+                callback();
+            });
     });
 
-    this.Given(/^jag ändrar diagnoskod$/, function(callback) {
-        fkUtkastPage.angeDiagnosKod(td.values.fk.getRandomDiagnoskod())
-            .then(callback());
+    this.Given(/^jag går in på utkastet$/, function(callback) {
+        browser.get('/web/dashboard#/fk7263/edit/' + intyg.id)
+            .then(function() {
+                callback();
+            });
     });
-
-
 };
