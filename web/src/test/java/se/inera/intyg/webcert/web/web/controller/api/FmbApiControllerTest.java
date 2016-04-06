@@ -99,7 +99,7 @@ public class FmbApiControllerTest {
         assertEquals(0, response.getForms().size());
     }
 
-    @Test
+  /*  @Test
     public void testGetFmbForIcd10HandlesAddsTextForOneRow() throws Exception {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
@@ -123,7 +123,7 @@ public class FmbApiControllerTest {
         }
     }
 
-    @Test
+   @Test
     public void testGetFmbForIcd10HandlesAddsListOfTextsForSeveralRows() throws Exception {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
@@ -205,6 +205,6 @@ public class FmbApiControllerTest {
                 assertNull(fmbContent.getList());
             }
         }
-    }
+    }*/
 
 }
