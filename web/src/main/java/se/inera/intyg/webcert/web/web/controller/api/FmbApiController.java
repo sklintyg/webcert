@@ -39,10 +39,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
@@ -77,7 +74,7 @@ public class FmbApiController extends AbstractApiController {
     })
     public Response getFmbForIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
         if (icd10 == null || icd10.isEmpty()) {
-           return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
         }
         final FmbResponse result = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
         return Response.ok(result).build();
@@ -104,6 +101,36 @@ public class FmbApiController extends AbstractApiController {
             return null;
         }
         return new FmbForm(name, contents);
+    }
+
+    @GET
+    @Path("/{icd10}/{certtype}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get FMB data for ICD10 codes", httpMethod = "GET", notes = "Fetch the admin user details", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(code = OK, message = "Given FMB data for icd10 code found", response = FmbResponse.class),
+            @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code the data")
+    })
+    public Response getFmbForLisuIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10,
+            @PathParam("certtype") String certtype) {
+        if (icd10 == null || icd10.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
+        }
+
+        if (certtype == null || certtype.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing certtype").build();
+        }
+        final FmbResponse result = getFmbResponseForCertType(icd10.toUpperCase(Locale.ENGLISH));
+        return Response.ok(result).build();
+    }
+
+    private FmbResponse getFmbResponseForCertType(String icd10) {
+        final List<FmbForm> forms = new ArrayList<>(FmbFormName.values().length);
+        forms.add(getFmbForm(icd10, FmbFormName.DIAGNOS, FmbType.FALT2_SPB, FmbType.FALT2_GENERAL));
+        forms.add(getFmbForm(icd10, FmbFormName.FUNKTIONSNEDSATTNING, FmbType.FALT4));
+        forms.add(getFmbForm(icd10, FmbFormName.AKTIVITETSERSATTNING, FmbType.FALT5));
+        forms.add(getFmbForm(icd10, FmbFormName.ARBETSFORMOGA, FmbType.FALT8B));
+        return new FmbResponse(icd10, Lists.newArrayList(Iterables.filter(forms, Predicates.notNull())));
     }
 
     private FmbContent getFmbContent(String icd10, FmbType fmbType) {
