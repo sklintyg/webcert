@@ -92,7 +92,10 @@ public class CopyUtkastServiceImplTest {
     private PUService mockPUService;
 
     @Mock
-    private CopyUtkastBuilder mockUtkastBuilder;
+    private CreateCopyUtkastBuilder mockUtkastBuilder;
+    
+    @Mock
+    private CopyCompletionUtkastBuilder copyCompletionUtkastBuilder;
 
     @Mock
     private NotificationService mockNotificationService;
@@ -184,7 +187,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCopyRequest.class), any(Person.class), any(boolean.class))).thenReturn(resp);
+        when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class), any(boolean.class))).thenReturn(resp);
 
         CreateCompletionCopyRequest copyReq = buildCompletionRequest();
 
@@ -196,7 +199,7 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_ID, copyResp.getOriginalIntygId());
 
         verify(mockPUService).getPerson(PATIENT_SSN);
-        verify(mockUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class));
+        verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));

@@ -47,6 +47,10 @@ public abstract class CreateCopyRequest {
         this.hosPerson = hosPerson;
         this.vardenhet = vardenhet;
     }
+    
+    public CreateCopyRequest(){
+        
+    }
 
     public boolean containsNyttPatientPersonnummer() {
         return nyttPatientPersonnummer != null && StringUtils.isNotBlank(nyttPatientPersonnummer.getPersonnummer());

@@ -25,14 +25,15 @@ import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 
-public interface CopyUtkastBuilder {
+public interface CopyUtkastBuilder<T extends CreateCopyRequest> {
 
-    CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateCopyRequest copyRequest, Person patientDetails, boolean addRelation)
+ 
+
+    CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation)
             throws ModuleNotFoundException,
             ModuleException;
 
-    CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateCopyRequest copyRequest, Person patientDetails, boolean addRelation)
-            throws ModuleNotFoundException,
-            ModuleException;
+    CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation)
+            throws ModuleNotFoundException, ModuleException;
 
 }

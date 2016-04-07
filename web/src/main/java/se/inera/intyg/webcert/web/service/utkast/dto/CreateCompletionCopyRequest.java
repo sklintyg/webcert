@@ -19,10 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
+import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 
+@Component
 public class CreateCompletionCopyRequest extends CreateCopyRequest {
 
     private String meddelandeId;
@@ -31,6 +34,9 @@ public class CreateCompletionCopyRequest extends CreateCopyRequest {
             HoSPerson hosPerson, Vardenhet vardenhet) {
         super(orginalIntygsId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
         this.setMeddelandeId(meddelandeId);
+    }
+    
+    public CreateCompletionCopyRequest(){
     }
 
     public String getMeddelandeId() {
