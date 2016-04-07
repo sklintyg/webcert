@@ -22,7 +22,7 @@ package se.inera.intyg.common.specifications.spec
 import geb.driver.CachingDriverFactory
 
 import org.openqa.selenium.Cookie
-
+import org.openqa.selenium.JavascriptExecutor
 import se.inera.intyg.common.specifications.page.AbstractPage
 
 public class Browser {
@@ -70,6 +70,12 @@ public class Browser {
     static String setCookie(cookieName, cookieValue) {
         Cookie cookie = new Cookie(cookieName, cookieValue)
         browser.getDriver().manage().addCookie(cookie)
+    }
+
+    static String setLocalStorageValue(String item, String value) {
+        ((JavascriptExecutor) browser.getDriver()).executeScript(String.format(
+                "window.localStorage.setItem('%s','%s');", item, value));
+
     }
 
     static String getTitle() {
