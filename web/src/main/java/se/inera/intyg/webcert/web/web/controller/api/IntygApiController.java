@@ -174,24 +174,23 @@ public class IntygApiController extends AbstractApiController {
      * @return
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
+    @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/forlang")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId,
-            @PathParam("meddelandeId") String meddelandeId) {
+    public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.KOPIERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
                 .orThrow();
 
-        LOG.debug("Attempting to create a completion of {} with id '{}'", intygsTyp, orgIntygsId);
+        LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
 
         if (!request.isValid()) {
-            LOG.error("Request to create completion of '{}' is not valid", orgIntygsId);
+            LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
-        CreateRenewalCopyRequest serviceRequest = createRenewalCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
+        CreateRenewalCopyRequest serviceRequest = createRenewalCopyRequest(orgIntygsId, intygsTyp, request);
         CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {}, renewing certificate with id '{}'.",
@@ -203,12 +202,12 @@ public class IntygApiController extends AbstractApiController {
         return Response.ok().entity(response).build();
     }
 
-    private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId, CopyIntygRequest request) {
+    private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
         HoSPerson hosPerson = createHoSPersonFromUser();
         Vardenhet vardenhet = createVardenhetFromUser();
         Personnummer patientPersonnummer = request.getPatientPersonnummer();
 
-        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patientPersonnummer, hosPerson, vardenhet);
+        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
 
         if (request.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");

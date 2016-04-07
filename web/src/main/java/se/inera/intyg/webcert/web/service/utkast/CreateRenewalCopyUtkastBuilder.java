@@ -24,33 +24,9 @@ public class CreateRenewalCopyUtkastBuilder extends AbstractUtkastBuilder<Create
         Relation relation = new Relation();
         relation.setRelationIntygsId(request.getOriginalIntygId());
         relation.setRelationKod(relationKod);
-        relation.setMeddelandeId(request.getMeddelandeId());
         return relation;
     }
 
-    // @Override // TODO:
-    // protected Utkast buildUtkastCopy(CreateRenewalCopyRequest copyRequest, String utkastId, String utkastTyp, boolean
-    // addRelation, Relation relation,
-    // String draftCopyJson, UtkastStatus utkastStatus) {
-    // Utkast utkast = new Utkast();
-    //
-    // utkast.setIntygsId(utkastId);
-    // utkast.setIntygsTyp(utkastTyp);
-    // utkast.setStatus(utkastStatus);
-    // utkast.setModel(draftCopyJson);
-    //
-    // if (addRelation) {
-    // enrichWithRelation(utkast, relation);
-    // }
-    //
-    // populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
-    //
-    // return utkast;
-    //
-    // return super.buildUtkastCopy(copyRequest, utkastId, utkastTyp, addRelation, relation, draftCopyJson,
-    // utkastStatus);
-    // }
-    
     @Override
     protected InternalModelResponse getInternalModel(Utkast orgUtkast, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
             throws ModuleException {
