@@ -30,6 +30,14 @@ module.exports = {
 
         promiseArr.push(tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
             logger.info('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
+
+            //Hörsel och balans kräver att körkortstyper är angivna
+            return tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function() {
+                logger.info('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
+            }, function(reason) {
+                cb('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
+            });
+
         }, function(reason) {
             cb('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
         }));
@@ -54,12 +62,6 @@ module.exports = {
             cb('FEL, fillInSynfunktioner,' + reason);
         }));
 
-
-        promiseArr.push(tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function() {
-            logger.info('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
-        }, function(reason) {
-            cb('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
-        }));
         promiseArr.push(tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg.rorelseorganensFunktioner).then(function() {
             logger.info('OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(global.intyg.rorelseorganensFunktioner));
         }, function(reason) {

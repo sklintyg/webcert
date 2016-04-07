@@ -154,21 +154,26 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
         return Promise.all(promiseArr);
     },
-    fillInHorselOchBalanssinne: function(horselObj) {
-        var promiseArr = [];
-
-        if (horselObj.yrsel === 'Ja') {
-            promiseArr.push(this.horselBalans.aYes.sendKeys(protractor.Key.SPACE));
+    fillInYrsel: function(yrsel) {
+        if (yrsel === 'Ja') {
+            return this.horselBalans.aYes.sendKeys(protractor.Key.SPACE);
         } else {
-            promiseArr.push(this.horselBalans.aNo.sendKeys(protractor.Key.SPACE));
+            return this.horselBalans.aNo.sendKeys(protractor.Key.SPACE);
         }
+    },
+    fillInHorselOchBalanssinne: function(horselObj) {
+        var horselBalansEl = this.horselBalans;
+        return this.fillInYrsel(horselObj.yrsel)
+            .then(function() {
+                if (horselObj.samtal === 'Ja') {
+                    return horselBalansEl.bYes.sendKeys(protractor.Key.SPACE);
+                } else if (horselObj.samtal === 'Nej') {
+                    return horselBalansEl.bNo.sendKeys(protractor.Key.SPACE);
+                }
+            });
 
-        if (horselObj.samtal === 'Ja') {
-            promiseArr.push(this.horselBalans.bYes.sendKeys(protractor.Key.SPACE));
-        } else if (horselObj.samtal === 'Nej') {
-            promiseArr.push(this.horselBalans.bNo.sendKeys(protractor.Key.SPACE));
-        }
-        return Promise.all(promiseArr);
+
+
     },
     fillInRorelseorganensFunktioner: function(rorelseorganensFunktionerObj) {
         var promiseArr = [];
