@@ -78,7 +78,7 @@ var tsValues = {
 
     getRandomHorselSamtal: function(korkortstyper) {
         var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
-        if (arrayContains(tsValues.korkortstyper, besvarasOm)) {
+        if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(tsValues.horselSamtal)[0];
         } else {
             return false;
@@ -86,10 +86,10 @@ var tsValues = {
     },
     getRandomInUtUrFordon: function(korkortstyper) {
         var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
-        if (arrayContains(tsValues.korkortstyper, besvarasOm)) {
+        if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(tsValues.rorOrgInUt)[0];
         } else {
-            return '';
+            return false;
         }
     },
 

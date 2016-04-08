@@ -175,23 +175,32 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
 
     },
+
+    fillInRorelseNedsattning: function(nedsattning) {
+        var nedsattningEl = this.funktionsnedsattning;
+
+        if (nedsattning === 'Ja') {
+            return nedsattningEl.aYes.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return nedsattningEl.aText.sendKeys('Nedsattning text');
+                });
+
+        } else if (nedsattning === 'Nej') {
+            return nedsattningEl.aNo.sendKeys(protractor.Key.SPACE);
+        }
+    },
     fillInRorelseorganensFunktioner: function(rorelseorganensFunktionerObj) {
-        var promiseArr = [];
-        if (rorelseorganensFunktionerObj.nedsattning === 'Ja') {
-            promiseArr.push(this.funktionsnedsattning.aYes.sendKeys(protractor.Key.SPACE));
-            promiseArr.push(this.funktionsnedsattning.aText.sendKeys('Amputerad under höger knä.'));
-        } else {
-            promiseArr.push(this.funktionsnedsattning.aNo.sendKeys(protractor.Key.SPACE));
-        }
+        var nedsattningEl = this.funktionsnedsattning;
+        var inUtUrFordon = rorelseorganensFunktionerObj.inUtUrFordon;
 
-        if (rorelseorganensFunktionerObj.inUtUrFordon === 'Ja') {
-            promiseArr.push(this.funktionsnedsattning.bYes.sendKeys(protractor.Key.SPACE));
-        } else if (rorelseorganensFunktionerObj.inUtUrFordon === 'Nej') {
-            promiseArr.push(this.funktionsnedsattning.bNo.sendKeys(protractor.Key.SPACE));
-        }
-
-        return Promise.all(promiseArr);
-
+        return this.fillInRorelseNedsattning(rorelseorganensFunktionerObj.nedsattning)
+            .then(function() {
+                if (inUtUrFordon === 'Ja') {
+                    return nedsattningEl.bYes.sendKeys(protractor.Key.SPACE);
+                } else if (inUtUrFordon === 'Nej') {
+                    return nedsattningEl.bNo.sendKeys(protractor.Key.SPACE);
+                }
+            });
     },
 
     fillInHjartOchKarlsjukdomar: function(utkast) {
