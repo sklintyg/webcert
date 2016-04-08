@@ -758,12 +758,22 @@
     <dropForeignKeyConstraint baseTableName="BEFATTNINGSKODER_ROLL" constraintName="BEFATTNINGSKODER_ROLL_BEFATTNINGSKOD_FK" />
     <dropForeignKeyConstraint baseTableName="BEFATTNINGSKODER_ROLL" constraintName="BEFATTNINGSKODER_ROLL_ROLL_FK" />
     <dropTable tableName="BEFATTNINGSKODER_ROLL" />
+  </changeSet>
 
+  <changeSet id="30" author="me">
     <dropUniqueConstraint tableName="BEFATTNINGSKODER" constraintName="BEFATTNINGSKOD_GRUPPFORSKRIVARKOD_UNIQUE_CONST" />
     <dropTable tableName="BEFATTNINGSKODER" />
-    
+  </changeSet>
+
+  <changeSet id="31" author="me">
     <dropTable tableName="ROLLER_RATTIGHETER" />
+  </changeSet>
+
+  <changeSet id="32" author="me">
     <dropTable tableName="RATTIGHETER" />
+  </changeSet>
+
+  <changeSet id="33" author="me">
     <dropTable tableName="ROLLER" />
   </changeSet>
 </databaseChangeLog>
