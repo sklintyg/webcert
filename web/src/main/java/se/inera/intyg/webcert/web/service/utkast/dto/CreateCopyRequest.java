@@ -47,9 +47,9 @@ public abstract class CreateCopyRequest {
         this.hosPerson = hosPerson;
         this.vardenhet = vardenhet;
     }
-    
-    public CreateCopyRequest(){
-        
+
+    public CreateCopyRequest() {
+
     }
 
     public boolean containsNyttPatientPersonnummer() {

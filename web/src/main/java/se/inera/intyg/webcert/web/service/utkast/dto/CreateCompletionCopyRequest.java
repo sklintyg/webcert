@@ -35,8 +35,8 @@ public class CreateCompletionCopyRequest extends CreateCopyRequest {
         super(orginalIntygsId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
         this.setMeddelandeId(meddelandeId);
     }
-    
-    public CreateCompletionCopyRequest(){
+
+    public CreateCompletionCopyRequest() {
     }
 
     public String getMeddelandeId() {

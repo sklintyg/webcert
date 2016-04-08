@@ -64,13 +64,12 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateopyUtkastBuilderImplTest {
+public class CreateCopyUtkastBuilderImplTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
@@ -121,7 +120,7 @@ public class CreateopyUtkastBuilderImplTest {
 
     @InjectMocks
     private CreateCopyUtkastBuilder copyBuilder = new CreateCopyUtkastBuilder();
-    
+
     @InjectMocks
     private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
 
@@ -149,21 +148,21 @@ public class CreateopyUtkastBuilderImplTest {
 
     @Test
     public void testPopulateCompletionFromSignedIntyg() throws Exception {
-        
+
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
-        
+
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
-        
+
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
-        
+
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
-        
+
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
-        
+
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
         assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());

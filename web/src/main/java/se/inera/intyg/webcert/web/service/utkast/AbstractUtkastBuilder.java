@@ -208,7 +208,6 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
     }
 
     private void enrichWithRelation(Utkast utkast, Relation relation) {
-        System.out.println((utkast == null) + "   " + (relation == null));
         utkast.setRelationIntygsId(relation.getRelationIntygsId());
         utkast.setRelationKod(relation.getRelationKod());
     }
