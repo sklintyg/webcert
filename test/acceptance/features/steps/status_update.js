@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global wcTestTools, pages, browser, protractor, intyg, logger */
+/* global wcTestTools, pages, browser, protractor, intyg, logger, ursprungligtIntyg */
 
 'use strict';
 var soap = require('soap');
@@ -203,6 +203,10 @@ module.exports = function() {
 
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(arg1, arg2, callback) {
         assertEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
+    });
+
+    this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelse, callback) {
+        assertEvents(ursprungligtIntyg, handelse, parseInt(antal, 10), callback);
     });
 
     this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {

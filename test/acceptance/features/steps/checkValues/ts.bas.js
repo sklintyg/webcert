@@ -174,7 +174,7 @@ module.exports = {
         });
 
         if (intyg.rorelseorganensFunktioner.nedsattning === 'Ja') {
-            expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal('Amputerad under höger knä.').then(function(value) {
+            expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal('Nedsattning text').then(function(value) {
                 logger.info('OK - Rörelsehinder kommentar = ' + value);
             }, function(reason) {
                 callback('FEL - Rörelsehinder kommentar : ' + reason);

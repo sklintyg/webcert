@@ -10,15 +10,6 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
 
-@notReady
-Scenario: Komplettering av läkarintyg
-   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
-   Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
-
-   Och jag går in på intygsutkastet via djupintegrationslänk
-   Och jag svarar på frågan
-   Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
-
 Scenario: Avstämningsmöte
    När Försäkringskassan ställer en "Avstamningsmote" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"

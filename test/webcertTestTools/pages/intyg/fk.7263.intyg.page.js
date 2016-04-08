@@ -164,6 +164,9 @@ var Fk7263Intyg = BaseIntyg._extend({
     },
     markMessageAsHandled: function(id) {
         return this.getMarkAsHandledButtonForID(id).sendKeys(protractor.Key.SPACE);
+    },
+    svaraMedNyttIntyg: function(id) {
+        return element(by.id('answerWithIntygBtn-' + id)).sendKeys(protractor.Key.SPACE);
     }
 });
 

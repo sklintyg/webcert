@@ -20,8 +20,8 @@
 /*global intyg,wcTestTools */
 
 'use strict';
-var fillIn = require('./fillIn').fillIn;
-var generateIntygByType = require('./helpers.js').generateIntygByType;
+var fillIn = require('./').fillIn;
+var generateIntygByType = require('../helpers.js').generateIntygByType;
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var td = wcTestTools.testdata;
 module.exports = function() {

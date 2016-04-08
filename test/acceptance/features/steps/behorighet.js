@@ -23,10 +23,8 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var basePage = pages.webcertBase;
-// var intygPage = pages.intyg.base.intyg;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
-// var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 
 module.exports = function() {
 
@@ -179,18 +177,5 @@ module.exports = function() {
             }
         }).then(callback);
     });
-
-    // ============== PLACEHOLDER TO PAUSE TESTS =================
-    this.Given(/^jag väntar$/, function(callback) {
-        // Write code here that turns the phrase above into concrete actions
-        // callback.pending();
-    });
-    // ===========================================================
-
-    // this.Given(/^jag svarar på "([^"]*)" på frågan$/, function (arg1, callback) {
-    //   fkIntygPage.answer.text.sendKeys(arg1).then(function () {
-    //     basePage.QnA.respond.sendKeys(protractor.Key.SPACE).then(callback);
-    //   });
-    // });
 
 };

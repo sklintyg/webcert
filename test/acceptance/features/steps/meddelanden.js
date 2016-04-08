@@ -35,4 +35,13 @@ module.exports = function() {
             callback();
         });
     });
+
+    this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
+        fkIntygPage.svaraMedNyttIntyg(intyg.messages[0].id)
+            .then(function() {
+                global.ursprungligtIntyg = intyg.id;
+                callback();
+            });
+    });
+
 };

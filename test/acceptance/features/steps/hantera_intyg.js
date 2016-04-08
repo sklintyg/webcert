@@ -59,4 +59,10 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^jag raderar utkastet$/, function(callback) {
+        fkUtkastPage.radera.knapp.click();
+        fkUtkastPage.radera.bekrafta.click()
+            .then(callback);
+    });
+
 };

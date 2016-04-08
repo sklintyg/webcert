@@ -26,7 +26,7 @@ var fk7263Intyg = pages.intyg.fk['7263'].intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 // var webcertBase = pages.webcertBase;
-var checkValues = require('./checkValues');
+var checkValues = require('../checkValues');
 var helpers = wcTestTools.helpers;
 
 // webcertBase.flikarsokSkrivIntyg
