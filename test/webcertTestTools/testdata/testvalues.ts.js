@@ -37,6 +37,7 @@ function findArrayElementsInArray(targetArray, compareArray) {
 
 function arrayContains(array, compareArray) {
     var found = findArrayElementsInArray(array, compareArray);
+    //console.log('found:' + JSON.stringify(found));
     return found.length > 0;
 }
 
@@ -89,7 +90,7 @@ var tsValues = {
         if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(tsValues.rorOrgInUt)[0];
         } else {
-            return false;
+            return '';
         }
     },
 
