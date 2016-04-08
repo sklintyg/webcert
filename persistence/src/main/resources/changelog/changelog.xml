@@ -754,14 +754,10 @@
   </changeSet>
 
   <changeSet id="29" author="me">
-    <dropUniqueConstraint tableName="BEFATTNINGSKODER_ROLL" constraintName="BEFATTNINGSKOD_ROLL_UNIQUE_CONST" />
-    <dropForeignKeyConstraint baseTableName="BEFATTNINGSKODER_ROLL" constraintName="BEFATTNINGSKODER_ROLL_BEFATTNINGSKOD_FK" />
-    <dropForeignKeyConstraint baseTableName="BEFATTNINGSKODER_ROLL" constraintName="BEFATTNINGSKODER_ROLL_ROLL_FK" />
     <dropTable tableName="BEFATTNINGSKODER_ROLL" />
   </changeSet>
 
   <changeSet id="30" author="me">
-    <dropUniqueConstraint tableName="BEFATTNINGSKODER" constraintName="BEFATTNINGSKOD_GRUPPFORSKRIVARKOD_UNIQUE_CONST" />
     <dropTable tableName="BEFATTNINGSKODER" />
   </changeSet>
 
