@@ -1,6 +1,6 @@
 ## Nya log-sender.war (Camel)
 
-För att köra nya Camel-baserade log-sender lokal gäller följande:
+För att köra nya Camel-baserade log-sender lokalt gäller följande:
 
 ### Starta log-sender
 
@@ -41,10 +41,30 @@ Det innebär att följande saker behöver vara uppfyllda:
     mvn clean install;cd web;mvn jetty:run
 
 ### Aggregering av loggposter
-Kom ihåg att standardinställningen för aggregering av loggmeddelanden från producenter är 5 st, dvs. om man vill testa från lokal Webcert (localhost:9088) så kan man förslagsvis logga in, gå in på 191212121212, skapa ett Utkast och sedan klicka sig in och ut på Utkastet ytterligare 4 gånger via sidan för Ej signerade utkast. Varje "titt" på utkastet skapar en loggpost och efter totalt 5 st så kommer log-sender sammanställa ett loggmeddelande utan samtliga aggregerade och skicka till PDL-tjänsten.
+Kom ihåg att standardinställningen för aggregering av loggmeddelanden från producenter är 5 st, dvs. om man vill testa från lokal Webcert (localhost:9088) så kan man förslagsvis logga in, gå in på 191212121212, skapa ett Utkast och sedan klicka sig in och ut på Utkastet ytterligare 4 gånger via sidan för Ej signerade utkast. Varje "titt" på utkastet skapar en loggpost och efter totalt 5 st så kommer log-sender sammanställa ett loggmeddelande utifrån samtliga aggregerade och skicka till PDL-tjänsten.
 
 ### Kontrollera stubbe
 
 Lokalt är förstås tjänsten stubbad, man bör kunna kika på innehållet i stubben på:
 
     http://localhost:9097/log-sender/loggtjanst-stub
+    
+### Stubbens Testbarhets-API 
+    
+Följande operationer kan utföras mha GET-anrop till stubben
+    
+Avaktivera stubbe
+
+    http://localhost:9097/log-sender/loggtjanst-stub/offline
+    
+Återaktivera stubbe
+
+    http://localhost:9097/log-sender/loggtjanst-stub/online
+    
+Fejka fel (errorType = någon av NONE,ERROR,VALIDATION)
+
+    http://localhost:9097/log-sender/loggtjanst-stub/error/{errorType}
+    
+Fejkla latency, (latencyMs = artificiell fördröjning i millisekunder)
+
+     http://localhost:9097/log-sender/loggtjanst-stub/latency/{latencyMs}
