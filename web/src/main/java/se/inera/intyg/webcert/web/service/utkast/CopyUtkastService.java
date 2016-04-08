@@ -45,7 +45,7 @@ public interface CopyUtkastService {
     /**
      * Create a renewal, which is essentially a copy with a relation to the Intyg on which the copy is based.
      * @param copyRequest
-     * @return {@link CreateNewDraftCopyResponse}
+     * @return {@link CreateRenewalCopyRequest}
      */
     CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest);
 
