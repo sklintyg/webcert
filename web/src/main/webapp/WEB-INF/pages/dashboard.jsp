@@ -56,7 +56,11 @@
 </head>
 <body>
 
+  <wc-cookie-banner></wc-cookie-banner>
+
   <div ui-view="header" autoscroll="true" id="wcHeader" class="print-hide"></div>
+
+
 
   <%-- ui-view that holds dynamic content managed by angular app --%>
   <div ui-view="content" autoscroll="false" id="view"></div>

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.specifications.pages
 
 import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.common.specifications.spec.Browser
 
 class WelcomePage extends AbstractPage {
 
@@ -31,6 +32,10 @@ class WelcomePage extends AbstractPage {
     }
 
     def loginAs(String id) {
+        //Having this flag in localStorage will suppress the cookieBanner. (This is what will be set
+        //when a user gives consent). We pre-set this before logging in to avoid having to click on that button
+        //for every test. (actual testing of the cookiebanner is made with protractor)
+        Browser.setLocalStorageValue("wc-cookie-consent-given", "1");
         userSelect = $("#${id}").value();
         loginBtn.click()
     }

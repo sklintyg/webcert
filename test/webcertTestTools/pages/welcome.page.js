@@ -31,17 +31,36 @@ module.exports = {
     get: function() {
         browser.get('welcome.jsp');
     },
-    login: function(userId) {
+
+    disableCookieConsentBanner: function() {
+        //Having this flag in localStorage will suppress the cookieBanner.(This is what will be set
+        //when a user gives consent). We pre-set this before logging in to avoid having to click on that button
+        //for every test.
+        browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","1");');
+    },
+    enableCookieConsentBanner: function() {
+        browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","0");');
+    },
+
+    login: function(userId, showCookieBanner) {
         // login id IFV1239877878-104B_IFV1239877878-1042
         // var id = 'IFV1239877878-104B_IFV1239877878-1042';
+        if (!showCookieBanner) {
+            this.disableCookieConsentBanner();
+        } else {
+            this.enableCookieConsentBanner();
+        }
+
         element(by.id(userId)).click();
         loginButton.click();
     },
     loginByName: function(name) {
+        this.disableCookieConsentBanner();
         element(by.cssContainingText('option', name)).click();
         loginButton.click();
     },
     loginByJSON: function(userJson) {
+        this.disableCookieConsentBanner();
         jsonDisplay.clear().sendKeys(userJson);
         loginButton.click();
     }
