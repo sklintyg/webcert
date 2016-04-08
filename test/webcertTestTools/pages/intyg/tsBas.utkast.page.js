@@ -205,21 +205,25 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
     fillInHjartOchKarlsjukdomar: function(utkast) {
         var promiseArr = [];
+        var hjartKarlCEl = this.hjartKarl;
+
         if (utkast.hjartHjarna === 'Ja') {
-            promiseArr.push(this.hjartKarl.aYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(hjartKarlCEl.aYes.sendKeys(protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.hjartKarl.aNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(hjartKarlCEl.aNo.sendKeys(protractor.Key.SPACE));
         }
         if (utkast.hjartSkada === 'Ja') {
-            promiseArr.push(this.hjartKarl.bYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(hjartKarlCEl.bYes.sendKeys(protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.hjartKarl.bNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(hjartKarlCEl.bNo.sendKeys(protractor.Key.SPACE));
         }
         if (utkast.hjartRisk === 'Ja') {
-            promiseArr.push(this.hjartKarl.cYes.sendKeys(protractor.Key.SPACE));
-            promiseArr.push(this.hjartKarl.cText.sendKeys('TIA och förmaksflimmer.'));
+            promiseArr.push(hjartKarlCEl.cYes.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return hjartKarlCEl.cText.sendKeys('TIA och förmaksflimmer.');
+                }));
         } else {
-            promiseArr.push(this.hjartKarl.cNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(hjartKarlCEl.cNo.sendKeys(protractor.Key.SPACE));
         }
         return Promise.all(promiseArr);
     },
