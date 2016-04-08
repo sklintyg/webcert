@@ -65,6 +65,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 
 @Service
@@ -72,6 +73,12 @@ import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedper
 public class ArendeServiceImpl implements ArendeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
+
+    private static final ArendeConversationViewTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeConversationViewTimeStampComparator();
+
+    private static final List<String> BLACKLISTED = Arrays.asList(CertificateTypes.FK7263.toString(), CertificateTypes.TSBAS.toString(),
+            CertificateTypes.TSDIABETES.toString());
+
     @Autowired
     private ArendeRepository repo;
 
@@ -96,8 +103,6 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private NotificationService notificationService;
 
-    private static final ArendeConversationViewTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeConversationViewTimeStampComparator();
-
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
         if (repo.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
@@ -105,13 +110,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
-        if (utkast == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "Certificate " + arende.getIntygsId() + " not found.");
-        } else if (utkast.getSignatur() == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Certificate " + arende.getIntygsId() + " not signed.");
-        }
+        validateArende(arende, utkast);
         LocalDateTime now = LocalDateTime.now();
         decorateArende(arende, utkast, now);
 
@@ -120,42 +119,6 @@ public class ArendeServiceImpl implements ArendeService {
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
 
         return repo.save(arende);
-    }
-
-    private void updateRelated(Arende arende, LocalDateTime now) {
-        if (arende.getSvarPaId() != null) {
-            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getSvarPaId())).ifPresent(a -> {
-                a.setSenasteHandelse(now);
-                a.setStatus(Status.ANSWERED);
-            });
-        } else if (arende.getPaminnelseMeddelandeId() != null) {
-            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId())).ifPresent(a -> a.setSenasteHandelse(now));
-        }
-    }
-
-    private void decorateArende(Arende arende, Utkast utkast, LocalDateTime now) {
-        arende.setTimestamp(now);
-        arende.setSenasteHandelse(now);
-        arende.setStatus(arende.getSvarPaId() == null ? Status.PENDING_INTERNAL_ACTION : Status.ANSWERED);
-        arende.setVidarebefordrad(Boolean.FALSE);
-
-        arende.setIntygTyp(utkast.getIntygsTyp());
-        arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
-        arende.setSigneratAvName(getSignedByName(utkast));
-        arende.setEnhet(utkast.getEnhetsId());
-    }
-
-    private String getSignedByName(Utkast utkast) {
-        return Optional.ofNullable(hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null))
-                .map(GetEmployeeIncludingProtectedPersonResponseType::getPersonInformation)
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                        "HSA did not respond with information"))
-                .stream()
-                .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
-                .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
-                        ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                        : pit.getMiddleAndSurName())
-                .findFirst().orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
     }
 
     @Override
@@ -212,47 +175,6 @@ public class ArendeServiceImpl implements ArendeService {
         return arendeConversations;
     }
 
-    private List<ArendeConversationView> buildArendeConversations(List<ArendeView> arendeViews) {
-        List<ArendeConversationView> arendeConversations = new ArrayList<>();
-        Map<String, List<ArendeView>> threads = new HashMap<>();
-        String meddelandeId = null;
-        for (ArendeView arende : arendeViews) { // divide into threads
-            meddelandeId = getMeddelandeId(arende);
-            if (threads.get(meddelandeId) == null) {
-                threads.put(meddelandeId, new ArrayList<ArendeView>());
-            }
-            threads.get(meddelandeId).add(arende);
-        }
-
-        for (String meddelandeIdd : threads.keySet()) {
-            List<ArendeView> arendeConversationContent = threads.get(meddelandeIdd);
-            List<ArendeView> paminnelser = new ArrayList<>();
-            ArendeView fraga = null, svar = null;
-            LocalDateTime senasteHandelse = null;
-            for (ArendeView view : arendeConversationContent) {
-                if (view.getArendeType() == ArendeType.FRAGA) {
-                    fraga = view;
-                } else if (view.getArendeType() == ArendeType.SVAR) {
-                    svar = view;
-                } else {
-                    paminnelser.add(view);
-                }
-                if (senasteHandelse == null || senasteHandelse.isBefore(view.getTimestamp())) {
-                    senasteHandelse = view.getTimestamp();
-                }
-            }
-
-            arendeConversations.add(ArendeConversationView.create(fraga, svar, senasteHandelse, paminnelser));
-        }
-        return arendeConversations;
-    }
-
-    private String getMeddelandeId(ArendeView arende) {
-        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
-        String meddelandeId = (referenceId != null) ? referenceId : arende.getInternReferens();
-        return meddelandeId;
-    }
-
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
@@ -293,13 +215,6 @@ public class ArendeServiceImpl implements ArendeService {
         return response;
     }
 
-    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
-        if (!webcertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsId);
-        }
-    }
-
     @Override
     @Transactional
     public Arende closeArendeAsHandled(String meddelandeId) {
@@ -313,8 +228,14 @@ public class ArendeServiceImpl implements ArendeService {
         return closedArende;
     }
 
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webcertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
+    }
+
     private NotificationEvent determineNotificationEvent(Arende arende) {
-        // TODO make sure this is populated with the correct information from Arende
         FrageStallare frageStallare = FrageStallare.getByKod(arende.getSkickatAv());
         Status arendeSvarStatus = arende.getStatus();
 
@@ -374,6 +295,96 @@ public class ArendeServiceImpl implements ArendeService {
                     "Could not find Arende with id:" + meddelandeId);
         }
         return arende;
+    }
+
+    private void validateArende(Arende arende, Utkast utkast) {
+        if (utkast == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "Certificate " + arende.getIntygsId() + " not found.");
+        } else if (utkast.getSignatur() == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Certificate " + arende.getIntygsId() + " not signed.");
+        } else if (BLACKLISTED.contains(utkast.getIntygsTyp())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Certificate " + arende.getIntygsId() + " has wrong type. " + utkast.getIntygsTyp() + " is blacklisted.");
+        }
+    }
+
+    private List<ArendeConversationView> buildArendeConversations(List<ArendeView> arendeViews) {
+        List<ArendeConversationView> arendeConversations = new ArrayList<>();
+        Map<String, List<ArendeView>> threads = new HashMap<>();
+        String meddelandeId = null;
+        for (ArendeView arende : arendeViews) { // divide into threads
+            meddelandeId = getMeddelandeId(arende);
+            if (threads.get(meddelandeId) == null) {
+                threads.put(meddelandeId, new ArrayList<ArendeView>());
+            }
+            threads.get(meddelandeId).add(arende);
+        }
+
+        for (String meddelandeIdd : threads.keySet()) {
+            List<ArendeView> arendeConversationContent = threads.get(meddelandeIdd);
+            List<ArendeView> paminnelser = new ArrayList<>();
+            ArendeView fraga = null, svar = null;
+            LocalDateTime senasteHandelse = null;
+            for (ArendeView view : arendeConversationContent) {
+                if (view.getArendeType() == ArendeType.FRAGA) {
+                    fraga = view;
+                } else if (view.getArendeType() == ArendeType.SVAR) {
+                    svar = view;
+                } else {
+                    paminnelser.add(view);
+                }
+                if (senasteHandelse == null || senasteHandelse.isBefore(view.getTimestamp())) {
+                    senasteHandelse = view.getTimestamp();
+                }
+            }
+
+            arendeConversations.add(ArendeConversationView.create(fraga, svar, senasteHandelse, paminnelser));
+        }
+        return arendeConversations;
+    }
+
+    private String getMeddelandeId(ArendeView arende) {
+        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
+        String meddelandeId = (referenceId != null) ? referenceId : arende.getInternReferens();
+        return meddelandeId;
+    }
+
+    private void updateRelated(Arende arende, LocalDateTime now) {
+        if (arende.getSvarPaId() != null) {
+            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getSvarPaId())).ifPresent(a -> {
+                a.setSenasteHandelse(now);
+                a.setStatus(Status.ANSWERED);
+            });
+        } else if (arende.getPaminnelseMeddelandeId() != null) {
+            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId())).ifPresent(a -> a.setSenasteHandelse(now));
+        }
+    }
+
+    private void decorateArende(Arende arende, Utkast utkast, LocalDateTime now) {
+        arende.setTimestamp(now);
+        arende.setSenasteHandelse(now);
+        arende.setStatus(arende.getSvarPaId() == null ? Status.PENDING_INTERNAL_ACTION : Status.ANSWERED);
+        arende.setVidarebefordrad(Boolean.FALSE);
+
+        arende.setIntygTyp(utkast.getIntygsTyp());
+        arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
+        arende.setSigneratAvName(getSignedByName(utkast));
+        arende.setEnhet(utkast.getEnhetsId());
+    }
+
+    private String getSignedByName(Utkast utkast) {
+        return Optional.ofNullable(hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null))
+                .map(GetEmployeeIncludingProtectedPersonResponseType::getPersonInformation)
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                        "HSA did not respond with information"))
+                .stream()
+                .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
+                .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
+                        ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                        : pit.getMiddleAndSurName())
+                .findFirst().orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
     }
 
     public static class ArendeConversationViewTimeStampComparator implements Comparator<ArendeConversationView> {
