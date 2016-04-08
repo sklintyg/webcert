@@ -99,15 +99,26 @@
                           id="showBtn-{{cert.intygId}}">Visa
                   </button>
                 </td>
-                <td>
+                <td ng-switch on="cert.intygType">
                   <button
                       type="button"
+                      ng-switch-when="fk7263"
                       ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
-                      class="btn btn-info" wc-authority="FORNYA_INTYG" feature="fornyaIntyg"
+                      class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
                       intygstyp="{{cert.intygType}}"
                       title="Förnyelse utav intyg skapar ett nytt intygsutkast från det ursprungliga intyget. Det förnyade utkastet kan ändras och signeras."
                       ng-click="fornyaIntyg(cert)" id="fornyaBtn-{{cert.intygId}}">
                     Förnya intyg
+                  </button>
+                  <button
+                      type="button"
+                      ng-switch-default
+                      ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
+                      class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
+                      intygstyp="{{cert.intygType}}"
+                      title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
+                      ng-click="copyIntyg(cert)" id="copyBtn-{{cert.intygId}}">
+                    Kopiera
                   </button>
                 </td>
                 <td><span message key="certificatetypes.{{cert.intygType}}.typename"></span></td>
