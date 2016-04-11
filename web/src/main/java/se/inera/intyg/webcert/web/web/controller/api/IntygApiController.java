@@ -190,7 +190,7 @@ public class IntygApiController extends AbstractApiController {
      * @return
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/forlang")
+    @Path("/{intygsTyp}/{intygsId}/fornya")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
