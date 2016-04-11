@@ -1,11 +1,11 @@
 # language: sv
-@smoke @sjukersattning @luse
+@smoke @sjukersattning @luse @waitingForFix
 Egenskap: Hantera Läkarutlåtande för sjukersättning
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 
-@keepIntyg @foo
+@keepIntyg
 Scenario: Skapa och signera ett intyg
 	När jag väljer patienten "19520617-2339"
 	Och jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg

@@ -20,8 +20,9 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals wcTestTools,browser,JSON*/
+/*globals browser,JSON*/
 'use strict';
+var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;

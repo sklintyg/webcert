@@ -29,10 +29,28 @@ module.exports = {
 
 
         promiseArr.push(tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
-            logger.info('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
-        }, function(reason) {
-            cb('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
-        }));
+                logger.info('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
+
+                //Hörsel och balans kräver att körkortstyper är angivna
+                return tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel)
+                    .then(function() {
+                        logger.info('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
+
+                        //Rörelseorganens funktioner kräver att körkortstyper är angivna
+                        return tsBasUtkastPage.fillInRorelseorganensFunktioner(intyg.rorelseorganensFunktioner)
+                            .then(function() {
+                                logger.info('OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(intyg.rorelseorganensFunktioner));
+                            }, function(reason) {
+                                cb('FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(intyg.rorelseorganensFunktioner) + reason);
+                            });
+
+                    }, function(reason) {
+                        cb('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
+                    });
+            },
+            function(reason) {
+                cb('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
+            }));
 
         promiseArr.push(tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
             logger.info('OK - fillInIdentitetStyrktGenom:' + intyg.identitetStyrktGenom.toString());
@@ -48,24 +66,13 @@ module.exports = {
         promiseArr.push(browser.element(by.id('patientPostort')).sendKeys('postort'));
 
         // Synfunktioner
-        promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(intyg).then(function() {
             logger.info('OK - fillInSynfunktioner');
         }, function(reason) {
             cb('FEL, fillInSynfunktioner,' + reason);
         }));
 
-
-        promiseArr.push(tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function() {
-            logger.info('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
-        }, function(reason) {
-            cb('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInRorelseorganensFunktioner(global.intyg.rorelseorganensFunktioner).then(function() {
-            logger.info('OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(global.intyg.rorelseorganensFunktioner));
-        }, function(reason) {
-            cb('FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(global.intyg.rorelseorganensFunktioner) + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInHjartOchKarlsjukdomar(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInHjartOchKarlsjukdomar(intyg).then(function() {
             logger.info('OK - fillInHjartOchKarlsjukdomar');
         }, function(reason) {
             cb('FEL, fillInHjartOchKarlsjukdomar,' + reason);
@@ -75,67 +82,62 @@ module.exports = {
         }, function(reason) {
             cb('FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
         }));
-        // promiseArr.push(tsBasUtkastPage.fillInHorselOchBalanssinne(global.intyg).then(function () {
-        //   logger.info('OK - fillInHorselOchBalanssinne');
-        // }, function (reason) {
-        //   cb('FEL, fillInHorselOchBalanssinne,' + reason);
-        // }));
-        promiseArr.push(tsBasUtkastPage.fillInNeurologiskaSjukdomar(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInNeurologiskaSjukdomar(intyg).then(function() {
             logger.info('OK - fillInNeurologiskaSjukdomar');
         }, function(reason) {
             cb('FEL, fillInNeurologiskaSjukdomar,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInEpilepsi(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInEpilepsi(intyg).then(function() {
             logger.info('OK - fillInEpilepsi');
         }, function(reason) {
             cb('FEL, fillInEpilepsi,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInNjursjukdomar(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInNjursjukdomar(intyg).then(function() {
             logger.info('OK - fillInNjursjukdomar');
         }, function(reason) {
             cb('FEL, fillInNjursjukdomar,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInDemens(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInDemens(intyg).then(function() {
             logger.info('OK - fillInDemens');
         }, function(reason) {
             cb('FEL, fillInDemens,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInSomnOchVakenhet(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInSomnOchVakenhet(intyg).then(function() {
             logger.info('OK - fillInSomnOchVakenhet');
         }, function(reason) {
             cb('FEL, fillInSomnOchVakenhet,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(intyg).then(function() {
             logger.info('OK - fillInAlkoholNarkotikaLakemedel');
         }, function(reason) {
             cb('FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInPsykiska(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInPsykiska(intyg).then(function() {
             logger.info('OK - fillInPsykiska');
         }, function(reason) {
             cb('FEL, fillInPsykiska,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInAdhd(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInAdhd(intyg).then(function() {
             logger.info('OK - fillInAdhd');
         }, function(reason) {
             cb('FEL, fillInAdhd,' + reason);
         }));
-        promiseArr.push(tsBasUtkastPage.fillInSjukhusvard(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInSjukhusvard(intyg).then(function() {
             logger.info('OK - fillInSjukhusvard');
         }, function(reason) {
             cb('FEL, fillInSjukhusvard,' + reason);
         }));
 
-        promiseArr.push(tsBasUtkastPage.fillInOvrigMedicinering(global.intyg).then(function() {
+        promiseArr.push(tsBasUtkastPage.fillInOvrigMedicinering(intyg).then(function() {
             logger.info('OK - fillInOvrigMedicinering');
         }, function(reason) {
             cb('FEL, fillInOvrigMedicinering,' + reason);
         }));
 
         promiseArr.push(tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
-            logger.info('OK - fillInOvrigMedicinering');
+            logger.info('OK - fillInBedomning');
         }, function(reason) {
-            cb('FEL, fillInOvrigMedicinering,' + reason);
+            cb('FEL, fillInBedomning,' + reason);
         }));
 
         return Promise.all(promiseArr)

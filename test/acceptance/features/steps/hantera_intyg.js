@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, protractor, browser*/
+/* globals pages, intyg, protractor, browser, logger*/
 
 'use strict';
 
@@ -46,8 +46,23 @@ module.exports = function() {
 
     this.Given(/^jag kopierar intyget$/, function(callback) {
         fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE).then(callback);
+            fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    browser.getCurrentUrl()
+                        .then(function(text) {
+                            intyg.id = text.split('/').slice(-1)[0];
+                            intyg.id = intyg.id.split('?')[0];
+                            logger.info('intyg.id: ' + intyg.id);
+                            callback();
+                        });
+                });
         });
+    });
+
+    this.Given(/^jag raderar utkastet$/, function(callback) {
+        fkUtkastPage.radera.knapp.click();
+        fkUtkastPage.radera.bekrafta.click()
+            .then(callback);
     });
 
 };

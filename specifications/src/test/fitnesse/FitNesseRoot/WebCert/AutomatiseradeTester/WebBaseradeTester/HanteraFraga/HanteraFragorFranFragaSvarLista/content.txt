@@ -18,9 +18,6 @@ Testet beskriver fallet när en användare har fått svar på sin fråga utanfö
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
-| markera fraga som hanterad | $internReferens1 |
-| ar fraga hanterad | $internReferens1 |
-| markera fraga som ohanterad | $internReferens1 |
 | ar fraga ohanterad | $internReferens1 |
 
 !3 Ta bort fråga

@@ -16,20 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.service.notification;
 
-/*global intyg, */
-
-'use strict';
-var fillIn = require('./fillIn').fillIn;
-var generateIntygByType = require('./helpers.js').generateIntygByType;
-
-module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
-        if (!global.intyg.typ) {
-            callback('Intyg.typ odefinierad.');
-        } else {
-            global.intyg = generateIntygByType(intyg.typ, intyg.id);
-            fillIn(global.intyg, callback);
-        }
-    });
-};
+public enum NotificationEvent {
+    QUESTION_SENT_TO_FK,
+    ANSWER_SENT_TO_FK,
+    QUESTION_FROM_FK_HANDLED,
+    QUESTION_FROM_FK_UNHANDLED,
+    ANSWER_FROM_FK_HANDLED,
+    ANSWER_FROM_FK_UNHANDLED;
+}

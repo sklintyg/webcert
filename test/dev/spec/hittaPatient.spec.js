@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals describe,it,wcTestTools,browser */
+/*globals describe,it,browser */
 'use strict';
-
+var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;

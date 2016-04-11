@@ -46,6 +46,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -249,6 +250,86 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotificationForAnswerHandled(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.SVAR_FRAN_FK_HANTERAD);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.
+     * inera.intyg.webcert.web
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForQuestionReceived(Arende arende) {
+        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.FRAGA_FRAN_FK);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.
+     * inera.intyg.webcert.web
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForQuestionHandled(Arende arende) {
+        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.FRAGA_FRAN_FK_HANTERAD);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.
+     * intyg.webcert.web
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForQuestionSent(Arende arende) {
+        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.FRAGA_TILL_FK);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera
+     * .intyg.webcert.web
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForAnswerRecieved(Arende arende) {
+        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
+        if (utkast.isPresent()) {
+            createAndSendNotification(utkast.get(), HandelseType.SVAR_FRAN_FK);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.
+     * intyg.webcert.web
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForAnswerHandled(Arende arende) {
+        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
             createAndSendNotification(utkast.get(), HandelseType.SVAR_FRAN_FK_HANTERAD);
         }

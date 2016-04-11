@@ -23,10 +23,10 @@
 'use strict';
 
 var JClass = require('jclass');
-
 /**
  * Elements always shown in webcert are connected here. Header etc.
  */
+
 var WebcertBasePage = JClass._extend({
     init: function() {
         this.doctor = element(by.css('.logged-in'));
@@ -43,6 +43,7 @@ var WebcertBasePage = JClass._extend({
         this.warnings = {
             protectedInfo: element(by.id('sekretessmarkering'))
         };
+        this.cookieConsentBtnId = 'cookie-usage-consent-btn';
 
     },
     getDoctorText: function() {

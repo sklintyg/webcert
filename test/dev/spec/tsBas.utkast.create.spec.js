@@ -21,9 +21,10 @@
  * Created by bennysce on 09/06/15.
  */
 
-/*globals wcTestTools,describe,it,browser */
+/*globals describe,it,browser */
 'use strict';
 
+var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var tsdBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;

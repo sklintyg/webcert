@@ -101,8 +101,6 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.wcTestTools = require('webcert-testtools');
-
         global.logg = function(text){
             console.log(text);
         };

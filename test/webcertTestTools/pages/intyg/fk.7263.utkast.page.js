@@ -164,7 +164,7 @@ var FkUtkast = BaseUtkast._extend({
         this.minUndersokning.sendKeys(protractor.Key.SPACE);
     },
     angeDiagnosKod: function(kod) {
-        this.diagnosKod.sendKeys(kod);
+        return this.diagnosKod.sendKeys(kod);
     },
     angeFunktionsnedsattning: function(txt) {
         if (!txt) {
@@ -277,15 +277,13 @@ var FkUtkast = BaseUtkast._extend({
         } else if (prognos.val === 'Nej') {
             return this.prognos.NEJ.sendKeys(protractor.Key.SPACE);
         } else if (prognos.val === 'Går inte att bedöma') {
-            var promisesArr = [];
-            promisesArr.push(this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE).then(function() {
+            return this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE).then(function() {
                 if (prognos.fortydligande) {
-                    return browser.driver.wait(protractor.until.elementIsVisible(prognosFortydligande)).then(prognosFortydligande.sendKeys(prognos.fortydligande));
+                    return prognosFortydligande.sendKeys(prognos.fortydligande);
                 } else {
                     return Promise.resolve('Inget förtydligande');
                 }
-            }));
-            return Promise.all(promisesArr);
+            });
         }
     },
     angeArbete: function(arbete) {

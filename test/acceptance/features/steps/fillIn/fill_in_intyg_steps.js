@@ -17,27 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, intyg, browser, protractor */
+/*global intyg,wcTestTools */
 
 'use strict';
-
-var basIntyg = pages.intyg.base.intyg;
-
+var fillIn = require('./').fillIn;
+var generateIntygByType = require('../helpers.js').generateIntygByType;
+var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var td = wcTestTools.testdata;
 module.exports = function() {
-
-    this.Given(/^jag går tillbaka till start$/, function(callback) {
-        browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn));
-        basIntyg.backBtn.click().then(callback);
+    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
+        if (!global.intyg.typ) {
+            callback('Intyg.typ odefinierad.');
+        } else {
+            global.intyg = generateIntygByType(intyg.typ, intyg.id);
+            fillIn(global.intyg, callback);
+        }
     });
 
-    this.Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {
-        expect(element(by.id('certificate-is-revoked-message-text')).getText())
-            .to.eventually.contain(arg1).and.notify(callback);
+    this.Given(/^jag ändrar diagnoskod$/, function(callback) {
+        fkUtkastPage.angeDiagnosKod(td.values.fk.getRandomDiagnoskod())
+            .then(callback());
     });
 
-    this.Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
-        element(by.id('intygFilterSamtliga')).click();
-        expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
-    });
 
 };

@@ -17,13 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*globals protractor, describe,it,browser,element */
 'use strict';
 var wcTestTools = require('webcert-testtools');
-var testdataHelper = wcTestTools.helpers.restTestdata;
+var specHelper = wcTestTools.helpers.spec;
+var WelcomePage = wcTestTools.pages.welcome;
+var basepage = wcTestTools.pages.webcertBase;
+var EC = protractor.ExpectedConditions;
 
-describe('Clean utkast via rest', function() {
+describe('Logga in och godkänn kakor', function() {
 
-    it('should login rest client and clean all utkast', function() {
-        testdataHelper.deleteAllUtkast();
+    it('Öppna och logga in utan att disabla cookiebanner', function() {
+        WelcomePage.get();
+        specHelper.waitForAngularTestability();
+        WelcomePage.login('IFV1239877878-104B_IFV1239877878-1042', true);
+        specHelper.waitForAngularTestability();
+
+        browser.wait(EC.elementToBeClickable(element(by.id(basepage.cookieConsentBtnId))), 5000);
+        element(by.id(basepage.cookieConsentBtnId)).click();
+        browser.wait(EC.invisibilityOf(element(by.id(basepage.cookieConsentBtnId))), 5000);
+
+
     });
+
+
 });

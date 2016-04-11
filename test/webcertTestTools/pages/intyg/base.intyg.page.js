@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser*/
+/*globals browser, protractor*/
 'use strict';
 
 var JClass = require('jclass');
@@ -58,6 +58,11 @@ var BaseIntyg = JClass._extend({
     },
     copyDialogConfirmBtn: function() {
         return this.copy.dialogConfirmButton;
+    },
+    skrivUtFullstandigtIntyg: function() {
+        return element(by.cssContainingText('button', 'Skriv ut')).sendKeys(protractor.Key.SPACE).then(function() {
+            return element(by.cssContainingText('a', 'Fullständigt intyg')).click();
+        });
     }
 });
 

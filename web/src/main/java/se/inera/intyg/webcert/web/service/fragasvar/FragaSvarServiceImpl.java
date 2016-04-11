@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -69,15 +70,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 @Service
 @Transactional("jpaTransactionManager")
 public class FragaSvarServiceImpl implements FragaSvarService {
-
-    private enum NotificationEvent {
-        QUESTION_SENT_TO_FK,
-        ANSWER_SENT_TO_FK,
-        QUESTION_FROM_FK_HANDLED,
-        QUESTION_FROM_FK_UNHANDLED,
-        ANSWER_FROM_FK_HANDLED,
-        ANSWER_FROM_FK_UNHANDLED;
-    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 

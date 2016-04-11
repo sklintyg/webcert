@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global wcTestTools, pages, browser, protractor, intyg, logger */
+/* global wcTestTools, pages, browser, protractor, intyg, logger, ursprungligtIntyg */
 
 'use strict';
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var db = require('./db_actions/db.js');
+var db = require('./dbActions');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
 var testdataHelper = wcTestTools.helpers.testdata;
 
@@ -104,21 +104,31 @@ module.exports = function() {
             global.user.enhetId,
             'Enhetsnamn'
         );
+        console.log(body);
 
         var path = '/services/create-draft-certificate/v1.0?wsdl';
         var url = stripTrailingSlash(process.env.WEBCERT_URL) + path;
         url = url.replace('https', 'http');
 
         soap.createClient(url, function(err, client) {
-
+            logger.info(url);
             if (err) {
                 callback(err);
             } else {
-                client.CreateDraftCertificate(body, function(err, result, body) {
+                client.CreateDraftCertificate(body, function(err, result, resBody) {
+
+                    console.log(resBody);
+
                     if (err) {
                         callback(err);
                     } else {
-                        //logger.debug(result);
+                        var resultcode = result.result.resultCode;
+                        logger.info('ResultCode: ' + resultcode);
+
+                        if (resultcode !== 'OK') {
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        }
+
                         intyg.id = result['utlatande-id'].attributes.extension;
                         logger.info('intyg.id: ' + intyg.id);
                         callback();
@@ -199,6 +209,10 @@ module.exports = function() {
 
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(arg1, arg2, callback) {
         assertEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
+    });
+
+    this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelse, callback) {
+        assertEvents(ursprungligtIntyg, handelse, parseInt(antal, 10), callback);
     });
 
     this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {

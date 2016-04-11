@@ -611,7 +611,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         List<MedicinsktArende> komplettering = new ArrayList<MedicinsktArende>();
         arende.setIntygsId(intygId);
         arende.setPatientPersonId(PATIENT_ID.getPersonnummer());
+        arende.setSigneratAv("Signatur");
+        arende.setSistaDatumForSvar(skickadTidpunkt.plusDays(7).toLocalDate());
         arende.setKomplettering(komplettering);
+        arende.setRubrik("rubrik");
+        arende.setSkickatAv("Avsandare");
+        arende.setVidarebefordrad(false);
+        
         return arende;
     }
 

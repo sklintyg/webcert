@@ -26,6 +26,7 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.converter.util.ConverterException;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -138,8 +139,8 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             }
             
             @Override
-            public se.inera.intyg.common.support.model.common.internal.Utlatande getUtlatandeFromIntyg(Intyg intyg) throws Exception {
-                throw new Exception("Module Fk7263 does not support getUtlatandeFromIntyg.");
+            public se.inera.intyg.common.support.model.common.internal.Utlatande getUtlatandeFromIntyg(Intyg intyg) throws ConverterException {
+                throw new UnsupportedOperationException("Module Fk7263 does not support getUtlatandeFromIntyg.");
             }
             
             @Override

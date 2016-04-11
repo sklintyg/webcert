@@ -17,8 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict';
+/*globals protractor, wcTestTools, browser, intyg */
 
-// Array.prototype.sample = function () {
-//     return this[Math.floor(Math.random() * this.length)];
-// };
+'use strict';
+var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+module.exports = function() {
+
+    this.Given(/^jag går tillbaka$/, function(callback) {
+        fkUtkastPage.backBtn.sendKeys(protractor.Key.SPACE)
+            .then(function() {
+                callback();
+            });
+    });
+
+    this.Given(/^jag går in på utkastet$/, function(callback) {
+        browser.get('/web/dashboard#/fk7263/edit/' + intyg.id)
+            .then(function() {
+                callback();
+            });
+    });
+};

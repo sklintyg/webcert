@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,9 +53,12 @@ import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.TransportToArende;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
@@ -66,6 +71,7 @@ import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedper
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
     @Autowired
     private ArendeRepository repo;
 
@@ -86,6 +92,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Autowired
     private FragaSvarService fragaSvarService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private static final ArendeConversationViewTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeConversationViewTimeStampComparator();
 
@@ -285,6 +294,82 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
         }
+    }
+
+    @Override
+    @Transactional
+    public Arende closeArendeAsHandled(String meddelandeId) {
+        Arende arendeToClose = lookupArende(meddelandeId);
+        NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose);
+        Arende closedArende = closeArendeAsHandled(arendeToClose);
+
+        if (notificationEvent != null) {
+            sendNotification(closedArende, notificationEvent);
+        }
+        return closedArende;
+    }
+
+    private NotificationEvent determineNotificationEvent(Arende arende) {
+        // TODO make sure this is populated with the correct information from Arende
+        FrageStallare frageStallare = FrageStallare.getByKod(arende.getSkickatAv());
+        Status arendeSvarStatus = arende.getStatus();
+
+        if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
+            if (Status.PENDING_INTERNAL_ACTION.equals(arendeSvarStatus)) {
+                return NotificationEvent.QUESTION_FROM_FK_HANDLED;
+            } else if (Status.CLOSED.equals(arendeSvarStatus)) {
+                return NotificationEvent.QUESTION_FROM_FK_UNHANDLED;
+            }
+        }
+
+        if (FrageStallare.WEBCERT.equals(frageStallare)) {
+            if (Status.ANSWERED.equals(arendeSvarStatus)) {
+                return NotificationEvent.ANSWER_FROM_FK_HANDLED;
+            } else if (Status.CLOSED.equals(arendeSvarStatus) && StringUtils.isNotEmpty(arende.getMeddelande())) {
+                return NotificationEvent.ANSWER_FROM_FK_UNHANDLED;
+            }
+        }
+
+        return null;
+    }
+
+    private void sendNotification(Arende arende, NotificationEvent event) {
+        switch (event) {
+        case ANSWER_FROM_FK_HANDLED:
+            notificationService.sendNotificationForAnswerHandled(arende);
+            break;
+        case ANSWER_FROM_FK_UNHANDLED:
+            notificationService.sendNotificationForAnswerRecieved(arende);
+            break;
+        case ANSWER_SENT_TO_FK:
+            notificationService.sendNotificationForQuestionHandled(arende);
+            break;
+        case QUESTION_FROM_FK_HANDLED:
+            notificationService.sendNotificationForQuestionHandled(arende);
+            break;
+        case QUESTION_FROM_FK_UNHANDLED:
+            notificationService.sendNotificationForQuestionReceived(arende);
+            break;
+        case QUESTION_SENT_TO_FK:
+            notificationService.sendNotificationForQuestionSent(arende);
+            break;
+        default:
+            LOG.warn("ArendeServiceImpl.sendNotification(Arende, NotificationEvent) - cannot send notification. Incoming event not handled!");
+        }
+    }
+
+    private Arende closeArendeAsHandled(Arende arende) {
+        arende.setStatus(Status.CLOSED);
+        return repo.save(arende);
+    }
+
+    private Arende lookupArende(String meddelandeId) {
+        Arende arende = repo.findOneByMeddelandeId(meddelandeId);
+        if (arende == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Could not find Arende with id:" + meddelandeId);
+        }
+        return arende;
     }
 
     public static class ArendeConversationViewTimeStampComparator implements Comparator<ArendeConversationView> {

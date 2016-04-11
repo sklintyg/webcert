@@ -37,6 +37,7 @@ function findArrayElementsInArray(targetArray, compareArray) {
 
 function arrayContains(array, compareArray) {
     var found = findArrayElementsInArray(array, compareArray);
+    //console.log('found:' + JSON.stringify(found));
     return found.length > 0;
 }
 
@@ -78,7 +79,7 @@ var tsValues = {
 
     getRandomHorselSamtal: function(korkortstyper) {
         var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
-        if (arrayContains(tsValues.korkortstyper, besvarasOm)) {
+        if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(tsValues.horselSamtal)[0];
         } else {
             return false;
@@ -86,7 +87,7 @@ var tsValues = {
     },
     getRandomInUtUrFordon: function(korkortstyper) {
         var besvarasOm = ['D1', 'D1E', 'D', 'DE', 'Taxi'];
-        if (arrayContains(tsValues.korkortstyper, besvarasOm)) {
+        if (arrayContains(korkortstyper, besvarasOm)) {
             return shuffle(tsValues.rorOrgInUt)[0];
         } else {
             return '';

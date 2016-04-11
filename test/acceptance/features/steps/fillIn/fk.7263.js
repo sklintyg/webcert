@@ -84,12 +84,15 @@ module.exports = {
             cb('FEL, angeArbetsformagaFMB,' + reason);
         }));
 
+        browser.ignoreSynchronization = false;
         promisesArr.push(fkUtkastPage.angePrognos(intyg.prognos).then(function() {
             logger.info('OK - angePrognos :' + JSON.stringify(intyg.prognos));
         }, function(reason) {
             cb('FEL, angePrognos, value:' +
                 JSON.stringify(intyg.prognos) + ' ,' + reason);
         }));
+        browser.ignoreSynchronization = true;
+
         promisesArr.push(fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function() {
             logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
         }, function(reason) {

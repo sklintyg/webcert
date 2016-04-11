@@ -27,27 +27,20 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.swagger.annotations.Api;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import io.swagger.annotations.Api;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -84,7 +77,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
+            @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
+            @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
         return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName);
     }
 
@@ -94,11 +89,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *
      * @param intygId
      *            The id of the certificate to view.
-     * @param typ The type of certificate
+     * @param typ
+     *            The type of certificate
      */
     @GET
     @Path("/{typ}/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ,
+            @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
+            @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
 
         super.validateRedirectToIntyg(intygId);
 
@@ -110,7 +108,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         if (typ == null) {
-            typ = utkast.getIntygsTyp();
+            typ = utkast != null ? utkast.getIntygsTyp() : CertificateTypes.FK7263.toString();
         }
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
@@ -125,7 +123,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
 
-
     // - - - - - Protected scope - - - - -
 
     @Override
@@ -137,7 +134,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     protected WebCertUserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
-
 
     // - - - - - Private scope - - - - -
 
