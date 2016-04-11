@@ -73,7 +73,7 @@ module.exports = {
             '    <urn:adressVard>' +
             '      <urn1:hosPersonal>' +
             '        <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + user.hsaId + '"/>' +
-            '        <urn2:fullstandigtNamn>' + user.fornamn + '' + user.efternamn + '</urn2:fullstandigtNamn>' +
+            '        <urn2:fullstandigtNamn>' + user.fornamn + ' ' + user.efternamn + '</urn2:fullstandigtNamn>' +
             '        <urn2:enhet>' +
             '          <urn2:enhets-id extension="' + user.enhetId + '" root="1.2.752.129.2.1.4.1"/>' +
             '          <urn2:enhetsnamn>unitName</urn2:enhetsnamn>' +
@@ -114,11 +114,11 @@ module.exports = {
             '    <urn:fkReferens-id>626251</urn:fkReferens-id>' +
             '    <urn:amne>Arbetstidsforlaggning</urn:amne>' +
             '    <urn:fraga>' +
-            '      <urn1:meddelandeText>Fråga TF 1.5</urn1:meddelandeText>' +
+            '      <urn1:meddelandeText>Fråga</urn1:meddelandeText>' +
             '      <urn1:signeringsTidpunkt>2015-08-28T09:05:21</urn1:signeringsTidpunkt>' +
             '    </urn:fraga>' +
             '    <urn:svar>' +
-            '      <urn1:meddelandeText>Här kommer ett svar!, tf1.5</urn1:meddelandeText>' +
+            '      <urn1:meddelandeText>Här kommer ett svar!</urn1:meddelandeText>' +
             '      <urn1:signeringsTidpunkt>2015-08-28T09:05:21</urn1:signeringsTidpunkt>' +
             '    </urn:svar>' +
             '    <urn:avsantTidpunkt>2015-08-28T09:05:21</urn:avsantTidpunkt>' +

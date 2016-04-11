@@ -111,7 +111,7 @@ module.exports = function() {
         url = url.replace('https', 'http');
 
         soap.createClient(url, function(err, client) {
-            console.log(url);
+            logger.info(url);
             if (err) {
                 callback(err);
             } else {
@@ -122,7 +122,13 @@ module.exports = function() {
                     if (err) {
                         callback(err);
                     } else {
-                        //logger.debug(result);
+                        var resultcode = result.result.resultCode;
+                        logger.info('ResultCode: ' + resultcode);
+
+                        if (resultcode !== 'OK') {
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        }
+
                         intyg.id = result['utlatande-id'].attributes.extension;
                         logger.info('intyg.id: ' + intyg.id);
                         callback();
