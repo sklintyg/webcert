@@ -22,7 +22,6 @@ När jag väljer patienten "19121212-1212"
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
-@notReady
 Scenario: Makulera ett skickat intyg
 	När jag väljer patienten "19121212-1212"
     Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Mottaget"
