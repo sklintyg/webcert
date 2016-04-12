@@ -30,6 +30,7 @@ describe('ChooseCertTypeCtrl', function() {
     var IntygFornyaRequestInstanceMock;
     var PatientModelMock;
     var $stateParamsMock;
+    var CommonMessageServiceSpy;
 
     beforeEach(function(){
 
@@ -37,6 +38,7 @@ describe('ChooseCertTypeCtrl', function() {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
             CommonIntygServiceSpy = jasmine.createSpyObj('common.IntygService', ['fornya']);
             IntygFornyaRequestModelSpy = jasmine.createSpyObj('common.IntygFornyaRequestModel', ['build']);
+            CommonMessageServiceSpy = jasmine.createSpyObj('common.messageService', ['getProperty']);
             IntygFornyaRequestInstanceMock = {};
             $stateParamsMock = {
                 patientId: 'PAT-ID-TEST'
@@ -52,6 +54,7 @@ describe('ChooseCertTypeCtrl', function() {
                 postnummer: '111 22',
                 postort: 'Skogen'
             };
+            CommonMessageServiceSpy.getProperty.and.returnValue('Test text');
             IntygFornyaRequestModelSpy.build.and.returnValue(IntygFornyaRequestInstanceMock);
             $provide.value('common.statService', statService);
 
@@ -65,6 +68,7 @@ describe('ChooseCertTypeCtrl', function() {
             $provide.value('common.IntygService', CommonIntygServiceSpy);
             $provide.value('common.PatientModel', PatientModelMock);
             $provide.value('common.PatientProxy', {});
+            $provide.value('common.messageService', CommonMessageServiceSpy);
             $provide.value('$stateParams', $stateParamsMock);
         });
 
