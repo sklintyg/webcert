@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="445b108c-cbcd-41a0-b032-551b71bc4d32" activeEnvironment="Default" name="SendMessageToCareInteraction_1.0_RIVTABP21" resourceRoot="" soapui-version="5.2.1" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="98b08e49-733d-4936-a036-fa0dfeb76662" wsaVersion="NONE" name="SendMessageToCareResponderBinding" type="wsdl" bindingName="{urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21}SendMessageToCareResponderBinding" soapVersion="1_1" anonymous="optional" definition="file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl"><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareInteraction_1.0_RIVTABP21.wsdl</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. Sveriges Kommuner och Landsting 
+	licenses this file to you under the Apache License, Version 2.0 (the "License"); 
+	you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License.-->
+<wsdl:definitions name="SendMessageToCareInteraction" targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tjsr="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21" xmlns:itr="urn:riv:itintegration:registry:1">
+  <wsdl:documentation>Tjänsteinteraktionens namn: SendMessageToCareInteraction
+		Beskrivning: Skickar ett meddelande till vården.
+		Revisioner:
+		2015-09-30: Version 1.0, johan.zetterstrom@callistaenterprise.se
+		Tjänstedomän: clinicalprocess:healthcond:certificate
+		Tjänsteinteraktionstyp: Fråga-svar
+		WS-profil: RIVTABP21</wsdl:documentation>
+  <wsdl:types>
+    <xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21">
+      <xs:import schemaLocation="SendMessageToCareResponder_1.0.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1"/>
+      <xs:import schemaLocation="../../core_components/itintegration_registry_1.0.xsd" namespace="urn:riv:itintegration:registry:1"/>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="SendMessageToCareRequest">
+    <wsdl:part name="LogicalAddress" element="itr:LogicalAddress"></wsdl:part>
+    <wsdl:part name="parameters" element="tjsr:SendMessageToCare"/>
+  </wsdl:message>
+  <wsdl:message name="SendMessageToCareResponse">
+    <wsdl:part name="parameters" element="tjsr:SendMessageToCareResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="SendMessageToCareResponderInterface">
+    <wsdl:operation name="SendMessageToCare">
+      <wsdl:input message="tns:SendMessageToCareRequest"/>
+      <wsdl:output message="tns:SendMessageToCareResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SendMessageToCareResponderBinding" type="tns:SendMessageToCareResponderInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SendMessageToCare">
+      <soap:operation soapAction="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare" style="document"/>
+      <wsdl:input>
+        <soap:header use="literal" message="tns:SendMessageToCareRequest" part="LogicalAddress"/>
+        <soap:body use="literal" parts="parameters"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SendMessageToCareResponderService">
+    <wsdl:port name="SendMessageToCareResponderPort" binding="tns:SendMessageToCareResponderBinding">
+      <soap:address location="http://tempuri.org"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/SendMessageToCareInteraction/SendMessageToCareResponder_1.0.xsd</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership. Sveriges Kommuner och Landsting licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations
+ under the License.-->
+<schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:core="urn:riv:clinicalprocess:healthcond:certificate:2">
+  <import schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_2.0.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:2"/>
+  <import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:2" schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd"/>
+  <element name="SendMessageToCare" type="tns:SendMessageToCareType"/>
+  <element name="SendMessageToCareResponse" type="tns:SendMessageToCareResponseType"/>
+  <complexType name="SendMessageToCareType">
+    <sequence>
+      <element name="meddelande-id" type="string"/>
+      <element name="referens-id" type="string" minOccurs="0"/>
+      <element name="skickatTidpunkt" type="types:TimeStampType"/>
+      <element name="intygs-id" type="types:IntygId"/>
+      <element name="patientPerson-id" type="types:PersonId"/>
+      <element name="logiskAdressMottagare" type="string"/>
+      <element name="amne" type="types:Amneskod"/>
+      <element name="rubrik" type="string" minOccurs="0"/>
+      <element name="meddelande" type="string"/>
+      <element name="paminnelseMeddelande-id" type="string" minOccurs="0"/>
+      <element name="svarPa" type="core:MeddelandeReferens" minOccurs="0"/>
+      <element name="skickatAv">
+        <complexType>
+          <sequence>
+            <element name="part" type="types:Part"/>
+            <element name="kontaktInfo" type="string" minOccurs="0" maxOccurs="unbounded"/>
+            <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="komplettering" minOccurs="0" maxOccurs="unbounded">
+        <complexType>
+          <sequence>
+            <element name="frage-id" type="core:FrageIdType"/>
+            <element name="instans" type="int" minOccurs="0"/>
+            <element name="text" type="string"/>
+            <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </sequence>
+        </complexType>
+      </element>
+      <element name="sistaDatumForSvar" type="types:DateType" minOccurs="0"/>
+      <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <complexType name="SendMessageToCareResponseType">
+    <sequence>
+      <element name="result" type="core:ResultType"/>
+      <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+</schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:2" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:2" schemaLocation="clinicalprocess_healthcond_certificate_types_2.0.xsd"/>
+  <xs:complexType name="Intyg">
+    <xs:annotation>
+      <xs:documentation>Ett intyg.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="intygs-id" type="types:IntygId"/>
+      <xs:element name="mottagare" type="types:Part" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="typ" type="types:TypAvIntyg"/>
+      <xs:element name="version" type="xs:string"/>
+      <xs:element name="signeringstidpunkt" type="types:TimeStampType" minOccurs="0"/>
+      <xs:element name="skickatTidpunkt" type="types:TimeStampType" minOccurs="0"/>
+      <xs:element name="patient" type="Patient"/>
+      <xs:element name="skapadAv" type="HosPersonal"/>
+      <xs:element name="relation" type="Relation" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="status" type="IntygsStatus" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="svar" type="Svar" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="HosPersonal">
+    <xs:sequence>
+      <xs:element name="personal-id" type="types:HsaId">
+        <xs:annotation>
+          <xs:documentation>HSA-id, o.i.d för HSA-id är 1.2.752.129.2.1.4.1</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fullstandigtNamn" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Förnamn + efternamn sammanslaget.
+						Är tomt om
+						personen har en skyddad identitet.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="forskrivarkod" type="xs:string" minOccurs="0"/>
+      <xs:element name="befattning" type="types:Befattning" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="enhet" type="Enhet"/>
+      <xs:element name="specialistkompetens" type="types:Specialistkompetens" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Enhet">
+    <xs:sequence>
+      <xs:element name="enhets-id" type="types:HsaId">
+        <xs:annotation>
+          <xs:documentation>HSA-id, o.i.d för HSA-id är 1.2.752.129.2.1.4.1</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="arbetsplatskod" type="types:ArbetsplatsKod">
+        <xs:annotation>
+          <xs:documentation>o.i.d för arbetsplatskod är 1.2.752.29.4.71</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="enhetsnamn" type="xs:string"/>
+      <xs:element name="postadress" type="types:nonEmptyString"/>
+      <xs:element name="postnummer" type="types:nonEmptyString"/>
+      <xs:element name="postort" type="types:nonEmptyString"/>
+      <xs:element name="telefonnummer" type="types:nonEmptyString"/>
+      <xs:element name="epost" type="types:nonEmptyString" minOccurs="0"/>
+      <xs:element name="vardgivare" type="Vardgivare"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Vardgivare">
+    <xs:sequence>
+      <xs:element name="vardgivare-id" type="types:HsaId">
+        <xs:annotation>
+          <xs:documentation>HSA-id, o.i.d för HSA-id är 1.2.752.129.2.1.4.1</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="vardgivarnamn" type="xs:string"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Patient">
+    <xs:sequence>
+      <xs:element name="person-id" type="types:PersonId"/>
+      <xs:element name="fornamn" type="xs:string"/>
+      <xs:element name="efternamn" type="xs:string"/>
+      <xs:element name="mellannamn" type="xs:string" minOccurs="0"/>
+      <xs:element name="postadress" type="xs:string"/>
+      <xs:element name="postnummer" type="xs:string"/>
+      <xs:element name="postort" type="xs:string"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MeddelandeReferens">
+    <xs:annotation>
+      <xs:documentation>Referens till ett meddelande</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="meddelande-id" type="xs:string"/>
+      <xs:element name="referens-id" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Svar">
+    <xs:annotation>
+      <xs:documentation>Svar på en fråga</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="instans" type="xs:int" minOccurs="0"/>
+      <xs:element name="delsvar" maxOccurs="unbounded">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:attribute name="id" type="DelfrageIdType" use="required"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="FrageIdType" use="required"/>
+  </xs:complexType>
+  <xs:simpleType name="FrageIdType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DelfrageIdType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]+\.[0-9]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ResultType">
+    <xs:annotation>
+      <xs:documentation xml:lang="sv">Datatyp som returneras
+				som ett generellt svar från alla förändrande tjänster, t.ex. skapa,
+				radera, etc.
+				En anropande klient skall alltid kontrollera att
+				resultatkoden inte innehåller fel för att på så sätt veta om anropet
+				lyckades.
+				Alla svarskoder förutom OK och INFO betyder att åtgärden
+				inte genomfördes.
+				Om svarskoden är INFO skall fältet resultText
+				innehålla mer information.
+				Om svarskorden är ERROR skall fältet
+				errorId innehålla en specifik felkod, och fältet resultText
+				innehålla mer information.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="resultCode" type="ResultCodeType"/>
+      <xs:element name="resultText" type="xs:string" minOccurs="0"/>
+      <xs:element name="errorId" type="ErrorIdType" minOccurs="0"/>
+      <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ResultCodeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="sv">Enumerationsvärde som
+				anger de svarskoder som finns.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OK">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">Transaktionen har
+						utförts enligt uppdraget.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INFO">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">Transaktionen har
+						utförts enligt begäran, men det finns ett meddelande som
+						konsumenten bör visa upp.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ERROR">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">Transaktionen har INTE
+						kunnat utföras. Det finns en felkod som klassificerar
+						felet, samt
+						ett meddelande som konsumenten bör visa upp.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ErrorIdType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="VALIDATION_ERROR">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">En eller flera
+						inparametrar innehåller felaktiga värden. Angiven
+						tjänst utfördes
+						ej, och omsändning av
+						transaktionen är inte tillämpbart.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="APPLICATION_ERROR">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">Transaktionen har INTE
+						kunnat utföras p.g.a ett logiskt fel. Det finns ett
+						meddelande som
+						konsumenten bör
+						visa upp. Då felet är logisk är omsändning av
+						transaktionen inte
+						tillämpbart.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TECHNICAL_ERROR">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">Transaktionen har INTE
+						kunnat utföras p.g.a ett tekniskt fel. Det finns ett
+						meddelande som
+						konsumenten bör
+						visa upp. Felet kan vara intermittent, varför
+						omsändning av
+						transaktionen är tillämpbart.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="REVOKED">
+        <xs:annotation>
+          <xs:documentation xml:lang="sv">Den efterfrågade
+						informationen existerar men har rättats/dragits
+						tillbaka och är ej
+						längre giltig eller
+						tillgänglig. Angiven tjänst utfördes ej, och
+						omsändning av transaktionen är
+						inte tillämpbart.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="IntygsStatus">
+    <xs:sequence>
+      <xs:element name="part" type="types:Part"/>
+      <xs:element name="status" type="types:Statuskod"/>
+      <xs:element name="tidpunkt" type="types:TimeStampType"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!--typer som används vid integrerad intygsapplikation-->
+  <xs:complexType name="Handelse">
+    <xs:sequence>
+      <xs:element name="handelsekod" type="types:Handelsekod"/>
+      <xs:element name="tidpunkt" type="types:TimeStampMedMillisekunder"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FragorOchSvar">
+    <!--Frågor och svar-->
+    <xs:sequence>
+      <xs:element name="antalFragor" type="xs:int"/>
+      <xs:element name="antalHanteradeFragor" type="xs:int"/>
+      <xs:element name="antalSvar" type="xs:int"/>
+      <xs:element name="antalHanteradeSvar" type="xs:int"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!--slut typer som används vid integrerad intygsapplikation-->
+  <xs:complexType name="Relation">
+    <xs:sequence>
+      <xs:element name="typ" type="types:TypAvRelation"/>
+      <xs:element name="intygs-id" type="types:IntygId"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:types:2" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+  <xs:complexType name="IntygId">
+    <xs:complexContent>
+      <xs:restriction base="IIType">
+        <xs:sequence>
+          <xs:element name="root" type="xs:string"/>
+          <xs:element name="extension" type="xs:string"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TypAvIntyg">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PersonId">
+    <xs:complexContent>
+      <xs:restriction base="IIType">
+        <xs:sequence>
+          <xs:element name="root" type="PersonIdRoot"/>
+          <xs:element name="extension" type="PersonIdExtension"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="PersonIdRoot">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="1.2.752.129.2.1.3.1"/>
+      <xs:enumeration value="1.2.752.129.2.1.3.3"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PersonIdExtension">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d{12}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="HsaId">
+    <xs:complexContent>
+      <xs:restriction base="IIType">
+        <xs:sequence>
+          <xs:element name="root" type="xs:string" fixed="1.2.752.129.2.1.4.1"/>
+          <xs:element name="extension" type="nonEmptyString"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Befattning">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string" fixed="1.2.752.129.2.2.1.4"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Specialistkompetens">
+    <xs:sequence>
+      <xs:element name="code" type="xs:string"/>
+      <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Handelsekod">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string" fixed="dfd7bbad-dbe5-4a2f-ba25-f7b9b2cc6b14"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArbetsplatsKod">
+    <xs:complexContent>
+      <xs:restriction base="IIType">
+        <xs:sequence>
+          <xs:element name="root" type="xs:string" fixed="1.2.752.29.4.71"/>
+          <xs:element name="extension" type="nonEmptyString"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Statuskod">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string" fixed="9871cd17-8755-4ed9-b894-ff3729e775a4"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Part">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string" fixed="769bb12b-bd9f-4203-a5cd-fd14f2eb3b80"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TypAvRelation">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string" fixed="c2362fcd-eda0-4f9a-bd13-b3bbaf7f2146"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Amneskod">
+    <xs:complexContent>
+      <xs:restriction base="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string" fixed="ffa59d8f-8d7e-46ae-ac9e-31804e8e8499"/>
+          <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="TimeStampMedMillisekunder">
+    <xs:annotation>
+      <xs:documentation>DateTime value is a string with the format
+				"YYYY-MM-DDThh:mm:ss"
+				that conforms to the constrained ISO
+				8601.
+				Fraction of seconds and timezone precision is not required.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:dateTime">
+      <xs:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d.\d{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TimeStampType">
+    <xs:annotation>
+      <xs:documentation>DateTime avgränsat till YYYY-MM-DDThh:mm:ss</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:dateTime">
+      <xs:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--YYYYMMDD-->
+  <xs:simpleType name="DateType">
+    <xs:annotation>
+      <xs:documentation>Date avgränsat till YYYY-MM-DD</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:date">
+      <xs:pattern value="\d{4}-\d\d-\d\d"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="PartialDateType">
+    <xs:sequence>
+      <xs:element name="format" type="PartialDateTypeFormatEnum"/>
+      <xs:element name="value" type="PartialDateTypeValue"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="PartialDateTypeFormatEnum">
+    <xs:annotation>
+      <xs:documentation>Value-delen av PartialDateType.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="YYYY-MM-DD"/>
+      <xs:enumeration value="YYYY-MM"/>
+      <xs:enumeration value="YYYY"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PartialDateTypeValue">
+    <xs:annotation>
+      <xs:documentation>PartialDate value is a string with the format
+				"YYYY[-MM[-DD]]" that
+				conforms to the constrained ISO
+				8601.
+				In
+				contrast to the date type, this type also allows for year-only and
+				year-and-month values.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[1-2][0-9]{3,3}(-((0[1-9])|(1[0-2]))(-((0[1-9])|([1-2][0-9])|(3[0-1])))?)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--Best practice datatyper-->
+  <xs:complexType name="CVType">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="code" type="xs:string"/>
+      <xs:element name="codeSystem" type="xs:string"/>
+      <xs:element name="codeSystemName" type="xs:string" minOccurs="0"/>
+      <xs:element name="codeSystemVersion" type="xs:string" minOccurs="0"/>
+      <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+      <xs:element name="originalText" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="IIType">
+    <xs:sequence>
+      <xs:element name="root" type="xs:string"/>
+      <xs:element name="extension" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PQType">
+    <xs:sequence>
+      <xs:element name="value" type="xs:double"/>
+      <xs:element name="unit" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PQIntervalType">
+    <xs:sequence>
+      <xs:element name="low" type="xs:double" minOccurs="0"/>
+      <xs:element name="high" type="xs:double" minOccurs="0"/>
+      <xs:element name="unit" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DatePeriodType">
+    <xs:sequence>
+      <xs:element name="start" type="DateType" minOccurs="0"/>
+      <xs:element name="end" type="DateType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TimePeriodType">
+    <xs:sequence>
+      <xs:element name="start" type="TimeStampType" minOccurs="0"/>
+      <xs:element name="end" type="TimeStampType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!--Element tillagda dör att kunna hantera användning av datatyperna i 
+		any-tag-->
+  <xs:element name="timePeriod" type="TimePeriodType"/>
+  <xs:element name="datePeriod" type="DatePeriodType"/>
+  <xs:element name="pq" type="PQType"/>
+  <xs:element name="pqInterval" type="PQIntervalType"/>
+  <xs:element name="ii" type="IIType"/>
+  <xs:element name="cv" type="CVType"/>
+  <xs:element name="partialDate" type="PartialDateType"/>
+  <xs:element name="timestamp" type="TimeStampType"/>
+  <xs:element name="date" type="DateType"/>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/itintegration_registry_1.0.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:itintegration:registry:1" elementFormDefault="qualified" version="1.0" xmlns="urn:riv:itintegration:registry:1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:documentation>Beskrivning: 	Typdefinition för logisk adress som skall användas i tjänstekontrakten 
+							från och med RIV-TA Basic Profile 2.1
+			
+			Revisionshistorik:
+			
+			Datum:			2011-05-04
+			Beskrivning:	Initial version
+			Författare:		marcus.krantz@callistaenterprise.se</xs:documentation>
+  </xs:annotation>
+  <xs:element name="LogicalAddress" type="LogicalAddressType"/>
+  <xs:simpleType name="LogicalAddressType">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://tempuri.org</con:endpoint></con:endpoints><con:operation id="0bce026f-2f88-4beb-9c1d-3c271e4e88d0" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare" name="SendMessageToCare" bindingOperationName="SendMessageToCare" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="33bbb157-2b33-40be-afde-b8b22b657721" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://test.webcert.intygstjanster.se/services/send-message-to-care/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">
+   <soapenv:Header>
+      <urn:LogicalAddress>fk</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:SendMessageToCare>
+         <urn1:meddelande-id>Meddelade</urn1:meddelande-id>
+         <urn1:referens-id>reff</urn1:referens-id>
+         <urn1:skickatTidpunkt>2014-11-22T14:53:00</urn1:skickatTidpunkt>
+         <urn1:intygs-id>
+            <urn2:root>SE5565594230-B31</urn2:root>
+            <urn2:extension>15fb5a6a-763b-4872-83a1-84535dbdae56</urn2:extension>
+         </urn1:intygs-id>
+         <urn1:patientPerson-id>
+            <urn2:root>1.2.752.129.2.1.3.3</urn2:root>
+            <urn2:extension>19121212-1212</urn2:extension>
+         </urn1:patientPerson-id>
+         <urn1:logiskAdressMottagare>logiskaddress</urn1:logiskAdressMottagare>
+         <urn1:amne>
+            <urn2:code>KOMPLT</urn2:code>
+            <urn2:codeSystem>jap</urn2:codeSystem>
+         </urn1:amne>
+         <urn1:rubrik>Kompletteringsbegäran</urn1:rubrik>
+         <urn1:meddelande>Du har glömt grejer!</urn1:meddelande>
+         <urn1:skickatAv>
+            <urn1:part>
+               <urn2:code>FK</urn2:code>
+               <urn2:codeSystem>system</urn2:codeSystem>
+            </urn1:part>
+         </urn1:skickatAv>
+         <urn1:sistaDatumForSvar>2017-11-22</urn1:sistaDatumForSvar>
+      </urn1:SendMessageToCare>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>

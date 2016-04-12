@@ -163,6 +163,13 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
                 return utlatandeJson;
             }
 
+            @Override
+            public InternalModelResponse createRenewalFromTemplate(CreateDraftCopyHolder draftCopyHolder, InternalModelHolder internalModelHolder)
+                    throws ModuleException {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
         };
     }
 

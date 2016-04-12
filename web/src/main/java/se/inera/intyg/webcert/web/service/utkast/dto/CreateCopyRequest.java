@@ -48,6 +48,10 @@ public abstract class CreateCopyRequest {
         this.vardenhet = vardenhet;
     }
 
+    public CreateCopyRequest() {
+
+    }
+
     public boolean containsNyttPatientPersonnummer() {
         return nyttPatientPersonnummer != null && StringUtils.isNotBlank(nyttPatientPersonnummer.getPersonnummer());
     }

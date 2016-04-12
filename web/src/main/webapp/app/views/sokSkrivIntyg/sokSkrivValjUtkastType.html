@@ -121,9 +121,20 @@
                           id="showBtn-{{cert.intygId}}">Visa
                   </button>
                 </td>
-                <td>
+                <td ng-switch on="cert.intygType">
                   <button
                       type="button"
+                      ng-switch-when="fk7263"
+                      ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
+                      class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
+                      intygstyp="{{cert.intygType}}"
+                      title="{{fornyaTitleText}}"
+                      ng-click="fornyaIntyg(cert)" id="fornyaBtn-{{cert.intygId}}">
+                    Förnya
+                  </button>
+                  <button
+                      type="button"
+                      ng-switch-default
                       ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
                       class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
                       intygstyp="{{cert.intygType}}"

@@ -44,6 +44,7 @@ var wcMessages = {
         'label.confirmaddress': 'Återanvänd uppgifter',
         'label.confirmsign': 'Signera intyget',
         'label.copycert': 'Kopiera intyg',
+        'label.fornyacert': 'Förnya intyg',
 
         'print.label.signed': 'Observera! Detta är en webbutskrift av intyget och är därför inte giltigt som intyg.',
         'print.label.draft': 'Observera! Intyget är ett utkast och är därför inte giltigt.',
@@ -117,6 +118,8 @@ var wcMessages = {
         'error.failedtomakuleraintyg': 'Kunde inte makulera intyget. Försök igen senare.',
         'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.',
         'error.failedtocopyintyg.personidnotfound': 'Kunde inte kopiera intyget. Det nya person-id:t kunde inte hittas.',
+        'error.failedtofornyaintyg': 'Kunde inte förnya intyget. Försök igen senare.',
+        'error.failedtofornyaintyg.personidnotfound': 'Kunde inte förnya intyget. Det nya person-id:t kunde inte hittas.',
         'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.',
         'error.pu.namenotfound': 'Personnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt.<br>Observera att det inte går att ange reservnummer. Webcert hanterar enbart person- och samordningsnummer.',
         'error.pu.samordningsnummernotfound': 'Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt.<br>Observera att det inte går att ange reservnummer. Webcert hanterar enbart person- och samordningsnummer.',

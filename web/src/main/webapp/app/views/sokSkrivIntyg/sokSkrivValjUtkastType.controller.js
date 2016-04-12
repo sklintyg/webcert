@@ -18,9 +18,10 @@
  */
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
-        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel', 'common.PatientModel',
+        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.IntygFornyaRequestModel',
+        'common.PatientModel', 'common.messageService',
         function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
-            IntygProxy, UtkastProxy, IntygCopyRequestModel, PatientModel) {
+            IntygProxy, UtkastProxy, IntygFornyaRequestModel, IntygCopyRequestModel, PatientModel, messageService) {
             'use strict';
 
             /**
@@ -50,6 +51,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.fornamn = PatientModel.fornamn;
             $scope.mellannamn = PatientModel.mellannamn;
             $scope.efternamn = PatientModel.efternamn;
+            $scope.fornyaTitleText = messageService.getProperty('fk7263.label.fornya.text');
 
             $scope.intygType = 'default';
             $scope.certificateTypeText = '';
@@ -186,6 +188,24 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
                 CommonIntygService.copy($scope.viewState,
                     IntygCopyRequestModel.build({
+                        intygId: cert.intygId,
+                        intygType: cert.intygType,
+                        patientPersonnummer: $scope.personnummer,
+                        nyttPatientPersonnummer: $stateParams.patientId
+                    }),
+                    isOtherCareUnit
+                );
+            };
+
+            $scope.fornyaIntyg = function(cert) {
+                $scope.viewState.createErrorMessageKey = null;
+
+                // We don't have the required info about issuing unit in the supplied 'cert' object, always set to true.
+                // It only affects a piece of text in the Kopiera-dialog anyway.
+                var isOtherCareUnit = true;
+
+                CommonIntygService.fornya($scope.viewState,
+                    IntygFornyaRequestModel.build({
                         intygId: cert.intygId,
                         intygType: cert.intygType,
                         patientPersonnummer: $scope.personnummer,

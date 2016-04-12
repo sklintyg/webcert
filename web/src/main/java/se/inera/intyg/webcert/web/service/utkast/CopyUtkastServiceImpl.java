@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRespons
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -61,7 +64,16 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private PUService personUppgiftsService;
 
     @Autowired
-    private CopyUtkastBuilder utkastBuilder;
+    @Qualifier("copyCompletionUtkastBuilder")
+    private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
+
+    @Autowired
+    @Qualifier("createCopyUtkastBuilder")
+    private CopyUtkastBuilder<CreateCopyRequest> createCopyUtkastBuilder;
+
+    @Autowired
+    @Qualifier("createRenewalUtkastBuilder")
+    private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -78,7 +90,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.dto.
+     * @see
+     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.
+     * dto.
      * CreateNewDraftCopyRequest)
      */
     @Override
@@ -93,6 +107,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             CopyUtkastBuilderResponse builderResponse;
 
             builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
+            // builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId, false);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
@@ -111,7 +126,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.dto.
+     * @see
+     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.
+     * dto.
      * CreateNewDraftCopyRequest)
      */
     @Override
@@ -137,6 +154,37 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.
+     * dto.
+     * CreateRenewalCopyRequest)
+     */
+    @Override
+    public CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest) {
+        String originalIntygId = copyRequest.getOriginalIntygId();
+
+        LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
+
+        try {
+            CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true);
+
+            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+
+            return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+
+        } catch (ModuleException | ModuleNotFoundException me) {
+            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
+
     private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
@@ -151,7 +199,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return savedUtkast;
     }
 
-    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId) throws ModuleNotFoundException, ModuleException {
+    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
+            throws ModuleNotFoundException, ModuleException {
         Person patientDetails = null;
 
         if (!copyRequest.isDjupintegrerad()) {
@@ -160,15 +209,16 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false);
+            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false);
         } else {
-            builderResponse = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
+            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
         }
 
         return builderResponse;
     }
 
-    private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCopyRequest copyRequest, String originalIntygId, boolean addRelation) throws ModuleNotFoundException, ModuleException {
+    private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,
+            boolean addRelation) throws ModuleNotFoundException, ModuleException {
         Person patientDetails = null;
 
         if (!copyRequest.isDjupintegrerad()) {
@@ -177,9 +227,28 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
+            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
         } else {
-            builderResponse = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
+            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
+        }
+
+        return builderResponse;
+    }
+
+    // TODO
+    private CopyUtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId,
+            boolean addRelation) throws ModuleNotFoundException, ModuleException {
+        Person patientDetails = null;
+
+        if (!copyRequest.isDjupintegrerad()) {
+            patientDetails = refreshPatientDetails(copyRequest);
+        }
+
+        CopyUtkastBuilderResponse builderResponse;
+        if (utkastRepository.exists(originalIntygId)) {
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
+        } else {
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
         }
 
         return builderResponse;

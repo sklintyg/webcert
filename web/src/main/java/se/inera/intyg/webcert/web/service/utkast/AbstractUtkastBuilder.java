@@ -24,10 +24,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -51,16 +49,14 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+//import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
-@Component
-public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
-
+public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
 
-    private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastBuilderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateCopyUtkastBuilder.class);
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -74,11 +70,15 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
     @Autowired
     private UtkastRepository utkastRepository;
 
-    /* (non-Javadoc)
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
+    /*
+     * (non-Javadoc)
+     * @see
+     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.
+     * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation)
+            throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -100,7 +100,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
         // Set relation to null if not applicable
-        Relation relation = addRelation ? createRelation((CreateCompletionCopyRequest) copyRequest, RelationKod.KOMPLT) : null;
+        Relation relation = createRelation(copyRequest);
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
@@ -111,7 +111,8 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), intygsTyp, addRelation, relation, draftCopyJson, utkastStatus);
+        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), intygsTyp, addRelation, relation, draftCopyJson,
+                utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -127,12 +128,17 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return builderResponse;
     }
 
-    /* (non-Javadoc)
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
+    public abstract Relation createRelation(T copyRequest);
+
+    /*
+     * (non-Javadoc)
+     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.
+     * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateCopyRequest copyRequest, Person patientDetails, boolean addRelation) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation)
+            throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -150,18 +156,18 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         ModuleApi moduleApi = moduleRegistry.getModuleApi(orgUtkast.getIntygsTyp());
 
         // Set relation to null if not applicable
-        Relation relation = addRelation ? createRelation((CreateCompletionCopyRequest) copyRequest, RelationKod.KOMPLT) : null;
+        Relation relation = createRelation(copyRequest);
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
-                new InternalModelHolder(orgUtkast.getModel()));
+        InternalModelResponse draftResponse = getInternalModel(orgUtkast, moduleApi, draftCopyHolder);
 
         String draftCopyJson = draftResponse.getInternalModel();
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), orgUtkast.getIntygsTyp(), addRelation, relation, draftCopyJson, utkastStatus);
+        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), orgUtkast.getIntygsTyp(), addRelation, relation,
+                draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -176,7 +182,14 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         return builderResponse;
     }
 
-    private Utkast buildUtkastCopy(CreateCopyRequest copyRequest, String utkastId, String utkastTyp, boolean addRelation, Relation relation,
+    protected InternalModelResponse getInternalModel(Utkast orgUtkast, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
+            throws ModuleException {
+        InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
+                new InternalModelHolder(orgUtkast.getModel()));
+        return draftResponse;
+    }
+
+    protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, boolean addRelation, Relation relation,
             String draftCopyJson, UtkastStatus utkastStatus) {
         Utkast utkast = new Utkast();
 
@@ -192,14 +205,6 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         return utkast;
-    }
-
-    private Relation createRelation(CreateCompletionCopyRequest request, RelationKod relationKod) {
-        Relation relation = new Relation();
-        relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(relationKod);
-        relation.setMeddelandeId(request.getMeddelandeId());
-        return relation;
     }
 
     private void enrichWithRelation(Utkast utkast, Relation relation) {
@@ -329,4 +334,5 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
 
         return (ValidationStatus.VALID.equals(validationStatus)) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
     }
+
 }

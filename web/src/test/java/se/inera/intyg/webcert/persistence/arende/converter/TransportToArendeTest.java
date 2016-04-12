@@ -88,14 +88,13 @@ public class TransportToArendeTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
     }
-    
+
     @Test
     public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException{
         Arende arende = buildArende("lisu");
         StringWriter jsonWriter = new StringWriter();
         CustomObjectMapper objectMapper = new CustomObjectMapper();
         objectMapper.writeValue(jsonWriter, arende);
-        System.out.println(jsonWriter.toString());
     }
 
     @Test

@@ -25,11 +25,34 @@ describe('ChooseCertTypeCtrl', function() {
     var IntygProxy;
     var $scope;
     var $location;
+    var CommonIntygServiceSpy;
+    var IntygFornyaRequestModelSpy;
+    var IntygFornyaRequestInstanceMock;
+    var PatientModelMock;
+    var $stateParamsMock;
 
     beforeEach(function(){
 
         module('webcert', function($provide) {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
+            CommonIntygServiceSpy = jasmine.createSpyObj('common.IntygService', ['fornya']);
+            IntygFornyaRequestModelSpy = jasmine.createSpyObj('common.IntygFornyaRequestModel', ['build']);
+            IntygFornyaRequestInstanceMock = {};
+            $stateParamsMock = {
+                patientId: 'PAT-ID-TEST'
+            };
+            PatientModelMock = {
+                sekretessmarkering: '',
+                fornamn: 'Kalle',
+                mellannamn: 'Kula',
+                efternamn: 'Håkansson',
+                personnummer: '19121212-1212',
+                intygType: 'fk7263',
+                postadress: 'Skogsvägen 1',
+                postnummer: '111 22',
+                postort: 'Skogen'
+            };
+            IntygFornyaRequestModelSpy.build.and.returnValue(IntygFornyaRequestInstanceMock);
             $provide.value('common.statService', statService);
 
             UtkastProxy = jasmine.createSpyObj('webcert.UtkastProxy', [ 'getUtkastTypes', 'initCopyDialog' ]);
@@ -38,10 +61,11 @@ describe('ChooseCertTypeCtrl', function() {
             IntygProxy = jasmine.createSpyObj('webcert.IntygProxy', [ 'getIntygForPatient' ]);
             $provide.value('webcert.IntygProxy', IntygProxy);
 
-            $provide.value('common.IntygCopyRequestModel', {});
-            $provide.value('common.IntygService', {});
-            $provide.value('common.PatientModel', {});
+            $provide.value('common.IntygFornyaRequestModel', IntygFornyaRequestModelSpy);
+            $provide.value('common.IntygService', CommonIntygServiceSpy);
+            $provide.value('common.PatientModel', PatientModelMock);
             $provide.value('common.PatientProxy', {});
+            $provide.value('$stateParams', $stateParamsMock);
         });
 
         inject(function($rootScope, _$location_, _$controller_) {
@@ -50,6 +74,35 @@ describe('ChooseCertTypeCtrl', function() {
             $controller = _$controller_;
         });
     });
+
+    describe('förnya intyg', function () {
+        var controller;
+        var cert;
+
+        beforeEach(function() {
+            controller = $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
+            cert = {
+                intygType: 'fk7263',
+                intygId: 'abc123'
+            };
+        });
+
+        it('should förnya intyg', function () {
+            $scope.fornyaIntyg(cert);
+            expect(IntygFornyaRequestModelSpy.build).toHaveBeenCalledWith({
+                intygType: 'fk7263',
+                intygId: 'abc123',
+                patientPersonnummer: '19121212-1212',
+                nyttPatientPersonnummer: 'PAT-ID-TEST'
+            });
+            expect(CommonIntygServiceSpy.fornya).toHaveBeenCalledWith(
+                $scope.viewState,
+                IntygFornyaRequestInstanceMock,
+                true
+            );
+        });
+    });
+
 
     describe('openIntyg', function() {
 
@@ -75,5 +128,5 @@ describe('ChooseCertTypeCtrl', function() {
             $scope.openIntyg(cert);
             expect($location.path()).toBe('/intyg/' + cert.intygType + '/' + cert.intygId);
         });
-    }) ;
+    });
 });
