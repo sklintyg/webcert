@@ -782,6 +782,34 @@
       </build>
     </profile>
 
+    <profile>
+      <id>v4.1</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-release-features</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <copy
+                        file="${project.basedir}/../src/main/releases/v4.1/features.properties"
+                        tofile="${project.build.outputDirectory}/features.properties"
+                        overwrite="true" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <!-- integration-test profile that overrides project default test execution flags.
       This will also trigger the startup of jetty in preparation of integration-test execution.
       -->

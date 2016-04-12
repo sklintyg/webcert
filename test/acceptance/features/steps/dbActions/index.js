@@ -17,64 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, wcTestTools, Promise */
+/* globals logger */
 
 'use strict';
-var mysql = require('mysql');
-var testdataHelper = wcTestTools.helpers.testdata;
-
-function formatDate(date) {
-    var time = ((date.getHours() < 10) ? '0' : '') +
-        date.getHours() + ':' +
-        ((date.getMinutes() < 10) ? '0' : '') +
-        date.getMinutes() + ':' +
-        ((date.getSeconds() < 10) ? '0' : '') + date.getSeconds();
-    return testdataHelper.dateFormat(date) + 'T' + time;
-}
 
 module.exports = {
-    makeConnection: function() {
-        if (!process.env.DATABASE_PASSWORD) {
-            throw 'Miljövariabel DATABASE_PASSWORD saknas';
-        }
-        return mysql.createConnection({
-            host: process.env.DATABASE_HOST,
-            user: process.env.DATABASE_USER,
-            password: process.env.DATABASE_PASSWORD,
-            database: process.env.DATABASE_NAME,
-            multipleStatements: true
-        });
-    },
-    getLogEntries: function(activity, intygsID, lakareID) {
-        var conn = this.makeConnection();
-
-        var dbTable = 'webcert_requests.storelog__mock_requests';
-        // var oneMinuteSinceNow = '2017-03-17 06:42:10';
-        var now = new Date();
-        var oneMinuteSinceNow = new Date(now.getTime() + (-1) * 60000);
-        oneMinuteSinceNow = formatDate(oneMinuteSinceNow);
-
-        var query = 'SELECT * FROM ' + dbTable + ' where ' +
-            ' activityLevel = "' + intygsID + '"' +
-            ' AND activitytype = "' + activity + '"' +
-            ' AND userid = "' + lakareID + '"' +
-            ' AND logtime>="' + oneMinuteSinceNow + '"';
-
-        logger.info('query: ' + query);
-        var p1 = new Promise(function(resolve, reject) {
-            conn.connect();
-            conn.query(query,
-                function(err, rows, fields) {
-                    conn.end();
-                    if (err) {
-                        reject(err);
-                    }
-                    resolve(rows);
-                });
-        });
-        return p1;
-    },
-
+    makeConnection: require('./makeConnection'),
+    storeLog: require('./storeLog'),
     removeCert: function(intygsId, cb) {
         var envName = 'ip30';
 

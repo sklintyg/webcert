@@ -65,4 +65,11 @@ module.exports = function() {
             .then(callback);
     });
 
+
+    this.Given(/^jag skriver ut intyget$/, function(callback) {
+        fkIntygPage.skrivUtFullstandigtIntyg().then(function() {
+            callback();
+        });
+    });
+
 };

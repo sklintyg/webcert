@@ -17,17 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg */
+
 'use strict';
-var db = require('./dbActions');
-
+var mysql = require('mysql');
 module.exports = function() {
-
-    this.Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten$/, function(activity, callback) {
-        db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, callback);
-    });
-
-    this.Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity, callback) {
-        db.storeLog.waitForCount(activity, count, intyg.id, global.user.hsaId, callback);
+    if (!process.env.DATABASE_PASSWORD) {
+        throw 'Miljövariabel DATABASE_PASSWORD saknas';
+    }
+    return mysql.createConnection({
+        host: process.env.DATABASE_HOST,
+        user: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE_NAME,
+        multipleStatements: true
     });
 };
