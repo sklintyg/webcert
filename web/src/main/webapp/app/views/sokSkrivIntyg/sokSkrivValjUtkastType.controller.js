@@ -19,9 +19,9 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.IntygFornyaRequestModel',
-        'common.PatientModel',
+        'common.PatientModel', 'common.messageService',
         function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
-            IntygProxy, UtkastProxy, IntygFornyaRequestModel, IntygCopyRequestModel, PatientModel) {
+            IntygProxy, UtkastProxy, IntygFornyaRequestModel, IntygCopyRequestModel, PatientModel, messageService) {
             'use strict';
 
             /**
@@ -51,6 +51,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.fornamn = PatientModel.fornamn;
             $scope.mellannamn = PatientModel.mellannamn;
             $scope.efternamn = PatientModel.efternamn;
+            $scope.fornyaTitleText = messageService.getProperty('fk7263.label.fornya.text');
 
             $scope.intygType = 'default';
             $scope.certificateTypeText = '';

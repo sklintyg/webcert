@@ -128,7 +128,7 @@
                       ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
                       class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
                       intygstyp="{{cert.intygType}}"
-                      title="Förnyelse utav intyg skapar ett nytt intygsutkast från det ursprungliga intyget. Det förnyade utkastet kan ändras och signeras."
+                      title="{{fornyaTitleText}}"
                       ng-click="fornyaIntyg(cert)" id="fornyaBtn-{{cert.intygId}}">
                     Förnya
                   </button>
