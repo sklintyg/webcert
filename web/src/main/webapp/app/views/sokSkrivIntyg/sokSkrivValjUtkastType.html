@@ -3,9 +3,6 @@
     <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
       <div class="row">
         <div class="col-xs-12">
-        <button type="button" class="btn btn-link pull-right" ng-click="setTestMode();">
-          {{testModeActive ? testModeText.active : testModeText.inactive}}
-        </button>
         <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
           <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
           <h1>Sök/skriv intyg</h1>
@@ -19,13 +16,38 @@
             <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
           </div>
 
-          <wc-prototype>
-            <select ng-model="selectedTemplate" ng-options="t.name for t in prototypes.templates" class="proto-selector" ng-show="testModeActive == true" >
-            </select>
-            <div class="slide-animate-container">
-              <div class="slide-animate" ng-include="selectedTemplate.url" onload="resetPrototype();"></div>
+          <!-- New cert -->
+          <div class="webcert-col-section qa-table-section">
+            <div class="form-group">
+              <label for="intygType" class="control-label">Skriv nytt intyg</label>
+              <div ng-show="!sekretessmarkering">
+                <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType"
+                        data-ng-options="type.id as type.label for type in certTypes" wc-focus-me="focusFirstInput"></select>
+
+              </div>
             </div>
-          </wc-prototype>
+            <div ng-show="!sekretessmarkering" class="form-group" id="fortsattBtn">
+              <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
+                      ng-disabled="intygType == 'default'">Fortsätt
+              </button>
+            </div>
+            <div ng-if="sekretessmarkering" class="form-group">
+              <div class="alert alert-warning col-lg-7" id="sekretessmarkering">
+                <span message key='label.createutkast.sekretessmarkering'></span>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+
+            <!-- error message -->
+            <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+              <span message key="{{viewState.createErrorMessageKey}}"></span>
+            </div>
+
+            <div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined" id="intygTypeWarning">
+              <span message key='{{"certificatetypes."+ intygType +".helptext"}}'></span>
+            </div>
+          </div>
+
 
         </form>
       </div>
