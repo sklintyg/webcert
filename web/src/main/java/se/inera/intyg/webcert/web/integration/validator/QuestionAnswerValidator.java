@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.integration.validator;
 
 import iso.v21090.dt.v1.II;
 import org.apache.commons.lang.StringUtils;
+
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
@@ -30,7 +32,6 @@ import se.inera.intyg.common.schemas.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public final class QuestionAnswerValidator {
 
@@ -42,6 +43,7 @@ public final class QuestionAnswerValidator {
         if (request.getAnswer().getSvar() == null) {
             messages.add("Missing svar element.");
         }
+        validateAmne(messages, request.getAnswer().getAmne());
 
         LakarutlatandeEnkelType lakarutlatande = request.getAnswer().getLakarutlatande();
         validateLakarutlatande(messages, lakarutlatande);
@@ -61,6 +63,7 @@ public final class QuestionAnswerValidator {
         if (request.getQuestion().getFraga() == null) {
             messages.add("Missing fraga element.");
         }
+        validateAmne(messages, request.getQuestion().getAmne());
 
         LakarutlatandeEnkelType lakarutlatande = request.getQuestion().getLakarutlatande();
         validateLakarutlatande(messages, lakarutlatande);
@@ -78,6 +81,12 @@ public final class QuestionAnswerValidator {
     private static void validateLakarutlatande(List<String> messages, LakarutlatandeEnkelType lakarutlatande) {
         if (StringUtils.isEmpty(lakarutlatande.getLakarutlatandeId())) {
             messages.add("Intygsid är tom eller saknas");
+        }
+    }
+
+    private static void validateAmne(List<String> messages, Amnetyp amne) {
+        if (amne == null) {
+            messages.add("Amne är felaktigt");
         }
     }
 
