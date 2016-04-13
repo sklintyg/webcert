@@ -72,6 +72,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.intyg.
      * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
@@ -104,8 +105,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
-                new InternalModelHolder(signedIntygHolder.getContents()));
+        InternalModelResponse draftResponse = getInternalModel(signedIntygHolder.getContents(), moduleApi, draftCopyHolder);
 
         String draftCopyJson = draftResponse.getInternalModel();
 
@@ -132,7 +132,9 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
     /*
      * (non-Javadoc)
-     * @see se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.intyg.
      * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
@@ -160,7 +162,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        InternalModelResponse draftResponse = getInternalModel(orgUtkast, moduleApi, draftCopyHolder);
+        InternalModelResponse draftResponse = getInternalModel(orgUtkast.getModel(), moduleApi, draftCopyHolder);
 
         String draftCopyJson = draftResponse.getInternalModel();
 
@@ -182,10 +184,10 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         return builderResponse;
     }
 
-    protected InternalModelResponse getInternalModel(Utkast orgUtkast, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
+    protected InternalModelResponse getInternalModel(String jsonModel, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
             throws ModuleException {
         InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
-                new InternalModelHolder(orgUtkast.getModel()));
+                new InternalModelHolder(jsonModel));
         return draftResponse;
     }
 

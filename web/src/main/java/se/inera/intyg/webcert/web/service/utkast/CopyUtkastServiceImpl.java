@@ -248,7 +248,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
         } else {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
         }
 
         return builderResponse;
