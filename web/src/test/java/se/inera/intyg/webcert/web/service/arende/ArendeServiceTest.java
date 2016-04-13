@@ -43,12 +43,10 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -388,9 +386,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         }
         ArendeView view = ArendeView.builder().setAmne(ArendeAmne.ARBTID).setArendeType(arendeType).setInternReferens(meddelandeId)
                 .setIntygId("intyg-1").setStatus(Status.PENDING_INTERNAL_ACTION).setMeddelandeRubrik("rubrik").setSvarPaId(svarPaId)
-                .setTimestamp(timestamp).setVidarebefordrad(false).setPaminnelseMeddelandeId(paminnelseMeddelandeId).setSvarPaId(svarPaId).
-
-        build();
+                .setTimestamp(timestamp).setVidarebefordrad(false).setPaminnelseMeddelandeId(paminnelseMeddelandeId).setSvarPaId(svarPaId)
+                .build();
 
         return view;
     }
@@ -604,6 +601,18 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(intygId1, response.getResults().get(0).getIntygId());
         assertEquals(intygId2, response.getResults().get(1).getIntygId());
         assertEquals(intygId3, response.getResults().get(2).getIntygId());
+    }
+
+    @Test
+    public void testGetArende() {
+        final String meddelandeId = "med0123";
+        final Long id = 1L;
+        Arende arende = buildArende(id, LocalDateTime.now(), null);
+
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
+
+        Arende res = service.getArende(meddelandeId);
+        assertEquals(id, res.getId());
     }
 
     private Arende buildArende(Long id, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {

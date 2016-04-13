@@ -19,14 +19,22 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @Component
 public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCompletionCopyRequest> {
+
+    @Autowired
+    ArendeService arendeService;
 
     @Override
     public Relation createRelation(CreateCompletionCopyRequest copyRequest) {
@@ -38,6 +46,15 @@ public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCom
         relation.setRelationIntygsId(request.getOriginalIntygId());
         relation.setRelationKod(relationKod);
         relation.setMeddelandeId(request.getMeddelandeId());
+        relation.setReferensId(getArendeReferensId(request.getMeddelandeId(), request.getTyp()));
         return relation;
+    }
+
+    private String getArendeReferensId(String meddelandeId, String intygsTyp) {
+        if (StringUtils.isNotEmpty(meddelandeId) && !intygsTyp.equals(CertificateTypes.FK7263.toString())) {
+            Arende arende = arendeService.getArende(meddelandeId);
+            return arende != null ? arende.getReferensId() : null;
+        }
+        return null;
     }
 }

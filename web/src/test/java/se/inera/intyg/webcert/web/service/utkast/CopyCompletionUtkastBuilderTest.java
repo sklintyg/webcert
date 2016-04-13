@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.service.utkast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
@@ -36,6 +36,7 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -44,20 +45,23 @@ import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.integration.pu.model.Person;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateCopyUtkastBuilderImplTest {
+public class CopyCompletionUtkastBuilderTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
@@ -71,8 +75,6 @@ public class CreateCopyUtkastBuilderImplTest {
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";
 
-    private static final Personnummer PATIENT_NEW_SSN = new Personnummer("19121212-1414");
-
     private static final String VARDENHET_ID = "SE00001234-5678";
     private static final String VARDENHET_NAME = "Vårdenheten 1";
 
@@ -81,6 +83,7 @@ public class CreateCopyUtkastBuilderImplTest {
 
     private static final String HOSPERSON_ID = "SE12345678-0001";
     private static final String HOSPERSON_NAME = "Dr Börje Dengroth";
+    private static final String MEDDELANDE_ID = "13";
 
     @Mock
     private IntygService mockIntygService;
@@ -90,6 +93,9 @@ public class CreateCopyUtkastBuilderImplTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private ArendeService arendeService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -106,7 +112,7 @@ public class CreateCopyUtkastBuilderImplTest {
     private Vardenhet vardenhet;
 
     @InjectMocks
-    private CreateCopyUtkastBuilder copyBuilder = new CreateCopyUtkastBuilder();
+    private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
 
     @Before
     public void setup() {
@@ -131,12 +137,13 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test
-    public void testPopulateCopyUtkastFromSignedIntyg() throws Exception {
+    public void testPopulateCompletionFromSignedIntyg() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
+        copyRequest.setMeddelandeId("meddelandeId");
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
@@ -145,7 +152,7 @@ public class CreateCopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
+        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -155,15 +162,18 @@ public class CreateCopyUtkastBuilderImplTest {
         assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
 
+        assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
     @Test
-    public void testPopulateCopyUtkastFromOriginal() throws Exception {
+    public void testPopulateCompletionFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
+
+        copyRequest.setMeddelandeId("meddelandeId");
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
@@ -172,7 +182,7 @@ public class CreateCopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false);
+        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -181,92 +191,72 @@ public class CreateCopyUtkastBuilderImplTest {
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+
+        assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
     @Test
-    public void testPopulateCopyUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
+    public void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
+        final String intygsTyp = CertificateTypes.LUSE.toString();
+        final String meddelandeId = "meddelandeId";
+        final String referensId = UUID.randomUUID().toString();
+        Arende arende = new Arende();
+        arende.setReferensId(referensId);
+        when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
+        when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp)).thenReturn(createIntygContentHolder());
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(new InternalModelResponse(INTYG_JSON));
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
+        when(arendeService.getArende(meddelandeId)).thenReturn(arende);
 
-        Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+        CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
+        copyRequest.setMeddelandeId(meddelandeId);
+        copyRequest.setTyp(intygsTyp);
+        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
-        copyRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
-        copyRequest.setDjupintegrerad(true);
+        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
 
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
+        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), any(InternalModelHolder.class));
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
-
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, null, false);
-
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_NEW_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
-        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(createDraftCopyHolderCaptor.getValue());
+        assertEquals(meddelandeId, createDraftCopyHolderCaptor.getValue().getRelation().getMeddelandeId());
+        assertEquals(RelationKod.KOMPLT, createDraftCopyHolderCaptor.getValue().getRelation().getRelationKod());
+        assertEquals(referensId, createDraftCopyHolderCaptor.getValue().getRelation().getReferensId());
+        assertEquals(INTYG_ID, createDraftCopyHolderCaptor.getValue().getRelation().getRelationIntygsId());
     }
 
     @Test
-    public void testPopulateCopyUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
+    public void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
+        final String intygsTyp = CertificateTypes.LISU.toString();
+        final String meddelandeId = "meddelandeId";
+        final String referensId = UUID.randomUUID().toString();
+        Arende arende = new Arende();
+        arende.setReferensId(referensId);
+        when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
+        when(arendeService.getArende(meddelandeId)).thenReturn(arende);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(new InternalModelResponse(INTYG_JSON));
 
-        IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
+        CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
+        copyRequest.setMeddelandeId(meddelandeId);
+        copyRequest.setTyp(intygsTyp);
+        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
 
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
+        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), any(InternalModelHolder.class));
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
-
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, null, false);
-
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals("Test", builderResponse.getUtkastCopy().getPatientFornamn());
-        assertNull(builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals("Testorsson", builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(createDraftCopyHolderCaptor.getValue());
+        assertEquals(meddelandeId, createDraftCopyHolderCaptor.getValue().getRelation().getMeddelandeId());
+        assertEquals(RelationKod.KOMPLT, createDraftCopyHolderCaptor.getValue().getRelation().getRelationKod());
+        assertEquals(referensId, createDraftCopyHolderCaptor.getValue().getRelation().getReferensId());
+        assertEquals(INTYG_ID, createDraftCopyHolderCaptor.getValue().getRelation().getRelationIntygsId());
     }
 
-    @Test
-    public void testExtractNamePartsFromFullName() {
-
-        String[] res = copyBuilder.extractNamePartsFromFullName(null);
-        assertNotNull(res);
-
-        res = copyBuilder.extractNamePartsFromFullName("");
-        assertNotNull(res);
-
-        res = copyBuilder.extractNamePartsFromFullName("  ");
-        assertNotNull(res);
-        assertEquals("", res[0]);
-        assertEquals("", res[1]);
-
-        res = copyBuilder.extractNamePartsFromFullName("Adam");
-        assertNotNull(res);
-        assertEquals("Adam", res[0]);
-        assertEquals("", res[1]);
-
-        res = copyBuilder.extractNamePartsFromFullName("Adam Caesarsson");
-        assertNotNull(res);
-        assertEquals("Adam", res[0]);
-        assertEquals("Caesarsson", res[1]);
-
-        res = copyBuilder.extractNamePartsFromFullName("Adam Bertil Caesarsson");
-        assertNotNull(res);
-        assertEquals("Adam Bertil", res[0]);
-        assertEquals("Caesarsson", res[1]);
-    }
-
-    private CreateNewDraftCopyRequest buildCopyRequest() {
-        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson, vardenhet);
+    private CreateCompletionCopyRequest buildCompletionRequest() {
+        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, PATIENT_SSN, hoSPerson, vardenhet);
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {

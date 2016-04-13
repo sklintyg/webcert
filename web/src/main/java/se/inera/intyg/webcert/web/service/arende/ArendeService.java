@@ -53,4 +53,6 @@ public interface ArendeService {
      * Close Arende and set status 'CLOSED'.
      */
     Arende closeArendeAsHandled(String meddelandeId);
+
+    Arende getArende(String meddelandeId);
 }
