@@ -32,9 +32,7 @@ var proxy = new HttpBackend(browser);
 
 var texts = require('../../webcertTestTools/testdata/luse_questions.json');
 
-// Denna testsvit breakar alla följande protractor tester och jag kan inte
-// lista ut varför. Var god försök!
-xdescribe('Luse tillaggsfragor variants', function() {
+describe('Luse tillaggsfragor variants', function() {
     it('Login through the welcome page with user', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
@@ -51,6 +49,7 @@ xdescribe('Luse tillaggsfragor variants', function() {
                 'textVersion':'0.9','underlag':[],'diagnoser':[],'tillaggsfragor':[{'id':'9001','svar':'50'},{'id':'9002','svar':'200cm'}],'typ':'luse'}};
 
         afterEach(function () {
+            proxy.onLoad.reset();
             browser.clearMockModules();
         });
 
@@ -69,8 +68,6 @@ xdescribe('Luse tillaggsfragor variants', function() {
         function textResponse(method, url) {
             // Note: This method is run in the browser
             var version = url.split('?')[0].split('/')[5];
-            console.log('2...');
-            console.log(version);
             var texts = $httpBackend.context.texts;
             if (version === '1.0') {
                 texts.tillaggsfragor = [
@@ -81,7 +78,7 @@ xdescribe('Luse tillaggsfragor variants', function() {
         }
 
         it('textversion is 0.9, there are 2 tillaggsfragor', function () {
-            utkastData.latestTextVersion = '0.9';
+            proxy.context.utkastData.latestTextVersion = '0.9';
             proxy.syncContext();
             proxy.onLoad.whenGET(new RegExp('/moduleapi/utkast/luse/' + intygsId + '.*')).respond(utkastResponse);
             proxy.onLoad.whenGET(new RegExp('/api/utkast/questions/luse/.*')).respond(textResponse);
@@ -99,7 +96,7 @@ xdescribe('Luse tillaggsfragor variants', function() {
         });
 
         it('textversion has been updated to 1.0', function () {
-            utkastData.latestTextVersion = '1.0';
+            proxy.context.utkastData.latestTextVersion = '1.0';
             proxy.syncContext();
             proxy.onLoad.whenGET(new RegExp('/moduleapi/utkast/luse/' + intygsId + '.*')).respond(utkastResponse);
             proxy.onLoad.whenGET(new RegExp('/api/utkast/questions/luse/.*')).respond(textResponse);
