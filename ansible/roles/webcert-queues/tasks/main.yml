@@ -18,6 +18,6 @@
 - name: configure aggreagated logging DLQ
   lineinfile:
     dest="{{ activemq_conf }}/activemq.xml"
-    regexp=".*<policyEntry queue='{{ environment_name }}.aggregated.webcert.log.queue'>"
+    regexp=".*<policyEntry queue='{{ environment_name }}.webcert.aggregated.log.queue'>"
     insertbefore=".*</policyEntries>"
-    line="                <policyEntry queue='{{ environment_name }}.aggregated.webcert.log.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true' enableAudit='false'/></deadLetterStrategy></policyEntry>"
+    line="                <policyEntry queue='{{ environment_name }}.webcert.aggregated.log.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true' enableAudit='false'/></deadLetterStrategy></policyEntry>"

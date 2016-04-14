@@ -42,14 +42,14 @@
     dest="{{ tomcat_conf }}/context.xml"
     regexp="    <Resource name='jms/AggregatedLogSenderQueue'"
     insertbefore="</Context>"
-    line="    <Resource name='jms/AggregatedLogSenderQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.aggregated.webcert.log.queue' />"
+    line="    <Resource name='jms/AggregatedLogSenderQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.aggregated.log.queue' />"
 
 - name: configure PDL aggregated logging dead letter queue (DLQ)
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"
     regexp="    <Resource name='jms/AggregatedLogSenderDLQ'"
     insertbefore="</Context>"
-    line="    <Resource name='jms/AggregatedLogSenderDLQ' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Dead Letter Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='DLQ.{{ environment_name }}.aggregated.webcert.log.queue' />"
+    line="    <Resource name='jms/AggregatedLogSenderDLQ' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Dead Letter Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='DLQ.{{ environment_name }}.webcert.aggregated.log.queue' />"
 
 
 - name: configure notification queue
