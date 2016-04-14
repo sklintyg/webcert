@@ -20,7 +20,7 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-/* globals browser, Promise */
+/* globals browser, protractor */
 
 'use strict';
 
@@ -30,6 +30,7 @@ var SokSkrivIntyg = WebcertBasePage._extend({
     init: function init() {
         init._super.call(this);
 
+        this.at = element(by.id('skapa-valj-patient'));
         this.personnummer = element(by.id('pnr'));
         this.pnButton = element(by.id('skapapersonnummerfortsatt'));
         this.sekretessmarkering = element(by.id('sekretessmarkering'));
@@ -37,6 +38,7 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         this.fornamn = element(by.id('fornamn'));
         this.efternamn = element(by.id('efternamn'));
         this.namnFortsatt = element(by.id('namnFortsatt'));
+        this.intygLista = element(by.id('intygLista'));
     },
     get: function() {
         browser.get('web/dashboard#/create/choose-cert-type/index');
@@ -45,10 +47,13 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         return this.personnummer.sendKeys(pn);
     },
     selectPersonnummer: function(pn) {
-        return Promise.all([
-            this.setPersonnummer(pn),
-            this.pnButton.click()
+        return protractor.promise.all([
+            this.setPersonnummer(pn).then(),
+            this.pnButton.click().then()
         ]);
+    },
+    isAt: function() {
+        return this.at.isDisplayed();
     }
 });
 

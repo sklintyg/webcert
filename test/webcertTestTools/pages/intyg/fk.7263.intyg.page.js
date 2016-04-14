@@ -118,6 +118,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
 
         this.copyBtn = element(by.id('copyBtn'));
+        this.fornyaBtn = element(by.id('fornyaBtn'));
 
         this.prognosGIAB = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
         this.prognosN = element(by.id('arbetsformataPrognosNej'));

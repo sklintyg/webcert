@@ -85,24 +85,28 @@ var FkUtkast = BaseUtkast._extend({
 
         this.nedsatt = {
             med25: {
-                checkbox: element(by.id('nedsattMed25')),
-                from: element(by.id('nedsattMed25from')),
-                tom: element(by.id('nedsattMed25tom'))
+                checkbox: function () { return element(by.id('nedsattMed25')); },
+                from: function () { return element(by.id('nedsattMed25from')); },
+                tom: function () { return element(by.id('nedsattMed25tom')); },
+                alert: function () { return element(by.id('nedsattMed25Alert')); }
             },
             med50: {
-                checkbox: element(by.id('nedsattMed50')),
-                from: element(by.id('nedsattMed50from')),
-                tom: element(by.id('nedsattMed50tom'))
+                checkbox: function () { return element(by.id('nedsattMed50')); },
+                from: function () { return element(by.id('nedsattMed50from')); },
+                tom: function () { return element(by.id('nedsattMed50tom')); },
+                alert: function () { return element(by.id('nedsattMed50Alert')); }
             },
             med75: {
-                checkbox: element(by.id('nedsattMed75')),
-                from: element(by.id('nedsattMed75from')),
-                tom: element(by.id('nedsattMed75tom'))
+                checkbox: function () { return element(by.id('nedsattMed75')); },
+                from: function () { return element(by.id('nedsattMed75from')); },
+                tom: function () { return element(by.id('nedsattMed75tom')); },
+                alert: function () { return element(by.id('nedsattMed75Alert')); }
             },
             med100: {
-                checkbox: element(by.id('nedsattMed100')),
-                from: element(by.id('nedsattMed100from')),
-                tom: element(by.id('nedsattMed100tom'))
+                checkbox: function () { return element(by.id('nedsattMed100')); },
+                from: function () { return element(by.id('nedsattMed100from')); },
+                tom: function () { return element(by.id('nedsattMed100tom')); },
+                alert: function () { return element(by.id('nedsattMed100Alert')); }
             }
         };
         this.baserasPa = {
@@ -149,7 +153,7 @@ var FkUtkast = BaseUtkast._extend({
         this.smittskyddCheckbox.sendKeys(protractor.Key.SPACE);
     },
     nedsattMed25CheckboxClick: function() {
-        this.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
+        return this.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE);
     },
     travelRadioButtonJaClick: function() {
         this.travelRadioButtonJa.sendKeys(protractor.Key.SPACE);

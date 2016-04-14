@@ -43,6 +43,10 @@ var BaseIntyg = JClass._extend({
             button: element(by.id('copyBtn')),
             dialogConfirmButton: element(by.id('button1copy-dialog'))
         };
+        this.fornya = {
+            button: element(by.id('fornyaBtn')),
+            dialogConfirmButton: element(by.id('button1fornya-dialog'))
+        };
         this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
         // element(by.css('.btn.btn-info'))
@@ -58,6 +62,9 @@ var BaseIntyg = JClass._extend({
     },
     copyDialogConfirmBtn: function() {
         return this.copy.dialogConfirmButton;
+    },
+    fornyaDialogConfirmBtn: function() {
+        return this.fornya.dialogConfirmButton;
     },
     skrivUtFullstandigtIntyg: function() {
         return element(by.cssContainingText('button', 'Skriv ut')).sendKeys(protractor.Key.SPACE).then(function() {

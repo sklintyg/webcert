@@ -42,6 +42,9 @@ module.exports = {
     selectIntygTypeByLabel: function(val) {
         return intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
     },
+    clickFornyaBtnById: function (id) {
+        return element(by.id('fornyaBtn-' + id)).click();
+    },
     intygTypeSelector: intygTypeSelector,
     intygTypeButton: intygTypeButton
 };
