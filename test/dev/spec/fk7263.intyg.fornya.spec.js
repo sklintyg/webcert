@@ -88,10 +88,10 @@ describe('Generate fk intyg', function() {
         it('should set capacity for work based on previous intyg last effective date', function () {
             FkUtkastPage.nedsattMed25CheckboxClick()
                 .then(function () {
-                    expect(FkUtkastPage.nedsatt.med25.alert().isPresent()).toBe(true);
+                    expect(FkUtkastPage.nedsatt.med25.alert.isPresent()).toBe(true);
                     return protractor.promise.all([
-                        FkUtkastPage.nedsatt.med25.alert().evaluate('lastEffectiveDate').then(),
-                        FkUtkastPage.nedsatt.med25.from().getAttribute('value').then()
+                        FkUtkastPage.nedsatt.med25.alert.evaluate('lastEffectiveDate').then(),
+                        FkUtkastPage.nedsatt.med25.from.getAttribute('value').then()
                     ]);
                 })
                 .then(function (dateStrings) {
