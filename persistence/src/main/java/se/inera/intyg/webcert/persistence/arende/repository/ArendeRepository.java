@@ -46,6 +46,24 @@ public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRep
     Arende findOneByMeddelandeId(String meddelandeId);
 
     /**
+     * Returns all answers to the {@link Arende} of the given meddelandeId.
+     *
+     * @param svarPaId the meddelandeId to find answers to
+     * @return a list of {@link Arende} matching the search criteria. If no entities are found, this method returns
+     *         an empty list.
+     */
+    List<Arende> findBySvarPaId(String svarPaId);
+
+    /**
+     * Returns all reminders to the {@link Arende} of the given meddelandeId.
+     *
+     * @param paminnelseMeddelandeId the meddelandeId to find reminders to
+     * @return a list of {@link Arende} matching the search criteria. If no entities are found, this method returns
+     *         an empty list.
+     */
+    List<Arende> findByPaminnelseMeddelandeId(String paminnelseMeddelandeId);
+
+    /**
      * List all unique signing doctors for the supplied units.
      *
      * @return a list of names

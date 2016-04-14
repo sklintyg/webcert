@@ -17,17 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.certificatesender;
+package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 
-/**
- * Created by eriklupander on 2015-05-20.
- */
-public interface CertificateSenderService {
+public class CreateMessageParameter {
 
-    void storeCertificate(String intygsId, String intygsTyp, String jsonBody) throws CertificateSenderException;
-    void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) throws CertificateSenderException;
-    void revokeCertificate(String intygsId, String xmlBody) throws CertificateSenderException;
-    void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
+    private ArendeAmne amne;
+    private String rubrik;
+    private String meddelande;
+
+    public ArendeAmne getAmne() {
+        return amne;
+    }
+
+    public void setAmne(ArendeAmne amne) {
+        this.amne = amne;
+    }
+
+    public String getRubrik() {
+        return rubrik;
+    }
+
+    public void setRubrik(String rubrik) {
+        this.rubrik = rubrik;
+    }
+
+    public String getMeddelande() {
+        return meddelande;
+    }
+
+    public void setMeddelande(String meddelande) {
+        this.meddelande = meddelande;
+    }
+
 }

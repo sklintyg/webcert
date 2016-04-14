@@ -69,6 +69,10 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         jmsTemplate.send(new RevokeCertificateMessageCreator(intygsId, xmlBody, logicalAddress));
     }
 
+    @Override
+    public void sendMessageToRecipient(String intygsId, String xmlBody) {
+        jmsTemplate.send(new SendMessageToRecipientMessageCreator(intygsId, xmlBody, logicalAddress));
+    }
 
     static final class StoreCertificateMessageCreator implements MessageCreator {
 
@@ -141,6 +145,29 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             Message message = session.createTextMessage(xmlBody);
             message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE);
+
+            message.setStringProperty(Constants.INTYGS_ID, intygsId);
+            message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
+            return message;
+        }
+    }
+
+    static final class SendMessageToRecipientMessageCreator implements MessageCreator {
+        private final String intygsId;
+        private final String xmlBody;
+        private final String logicalAddress;
+
+        private SendMessageToRecipientMessageCreator(String intygsId, String xmlBody, String logicalAddress) {
+            this.intygsId = intygsId;
+            this.xmlBody = xmlBody;
+            this.logicalAddress = logicalAddress;
+        }
+
+        @Override
+        public Message createMessage(Session session) throws JMSException {
+            Message message = session.createTextMessage(xmlBody);
+            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
+            message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);

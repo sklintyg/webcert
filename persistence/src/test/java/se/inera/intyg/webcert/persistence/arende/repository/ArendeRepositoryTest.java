@@ -495,6 +495,30 @@ public class ArendeRepositoryTest {
         assertEquals(3, result);
     }
 
+    @Test
+    public void testFindBySvarPaId() {
+        Arende fraga = repo.save(buildArende());
+        Arende svar = buildArende();
+        svar.setSvarPaId(fraga.getMeddelandeId());
+        repo.save(svar);
+
+        List<Arende> result = repo.findBySvarPaId(fraga.getMeddelandeId());
+        assertEquals(1, result.size());
+        assertEquals(svar.getMeddelandeId(), result.get(0).getMeddelandeId());
+    }
+
+    @Test
+    public void testFindByPaminnelseMeddelandeId() {
+        Arende fraga = repo.save(buildArende());
+        Arende paminnelse = buildArende();
+        paminnelse.setPaminnelseMeddelandeId(fraga.getMeddelandeId());
+        repo.save(paminnelse);
+
+        List<Arende> result = repo.findByPaminnelseMeddelandeId(fraga.getMeddelandeId());
+        assertEquals(1, result.size());
+        assertEquals(paminnelse.getMeddelandeId(), result.get(0).getMeddelandeId());
+    }
+
     private Arende buildArende() {
         return buildArende("SIGNERAT_AV", "SIGNERAT_AV_NAMN", "ENHET");
     }

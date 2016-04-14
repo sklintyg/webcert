@@ -173,6 +173,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.ARENDE_RECEIVED, subject, intygsId, intygsTyp, unitHsaId);
     }
 
+    @Override
+    public void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, String subject) {
+        logEvent(MonitoringEvent.ARENDE_CREATED, subject, intygsId, intygsTyp, unitHsaId);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -209,7 +214,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'"),
-        ARENDE_RECEIVED("Received arende with subject '{}' for '{}' of type '{}' for unit '{}'");
+        ARENDE_RECEIVED("Received arende with subject '{}' for '{}' of type '{}' for unit '{}'"),
+        ARENDE_CREATED("Created arende with subject '{}' for '{}' of type '{}' for unit '{}'");
 
         private final String msg;
 

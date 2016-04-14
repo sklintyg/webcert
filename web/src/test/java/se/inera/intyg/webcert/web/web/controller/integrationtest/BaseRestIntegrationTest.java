@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,6 +42,8 @@ import com.jayway.restassured.response.Response;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
@@ -192,7 +194,7 @@ public abstract class BaseRestIntegrationTest {
         final String utkastId = createUtkast(intygsTyp, patientPersonNummer);
 
         // ..then "fake" it to be signed. Maybe we should set more signature related metadata?
-        given().pathParam("intygsId", utkastId).expect().statusCode(200).when().put("testability/intyg/{intygsId}/signerat");
+        given().pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId()).expect().statusCode(200).when().put("testability/intyg/{intygsId}/signerat");
 
         return utkastId;
     }
@@ -220,7 +222,7 @@ public abstract class BaseRestIntegrationTest {
 
     /**
      * Inserts a question for an existing certificate
-     * 
+     *
      * @param intygsType
      *            type to create
      * @param patientPersonNummer
@@ -239,8 +241,28 @@ public abstract class BaseRestIntegrationTest {
     }
 
     /**
+     * Inserts a question of type arende for an existing certificate
+     *
+     * @param intygsType
+     *            type to create
+     * @param patientPersonNummer
+     *            patient to create it for
+     * @return
+     */
+    protected String createArendeQuestion(String typ, String intygId, String personnummer) {
+        Arende arende = createTestArendeQuestion(typ, intygId, personnummer);
+
+        Response response = given().contentType(ContentType.JSON)
+                .body(arende).expect().statusCode(200).when()
+                .post("testability/questions/arende").then().extract().response();
+
+        JsonPath model = new JsonPath(response.body().asString());
+        return model.get("meddelandeId");
+    }
+
+    /**
      * Removes a question after using it for a test
-     * 
+     *
      * @param internId
      *            internal id of the question to remove
      */
@@ -250,7 +272,7 @@ public abstract class BaseRestIntegrationTest {
 
     /**
      * Creates a test question with information specified in most fields.
-     * 
+     *
      * @param typ
      *            Certificate type of which the question refers to
      * @param intygId
@@ -300,6 +322,40 @@ public abstract class BaseRestIntegrationTest {
             }
         });
         return fs;
+    }
+
+    /**
+     * Creates a test question of type arende with information specified in most fields.
+     *
+     * @param typ
+     *            Certificate type of which the question refers to
+     * @param intygId
+     *            Certificate id of which the question refers to
+     * @param personnummer
+     *            Social security number of the patient the certificate is made out to
+     * @return
+     */
+    private Arende createTestArendeQuestion(String typ, String intygId, String personnummer) {
+        LocalDateTime now = LocalDateTime.now();
+        Arende arende = new Arende();
+        arende.setAmne(ArendeAmne.ARBTID);
+        arende.setMeddelande(DEFAULT_FRAGE_TEXT);
+        arende.setIntygsId(intygId);
+        arende.setPatientPersonId(personnummer);
+        arende.setIntygTyp(typ);
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        arende.setSenasteHandelse(now);
+        arende.setSkickatTidpunkt(now);
+        arende.setTimestamp(now);
+        arende.setRubrik("Meddelanderubrik");
+        arende.setSkickatAv("FK");
+        arende.setSigneratAvName("Jan Nilsson");
+        arende.setSigneratAv(DEFAULT_LAKARE.getHsaId());
+        arende.setReferensId("FK-REF-1");
+        arende.setEnhet(DEFAULT_LAKARE.getEnhetId());
+        arende.setMeddelandeId(UUID.randomUUID().toString());
+        arende.setKomplettering(new ArrayList<>());
+        return arende;
     }
 
     /**

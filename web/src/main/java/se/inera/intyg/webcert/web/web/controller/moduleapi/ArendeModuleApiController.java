@@ -21,10 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -33,14 +30,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateMessageParameter;
 
 @Path("/arende")
 @Api(value = "arende", description = "REST API - moduleapi - arende", produces = MediaType.APPLICATION_JSON)
 public class ArendeModuleApiController extends AbstractApiController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ArendeModuleApiController.class);
+
     @Autowired
     private ArendeService arendeService;
 
@@ -48,9 +50,73 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<ArendeConversationView> arendeForIntyg(@PathParam("intygsId") String intygsId) {
+        LOGGER.debug("Get arende for intyg {}", intygsId);
         List<ArendeConversationView> arenden = arendeService.getArenden(intygsId);
 
         return arenden;
+    }
+
+    @POST
+    @Path("/{intygsTyp}/{intygsId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response createMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
+            CreateMessageParameter parameter) {
+        LOGGER.debug("Create arende for {} ({})", intygsId, intygsTyp);
+        abortIfHanteraFragorNotActive(intygsTyp);
+        ArendeConversationView response = arendeService.createMessage(intygsId, parameter.getAmne(), parameter.getRubrik(),
+                parameter.getMeddelande());
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/{intygsTyp}/{meddelandeId}/besvara")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId, String svarsText) {
+        LOGGER.debug("Answer arende {}", meddelandeId);
+        abortIfHanteraFragorNotActive(intygsTyp);
+        ArendeConversationView response = arendeService.answer(meddelandeId, svarsText);
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/{intygsTyp}/{meddelandeId}/vidarebefordrad")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response setForwarded(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
+            Boolean vidarebefordrad) {
+        LOGGER.debug("Set arende {} as forwared {}", meddelandeId, vidarebefordrad != null ? vidarebefordrad : "");
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
+                .orThrow();
+
+        ArendeConversationView response = arendeService.setForwarded(meddelandeId, vidarebefordrad != null ? vidarebefordrad : true);
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/{intygsTyp}/{meddelandeId}/stang")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
+        LOGGER.debug("Close arende {} as handled", meddelandeId);
+        abortIfHanteraFragorNotActive(intygsTyp);
+        ArendeConversationView response = arendeService.closeArendeAsHandled(meddelandeId);
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/{intygsTyp}/{meddelandeId}/oppna")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response openAsUnhandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
+        LOGGER.debug("Open arende {} as unhandled", meddelandeId);
+        abortIfHanteraFragorNotActive(intygsTyp);
+        ArendeConversationView response = arendeService.openArendeAsUnhandled(meddelandeId);
+        return Response.ok(response).build();
     }
 
     @GET
@@ -74,6 +140,10 @@ public class ArendeModuleApiController extends AbstractApiController {
         }
         sb.append("</pingdom_http_custom_check>");
         return sb.toString();
+    }
+
+    private void abortIfHanteraFragorNotActive(String intygsTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
     }
 
 }

@@ -51,6 +51,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.STORE_MESSAGE)).to("bean:certificateStoreProcessor").stop()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE)).to("bean:certificateSendProcessor").stop()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REVOKE_MESSAGE)).to("bean:certificateRevokeProcessor").stop()
+                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE_TO_RECIPIENT)).to("bean:sendMessageToRecipientProcessor").stop()
                 .otherwise().log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
 
         from("direct:certPermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")

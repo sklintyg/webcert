@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "fraga": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kompletteringar": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object"
+          }
+        },
+        "internReferens": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "amne": {
+          "type": "string",
+          "enum": [
+            "KOMPLT",
+            "AVSTMN",
+            "KONTKT",
+            "ARBTID",
+            "PAMINN",
+            "OVRIGT"
+          ]
+        },
+        "meddelandeRubrik": {
+          "type": "string"
+        },
+        "sistaDatumForSvar": {
+          "type": "string"
+        },
+        "vidarebefordrad": {
+          "type": "boolean"
+        },
+        "frageStallare": {
+          "type": "string"
+        },
+        "externaKontakter": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "string"
+          }
+        },
+        "meddelande": {
+          "type": "string"
+        },
+        "signeratAv": {
+          "type": "string"
+        },
+        "svarSkickadDatum": {
+          "type": "string"
+        },
+        "intygId": {
+          "type": "string"
+        },
+        "enhetsnamn": {
+          "type": "string"
+        },
+        "vardgivarnamn": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "arendeType": {
+          "type": "string"
+        },
+        "svarPaId": {
+          "type": "string"
+        },
+        "paminnelseMeddelandeId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kompletteringar",
+        "internReferens",
+        "status",
+        "amne",
+        "meddelandeRubrik",
+        "vidarebefordrad",
+        "frageStallare",
+        "externaKontakter",
+        "meddelande",
+        "signeratAv",
+        "svarSkickadDatum",
+        "intygId",
+        "enhetsnamn",
+        "timestamp",
+        "arendeType"
+      ]
+    },
+    "svar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kompletteringar": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object"
+          }
+        },
+        "internReferens": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "amne": {
+          "type": "string",
+          "enum": [
+            "KOMPLT",
+            "AVSTMN",
+            "KONTKT",
+            "ARBTID",
+            "PAMINN",
+            "OVRIGT"
+          ]
+        },
+        "meddelandeRubrik": {
+          "type": "string"
+        },
+        "sistaDatumForSvar": {
+          "type": "string"
+        },
+        "vidarebefordrad": {
+          "type": "boolean"
+        },
+        "frageStallare": {
+          "type": "string"
+        },
+        "externaKontakter": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object"
+          }
+        },
+        "meddelande": {
+          "type": "string"
+        },
+        "signeratAv": {
+          "type": "string"
+        },
+        "svarSkickadDatum": {
+          "type": "string"
+        },
+        "intygId": {
+          "type": "string"
+        },
+        "enhetsnamn": {
+          "type": "string"
+        },
+        "vardgivarnamn": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "arendeType": {
+          "type": "string"
+        },
+        "svarPaId": {
+          "type": "string"
+        },
+        "paminnelseMeddelandeId": {
+          "type": "string"
+        }
+      }
+    },
+    "senasteHandelse": {
+      "type": "string"
+    },
+    "paminnelser": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "fraga",
+    "senasteHandelse",
+    "paminnelser"
+  ]
+}

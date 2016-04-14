@@ -1,12 +1,12 @@
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,15 +36,18 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.*;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
+import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
@@ -77,6 +80,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private FragaSvarService fragaSvarService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private CertificateSenderService certificateSenderService;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -179,11 +188,15 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende res = service.processIncomingMessage(svararende);
         assertEquals(Status.ANSWERED, res.getStatus());
-        assertEquals(Status.ANSWERED, fragearende.getStatus());
         assertEquals(FIXED_TIME_MILLIS, res.getSenasteHandelse().toDateTime().getMillis());
-        assertEquals(FIXED_TIME_MILLIS, fragearende.getSenasteHandelse().toDateTime().getMillis());
 
         verify(repo).findOneByMeddelandeId(eq(frageid));
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo, times(2)).save(arendeCaptor.capture());
+
+        Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
+        assertEquals(FIXED_TIME_MILLIS, updatedQuestion.getSenasteHandelse().toDateTime().getMillis());
+        assertEquals(Status.ANSWERED, updatedQuestion.getStatus());
     }
 
     @Test
@@ -211,9 +224,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende res = service.processIncomingMessage(svararende);
         assertEquals(FIXED_TIME_MILLIS, res.getSenasteHandelse().toDateTime().getMillis());
-        assertEquals(FIXED_TIME_MILLIS, paminnelse.getSenasteHandelse().toDateTime().getMillis());
 
         verify(repo).findOneByMeddelandeId(eq(paminnelseid));
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo, times(2)).save(arendeCaptor.capture());
+
+        Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
+        assertEquals(FIXED_TIME_MILLIS, updatedQuestion.getSenasteHandelse().toDateTime().getMillis());
     }
 
     @Test
@@ -281,6 +298,389 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
         }
+    }
+
+    public void createQuestionTest() throws CertificateSenderException {
+        LocalDateTime now = LocalDateTime.now();
+        Utkast utkast = new Utkast();
+        utkast.setSignatur(new Signatur());
+        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenReturn(createHsaResponse("givenName", "surname"));
+        Arende arende = new Arende();
+        arende.setSenasteHandelse(now);
+        when(repo.save(any(Arende.class))).thenReturn(arende);
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        ArendeConversationView result = service.createMessage("intygId", ArendeAmne.KONTKT, "rubrik", "meddelande");
+        assertNotNull(result.getFraga());
+        assertNull(result.getSvar());
+        assertEquals(now, result.getSenasteHandelse());
+        verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
+        verify(repo).save(any(Arende.class));
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
+        verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
+        verify(notificationService).sendNotificationForQuestionSent(any(Arende.class));
+    }
+
+    @Test
+    public void createQuestionArendeContentTest() throws CertificateSenderException {
+        final ArendeAmne amne = ArendeAmne.OVRIGT;
+        final String enhetsId = "enhetsId";
+        final String intygsId = "intygsId";
+        final String intygsTyp = "luse";
+        final String meddelande = "meddelande";
+        final String patientPersonId = "191212121212";
+        final String rubrik = "rubrik";
+        final String signeratAv = "hsa123";
+        final String givenName = "givenname";
+        final String surname = "surname";
+        Utkast utkast = new Utkast();
+        utkast.setEnhetsId(enhetsId);
+        utkast.setIntygsId(intygsId);
+        utkast.setIntygsTyp(intygsTyp);
+        utkast.setPatientPersonnummer(new Personnummer(patientPersonId));
+        utkast.setSignatur(mock(Signatur.class));
+        when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
+        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(hsaEmployeeService.getEmployee(signeratAv, null)).thenReturn(createHsaResponse(givenName, surname));
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        service.createMessage(intygsId, amne, rubrik, meddelande);
+
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo).save(arendeCaptor.capture());
+        assertNotNull(arendeCaptor.getValue());
+        assertEquals(amne, arendeCaptor.getValue().getAmne());
+        assertEquals(enhetsId, arendeCaptor.getValue().getEnhet());
+        assertEquals(intygsId, arendeCaptor.getValue().getIntygsId());
+        assertEquals(intygsTyp, arendeCaptor.getValue().getIntygTyp());
+        assertEquals(meddelande, arendeCaptor.getValue().getMeddelande());
+        assertNotNull(arendeCaptor.getValue().getMeddelandeId());
+        assertNull(arendeCaptor.getValue().getPaminnelseMeddelandeId());
+        assertEquals(patientPersonId, arendeCaptor.getValue().getPatientPersonId());
+        assertNull(arendeCaptor.getValue().getReferensId());
+        assertEquals(rubrik, arendeCaptor.getValue().getRubrik());
+        assertEquals(FIXED_TIME_MILLIS, arendeCaptor.getValue().getSenasteHandelse().toDateTime().getMillis());
+        assertEquals(signeratAv, arendeCaptor.getValue().getSigneratAv());
+        assertEquals(givenName + " " + surname, arendeCaptor.getValue().getSigneratAvName());
+        assertNull(arendeCaptor.getValue().getSistaDatumForSvar());
+        assertEquals(FrageStallare.WEBCERT.getKod(), arendeCaptor.getValue().getSkickatAv());
+        assertEquals(FIXED_TIME_MILLIS, arendeCaptor.getValue().getSkickatTidpunkt().toDateTime().getMillis());
+        assertEquals(Status.PENDING_EXTERNAL_ACTION, arendeCaptor.getValue().getStatus());
+        assertNull(arendeCaptor.getValue().getSvarPaId());
+        assertNull(arendeCaptor.getValue().getSvarPaReferens());
+        assertEquals(FIXED_TIME_MILLIS, arendeCaptor.getValue().getTimestamp().toDateTime().getMillis());
+        assertEquals(Boolean.FALSE, arendeCaptor.getValue().getVidarebefordrad());
+    }
+
+    @Test
+    public void createQuestionInvalidAmneTest() {
+        try {
+            service.createMessage("intygId", ArendeAmne.KOMPLT, "rubrik", "meddelande");
+            fail("should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void createQuestionCertificateDoesNotExistTest() {
+        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        try {
+            service.createMessage("intygId", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            fail("should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void createQuestionCertificateNotSignedTest() {
+        when(utkastRepository.findOne(anyString())).thenReturn(new Utkast());
+        try {
+            service.createMessage("intygId", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            fail("should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void createQuestionInvalidCertificateTypeTest() {
+        Utkast utkast = new Utkast();
+        utkast.setSignatur(new Signatur());
+        utkast.setIntygsTyp(CertificateTypes.FK7263.toString());
+        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        try {
+            service.createMessage("intygId", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            fail("should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void createQuestionUnauthorizedTest() {
+        Utkast utkast = new Utkast();
+        utkast.setSignatur(new Signatur());
+        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenReturn(createHsaResponse("givenName", "surname"));
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(false);
+        try {
+            service.createMessage("intygId", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            fail("should throw exception");
+        } catch (WebCertServiceException e) {
+            assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void answerTest() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        LocalDateTime now = LocalDateTime.now();
+        Arende fraga = new Arende();
+        fraga.setAmne(ArendeAmne.OVRIGT);
+        fraga.setSenasteHandelse(now);
+        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
+        assertNotNull(result.getFraga());
+        assertNotNull(result.getSvar());
+        assertEquals(now, result.getSenasteHandelse());
+        verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
+        verify(repo).save(any(Arende.class));
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
+        verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
+        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void answerSvarsTextNullTest() throws CertificateSenderException {
+        service.answer("svarPaMeddelandeId", null);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void answerSvarsTextEmptyTest() throws CertificateSenderException {
+        service.answer("svarPaMeddelandeId", "");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void answerQuestionWithInvalidStatusTest() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        Arende fraga = new Arende();
+        fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        service.answer(svarPaMeddelandeId, "svarstext");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void answerPaminnQuestionTest() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        Arende fraga = new Arende();
+        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        fraga.setAmne(ArendeAmne.PAMINN);
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        service.answer(svarPaMeddelandeId, "svarstext");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void answerKompltQuestionUnauthorizedTest() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        Arende fraga = new Arende();
+        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        fraga.setAmne(ArendeAmne.KOMPLT);
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        service.answer(svarPaMeddelandeId, "svarstext");
+    }
+
+    @Test
+    public void answerKompltQuestionAuthorizedTest() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        Arende fraga = new Arende();
+        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        fraga.setAmne(ArendeAmne.KOMPLT);
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        WebCertUser webcertUser = new WebCertUser();
+        webcertUser.setAuthorities(new HashMap<>());
+        Privilege privilege = new Privilege();
+        privilege.setRequestOrigins(new ArrayList<>());
+        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA, privilege);
+        when(webcertUserService.getUser()).thenReturn(webcertUser);
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+
+        ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
+
+        assertNotNull(result.getFraga());
+        assertNotNull(result.getSvar());
+    }
+
+    @Test
+    public void answerArendeContentTest() throws CertificateSenderException {
+        final String nyttMeddelande = "nytt meddelande";
+        final String meddelandeId = "meddelandeId";
+        final ArendeAmne amne = ArendeAmne.KONTKT;
+        final String enhetsId = "enhetsId";
+        final String intygsId = "intygsId";
+        final String intygsTyp = "luse";
+        final String meddelande = "meddelande";
+        final String patientPersonId = "191212121212";
+        final String rubrik = "rubrik";
+        final String signeratAv = "hsa123";
+        final String signeratAvName = "givenname surname";
+        final String referensId = "referensId";
+        Arende arende = new Arende();
+        arende.setEnhet(enhetsId);
+        arende.setIntygsId(intygsId);
+        arende.setIntygTyp(intygsTyp);
+        arende.setPatientPersonId(patientPersonId);
+        arende.setSigneratAv(signeratAv);
+        arende.setSigneratAvName(signeratAvName);
+        arende.setRubrik(rubrik);
+        arende.setMeddelande(meddelande);
+        arende.setAmne(amne);
+        arende.setMeddelandeId(meddelandeId);
+        arende.setReferensId(referensId);
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        service.answer(meddelandeId, nyttMeddelande);
+
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo, times(2)).save(arendeCaptor.capture());
+        Arende saved = arendeCaptor.getAllValues().get(0);
+        assertNotNull(saved);
+        assertEquals(amne, saved.getAmne());
+        assertEquals(enhetsId, saved.getEnhet());
+        assertEquals(intygsId, saved.getIntygsId());
+        assertEquals(intygsTyp, saved.getIntygTyp());
+        assertEquals(nyttMeddelande, saved.getMeddelande());
+        assertNotNull(saved.getMeddelandeId());
+        assertNull(saved.getPaminnelseMeddelandeId());
+        assertEquals(patientPersonId, saved.getPatientPersonId());
+        assertNull(saved.getReferensId());
+        assertEquals(rubrik, saved.getRubrik());
+        assertEquals(FIXED_TIME_MILLIS, saved.getSenasteHandelse().toDateTime().getMillis());
+        assertEquals(signeratAv, saved.getSigneratAv());
+        assertEquals(signeratAvName, saved.getSigneratAvName());
+        assertNull(saved.getSistaDatumForSvar());
+        assertEquals(FrageStallare.WEBCERT.getKod(), saved.getSkickatAv());
+        assertEquals(FIXED_TIME_MILLIS, saved.getSkickatTidpunkt().toDateTime().getMillis());
+        assertEquals(Status.CLOSED, saved.getStatus());
+        assertEquals(meddelandeId, saved.getSvarPaId());
+        assertEquals(referensId, saved.getSvarPaReferens());
+        assertEquals(FIXED_TIME_MILLIS, saved.getTimestamp().toDateTime().getMillis());
+        assertEquals(Boolean.FALSE, saved.getVidarebefordrad());
+        assertNotEquals(meddelandeId, saved.getMeddelandeId());
+    }
+
+    @Test
+    public void answerUpdatesQuestionTest() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        LocalDateTime now = LocalDateTime.now();
+        Arende fraga = new Arende();
+        fraga.setAmne(ArendeAmne.OVRIGT);
+        fraga.setMeddelandeId(svarPaMeddelandeId);
+        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
+        assertNotNull(result.getFraga());
+        assertNotNull(result.getSvar());
+        assertEquals(now, result.getSenasteHandelse());
+        verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
+        verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
+        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo, times(2)).save(arendeCaptor.capture());
+
+        Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
+        assertEquals(FIXED_TIME_MILLIS, updatedQuestion.getSenasteHandelse().toDateTime().getMillis());
+        assertEquals(Status.CLOSED, updatedQuestion.getStatus());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void setForwardedArendeNotFoundTest() {
+        service.setForwarded("meddelandeId", true);
+    }
+
+    @Test
+    public void setForwardedTrueTest() {
+        final String meddelandeId = "meddelandeId";
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(new Arende());
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        service.setForwarded(meddelandeId, true);
+
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo).save(arendeCaptor.capture());
+        verify(repo).findBySvarPaId(meddelandeId); // lookup answers for response
+        verify(repo).findByPaminnelseMeddelandeId(meddelandeId); // lookup reminders for response
+
+        assertEquals(true, arendeCaptor.getValue().getVidarebefordrad());
+    }
+
+    @Test
+    public void setForwardedFalseTest() {
+        final String meddelandeId = "meddelandeId";
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(new Arende());
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        service.setForwarded(meddelandeId, false);
+
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo).save(arendeCaptor.capture());
+        verify(repo).findBySvarPaId(meddelandeId); // lookup answers for response
+        verify(repo).findByPaminnelseMeddelandeId(meddelandeId); // lookup reminders for response
+
+        assertEquals(false, arendeCaptor.getValue().getVidarebefordrad());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void openArendeAsUnhandledArendeNotFoundTest() {
+        service.openArendeAsUnhandled("meddelandeId");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void openArendeAsUnhandledFromFKAndAnsweredTest() {
+        final String meddelandeId = "meddelandeId";
+        Arende arende = new Arende();
+        arende.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
+        when(repo.findBySvarPaId(meddelandeId)).thenReturn(Arrays.asList(new Arende())); // there are answers
+
+        service.openArendeAsUnhandled(meddelandeId);
+    }
+
+    @Test
+    public void openArendeAsUnhandledTest() {
+        final String meddelandeId = "meddelandeId";
+        Arende arende = new Arende();
+        arende.setSkickatAv(FrageStallare.WEBCERT.getKod());
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+
+        service.openArendeAsUnhandled(meddelandeId);
     }
 
     @Test

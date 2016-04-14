@@ -23,6 +23,7 @@ import java.util.List;
 
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
@@ -34,6 +35,14 @@ public interface ArendeService {
      * Validates and decorates incoming arende with additional information.
      */
     Arende processIncomingMessage(Arende arende) throws WebCertServiceException;
+
+    ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) throws WebCertServiceException;
+
+    ArendeConversationView answer(String svarPaMeddelandeId, String meddelande) throws WebCertServiceException;
+
+    ArendeConversationView setForwarded(String meddelandeId, boolean vidarebefordrad);
+
+    ArendeConversationView openArendeAsUnhandled(String meddelandeId);
 
     /**
      * List names of signing doctors for units where the webcert user is logged in.
@@ -52,7 +61,7 @@ public interface ArendeService {
     /**
      * Close Arende and set status 'CLOSED'.
      */
-    Arende closeArendeAsHandled(String meddelandeId);
+    ArendeConversationView closeArendeAsHandled(String meddelandeId);
 
     Arende getArende(String meddelandeId);
 }

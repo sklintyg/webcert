@@ -155,8 +155,8 @@ public class IntygResource {
     @PUT
     @Path("/{id}/signerat")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signDraft(@PathParam("id") String id) {
-        updateUtkastForSign(id);
+    public Response signDraft(@PathParam("id") String id, String signeratAv) {
+        updateUtkastForSign(id, signeratAv);
         return Response.ok().build();
     }
 
@@ -176,11 +176,11 @@ public class IntygResource {
         }
     }
 
-    private void updateUtkastForSign(@PathParam("id") String id) {
+    private void updateUtkastForSign(@PathParam("id") String id, String signeratAv) {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
-            Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "");
+            Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "");
             utkast.setSignatur(sig);
             utkastRepository.save(utkast);
         }

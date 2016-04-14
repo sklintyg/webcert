@@ -21,40 +21,30 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.CamelExecutionException;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.apache.camel.test.spring.CamelTestContextBootstrapper;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
+import org.apache.camel.test.spring.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.BootstrapWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.*;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import com.google.common.collect.ImmutableMap;
 
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
-import com.google.common.collect.ImmutableMap;
-
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
-@MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|bean:sendMessageToRecipientProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
 public class RouteTest {
 
     private static final String MESSAGE_BODY = "message";
@@ -74,6 +64,9 @@ public class RouteTest {
     @EndpointInject(uri = "mock:bean:certificateRevokeProcessor")
     private MockEndpoint revokeProcessor;
 
+    @EndpointInject(uri = "mock:bean:sendMessageToRecipientProcessor")
+    private MockEndpoint sendMessageProcessor;
+
     @EndpointInject(uri = "mock:direct:certPermanentErrorHandlerEndpoint")
     private MockEndpoint permanentErrorHandlerEndpoint;
 
@@ -92,6 +85,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(1);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -102,6 +96,7 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
@@ -112,6 +107,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(1);
         revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -122,6 +118,7 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
@@ -132,6 +129,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(1);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -142,6 +140,29 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testNormalSendMessageRoute() throws InterruptedException {
+        // Given
+        storeProcessor.expectedMessageCount(0);
+        sendProcessor.expectedMessageCount(0);
+        revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(1);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT));
+
+        // Then
+        assertIsSatisfied(storeProcessor);
+        assertIsSatisfied(sendProcessor);
+        assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
@@ -152,6 +173,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -162,6 +184,7 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
@@ -179,6 +202,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(1);
         revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
 
@@ -189,6 +213,7 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
@@ -206,6 +231,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(0);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(1);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -216,6 +242,7 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
@@ -233,6 +260,7 @@ public class RouteTest {
         storeProcessor.expectedMessageCount(1);
         sendProcessor.expectedMessageCount(0);
         revokeProcessor.expectedMessageCount(0);
+        sendMessageProcessor.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
 
@@ -243,6 +271,7 @@ public class RouteTest {
         assertIsSatisfied(storeProcessor);
         assertIsSatisfied(sendProcessor);
         assertIsSatisfied(revokeProcessor);
+        assertIsSatisfied(sendMessageProcessor);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }

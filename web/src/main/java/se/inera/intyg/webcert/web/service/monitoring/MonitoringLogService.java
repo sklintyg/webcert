@@ -83,4 +83,6 @@ public interface MonitoringLogService {
     void logNotificationSent(String hanType, String unitId);
 
     void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, String subject);
+
+    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, String subject);
 }

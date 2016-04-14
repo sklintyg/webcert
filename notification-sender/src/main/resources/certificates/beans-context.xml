@@ -28,4 +28,6 @@
 
   <bean id="certificateRevokeProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateRevokeProcessor"/>
 
+  <bean id="sendMessageToRecipientProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor"/>
+
 </beans>
