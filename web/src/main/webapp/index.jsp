@@ -96,7 +96,11 @@
         lagras på din dator och som innehåller information. Denna webbplats använder så kallade sessionskakor.
         Sessionskakor lagras temporärt i din dators minne under tiden du är inne på en webbsida. Sessionskakor
         försvinner när du stänger din webbläsare. Ingen personlig information om dig sparas vid användning av
-        sessionskakor. Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares
+        sessionskakor.
+        <p>
+        Genom att använda Webcert accepterar du användningen av kakor på den här webbplatsen.
+        </p>
+        Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares
         säkerhetsinställningar. Du kan även ställa in webbläsaren så att du får en varning varje gång webbplatsen
         försöker sätta en kaka på din dator.</p>
       <p>
