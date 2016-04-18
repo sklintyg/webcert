@@ -196,7 +196,7 @@ public class IntygApiController extends AbstractApiController {
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
+                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
                 .orThrow();
 
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
