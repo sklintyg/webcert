@@ -19,11 +19,7 @@
 
 package se.inera.intyg.webcert.notification_sender.mocks;
 
-import java.util.List;
-import java.util.Map;
-
 import org.joda.time.LocalDateTime;
-
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.converter.util.ConverterException;
@@ -38,6 +34,9 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
+
+import java.util.List;
+import java.util.Map;
 
 
 public class MockIntygModuleRegistry implements IntygModuleRegistry {
@@ -152,7 +151,6 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
                 return utlatandeJson;
             }
 
-            @Override
             public InternalModelResponse createRenewalFromTemplate(CreateDraftCopyHolder draftCopyHolder, InternalModelHolder internalModelHolder)
                     throws ModuleException {
                 // TODO Auto-generated method stub
