@@ -27,22 +27,11 @@ import org.joda.time.LocalDateTime;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.converter.util.ConverterException;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.registry.*;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.ModuleContainerApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidateXmlResponse;
+import se.inera.intyg.common.support.modules.support.api.*;
+import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
@@ -137,12 +126,12 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public Utlatande getUtlatandeFromJson(String utlatandeJson) {
                 return null;
             }
-            
+
             @Override
             public se.inera.intyg.common.support.model.common.internal.Utlatande getUtlatandeFromIntyg(Intyg intyg) throws ConverterException {
                 throw new UnsupportedOperationException("Module Fk7263 does not support getUtlatandeFromIntyg.");
             }
-            
+
             @Override
             public String transformToStatisticsService(String inputXml) throws ModuleException {
                 return inputXml;
@@ -167,6 +156,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
             public InternalModelResponse createRenewalFromTemplate(CreateDraftCopyHolder draftCopyHolder, InternalModelHolder internalModelHolder)
                     throws ModuleException {
                 // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public Intyg getIntygFromCertificateHolder(CertificateHolder certificateHolder) throws ModuleException {
                 return null;
             }
 
