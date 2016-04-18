@@ -146,7 +146,9 @@ privileges:
     desc: Besvara fråga om komplettering
     intygstyper:
       - *ki010 # FK7263
-    requestOrigins: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
   - &p070
     name: *kp070
     desc: Filtrera på annan läkare
