@@ -63,7 +63,8 @@ module.exports = function(grunt) {
         'ts-bas':      { base: 'intygstyper/ts-bas' },
         'ts-diabetes': { base: 'intygstyper/ts-diabetes' },
         'luse':        { base: 'intygstyper/fk/sjukersattning', angularModule:'luse' },
-        'lisu':        { base: 'intygstyper/fk/sjukpenning-utokad', angularModule:'lisu' }
+        'lisu':        { base: 'intygstyper/fk/sjukpenning-utokad', angularModule:'lisu' },
+        'luaefs':      { base: 'intygstyper/fk/luaefs', angularModule:'luaefs' }
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];
