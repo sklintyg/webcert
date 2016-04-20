@@ -12,6 +12,7 @@
       "postadress" : "NMT gata 1",
       "postnummer" : "12345",
       "postort" : "Testhult",
+      "agandeForm": "PRIVAT",
       "arbetsplatskod" : "1234567890"
     },
     {
@@ -23,6 +24,7 @@
       "postadress" : "NMT gata 2",
       "postnummer" : "12345",
       "postort" : "Testhult",
+      "agandeForm": "PRIVAT",
       "arbetsplatskod" : "1234567890"
     },
     {
@@ -34,6 +36,7 @@
       "postadress" : "NMT gata 3",
       "postnummer" : "12345",
       "postort" : "Testhult",
+      "agandeForm": "PRIVAT",
       "arbetsplatskod" : "1234567890"
     }
   ]
