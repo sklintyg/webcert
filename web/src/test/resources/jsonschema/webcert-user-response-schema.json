@@ -583,6 +583,14 @@
         "postort": {
           "type": "string"
         },
+        "agandeForm": {
+          "type": "string",
+          "enum": [
+            "PRIVAT",
+            "OFFENTLIG",
+            "OKAND"
+          ]
+        },
         "telefonnummer": {
           "type": "string"
         }
