@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.persistence.arende.converter;
+package se.inera.intyg.webcert.web.converter.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -33,13 +33,12 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.*;
-import se.inera.intyg.webcert.web.converter.util.TransportToArende;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TransportToArendeTest {
+public class ArendeViewConverterTest {
     private static final String PATIENT_PERSON_ID = "19121212-1212";
     private static final String SKAPADAV_PERSON_ID = "19121212-1212";
     private static final String ENHETS_ID = "enhetsId";
@@ -48,7 +47,7 @@ public class TransportToArendeTest {
     private static final String VARDAKTOR_NAMN = "vardaktor namn";
 
     @InjectMocks
-    private TransportToArende converter;
+    private ArendeViewConverter converter;
 
     @Mock
     private IntygModuleRegistryImpl moduleRegistry;

@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.*;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+import se.inera.intyg.webcert.web.converter.util.ArendeViewConverter;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -73,7 +73,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private MonitoringLogService monitoringLog;
 
     @Mock
-    private TransportToArende transportToArende;
+    private ArendeViewConverter arendeViewConverter;
 
     @Mock
     private HsaEmployeeService hsaEmployeeService;
@@ -311,7 +311,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende arende = new Arende();
         arende.setSenasteHandelse(now);
         when(repo.save(any(Arende.class))).thenReturn(arende);
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         ArendeConversationView result = service.createMessage("intygId", ArendeAmne.KONTKT, "rubrik", "meddelande");
         assertNotNull(result.getFraga());
         assertNull(result.getSvar());
@@ -350,7 +350,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(hsaEmployeeService.getEmployee(signeratAv, null)).thenReturn(createHsaResponse(givenName, surname));
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         service.createMessage(intygsId, amne, rubrik, meddelande);
 
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -453,7 +453,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
@@ -523,7 +523,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA, privilege);
         when(webcertUserService.getUser()).thenReturn(webcertUser);
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
 
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
 
@@ -565,7 +565,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setNamn(vardaktorName);
         when(webcertUserService.getUser()).thenReturn(user);
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         service.answer(meddelandeId, nyttMeddelande);
 
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -609,7 +609,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
@@ -636,7 +636,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String meddelandeId = "meddelandeId";
         when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(new Arende());
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         service.setForwarded(meddelandeId, true);
 
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -652,7 +652,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String meddelandeId = "meddelandeId";
         when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(new Arende());
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         service.setForwarded(meddelandeId, false);
 
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -686,7 +686,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setSkickatAv(FrageStallare.WEBCERT.getKod());
         when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
-        when(transportToArende.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
 
         service.openArendeAsUnhandled(meddelandeId);
     }
@@ -761,10 +761,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arendeViewList.add(buildArendeView(arendeList.get(3), "meddelandeId4", null, null, FEBRUARY)); // fraga
 
         when(repo.findByIntygsId("intyg-1")).thenReturn(arendeList);
-        when(transportToArende.convert(arendeList.get(0))).thenReturn(arendeViewList.get(0));
-        when(transportToArende.convert(arendeList.get(1))).thenReturn(arendeViewList.get(1));
-        when(transportToArende.convert(arendeList.get(2))).thenReturn(arendeViewList.get(2));
-        when(transportToArende.convert(arendeList.get(3))).thenReturn(arendeViewList.get(3));
+        when(arendeViewConverter.convert(arendeList.get(0))).thenReturn(arendeViewList.get(0));
+        when(arendeViewConverter.convert(arendeList.get(1))).thenReturn(arendeViewList.get(1));
+        when(arendeViewConverter.convert(arendeList.get(2))).thenReturn(arendeViewList.get(2));
+        when(arendeViewConverter.convert(arendeList.get(3))).thenReturn(arendeViewList.get(3));
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 

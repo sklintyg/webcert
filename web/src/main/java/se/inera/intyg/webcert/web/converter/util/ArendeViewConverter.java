@@ -46,8 +46,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
-public class TransportToArende {
-    private static final Logger LOG = LoggerFactory.getLogger(TransportToArende.class);
+public class ArendeViewConverter {
+    private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
     private static final int TILLAGGSFRAGA_START = 9000;
 
     @Autowired
