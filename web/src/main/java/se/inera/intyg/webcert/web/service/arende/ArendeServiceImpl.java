@@ -599,6 +599,7 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setSenasteHandelse(now);
         arende.setSkickatTidpunkt(now);
         arende.setTimestamp(now);
+        arende.setVardaktorName(webcertUserService.getUser().getNamn());
     }
 
     private String getSignedByName(Utkast utkast) {

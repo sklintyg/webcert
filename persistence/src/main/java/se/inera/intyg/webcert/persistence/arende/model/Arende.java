@@ -22,18 +22,7 @@ package se.inera.intyg.webcert.persistence.arende.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
@@ -127,6 +116,9 @@ public class Arende {
 
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
     private Boolean vidarebefordrad = Boolean.FALSE;
+
+    @Column(name = "VARDAKTOR_NAME")
+    private String vardaktorName;
 
     public Long getId() {
         return id;
@@ -320,5 +312,13 @@ public class Arende {
 
     public void setVidarebefordrad(Boolean vidarebefordrad) {
         this.vidarebefordrad = vidarebefordrad;
+    }
+
+    public String getVardaktorName() {
+        return vardaktorName;
+    }
+
+    public void setVardaktorName(String vardaktorName) {
+        this.vardaktorName = vardaktorName;
     }
 }

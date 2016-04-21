@@ -92,6 +92,9 @@ public abstract class ArendeView {
     @Nullable
     public abstract String getPaminnelseMeddelandeId();
 
+    @Nullable
+    public abstract String getVardaktorNamn();
+
     /*
      * Retrieve a builder from an existing SjukersattningUtlatande object. The builder can then be used
      * to create a new copy with modified attributes.
@@ -142,6 +145,8 @@ public abstract class ArendeView {
         public abstract Builder setSvarPaId(String svarPaId);
 
         public abstract Builder setPaminnelseMeddelandeId(String paminnelseMeddelandeId);
+
+        public abstract Builder setVardaktorNamn(String vardaktorNamn);
 
         public Builder setKompletteringar(List<MedicinsktArendeView> kompletteringar) {
             return setKompletteringar(ImmutableList.copyOf(kompletteringar));
