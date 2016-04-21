@@ -654,10 +654,10 @@
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/luaefs"
+                    todir="${project.build.directory}/webjardependencies/luae_fs"
                     verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/luaefs">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/luae_fs">
                   </fileset>
                 </copy>
                 <!--

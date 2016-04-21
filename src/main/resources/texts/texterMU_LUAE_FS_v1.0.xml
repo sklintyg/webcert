@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<texter typ="LUAEFS" giltigFrom="2016-04-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
+<texter typ="LUAE_FS" giltigFrom="2016-04-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 	
 	<!-- Text före val av elektroniskt formulär -->
 	<text id="FRM_1.RBK">Vad är aktivitetsersättning vid förlängd skolgång?
@@ -107,14 +107,14 @@ Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar 
 	===============================================
 	-->
 	<text id="KAT_4.RBK">Funktionsnedsättning</text>
-	<text id="KAT_4.HLP"></text>
+	<text id="KAT_4.HLP">Hjälptext funktionsnedsättnings kategori</text>
 	<text id="FRG_15.RBK">Beskriv när och hur patientens funktionsnedsättning debuterat, utvecklats och visar sig för närvarande.</text>
 	<text id="FRG_15.HLP"></text>
-	<text id="DFR_15.1.RBK"></text>
-	<text id="DFR_15.1.HLP"></text>
+	<text id="DFR_15.1.RBK">Beskriv funktionsnedsättningens debut, utveckling och...</text>
+	<text id="DFR_15.1.HLP">Hkälptext för funk.nedsätt. debug</text>
 	<text id="FRG_16.RBK">Beskriv på vilket sätt funktionsnedsättningen påverkar eller har påverkat patientens förmåga att klara sin skolgång.</text>
 	<text id="FRG_16.HLP">Beskriv om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång och att det inte finns några andra skäl än rent medicinska som är orsaken till de förlängda studierna. Funktionsnedsättning behöver inte finnas kvar när studierna påbörjas, det är tillräckligt att den orsakat behovet av förlängd skolgång.</text>
-	<text id="DFR_16.1.RBK"></text>
+	<text id="DFR_16.1.RBK">På vilket sätt har skolgången påverkats?</text>
 	<text id="DFR_16.1.HLP"></text>
 
 	<!--
