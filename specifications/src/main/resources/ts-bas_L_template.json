@@ -1,6 +1,6 @@
 {
    "id": "80832895-5a9c-450a-bd74-08af43750788",
-   "typ": "TS_BAS_U06_V06",
+   "typ": "ts-bas",
     "grundData": {
         "signeringsdatum": "2013-08-12T15:57:00.000",
         "skapadAv": {
