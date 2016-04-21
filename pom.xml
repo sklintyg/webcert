@@ -254,7 +254,7 @@
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
-        <artifactId>luae-fs</artifactId>
+        <artifactId>luae_fs</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
 
