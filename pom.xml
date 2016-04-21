@@ -239,6 +239,11 @@
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
+        <artifactId>aktivitetsersattning-na</artifactId>
+        <version>${intygstyper.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>fk7263</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
@@ -247,6 +252,7 @@
         <artifactId>ts-bas</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
+      
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
