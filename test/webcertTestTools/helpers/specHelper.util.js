@@ -103,7 +103,7 @@ module.exports = {
             }
 
             loadScript([
-                '/web/webjars/angularjs/1.4.7/angular-mocks.js'
+                '/web/webjars/angularjs/1.4.10/angular-mocks.js'
             ]);
 
             angular.module('httpBackendMock', ['ngMockE2E']);

@@ -38,16 +38,16 @@
 
 <c:choose>
   <c:when test="${useMinifiedJavaScript == 'true'}">
-    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.min.js"></script>
-    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="/pubapp/login.controller.js"></script>
   </c:when>
   <c:otherwise>
-    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.js"></script>
-    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/i18n/angular-locale_sv-se.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.js"></script>
     <script type="text/javascript" src="/pubapp/login.controller.js"></script>
   </c:otherwise>

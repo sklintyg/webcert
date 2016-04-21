@@ -132,12 +132,18 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     filterQuery.hsaId = $scope.filterForm.lakareSelector.hsaId;
                 }
 
-                if (filterQuery.changedFrom) {
-                    filterQuery.changedFrom = $filter('date')(filterQuery.changedFrom, 'yyyy-MM-dd');
+                if ($scope.filterForm.changedFrom) {
+                    filterQuery.changedFrom = $filter('date')($scope.filterForm.changedFrom, 'yyyy-MM-dd');
+                }
+                else {
+                    filterQuery.changedFrom = undefined;
                 }
 
-                if (filterQuery.changedTo) {
-                    filterQuery.changedTo = $filter('date')(filterQuery.changedTo, 'yyyy-MM-dd');
+                if ($scope.filterForm.changedTo) {
+                    filterQuery.changedTo = $filter('date')($scope.filterForm.changedTo, 'yyyy-MM-dd');
+                }
+                else {
+                    filterQuery.changedTo = undefined;
                 }
 
                 if ($scope.filterForm.questionFrom === 'FK') {
@@ -264,6 +270,17 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                             .getObject('savedFilterQuery').vantarPa);
                     } else {
                         $scope.filterForm.vantarPaSelector = $scope.statusList[1];
+                    }
+
+                    if ($scope.filterQuery.changedFrom === undefined) {
+                        $scope.filterForm.changedFrom = undefined;
+                    } else {
+                        $scope.filterForm.changedFrom = $scope.filterQuery.changedFrom;
+                    }
+                    if ($scope.filterQuery.changedTo === undefined) {
+                        $scope.filterForm.changedTo = undefined;
+                    } else {
+                        $scope.filterForm.changedTo = $scope.filterQuery.changedTo;
                     }
                 }
             }

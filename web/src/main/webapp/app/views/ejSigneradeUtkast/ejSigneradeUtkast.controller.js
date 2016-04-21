@@ -116,12 +116,6 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
 
-                $timeout(function() {
-                    // These need to be loaded later and after doneloading or they won't be available sometimes.
-                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
-                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
-                }, 500);
-
             }, function() {
                 $log.debug('Query Error');
                 $scope.widgetState.doneLoading = true;
