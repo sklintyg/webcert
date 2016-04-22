@@ -32,18 +32,18 @@ Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar 
 	<text id="KV_FKMU_0001.3.RBK">Journaluppgifter från den</text>
 	<text id="KV_FKMU_0001.3.HLP"></text>		
 	<text id="KV_FKMU_0001.4.RBK">Anhörigs beskrivning av patienten</text>
-	<text id="KV_FKMU_0001.4.HLP"></text>		
+	<text id="KV_FKMU_0001.4.HLP">Hjälptext för anhörigbeskrivningen</text>
 	<text id="KV_FKMU_0001.5.RBK">Annat</text>
 	<text id="KV_FKMU_0001.5.HLP"></text>	
 
 	<text id="DFR_1.2.RBK"></text>
 	<text id="DFR_1.2.HLP"></text>
 	<text id="DFR_1.3.RBK">Ange vad annat är: </text>
-	<text id="DFR_1.3.HLP"></text>
+	<text id="DFR_1.3.HLP">Annat-hjälptext</text>
 	<text id="FRG_2.RBK">Jag har känt patienten seden den</text>
 	<text id="FRG_2.HLP"></text>
-	<text id="DFR_2.1.RBK"></text>
-	<text id="DFR_2.1.HLP"></text>
+	<text id="DFR_2.1.RBK">Datum för kännedom om patienten</text>
+	<text id="DFR_2.1.HLP">Hjälptext för DFR_2.1</text>
 
 	<!--
 	===============================================
@@ -54,7 +54,7 @@ Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar 
 	<text id="KAT_2.HLP"></text>
 	<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
 	<text id="FRG_3.HLP"></text>
-	<text id="DFR_3.1.RBK"></text>
+	<text id="DFR_3.1.RBK">andra?</text>
 	<text id="DFR_3.1.HLP"></text>
 	<text id="FRG_4.RBK">Ange utredning eller underlag</text>
 	<text id="FRG_4.HLP"></text>
@@ -123,10 +123,10 @@ Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar 
 	===============================================
 	-->
 	<text id="KAT_5.RBK">Övrigt</text>
-	<text id="KAT_5.HLP"></text>
+	<text id="KAT_5.HLP">Kategori 5 Övrigt hjälptext</text>
 	<text id="FRG_25.RBK">Övriga upplysningar</text>
 	<text id="FRG_25.HLP"></text>
-	<text id="DFR_25.1.RBK"></text>
+	<text id="DFR_25.1.RBK">övrigt</text>
 	<text id="DFR_25.1.HLP"></text>
 
 	<!--
@@ -142,4 +142,18 @@ Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar 
 	<text id="DFR_26.1.HLP"></text>
 	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
 	<text id="DFR_26.2.HLP"></text>
+
+	<text id="KAT_9999.RBK">Tilläggsfrågor</text>
+	<text id="KAT_9999.HLP">TBD</text>
+
+	<tillagg>
+		<tillaggsfraga id="9001">
+			<text id="DFR_9001.1.RBK">Är patienten väldigt skoltrött?</text>
+			<text id="DFR_9001.1.HLP">Ange varför.</text>
+		</tillaggsfraga>
+		<tillaggsfraga id="9002">
+			<text id="DFR_9002.1.RBK">Hur långt är ett snöre?</text>
+			<text id="DFR_9002.1.HLP">Ange längd i centimeter (cm).</text>
+		</tillaggsfraga>
+	</tillagg>
 </texter>
