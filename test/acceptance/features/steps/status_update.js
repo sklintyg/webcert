@@ -78,6 +78,7 @@ function assertNumberOfEvents(query, numEvents, cb) {
         function(err, rows, fields) {
             conn.end();
             if (err) {
+                console.log('Error-code' + err.code);
                 cb(err);
             } else if (rows[0].Counter !== numEvents) {
                 cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');

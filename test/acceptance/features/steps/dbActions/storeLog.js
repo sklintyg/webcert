@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals Promise, wcTestTools, JSON,logger, conn */
+/* globals Promise, wcTestTools, JSON,logger */
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
+var connection;
 
 function formatDate(date) {
     var time = ((date.getHours() < 10) ? '0' : '') +
@@ -58,7 +59,7 @@ function getLogEntries(activity, intygsID, userHSA) {
 
     console.log('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
-        conn.query(query,
+        connection.query(query,
             function(err, rows, fields) {
                 if (err) {
                     reject(err);
@@ -70,15 +71,14 @@ function getLogEntries(activity, intygsID, userHSA) {
 }
 
 function waitForCount(activity, count, intygsID, userHSA, cb) {
-    global.conn = require('./makeConnection')();
-    conn.connect();
+    handleDisconnect();
 
     var intervall = 5000;
 
     getLogEntries(activity, intygsID, userHSA).then(function(result) {
         if (result.length >= count) {
             logger.info('Hittade rader: ' + JSON.stringify(result));
-            conn.end();
+            connection.end();
             cb();
         } else {
             logger.info('Hittade färre än ' + count + 'rader i databasen');
@@ -89,11 +89,37 @@ function waitForCount(activity, count, intygsID, userHSA, cb) {
         }
 
     }, function(err) {
-        conn.end();
+        console.log('Error-code' + err.code);
+        connection.end();
         cb(err);
 
     });
 }
+
+
+// från http://stackoverflow.com/questions/19357539/node-js-server-closed-the-connection
+function handleDisconnect() {
+    connection = require('./makeConnection')(); // Recreate the connection, since
+    // the old one cannot be reused.
+
+    connection.connect(function(err) { // The server is either down
+        if (err) { // or restarting (takes a while sometimes).
+            logger.warn('Fel i anslutning till databasen:', err);
+            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+        } // to avoid a hot loop, and to allow our node script to
+    }); // process asynchronous requests in the meantime.
+    // If you're also serving http, display a 503 error.
+    connection.on('error', function(err) {
+        logger.warn('Anslutningsproblem i databaskoppling' + JSON.stringify(err));
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            logger.info('Skapar ny db-anslutning');
+            handleDisconnect(); // lost due to either server restart, or a
+        } else { // connnection idle timeout (the wait_timeout
+            throw err; // server variable configures this)
+        }
+    });
+}
+
 
 
 module.exports = {
