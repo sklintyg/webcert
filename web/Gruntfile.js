@@ -64,7 +64,7 @@ module.exports = function(grunt) {
         'ts-diabetes': { base: 'intygstyper/ts-diabetes' },
         'luse':        { base: 'intygstyper/fk/sjukersattning', angularModule:'luse' },
         'lisu':        { base: 'intygstyper/fk/sjukpenning-utokad', angularModule:'lisu' },
-        'luae_na':        { base: 'intygstyper/fk/aktivitetsersattning-na', angularModule:'luae_na' }
+        'luae_na':        { base: 'intygstyper/fk/luae_na', angularModule:'luae_na' }
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];

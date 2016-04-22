@@ -239,7 +239,7 @@
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
-        <artifactId>aktivitetsersattning-na</artifactId>
+        <artifactId>luae_na</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
       <dependency>

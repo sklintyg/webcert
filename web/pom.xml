@@ -142,7 +142,7 @@
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
-      <artifactId>aktivitetsersattning-na</artifactId>
+      <artifactId>luae_na</artifactId>
     </dependency>
 
     <!-- RIVTA Schemas -->
