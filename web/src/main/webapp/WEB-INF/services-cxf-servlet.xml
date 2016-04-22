@@ -65,7 +65,7 @@
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/create-draft-certificate.xslt" />
+        <constructor-arg value="transform/clinicalprocess-healthcond-2/create-draft-certificate.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
@@ -100,7 +100,7 @@
   <jaxws:endpoint address="/send-message-to-care/v1.0" implementor="se.inera.intyg.webcert.web.integration.SendMessageToCareResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/send-message-to-care.xslt" />
+        <constructor-arg value="transform/clinicalprocess-healthcond-2/send-message-to-care.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
