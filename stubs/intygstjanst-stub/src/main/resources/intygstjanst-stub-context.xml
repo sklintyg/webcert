@@ -31,7 +31,13 @@
     <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.intyg.webcert.intygstjanststub.GetCertificateForCareResponderStub"/>
     <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.intyg.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
     <jaxws:endpoint address="/revoke-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RevokeMedicalCertificateResponderStub"/>
-    <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.intyg.webcert.intygstjanststub.SendCertificateToRecipientResponderStub"/>
+    <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.intyg.webcert.intygstjanststub.SendCertificateToRecipientResponderStub">
+        <jaxws:schemaLocations>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/interactions/SendCertificateToRecipientInteraction/SendCertificateToRecipientResponder_1.0.xsd</jaxws:schemaLocation>
+        </jaxws:schemaLocations>
+    </jaxws:endpoint>
     <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>
     <jaxws:endpoint address="/register-ts-bas-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSBasResponderStub"/>
     <jaxws:endpoint address="/register-ts-diabetes-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSDiabetesResponderStub"/>
