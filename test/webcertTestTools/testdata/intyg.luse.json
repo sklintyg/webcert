@@ -1,0 +1,91 @@
+{
+  "typ": "luse",
+  "id": "7f07e797-47c9-4c16-8b55-9c2fc7f1b982",
+  "grundData": {
+    "signeringsdatum": "2016-04-21T14:02:26.000",
+    "skapadAv": {
+      "personId": "IFV1239877878-1049",
+      "fullstandigtNamn": "Jan Nilsson",
+      "forskrivarKod": "0000000",
+      "befattningar": [],
+      "specialiteter": [],
+      "vardenhet": {
+        "enhetsid": "IFV1239877878-1042",
+        "enhetsnamn": "WebCert-Enhet1",
+        "postadress": "Storgatan 1",
+        "postnummer": "12345",
+        "postort": "Småmåla",
+        "telefonnummer": "0101234567890",
+        "epost": "enhet1@webcert.invalid.se",
+        "vardgivare": {
+          "vardgivarid": "IFV1239877878-1041",
+          "vardgivarnamn": "WebCert-Vårdgivare1"
+        },
+        "arbetsplatsKod": "1234567890"
+      }
+    },
+    "patient": {
+      "personId": "191212121212",
+      "fullstandigtNamn": "Tolvan Tolvansson",
+      "fornamn": "Tolvan",
+      "efternamn": "Tolvansson",
+      "postadress": "Svensson, Storgatan 1, PL 1234",
+      "postnummer": "12345",
+      "postort": "Småmåla",
+      "samordningsNummer": false
+    }
+  },
+  "textVersion": "1.0",
+  "undersokningAvPatienten": "2016-04-21",
+  "journaluppgifter": "2016-04-21",
+  "anhorigsBeskrivningAvPatienten": "2016-04-21",
+  "annatGrundForMU": "2016-04-21",
+  "annatGrundForMUBeskrivning": "Annat underlag.",
+  "kannedomOmPatient": "2016-04-21",
+  "underlagFinns": true,
+  "underlag": [
+    {
+      "typ": 2,
+      "datum": "2016-04-07",
+      "hamtasFran": "Information om utredning."
+    }
+  ],
+  "sjukdomsforlopp": "Sjukdomsförlopp.",
+  "diagnoser": [
+    {
+      "diagnosKod": "Z60",
+      "diagnosKodSystem": "ICD_10_SE",
+      "diagnosBeskrivning": "Problem som har samband med social miljö",
+      "diagnosDisplayName": ""
+    }
+  ],
+  "diagnosgrund": "När ställdes diagnos.",
+  "nyBedomningDiagnosgrund": false,
+  "funktionsnedsattningIntellektuell": "Intellektuell.",
+  "funktionsnedsattningKommunikation": "Social.",
+  "funktionsnedsattningKoncentration": "Koncentration.",
+  "funktionsnedsattningPsykisk": "Psykisk.",
+  "funktionsnedsattningSynHorselTal": "Tal.",
+  "funktionsnedsattningBalansKoordination": "Balans.",
+  "funktionsnedsattningAnnan": "Annan funktion.",
+  "aktivitetsbegransning": "Aktivitetsbegränsning allt.",
+  "pagaendeBehandling": "Pågående åtgärder.",
+  "avslutadBehandling": "Åtgärder.",
+  "planeradBehandling": "Planerade åtgärder.",
+  "substansintag": "Substans.",
+  "medicinskaForutsattningarForArbete": "Förutsättningar över tid.",
+  "formagaTrotsBegransning": "Vad kan patienten göra.",
+  "ovrigt": "Övrigt lång text.",
+  "kontaktMedFk": true,
+  "anledningTillKontakt": "Kontaktinfo.",
+  "tillaggsfragor": [
+    {
+      "id": "9001",
+      "svar": "Skostorlek."
+    },
+    {
+      "id": "9002",
+      "svar": "Längd."
+    }
+  ]
+}

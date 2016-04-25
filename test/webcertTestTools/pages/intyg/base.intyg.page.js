@@ -49,13 +49,23 @@ var BaseIntyg = JClass._extend({
         };
         this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
-        // element(by.css('.btn.btn-info'))
+
+        this.signedMessage = element(by.id('certificate-is-sent-to-it-message-text'));
+        this.sentMessage1 = element(by.id('certificate-is-on-sendqueue-to-it-message-text'));
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
     },
     isAt: function() {
         return this.at.isDisplayed();
+    },
+    send: function() {
+        var self = this;
+        return this.skicka.knapp.click().then(function() {
+            return self.skicka.samtyckeCheckbox.click().then(function() {
+                return self.skicka.dialogKnapp.click();
+            })
+        });
     },
     copyBtn: function() {
         return this.copy.button;

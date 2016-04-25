@@ -23,15 +23,15 @@
 /*globals element,by */
 'use strict';
 
-var BaseUtkast = require('./base.intyg.page.js');
+var BaseIntyg = require('./base.intyg.page.js');
 
 //TODO: Det är möjligt att vissa element här endast finns för LUSE, de bör flyttas bort.
 
-var BaseSmiIntygPage = BaseUtkast._extend({
+var BaseSmiIntygPage = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-
-        this.at = element(by.css('.edit-form'));
+        
+        this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
 
         this.diagnoseCode = element(by.id('diagnoseCode'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));

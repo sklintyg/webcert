@@ -22,6 +22,20 @@
  */
 
 var intygTemplates = {
+    'luseMax': {
+        personnr: '19121212-1212',
+        patientNamn: 'Tolvan Tolvansson',
+        issuer: 'IFV1239877878-104B',
+        issued: '2016-04-01',
+        validFrom: '2016-04-01',
+        validTo: '2016-04-11',
+        enhetId: 'IFV1239877878-1042',
+        vardgivarId: 'IFV1239877878-1041',
+        intygType: 'luse',
+        intygId: 'luse-protractor-max',
+        sent: false,
+        revoked: false
+    },
     'fkMax': {
         personnr: '19121212-1212',
         patientNamn: 'Tolvan Tolvansson',
