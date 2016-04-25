@@ -566,7 +566,7 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setIntygsId(utkast.getIntygsId());
         arende.setIntygTyp(utkast.getIntygsTyp());
         arende.setMeddelande(meddelande);
-        arende.setPatientPersonId(utkast.getPatientPersonnummer().getPersonnummer());
+        arende.setPatientPersonId(utkast.getPatientPersonnummer().getPersonnummerWithoutDash());
         arende.setRubrik(rubrik);
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
         arende.setSigneratAvName(getSignedByName(utkast));

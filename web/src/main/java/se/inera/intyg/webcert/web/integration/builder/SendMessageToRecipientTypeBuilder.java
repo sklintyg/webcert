@@ -75,7 +75,7 @@ public final class SendMessageToRecipientTypeBuilder {
     private static PersonId buildPersonId(Arende arende) {
         PersonId personId = new PersonId();
         personId.setRoot(PERSON_ID_ROOT);
-        personId.setExtension(arende.getPatientPersonId());
+        personId.setExtension(arende.getPatientPersonId().replace("-", ""));
         return personId;
     }
 

@@ -449,6 +449,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setAmne(ArendeAmne.OVRIGT);
         fraga.setSenasteHandelse(now);
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        fraga.setPatientPersonId("191212121212");
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
@@ -514,6 +515,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende fraga = new Arende();
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
         fraga.setAmne(ArendeAmne.KOMPLT);
+        fraga.setPatientPersonId("191212121212");
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         WebCertUser webcertUser = new WebCertUser();
@@ -605,6 +607,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setAmne(ArendeAmne.OVRIGT);
         fraga.setMeddelandeId(svarPaMeddelandeId);
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        fraga.setPatientPersonId("191212121212");
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
