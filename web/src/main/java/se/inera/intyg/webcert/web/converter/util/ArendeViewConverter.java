@@ -21,9 +21,7 @@ package se.inera.intyg.webcert.web.converter.util;
 import static se.inera.certificate.modules.fkparent.model.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1;
 import static se.inera.certificate.modules.fkparent.model.converter.RespConstants.TILLAGGSFRAGOR_SVAR_JSON_ID;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,12 +42,12 @@ import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
-public class TransportToArende {
-    private static final Logger LOG = LoggerFactory.getLogger(TransportToArende.class);
+public class ArendeViewConverter {
+    private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
     private static final int TILLAGGSFRAGA_START = 9000;
 
     @Autowired
@@ -80,6 +78,7 @@ public class TransportToArende {
         template.setTimestamp(arende.getTimestamp());
         template.setSigneratAv(arende.getSigneratAv());
         template.setVidarebefordrad(arende.getVidarebefordrad());
+        template.setVardaktorNamn(arende.getVardaktorName());
 
         return template.build();
     }

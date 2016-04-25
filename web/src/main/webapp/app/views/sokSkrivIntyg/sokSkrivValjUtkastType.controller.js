@@ -39,7 +39,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 currentList: undefined,
                 unsigned: 'certlist-empty', // unsigned, unsigned-mixed,
                 luseDescriptionLabel: 'DFR_3.1',
-                lisuDescriptionLabel: 'XYZ123'
+                lisuDescriptionLabel: 'XYZ123',
+                luae_naDescriptionLabel: 'luae123'
             };
 
             $scope.filterForm = {

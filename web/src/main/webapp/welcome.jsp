@@ -43,7 +43,7 @@
         .envButtons input { margin-right: 0.2em; }
     </style>
 
-    <script type="text/javascript" src="/web/webjars/angularjs/1.4.7/angular.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.min.js"></script>
 
     <script type="text/javascript">
         //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar

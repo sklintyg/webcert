@@ -164,6 +164,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
                 return null;
             }
 
+            @Override
+            public String getAdditionalInfo(Intyg intyg) throws ModuleException {
+                return null;
+            }
+
         };
     }
 

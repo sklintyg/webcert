@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.persistence.arende.converter;
+package se.inera.intyg.webcert.web.converter.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -25,38 +25,29 @@ import se.inera.certificate.modules.sjukersattning.model.internal.Sjukersattning
 import se.inera.certificate.modules.sjukersattning.rest.SjukersattningModuleApi;
 import se.inera.certificate.modules.sjukpenning_utokad.model.internal.SjukpenningUtokadUtlatande;
 import se.inera.certificate.modules.sjukpenning_utokad.rest.SjukpenningUtokadModuleApi;
-import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.InternalDate;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.model.*;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
-import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TransportToArendeTest {
+public class ArendeViewConverterTest {
     private static final String PATIENT_PERSON_ID = "19121212-1212";
     private static final String SKAPADAV_PERSON_ID = "19121212-1212";
     private static final String ENHETS_ID = "enhetsId";
     private static final String ENHETS_NAMN = "enhetsNamn";
     private static final String intygsId = "intyg-1";
+    private static final String VARDAKTOR_NAMN = "vardaktor namn";
 
     @InjectMocks
-    private TransportToArende converter;
+    private ArendeViewConverter converter;
 
     @Mock
     private IntygModuleRegistryImpl moduleRegistry;
@@ -87,6 +78,7 @@ public class TransportToArendeTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
+        assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
     }
 
     @Test
@@ -118,6 +110,7 @@ public class TransportToArendeTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
+        assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
     }
 
     private ArendeView setupMocks(Arende arende, ModuleApi moduleApi, LocalDateTime timeStamp, Utlatande utlatande)
@@ -189,7 +182,8 @@ public class TransportToArendeTest {
         arende.setPatientPersonId("191212121212");
         arende.setTimestamp(LocalDateTime.now());
         arende.setIntygTyp(intygstyp);
-        
+        arende.setVardaktorName(VARDAKTOR_NAMN);
+
         arende.setSkickatAv("Fragestallare");
         arende.setRubrik("rubrik");
         arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());

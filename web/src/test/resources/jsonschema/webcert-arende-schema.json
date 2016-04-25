@@ -79,6 +79,9 @@
         },
         "paminnelseMeddelandeId": {
           "type": "string"
+        },
+        "vardaktorNamn": {
+          "type": "string"
         }
       },
       "required": [
@@ -174,6 +177,9 @@
           "type": "string"
         },
         "paminnelseMeddelandeId": {
+          "type": "string"
+        },
+        "vardaktorNamn": {
           "type": "string"
         }
       }

@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
-import se.inera.intyg.webcert.web.converter.util.TransportToArende;
+import se.inera.intyg.webcert.web.converter.util.ArendeViewConverter;
 import se.inera.intyg.webcert.web.integration.builder.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -100,7 +100,7 @@ public class ArendeServiceImpl implements ArendeService {
     private MonitoringLogService monitoringLog;
 
     @Autowired
-    private TransportToArende transportToArende;
+    private ArendeViewConverter arendeViewConverter;
 
     @Autowired
     private HsaEmployeeService hsaEmployeeService;
@@ -149,7 +149,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
 
-        ArendeView arendeView = transportToArende.convert(saved);
+        ArendeView arendeView = arendeViewConverter.convert(saved);
 
         return ArendeConversationView.create(arendeView, null, saved.getSenasteHandelse(), new ArrayList<>());
     }
@@ -192,8 +192,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
 
-        ArendeView arendeViewQuestion = transportToArende.convert(svarPaMeddelande);
-        ArendeView arendeViewAnswer = transportToArende.convert(saved);
+        ArendeView arendeViewQuestion = arendeViewConverter.convert(svarPaMeddelande);
+        ArendeView arendeViewAnswer = arendeViewConverter.convert(saved);
         List<ArendeView> arendeViewPaminnelser = getPaminnelser(svarPaMeddelandeId);
 
         return ArendeConversationView.create(arendeViewQuestion, arendeViewAnswer, svarPaMeddelande.getSenasteHandelse(), arendeViewPaminnelser);
@@ -206,11 +206,11 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende updatedArende = repo.save(arende);
 
-        ArendeView arendeViewQuestion = transportToArende.convert(updatedArende);
+        ArendeView arendeViewQuestion = arendeViewConverter.convert(updatedArende);
         ArendeView arendeViewAnswer = null;
         List<Arende> svar = repo.findBySvarPaId(meddelandeId);
         if (CollectionUtils.isNotEmpty(svar)) {
-            arendeViewAnswer = transportToArende.convert(svar.get(0));
+            arendeViewAnswer = arendeViewConverter.convert(svar.get(0));
         }
         List<ArendeView> arendeViewPaminnelser = getPaminnelser(meddelandeId);
 
@@ -246,11 +246,11 @@ public class ArendeServiceImpl implements ArendeService {
             sendNotification(openedArende, notificationEvent);
         }
 
-        ArendeView arendeViewQuestion = transportToArende.convert(openedArende);
+        ArendeView arendeViewQuestion = arendeViewConverter.convert(openedArende);
         ArendeView arendeViewAnswer = null;
         List<Arende> svar = repo.findBySvarPaId(meddelandeId);
         if (CollectionUtils.isNotEmpty(svar)) {
-            arendeViewAnswer = transportToArende.convert(svar.get(0));
+            arendeViewAnswer = arendeViewConverter.convert(svar.get(0));
         }
         List<ArendeView> arendeViewPaminnelser = getPaminnelser(meddelandeId);
 
@@ -302,7 +302,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         List<ArendeView> arendeViews = new ArrayList<>();
         for (Arende arende : arendeList) {
-            ArendeView latestDraft = transportToArende.convert(arende);
+            ArendeView latestDraft = arendeViewConverter.convert(arende);
             arendeViews.add(latestDraft);
         }
         List<ArendeConversationView> arendeConversations = buildArendeConversations(arendeViews);
@@ -362,11 +362,11 @@ public class ArendeServiceImpl implements ArendeService {
             sendNotification(closedArende, notificationEvent);
         }
 
-        ArendeView arendeViewQuestion = transportToArende.convert(closedArende);
+        ArendeView arendeViewQuestion = arendeViewConverter.convert(closedArende);
         ArendeView arendeViewAnswer = null;
         List<Arende> svar = repo.findBySvarPaId(meddelandeId);
         if (CollectionUtils.isNotEmpty(svar)) {
-            arendeViewAnswer = transportToArende.convert(svar.get(0));
+            arendeViewAnswer = arendeViewConverter.convert(svar.get(0));
         }
         List<ArendeView> arendeViewPaminnelser = getPaminnelser(meddelandeId);
 
@@ -485,7 +485,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<Arende> paminnelser = repo.findByPaminnelseMeddelandeId(meddelandeId);
         for (Arende paminnelse : paminnelser) {
-            arendeViewPaminnelser.add(transportToArende.convert(paminnelse));
+            arendeViewPaminnelser.add(arendeViewConverter.convert(paminnelse));
         }
         return arendeViewPaminnelser;
     }
@@ -599,6 +599,7 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setSenasteHandelse(now);
         arende.setSkickatTidpunkt(now);
         arende.setTimestamp(now);
+        arende.setVardaktorName(webcertUserService.getUser().getNamn());
     }
 
     private String getSignedByName(Utkast utkast) {

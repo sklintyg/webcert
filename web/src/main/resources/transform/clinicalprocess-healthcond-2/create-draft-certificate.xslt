@@ -19,9 +19,9 @@
   -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:cdc="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:1">
+                xmlns:cdc="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:2">
 
-  <xsl:include href="transform/general-clinicalprocess-healthcond-transform.xslt"/>
+  <xsl:include href="transform/clinicalprocess-healthcond-2/general-clinicalprocess-healthcond-transform.xslt"/>
 
   <xsl:template name="response">
      <cdc:CreateDraftCertificateResponse>

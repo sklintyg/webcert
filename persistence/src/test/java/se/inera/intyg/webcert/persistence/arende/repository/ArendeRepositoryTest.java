@@ -81,6 +81,7 @@ public class ArendeRepositoryTest {
         assertEquals(read.getTimestamp(), saved.getTimestamp());
         assertEquals(read.getVidarebefordrad(), saved.getVidarebefordrad());
         assertEquals(read.getSenasteHandelse(), saved.getSenasteHandelse());
+        assertEquals(read.getVardaktorName(), saved.getVardaktorName());
 
         assertEquals(read.getKomplettering(), saved.getKomplettering());
         assertEquals(read.getKontaktInfo(), saved.getKontaktInfo());
@@ -554,6 +555,13 @@ public class ArendeRepositoryTest {
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId,
             String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
             String meddelandeId) {
+        return buildArende(signeratAv, signeratAvName, enhet, status, paminnelseMeddelandeId, svarPaId, skickatAv, sistaDatumForSvar, amne,
+                vidarebefordrad, senasteHandelse, meddelandeId, "vardaktorName");
+    }
+
+    private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId, String svarPaId,
+            String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
+            String meddelandeId, String vardaktorName) {
         Arende res = new Arende();
         res.setAmne(amne);
         res.setIntygsId("INTYG_ID");
@@ -576,6 +584,7 @@ public class ArendeRepositoryTest {
         res.setTimestamp(LocalDateTime.now());
         res.setVidarebefordrad(vidarebefordrad);
         res.setSenasteHandelse(senasteHandelse);
+        res.setVardaktorName(vardaktorName);
 
         res.getKomplettering().add(buildMedicinsktArende("1", 1, "text 1"));
         res.getKomplettering().add(buildMedicinsktArende("2", null, "text 2"));

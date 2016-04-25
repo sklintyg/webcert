@@ -54,7 +54,8 @@ knownIntygstyper:
   - &ki030 ts-diabetes
   - &ki040 lisu
   - &ki050 luse
-  - &ki060 luae_fs
+  - &ki060 luae_na
+  - &ki070 luae_fs
 
 # De rättigheter som systemet har
 knownPrivileges:

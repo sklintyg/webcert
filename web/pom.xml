@@ -142,6 +142,10 @@
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>luae_na</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>luae_fs</artifactId>
     </dependency>
 
@@ -651,6 +655,13 @@
                     verbose="false">
                   <fileset
                       dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/lisu">
+                  </fileset>
+                </copy>
+                <copy
+                    todir="${project.build.directory}/webjardependencies/luae_na"
+                    verbose="false">
+                  <fileset
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/luae_na">
                   </fileset>
                 </copy>
                 <copy

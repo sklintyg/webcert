@@ -778,4 +778,10 @@
       columnNames="MEDDELANDE_ID"
       tableName="ARENDE" />
   </changeSet>
+
+  <changeSet id="35" author="mn">
+    <addColumn tableName="ARENDE">
+      <column name="VARDAKTOR_NAME" type="varchar(255)" />
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>
