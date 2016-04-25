@@ -23,7 +23,6 @@
 
 /* globals JSON */
 'use strict';
-var fkIntyg = require('./../testdata/intyg.fk7263.json');
 
 /*
  Options
@@ -55,7 +54,8 @@ function _buildIntyg(intygOptions) {
 
     //    console.log("======================================================INTYG");
     //    console.log(fkIntyg);
-    var jsonDocument = buildDocumentFromIntygTemplate(fkIntyg, intygOptions);
+    var intygTemplate = require('./../testdata/intyg.' + intygOptions.intygType + '.json');
+    var jsonDocument = buildDocumentFromIntygTemplate(intygTemplate, intygOptions);
     //    console.log("======================================================JSONDOCUMENT");
     //    console.log(jsonDocument);
 

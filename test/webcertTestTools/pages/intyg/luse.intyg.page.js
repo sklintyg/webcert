@@ -26,6 +26,7 @@ var BaseSmiIntygPage = require('./smi.base.intyg.page.js');
 var LuseIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
+        this.intygType = 'luse';
 
         this.andraMedicinskaUtredningar = {
             field: element(by.cssContainingText('.intyg-field', 'andra medicinska utredningar')),

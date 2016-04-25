@@ -60,7 +60,6 @@ var BaseSmiUtkast = BaseUtkast._extend({
                     datum: row.element(by.css('[name="-Date"]')),
                     information: row.element(by.css('.input-full'))
                 };
-
             },
             laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
 
