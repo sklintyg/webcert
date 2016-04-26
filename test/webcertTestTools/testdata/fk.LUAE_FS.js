@@ -19,16 +19,22 @@
 
 'use strict';
 
+var testdataHelper = require('./../helpers/testdataHelper.js');
+var shuffle = testdataHelper.shuffle;
+var fkValues = require('./testvalues.js').fk;
+
 module.exports = {
-    fk: {
-        '7263': require('./fk.7263.js'),
-        LUSE: require('./fk.LUSE.js'),
-        LISU: require('./fk.LISU.js'),
-        LUAE_FS: require('./fk.LUAE_FS.js')
-    },
-    ts: {
-        bas: require('./ts.bas.js'),
-        diabetes: require('./ts.diabetes.js')
-    },
-    values: require('./testvalues.js')
+    getRandom: function(intygsID) {
+        return {
+            intygId: intygsID,
+            typ: 'Läkarintyg för aktivitetsersättning förlängd skolgång',
+
+            diagnos: {
+                kod: shuffle(fkValues.ICD10)[0],
+                bakgrund: testdataHelper.randomTextString()
+            },
+            funktionsnedsattningDebut: testdataHelper.randomTextString(),
+            funktionsnedsattningPaverkan: testdataHelper.randomTextString()
+        };
+    }
 };

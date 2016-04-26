@@ -53,6 +53,9 @@ module.exports = {
             utkast: require(intygPath + 'lisu.utkast.page.js')
                 //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
+        luae_fs: {
+            utkast: require(intygPath + 'luae_fs.utkast.page.js')
+        },
         ts: {
             diabetes: {
                 utkast: require(intygPath + 'tsDiabetes.utkast.page.js'),
