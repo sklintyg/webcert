@@ -213,7 +213,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelse, callback) {
-        assertEvents(ursprungligtIntyg, handelse, parseInt(antal, 10), callback);
+        assertEvents(ursprungligtIntyg.id, handelse, parseInt(antal, 10), callback);
     });
 
     this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {

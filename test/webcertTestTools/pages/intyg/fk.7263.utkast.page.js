@@ -358,6 +358,14 @@ var FkUtkast = BaseUtkast._extend({
             }
         }
         return Promise.all(promisesArr);
+    },
+    getQAElementByText: function(containingText) {
+        var panel = element(by.cssContainingText('.qa-panel', containingText));
+        return {
+            panel: panel,
+            text: panel.element(by.css('textarea')),
+            sendButton: panel.element(by.css('.btn-success'))
+        };
     }
 });
 

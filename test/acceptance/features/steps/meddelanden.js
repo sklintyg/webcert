@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, protractor, logger*/
+/* globals pages, intyg, protractor, logger, JSON*/
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
         fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
@@ -39,9 +40,21 @@ module.exports = function() {
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
         fkIntygPage.svaraMedNyttIntyg(intyg.messages[0].id)
             .then(function() {
-                global.ursprungligtIntyg = intyg.id;
+                //Fulhack för att inte global ska innehålla en referens
+                global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
                 callback();
             });
+    });
+
+    this.Given(/^ska jag se kompletteringsfrågan på utkast\-sidan$/, function(callback) {
+        var fragaText = global.ursprungligtIntyg.guidcheck;
+        console.log('Letar efter fråga som innehåller text: ' + fragaText);
+        expect(fkUtkastPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
+            logger.info('OK - hittade fråga med text: ' + fragaText);
+            callback();
+        }, function(reason) {
+            callback('FEL : ' + reason);
+        });
     });
 
 };
