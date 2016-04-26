@@ -61,7 +61,6 @@ module.exports = {
                             cb();
                         }
                         if (err) {
-                            console.log('Error-code' + err.code);
                             cb(err);
                         }
 
