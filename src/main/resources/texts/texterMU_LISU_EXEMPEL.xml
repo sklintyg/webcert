@@ -148,7 +148,7 @@
   <text id="KV_FKMU_0003.4.RBK">Nedsatt med 1/4</text>
   <text id="KV_FKMU_0003.4.HLP">Hjälp.</text>
 
-  <text id="KV_FKMU_0006.1.RBK">Med stor sannolikhet</text>
+  <text id="KV_FKMU_0006.1.RBK">Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning</text>
   <text id="KV_FKMU_0006.1.HLP">Hjälp.</text>
   <text id="KV_FKMU_0006.2.RBK">Patienten bedöms kunna återgå i nuvarande sysselsättning, men sjukskrivningstiden är sannolikt längre än 180 dagar</text>
   <text id="KV_FKMU_0006.2.HLP">Hjälp.</text>
@@ -156,6 +156,17 @@
   <text id="KV_FKMU_0006.3.HLP">Hjälp.</text>
   <text id="KV_FKMU_0006.4.RBK">Prognos för återgång i nuvarande sysselsättning är oklar</text>
   <text id="KV_FKMU_0006.4.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0006.5.RBK">Patienten kommer med stor sannolikhet att återgå helt i nuvarande sysselsättning efter x antal dagar</text>
+  <text id="KV_FKMU_0006.5.HLP">Hjälp.</text>
+
+  <text id="KV_FKMU_0007.1.RBK">30 dagar</text>
+  <text id="KV_FKMU_0007.1.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0007.2.RBK">60 dagar</text>
+  <text id="KV_FKMU_0007.2.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0007.3.RBK">90 dagar</text>
+  <text id="KV_FKMU_0007.3.HLP">Hjälp.</text>
+  <text id="KV_FKMU_0007.4.RBK">180 dagar</text>
+  <text id="KV_FKMU_0007.4.HLP">Hjälp.</text>
 
   <text id="FRG_32.RBK">Din bedömning av patientens behov av sjukskrivning utifrån aktuell sysselsättning</text>
   <text id="FRG_32.HLP">För den som studerar är det endast möjligt att sjukskriva på heltid.</text>
@@ -200,6 +211,8 @@
 
   <text id="DFR_39.2.RBK">Prognos för återgång i nuvarande sysselsättning är oklar (förtydliga i fritext)</text>
   <text id="DFR_39.2.HLP">TBD</text>
+  <text id="DFR_39.3.RBK">Prognos för antal dagar till arbete</text>
+  <text id="DFR_39.3.HLP">TBD</text>
 
   <!--
   ===============================================
