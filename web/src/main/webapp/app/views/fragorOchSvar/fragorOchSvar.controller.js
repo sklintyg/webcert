@@ -231,6 +231,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 $scope.filterForm.lakareSelector = $scope.lakareList[0];
                 $scope.filterForm.questionFrom = 'default';
                 $scope.filterForm.vidarebefordrad = 'default';
+                $scope.filterForm.changedFrom = undefined;
+                $scope.filterForm.changedTo = undefined;
             }
 
             function loadSearchForm() {
