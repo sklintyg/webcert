@@ -124,16 +124,17 @@ module.exports = function() {
                     } else {
                         var resultcode = result.result.resultCode;
                         logger.info('ResultCode: ' + resultcode);
-
-                        if (resultcode !== 'OK') {
-                            callback('ResultCode: ' + resultcode + '\n' + resBody);
-                        }
                         console.log(result);
-                        intyg.id = result['utlatande-id'].attributes.extension;
-                        logger.info('intyg.id: ' + intyg.id);
-                        callback();
-                    }
+                        if (resultcode !== 'OK') {
+                            logger.info(result);
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        } else {
+                            intyg.id = result['utlatande-id'].attributes.extension;
+                            logger.info('intyg.id: ' + intyg.id);
+                            callback();
+                        }
 
+                    }
                 });
             }
         });
