@@ -16,7 +16,8 @@
                 "vardgivare": {
                     "vardgivarid": "SE0000000000-HAHAHHSAA",
                     "vardgivarnamn": "Vårdgivarnamn"
-                }
+                },
+                "arbetsplatsKod": "123456789011"
             }
         },
         "patient": {
