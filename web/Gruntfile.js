@@ -53,7 +53,7 @@ module.exports = function(grunt) {
             return '/app/' + file;
         }).
         concat('/app/templates.js'), null, 4));
-    webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert.map(function(file) {
+        webcert = [SRC_DIR + 'app.js', DEST_DIR + 'templates.js'].concat(webcert.map(function(file) {
         return SRC_DIR + file;
     }));
 
