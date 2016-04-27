@@ -68,6 +68,11 @@
         <constructor-arg value="transform/clinicalprocess-healthcond-2/create-draft-certificate.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
+    <jaxws:schemaLocations>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_2.0.xsd</jaxws:schemaLocation>
+    </jaxws:schemaLocations>
   </jaxws:endpoint>
 
   <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.intyg.webcert.web.integration.ReceiveQuestionResponderImpl">
@@ -103,6 +108,11 @@
         <constructor-arg value="transform/clinicalprocess-healthcond-2/send-message-to-care.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
+    <jaxws:schemaLocations>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/interactions/SendMessageToCareInteraction/SendMessageToCareResponder_1.0.xsd</jaxws:schemaLocation>
+    </jaxws:schemaLocations>
   </jaxws:endpoint>
 
 </beans>

@@ -78,7 +78,6 @@ function assertNumberOfEvents(query, numEvents, cb) {
         function(err, rows, fields) {
             conn.end();
             if (err) {
-                console.log('Error-code' + err.code);
                 cb(err);
             } else if (rows[0].Counter !== numEvents) {
                 cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
@@ -125,16 +124,17 @@ module.exports = function() {
                     } else {
                         var resultcode = result.result.resultCode;
                         logger.info('ResultCode: ' + resultcode);
-
+                        console.log(result);
                         if (resultcode !== 'OK') {
+                            logger.info(result);
                             callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        } else {
+                            intyg.id = result['utlatande-id'].attributes.extension;
+                            logger.info('intyg.id: ' + intyg.id);
+                            callback();
                         }
 
-                        intyg.id = result['utlatande-id'].attributes.extension;
-                        logger.info('intyg.id: ' + intyg.id);
-                        callback();
                     }
-
                 });
             }
         });
@@ -213,7 +213,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelse, callback) {
-        assertEvents(ursprungligtIntyg, handelse, parseInt(antal, 10), callback);
+        assertEvents(ursprungligtIntyg.id, handelse, parseInt(antal, 10), callback);
     });
 
     this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {

@@ -89,7 +89,6 @@ function waitForCount(activity, count, intygsID, userHSA, cb) {
         }
 
     }, function(err) {
-        console.log('Error-code' + err.code);
         connection.end();
         cb(err);
 
@@ -99,24 +98,21 @@ function waitForCount(activity, count, intygsID, userHSA, cb) {
 
 // från http://stackoverflow.com/questions/19357539/node-js-server-closed-the-connection
 function handleDisconnect() {
-    connection = require('./makeConnection')(); // Recreate the connection, since
-    // the old one cannot be reused.
+    connection = require('./makeConnection')();
 
-    connection.connect(function(err) { // The server is either down
-        if (err) { // or restarting (takes a while sometimes).
+    connection.connect(function(err) {
+        if (err) {
             logger.warn('Fel i anslutning till databasen:', err);
-            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-        } // to avoid a hot loop, and to allow our node script to
-    }); // process asynchronous requests in the meantime.
-    // If you're also serving http, display a 503 error.
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
     connection.on('error', function(err) {
         logger.warn('Anslutningsproblem i databaskoppling' + JSON.stringify(err));
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-            logger.info('Skapar ny db-anslutning');
-            handleDisconnect(); // lost due to either server restart, or a
-        } else { // connnection idle timeout (the wait_timeout
-            throw err; // server variable configures this)
-        }
+        // if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        //     //logger.info('Skapar ny db-anslutning');
+        //     //handleDisconnect(); // lost due to either server restart, or a
+        // } else { // connnection idle timeout
+        // }
     });
 }
 

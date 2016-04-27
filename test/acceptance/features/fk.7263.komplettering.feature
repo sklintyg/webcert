@@ -14,9 +14,13 @@ Scenario: Svara med nytt intyg
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
 
-   Och jag går in på intygsutkastet via djupintegrationslänk
+   När jag går in på intygsutkastet via djupintegrationslänk
    Och jag väljer att svara med ett nytt intyg
-   Och jag signerar intyget
+   Så ska jag se kompletteringsfrågan på utkast-sidan
+
+   När jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
-   Så ska 1 statusuppdatering "HAN9" skickas för det ursprungliga intyget
-   Så ska intygets status vara "Intyget är signerat"	
+   Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
+   Och ska intygets status vara "Intyget är signerat"
+   Och ska 1 statusuppdatering "HAN9" skickas för det ursprungliga intyget
+    

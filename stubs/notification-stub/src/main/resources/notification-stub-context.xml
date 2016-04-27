@@ -38,7 +38,13 @@
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub">
     <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare v2 -->
-    <jaxws:endpoint address="/certificate-status-update-for-care-stub/v2.0" implementor="se.inera.intyg.webcert.notificationstub.v2.CertificateStatusUpdateForCareResponderStub" />
+    <jaxws:endpoint address="/certificate-status-update-for-care-stub/v2.0" implementor="se.inera.intyg.webcert.notificationstub.v2.CertificateStatusUpdateForCareResponderStub">
+        <jaxws:schemaLocations>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/interactions/CertificateStatusUpdateForCareInteraction/CertificateStatusUpdateForCareResponder_2.0.xsd</jaxws:schemaLocation>
+        </jaxws:schemaLocations>
+    </jaxws:endpoint>
   </beans>
 
   <beans profile="dev,testability-api">

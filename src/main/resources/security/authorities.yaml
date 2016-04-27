@@ -152,7 +152,9 @@ privileges:
       - *ki010 # FK7263
       - *ki040 # lisu 
       - *ki050 # luse
-    requestOrigins: # Implicit alla
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
   - &p070
     name: *kp070
     desc: Filtrera på annan läkare
