@@ -25,7 +25,8 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luae_fs.utkast;
 var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
 
-fdescribe('Create and Sign luae_fs utkast', function() {
+// Use fdescribe to run in isolation.
+describe('Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
 
@@ -39,7 +40,7 @@ fdescribe('Create and Sign luae_fs utkast', function() {
         describe('Interagera med utkastet', function() {
 
             it('Spara undan intygsId från URL', function() {
-            //
+
                 // Save id so it can be removed in cleanup stage.
                 browser.getCurrentUrl().then(function(url) {
                     utkastId = url.split('/').pop();
@@ -49,17 +50,31 @@ fdescribe('Create and Sign luae_fs utkast', function() {
             describe('Fyll i luae_fs intyg', function() {
 
                 it('Grund - baserat på', function() {
-                    UtkastPage.angeIntygetBaserasPa( {
-                        minUndersokning : {
-                            datum: '2016-04-22'
-                        }});
 
-                    UtkastPage.angeIntygetBaserasPa( {
+                    var promiseArr = [];
+
+                    promiseArr.push(UtkastPage.angeIntygetBaserasPa( {
+                        minUndersokningAvPatienten : {
+                            datum: '2016-04-22'
+                        }}));
+
+                    promiseArr.push(UtkastPage.angeIntygetBaserasPa( {
                         kannedomOmPatient : {
                             datum: '2016-04-21'
-                        }});
+                        }}));
 
+                    promiseArr.push(UtkastPage.angeIntygetBaserasPa( {
+                        annat : {
+                            datum: '2016-04-23',
+                            beskrivning: 'Utlåtande från skolledningen'
+                        }}));
+
+                    Promise.all(promiseArr);
+
+                    expect(UtkastPage.baseratPa.minUndersokningAvPatienten.datum.getAttribute('value')).toBe('2016-04-22');
                     expect(UtkastPage.baseratPa.kannedomOmPatient.datum.getAttribute('value')).toBe('2016-04-21');
+                    expect(UtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-04-23');
+                    expect(UtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Utlåtande från skolledningen');
                 });
 
                 it('Andra medicinska utredningar eller underlag', function() {
@@ -69,6 +84,16 @@ fdescribe('Create and Sign luae_fs utkast', function() {
                         infoOmUtredningen: 'Hämtas hos posten'
                     }];
                     UtkastPage.angeAndraMedicinskaUtredningar(utredningar);
+
+                    expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
+                });
+
+                it('Lägg till ytterligare ett annat underlag, ta bort igen.', function() {
+                    UtkastPage.clickCreateUnderlag();
+                    expect(UtkastPage.getNumberOfUnderlag()).toBe(2);
+
+                    UtkastPage.clickRemoveUnderlag(1);
+                    expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
                 });
 
                 it('Ange diagnoser', function() {
@@ -77,8 +102,12 @@ fdescribe('Create and Sign luae_fs utkast', function() {
                         diagnoser: [{'kod':'J21'},{'kod':'J22'},{'kod':'A21'}]
                     };
                     UtkastPage.angeDiagnos(diagnosObj);
+
+                    expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3);
+
+                    UtkastPage.taBortDiagnos(1);
+                    expect(UtkastPage.getNumberOfDiagnosRows()).toBe(2);
                     browser.ignoreSynchronization = true;
-                    expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3)
                 });
 
                 it('Ange funktionsnedsättningar', function() {

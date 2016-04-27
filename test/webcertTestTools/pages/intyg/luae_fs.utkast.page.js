@@ -57,7 +57,7 @@ var LuaefsUtkast = BaseUtkast._extend({
 
         };
 
-        this.diagnosKod = element(by.id('diagnoseCode'));
+        //this.diagnosKod = element(by.id('diagnoseCode'));
 
         this.diagnos = {
             laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
@@ -74,7 +74,6 @@ var LuaefsUtkast = BaseUtkast._extend({
         this.funktionsnedsattningPaverkan = element(by.id('funktionsnedsattningPaverkan'));
 
         this.ovrigt = element(by.id('ovrigt'));
-
 
         this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
         this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
@@ -107,6 +106,8 @@ var LuaefsUtkast = BaseUtkast._extend({
         };
     },
 
+
+    // Helper functions filling, editing etc.
     angeDiagnos: function(diagnosObj) {
         var diagnoser = diagnosObj.diagnoser;
         var promiseArr = [];
@@ -127,6 +128,14 @@ var LuaefsUtkast = BaseUtkast._extend({
         }
         Promise.all(promiseArr);
 
+    },
+
+    taBortDiagnos: function(index) {
+        var promiseArr = [];
+        var button = element.all(by.css('.deleteDiagnos')).get(index);
+        promiseArr.push(button.click());
+
+        Promise.all(promiseArr);
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
@@ -161,23 +170,27 @@ var LuaefsUtkast = BaseUtkast._extend({
         }
     },
 
+    clickCreateUnderlag: function() {
+        var addBtn = element(by.id('form_underlag')).element(by.css('button[ng-click="createUnderlag()"]'));
+        addBtn.sendKeys(protractor.Key.SPACE);
+    },
+
+    clickRemoveUnderlag: function(index) {
+        element.all(by.css('button[ng-click="removeUnderlag($index)"]')).then(function(items) {
+            items[index].sendKeys(protractor.Key.SPACE);
+        });
+    },
+
     angeUnderlagFinns: function(underlag) {
         if (!underlag) {
             return Promise.resolve('Success');
         }
 
-        promisesArr = [];
-        promisesArr.push(this.underlagDatePicker1.sendKeys(underlag.datum));
-        Promise.all(promisesArr);
-
         var promisesArr = [];
+        promisesArr.push(this.underlagDatePicker1.sendKeys(underlag.datum));
         promisesArr.push(this.underlagSelect1.sendKeys(underlag.typ));
-        Promise.all(promisesArr);
-
-
-
-        promisesArr = [];
         promisesArr.push(this.underlagTextField1.sendKeys(underlag.hamtasFran));
+
         Promise.all(promisesArr);
     },
 
@@ -188,22 +201,18 @@ var LuaefsUtkast = BaseUtkast._extend({
 
         var promisesArr = [];
 
-        if (intygetBaserasPa.minUndersokning) {
-            // this.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE);
-            promisesArr.push(this.baseratPa.minUndersokningAvPatienten.datum.sendKeys(intygetBaserasPa.minUndersokning.datum));
+        if (intygetBaserasPa.minUndersokningAvPatienten) {
+            promisesArr.push(this.baseratPa.minUndersokningAvPatienten.datum.sendKeys(intygetBaserasPa.minUndersokningAvPatienten.datum));
         }
         if (intygetBaserasPa.journaluppgifter) {
-            // this.baserasPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
             promisesArr.push(this.baseratPa.journaluppgifter.datum.sendKeys(intygetBaserasPa.journaluppgifter.datum));
         }
         if (intygetBaserasPa.anhorigBeskrivning) {
-            // this.baserasPa.anhorigBeskrivning.checkbox.sendKeys(protractor.Key.SPACE);
             promisesArr.push(this.baseratPa.anhorigBeskrivning.datum.sendKeys(intygetBaserasPa.anhorigBeskrivning.datum));
         }
         if (intygetBaserasPa.annat) {
-            // this.baserasPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
             promisesArr.push(this.baseratPa.annat.datum.sendKeys(intygetBaserasPa.annat.datum));
-            promisesArr.push(this.baseratPa.annat.text.sendKeys(intygetBaserasPa.annat.text));
+            promisesArr.push(this.baseratPa.annat.beskrivning.sendKeys(intygetBaserasPa.annat.beskrivning));
         }
         if (intygetBaserasPa.kannedomOmPatient) {
             promisesArr.push(this.baseratPa.kannedomOmPatient.datum.sendKeys(intygetBaserasPa.kannedomOmPatient.datum));
@@ -217,6 +226,11 @@ var LuaefsUtkast = BaseUtkast._extend({
         });
     },
 
+    getNumberOfUnderlag: function() {
+        return element.all(by.css('.underlagRow td select')).then(function(items) {
+            return items.length;
+        });
+    },
 
     get: function get(intygId) {
         get._super.call(this, 'luae_fs', intygId);
