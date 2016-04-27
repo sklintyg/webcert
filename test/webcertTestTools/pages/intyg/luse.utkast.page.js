@@ -49,7 +49,7 @@ var LuseUtkast = BaseSmiUtkast._extend({
         };
         this.medicinskaForutsattningar = {
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
-            trotsBegransningar: element(by.id('aktivitetsFormaga'))
+            trotsBegransningar: element(by.id('formagaTrotsBegransning'))
         };
         this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
         // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));

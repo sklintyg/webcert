@@ -85,7 +85,7 @@ var BaseSmiIntygPage = BaseUtkast._extend({
 
         this.medicinskaForutsattningar = {
             kanUtvecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
-            kanGoraTrotsBegransning: element(by.id('aktivitetsFormaga'))
+            kanGoraTrotsBegransning: element(by.id('formagaTrotsBegransning'))
         };
 
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
