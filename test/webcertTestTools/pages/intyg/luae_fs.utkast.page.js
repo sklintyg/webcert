@@ -59,6 +59,17 @@ var LuaefsUtkast = BaseUtkast._extend({
 
         this.diagnosKod = element(by.id('diagnoseCode'));
 
+        this.diagnos = {
+            laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
+            diagnosRow: function(index) {
+                var row = element.all(by.css('.diagnosRow')).get(index);
+                return {
+                    kod: row.element(by.css('#diagnoseCode'))
+                };
+
+            }
+        };
+
         this.funktionsnedsattningDebut = element(by.id('funktionsnedsattningDebut'));
         this.funktionsnedsattningPaverkan = element(by.id('funktionsnedsattningPaverkan'));
 
@@ -94,6 +105,28 @@ var LuaefsUtkast = BaseUtkast._extend({
                 checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
             }
         };
+    },
+
+    angeDiagnos: function(diagnosObj) {
+        var diagnoser = diagnosObj.diagnoser;
+        var promiseArr = [];
+
+        function sendEnterToElement(el) {
+            return function() {
+                el.sendKeys(protractor.Key.ENTER);
+            };
+        }
+        //Ange diagnoser
+        for (var i = 0; i < diagnoser.length; i++) {
+            if (i !== 0) {
+                promiseArr.push(this.diagnos.laggTillDiagnosKnapp.click());
+            }
+            var row = this.diagnos.diagnosRow(i);
+            promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
+
+        }
+        Promise.all(promiseArr);
+
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
@@ -172,7 +205,16 @@ var LuaefsUtkast = BaseUtkast._extend({
             promisesArr.push(this.baseratPa.annat.datum.sendKeys(intygetBaserasPa.annat.datum));
             promisesArr.push(this.baseratPa.annat.text.sendKeys(intygetBaserasPa.annat.text));
         }
+        if (intygetBaserasPa.kannedomOmPatient) {
+            promisesArr.push(this.baseratPa.kannedomOmPatient.datum.sendKeys(intygetBaserasPa.kannedomOmPatient.datum));
+        }
         return Promise.all(promisesArr);
+    },
+
+    getNumberOfDiagnosRows: function() {
+        return element.all(by.css('.diagnosRow')).then(function(items) {
+            return items.length;
+        });
     },
 
 

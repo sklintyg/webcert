@@ -23,49 +23,43 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luae_fs.utkast;
-// var IntygPage = wcTestTools.pages.intyg.fk['luae_fs'].intyg;
+var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
 
 fdescribe('Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
 
-    describe('Login through the welcome page', function() {
-        it('with user', function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
-        });
+    beforeAll(function() {
+        specHelper.login();
+        specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
     });
 
-    describe('create luae_fs', function() {
+    describe('Skapa luae_fs utkatst', function() {
 
-        describe('interact with utkast', function() {
+        describe('Interagera med utkastet', function() {
 
-            it('check that smittskydd is displayed', function() {
+            it('Spara undan intygsId från URL', function() {
             //
                 // Save id so it can be removed in cleanup stage.
                 browser.getCurrentUrl().then(function(url) {
                     utkastId = url.split('/').pop();
                 });
-            //
-            //    UtkastPage.whenSmittskyddIsDisplayed().then(function() {
-            //        expect(UtkastPage.getSmittskyddLabelText()).toContain('Avstängning enligt smittskyddslagen på grund av smitta');
-            //    });
-            //
             });
 
-            describe('fill in luae_fs intyg', function() {
-
-                // speeds up utkast filling by not waiting for angular events, promises etc.
-                browser.ignoreSynchronization = true;
+            describe('Fyll i luae_fs intyg', function() {
 
                 it('Grund - baserat på', function() {
-                    var baserasPa = {
+                    UtkastPage.angeIntygetBaserasPa( {
                         minUndersokning : {
                             datum: '2016-04-22'
-                        }
-                    };
-                    UtkastPage.angeIntygetBaserasPa(baserasPa);
+                        }});
+
+                    UtkastPage.angeIntygetBaserasPa( {
+                        kannedomOmPatient : {
+                            datum: '2016-04-21'
+                        }});
+
+                    expect(UtkastPage.baseratPa.kannedomOmPatient.datum.getAttribute('value')).toBe('2016-04-21');
                 });
 
                 it('Andra medicinska utredningar eller underlag', function() {
@@ -77,33 +71,56 @@ fdescribe('Create and Sign luae_fs utkast', function() {
                     UtkastPage.angeAndraMedicinskaUtredningar(utredningar);
                 });
 
+                it('Ange diagnoser', function() {
+                    browser.ignoreSynchronization = false;
+                    var diagnosObj = {
+                        diagnoser: [{'kod':'J21'},{'kod':'J22'},{'kod':'A21'}]
+                    };
+                    UtkastPage.angeDiagnos(diagnosObj);
+                    browser.ignoreSynchronization = true;
+                    expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3)
+                });
 
+                it('Ange funktionsnedsättningar', function() {
+                    UtkastPage.funktionsnedsattningDebut.sendKeys('Komplex tango på skoldansen, knäfraktur.');
+                    UtkastPage.funktionsnedsattningPaverkan.sendKeys('Dansen funkar inte längre, svårt att fullfölja baletten.');
+                });
 
-                //it('resor form 6a', function() {
-                //    UtkastPage.travelRadioButtonJaClick();
-                //    var val = UtkastPage.getCheckedTravelRadioButtonValue();
-                //    expect(val).toBe('JA');
-                //});
-                //
-                //it('can sign', function() {
-                //
-                //    // reset
-                //    browser.ignoreSynchronization = false;
-                //
-                //    UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                //        UtkastPage.signeraButtonClick();
-                //        expect(IntygPage.isAt()).toBeTruthy();
-                //    });
-                //});
+                it('Ange övrigt', function() {
+                     UtkastPage.ovrigt.sendKeys('Behöver nog ett par år extra för att komma ikapp efter skadan.');
+                });
+
+                it('Ange kontakt önskas', function() {
+                    var promiseArr = [];
+                    promiseArr.push(UtkastPage.kontaktMedFkNo.click());
+                    promiseArr.push(UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.'));
+
+                    Promise.all(promiseArr);
+                });
+
+                it('Ange tilläggsfrågor', function() {
+                    UtkastPage.tillaggsfragor0svar.sendKeys('Vad för slags fråga är det där?!?!?');
+                    UtkastPage.tillaggsfragor1svar.sendKeys('Likheten på en struts? Båda benen är lika långa, särskilt det vänstra.');
+                });
+
+                it('Signera intyget', function() {
+
+                    // reset
+                    browser.ignoreSynchronization = false;
+
+                    UtkastPage.whenSigneraButtonIsEnabled().then(function() {
+                        UtkastPage.signeraButtonClick();
+                        expect(IntygPage.isAt()).toBeTruthy();
+                    });
+                });
             });
         });
     });
 
-    describe('remove test intyg', function() {
-        it('should clean up all utkast after the test', function() {
-            //testdataHelper.deleteIntyg(utkastId);
-            testdataHelper.deleteUtkast(utkastId);
-        });
+    afterAll(function() {
+        testdataHelper.deleteIntyg(utkastId);
+        testdataHelper.deleteUtkast(utkastId);
+        specHelper.logout();
     });
 
 });

@@ -36,6 +36,11 @@ module.exports = {
         this.waitForAngularTestability();
         expect(SokSkrivIntygPage.getDoctorText()).toContain('Åsa Andersson');
     },
+
+    logout: function() {
+        element(by.id('logoutLink')).click();
+    },
+
     waitForAngularTestability: function() {
         var clientScript =
             'var asyncCallback = arguments[2];\n' +

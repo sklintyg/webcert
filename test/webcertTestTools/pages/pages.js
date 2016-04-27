@@ -54,7 +54,8 @@ module.exports = {
                 //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         luae_fs: {
-            utkast: require(intygPath + 'luae_fs.utkast.page.js')
+            utkast: require(intygPath + 'luae_fs.utkast.page.js'),
+            intyg: require(intygPath + 'luae_fs.intyg.page.js')
         },
         ts: {
             diabetes: {
