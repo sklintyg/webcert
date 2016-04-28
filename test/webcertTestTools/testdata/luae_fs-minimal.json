@@ -1,0 +1,74 @@
+{
+  "typ": "luae_fs",
+  "id": "intyg-visa-test-1",
+  "textVersion": "1.0",
+  "grundData": {
+    "patient": {
+      "samordningsNummer": false,
+      "postort": "Stadby gärde",
+      "postnummer": "100 20",
+      "postadress": "Pgatan 2",
+      "efternamn": "Tolvansson",
+      "fornamn": "Tolvan",
+      "fullstandigtNamn": "Tolvan Tolvansson",
+      "personId": "191212121212"
+    },
+    "skapadAv": {
+      "vardenhet": {
+        "arbetsplatsKod": "45312",
+        "vardgivare": {
+          "vardgivarnamn": "WebCert Vårdgivare 1",
+          "vardgivarid": "IFV1239877878-1041"
+        },
+        "epost": "ve1@vg1.se",
+        "telefonnummer": "0812341234",
+        "postort": "Stadby",
+        "postnummer": "100 10",
+        "postadress": "Enhetsg. 1",
+        "enhetsnamn": "Webcert Enhet 1",
+        "enhetsid": "IFV1239877878-1042"
+      },
+      "specialiteter": [
+        "Kirurg"
+      ],
+      "befattningar": [
+        "Klinikchef",
+        "Forskningsledare"
+      ],
+      "forskrivarKod": "2481632",
+      "fullstandigtNamn": "Jan Nilsson",
+      "personId": "19650708-1234"
+    },
+    "signeringsdatum": "2015-12-07T15:48:05.000"
+  },
+  "underlag": [
+    {
+      "hamtasFran": "Skickas med posten",
+      "datum": "2015-09-03",
+      "typ": 6
+    },
+    {
+      "hamtasFran": "Arkivet",
+      "datum": "2015-09-04",
+      "typ": 2
+    }
+  ],
+  "underlagFinns": true,
+  "tillaggsfragor": [],
+  "kannedomOmPatient": "2015-01-07",
+  "undersokningAvPatienten": "2015-09-09",
+  "journaluppgifter":  "2015-09-10",
+  "anhorigsBeskrivningAvPatienten" : "2015-09-11",
+  "annatGrundForMU" : "2015-09-12",
+  "annatGrundForMUBeskrivning" : "Detta är en annan beskrivning",
+
+  "funktionsnedsattningDebut": "Skoldansen",
+  "funktionsnedsattningPaverkan": "Haltar när han dansar",
+  "diagnoser": [
+    {
+      "diagnosBeskrivning": "Klämskada skuldra",
+      "diagnosKodSystem": "ICD_10_SE",
+      "diagnosKod": "S47"
+    }
+  ]
+}

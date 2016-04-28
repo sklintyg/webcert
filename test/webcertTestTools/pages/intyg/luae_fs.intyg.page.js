@@ -28,6 +28,43 @@ var LuaefsIntyg = BaseIntygPage._extend({
         init._super.call(this);
         this.at = element(by.id('viewCertAndQA'));
         this.intygType = 'luae_fs';
+
+        this.undersokningAvPatienten = element(by.css('span #undersokningAvPatienten'));
+        this.journaluppgifter = element(by.css('span #journaluppgifter'));
+        this.anhorigsBeskrivningAvPatienten = element(by.css('span #anhorigsBeskrivningAvPatienten'));
+        this.annatGrundForMU = element(by.css('span #annatGrundForMU'));
+        this.annatGrundForMUBeskrivning = element(by.css('div #annatGrundForMUBeskrivning'));
+        this.kannedomOmPatient = element(by.css('span #kannedomOmPatient'));
+
+        this.underlagFinnsJa = element(by.id('underlagFinns-Ja'));
+
+        this.underlag0Typ = element(by.id('underlag-0-typ'));
+        this.underlag0Datum = element(by.id('underlag-0-datum'));
+        this.underlag0HamtasFran = element(by.id('underlag-0-hamtasFran'));
+
+        this.underlag1Typ = element(by.id('underlag-1-typ'));
+        this.underlag1Datum = element(by.id('underlag-1-datum'));
+        this.underlag1HamtasFran = element(by.id('underlag-1-hamtasFran'));
+
+        this.diagnos0Kod = element(by.id('diagnoser-0-kod'));
+        this.diagnos0Beskrivning = element(by.id('diagnoser-0-beskrivning'));
+
+        this.diagnos1Kod = element(by.id('diagnoser-1-kod'));
+        this.diagnos1Beskrivning = element(by.id('diagnoser-1-beskrivning'));
+
+        this.diagnos2Kod = element(by.id('diagnoser-2-kod'));
+        this.diagnos2Beskrivning = element(by.id('diagnoser-2-beskrivning'));
+
+        this.funktionsnedsattningDebut = element(by.id('funktionsnedsattningDebut'));
+        this.funktionsnedsattningPaverkan = element(by.id('funktionsnedsattningPaverkan'));
+
+        this.ovrigt = element(by.id('ovrigt'));
+
+        this.kontaktMedFkJa = element(by.id('kontaktMedFk-Ja'));
+        this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
+
+        this.tillagsFraga1 = element(by.css('tillaggsfraga-9001 div'));
+        this.tillagsFraga2 = element(by.css('tillaggsfraga-9002 div'));
     },
 
     get: function get(intygId) {

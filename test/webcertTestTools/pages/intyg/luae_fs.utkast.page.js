@@ -57,8 +57,6 @@ var LuaefsUtkast = BaseUtkast._extend({
 
         };
 
-        //this.diagnosKod = element(by.id('diagnoseCode'));
-
         this.diagnos = {
             laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
             diagnosRow: function(index) {

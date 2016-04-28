@@ -32,7 +32,8 @@ module.exports = {
     'welcome': require('./welcome.page.js'),
     'sokSkrivIntyg': {
         'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),
-        'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js')
+        'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js'),
+        'visaIntyg': require('./sokSkrivIntyg/sokSkrivValjIntyg.page.js')
     },
     'intyg': {
         fk: {
