@@ -24,6 +24,7 @@
 //     return string.slice(0, prefix.length) === prefix;
 // }
 var testdataHelper = wcTestTools.helpers.testdata;
+var loginHelpers = require('./inloggning/login.helpers.js');
 // var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
@@ -180,7 +181,7 @@ function createTsIntyg(typ, status, cb) {
         lakare: true,
         forskrivarKod: '2481632'
     };
-    require('./login.helpers.js').logInAsUserRole(userObj, 'Läkare')
+    loginHelpers.logInAsUserRole(userObj, 'Läkare')
         .and.notify(function() {
             sokSkrivIntygPage.selectPersonnummer(person.id);
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
@@ -203,7 +204,7 @@ function createTsIntyg(typ, status, cb) {
                     forskrivarKod: standardUser.forskrivarKod
                 };
 
-                require('./login.helpers.js').logInAsUserRole(userObj, standardUser.roleName, standardUser.origin, standardUser.role).and.notify(cb);
+                loginHelpers.logInAsUserRole(userObj, standardUser.roleName, standardUser.origin, standardUser.role).and.notify(cb);
             });
         });
 }

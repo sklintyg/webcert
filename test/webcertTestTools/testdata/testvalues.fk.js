@@ -38,8 +38,67 @@ var fkValues = {
     },
     getRandomDiagnoskod: function() {
         return shuffle(this.ICD10)[0];
-    }
+    },
+    getRandomBaserasPa: function(smittskydd) {
+        if (smittskydd) {
+            return false;
+        }
+        return {
+            minUndersokning: {
+                datum: '2015-12-10'
+            },
+            minTelefonkontakt: {
+                datum: '2015-12-10'
+            },
+            journaluppgifter: {
+                datum: '2015-12-10'
+            },
+            annat: {
+                datum: '2015-12-10',
+                text: 'Annat text'
+            }
+        };
+    },
+    getRandomArbetsformaga: function() {
+        var today = new Date();
+        var todayPlus5Days = new Date();
+        var todayPlus6Days = new Date();
+        var todayPlus10Days = new Date();
+        var todayPlus11Days = new Date();
+        var todayPlus20Days = new Date();
+        var todayPlus21Days = new Date();
+        var todayPlus30Days = new Date();
 
+        todayPlus5Days.setDate(today.getDate() + 5);
+        todayPlus6Days.setDate(today.getDate() + 6);
+        todayPlus10Days.setDate(today.getDate() + 10);
+        todayPlus11Days.setDate(today.getDate() + 11);
+        todayPlus20Days.setDate(today.getDate() + 20);
+        todayPlus21Days.setDate(today.getDate() + 21);
+        todayPlus30Days.setDate(today.getDate() + 30);
+
+        return {
+            nedsattMed25: {
+                from: testdataHelper.dateFormat(today),
+                tom: testdataHelper.dateFormat(todayPlus5Days)
+            },
+            nedsattMed50: {
+                from: testdataHelper.dateFormat(todayPlus6Days),
+                tom: testdataHelper.dateFormat(todayPlus10Days)
+            },
+            nedsattMed75: {
+                from: testdataHelper.dateFormat(todayPlus11Days),
+                tom: testdataHelper.dateFormat(todayPlus20Days)
+            },
+            nedsattMed100: {
+                from: testdataHelper.dateFormat(todayPlus21Days),
+                tom: testdataHelper.dateFormat(todayPlus30Days)
+            }
+        };
+    },
+    getRandomKontaktOnskasMedFK: function() {
+        return shuffle([true, false])[0];
+    }
 };
 
 function getRandomUtredning() {

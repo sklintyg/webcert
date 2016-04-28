@@ -36,10 +36,10 @@ module.exports = function() {
             .then(callback);
     });
 
-    this.Given(/^jag går till Mina intyg för patienten "([^"]*)"$/, function(pnr, callback) {
+    this.Given(/^jag går till Mina intyg för patienten$/, function(callback) {
         browser.ignoreSynchronization = true;
         browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
-        element(by.id('guid')).sendKeys(pnr);
+        element(by.id('guid')).sendKeys(global.person.id);
         element(by.css('input.btn')).click().then(function() {
 
             // Detta behövs pga att Mina intyg är en extern sida
@@ -82,7 +82,5 @@ module.exports = function() {
         } else {
             callback.pending();
         }
-
-
     });
 };

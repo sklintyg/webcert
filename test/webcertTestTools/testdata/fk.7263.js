@@ -21,6 +21,7 @@
 
 var shuffle = require('./../helpers/testdataHelper.js').shuffle;
 var testdataHelper = require('../helpers/helpers.js').testdata;
+var fkValues = require('./testvalues.js').fk;
 
 var testdata = {
     smittskydd: [true, false]
@@ -58,26 +59,6 @@ function randomPrognosFortydligande(val) {
 }
 
 var random = {
-    baserasPa: function(smittskydd) {
-        if (smittskydd) {
-            return false;
-        }
-        return {
-            minUndersokning: {
-                datum: '2015-12-10'
-            },
-            minTelefonkontakt: {
-                datum: '2015-12-10'
-            },
-            journaluppgifter: {
-                datum: '2015-12-10'
-            },
-            annat: {
-                datum: '2015-12-10',
-                text: 'Annat text'
-            }
-        };
-    },
     diagnos: function(smittskydd) {
         if (smittskydd) {
             return false;
@@ -121,43 +102,6 @@ var random = {
             foraldraledighet: true
         };
     },
-    arbetsformaga: function() {
-        var today = new Date();
-        var todayPlus5Days = new Date();
-        var todayPlus6Days = new Date();
-        var todayPlus10Days = new Date();
-        var todayPlus11Days = new Date();
-        var todayPlus20Days = new Date();
-        var todayPlus21Days = new Date();
-        var todayPlus30Days = new Date();
-
-        todayPlus5Days.setDate(today.getDate() + 5);
-        todayPlus6Days.setDate(today.getDate() + 6);
-        todayPlus10Days.setDate(today.getDate() + 10);
-        todayPlus11Days.setDate(today.getDate() + 11);
-        todayPlus20Days.setDate(today.getDate() + 20);
-        todayPlus21Days.setDate(today.getDate() + 21);
-        todayPlus30Days.setDate(today.getDate() + 30);
-
-        return {
-            nedsattMed25: {
-                from: testdataHelper.dateFormat(today),
-                tom: testdataHelper.dateFormat(todayPlus5Days)
-            },
-            nedsattMed50: {
-                from: testdataHelper.dateFormat(todayPlus6Days),
-                tom: testdataHelper.dateFormat(todayPlus10Days)
-            },
-            nedsattMed75: {
-                from: testdataHelper.dateFormat(todayPlus11Days),
-                tom: testdataHelper.dateFormat(todayPlus20Days)
-            },
-            nedsattMed100: {
-                from: testdataHelper.dateFormat(todayPlus21Days),
-                tom: testdataHelper.dateFormat(todayPlus30Days)
-            }
-        };
-    },
     prognos: function() {
         var val = shuffle(['Ja', 'Ja, delvis', 'Nej', 'Går inte att bedöma'])[0];
         return {
@@ -183,9 +127,6 @@ var random = {
             arbetslivsinriktadRehab: randomRehabAktuell(smittskydd)
         };
     },
-    kontaktOnskasMedFK: function() {
-        return shuffle([true, false])[0];
-    },
     ovrigaUpplysningar: function() {
         return 'Övriga upplysningar och förtydliganden text';
     },
@@ -208,18 +149,18 @@ module.exports = {
             id: intygsID,
             typ: 'Läkarintyg FK 7263',
             smittskydd: isSmittskydd,
-            baserasPa: random.baserasPa(isSmittskydd),
+            baserasPa: fkValues.getRandomBaserasPa(isSmittskydd),
             diagnos: random.diagnos(isSmittskydd),
             aktuelltSjukdomsforlopp: random.aktuelltSjukdomsforlopp(isSmittskydd),
             funktionsnedsattning: random.funktionsnedsattning(isSmittskydd),
             aktivitetsBegransning: random.aktivitestbegransning(isSmittskydd),
             arbete: random.arbete(isSmittskydd),
-            arbetsformaga: random.arbetsformaga(),
+            arbetsformaga: fkValues.getRandomArbetsformaga(),
             arbetsformagaFMB: random.arbetsformagaFMB(),
             prognos: random.prognos(),
             atgarder: random.atgarder(isSmittskydd),
             rekommendationer: random.rekommendationer(isSmittskydd),
-            kontaktOnskasMedFK: random.kontaktOnskasMedFK(),
+            kontaktOnskasMedFK: fkValues.getRandomKontaktOnskasMedFK(),
             ovrigaUpplysningar: random.ovrigaUpplysningar()
         };
     }

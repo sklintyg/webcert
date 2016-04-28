@@ -39,6 +39,7 @@ function gotoPatient(pnr) {
         browser.sleep(1000);
     }
     sokSkrivIntygPage.selectPersonnummer(pnr);
+    logger.log('Går in på patient ' + pnr);
     //Patientuppgifter visas
     var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
     return expect(patientUppgifter.getText()).to.eventually.contain(pnr);

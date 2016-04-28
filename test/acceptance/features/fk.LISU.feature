@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 
 Scenario: Skapa och signera ett intyg
-	När jag väljer patienten "19971019-2387"
+	När jag går in på en patient
 	Och jag går in på att skapa ett "Läkarintyg för sjukpenning utökat" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
