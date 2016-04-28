@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
+import se.inera.intyg.webcert.web.auth.authorities.*;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -70,23 +68,22 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
         errors.clear();
 
         if (featureConstraints.isPresent() && Arrays.stream(featureConstraints.get()).noneMatch(fc -> this.checkHasFeature(fc))) {
-            errors.add(String.format("mandatory features '%s' was not present in users features.",
-                    Arrays.stream(featureConstraints.get()).map(o -> o.name()).collect(Collectors.joining(","))));
+            errors.add(formatFeatureError(featureConstraints.get(), "mandatory features '%s' was not present in users features."));
         }
 
         if (featureNotConstraints.isPresent() && Arrays.stream(featureNotConstraints.get()).anyMatch(fc -> this.checkHasFeature(fc))) {
-            errors.add(String.format("forbidden features '%s' was present in users features.",
-                    Arrays.stream(featureNotConstraints.get()).map(o -> o.name()).collect(Collectors.joining(","))));
+            errors.add(formatFeatureError(featureNotConstraints.get(), "forbidden features '%s' was present in users features."));
         }
 
         if (originConstraints.isPresent() && Arrays.stream(originConstraints.get()).noneMatch(oc -> this.checkHasOrigin(oc.name()))) {
             errors.add(String.format("mandatory origins '%s' did not match users origin value of '%s'.",
-                    Arrays.stream(originConstraints.get()).map(o -> o.name()).collect(Collectors.joining(",")), this.user.getOrigin()));
+                    Arrays.stream(originConstraints.get()).map(WebCertUserOriginType::name).collect(Collectors.joining(",")), this.user.getOrigin()));
         }
 
         if (originNotConstraints.isPresent() && Arrays.stream(originNotConstraints.get()).anyMatch(oc -> this.checkHasOrigin(oc.name()))) {
             errors.add(String.format("forbidden features '%s' matched user orgin value '%s'",
-                    Arrays.stream(originNotConstraints.get()).map(o -> o.name()).collect(Collectors.joining(",")), this.user.getOrigin()));
+                    Arrays.stream(originNotConstraints.get()).map(WebCertUserOriginType::name).collect(Collectors.joining(",")),
+                    this.user.getOrigin()));
         }
 
         if (roleConstraints.isPresent() && Arrays.stream(roleConstraints.get()).noneMatch(rc -> this.checkRole(rc))) {
@@ -98,14 +95,44 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
         }
 
         if (privilegeConstraint.isPresent() && !checkHasPrivilege(privilegeConstraint.get())) {
-            errors.add(String.format("user does not have mandatory privilege '%s'.", privilegeConstraint.get()));
+            errors.add(formatPrivilegeError("user does not have mandatory privilege '%s'", privilegeConstraint.get()));
         }
 
         if (privilegeNotConstraint.isPresent() && checkHasPrivilege(privilegeNotConstraint.get())) {
-            errors.add(String.format("forbidden privilege '%s' was present in user privileges.", privilegeNotConstraint.get()));
+            errors.add(formatPrivilegeError("forbidden privilege '%s' was present in user privileges", privilegeNotConstraint.get()));
         }
 
         return errors.isEmpty();
+    }
+
+    private String formatPrivilegeError(String start, String privilegeConstraint) {
+        StringBuilder sb = new StringBuilder(String.format(start, privilegeConstraint));
+        sb.append(" (");
+        if (intygsTypeContext.isPresent()) {
+            sb.append("intygType = ");
+            sb.append(intygsTypeContext.get());
+            sb.append(", ");
+        }
+        sb.append("origin = ");
+        sb.append(user.getOrigin());
+        if (user.getRoles() != null) {
+            sb.append(", roles = '");
+            sb.append(user.getRoles().values().stream().map(Role::getName).collect(Collectors.joining(", ")));
+            sb.append('\'');
+        }
+        sb.append(").");
+
+        return sb.toString();
+    }
+
+    private String formatFeatureError(WebcertFeature[] features, String format) {
+        return String.format(format,
+                Arrays.stream(features)
+                        .map(WebcertFeature::name)
+                        .map(s -> intygsTypeContext.isPresent()
+                                ? String.format("%s.%s", s, intygsTypeContext.get())
+                                : s)
+                        .collect(Collectors.joining(",")));
     }
 
     @Override
@@ -207,7 +234,7 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
                 return false;
             }
 
-            // If the originConfig has a intygstypeConstraint - on of them must also match any given intygstype
+            // If the originConfig has a intygstypeConstraint - one of them must also match any given intygstype
             // context..
             if (this.intygsTypeContext.isPresent() && (matchingOriginConfig.get().getIntygstyper().size() > 0)
                     && matchingOriginConfig.get().getIntygstyper().stream().noneMatch(t -> t.equals(this.intygsTypeContext.get()))) {
