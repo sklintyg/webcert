@@ -91,7 +91,7 @@ module.exports = {
             utkastPage = pages.intyg.fk['7263'].utkast;
         }
         if (intygType === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            utkastPage = pages.intyg.luae_fs.utkast;
+            utkastPage = pages.intyg.luaeFS.utkast;
         }
 
         expect(utkastPage.isAt()).toBe(true);

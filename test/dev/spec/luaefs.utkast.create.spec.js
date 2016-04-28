@@ -22,8 +22,8 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.luae_fs.utkast;
-var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
+var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
 // Use fdescribe to run in isolation.
 describe('Create and Sign luae_fs utkast', function() {
@@ -53,21 +53,24 @@ describe('Create and Sign luae_fs utkast', function() {
 
                     var promiseArr = [];
 
-                    promiseArr.push(UtkastPage.angeIntygetBaserasPa( {
-                        minUndersokningAvPatienten : {
+                    promiseArr.push(UtkastPage.angeIntygetBaserasPa({
+                        minUndersokningAvPatienten: {
                             datum: '2016-04-22'
-                        }}));
+                        }
+                    }));
 
-                    promiseArr.push(UtkastPage.angeIntygetBaserasPa( {
-                        kannedomOmPatient : {
+                    promiseArr.push(UtkastPage.angeIntygetBaserasPa({
+                        kannedomOmPatient: {
                             datum: '2016-04-21'
-                        }}));
+                        }
+                    }));
 
-                    promiseArr.push(UtkastPage.angeIntygetBaserasPa( {
-                        annat : {
+                    promiseArr.push(UtkastPage.angeIntygetBaserasPa({
+                        annat: {
                             datum: '2016-04-23',
                             beskrivning: 'Utlåtande från skolledningen'
-                        }}));
+                        }
+                    }));
 
                     Promise.all(promiseArr);
 
@@ -99,7 +102,13 @@ describe('Create and Sign luae_fs utkast', function() {
                 it('Ange diagnoser', function() {
                     browser.ignoreSynchronization = false;
                     var diagnosObj = {
-                        diagnoser: [{'kod':'J21'},{'kod':'J22'},{'kod':'A21'}]
+                        diagnoser: [{
+                            'kod': 'J21'
+                        }, {
+                            'kod': 'J22'
+                        }, {
+                            'kod': 'A21'
+                        }]
                     };
                     UtkastPage.angeDiagnos(diagnosObj);
 
@@ -116,7 +125,7 @@ describe('Create and Sign luae_fs utkast', function() {
                 });
 
                 it('Ange övrigt', function() {
-                     UtkastPage.ovrigt.sendKeys('Behöver nog ett par år extra för att komma ikapp efter skadan.');
+                    UtkastPage.ovrigt.sendKeys('Behöver nog ett par år extra för att komma ikapp efter skadan.');
                 });
 
                 it('Ange kontakt önskas', function() {

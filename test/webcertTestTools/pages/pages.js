@@ -53,7 +53,7 @@ module.exports = {
             utkast: require(intygPath + 'lisu.utkast.page.js')
                 //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
-        luae_fs: {
+        luaeFS: {
             utkast: require(intygPath + 'luae_fs.utkast.page.js'),
             intyg: require(intygPath + 'luae_fs.intyg.page.js')
         },
