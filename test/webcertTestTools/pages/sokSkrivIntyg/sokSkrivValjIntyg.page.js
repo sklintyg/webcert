@@ -35,5 +35,5 @@ module.exports = {
     },
     selectIntygById: function(intygId) {
         element(by.id('showBtn-' + intygId)).click();
-    },
+    }
 };
