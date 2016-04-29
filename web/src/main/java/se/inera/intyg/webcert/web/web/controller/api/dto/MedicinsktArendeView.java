@@ -27,6 +27,7 @@ public abstract class MedicinsktArendeView {
 
     public abstract Integer getPosition();
 
+    @Nullable
     public abstract Integer getInstans();
 
     public abstract String getFrageId();
