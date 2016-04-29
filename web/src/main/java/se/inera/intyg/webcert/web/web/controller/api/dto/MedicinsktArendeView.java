@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.google.auto.value.AutoValue;
 
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.Builder;
+import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class MedicinsktArendeView {
