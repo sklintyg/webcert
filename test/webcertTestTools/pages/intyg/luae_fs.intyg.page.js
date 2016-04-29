@@ -29,6 +29,9 @@ var LuaefsIntyg = BaseIntygPage._extend({
         this.at = element(by.id('viewCertAndQA'));
         this.intygType = 'luae_fs';
 
+        // Knappar etc. ärvs i första hand från BaseIntygPage
+
+        // Svarstexter
         this.undersokningAvPatienten = element(by.css('span #undersokningAvPatienten'));
         this.journaluppgifter = element(by.css('span #journaluppgifter'));
         this.anhorigsBeskrivningAvPatienten = element(by.css('span #anhorigsBeskrivningAvPatienten'));
@@ -63,8 +66,8 @@ var LuaefsIntyg = BaseIntygPage._extend({
         this.kontaktMedFkJa = element(by.id('kontaktMedFk-Ja'));
         this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
 
-        this.tillagsFraga1 = element(by.css('tillaggsfraga-9001 div'));
-        this.tillagsFraga2 = element(by.css('tillaggsfraga-9002 div'));
+        this.tillagsFraga1 = element(by.css('#tillaggsfraga-9001 div'));
+        this.tillagsFraga2 = element(by.css('#tillaggsfraga-9002 div'));
     },
 
     get: function get(intygId) {

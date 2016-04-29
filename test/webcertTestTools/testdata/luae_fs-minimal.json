@@ -54,7 +54,16 @@
     }
   ],
   "underlagFinns": true,
-  "tillaggsfragor": [],
+  "tillaggsfragor": [
+    {
+      "id": "9001",
+      "svar": "Tämligen"
+    },
+    {
+      "id": "9002",
+      "svar": "Minst 3 fot"
+    }
+  ],
   "kannedomOmPatient": "2015-01-07",
   "undersokningAvPatienten": "2015-09-09",
   "journaluppgifter":  "2015-09-10",
@@ -69,6 +78,14 @@
       "diagnosBeskrivning": "Klämskada skuldra",
       "diagnosKodSystem": "ICD_10_SE",
       "diagnosKod": "S47"
+    },
+    {
+      "diagnosBeskrivning": "Icke specificerad akut infektion i nedre luftvägarna",
+      "diagnosKodSystem": "ICD_10_SE",
+      "diagnosKod": "J22"
     }
-  ]
+  ],
+  "ovrigt": "Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar",
+  "kontaktMedFk": true,
+  "anledningTillKontakt": "Vill stämma av ersättningen"
 }

@@ -29,7 +29,7 @@ var restUtil = require('webcert-testtools/util/rest.util.js');
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 // Use fdescribe to run in isolation.
-describe('Validera visning av Intyg', function() {
+describe('Validera makulering av luae_fs Intyg', function() {
 
     var intygsId = 'intyg-visa-test-1';
 
@@ -60,6 +60,15 @@ describe('Validera visning av Intyg', function() {
         return certHolder;
     }
 
+    function isCancelled(states) {
+        for (var a = 0; a < states.length; a++) {
+            if (states[a].state === 'CANCELLED') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
@@ -75,45 +84,17 @@ describe('Validera visning av Intyg', function() {
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
-        it('Verifiera Grund för medicinskt underlag', function() {
-            expect(IntygPage.undersokningAvPatienten.getText()).toBe('9 september 2015');
-            expect(IntygPage.journaluppgifter.getText()).toBe('10 september 2015');
-            expect(IntygPage.anhorigsBeskrivningAvPatienten.getText()).toBe('11 september 2015');
-            expect(IntygPage.annatGrundForMU.getText()).toBe('12 september 2015');
-            expect(IntygPage.annatGrundForMUBeskrivning.getText()).toBe(luaefsTemplate.annatGrundForMUBeskrivning);
-            expect(IntygPage.kannedomOmPatient.getText()).toBe('7 januari 2015');
-        });
+        it('Makulera intyget', function() {
+            IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+            browser.wait(IntygPage.makulera.dialogAterta.isDisplayed())
+                .then(IntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE));
 
-        it('Verifiera underlag', function() {
-            expect(IntygPage.underlagFinnsJa.getText()).toBe('Ja');
+            browser.wait(IntygPage.makulera.kvittensOKBtn.isDisplayed())
+                .then(IntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE));
 
-            expect(IntygPage.underlag0Typ.getText()).toBe('Underlag från psykolog');
-            expect(IntygPage.underlag0Datum.getText()).toBe('3 september 2015');
-            expect(IntygPage.underlag0HamtasFran.getText()).toBe('Skickas med posten');
-
-            expect(IntygPage.underlag1Typ.getText()).toBe('Underlag från habiliteringen');
-            expect(IntygPage.underlag1Datum.getText()).toBe('4 september 2015');
-            expect(IntygPage.underlag1HamtasFran.getText()).toBe('Arkivet');
-        });
-
-        it('Verifiera diagnos', function() {
-            expect(IntygPage.diagnos0Kod.getText()).toBe('S47');
-            expect(IntygPage.diagnos0Beskrivning.getText()).toBe('Klämskada skuldra');
-            expect(IntygPage.diagnos1Kod.getText()).toBe('J22');
-            expect(IntygPage.diagnos1Beskrivning.getText()).toBe('Icke specificerad akut infektion i nedre luftvägarna');
-        });
-
-        it('Verifiera funktionsnedsättning', function() {
-            expect(IntygPage.funktionsnedsattningDebut.getText()).toBe('Skoldansen');
-            expect(IntygPage.funktionsnedsattningPaverkan.getText()).toBe('Haltar när han dansar');
-        });
-
-        it('Verifiera övrigt, kontakt och tilläggsfrågor', function() {
-            expect(IntygPage.ovrigt.getText()).toBe('Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar');
-            expect(IntygPage.kontaktMedFkJa.getText()).toBe('Ja');
-            expect(IntygPage.anledningTillKontakt.getText()).toBe('Vill stämma av ersättningen');
-            expect(IntygPage.tillagsFraga1.getText()).toBe('Tämligen');
-            expect(IntygPage.tillagsFraga2.getText()).toBe('Minst 3 fot');
+            element.all(by.id('#makuleraBtn')).then(function(items) {
+                expect(items.length).toBe(0);
+            });
         });
 
     });
