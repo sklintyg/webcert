@@ -66,5 +66,13 @@ module.exports = {
     deleteUtkast: function(id) {
         restUtil.login();
         return restUtil.deleteUtkast(id);
+    },
+    deleteAllArenden: function() {
+        restUtil.login();
+        return restUtil.deleteAllUtkast();
+    },
+    deleteArende: function(id) {
+        restUtil.login();
+        return restUtil.deleteUtkast(id);
     }
 };

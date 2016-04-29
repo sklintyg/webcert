@@ -32,13 +32,22 @@ fdescribe('Generate fk luse intyg', function() {
 
     var intygId = testdataHelper.generateTestGuid();
     var intyg;
+    var utkast = null;
 
     describe('prepare test with intyg', function() {
         it('should generate fk luse intyg', function() {
             browser.ignoreSynchronization = false;
+            /*
             restTestdataHelper.createIntygFromTemplate('luseMax', intygId).then(function(response) {
                 intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();
+            }, function(error) {
+                console.log('Error calling createIntyg');
+            });*/
+
+            testdataHelper.createUtkast('ts-bas').then(function(response) {
+                utkast = response.body;
+                expect(utkast.intygsId).not.toBeNull();
             }, function(error) {
                 console.log('Error calling createIntyg');
             });
@@ -69,13 +78,21 @@ fdescribe('Generate fk luse intyg', function() {
             });
         });
     });
-    /*
+
     describe('send new arende', function() {
         it('open new arende panel', function() {
-            expect(true).toBeTruthy();
+            LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
+                expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
+            })
         });
     });
-*/
+
+    describe('remove arende', function() {
+        it('should clean up created arende after the test', function() {
+            restTestdataHelper.deleteAllArenden();
+        });
+    });
+
     describe('remove test intyg', function() {
         it('should clean up intyg after the test', function() {
             restTestdataHelper.deleteIntyg(intygId);

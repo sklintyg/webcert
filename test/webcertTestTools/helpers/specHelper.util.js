@@ -32,9 +32,9 @@ var SokSkrivValjUtkastType = pages.sokSkrivIntyg.valjUtkastType;
 module.exports = {
     login: function(userOptional) {
         WelcomePage.get();
-        WelcomePage.login(userOptional || 'IFV1239877878-104B_IFV1239877878-1042');
+        WelcomePage.login(userOptional || 'TSTNMT2321000156-100F_TSTNMT2321000156-1039');
         this.waitForAngularTestability();
-        expect(SokSkrivIntygPage.getDoctorText()).toContain('Åsa Andersson');
+        expect(SokSkrivIntygPage.getDoctorText()).toContain('Leonie Koehl');
     },
 
     logout: function() {

@@ -52,6 +52,16 @@ var BaseIntyg = JClass._extend({
 
         this.signedMessage = element(by.id('certificate-is-sent-to-it-message-text'));
         this.sentMessage1 = element(by.id('certificate-is-on-sendqueue-to-it-message-text'));
+
+        // arende
+        this.arendeIntygNotSentYetMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
+        this.arendeSentMessage = element(by.id('arende-is-sent-to-fk-message-text'));
+
+        this.newArendeBtn = element(by.id('askArendeBtn'));
+
+        this.arendeText = element(by.id('arendeNewModelText'));
+        this.arendeAmne = element(by.id('new-question-topic'));
+        this.arendeSend = element(by.id('sendArendeBtn'));
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
@@ -80,7 +90,21 @@ var BaseIntyg = JClass._extend({
         return element(by.cssContainingText('button', 'Skriv ut')).sendKeys(protractor.Key.SPACE).then(function() {
             return element(by.cssContainingText('a', 'Fullständigt intyg')).click();
         });
+    },
+    sendNewArende: function(arendeText, arendeAmne) {
+        var self = this;
+        return this.newArendeBtn.click().then(function(){
+            return self.arendeText.sendKeys(arendeText).then(function() {
+                return self.arendeValjAmne(arendeAmne).then(function() {
+                    return self.arendeSend.click();
+                });
+            });
+        })
+    },
+    arendeValjAmne: function(val) {
+        return this.arendeAmne.all(by.css('option[label="' + val + '"]')).click();
     }
+
 });
 
 module.exports = BaseIntyg;
