@@ -28,7 +28,7 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 
-fdescribe('Generate fk luse intyg', function() {
+describe('Generate fk luse intyg', function() {
 
     var intygId = testdataHelper.generateTestGuid();
     var intyg;
