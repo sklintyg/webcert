@@ -20,7 +20,7 @@
 /*globals element, by, Promise, protractor, browser */
 'use strict';
 
-var BaseUtkast = require('./base.utkast.page.js');
+var FkBaseUtkast = require('./fk.base.utkast.page.js');
 
 function sendKeysWithBackspaceFix(el, text) {
     return el.sendKeys(text)
@@ -33,7 +33,7 @@ function sendKeysWithBackspaceFix(el, text) {
 }
 
 
-var BaseSmiUtkast = BaseUtkast._extend({
+var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
 

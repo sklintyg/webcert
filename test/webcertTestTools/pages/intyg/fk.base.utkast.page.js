@@ -20,6 +20,11 @@
 /*globals element,by */
 'use strict';
 
+/**
+ * This is a base page for fk SIT family of intyg (luse, lusi, luaefs, luaena).
+ * Only things relevant to ALL such types should end up here.
+ */
+
 var BaseUtkast = require('./base.utkast.page.js');
 
 var FkBaseUtkast = BaseUtkast._extend({
