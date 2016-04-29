@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise, protractor, browser*/
+/*globals element,by */
 'use strict';
 
 var BaseUtkast = require('./base.utkast.page.js');
@@ -32,6 +32,11 @@ var FkBaseUtkast = BaseUtkast._extend({
 
     isAt: function isAt() {
         return isAt._super.call(this);
+    },
+
+    //Locates the dynamic text based on text-key. see luaefs.utkast.dynamictexts.spec.js for example
+    getDynamicLabelText: function(textKey) {
+        return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
     }
 });
 

@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*globals describe,it,browser */
+'use strict';
+var wcTestTools = require('webcert-testtools');
+var specHelper = wcTestTools.helpers.spec;
+var testdataHelper = wcTestTools.helpers.restTestdata;
+var textHelper = wcTestTools.helpers.fkTextHelper;
+var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
+
+// Use fdescribe to run in isolation.
+describe('Create luae_fs utkast and check dynamic texts', function() {
+
+    var utkast = null;
+
+    var texts = null;
+
+
+    beforeAll(function() {
+        testdataHelper.createUtkast('luae_fs').then(function(response) {
+            utkast = response.body;
+            expect(utkast.intygsId).not.toBeNull();
+        }, function(error) {
+            console.log('Error calling createUtkast' + error);
+        });
+
+        //Load and cache expected dynamictext-values for this intygstype.
+        textHelper.readTextsFromFkTextFile('texterMU_LUAE_FS_v1.0.xml').then(function(textResources) {
+            texts = textResources;
+        }, function(err) {
+            fail('Error during text lookup ' + err);
+        });
+
+    });
+
+    describe('Check dynamic labels', function() {
+        it('should login and open created utkast', function() {
+            browser.ignoreSynchronization = false;
+            specHelper.login();
+            UtkastPage.get(utkast.intygsId);
+        });
+
+        it('Skall ha förväntade texter från server', function() {
+
+            //Min undersökning av patienten
+            expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.1.RBK')).toBe(texts['KV_FKMU_0001.1.RBK']);
+
+            //Funktionsnedsättning/påverkan
+            expect(UtkastPage.getDynamicLabelText('DFR_16.1.RBK')).toBe(texts['DFR_16.1.RBK']);
+
+            //Tilläggsfråga
+            expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
+
+        });
+
+
+    });
+
+    afterAll(function() {
+        testdataHelper.deleteUtkast(utkast.intygsId);
+        specHelper.logout();
+    });
+
+});
