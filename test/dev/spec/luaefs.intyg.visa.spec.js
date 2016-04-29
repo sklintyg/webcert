@@ -23,42 +23,18 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
-var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
-var luaefsTemplate = require('webcert-testtools/testdata/luae_fs-minimal.json');
-var restUtil = require('webcert-testtools/util/rest.util.js');
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
+var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
+var restUtil = wcTestTools.restUtil;
+
+// used for some assertions of non-transformed values.
+var luaefsTemplate = require('webcert-testtools/testdata/luae_fs-minimal.json');
 
 // Use fdescribe to run in isolation.
 describe('Validera visning av Intyg', function() {
 
-    var intygsId = 'intyg-visa-test-1';
-
-    function buildLuaefsIntyg() {
-        var certHolder = {
-            id: intygsId,
-            document: JSON.stringify(luaefsTemplate),
-            originalCertificate: '',
-            type: 'luae_fs',
-            signingDoctorName: 'Jan Nilsson',
-            careUnitId: 'IFV1239877878-1042',
-            careUnitName: 'WebCert Enhet 1',
-            careGiverId: 'IFV1239877878-1041',
-            civicRegistrationNumber: '19121212-1212',
-            signedDate: '2016-04-28',
-            validFromDate: null,
-            validToDate: null,
-            additionalInfo: '',
-            deleted: false,
-            deletedByCareGiver: false,
-            certificateStates: [{
-                target: 'HV',
-                state: 'RECEIVED',
-                timestamp: '2016-04-28T14:00:00.000'
-            }],
-            revoked: false
-        };
-        return certHolder;
-    }
+    var intygsId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -68,7 +44,9 @@ describe('Validera visning av Intyg', function() {
     describe('Visa signerat luae_fs intyg', function() {
 
         it('Something...', function() {
-            restUtil.createIntyg(buildLuaefsIntyg());
+            var intyg = intygFromJsonFactory.defaultLuaefs();
+            intygsId = intyg.id;
+            restUtil.createIntyg(intyg);
             SokSkrivIntygPage.selectPersonnummer('19121212-1212');
             SokSkrivValjIntyg.selectIntygById(intygsId);
 

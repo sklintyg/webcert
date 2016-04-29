@@ -24,13 +24,12 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
+var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-var restUtil = wcTestTools.restUtil;
-var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
-
 // Use fdescribe to run in isolation.
-describe('Validera makulering av luae_fs Intyg', function() {
+describe('Validera sändning av luae_fs Intyg', function() {
 
     var intygsId;
 
@@ -41,7 +40,7 @@ describe('Validera makulering av luae_fs Intyg', function() {
 
     describe('Visa signerat luae_fs intyg', function() {
 
-        it('Skapa signerat intyg i IT, visa intyget', function() {
+        it('Skapa intyget och gå till intygssidan', function() {
             var intyg = intygFromJsonFactory.defaultLuaefs();
             intygsId = intyg.id;
             restUtil.createIntyg(intyg);
@@ -51,15 +50,14 @@ describe('Validera makulering av luae_fs Intyg', function() {
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
-        it('Makulera intyget', function() {
-            IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-            browser.wait(IntygPage.makulera.dialogAterta.isDisplayed())
-                .then(IntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE));
+        it('Skicka intyget', function() {
+            IntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+            browser.wait(IntygPage.skicka.dialogKnapp.isDisplayed())
+                .then(IntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE))
+                .then(IntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
 
-            browser.wait(IntygPage.makulera.kvittensOKBtn.isDisplayed())
-                .then(IntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE));
 
-            element.all(by.id('#makuleraBtn')).then(function(items) {
+            element.all(by.id('#sendBtn')).then(function(items) {
                 expect(items.length).toBe(0);
             });
         });

@@ -24,11 +24,15 @@ var utkastTextmap = require('./testdata/utkastTextmap.js');
 var intygTemplates = require('./testdata/intygTemplates.js');
 var pages = require('./pages/pages.js');
 var helpers = require('./helpers/helpers.js'); // The order is important. Helpers requires pages.
+var intygFromJsonFactory = require('./util/intygFromJsonFactory.js');
+var restUtil = require('./util/rest.util.js');
 module.exports = {
     envConfig: environment.envConfig,
     testdata: testdata,
     utkastTextmap: utkastTextmap,
     intygTemplates: intygTemplates,
     pages: pages,
-    helpers: helpers
+    helpers: helpers,
+    intygFromJsonFactory: intygFromJsonFactory,
+    restUtil: restUtil
 };
