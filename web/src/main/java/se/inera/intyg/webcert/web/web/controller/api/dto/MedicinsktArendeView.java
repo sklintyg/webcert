@@ -18,15 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.google.auto.value.AutoValue;
+import javax.annotation.Nullable;
 
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.Builder;
+import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class MedicinsktArendeView {
 
     public abstract Integer getPosition();
 
+    @Nullable
     public abstract Integer getInstans();
 
     public abstract String getFrageId();
