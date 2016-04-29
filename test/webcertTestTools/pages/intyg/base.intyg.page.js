@@ -64,7 +64,7 @@ var BaseIntyg = JClass._extend({
         return this.skicka.knapp.click().then(function() {
             return self.skicka.samtyckeCheckbox.click().then(function() {
                 return self.skicka.dialogKnapp.click();
-            })
+            });
         });
     },
     copyBtn: function() {
