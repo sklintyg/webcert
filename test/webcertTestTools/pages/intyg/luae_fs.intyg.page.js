@@ -21,12 +21,12 @@
 
 'use strict';
 
-var BaseIntygPage = require('./base.intyg.page.js');
+var FkBaseIntygPage = require('./fk.base.intyg.page.js');
 
-var LuaefsIntyg = BaseIntygPage._extend({
+var LuaefsIntyg = FkBaseIntygPage._extend({
     init: function init() {
         init._super.call(this);
-        this.at = element(by.id('viewCertAndQA'));
+
         this.intygType = 'luae_fs';
 
         // Knappar etc. ärvs i första hand från BaseIntygPage

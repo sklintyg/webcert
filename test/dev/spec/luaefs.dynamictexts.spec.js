@@ -24,11 +24,15 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var textHelper = wcTestTools.helpers.fkTextHelper;
 var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
+var restUtil = wcTestTools.restUtil;
 
 // Use fdescribe to run in isolation.
 describe('Create luae_fs utkast and check dynamic texts', function() {
 
     var utkast = null;
+    var intyg = null;
 
     var texts = null;
 
@@ -57,7 +61,7 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
             UtkastPage.get(utkast.intygsId);
         });
 
-        it('Skall ha förväntade texter från server', function() {
+        it('should have dynamic texts on luae_fs draft', function() {
 
             //Min undersökning av patienten
             expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.1.RBK')).toBe(texts['KV_FKMU_0001.1.RBK']);
@@ -73,8 +77,34 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
 
     });
 
+    describe('Verify dynamic texts on luae_fs certificate', function() {
+
+        it('creates certificate via testabilityAPI...', function() {
+            intyg = intygFromJsonFactory.defaultLuaefs();
+            restUtil.createIntyg(intyg);
+
+            IntygPage.get(intyg.id);
+            expect(IntygPage.isAt()).toBeTruthy();
+        });
+
+        it('should have dynamic texts on certificate', function() {
+            //Min undersökning av patienten
+            expect(IntygPage.getDynamicLabelText('KV_FKMU_0001.1.RBK')).toBe(texts['KV_FKMU_0001.1.RBK']);
+
+            //Funktionsnedsättning/påverkan
+            expect(IntygPage.getDynamicLabelText('DFR_16.1.RBK')).toBe(texts['DFR_16.1.RBK']);
+
+            //Tilläggsfråga
+            expect(IntygPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
+        });
+
+
+
+    });
+
     afterAll(function() {
         testdataHelper.deleteUtkast(utkast.intygsId);
+        testdataHelper.deleteIntyg(intyg.id);
         specHelper.logout();
     });
 

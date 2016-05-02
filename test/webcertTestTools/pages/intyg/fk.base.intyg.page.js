@@ -21,17 +21,17 @@
 'use strict';
 
 /**
- * This is a base page for fk SIT family of intyg (luse, lusi, luaefs, luaena).
+ * This is a base (view) page for fk SIT family of intyg (luse, lusi, luae_fs, luae_na).
  * Only things relevant to ALL such types should end up here.
  */
 
-var BaseUtkast = require('./base.utkast.page.js');
+var BaseIntyg = require('./base.intyg.page.js');
 
-var FkBaseUtkast = BaseUtkast._extend({
+var FkBaseIntyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
 
-        this.at = element(by.css('.edit-form'));
+        this.at = element(by.id('viewCertAndQA'));
 
     },
 
@@ -45,4 +45,4 @@ var FkBaseUtkast = BaseUtkast._extend({
     }
 });
 
-module.exports = FkBaseUtkast;
+module.exports = FkBaseIntyg;
