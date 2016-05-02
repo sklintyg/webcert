@@ -61,7 +61,10 @@ var BaseSmiIntygPage = BaseIntyg._extend({
                 };
             },
             grund: element(by.id('diagnosgrund')),
-            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns det skäl att göra en ny bedömning av diagnosen/diagnoserna?'))
+            nyBedomningDiagnosgrundJa: element(by.id('nyBedomningDiagnosgrund-Ja')),
+            nyBedomningDiagnosgrundNej: element(by.id('nyBedomningDiagnosgrund-Nej')),
+            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns det skäl att göra en ny bedömning av diagnosen/diagnoserna?')),
+            diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
 
         this.funktionsnedsattning = {
@@ -92,6 +95,8 @@ var BaseSmiIntygPage = BaseIntyg._extend({
 
         this.kontaktFK = {
             onskas: element(by.cssContainingText('.intyg-field', 'Jag önskar att Försäkringskassan kontaktar mig')),
+            ja: element(by.id('kontaktMedFk-Ja')),
+            nej: element(by.id('kontaktMedFk-Nej')),
             anledning: element(by.id('anledningTillKontakt'))
         };
 

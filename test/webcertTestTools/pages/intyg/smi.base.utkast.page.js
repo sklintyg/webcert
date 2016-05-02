@@ -79,7 +79,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             skalTillNyBedomning: {
                 JA: element(by.id('nyBedomningDiagnosgrundYes')),
                 NEJ: element(by.id('nyBedomningDiagnosgrundNo'))
-            }
+            },
+            diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
 
         };
 
@@ -193,6 +194,11 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             nyBedomning = this.diagnos.skalTillNyBedomning.JA;
         }
         promiseArr.push(nyBedomning.sendKeys(protractor.Key.SPACE));
+
+        if (diagnosObj.nyBedomning) {
+            //Ange diagnosForNyBedomning
+            promiseArr.push(this.diagnos.diagnosForNyBedomning.sendKeys(diagnosObj.diagnosForNyBedomning));
+        }
 
         return Promise.all(promiseArr);
     },

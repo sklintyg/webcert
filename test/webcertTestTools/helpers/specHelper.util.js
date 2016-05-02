@@ -93,6 +93,9 @@ module.exports = {
         if (intygType === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
             utkastPage = pages.intyg.luaeFS.utkast;
         }
+        if (intygType === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            utkastPage = pages.intyg.luae_na.utkast;
+        }
 
         expect(utkastPage.isAt()).toBe(true);
     },

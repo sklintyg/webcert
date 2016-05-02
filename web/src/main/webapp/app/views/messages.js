@@ -72,7 +72,7 @@ var wcMessages = {
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
         'certificatetypes.lisu.typename': 'Läkarintyg för sjukpenning utökat',
         'certificatetypes.luse.typename': 'Läkarutlåtande för sjukersättning',
-        'certificatetypes.luae_na.typename': 'Läkarutlåtande för aktivitetsersättning NA',
+        'certificatetypes.luae_na.typename': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'certificatetypes.luae_fs.typename': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
 
         //certificate help texts old

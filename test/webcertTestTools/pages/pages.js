@@ -58,6 +58,10 @@ module.exports = {
             utkast: require(intygPath + 'luae_fs.utkast.page.js'),
             intyg: require(intygPath + 'luae_fs.intyg.page.js')
         },
+        luae_na: {
+            utkast: require(intygPath + 'luae_na.utkast.page.js'),
+            intyg: require(intygPath + 'luae_na.intyg.page.js')
+        },
         ts: {
             diabetes: {
                 utkast: require(intygPath + 'tsDiabetes.utkast.page.js'),
