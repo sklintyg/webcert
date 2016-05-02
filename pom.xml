@@ -30,18 +30,18 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>0-SNAPSHOT</version>
+  <version>v4.1.0-RC4</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
 
   <properties>
     <!-- Common -->
-    <common.version>0-SNAPSHOT</common.version>
+    <common.version>2.5.0-RC3</common.version>
     <common.version.range>(,2.5.0]</common.version.range>
 
     <!-- Intygstyper -->
-    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
+    <intygstyper.version>2.5.0-RC3</intygstyper.version>
     <intygstyper.version.range>(,2.5.0]</intygstyper.version.range>
 
     <!-- Schemas -->
