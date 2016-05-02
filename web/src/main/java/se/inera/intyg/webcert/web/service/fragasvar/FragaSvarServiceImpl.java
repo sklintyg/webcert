@@ -19,7 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.soap.SOAPFaultException;
@@ -35,21 +43,31 @@ import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.web.converter.*;
+import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
+import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
+import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
+import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -232,11 +250,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") for saving answer");
         }
 
+        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webCertUserService.getUser();
-        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())
-                && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
+                && !authoritiesValidator.given(user)
+                        .roles(AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE).isVerified()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
                     + ") can only be answered by user that is Lakare");
@@ -287,7 +307,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
 
         return saved;
-
     }
 
     @Override
@@ -553,7 +572,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     /* --------------------- Private scope --------------------- */
-
     private FragaSvar closeQuestionAsHandled(FragaSvar fragaSvar) {
         fragaSvar.setStatus(Status.CLOSED);
         return fragaSvarRepository.save(fragaSvar);
@@ -625,7 +643,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             notificationService.sendNotificationForQuestionSent(fragaSvar);
             break;
         default:
-            LOGGER.warn("FragaSvarServiceImpl.sendNotification(FragaSvar, NotificationEvent) - cannot send notification. Incoming event not handled!");
+            LOGGER.warn(
+                    "FragaSvarServiceImpl.sendNotification(FragaSvar, NotificationEvent) - cannot send notification. Incoming event not handled!");
         }
 
     }
