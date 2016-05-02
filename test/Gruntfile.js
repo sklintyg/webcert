@@ -34,9 +34,9 @@ module.exports = function(grunt) {
         jshint: {
             acc: [
                 'acceptance/features/steps/*.js',
-                'acceptance/features/steps/**/*.js',
-                'webcertTestTools/**/*.js',
-                'webcertTestTools/*.js'
+                'acceptance/features/steps/**/*.js' //,
+                //'webcertTestTools/**/*.js',
+                //'webcertTestTools/*.js'
             ],
             options: {
                 force: false,
@@ -47,9 +47,9 @@ module.exports = function(grunt) {
             verify: {
                 src: [
                     'acceptance/features/steps/*.js',
-                    'acceptance/features/steps/**/*.js',
-                    'webcertTestTools/**/*.js',
-                    'webcertTestTools/*.js'
+                    'acceptance/features/steps/**/*.js' //,
+                    //'webcertTestTools/**/*.js',
+                    //'webcertTestTools/*.js'
                 ],
                 options: {
                     mode: 'VERIFY_ONLY',
@@ -128,13 +128,12 @@ module.exports = function(grunt) {
         // https://github.com/cucumber/cucumber/wiki/Tags
         if (grunt.option("tags")) {
             var tagsArray = grunt.option("tags").split(',');
-            tagsArray.forEach(function (tag, index) {
-                tagsArray[index] = tagsArray[index].replace(" ",",");
+            tagsArray.forEach(function(tag, index) {
+                tagsArray[index] = tagsArray[index].replace(" ", ",");
             });
-	        grunt.config.set('protractor.acc.options.args.cucumberOpts.tags',tagsArray);
-        }
-        else {
-                grunt.config.set('protractor.acc.options.args.cucumberOpts.tags',['~@notReady','~@waitingForFix']);
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
+        } else {
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady', '~@waitingForFix']);
         }
         grunt.task.run(['jshint:acc', 'jsbeautifier:verify', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
     });
@@ -150,10 +149,9 @@ module.exports = function(grunt) {
         // kombinera OCH och ELLER operatorer.
         if (grunt.option("tags")) {
             var tagsArray = grunt.option("tags").split(',');
-	        grunt.config.set('protractor.acc.options.args.cucumberOpts.tags',tagsArray);
-        }
-        else {
-                grunt.config.set('protractor.acc.options.args.cucumberOpts.tags',['~@notReady','~@waitingForFix']);
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
+        } else {
+            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady', '~@waitingForFix']);
         }
         grunt.task.run(['env:' + environment, 'protractor_webdriver', 'protractor:acc']);
     });
