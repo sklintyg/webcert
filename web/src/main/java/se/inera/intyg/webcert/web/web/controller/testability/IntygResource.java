@@ -24,7 +24,13 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -37,9 +43,14 @@ import org.springframework.transaction.annotation.Transactional;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.*;
+import se.inera.intyg.webcert.web.service.dto.Patient;
+import se.inera.intyg.webcert.web.service.dto.Vardenhet;
+import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
@@ -91,6 +102,15 @@ public class IntygResource {
         }
         return Response.ok().build();
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response insertUtkast(Utkast utkast) {
+        utkastRepository.save(utkast);
+        return Response.ok(utkast).build();
+    }
+
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
