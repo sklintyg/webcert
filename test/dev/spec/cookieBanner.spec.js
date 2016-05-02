@@ -34,9 +34,8 @@ describe('Logga in och godkänn kakor', function() {
         specHelper.waitForAngularTestability();
 
         browser.wait(EC.elementToBeClickable(element(by.id(basepage.cookieConsentBtnId))), 5000);
-        element(by.id(basepage.cookieConsentBtnId)).click();
+        element(by.id(basepage.cookieConsentBtnId)).sendKeys(protractor.Key.SPACE);
         browser.wait(EC.invisibilityOf(element(by.id(basepage.cookieConsentBtnId))), 5000);
-
 
     });
 
