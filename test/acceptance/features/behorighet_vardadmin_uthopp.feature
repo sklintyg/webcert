@@ -29,7 +29,7 @@ Scenario: Kan ej signera intyg.
 	Givet att jag är inloggad som vårdadministratör
 	#Givet att jag är inloggad som uthoppad vårdadministratör
 	När jag väljer flik "Sök/skriv intyg"
-	När jag väljer patienten "19971019-2387"
+	Och jag går in på en patient
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så synns inte signera knappen
@@ -40,7 +40,7 @@ Scenario: Kan ej signera intyg.
 Scenario: Kan visa "Hämta personuppgifter"-knapp på utkast
 	Givet att jag är inloggad som vårdadministratör
 		När jag väljer flik "Sök/skriv intyg"
-		När jag väljer patienten "19971019-2387"
+		Och jag går in på en patient
 		Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 		Så synns Hämta personuppgifter knappen
 		

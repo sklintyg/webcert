@@ -19,19 +19,19 @@ Scenario: Kan signera intyg
 
 Scenario: Kan inte kopiera intyg Läkarintyg FK 7263 
    När går in på Sök/skriv intyg
-   Och jag väljer patienten "19971019-2387"
+   Och jag går in på en patient
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg 
    När går in på Sök/skriv intyg
-   Och jag väljer patienten "19971019-2387"
+   Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
    När går in på Sök/skriv intyg
-   Och jag väljer patienten "19971019-2387"
+   Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
@@ -47,7 +47,7 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
 
 Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
-   Och jag väljer patienten "19121212-1212"
+   Och jag går in på en patient
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
