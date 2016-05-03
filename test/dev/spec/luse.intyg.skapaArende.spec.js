@@ -30,7 +30,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 
 fdescribe('Generate fk luse intyg', function() {
 
-    var intygId = 'bad42b7c-c1e4-475d-b0e9-3b6b36a819cb';
+    var intygId = 'fbc8ef77-f0c9-4f87-93d5-4542544754a8';
 //    var intygId = testdataHelper.generateTestGuid();
     var intyg;
 /*
@@ -47,6 +47,7 @@ fdescribe('Generate fk luse intyg', function() {
 */
     describe('Login through the welcome page', function() {
         it('with default user', function() {
+            browser.ignoreSynchronization = false;
             specHelper.login();
         });
     });
@@ -58,14 +59,14 @@ fdescribe('Generate fk luse intyg', function() {
         });
         
         it('should make sure message that intyg must be sent to create new arenden is shown', function() {
-            expect(LuseIntygPage.notSentMessage.isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.arendeIntygNotSentYetMessage.isDisplayed()).toBeTruthy();
         });
     });
 
     describe('send intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
-                expect(LuseIntygPage.sentMessage1.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.skicka.statusSendInprogress.isDisplayed()).toBeTruthy();
             });
         });
     });
@@ -78,7 +79,7 @@ fdescribe('Generate fk luse intyg', function() {
         });
     });
 
-    describe('remove arende', function() {
+/*    describe('remove arende', function() {
         it('should clean up created arende after the test', function() {
             restTestdataHelper.deleteAllArenden();
         });
@@ -88,5 +89,5 @@ fdescribe('Generate fk luse intyg', function() {
         it('should clean up intyg after the test', function() {
             restTestdataHelper.deleteIntyg(intygId);
         });
-    });
+    });*/
 });

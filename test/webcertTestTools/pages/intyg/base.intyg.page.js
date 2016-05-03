@@ -56,7 +56,6 @@ var BaseIntyg = JClass._extend({
 
         // Ärende
         this.signedMessage = element(by.id('intyg-is-sent-to-it-message-text'));
-        this.sentMessage1 = element(by.id('intyg-is-on-sendqueue-to-it-message-text'));
 
         this.arendeIntygNotSentYetMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
         this.arendeSentMessage = element(by.id('arende-is-sent-to-fk-message-text'));
