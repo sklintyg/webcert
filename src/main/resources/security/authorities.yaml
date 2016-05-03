@@ -152,6 +152,7 @@ privileges:
       - *ki010 # FK7263
       - *ki040 # lisu 
       - *ki050 # luse
+      - *ki060 # luae_na
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION
