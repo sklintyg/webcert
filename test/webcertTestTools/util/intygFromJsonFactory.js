@@ -5,22 +5,47 @@
 /*globals JSON*/
 'use strict';
 
-var templateJsonObj = require('webcert-testtools/testdata/luae_fs-minimal.json');
+var templateJsonObjLuaefs = require('webcert-testtools/testdata/luae_fs-minimal.json');
+var templateJsonObjLuaena = require('webcert-testtools/testdata/luae_na.json');
 
 module.exports = {
     defaultLuaefs: function() {
 
         return {
-            id: templateJsonObj.id,
-            document: JSON.stringify(templateJsonObj),
+            id: templateJsonObjLuaefs.id,
+            document: JSON.stringify(templateJsonObjLuaefs),
             originalCertificate: '',
-            type: templateJsonObj.typ,
-            signingDoctorName: templateJsonObj.grundData.skapadAv.fullstandigtNamn,
-            careUnitId: templateJsonObj.grundData.skapadAv.vardenhet.enhetsid,
-            careUnitName: templateJsonObj.grundData.skapadAv.vardenhet.enhetsnamn,
-            careGiverId: templateJsonObj.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
-            civicRegistrationNumber: templateJsonObj.grundData.patient.personId,
-            signedDate: templateJsonObj.grundData.signeringsdatum,
+            type: templateJsonObjLuaefs.typ,
+            signingDoctorName: templateJsonObjLuaefs.grundData.skapadAv.fullstandigtNamn,
+            careUnitId: templateJsonObjLuaefs.grundData.skapadAv.vardenhet.enhetsid,
+            careUnitName: templateJsonObjLuaefs.grundData.skapadAv.vardenhet.enhetsnamn,
+            careGiverId: templateJsonObjLuaefs.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
+            civicRegistrationNumber: templateJsonObjLuaefs.grundData.patient.personId,
+            signedDate: templateJsonObjLuaefs.grundData.signeringsdatum,
+            validFromDate: null,
+            validToDate: null,
+            additionalInfo: '',
+            deleted: false,
+            deletedByCareGiver: false,
+            certificateStates: [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }],
+            revoked: false
+        };
+    },defaultLuaena: function() {
+        return {
+            id: templateJsonObjLuaena.id,
+            document: JSON.stringify(templateJsonObjLuaena),
+            originalCertificate: '',
+            type: templateJsonObjLuaena.typ,
+            signingDoctorName: templateJsonObjLuaena.grundData.skapadAv.fullstandigtNamn,
+            careUnitId: templateJsonObjLuaena.grundData.skapadAv.vardenhet.enhetsid,
+            careUnitName: templateJsonObjLuaena.grundData.skapadAv.vardenhet.enhetsnamn,
+            careGiverId: templateJsonObjLuaena.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
+            civicRegistrationNumber: templateJsonObjLuaena.grundData.patient.personId,
+            signedDate: templateJsonObjLuaena.grundData.signeringsdatum,
             validFromDate: null,
             validToDate: null,
             additionalInfo: '',

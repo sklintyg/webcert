@@ -1,0 +1,83 @@
+{
+    "typ": "luae_na",
+    "id": "intyg-visa-test-1",
+    "textVersion": "1.0",
+    "grundData": {
+        "patient": {
+            "samordningsNummer": false,
+            "postort": "Stadby gärde",
+            "postnummer": "100 20",
+            "postadress": "Pgatan 2",
+            "efternamn": "Tolvansson",
+            "fornamn": "Tolvan",
+            "fullstandigtNamn": "Tolvan Tolvansson",
+            "personId": "191212121212"
+        },
+        "skapadAv": {
+            "vardenhet": {
+                "arbetsplatsKod": "45312",
+                "vardgivare": {
+                    "vardgivarnamn": "WebCert Vårdgivare 1",
+                    "vardgivarid": "IFV1239877878-1041"
+                },
+                "epost": "ve1@vg1.se",
+                "telefonnummer": "0812341234",
+                "postort": "Stadby",
+                "postnummer": "100 10",
+                "postadress": "Enhetsg. 1",
+                "enhetsnamn": "Webcert Enhet 1",
+                "enhetsid": "IFV1239877878-1042"
+            },
+            "specialiteter": [
+                "Kirurg"
+            ],
+            "befattningar": [
+                "Klinikchef",
+                "Forskningsledare"
+            ],
+            "forskrivarKod": "2481632",
+            "fullstandigtNamn": "Jan Nilsson",
+            "personId": "19650708-1234"
+        },
+        "signeringsdatum": "2015-12-07T15:48:05.000"
+    },
+    "undersokningAvPatienten": "2016-05-03",
+    "journaluppgifter": "2016-05-03",
+    "anhorigsBeskrivningAvPatienten": "2016-05-03",
+    "annatGrundForMU": "2016-05-03",
+    "annatGrundForMUBeskrivning": "Annat",
+    "kannedomOmPatient": "2016-05-03",
+    "underlagFinns": true,
+    "underlag": [{
+        "typ": 2,
+        "datum": "2016-04-26",
+        "hamtasFran": "vårdgivare"
+    }],
+    "sjukdomsforlopp": "Bakgrund",
+    "diagnoser": [{
+        "diagnosKodSystem": "ICD_10_SE",
+        "diagnosKod": "J22",
+        "diagnosBeskrivning": "Icke specificerad akut infektion i nedre luftvägarna"
+    }],
+    "diagnosgrund": "Diagnos 1",
+    "nyBedomningDiagnosgrund": true,
+    "diagnosForNyBedomning": "Diagnos 2",
+    "funktionsnedsattningIntellektuell": "Funktionsnedsättning1",
+    "funktionsnedsattningKommunikation": "Funktionsnedsättning2",
+    "funktionsnedsattningKoncentration": "Funktionsnedsättning3",
+    "funktionsnedsattningPsykisk": "Funktionsnedsättning4",
+    "funktionsnedsattningSynHorselTal": "Funktionsnedsättning5",
+    "funktionsnedsattningBalansKoordination": "Funktionsnedsättning6",
+    "funktionsnedsattningAnnan": "Funktionsnedsättning7",
+    "aktivitetsbegransning": "Aktivitetsbegränsning",
+    "avslutadBehandling": "Medicinsk behandling 1",
+    "pagaendeBehandling": "Medicinsk behandling 2",
+    "planeradBehandling": "Medicinsk behandling 3",
+    "substansintag": "Medicinsk behandling 4",
+    "medicinskaForutsattningarForArbete": "Medicinska förutsättningar för arbete 1",
+    "formagaTrotsBegransning": "Medicinska förutsättningar för arbete 2",
+    "ovrigt": "Övrigt",
+    "kontaktMedFk": true,
+    "anledningTillKontakt": "Kontaktorsak",
+    "tillaggsfragor": []
+}

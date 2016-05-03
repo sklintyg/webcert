@@ -32,12 +32,16 @@ var BaseIntyg = JClass._extend({
         this.makulera = {
             btn: element(by.id('makuleraBtn')),
             dialogAterta: element(by.id('button1makulera-dialog')),
-            kvittensOKBtn: element(by.id('confirmationOkButton'))
+            kvittensOKBtn: element(by.id('confirmationOkButton')),
+            statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
+            statusRevoked: element(by.id('certificate-is-revoked-message-text'))
         };
         this.skicka = {
             knapp: element(by.id('sendBtn')),
             samtyckeCheckbox: element(by.id('patientSamtycke')),
-            dialogKnapp: element(by.id('button1send-dialog'))
+            dialogKnapp: element(by.id('button1send-dialog')),
+            statusSendInprogress: element(by.id('certificate-is-on-sendqueue-to-it-message-text')),
+            statusSent: element(by.id('certificate-is-sent-to-recipient-message-text'))
         };
         this.copy = {
             button: element(by.id('copyBtn')),
