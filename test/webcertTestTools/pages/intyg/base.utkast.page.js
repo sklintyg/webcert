@@ -26,6 +26,7 @@
 var JClass = require('jclass');
 
 var BaseUtkast = JClass._extend({
+
     init: function() {
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
@@ -35,6 +36,8 @@ var BaseUtkast = JClass._extend({
         };
         this.newTextVersionAlert = element(by.id('newTextVersion'));
         this.backBtn = element(by.id('tillbakaButton'));
+        this.showMissingInfoButton = element(by.id('showCompleteButton'));
+        this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
 
     },
     get: function(intygType, intygId) {
@@ -51,6 +54,14 @@ var BaseUtkast = JClass._extend({
     },
     signeraButtonClick: function() {
         this.signeraButton.click();
+    },
+    showMissingInfoButtonClick: function() {
+        this.showMissingInfoButton.click();
+    },
+    getMissingInfoMessagesCount: function() {
+        return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {
+            return items.length;
+        });
     }
 });
 

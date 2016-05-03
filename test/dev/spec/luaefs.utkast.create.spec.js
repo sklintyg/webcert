@@ -49,6 +49,14 @@ describe('Create and Sign luae_fs utkast', function() {
 
             describe('Fyll i luae_fs intyg', function() {
 
+                it('tomt utkast skall visa lista med fel efter klick på "Visa vad som saknas"', function() {
+
+                    UtkastPage.showMissingInfoButtonClick();
+
+                    expect(UtkastPage.getMissingInfoMessagesCount()).toBe(4);
+
+                });
+
                 it('Grund - baserat på', function() {
 
                     var promiseArr = [];
