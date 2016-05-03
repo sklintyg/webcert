@@ -29,7 +29,7 @@ var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 // Use fdescribe to run in isolation.
-describe('Validera sändning av luae_fs Intyg', function() {
+fdescribe('Validera sändning av luae_fs Intyg', function() {
 
     var intygsId;
 
@@ -60,6 +60,10 @@ describe('Validera sändning av luae_fs Intyg', function() {
             element.all(by.id('#sendBtn')).then(function(items) {
                 expect(items.length).toBe(0);
             });
+
+            // Add a small artificial wait so the revoke can be processed asynchronously by Intygstjänsten. Not pretty...
+            browser.sleep(500);
+            expect(isIntygSent(intygsId)).toBeTruthy();
         });
 
     });
@@ -69,5 +73,14 @@ describe('Validera sändning av luae_fs Intyg', function() {
         specHelper.logout();
         browser.ignoreSynchronization = true;
     });
+
+    function isIntygSent(intygsId) {
+        var innerDefer = protractor.promise.defer();
+        restUtil.getIntyg(intygsId).then(function(intygBody) {
+            var result = IntygPage.hasState(intygBody.body.states, 'SENT');
+            innerDefer.fulfill(result);
+        });
+        return innerDefer.promise;
+    }
 
 });

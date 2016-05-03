@@ -84,6 +84,14 @@ var BaseIntyg = JClass._extend({
         return element(by.cssContainingText('button', 'Skriv ut')).sendKeys(protractor.Key.SPACE).then(function() {
             return element(by.cssContainingText('a', 'Fullständigt intyg')).click();
         });
+    },
+    hasState: function(states, state) {
+        for(var a = 0; a < states.length; a++) {
+            if (states[a].state == state) {
+                return true;
+            }
+        }
+        return false;
     }
 });
 

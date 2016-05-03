@@ -30,7 +30,7 @@ var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
 // Use fdescribe to run in isolation.
-describe('Validera makulering av luae_fs Intyg', function() {
+fdescribe('Validera makulering av luae_fs Intyg', function() {
 
     var intygsId;
 
@@ -62,6 +62,11 @@ describe('Validera makulering av luae_fs Intyg', function() {
             element.all(by.id('#makuleraBtn')).then(function(items) {
                 expect(items.length).toBe(0);
             });
+
+            // A small artificial wait so Intygstjänsten kan process the revoke, it's async.
+            browser.sleep(500);
+            expect(isIntygRevoked(intygsId)).toBeTruthy();
+
         });
 
     });
@@ -73,3 +78,12 @@ describe('Validera makulering av luae_fs Intyg', function() {
     });
 
 });
+
+function isIntygRevoked(intygsId) {
+    var innerDefer = protractor.promise.defer();
+    restUtil.getIntyg(intygsId).then(function(intygBody) {
+        var result = IntygPage.hasState(intygBody.body.states, 'CANCELLED');
+        innerDefer.fulfill(result);
+    });
+    return innerDefer.promise;
+}

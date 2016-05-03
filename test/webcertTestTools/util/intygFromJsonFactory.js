@@ -11,6 +11,8 @@ var templateJsonObjLuaena = require('webcert-testtools/testdata/luae_na.json');
 module.exports = {
     defaultLuaefs: function() {
 
+        templateJsonObj.id = guid();
+
         return {
             id: templateJsonObjLuaefs.id,
             document: JSON.stringify(templateJsonObjLuaefs),
@@ -60,3 +62,13 @@ module.exports = {
         };
     }
 };
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
