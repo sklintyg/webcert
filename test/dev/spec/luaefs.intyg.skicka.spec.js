@@ -29,7 +29,7 @@ var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 // Use fdescribe to run in isolation.
-fdescribe('Validera sändning av luae_fs Intyg', function() {
+describe('Validera sändning av luae_fs Intyg', function() {
 
     var intygsId;
 

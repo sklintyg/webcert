@@ -30,7 +30,7 @@ var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
 // Use fdescribe to run in isolation.
-fdescribe('Validera makulering av luae_fs Intyg', function() {
+describe('Validera makulering av luae_fs Intyg', function() {
 
     var intygsId;
 
