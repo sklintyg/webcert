@@ -42,11 +42,6 @@ fdescribe('Generate fk luse intyg', function() {
                 "statuses":[{"type":"RECEIVED","target":"HSVARD","timestamp":"2016-05-03T13:22:13.000"}],
                 "revoked":false,"relations":[{"intygsId":"bad42b7c-c1e4-475d-b0e9-3b6b36a819cb","status":"INTYG"}]};
             restTestdataHelper.createWebcertIntyg(intygId, testData).then(function(response) {
-                intyg = JSON.parse(response.request.body);
-                expect(intyg.id).not.toBeNull();
-            }, function(error) {
-                console.log('Error calling createIntyg');
-            });
         });
     });
 */
@@ -74,13 +69,21 @@ fdescribe('Generate fk luse intyg', function() {
             });
         });
     });
-    /*
+
     describe('send new arende', function() {
         it('open new arende panel', function() {
-            expect(true).toBeTruthy();
+            LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
+                expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
+            })
         });
     });
-*/
+
+    describe('remove arende', function() {
+        it('should clean up created arende after the test', function() {
+            restTestdataHelper.deleteAllArenden();
+        });
+    });
+
     describe('remove test intyg', function() {
         it('should clean up intyg after the test', function() {
             restTestdataHelper.deleteIntyg(intygId);

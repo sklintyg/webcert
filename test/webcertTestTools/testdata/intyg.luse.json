@@ -2,24 +2,24 @@
   "typ": "luse",
   "id": "7f07e797-47c9-4c16-8b55-9c2fc7f1b982",
   "grundData": {
-    "signeringsdatum": "2016-04-21T14:02:26.000",
+    "signeringsdatum": "2016-04-28T12:40:04.000",
     "skapadAv": {
-      "personId": "IFV1239877878-1049",
-      "fullstandigtNamn": "Jan Nilsson",
+      "personId": "TSTNMT2321000156-103F",
+      "fullstandigtNamn": "Leonie Koehl",
       "forskrivarKod": "0000000",
-      "befattningar": [],
-      "specialiteter": [],
+      "befattningar": [ ],
+      "specialiteter": [ ],
       "vardenhet": {
-        "enhetsid": "IFV1239877878-1042",
-        "enhetsnamn": "WebCert-Enhet1",
-        "postadress": "Storgatan 1",
+        "enhetsid": "TSTNMT2321000156-1039",
+        "enhetsnamn": "NMT vg1 ve2",
+        "postadress": "NMT gata 2",
         "postnummer": "12345",
-        "postort": "Småmåla",
-        "telefonnummer": "0101234567890",
-        "epost": "enhet1@webcert.invalid.se",
+        "postort": "Testhult",
+        "telefonnummer": "0101112131415",
+        "epost": "enhet2@webcert.invalid.se",
         "vardgivare": {
-          "vardgivarid": "IFV1239877878-1041",
-          "vardgivarnamn": "WebCert-Vårdgivare1"
+          "vardgivarid": "TSTNMT2321000156-1002",
+          "vardgivarnamn": "NMT vg1"
         },
         "arbetsplatsKod": "1234567890"
       }
