@@ -159,7 +159,7 @@ public class IntygApiController extends AbstractApiController {
             @PathParam("meddelandeId") String meddelandeId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
                 .orThrow();
 
         LOG.debug("Attempting to create a completion of {} with id '{}'", intygsTyp, orgIntygsId);
@@ -172,9 +172,8 @@ public class IntygApiController extends AbstractApiController {
         CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
 
-        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.",
-                new Object[] { serviceResponse.getNewDraftIntygId(),
-                        serviceResponse.getNewDraftIntygType(), orgIntygsId });
+        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", serviceResponse.getNewDraftIntygId(),
+                serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 

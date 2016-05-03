@@ -72,6 +72,7 @@ knownPrivileges:
   - &kp090 HANTERA_PERSONUPPGIFTER
   - &kp100 HANTERA_MAILSVAR
   - &kp110 NAVIGERING
+  - &kp120 SVARA_MED_NYTT_INTYG
 
 # De roller som systemet har
 knownRoles:
@@ -150,12 +151,13 @@ privileges:
     desc: Besvara fråga om komplettering
     intygstyper:
       - *ki010 # FK7263
-      - *ki040 # lisu 
+      - *ki040 # lisu
       - *ki050 # luse
       - *ki060 # luae_na
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION
+      - *ro030 # UTHOPP
   - &p070
     name: *kp070
     desc: Filtrera på annan läkare
@@ -190,6 +192,16 @@ privileges:
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
+  - &p120
+    name: *kp120
+    desc: Svara med nytt intyg
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki040 # lisu
+      - *ki050 # luse
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
 
 # Roller
 roles:
@@ -210,6 +222,7 @@ roles:
       - *p090 # HANTERA_PERSONUPPGIFTER
       - *p100 # HANTERA_MAILSVAR
       - *p110 # NAVIGERING
+      - *p120 # SVARA_MED_NYTT_INTYG
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -224,6 +237,7 @@ roles:
       - *p090 # HANTERA_PERSONUPPGIFTER
       - *p100 # HANTERA_MAILSVAR
       - *p110 # NAVIGERING
+      - *p120 # SVARA_MED_NYTT_INTYG
   - &r030
     name: *kr030 # TANDLAKARE
     desc: Tandläkare
@@ -277,6 +291,10 @@ roles:
           - *ki010
           - *ki040
       - <<: *p110 # NAVIGERING
+        intygstyper:
+          - *ki010
+          - *ki040
+      - <<: *p120 # SVARA_MED_NYTT_INTYG
         intygstyper:
           - *ki010
           - *ki040

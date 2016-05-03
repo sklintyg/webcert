@@ -46,7 +46,7 @@ public final class AuthoritiesConstants {
 
     // Known privileges (these privileges are copied from authorities.yaml which is the master authorities
     // configuration)
-    // Note: not all privileges are mapped, only the ones actually used in beckend
+    // Note: not all privileges are mapped, only the ones actually used in backend
     public static final String PRIVILEGE_VISA_INTYG = "VISA_INTYG";
     public static final String PRIVILEGE_SIGNERA_INTYG = "SIGNERA_INTYG";
     public static final String PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA = "BESVARA_KOMPLETTERINGSFRAGA";
@@ -54,5 +54,6 @@ public final class AuthoritiesConstants {
     public static final String PRIVILEGE_VIDAREBEFORDRA_UTKAST = "VIDAREBEFORDRA_UTKAST";
     public static final String PRIVILEGE_MAKULERA_INTYG = "MAKULERA_INTYG";
     public static final String PRIVILEGE_KOPIERA_INTYG = "KOPIERA_INTYG";
+    public static final String PRIVILEGE_SVARA_MED_NYTT_INTYG = "SVARA_MED_NYTT_INTYG";
 
 }
