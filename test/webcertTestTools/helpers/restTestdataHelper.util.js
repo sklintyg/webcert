@@ -42,6 +42,10 @@ module.exports = {
         restUtil.login();
         return restUtil.deleteIntyg(id);
     },
+    createWebcertIntyg: function(id, createJson) {
+        restUtil.login();
+        return restUtil.createWebcertIntyg(id, createJson);
+    },
     createUtkast: function(intygType, template) {
         restUtil.login();
 

@@ -67,6 +67,14 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    createWebcertIntyg: function(id, createJson) {
+        var options = {
+            url: 'testability/intyg',
+            method: 'POST',
+            body: createJson
+        };
+        return restClient.run(options, 'json');
+    },
     createIntyg: function(createJson) {
         var options = {
             url: 'certificate/',

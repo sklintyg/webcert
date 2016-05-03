@@ -28,15 +28,20 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 
-describe('Generate fk luse intyg', function() {
+fdescribe('Generate fk luse intyg', function() {
 
-    var intygId = testdataHelper.generateTestGuid();
+    var intygId = 'bad42b7c-c1e4-475d-b0e9-3b6b36a819cb';
+//    var intygId = testdataHelper.generateTestGuid();
     var intyg;
-
+/*
     describe('prepare test with intyg', function() {
         it('should generate fk luse intyg', function() {
             browser.ignoreSynchronization = false;
-            restTestdataHelper.createIntygFromTemplate('luseMax', intygId).then(function(response) {
+            var testData = {"contents":{"grundData":{"signeringsdatum":"2016-05-03T13:22:13.000","skapadAv":{"personId":"IFV1239877878-1049","fullstandigtNamn":"Jan Nilsson","forskrivarKod":"0000000","befattningar":[],"specialiteter":[],"vardenhet":{"enhetsid":"IFV1239877878-1042","enhetsnamn":"WebCert-Enhet1","postadress":"Storgatan 1","postnummer":"12345","postort":"Småmåla","telefonnummer":"0101234567890","epost":"enhet1@webcert.invalid.se","vardgivare":{"vardgivarid":"IFV1239877878-1041","vardgivarnamn":"WebCert-Vårdgivare1"},"arbetsplatsKod":"1234567890"}},"patient":{"personId":"191212121212","fullstandigtNamn":"Tolvan Tolvansson","fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla","samordningsNummer":false}},"textVersion":"1.0","undersokningAvPatienten":"2016-05-03","journaluppgifter":"2016-05-03","anhorigsBeskrivningAvPatienten":"2016-05-03","annatGrundForMU":"2016-05-03","annatGrundForMUBeskrivning":"test","kannedomOmPatient":"2016-05-03","underlagFinns":false,"underlag":[],"sjukdomsforlopp":"test","diagnoser":[{"diagnosKod":"Z65","diagnosKodSystem":"ICD_10_SE","diagnosBeskrivning":"Problem som har samband med andra psykosociala förhållanden","diagnosDisplayName":""}],"diagnosgrund":"test","nyBedomningDiagnosgrund":false,"funktionsnedsattningIntellektuell":"test","funktionsnedsattningKommunikation":"test","funktionsnedsattningKoncentration":"test","funktionsnedsattningPsykisk":"test","funktionsnedsattningSynHorselTal":"test","funktionsnedsattningBalansKoordination":"test","funktionsnedsattningAnnan":"test","aktivitetsbegransning":"test","pagaendeBehandling":"test","avslutadBehandling":"test","planeradBehandling":"test","substansintag":"test","medicinskaForutsattningarForArbete":"test","formagaTrotsBegransning":"test","ovrigt":"test","kontaktMedFk":true,"anledningTillKontakt":"test","tillaggsfragor":[],
+                "typ":"luse"},
+                "statuses":[{"type":"RECEIVED","target":"HSVARD","timestamp":"2016-05-03T13:22:13.000"}],
+                "revoked":false,"relations":[{"intygsId":"bad42b7c-c1e4-475d-b0e9-3b6b36a819cb","status":"INTYG"}]};
+            restTestdataHelper.createWebcertIntyg(intygId, testData).then(function(response) {
                 intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();
             }, function(error) {
@@ -44,7 +49,7 @@ describe('Generate fk luse intyg', function() {
             });
         });
     });
-
+*/
     describe('Login through the welcome page', function() {
         it('with default user', function() {
             specHelper.login();

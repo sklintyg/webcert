@@ -54,8 +54,9 @@ var BaseIntyg = JClass._extend({
         this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
 
-        this.signedMessage = element(by.id('certificate-is-sent-to-it-message-text'));
-        this.sentMessage1 = element(by.id('certificate-is-on-sendqueue-to-it-message-text'));
+        // Ärende
+        this.signedMessage = element(by.id('intyg-is-sent-to-it-message-text'));
+        this.sentMessage1 = element(by.id('intyg-is-on-sendqueue-to-it-message-text'));
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
