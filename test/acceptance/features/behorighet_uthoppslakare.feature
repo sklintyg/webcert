@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @hurr
+@behorighet 
 Egenskap: Behörigheter för en uthoppsläkare
 
 Bakgrund: Inloggad som uthoppsläkare
@@ -53,3 +53,11 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
+Scenario: Ska få varning vid svar med nytt intyg
+   När jag går in på en patient
+   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+   Och jag går in på intyget via uthoppslänk
+   Så ska jag se kompletteringsfrågan på intygs-sidan
+   Och jag ska inte kunna komplettera med nytt intyg från webcert
+   Och jag ska se en varningstext för svara med nytt intyg

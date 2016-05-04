@@ -179,6 +179,22 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^jag går in på intyget via uthoppslänk/, function(callback) {
+        global.intyg.typ = 'Läkarintyg FK 7263';
+
+        var url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
+
+        browser.get(url).then(function() {
+            fkIntygPage.qaPanel.isPresent().then(function(isVisible) {
+                if (isVisible) {
+                    fetchMessageIds().then(callback);
+                } else {
+                    callback();
+                }
+            });
+        });
+    });
+
     this.Then(/^ska intygsutkastets status vara "([^"]*)"$/, function(statustext, callback) {
         expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
     });

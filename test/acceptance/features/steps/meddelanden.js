@@ -48,6 +48,7 @@ module.exports = function() {
 
     this.Given(/^ska jag se kompletteringsfrågan på utkast\-sidan$/, function(callback) {
         var fragaText = global.ursprungligtIntyg.guidcheck;
+
         console.log('Letar efter fråga som innehåller text: ' + fragaText);
         expect(fkUtkastPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
             logger.info('OK - hittade fråga med text: ' + fragaText);
@@ -57,4 +58,29 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^ska jag se kompletteringsfrågan på intygs\-sidan$/, function(callback) {
+
+        var fragaText = global.intyg.guidcheck;
+
+        console.log('Letar efter fråga som innehåller text: ' + fragaText);
+        expect(fkIntygPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
+            logger.info('OK - hittade fråga med text: ' + fragaText);
+            callback();
+        }, function(reason) {
+            callback('FEL : ' + reason);
+        });
+    });
+
+    this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function(callback) {
+        var answerWithIntygBtnId = 'answerWithIntygBtn-' + global.intyg.messages[0].id;
+        expect(element(by.id(answerWithIntygBtnId)).isPresent()).to.eventually.not.be.ok.and.notify(callback);
+    });
+
+    this.Given(/^jag ska se en varningstext för svara med nytt intyg/, function(callback) {
+        var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
+
+        expect(kompletteringsFraga.element(by.cssContainingText('.alert-warning',
+            'Gå tillbaka till journalsystemet för att svara på kompletteringsbegäran med nytt intyg.')).isPresent()).
+        to.eventually.be.ok.and.notify(callback);
+    });
 };
