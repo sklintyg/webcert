@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logger, wcTestTools, user, person, protractor, pages, Promise */
+/*global browser, intyg, logger, wcTestTools, user, person, protractor, pages, Promise, JSON, wcTestTools */
 'use strict';
 
 // function stringStartWith (string, prefix) {
@@ -82,14 +82,18 @@ module.exports = function() {
                     intyg.id = text.split('/').slice(-1)[0];
                     intyg.id = intyg.id.split('?')[0];
                     logger.info('intyg.id:' + intyg.id);
-                    callback(err);
+                    if (err) {
+                        callback(JSON.stringify(err));
+                    } else {
+                        callback();
+                    }
                 });
             });
         });
     });
 };
 
-var restUtil = require('../../../webcertTestTools/util/rest.util.js');
+var restUtil = wcTestTools.restUtil;
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
 function createIntygWithStatus(typ, status, cb) {
