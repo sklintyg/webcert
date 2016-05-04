@@ -93,7 +93,7 @@ module.exports = function() {
     });
 };
 
-var restUtil = wcTestTools.restUtil;
+var rUtil = wcTestTools.restUtil;
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
 function createIntygWithStatus(typ, status, cb) {
@@ -156,13 +156,13 @@ function createIntygWithRest(intygOptions, cb) {
         forskrivarKod: user.forskrivarKod
     };
 
-    restUtil.login(userObj).then(function(data) {
+    rUtil.login(userObj).then(function(data) {
         logger.debug('Login OK');
         return Promise.resolve('SUCCESS');
     }, function(error) {
         cb(error);
     }).then(function() {
-        restUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
+        rUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
             logger.info('Skapat intyg via REST-api');
             cb();
         }, function(error) {
