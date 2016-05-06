@@ -29,6 +29,12 @@ var today = testdataHelper.dateFormat(new Date());
 
 module.exports = {
     getRandom: function(intygsID) {
+        var nyBedomningDiagnos = testdataHelper.randomTrueFalse();
+        var diagnosForNyBedomning;
+        if (nyBedomningDiagnos) {
+            diagnosForNyBedomning = testdataHelper.randomTextString();
+        }
+
         return {
             id: intygsID,
             typ: 'Läkarutlåtande för sjukersättning',
@@ -47,7 +53,8 @@ module.exports = {
                     bakgrund: testdataHelper.randomTextString()
                 }],
                 narOchVarStalldesDiagnoserna: testdataHelper.randomTextString(),
-                nyBedomning: testdataHelper.randomTrueFalse()
+                nyBedomning: nyBedomningDiagnos,
+                diagnosForNyBedomning: diagnosForNyBedomning
             },
             sjukdomsForlopp: testdataHelper.randomTextString(),
             // sjukdomsForlopp: 'Sjukdomsförlopp kommentar',
@@ -75,11 +82,14 @@ module.exports = {
             },
             ovrigt: testdataHelper.randomTextString(),
             kontaktMedFk: testdataHelper.randomTrueFalse(),
-            tillaggsfragor: [{
-                svar: testdataHelper.randomTextString()
-            }, {
-                svar: testdataHelper.randomTextString()
-            }]
+            // Tillägsfrågor saknas tillsvidare
+            tillaggsfragor: [
+                // {
+                //     svar: testdataHelper.randomTextString()
+                // }, {
+                //     svar: testdataHelper.randomTextString()
+                // }
+            ]
         };
     }
 };

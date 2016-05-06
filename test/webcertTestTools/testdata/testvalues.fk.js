@@ -33,7 +33,7 @@ var fkValues = {
                     getRandomUtredning(),
                     getRandomUtredning()
                 ],
-                null
+                false
             ])[0];
     },
     getRandomDiagnoskod: function() {
@@ -111,11 +111,11 @@ function getRandomUtredning() {
             'Underlag från logoped',
             'Underlag från psykolog',
             'Underlag från företagshälsovård',
-            'Underlag från skolhälsovård',
             'Utredning av annan specialistklinik',
+            'Utredning från vårdinrättning utomlands',
             'Övrigt'
         ])[0],
-        datum: '2016-02-09',
+        datum: '2016-04-09',
         infoOmUtredningen: testdataHelper.randomTextString()
     };
 }

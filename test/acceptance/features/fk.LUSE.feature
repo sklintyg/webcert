@@ -1,5 +1,5 @@
 # language: sv
-@smoke @sjukersattning @luse @notReady
+@smoke @sjukersattning @luse
 Egenskap: Hantera Läkarutlåtande för sjukersättning
 
 Bakgrund: Jag befinner mig på webcerts förstasida

@@ -105,7 +105,7 @@ function createIntygWithStatus(typ, status, cb) {
     if (typ.indexOf('Transportstyrelsen') > -1) {
         createTsIntyg(typ, status, cb);
 
-    } else if (typ === 'Läkarintyg FK 7263' && status === 'Signerat') {
+    } else if (typ === 'Läkarintyg FK 7263') {
 
         createIntygWithRest({
             personnr: person.id,
@@ -120,27 +120,26 @@ function createIntygWithStatus(typ, status, cb) {
             vardgivarId: 'TSTNMT2321000156-1002',
             intygType: 'fk7263',
             intygId: intyg.id,
-            sent: false,
-            revoked: false
+            sent: (status === 'Mottaget' || status === 'Makulerat'),
+            revoked: (status === 'Makulerat')
         }, cb);
-    } else if (typ === 'Läkarintyg FK 7263' && status === 'Mottaget') {
+    } else if (typ === 'Läkarutlåtande för sjukersättning') {
 
         createIntygWithRest({
             personnr: person.id,
             patientNamn: 'Test Testsson',
-            //issuerId : '',
-            issuer: user.fornamn + ' ' + user.efternamn,
-            issued: '2015-04-01',
-            validFrom: '2015-04-01',
-            validTo: '2015-04-11',
+            issuer: user.hsaId,
+            issued: '2016-04-01',
+            validFrom: '2016-04-01',
+            validTo: '2016-04-11',
             enhetId: user.enhetId,
-            //enhet : '',
             vardgivarId: 'TSTNMT2321000156-1002',
-            intygType: 'fk7263',
+            intygType: 'luse',
             intygId: intyg.id,
-            sent: true,
-            revoked: false
+            sent: (status === 'Mottaget' || status === 'Makulerat'),
+            revoked: (status === 'Makulerat')
         }, cb);
+
     } else {
         cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
     }
@@ -169,8 +168,6 @@ function createIntygWithRest(intygOptions, cb) {
             cb(error);
         });
     });
-
-
 }
 
 
