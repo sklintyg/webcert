@@ -163,26 +163,21 @@ module.exports = function() {
         });
     }
 
-    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function(callback) {
+    this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin, callback) {
+
         global.intyg.typ = 'Läkarintyg FK 7263';
+        var url = '';
 
-        var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+        if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
+            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+        } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
+            url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
 
-        browser.get(url).then(function() {
-            fkIntygPage.qaPanel.isPresent().then(function(isVisible) {
-                if (isVisible) {
-                    fetchMessageIds().then(callback);
-                } else {
-                    callback();
-                }
-            });
-        });
-    });
-
-    this.Given(/^jag går in på intyget via uthoppslänk/, function(callback) {
-        global.intyg.typ = 'Läkarintyg FK 7263';
-
-        var url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
+        } else if (intygstyp === 'intyget' && origin === undefined) {
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+        } else {
+            logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
+        }
 
         browser.get(url).then(function() {
             fkIntygPage.qaPanel.isPresent().then(function(isVisible) {

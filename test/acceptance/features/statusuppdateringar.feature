@@ -72,3 +72,22 @@ Scenario: Fråga till FK
    Och jag markerar svaret från Försäkringskassan som hanterat
    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    
+@komplettering
+Scenario: Komplettering med nytt intyg
+
+   När jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan
+
+   Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+   Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
+
+   När jag går in på intygsutkastet via djupintegrationslänk
+   Och jag väljer att svara med ett nytt intyg
+   Så ska jag se kompletteringsfrågan på utkast-sidan
+
+   När jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan
+   Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
+   Och ska intygets status vara "Intyget är signerat"
+   Och ska 1 statusuppdatering "HAN9" skickas för det ursprungliga intyget

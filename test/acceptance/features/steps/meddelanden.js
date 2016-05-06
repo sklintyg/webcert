@@ -83,4 +83,15 @@ module.exports = function() {
             'Gå tillbaka till journalsystemet för att svara på kompletteringsbegäran med nytt intyg.')).isPresent()).
         to.eventually.be.ok.and.notify(callback);
     });
+
+    this.Given(/^jag ska kunna svara med textmeddelande/, function(callback) {
+
+        var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
+        kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE).then(function() {
+            return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys('Banan').then(function() {
+                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).click();
+
+            });
+        }).then(callback());
+    });
 };
