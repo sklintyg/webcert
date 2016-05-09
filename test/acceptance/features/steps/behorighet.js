@@ -29,11 +29,11 @@ var unsignedPage = pages.unsignedPage;
 module.exports = function() {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function(callback) {
-        basePage.flikar.sokSkrivIntyg.click().then(callback);
+        basePage.flikar.sokSkrivIntyg.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
     this.Given(/^går in på Ej signerade utkast$/, function(callback) {
-        unsignedPage.flikar.notSigned.click().then(callback);
+        unsignedPage.flikar.notSigned.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
     this.Given(/^är kopieraknappen tillgänglig$/, function(callback) {

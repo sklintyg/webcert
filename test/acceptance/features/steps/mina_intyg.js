@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, intyg, logger */
+/* globals browser, intyg, logger, protractor */
 
 'use strict';
 
@@ -40,7 +40,7 @@ module.exports = function() {
         browser.ignoreSynchronization = true;
         browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
         element(by.id('guid')).sendKeys(global.person.id);
-        element(by.css('input.btn')).click().then(function() {
+        element(by.css('input.btn')).sendKeys(protractor.Key.SPACE).then(function() {
 
             // Detta behövs pga att Mina intyg är en extern sida
             browser.sleep(2000);
@@ -49,7 +49,7 @@ module.exports = function() {
             element(by.id('consentTerms')).isPresent().then(function(result) {
                 if (result) {
                     logger.info('Lämnar samtycke..');
-                    element(by.id('giveConsentButton')).click()
+                    element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE)
                         .then(function() {
                             return browser.sleep(3000);
                         })
@@ -68,7 +68,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på intyget i Mina intyg$/, function(callback) {
-        element(by.id('viewCertificateBtn-' + intyg.id)).click().then(callback());
+        element(by.id('viewCertificateBtn-' + intyg.id)).sendKeys(protractor.Key.SPACE).then(callback());
     });
 
     this.Given(/^ska intygets information i Mina intyg vara den jag angett$/, function(callback) {

@@ -59,7 +59,7 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
             sokSkrivIntygPage.selectPersonnummer(person.id);
 
             getIntygElement(intygstyp, status, function(el) {
-                el.element(by.cssContainingText('button', 'Visa')).click();
+                el.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
                 cb();
             });
         });
@@ -67,7 +67,7 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
     }
     //Gå in på intyg
     else {
-        intygRadElement.element(by.cssContainingText('button', 'Visa')).click();
+        intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
         cb();
     }
 }
@@ -191,9 +191,9 @@ function createTsIntyg(typ, status, cb) {
             require('./fillIn').fillIn(intyg, function() {
                 fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
                 if (status === 'Mottaget') {
-                    fkIntygPage.skicka.knapp.click();
-                    fkIntygPage.skicka.samtyckeCheckbox.click();
-                    fkIntygPage.skicka.dialogKnapp.click();
+                    fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+                    fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE);
+                    fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
                 }
 
                 var userObj = {
