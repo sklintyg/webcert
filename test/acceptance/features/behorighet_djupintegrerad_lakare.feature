@@ -27,11 +27,23 @@ Scenario: Kan kopiera ett intyg från tidigare intyg listan (utan att gå in i i
 
 # PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA
 @djup_lakare @notReady
-Scenario: Djupintegrerad läkare besvarar kompleterings fråga
-
-@djup_lakare @notReady
-Scenario: Djupintegrerad läkare besvarar kompleterings fråga
+Scenario: Besvara kompleteringsfråga
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag svarar på frågan
    Så ska frågan vara hanterad
+
+@djup_lakare @notReady
+Scenario: Svara med nytt intyg
+   
+   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+
+   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+
+   När jag går in på intygsutkastet via djupintegrationslänk
+   Och jag väljer att svara med ett nytt intyg
+   Så ska jag se kompletteringsfrågan på utkast-sidan
+
+   När jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan
+   Och ska intygets status vara "Intyget är signerat"

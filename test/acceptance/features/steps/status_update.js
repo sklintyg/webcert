@@ -163,10 +163,21 @@ module.exports = function() {
         });
     }
 
-    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk$/, function(callback) {
-        global.intyg.typ = 'Läkarintyg FK 7263';
+    this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin, callback) {
 
-        var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+        global.intyg.typ = 'Läkarintyg FK 7263';
+        var url = '';
+
+        if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
+            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+        } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
+            url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
+
+        } else if (intygstyp === 'intyget' && origin === undefined) {
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+        } else {
+            logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
+        }
 
         browser.get(url).then(function() {
             fkIntygPage.qaPanel.isPresent().then(function(isVisible) {

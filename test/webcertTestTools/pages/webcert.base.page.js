@@ -43,6 +43,11 @@ var WebcertBasePage = JClass._extend({
         this.warnings = {
             protectedInfo: element(by.id('sekretessmarkering'))
         };
+        this.cookie = {
+            consentBanner: element(by.tagName('wc-cookie-banner')),
+            consentBtn: element(by.id('cookie-usage-consent-btn'))
+        };
+
         this.cookieConsentBtnId = 'cookie-usage-consent-btn';
 
     },

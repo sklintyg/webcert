@@ -255,8 +255,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webCertUserService.getUser();
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())
-                && !authoritiesValidator.given(user)
-                        .roles(AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE).isVerified()) {
+                && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
                     + ") can only be answered by user that is Lakare");

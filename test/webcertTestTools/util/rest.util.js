@@ -22,6 +22,7 @@
  */
 /*globals JSON*/
 'use strict';
+var http = require('http');
 var restClient = require('./restclient.util.js');
 var env = require('./../environment.js').envConfig;
 
@@ -120,6 +121,13 @@ module.exports = {
         var options = {
             url: 'certificate/' + id,
             method: 'DELETE'
+        };
+        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+    },
+    getIntyg: function(id) {
+        var options = {
+            url: 'certificate/' + id,
+            method: 'GET'
         };
         return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
     }

@@ -145,20 +145,6 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                     browser.sleep(2000);
                     var actions = utredningar.map(fillIn);
                     return actions;
-                    // var promiseArr = [];
-                    // for (var i = 0; i < utredningar.length; i++) {
-                    //     console.log('herp: ' + i);
-                    //     if (i !== 0) {
-                    //         promiseArr.push(utredningarElement.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE));
-                    //     }
-                    //     var row = utredningarElement.underlagRow(i);
-
-                    //     promiseArr.push(row.underlag.element(by.cssContainingText('option', utredningar[i].underlag)).click());
-                    //     promiseArr.push(sendKeysWithBackspaceFix(row.datum, utredningar[i].datum));
-                    //     promiseArr.push(row.information.sendKeys(utredningar[i].infoOmUtredningen));
-
-                    // }
-                    // return Promise.all(promiseArr);
                 });
         } else {
             return utredningarElement.finns.NEJ.sendKeys(protractor.Key.SPACE);
@@ -193,12 +179,15 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         if (diagnosObj.nyBedomning) {
             nyBedomning = this.diagnos.skalTillNyBedomning.JA;
         }
-        promiseArr.push(nyBedomning.sendKeys(protractor.Key.SPACE));
-
-        if (diagnosObj.nyBedomning) {
-            //Ange diagnosForNyBedomning
-            promiseArr.push(this.diagnos.diagnosForNyBedomning.sendKeys(diagnosObj.diagnosForNyBedomning));
-        }
+        var diagnosForNyBedomning = this.diagnos.diagnosForNyBedomning;
+        promiseArr.push(nyBedomning.sendKeys(protractor.Key.SPACE).then(function() {
+            if (diagnosObj.nyBedomning) {
+                //Ange diagnosForNyBedomning
+                return diagnosForNyBedomning.sendKeys(diagnosObj.diagnosForNyBedomning);
+            } else {
+                return Promise.resolve();
+            }
+        }));
 
         return Promise.all(promiseArr);
     },
@@ -213,12 +202,15 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         }
     },
     angeTillaggsfragor: function(svarArr) {
-        // return this.getTillaggsfraga(0).sendKeys('hallå');
-        var promiseArr = [];
-        for (var i = 0; i < svarArr.length; i++) {
-            promiseArr.push(this.getTillaggsfraga(i).sendKeys(svarArr[i].svar));
+        if (!svarArr) {
+            return Promise.resolve();
+        } else {
+            var promiseArr = [];
+            for (var i = 0; i < svarArr.length; i++) {
+                promiseArr.push(this.getTillaggsfraga(i).sendKeys(svarArr[i].svar));
+            }
+            return Promise.all(promiseArr);
         }
-        return Promise.all(promiseArr);
 
     },
     getTillaggsfraga: function(i) {

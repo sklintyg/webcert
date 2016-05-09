@@ -60,7 +60,7 @@ module.exports = {
         loginButton.click();
     },
     loginByJSON: function(userJson) {
-        this.disableCookieConsentBanner();
+        //this.disableCookieConsentBanner();
         jsonDisplay.clear().sendKeys(userJson);
         loginButton.click();
     }

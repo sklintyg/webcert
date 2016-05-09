@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logger, wcTestTools, user, person, protractor, pages, Promise */
+/*global browser, intyg, logger, wcTestTools, user, person, protractor, pages, Promise, JSON, wcTestTools */
 'use strict';
 
 // function stringStartWith (string, prefix) {
@@ -82,14 +82,18 @@ module.exports = function() {
                     intyg.id = text.split('/').slice(-1)[0];
                     intyg.id = intyg.id.split('?')[0];
                     logger.info('intyg.id:' + intyg.id);
-                    callback(err);
+                    if (err) {
+                        callback(JSON.stringify(err));
+                    } else {
+                        callback();
+                    }
                 });
             });
         });
     });
 };
 
-var restUtil = require('../../../webcertTestTools/util/rest.util.js');
+var rUtil = wcTestTools.restUtil;
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
 function createIntygWithStatus(typ, status, cb) {
@@ -101,7 +105,7 @@ function createIntygWithStatus(typ, status, cb) {
     if (typ.indexOf('Transportstyrelsen') > -1) {
         createTsIntyg(typ, status, cb);
 
-    } else if (typ === 'Läkarintyg FK 7263' && status === 'Signerat') {
+    } else if (typ === 'Läkarintyg FK 7263') {
 
         createIntygWithRest({
             personnr: person.id,
@@ -116,27 +120,26 @@ function createIntygWithStatus(typ, status, cb) {
             vardgivarId: 'TSTNMT2321000156-1002',
             intygType: 'fk7263',
             intygId: intyg.id,
-            sent: false,
-            revoked: false
+            sent: (status === 'Mottaget' || status === 'Makulerat'),
+            revoked: (status === 'Makulerat')
         }, cb);
-    } else if (typ === 'Läkarintyg FK 7263' && status === 'Mottaget') {
+    } else if (typ === 'Läkarutlåtande för sjukersättning') {
 
         createIntygWithRest({
             personnr: person.id,
             patientNamn: 'Test Testsson',
-            //issuerId : '',
-            issuer: user.fornamn + ' ' + user.efternamn,
-            issued: '2015-04-01',
-            validFrom: '2015-04-01',
-            validTo: '2015-04-11',
+            issuer: user.hsaId,
+            issued: '2016-04-01',
+            validFrom: '2016-04-01',
+            validTo: '2016-04-11',
             enhetId: user.enhetId,
-            //enhet : '',
             vardgivarId: 'TSTNMT2321000156-1002',
-            intygType: 'fk7263',
+            intygType: 'luse',
             intygId: intyg.id,
-            sent: true,
-            revoked: false
+            sent: (status === 'Mottaget' || status === 'Makulerat'),
+            revoked: (status === 'Makulerat')
         }, cb);
+
     } else {
         cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
     }
@@ -152,21 +155,19 @@ function createIntygWithRest(intygOptions, cb) {
         forskrivarKod: user.forskrivarKod
     };
 
-    restUtil.login(userObj).then(function(data) {
+    rUtil.login(userObj).then(function(data) {
         logger.debug('Login OK');
         return Promise.resolve('SUCCESS');
     }, function(error) {
         cb(error);
     }).then(function() {
-        restUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
+        rUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
             logger.info('Skapat intyg via REST-api');
             cb();
         }, function(error) {
             cb(error);
         });
     });
-
-
 }
 
 

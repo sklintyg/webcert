@@ -30,7 +30,7 @@ var BaseIntyg = require('./base.intyg.page.js');
 var BaseSmiIntygPage = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-        
+
         this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
 
         this.diagnoseCode = element(by.id('diagnoseCode'));
@@ -63,7 +63,7 @@ var BaseSmiIntygPage = BaseIntyg._extend({
             grund: element(by.id('diagnosgrund')),
             nyBedomningDiagnosgrundJa: element(by.id('nyBedomningDiagnosgrund-Ja')),
             nyBedomningDiagnosgrundNej: element(by.id('nyBedomningDiagnosgrund-Nej')),
-            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns det skäl att göra en ny bedömning av diagnosen/diagnoserna?')),
+            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns skäl till att revidera/uppdatera tidigare satt diagnos?')),
             diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
 

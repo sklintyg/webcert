@@ -59,7 +59,8 @@ function _run(options, json, baseUrl) {
 
     if (options.json) {
         options.headers = {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
+            'connection': 'Keep-Alive'
         };
     } else {
         var postData = options.body;

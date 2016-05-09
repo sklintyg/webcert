@@ -74,7 +74,7 @@ function checkBaseratPa(baseratPa) {
 
 
 function checkMedicinskaUtredningar(andraMedicinskaUtredningar) {
-    var field = element(by.cssContainingText('.body-row', 'Finns det andra medicinska utredningar eller underlag som är relevanta för bedömningen?'));
+    var field = element(by.cssContainingText('.mi-category', 'Andra medicinska utredningar eller underlag'));
 
     if (andraMedicinskaUtredningar) {
         var promiseArr = [];

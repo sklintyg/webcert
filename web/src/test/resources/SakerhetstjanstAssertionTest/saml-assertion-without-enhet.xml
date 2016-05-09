@@ -62,7 +62,7 @@
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
       <saml:AttributeValue>CN=SITHS Type 2 CA v1 PP,O=Inera AB,C=SE</saml:AttributeValue>
     </saml:Attribute>
-    <saml:Attribute Name="http://www.carelink.se/names/subject#medarbetarid"
+    <saml:Attribute Name="urn:sambi:names:attribute:employeeHsaId"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
       <saml:AttributeValue>T_SERVICES_SE165565594230-106X</saml:AttributeValue>
     </saml:Attribute>

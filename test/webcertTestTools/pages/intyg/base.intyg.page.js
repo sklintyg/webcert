@@ -77,7 +77,7 @@ var BaseIntyg = JClass._extend({
         return this.skicka.knapp.click().then(function() {
             return self.skicka.samtyckeCheckbox.click().then(function() {
                 return self.skicka.dialogKnapp.click();
-            })
+            });
         });
     },
     copyBtn: function() {
@@ -102,10 +102,18 @@ var BaseIntyg = JClass._extend({
                     return self.arendeSend.click();
                 });
             });
-        })
+        });
     },
     arendeValjAmne: function(val) {
         return this.arendeAmne.all(by.css('option[label="' + val + '"]')).click();
+    },
+    hasState: function(states, state) {
+        for(var a = 0; a < states.length; a++) {
+            if (states[a].state === state) {
+                return true;
+            }
+        }
+        return false;
     }
 
 });
