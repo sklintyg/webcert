@@ -89,7 +89,7 @@ module.exports = function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE).then(function() {
             return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys('Banan').then(function() {
-                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).click();
+                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE)();
 
             });
         }).then(callback());
