@@ -40,12 +40,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by eriklupander on 2015-06-04.
@@ -56,7 +56,7 @@ public class SendCertificateServiceClientTest {
     private static final String INTYGS_ID = "intyg-1";
     private static final String PERSON_ID = "person-1";
     private static final String SKICKAT_AV_JSON = createSkickatAvJson();
-    private static final String RECIPIENT = "recipient-1";
+    private static final String RECIPIENT = "FK";
     private static final String LOGICAL_ADDRESS = "logical-address-1";
 
     @Mock

@@ -1,6 +1,6 @@
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -21,7 +21,7 @@ public class ArendeConverterTest {
         final ArendeAmne amneskod = ArendeAmne.ARBTID;
         final String intygId = "intygId";
         final String kontaktInfo = "kontaktInfo";
-        final String skickatAv = "skickatAv";
+        final String skickatAv = "FKASSA";
         final String frageId = "frageId";
         final Integer instans = 1;
         final String kompletteringsText = "kompletteringsText";
@@ -41,7 +41,7 @@ public class ArendeConverterTest {
         assertEquals(amneskod, res.getAmne());
         assertEquals(intygId, res.getIntygsId());
         assertEquals(kontaktInfo, res.getKontaktInfo().get(0));
-        assertEquals(skickatAv, res.getSkickatAv());
+        assertEquals("FK", res.getSkickatAv());
         assertEquals(frageId, res.getKomplettering().get(0).getFrageId());
         assertEquals(instans, res.getKomplettering().get(0).getInstans());
         assertEquals(kompletteringsText, res.getKomplettering().get(0).getText());

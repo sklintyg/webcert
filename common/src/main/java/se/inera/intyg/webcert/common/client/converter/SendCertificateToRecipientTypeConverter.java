@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.common.client.converter;
 
 import org.joda.time.LocalDateTime;
 
+import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType;
@@ -63,9 +64,11 @@ public final class SendCertificateToRecipientTypeConverter {
     }
 
     private static Part buildPart(String recipient) {
+        PartKod partKod = PartKod.fromValue(recipient);
         Part part = new Part();
-        part.setCode(recipient);
+        part.setCode(partKod.name());
         part.setCodeSystem(MOTTAGARE_CODE_SYSTEM);
+        part.setDisplayName(partKod.getDisplayName());
         return part;
     }
 
