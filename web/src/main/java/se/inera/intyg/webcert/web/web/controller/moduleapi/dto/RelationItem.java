@@ -34,6 +34,10 @@ public class RelationItem {
         this.status = convert(status);
     }
 
+    public RelationItem() {
+
+    }
+
     private String convert(UtkastStatus status) {
         switch (status) {
         case SIGNED:
