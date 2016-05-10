@@ -119,7 +119,7 @@
 
   <logger name="org.springframework.transaction" level="info" />
   
-  <logger name="org.apache.cxf" level="debug" /> 
+<!--   <logger name="org.apache.cxf" level="debug" />  -->
 
   <logger name="se.inera.webcert.notifications" level="debug" />
 
