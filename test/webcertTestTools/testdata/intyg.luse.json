@@ -60,7 +60,8 @@
     }
   ],
   "diagnosgrund": "När ställdes diagnos.",
-  "nyBedomningDiagnosgrund": false,
+  "nyBedomningDiagnosgrund": true,
+  "diagnosForNyBedomning": "Hela diagnosen kan vara trasig",
   "funktionsnedsattningIntellektuell": "Intellektuell.",
   "funktionsnedsattningKommunikation": "Social.",
   "funktionsnedsattningKoncentration": "Koncentration.",

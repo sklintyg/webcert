@@ -57,8 +57,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 var row = element.all(by.css('tr.underlagRow')).get(index);
                 return {
                     underlag: row.element(by.css('[name="andraUnderlag"]')),
-                    datum: row.element(by.css('[name="-Date"]')),
-                    information: row.element(by.css('.input-full'))
+                    datum: row.element(by.id('underlag-'+(index-1)+'-datum')),
+                    information: row.element(by.id('underlag-'+(index-1)+'-hamtasFran'))
                 };
             },
             laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
@@ -86,6 +86,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.ovrigt = element(by.id('ovrigt'));
         this.kontaktMedFK = element(by.id('form_kontaktMedFk')).element(by.css('input'));
+        this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
     },
     angeBaseratPa: function(baseratPa) {
         var promiseArr = [];

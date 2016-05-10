@@ -97,10 +97,10 @@ describe('Create and Sign luae_na utkast', function() {
             IntygPage.verify(data);
         });
     });
-/*
+
     afterAll(function() {
         testdataHelper.deleteIntyg(utkastId);
         testdataHelper.deleteUtkast(utkastId);
     });
-*/
+
 });

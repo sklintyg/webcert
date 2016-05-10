@@ -59,6 +59,9 @@ module.exports = {
         }
         return restUtil.createUtkast(intygType, utkastTemplate);
     },
+    saveUtkast: function(intygType, intygId, version, utkastJson) {
+        return restUtil.saveUtkast(intygType, intygId, version, utkastJson);
+    },
     deleteAllUtkast: function() {
         restUtil.login();
         return restUtil.deleteAllUtkast();
