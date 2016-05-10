@@ -60,8 +60,8 @@ module.exports = function(grunt) {
     var modules = {
         'common':      { base: 'common/web' },
         'fk7263':      { base: 'intygstyper/fk7263' },
-        'ts-bas':      { base: 'intygstyper/ts-bas' },
-        'ts-diabetes': { base: 'intygstyper/ts-diabetes' },
+        'ts-bas':      { base: 'intygstyper/ts/ts-bas' },
+        'ts-diabetes': { base: 'intygstyper/ts/ts-diabetes' },
         'luse':        { base: 'intygstyper/fk/sjukersattning', angularModule:'luse' },
         'lisu':        { base: 'intygstyper/fk/sjukpenning-utokad', angularModule:'lisu' },
         'luae_na':     { base: 'intygstyper/fk/luae_na', angularModule:'luae_na' },
