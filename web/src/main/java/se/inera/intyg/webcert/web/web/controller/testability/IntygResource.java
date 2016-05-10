@@ -121,7 +121,7 @@ public class IntygResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/utkast")
+    @Path("/utkast/{utkastStatus}")
     public Response insertUtkast(@PathParam("utkastStatus") String utkastStatus, IntygContentWrapper intygContents) throws ModuleNotFoundException, IOException {
         String intygsTyp = intygContents.getContents().get("typ").textValue();
 
