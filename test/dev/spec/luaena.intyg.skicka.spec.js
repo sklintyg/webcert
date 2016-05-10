@@ -75,7 +75,7 @@ describe('Validera sändning av luae_na Intyg', function() {
     afterAll(function() {
         testdataHelper.deleteIntyg(intygsId);
         specHelper.logout();
-        browser.ignoreSynchronization = true;
+        browser.ignoreSynchronization = false;
     });
 
 });
