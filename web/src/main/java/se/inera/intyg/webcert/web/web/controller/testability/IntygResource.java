@@ -299,29 +299,29 @@ public class IntygResource {
         private boolean revoked;
         private List<RelationItem> relations;
 
-        public IntygContentWrapper(JsonNode contents, List<Status> statuses, boolean revoked, Optional<List<RelationItem>> relations) {
+        IntygContentWrapper(JsonNode contents, List<Status> statuses, boolean revoked, Optional<List<RelationItem>> relations) {
             this.contents = contents;
             this.statuses = statuses;
             this.revoked = revoked;
             this.relations = relations.orElse(new ArrayList<>());
         }
 
-        public IntygContentWrapper() {
+        IntygContentWrapper() {
         }
 
-        public JsonNode getContents() {
+        JsonNode getContents() {
             return contents;
         }
 
-        public List<Status> getStatuses() {
+        List<Status> getStatuses() {
             return statuses;
         }
 
-        public boolean isRevoked() {
+        boolean isRevoked() {
             return revoked;
         }
 
-        public List<RelationItem> getRelations() {
+        List<RelationItem> getRelations() {
             return relations;
         }
     }
