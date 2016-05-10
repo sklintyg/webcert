@@ -11,7 +11,7 @@ var templateJsonObjLuaena = require('webcert-testtools/testdata/luae_na.json');
 module.exports = {
     defaultLuaefs: function() {
 
-        templateJsonObj.id = guid();
+        templateJsonObjLuaefs.id = guid();
 
         return {
             id: templateJsonObjLuaefs.id,
