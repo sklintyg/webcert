@@ -47,7 +47,6 @@ describe('Luse attic tests', function() {
                 personnr: utkast.patientPersonnummer
             }).document);
 
-            // id grundData textVersion underlag diagnoser
             testdataHelper.saveUtkast('luse', intygsId, utkast.version, utkastData, function(){
             });
         });
