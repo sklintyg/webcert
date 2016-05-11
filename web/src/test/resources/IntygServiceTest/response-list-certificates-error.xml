@@ -18,8 +18,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<ListCertificatesForCareResponse xmlns="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:1"
-                                 xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
+<ListCertificatesForCareResponse xmlns="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:2"
+                                 xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:2">
   <result>
     <ns3:resultCode>ERROR</ns3:resultCode>
     <ns3:errorId>APPLICATION_ERROR</ns3:errorId>

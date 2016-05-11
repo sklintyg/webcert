@@ -19,16 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +41,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Relation;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
@@ -58,21 +53,16 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
+import se.inera.intyg.webcert.web.service.intyg.converter.*;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -80,21 +70,15 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
 
 /**
  * @author andreaskaltenbach
  */
 @Service
 public class IntygServiceImpl implements IntygService {
-
-    public enum Event {
-        REVOKE,
-        SEND;
-    }
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
@@ -186,76 +170,59 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygItemListResponse listIntyg(List<String> enhetId, Personnummer personnummer) {
+    public Pair<List<ListIntygEntry>, Boolean> listIntyg(List<String> enhetId, Personnummer personnummer) {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
-        request.setPersonId(personnummer.getPersonnummer());
-        request.getEnhet().addAll(enhetId);
+        request.setPersonId(InternalConverterUtil.getPersonId(personnummer));
+        for (String id : enhetId) {
+            request.getEnhetsId().add(InternalConverterUtil.getHsaId(id));
+        }
 
         try {
-            ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress,
-                    request);
+            ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress, request);
 
             switch (response.getResult().getResultCode()) {
             case OK:
-                List<IntygItem> fullIntygItemList = serviceConverter.convertToListOfIntygItem(response.getMeta());
-                filterByIntygTypeForUser(fullIntygItemList);
+                List<ListIntygEntry> fullIntygItemList = IntygDraftsConverter.convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
+                fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
                 addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
-                return new IntygItemListResponse(fullIntygItemList, false);
+                return Pair.of(fullIntygItemList, Boolean.FALSE);
             default:
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                         "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
             }
         } catch (WebServiceException wse) {
-            LOG.warn("Error when connecting to intygstjänsten: ", wse.getMessage());
-            LOG.info("Stacktrace: ", wse.getStackTrace());
-            wse.printStackTrace();
-            if (wse.getCause() != null) {
-                LOG.info(wse.getCause().toString());
-            }
+            LOG.warn("Error when connecting to intygstjänsten: {}", wse.getMessage());
             // If intygstjansten was unavailable, we return whatever certificates we can find and clearly inform
             // the caller that the set of certificates are only those that have been issued by WebCert.
-            List<IntygItem> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
-            return new IntygItemListResponse(intygItems, true);
+            List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
+            return Pair.of(intygItems, Boolean.TRUE);
         }
     }
 
-    private void filterByIntygTypeForUser(List<IntygItem> fullIntygItemList) {
+    private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList) {
         // Get intygstyper from the view privilege
         Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
-        if (intygsTyper.isEmpty()) {
-            fullIntygItemList.clear();
-            return;
-        }
-
-        // If there are intygstyper in the set, then user is only granted access to
-        // view intyg of intygstyper that are in the set.
-        Iterator<IntygItem> i = fullIntygItemList.iterator();
-        while (i.hasNext()) {
-            IntygItem intygItem = i.next();
-            if (!intygsTyper.contains(intygItem.getType())) {
-                i.remove();
-            }
-        }
+        // The user is only granted access to view intyg of intygstyper that are in the set.
+        return fullIntygItemList.stream().filter(i -> intygsTyper.contains(i.getIntygType())).collect(Collectors.toList());
     }
 
     /**
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
-    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<IntygItem> fullIntygItemList, List<String> enhetId, Personnummer personnummer) {
-        List<IntygItem> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
+    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList, List<String> enhetId, Personnummer personnummer) {
+        List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
 
         intygItems.removeAll(fullIntygItemList);
         fullIntygItemList.addAll(intygItems);
     }
 
-    private List<IntygItem> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
+    private List<ListIntygEntry> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
         Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(), enhetId, statuses, intygsTyper);
-        return serviceConverter.convertDraftsToListOfIntygItem(drafts);
+        return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
     }
 
     @Override

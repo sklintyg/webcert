@@ -19,22 +19,15 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.OptimisticLockException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,21 +47,12 @@ import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 
 /**
  * Controller for the API that serves WebCert.
@@ -181,7 +165,7 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Create a copy that is a renewal of an existing certificate. //TODO
+     * Create a copy that is a renewal of an existing certificate.
      *
      * @param request
      * @param intygsTyp
@@ -302,8 +286,8 @@ public class IntygApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        IntygItemListResponse intygItemListResponse = intygService.listIntyg(enhetsIds, personNummer);
-        LOG.debug("Got {} intyg", intygItemListResponse.getIntygItemList().size());
+        Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(enhetsIds, personNummer);
+        LOG.debug("Got {} intyg", intygItemListResponse.getLeft().size());
 
         List<Utkast> utkastList;
 
@@ -315,10 +299,10 @@ public class IntygApiController extends AbstractApiController {
             utkastList = Collections.emptyList();
         }
 
-        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(intygItemListResponse.getIntygItemList(), utkastList);
+        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(intygItemListResponse.getLeft(), utkastList);
 
         Response.ResponseBuilder responseBuilder = Response.ok(allIntyg);
-        if (intygItemListResponse.isOfflineMode()) {
+        if (intygItemListResponse.getRight()) {
             responseBuilder = responseBuilder.header(OFFLINE_MODE, Boolean.TRUE.toString());
         }
         return responseBuilder.build();

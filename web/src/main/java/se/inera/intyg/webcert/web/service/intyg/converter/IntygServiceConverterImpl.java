@@ -31,13 +31,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.converter.ClinicalProcessCertificateMetaTypeConverter;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.common.internal.*;
@@ -47,11 +48,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-
-import com.google.common.annotations.VisibleForTesting;
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
@@ -60,28 +57,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
-    @Override
-    public List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source) {
-        List<IntygItem> intygItems = new ArrayList<>();
-        for (CertificateMetaType certificateMetaType : source) {
-            intygItems.add(convertToIntygItem(certificateMetaType));
-        }
-        return intygItems;
-    }
-
-    private IntygItem convertToIntygItem(CertificateMetaType source) {
-
-        IntygItem item = new IntygItem();
-        item.setId(source.getCertificateId());
-        item.setType(source.getCertificateType());
-        item.setFromDate(source.getValidFrom());
-        item.setTomDate(source.getValidTo());
-        item.setStatuses(ClinicalProcessCertificateMetaTypeConverter.toStatusList(source.getStatus()));
-        item.setSignedBy(source.getIssuerName());
-        item.setSignedDate(source.getSignDate());
-        return item;
-    }
 
     /*
      * (non-Javadoc)
@@ -149,46 +124,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     public String buildVardReferensId(Operation op, String intygId, LocalDateTime ts) {
         String time = ts.toString(ISODateTimeFormat.basicDateTime());
         return StringUtils.join(new Object[]{op, intygId, time}, "-");
-    }
-
-    /**
-     * Converts a List of @link{Utkast} into a List of @link{IntygItem} by building a base @link{Utlatande}
-     * from the stored model in the utkast and applying the applicable fields
-     * onto IntygItem instances.
-     */
-    @Override
-    public List<IntygItem> convertDraftsToListOfIntygItem(List<Utkast> drafts) {
-        List<IntygItem> intygItems = new ArrayList<>();
-        for (Utkast utkast : drafts) {
-            Utlatande utlatande = buildUtlatandeFromUtkastModel(utkast);
-            intygItems.add(draftToIntygItem(utkast, utlatande));
-        }
-        return intygItems;
-    }
-
-    private IntygItem draftToIntygItem(Utkast utkast, Utlatande utlatande) {
-        IntygItem intygItem = new IntygItem();
-
-        intygItem.setId(utkast.getIntygsId());
-        intygItem.setSignedBy(resolvedSignedBy(utkast));
-        intygItem.setSignedDate(utlatande.getGrundData().getSigneringsdatum());
-        intygItem.setType(utkast.getIntygsTyp());
-        intygItem.setStatuses(buildStatusesFromUtkast(utkast));
-        return intygItem;
-    }
-
-    /**
-     * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
-     * we return the Name instead of the HSA ID.
-     */
-    private String resolvedSignedBy(Utkast utkast) {
-        if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
-            return utkast.getSkapadAv().getNamn();
-        } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
-            return utkast.getSenastSparadAv().getNamn();
-        } else {
-            return utkast.getSignatur().getSigneradAv();
-        }
     }
 
     /**
