@@ -21,10 +21,11 @@
  * Helper for asserting dynamic text values.
  * Created by marced on 2016-04-29.
  */
-/*globals protractor */
+/*globals protractor process */
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var xml2js = require('xml2js');
 
 module.exports = {
@@ -38,7 +39,10 @@ module.exports = {
         var deferred = protractor.promise.defer();
 
         var parser = new xml2js.Parser();
-        fs.readFile(__dirname + '/../../../src/main/resources/texts/' + textXmlFile, function(err, data) {
+        //cwd is expected to be webcert/test
+        var fullPath = path.join(process.cwd(), '../src/main/resources/texts/' + textXmlFile);
+        console.log('About to load fk xml text file:' + fullPath);
+        fs.readFile(fullPath, function(err, data) {
 
             if (err) {
                 console.error('Error while reading file ' + err);
