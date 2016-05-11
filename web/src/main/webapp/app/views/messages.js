@@ -66,7 +66,7 @@ var wcMessages = {
         'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
         'label.qacheckhanterad.tillbaka' : 'Tillbaka',
 
-        //certificate types
+        //certificate types (TODO: maybe use the module entrypoint map label/description properties instead as we do with detailedModuleDescription?)
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
         'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
@@ -75,16 +75,7 @@ var wcMessages = {
         'certificatetypes.luae_na.typename': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'certificatetypes.luae_fs.typename': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
 
-        //certificate help texts old
-        'certificatetypes.ts-bas.helptext': '<p>Transportstyrelsens läkarintyg ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Transportstyrelsens läkarintyg kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.</p>Specialistintyg finns bl.a. för alkohol, läkemedel, synfunktion, Alkolås m.m. Se <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
-        'certificatetypes.ts-diabetes.helptext': '<p>Transportstyrelsens läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.</p>Information om Transportstyrelsens föreskrifter finns på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
-        'certificatetypes.fk7263.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukpenning. Av intyget ska det framgå hur sjukdomen påverkar patientens arbetsförmåga och hur länge patienten behöver vara sjukskriven.',
-        'certificatetypes.lisu.helptext': 'Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är ett underlag för beslut.',
-        'certificatetypes.luse.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukersättning.',
-        'certificatetypes.luae_na.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till aktivitetsersättning för nedsatt arbetsförmåga.',
-        'certificatetypes.luae_fs.helptext': 'Läkarutlåtandet används av Försäkringskassan för att bedöma om patienten har rätt till aktivitetsersättning vid förlängd skolgång.',
-
-        //certificate help new texts as of 2016
+        //certificate help new texts as of 2016 (Can be removed?)
         'certificatetypes.2016.ts-bas.helptext': '<p>Transportstyrelsens läkarintyg ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Transportstyrelsens läkarintyg kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.</p>Specialistintyg finns bl.a. för alkohol, läkemedel, synfunktion, Alkolås m.m. Se <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
         'certificatetypes.2016.ts-diabetes.helptext': '<p>Transportstyrelsens läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.</p>Information om Transportstyrelsens föreskrifter finns på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
         'certificatetypes.2016.fk7263.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukpenning. Av intyget ska det framgå hur sjukdomen påverkar patientens arbetsförmåga och hur länge patienten behöver vara sjukskriven.',

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class ListIntygEntry {
@@ -116,5 +117,24 @@ public class ListIntygEntry {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ListIntygEntry)) {
+            return false;
+        }
+
+        ListIntygEntry intygItem = (ListIntygEntry) o;
+
+        return intygId.equals(intygItem.intygId);
+    }
+
+    @Override
+    public int hashCode() {
+        return intygId.hashCode();
     }
 }

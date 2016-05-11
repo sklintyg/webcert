@@ -21,9 +21,12 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 /**
  * @author andreaskaltenbach
@@ -58,7 +61,7 @@ public interface IntygService {
      * @return list of certificates matching the search criteria wrapped in a response container also indicating whether
      *         the data was fetched from intygstjansten ("online") or from webcert ("offline").
      */
-    IntygItemListResponse listIntyg(List<String> enhetId, Personnummer personnummer);
+    Pair<List<ListIntygEntry>, Boolean> listIntyg(List<String> enhetId, Personnummer personnummer);
 
     /**
      * Returns a given certificate as PDF.

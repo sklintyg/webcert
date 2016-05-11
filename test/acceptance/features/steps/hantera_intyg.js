@@ -60,8 +60,8 @@ module.exports = function() {
     });
 
     this.Given(/^jag raderar utkastet$/, function(callback) {
-        fkUtkastPage.radera.knapp.click();
-        fkUtkastPage.radera.bekrafta.click()
+        fkUtkastPage.radera.knapp.sendKeys(protractor.Key.SPACE);
+        fkUtkastPage.radera.bekrafta.sendKeys(protractor.Key.SPACE)
             .then(callback);
     });
 

@@ -139,6 +139,7 @@
     <security:http security="none" pattern="/testability/logMessages/**"/>
     <security:http security="none" pattern="/testability/questions/**"/>
     <security:http security="none" pattern="/testability/anvandare/**"/>
+    <security:http security="none" pattern="/testability/arendetest/**"/>
   </beans>
 
   <!-- =============================================================== -->

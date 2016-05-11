@@ -58,6 +58,14 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    saveUtkast: function(intygsTyp, intygsId, version, utkastJson) {
+        var options = {
+            url: 'moduleapi/utkast/' + intygsTyp + '/' + intygsId + '/' + version,
+            method: 'PUT',
+            body: utkastJson
+        };
+        return restClient.run(options, 'json');
+    },
     deleteAllUtkast: function() {
         var options = {
             url: 'testability/intyg',

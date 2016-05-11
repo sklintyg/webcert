@@ -27,7 +27,7 @@ module.exports = function() {
 
     this.Given(/^jag går tillbaka till start$/, function(callback) {
         browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn));
-        basIntyg.backBtn.click().then(callback);
+        basIntyg.backBtn.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
     this.Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {
@@ -36,7 +36,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
-        element(by.id('intygFilterSamtliga')).click();
+        element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
         expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
     });
 

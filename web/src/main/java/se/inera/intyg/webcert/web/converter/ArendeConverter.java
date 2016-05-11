@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.converter;
 
 import java.util.stream.Collectors;
 
+import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.Komplettering;
@@ -44,7 +45,7 @@ public final class ArendeConverter {
         res.setReferensId(request.getReferensId());
         res.setRubrik(request.getRubrik());
         res.setSistaDatumForSvar(request.getSistaDatumForSvar());
-        res.setSkickatAv(request.getSkickatAv().getPart().getCode());
+        res.setSkickatAv(PartKod.valueOf(request.getSkickatAv().getPart().getCode()).getValue());
         res.setSkickatTidpunkt(request.getSkickatTidpunkt());
         if (request.getSvarPa() != null) {
             res.setSvarPaId(request.getSvarPa().getMeddelandeId());

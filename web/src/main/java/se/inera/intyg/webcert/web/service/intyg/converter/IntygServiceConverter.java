@@ -26,16 +26,10 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificaterespo
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
 
 public interface IntygServiceConverter {
-
-    List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source);
-
-    List<IntygItem> convertDraftsToListOfIntygItem(List<Utkast> drafts);
 
     SendType buildSendTypeFromUtlatande(Utlatande utlatande);
 

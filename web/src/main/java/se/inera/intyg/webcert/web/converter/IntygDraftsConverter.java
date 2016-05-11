@@ -19,10 +19,7 @@
 
 package se.inera.intyg.webcert.web.converter;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,11 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v2.IntygsStatus;
 
 public final class IntygDraftsConverter {
 
@@ -43,27 +41,26 @@ public final class IntygDraftsConverter {
     private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC =
             (ie1, ie2) -> ie2.getLastUpdatedSigned().compareTo(ie1.getLastUpdatedSigned());
 
-    private static final Comparator<Status> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTimestamp().compareTo(c2.getTimestamp());
+    private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
 
-    private static final List<CertificateState> ARCHIVED_STATUSES = Arrays.asList(CertificateState.DELETED, CertificateState.RESTORED);
+    private static final List<String> ARCHIVED_STATUSES = Arrays.asList(StatusKod.DELETE.name(), StatusKod.RESTOR.name());
 
     private IntygDraftsConverter() {
 
     }
 
-    public static List<ListIntygEntry> merge(List<IntygItem> intygList, List<Utkast> utkastList) {
+    public static List<ListIntygEntry> merge(List<ListIntygEntry> intygList, List<Utkast> utkastList) {
 
         LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
         return Stream.concat(
-                intygList.stream()
-                        .map(IntygDraftsConverter::convertIntygItemToListIntygEntry),
+                intygList.stream(),
                 utkastList.stream()
                         .map(IntygDraftsConverter::convertUtkastToListIntygEntry))
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
     }
-    // CHECKSTYLE:ON
+
     public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
 
         return utkastList.stream()
@@ -75,48 +72,75 @@ public final class IntygDraftsConverter {
     public static ListIntygEntry convertUtkastToListIntygEntry(Utkast utkast) {
 
         ListIntygEntry entry = new ListIntygEntry();
-
         entry.setIntygId(utkast.getIntygsId());
         entry.setIntygType(utkast.getIntygsTyp());
         entry.setSource(IntygSource.WC);
-        entry.setUpdatedSignedBy(utkast.getSenastSparadAv().getNamn());
+        entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
         entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
         entry.setPatientId(utkast.getPatientPersonnummer());
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
-        entry.setStatus(utkast.getStatus().toString());
+        entry.setStatus(resolveStatus(utkast));
         entry.setVersion(utkast.getVersion());
 
         return entry;
     }
 
-    public static ListIntygEntry convertIntygItemToListIntygEntry(IntygItem intygItem) {
+    public static List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
+
+        return intygList.stream()
+                .map(IntygDraftsConverter::convertIntygToListIntygEntry)
+                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+                .collect(Collectors.toList());
+    }
+
+    private static ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
 
         ListIntygEntry entry = new ListIntygEntry();
-
-        entry.setIntygId(intygItem.getId());
-        entry.setIntygType(intygItem.getType());
-        entry.setStatus(findLatestStatus(intygItem.getStatuses()).toString());
+        entry.setIntygId(source.getIntygsId().getExtension());
+        entry.setIntygType(source.getTyp().getCode().toLowerCase());
         entry.setSource(IntygSource.IT);
-        entry.setLastUpdatedSigned(intygItem.getSignedDate());
-        entry.setUpdatedSignedBy(intygItem.getSignedBy());
+        entry.setStatus(findLatestStatus(source.getStatus()).name());
+        entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
+        entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
 
         return entry;
     }
 
-    public static CertificateState findLatestStatus(List<Status> intygStatuses) {
+    public static CertificateState findLatestStatus(List<IntygsStatus> intygStatuses) {
+        return intygStatuses.stream()
+                .filter(s -> !ARCHIVED_STATUSES.contains(s.getStatus().getCode()))
+                .max(INTYG_STATUS_COMPARATOR)
+                .map(s -> StatusKod.valueOf(s.getStatus().getCode()).toCertificateState())
+                .orElse(CertificateState.UNHANDLED);
+    }
 
-        if ((intygStatuses == null) || intygStatuses.isEmpty()) {
-            return CertificateState.UNHANDLED;
-        }
-
-        Optional<Status> status = intygStatuses.stream()
-                .filter(s -> !ARCHIVED_STATUSES.contains(s.getType()))
-                .max(INTYG_STATUS_COMPARATOR);
-
-        if (status.isPresent()) {
-            return status.get().getType();
+    /**
+     * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
+     * we return the Name instead of the HSA ID.
+     */
+    private static String resolvedSignedBy(Utkast utkast) {
+        if (utkast.getSignatur() == null) {
+            return utkast.getSenastSparadAv().getNamn();
+        } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSkapadAv().getNamn();
+        } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSenastSparadAv().getNamn();
         } else {
-            return CertificateState.UNHANDLED;
+            return utkast.getSignatur().getSigneradAv();
         }
     }
+
+    private static String resolveStatus(Utkast draft) {
+        if (draft.getAterkalladDatum() != null) {
+            return CertificateState.CANCELLED.name();
+        }
+        if (draft.getSkickadTillMottagareDatum() != null) {
+            return CertificateState.SENT.name();
+        }
+        if (draft.getSignatur() != null && draft.getSignatur().getSigneringsDatum() != null) {
+            return CertificateState.RECEIVED.name();
+        }
+        return draft.getStatus().name();
+    }
+
 }

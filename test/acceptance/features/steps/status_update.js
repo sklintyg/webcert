@@ -246,8 +246,8 @@ module.exports = function() {
     // });
 
     this.Given(/^jag raderar intyget$/, function(callback) {
-        fk7263Utkast.radera.knapp.click().then(function() {
-            fk7263Utkast.radera.bekrafta.click().then(callback);
+        fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
+            fk7263Utkast.radera.bekrafta.sendKeys(protractor.Key.SPACE).then(callback);
         });
     });
 

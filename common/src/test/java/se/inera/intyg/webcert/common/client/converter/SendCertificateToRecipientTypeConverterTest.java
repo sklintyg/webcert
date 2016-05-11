@@ -46,7 +46,7 @@ public class SendCertificateToRecipientTypeConverterTest {
         final String vardgivarid = "vardgivarid";
         final String vardgivarNamn = "vardgivarNamn";
         final String forskrivarKod = "forskrivarKod";
-        final String recipient = "recipient";
+        final String recipient = "TS";
 
         HoSPersonal skickatAv = buildHosPersonal(enhetsId, enhetsnamn, skapadAvFullstandigtNamn, skapadAvPersonId, arbetsplatsKod, postadress,
                 postNummer, postOrt, epost, telefonNummer, vardgivarid, vardgivarNamn, forskrivarKod);
@@ -77,7 +77,7 @@ public class SendCertificateToRecipientTypeConverterTest {
         assertEquals(forskrivarKod, result.getSkickatAv().getHosPersonal().getForskrivarkod());
         assertNotNull(result.getSkickatTidpunkt());
         assertNotNull(result.getMottagare().getCodeSystem());
-        assertEquals(recipient, result.getMottagare().getCode());
+        assertEquals("TRANSP", result.getMottagare().getCode());
     }
 
     private HoSPersonal buildHosPersonal(String enhetsId, String enhetsnamn, String skapadAvFullstandigtNamn, String skapadAvPersonId,

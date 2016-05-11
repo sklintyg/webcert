@@ -41,6 +41,10 @@
       serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
       address="${intygstjanst.listcertificatesforcare.endpoint.url}" />
 
+    <jaxws:client id="listCertificatesForCareResponderV2"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface"
+      address="${intygstjanst.listcertificatesforcare.v2.endpoint.url}" />
+
     <jaxws:client id="sendCertificateClient"
       serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface"
       address="${intygstjanst.sendcertificate.endpoint.url}" />

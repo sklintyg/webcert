@@ -20,19 +20,14 @@
 package se.inera.intyg.webcert.web.test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItem;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 /**
  * Util for building test data.
@@ -46,9 +41,9 @@ public final class TestIntygFactory {
 
     }
 
-    public static List<IntygItem> createListWithIntygItems() {
+    public static List<ListIntygEntry> createListWithIntygItems() {
 
-        List<IntygItem> list = new ArrayList<>();
+        List<ListIntygEntry> list = new ArrayList<>();
 
         list.add(createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23")));
         list.add(createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")));
@@ -56,23 +51,16 @@ public final class TestIntygFactory {
         return list;
     }
 
-    public static IntygItemListResponse createIntygItemListResponse(List<IntygItem> intygItemList, boolean offlineMode) {
-        return new IntygItemListResponse(intygItemList, offlineMode);
-    }
+    public static ListIntygEntry createIntygItem(String id, LocalDateTime signedDate) {
 
-    public static IntygItem createIntygItem(String id, LocalDateTime signedDate) {
+        ListIntygEntry it = new ListIntygEntry();
 
-        IntygItem it = new IntygItem();
+        it.setIntygId(id);
+        it.setUpdatedSignedBy("A Person");
+        it.setLastUpdatedSigned(signedDate);
+        it.setIntygType("Type 1");
 
-        it.setId(id);
-        it.setSignedBy("A Person");
-        it.setSignedDate(signedDate);
-        it.setType("Type 1");
-
-        Status is1 = new Status(CertificateState.RECEIVED, "FK", signedDate);
-        Status is2 = new Status(CertificateState.SENT, "MI", signedDate.plusSeconds(15));
-
-        it.setStatuses(Arrays.asList(is1, is2));
+        it.setStatus(CertificateState.SENT.name());
 
         return it;
     }

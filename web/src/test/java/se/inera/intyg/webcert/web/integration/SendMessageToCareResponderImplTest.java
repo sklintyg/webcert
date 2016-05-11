@@ -36,7 +36,8 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.SkickatAv;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
@@ -118,6 +119,7 @@ public class SendMessageToCareResponderImplTest {
     private SkickatAv createSkickadAv() {
         SkickatAv res = new SkickatAv();
         res.setPart(new Part());
+        res.getPart().setCode("FKASSA");
         return res;
     }
 

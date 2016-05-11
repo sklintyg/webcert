@@ -18,7 +18,7 @@
  */
 
 /* globals pages */
-/* globals browser, intyg, logger */
+/* globals browser, intyg, logger, protractor */
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -33,9 +33,9 @@ module.exports = function() {
             logger.info('Intygsid: ' + intyg.id);
         });
 
-        fkIntygPage.skicka.knapp.click();
-        fkIntygPage.skicka.samtyckeCheckbox.click();
-        fkIntygPage.skicka.dialogKnapp.click();
+        fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE);
+        fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
         callback();
     });
 
@@ -46,9 +46,9 @@ module.exports = function() {
             intyg.id = intyg.id.split('?')[0];
         });
 
-        fkIntygPage.skicka.knapp.click().then(function() {
-            fkIntygPage.skicka.samtyckeCheckbox.click().then(function() {
-                fkIntygPage.skicka.dialogKnapp.click().then(callback);
+        fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
+            fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE).then(function() {
+                fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE).then(callback);
             });
         });
 

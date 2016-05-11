@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -40,8 +41,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -53,6 +61,7 @@ import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -61,11 +70,17 @@ public class IntygResource {
 
     public static final Logger LOG = LoggerFactory.getLogger(IntygResource.class);
 
+    protected static final String UTF_8_CHARSET = ";charset=utf-8";
+    protected static final String UTF_8 = "UTF-8";
+
     @Autowired
     private UtkastRepository utkastRepository;
 
     @Autowired
     private IntygServiceConverter intygServiceConverter;
+
+    @Autowired
+    private IntygModuleRegistryImpl moduleRegistry;
 
     @DELETE
     @Path("/")
@@ -104,13 +119,57 @@ public class IntygResource {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertUtkast(Utkast utkast) {
+    @Path("/utkast/{utkastStatus}")
+    public Response insertUtkast(@PathParam("utkastStatus") String utkastStatus, IntygContentWrapper intygContents) throws ModuleNotFoundException, IOException {
+        String intygsTyp = intygContents.getContents().get("typ").textValue();
+
+        String model = intygContents.getContents().toString();
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+        Utlatande utlatande = moduleApi.getUtlatandeFromJson(model);
+        Utkast utkast = new Utkast();
+
+        utkast.setModel(model);
+
+        utkast.setEnhetsId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+        utkast.setEnhetsNamn(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        utkast.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
+        utkast.setIntygsTyp(utlatande.getTyp());
+        utkast.setIntygsId(utlatande.getId());
+        utkast.setPatientEfternamn(utlatande.getGrundData().getPatient().getEfternamn());
+        utkast.setPatientFornamn(utlatande.getGrundData().getPatient().getFornamn());
+        utkast.setPatientPersonnummer(utlatande.getGrundData().getPatient().getPersonId());
+
+        if (!intygContents.getRelations().isEmpty()) {
+            utkast.setRelationIntygsId(intygContents.getRelations().get(0).getIntygsId());
+            if (intygContents.getRelations().get(0).getKod() != null) {
+                utkast.setRelationKod(RelationKod.valueOf(intygContents.getRelations().get(0).getKod()));
+            }
+        }
+        utkast.setStatus(getStatus(utkastStatus));
+        utkast.setVidarebefordrad(false);
+        Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model, "ruffel",
+                "fusk");
+        utkast.setSignatur(signatur);
+        VardpersonReferens vardpersonReferens = new VardpersonReferens();
+        vardpersonReferens.setHsaId(utlatande.getGrundData().getSkapadAv().getPersonId());
+        vardpersonReferens.setNamn(utlatande.getGrundData().getSkapadAv().getFullstandigtNamn());
+        utkast.setSkapadAv(vardpersonReferens);
+        utkast.setSenastSparadAv(vardpersonReferens);
         utkastRepository.save(utkast);
-        return Response.ok(utkast).build();
+        return Response.ok().build();
     }
 
+    private UtkastStatus getStatus(String utkastStatus) {
+        UtkastStatus status = UtkastStatus.SIGNED;
+        try {
+            status = UtkastStatus.valueOf(utkastStatus);
+        } catch (Exception e) {
+            LOG.debug("Could not read utkastStatus.");
+        }
+        return status;
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -230,6 +289,40 @@ public class IntygResource {
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
 
             utkastRepository.save(utkast);
+        }
+    }
+
+    static class IntygContentWrapper {
+        private JsonNode contents;
+
+        private List<Status> statuses;
+        private boolean revoked;
+        private List<RelationItem> relations;
+
+        IntygContentWrapper(JsonNode contents, List<Status> statuses, boolean revoked, Optional<List<RelationItem>> relations) {
+            this.contents = contents;
+            this.statuses = statuses;
+            this.revoked = revoked;
+            this.relations = relations.orElse(new ArrayList<>());
+        }
+
+        IntygContentWrapper() {
+        }
+
+        JsonNode getContents() {
+            return contents;
+        }
+
+        List<Status> getStatuses() {
+            return statuses;
+        }
+
+        boolean isRevoked() {
+            return revoked;
+        }
+
+        List<RelationItem> getRelations() {
+            return relations;
         }
     }
 }

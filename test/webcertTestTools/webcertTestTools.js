@@ -25,6 +25,7 @@ var intygTemplates = require('./testdata/intygTemplates.js');
 var pages = require('./pages/pages.js');
 var helpers = require('./helpers/helpers.js'); // The order is important. Helpers requires pages.
 var intygFromJsonFactory = require('./util/intygFromJsonFactory.js');
+var intygGenerator = require('./util/intygGenerator.util.js');
 var restUtil = require('./util/rest.util.js');
 module.exports = {
     envConfig: environment.envConfig,
@@ -34,5 +35,6 @@ module.exports = {
     pages: pages,
     helpers: helpers,
     intygFromJsonFactory: intygFromJsonFactory,
+    intygGenerator: intygGenerator,
     restUtil: restUtil
 };

@@ -55,8 +55,18 @@ var BaseUtkast = JClass._extend({
     signeraButtonClick: function() {
         this.signeraButton.click();
     },
-    showMissingInfoButtonClick: function() {
-        this.showMissingInfoButton.click();
+    showMissingInfoButtonClick: function(optional) {
+        if (optional) {
+            var button = this.showMissingInfoButton;
+            button.isPresent().then(function(result) {
+                if (result) {
+                    button.click();
+                }
+            });
+        }
+        else {
+            this.showMissingInfoButton.click();
+        }
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {
