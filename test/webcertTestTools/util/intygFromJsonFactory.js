@@ -6,7 +6,7 @@
 'use strict';
 
 var templateJsonObjLuaefs = require('webcert-testtools/testdata/luae_fs-minimal.json');
-var templateJsonObjLuaena = require('webcert-testtools/testdata/luae_na.json');
+var templateJsonObjLuaena = require('webcert-testtools/testdata/intyg.luae_na.json');
 
 module.exports = {
     defaultLuaefs: function() {
