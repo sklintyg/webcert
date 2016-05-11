@@ -6,13 +6,15 @@
 		Aktivitetsersättning vid förlängd skolgång är en ersättning för unga personer, som på grund av funktionsnedsättning måste förlänga sin skolgång för att slutföra grundskola eller gymnasium. Det är möjligt att ansöka om ersättning även om studietiden är kortare än ett år. Man kan få ersättningen från juli månad det år man fyller 19 år fram till och med månaden innan man fyller 30 år. Ersättningen betalas alltid ut som hel ersättning, även om studierna till följd av funktionsnedsättningen måste bedrivas på deltid.</text>
 
 	<!-- Text efter val av elektroniskt formulär, visas tillsammans med formulärat -->
-	<text id="FRM_2.RBK">Vad är aktivitetsersättning vid förlängd skolgång?
-		Aktivitetsersättning vid förlängd skolgång är en ersättning för unga personer, som på grund av funktionsnedsättning måste förlänga sin skolgång för att slutföra grundskola eller gymnasium. Det är möjligt att ansöka om ersättning även om studietiden är kortare än ett år. Man kan få ersättningen från juli månad det år man fyller 19 år fram till och med månaden innan man fyller 30 år. Ersättningen betalas alltid ut som hel ersättning, även om studierna till följd av funktionsnedsättningen måste bedrivas på deltid.
+	<text id="FRM_2.RBK"><![CDATA[<b>Vad är aktivitetsersättning vid förlängd skolgång?</b>
 
-		Förutsättningar för att få aktivitetsersättning vid förlängd skolgång.
+		<p>Aktivitetsersättning vid förlängd skolgång är en ersättning för unga personer, som på grund av funktionsnedsättning måste förlänga sin skolgång för att slutföra grundskola eller gymnasium. Det är möjligt att ansöka om ersättning även om studietiden är kortare än ett år. Man kan få ersättningen från juli månad det år man fyller 19 år fram till och med månaden innan man fyller 30 år. Ersättningen betalas alltid ut som hel ersättning, även om studierna till följd av funktionsnedsättningen måste bedrivas på deltid.
+</p>
+		<b>Förutsättningar för att få aktivitetsersättning vid förlängd skolgång.</b>
+		<p>
 		Försäkringskassan bedömer om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång.
-
-		Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar i ordinarie skolform ska, på begäran av Försäkringskassan, ge in ett medicinskt underlag som beskriver funktionsnedsättningen.</text>
+</p>
+		Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar i ordinarie skolform ska, på begäran av Försäkringskassan, ge in ett medicinskt underlag som beskriver funktionsnedsättningen.]]></text>
 
 	<!--
 	===============================================

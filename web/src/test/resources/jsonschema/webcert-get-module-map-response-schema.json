@@ -17,6 +17,9 @@
       "description": {
         "type": "string"
       },
+      "detailedDescription": {
+        "type": "string"
+      },
       "cssPath": {
         "type": "string"
       },
@@ -32,6 +35,7 @@
       "id",
       "label",
       "description",
+      "detailedDescription",
       "cssPath",
       "scriptPath",
       "dependencyDefinitionPath"
