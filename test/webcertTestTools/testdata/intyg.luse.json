@@ -1,92 +1,92 @@
 {
-  "typ": "luse",
-  "id": "7f07e797-47c9-4c16-8b55-9c2fc7f1b982",
-  "grundData": {
-    "signeringsdatum": "2016-04-28T12:40:04.000",
-    "skapadAv": {
-      "personId": "TSTNMT2321000156-103F",
-      "fullstandigtNamn": "Leonie Koehl",
-      "forskrivarKod": "0000000",
-      "befattningar": [ ],
-      "specialiteter": [ ],
-      "vardenhet": {
-        "enhetsid": "TSTNMT2321000156-1039",
-        "enhetsnamn": "NMT vg1 ve2",
-        "postadress": "NMT gata 2",
-        "postnummer": "12345",
-        "postort": "Testhult",
-        "telefonnummer": "0101112131415",
-        "epost": "enhet2@webcert.invalid.se",
-        "vardgivare": {
-          "vardgivarid": "TSTNMT2321000156-1002",
-          "vardgivarnamn": "NMT vg1"
+    "typ": "luse",
+    "id": "7f07e797-47c9-4c16-8b55-9c2fc7f1b982",
+    "textVersion": "1.0",
+    "grundData": {
+        "patient": {
+            "personId": "191212121212",
+            "fullstandigtNamn": "Tolvan Tolvansson",
+            "fornamn": "Tolvan",
+            "efternamn": "Tolvansson",
+            "postadress": "Svensson, Storgatan 1, PL 1234",
+            "postnummer": "12345",
+            "postort": "Småmåla",
+            "samordningsNummer": false
         },
-        "arbetsplatsKod": "1234567890"
-      }
+        "skapadAv": {
+            "personId": "TSTNMT2321000156-103F",
+            "fullstandigtNamn": "Leonie Koehl",
+            "forskrivarKod": "0000000",
+            "befattningar": [ ],
+            "specialiteter": [ ],
+            "vardenhet": {
+                "enhetsid": "TSTNMT2321000156-1039",
+                "enhetsnamn": "NMT vg1 ve2",
+                "postadress": "NMT gata 2",
+                "postnummer": "12345",
+                "postort": "Testhult",
+                "telefonnummer": "0101112131415",
+                "epost": "enhet2@webcert.invalid.se",
+                "vardgivare": {
+                    "vardgivarid": "TSTNMT2321000156-1002",
+                    "vardgivarnamn": "NMT vg1"
+                },
+                "arbetsplatsKod": "1234567890"
+            }
+        },
+        "signeringsdatum": "2016-04-28T12:40:04.000",
     },
-    "patient": {
-      "personId": "191212121212",
-      "fullstandigtNamn": "Tolvan Tolvansson",
-      "fornamn": "Tolvan",
-      "efternamn": "Tolvansson",
-      "postadress": "Svensson, Storgatan 1, PL 1234",
-      "postnummer": "12345",
-      "postort": "Småmåla",
-      "samordningsNummer": false
-    }
-  },
-  "textVersion": "1.0",
-  "undersokningAvPatienten": "2016-04-21",
-  "journaluppgifter": "2016-04-21",
-  "anhorigsBeskrivningAvPatienten": "2016-04-21",
-  "annatGrundForMU": "2016-04-21",
-  "annatGrundForMUBeskrivning": "Annat underlag.",
-  "kannedomOmPatient": "2016-04-21",
-  "underlagFinns": true,
-  "underlag": [
-    {
-      "typ": 2,
-      "datum": "2016-04-07",
-      "hamtasFran": "Information om utredning."
-    }
-  ],
-  "sjukdomsforlopp": "Sjukdomsförlopp.",
-  "diagnoser": [
-    {
-      "diagnosKod": "Z60",
-      "diagnosKodSystem": "ICD_10_SE",
-      "diagnosBeskrivning": "Problem som har samband med social miljö",
-      "diagnosDisplayName": ""
-    }
-  ],
-  "diagnosgrund": "När ställdes diagnos.",
-  "nyBedomningDiagnosgrund": true,
-  "diagnosForNyBedomning": "Hela diagnosen kan vara trasig",
-  "funktionsnedsattningIntellektuell": "Intellektuell.",
-  "funktionsnedsattningKommunikation": "Social.",
-  "funktionsnedsattningKoncentration": "Koncentration.",
-  "funktionsnedsattningPsykisk": "Psykisk.",
-  "funktionsnedsattningSynHorselTal": "Tal.",
-  "funktionsnedsattningBalansKoordination": "Balans.",
-  "funktionsnedsattningAnnan": "Annan funktion.",
-  "aktivitetsbegransning": "Aktivitetsbegränsning allt.",
-  "pagaendeBehandling": "Pågående åtgärder.",
-  "avslutadBehandling": "Åtgärder.",
-  "planeradBehandling": "Planerade åtgärder.",
-  "substansintag": "Substans.",
-  "medicinskaForutsattningarForArbete": "Förutsättningar över tid.",
-  "formagaTrotsBegransning": "Vad kan patienten göra.",
-  "ovrigt": "Övrigt lång text.",
-  "kontaktMedFk": true,
-  "anledningTillKontakt": "Kontaktinfo.",
-  "tillaggsfragor": [
-    {
-      "id": "9001",
-      "svar": "Skostorlek."
-    },
-    {
-      "id": "9002",
-      "svar": "Längd."
-    }
-  ]
+    "undersokningAvPatienten": "2016-04-21",
+    "journaluppgifter": "2016-04-21",
+    "anhorigsBeskrivningAvPatienten": "2016-04-21",
+    "annatGrundForMU": "2016-04-21",
+    "annatGrundForMUBeskrivning": "Annat underlag.",
+    "kannedomOmPatient": "2016-04-21",
+    "underlagFinns": true,
+    "underlag": [
+        {
+            "typ": 2,
+            "datum": "2016-04-07",
+            "hamtasFran": "Information om utredning."
+        }
+    ],
+    "sjukdomsforlopp": "Sjukdomsförlopp.",
+    "diagnoser": [
+        {
+            "diagnosKod": "Z60",
+            "diagnosKodSystem": "ICD_10_SE",
+            "diagnosBeskrivning": "Problem som har samband med social miljö",
+            "diagnosDisplayName": ""
+        }
+    ],
+    "diagnosgrund": "När ställdes diagnos.",
+    "nyBedomningDiagnosgrund": true,
+    "diagnosForNyBedomning": "Hela diagnosen kan vara trasig",
+    "funktionsnedsattningIntellektuell": "Intellektuell.",
+    "funktionsnedsattningKommunikation": "Social.",
+    "funktionsnedsattningKoncentration": "Koncentration.",
+    "funktionsnedsattningPsykisk": "Psykisk.",
+    "funktionsnedsattningSynHorselTal": "Tal.",
+    "funktionsnedsattningBalansKoordination": "Balans.",
+    "funktionsnedsattningAnnan": "Annan funktion.",
+    "aktivitetsbegransning": "Aktivitetsbegränsning allt.",
+    "pagaendeBehandling": "Pågående åtgärder.",
+    "avslutadBehandling": "Åtgärder.",
+    "planeradBehandling": "Planerade åtgärder.",
+    "substansintag": "Substans.",
+    "medicinskaForutsattningarForArbete": "Förutsättningar över tid.",
+    "formagaTrotsBegransning": "Vad kan patienten göra.",
+    "ovrigt": "Övrigt lång text.",
+    "kontaktMedFk": true,
+    "anledningTillKontakt": "Kontaktinfo.",
+    "tillaggsfragor": [
+        {
+            "id": "9001",
+            "svar": "Skostorlek."
+        },
+        {
+            "id": "9002",
+            "svar": "Längd."
+        }
+    ]
 }

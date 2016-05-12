@@ -83,7 +83,7 @@ module.exports = {
     createWebcertIntyg: function(id, createJson) {
         var options = {
             url: 'testability/intyg/utkast',
-            method: 'POST',
+            method: 'PUT',
             body: createJson
         };
         return restClient.run(options, 'json');

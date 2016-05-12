@@ -1,0 +1,86 @@
+{
+    "contents": {
+        "grundData": {
+            "signeringsdatum": "2016-05-03T13:22:13.000",
+            "skapadAv": {
+                "personId": "TSTNMT2321000156-103F",
+                "fullstandigtNamn": "Leonie Koehl",
+                "forskrivarKod": "0000000",
+                "befattningar": [ ],
+                "specialiteter": [ ],
+                "vardenhet": {
+                    "enhetsid": "TSTNMT2321000156-1039",
+                    "enhetsnamn": "NMT vg1 ve2",
+                    "postadress": "NMT gata 2",
+                    "postnummer": "12345",
+                    "postort": "Testhult",
+                    "telefonnummer": "0101112131415",
+                    "epost": "enhet2@webcert.invalid.se",
+                    "vardgivare": {
+                        "vardgivarid": "TSTNMT2321000156-1002",
+                        "vardgivarnamn": "NMT vg1"
+                    },
+                    "arbetsplatsKod": "1234567890"
+                }
+            },
+            "patient": {
+                "personId": "191212121212",
+                "fullstandigtNamn": "Tolvan Tolvansson",
+                "fornamn": "Tolvan",
+                "efternamn": "Tolvansson",
+                "postadress": "Svensson, Storgatan 1, PL 1234",
+                "postnummer": "12345",
+                "postort": "Småmåla",
+                "samordningsNummer": false
+            }
+        },
+        "textVersion": "1.0",
+        "undersokningAvPatienten": "2016-05-03",
+        "journaluppgifter": "2016-05-03",
+        "anhorigsBeskrivningAvPatienten": "2016-05-03",
+        "annatGrundForMU": "2016-05-03",
+        "annatGrundForMUBeskrivning": "test",
+        "kannedomOmPatient": "2016-05-03",
+        "underlagFinns": false,
+        "underlag": [],
+        "sjukdomsforlopp": "test",
+        "diagnoser": [
+            {
+                "diagnosKod": "Z65",
+                "diagnosKodSystem": "ICD_10_SE",
+                "diagnosBeskrivning": "Problem som har samband med andra psykosociala förhållanden",
+                "diagnosDisplayName": ""
+            }
+        ],
+        "diagnosgrund": "test",
+        "nyBedomningDiagnosgrund": false,
+        "funktionsnedsattningIntellektuell": "test",
+        "funktionsnedsattningKommunikation": "test",
+        "funktionsnedsattningKoncentration": "test",
+        "funktionsnedsattningPsykisk": "test",
+        "funktionsnedsattningSynHorselTal": "test",
+        "funktionsnedsattningBalansKoordination": "test",
+        "funktionsnedsattningAnnan": "test",
+        "aktivitetsbegransning": "test",
+        "pagaendeBehandling": "test",
+        "avslutadBehandling": "test",
+        "planeradBehandling": "test",
+        "substansintag": "test",
+        "medicinskaForutsattningarForArbete": "test",
+        "formagaTrotsBegransning": "test",
+        "ovrigt": "test",
+        "kontaktMedFk": true,
+        "anledningTillKontakt": "test",
+        "tillaggsfragor": [],
+        "typ": "luse",
+        "id": "testid"
+    },
+    "utkastStatus": "SIGNED",
+    "revoked": false,
+    "relations": [
+        {
+            "intygsId": "testid",
+            "status": "INTYG"
+        }
+    ]
+}
