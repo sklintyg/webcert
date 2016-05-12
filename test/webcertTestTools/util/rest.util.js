@@ -82,7 +82,7 @@ module.exports = {
     },
     createWebcertIntyg: function(id, createJson) {
         var options = {
-            url: 'testability/intyg',
+            url: 'testability/intyg/utkast',
             method: 'POST',
             body: createJson
         };

@@ -45,7 +45,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -121,8 +120,8 @@ public class IntygResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/utkast/{utkastStatus}")
-    public Response insertUtkast(@PathParam("utkastStatus") String utkastStatus, IntygContentWrapper intygContents) throws ModuleNotFoundException, IOException {
+    @Path("/utkast")
+    public Response insertUtkast(IntygContentWrapper intygContents) throws ModuleNotFoundException, IOException {
         String intygsTyp = intygContents.getContents().get("typ").textValue();
 
         String model = intygContents.getContents().toString();
@@ -141,17 +140,19 @@ public class IntygResource {
         utkast.setPatientFornamn(utlatande.getGrundData().getPatient().getFornamn());
         utkast.setPatientPersonnummer(utlatande.getGrundData().getPatient().getPersonId());
 
-        if (!intygContents.getRelations().isEmpty()) {
+        if (intygContents.getRelations() != null && !intygContents.getRelations().isEmpty()) {
             utkast.setRelationIntygsId(intygContents.getRelations().get(0).getIntygsId());
             if (intygContents.getRelations().get(0).getKod() != null) {
                 utkast.setRelationKod(RelationKod.valueOf(intygContents.getRelations().get(0).getKod()));
             }
         }
-        utkast.setStatus(getStatus(utkastStatus));
+        utkast.setStatus(intygContents.getUtkastStatus());
         utkast.setVidarebefordrad(false);
-        Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model, "ruffel",
-                "fusk");
-        utkast.setSignatur(signatur);
+        if (utkast.getStatus() == UtkastStatus.SIGNED) {
+            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model, "ruffel",
+                    "fusk");
+            utkast.setSignatur(signatur);
+        }
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
         vardpersonReferens.setHsaId(utlatande.getGrundData().getSkapadAv().getPersonId());
         vardpersonReferens.setNamn(utlatande.getGrundData().getSkapadAv().getFullstandigtNamn());
@@ -294,15 +295,14 @@ public class IntygResource {
 
     static class IntygContentWrapper {
         private JsonNode contents;
-
-        private List<Status> statuses;
         private boolean revoked;
+        private UtkastStatus utkastStatus;
         private List<RelationItem> relations;
 
-        IntygContentWrapper(JsonNode contents, List<Status> statuses, boolean revoked, Optional<List<RelationItem>> relations) {
+        IntygContentWrapper(JsonNode contents, boolean revoked, UtkastStatus utkastStatus, Optional<List<RelationItem>> relations) {
             this.contents = contents;
-            this.statuses = statuses;
             this.revoked = revoked;
+            this.utkastStatus = utkastStatus;
             this.relations = relations.orElse(new ArrayList<>());
         }
 
@@ -313,16 +313,28 @@ public class IntygResource {
             return contents;
         }
 
-        List<Status> getStatuses() {
-            return statuses;
+        void setContents(JsonNode contents) {
+             this.contents = contents;
         }
 
         boolean isRevoked() {
             return revoked;
         }
 
+        UtkastStatus getUtkastStatus() {
+            return utkastStatus;
+        }
+
+        void setUtkastStatus(UtkastStatus utkastStatus) {
+            this.utkastStatus = utkastStatus;
+        }
+
         List<RelationItem> getRelations() {
             return relations;
+        }
+
+        void setRelations(List<RelationItem> relations) {
+            this.relations = relations;
         }
     }
 }
