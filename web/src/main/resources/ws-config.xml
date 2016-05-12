@@ -37,10 +37,6 @@
       serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface"
       address="${sendanswertofk.endpoint.url}" />
 
-    <jaxws:client id="listCertificatesForCareResponder"
-      serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
-      address="${intygstjanst.listcertificatesforcare.endpoint.url}" />
-
     <jaxws:client id="listCertificatesForCareResponderV2"
       serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface"
       address="${intygstjanst.listcertificatesforcare.v2.endpoint.url}" />
