@@ -28,27 +28,47 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 
-xdescribe('Generate fk luse intyg', function() {
+xdescribe('Skapa ärende luse intyg', function() {
 
-    var intygId = 'fbc8ef77-f0c9-4f87-93d5-4542544754a8';
-//    var intygId = testdataHelper.generateTestGuid();
-    var intyg;
-/*
-    describe('prepare test with intyg', function() {
-        it('should generate fk luse intyg', function() {
-            browser.ignoreSynchronization = false;
-            var testData = {"contents":{"grundData":{"signeringsdatum":"2016-05-03T13:22:13.000","skapadAv":{"personId":"IFV1239877878-1049","fullstandigtNamn":"Jan Nilsson","forskrivarKod":"0000000","befattningar":[],"specialiteter":[],"vardenhet":{"enhetsid":"IFV1239877878-1042","enhetsnamn":"WebCert-Enhet1","postadress":"Storgatan 1","postnummer":"12345","postort":"Småmåla","telefonnummer":"0101234567890","epost":"enhet1@webcert.invalid.se","vardgivare":{"vardgivarid":"IFV1239877878-1041","vardgivarnamn":"WebCert-Vårdgivare1"},"arbetsplatsKod":"1234567890"}},"patient":{"personId":"191212121212","fullstandigtNamn":"Tolvan Tolvansson","fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla","samordningsNummer":false}},"textVersion":"1.0","undersokningAvPatienten":"2016-05-03","journaluppgifter":"2016-05-03","anhorigsBeskrivningAvPatienten":"2016-05-03","annatGrundForMU":"2016-05-03","annatGrundForMUBeskrivning":"test","kannedomOmPatient":"2016-05-03","underlagFinns":false,"underlag":[],"sjukdomsforlopp":"test","diagnoser":[{"diagnosKod":"Z65","diagnosKodSystem":"ICD_10_SE","diagnosBeskrivning":"Problem som har samband med andra psykosociala förhållanden","diagnosDisplayName":""}],"diagnosgrund":"test","nyBedomningDiagnosgrund":false,"funktionsnedsattningIntellektuell":"test","funktionsnedsattningKommunikation":"test","funktionsnedsattningKoncentration":"test","funktionsnedsattningPsykisk":"test","funktionsnedsattningSynHorselTal":"test","funktionsnedsattningBalansKoordination":"test","funktionsnedsattningAnnan":"test","aktivitetsbegransning":"test","pagaendeBehandling":"test","avslutadBehandling":"test","planeradBehandling":"test","substansintag":"test","medicinskaForutsattningarForArbete":"test","formagaTrotsBegransning":"test","ovrigt":"test","kontaktMedFk":true,"anledningTillKontakt":"test","tillaggsfragor":[],
-                "typ":"luse"},
-                "statuses":[{"type":"RECEIVED","target":"HSVARD","timestamp":"2016-05-03T13:22:13.000"}],
-                "revoked":false,"relations":[{"intygsId":"bad42b7c-c1e4-475d-b0e9-3b6b36a819cb","status":"INTYG"}]};
-            restTestdataHelper.createWebcertIntyg(intygId, testData).then(function(response) {
-        });
-    });
-*/
-    describe('Login through the welcome page', function() {
-        it('with default user', function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
+    var intygId = testdataHelper.generateTestGuid();
+
+    beforeAll(function() {
+        browser.ignoreSynchronization = false;
+        specHelper.login();
+        var testData = {
+            "contents":{
+                "grundData":{"signeringsdatum":"2016-05-03T13:22:13.000",
+                    "skapadAv": {
+                        "personId": "TSTNMT2321000156-103F",
+                        "fullstandigtNamn": "Leonie Koehl",
+                        "forskrivarKod": "0000000",
+                        "befattningar": [ ],
+                        "specialiteter": [ ],
+                        "vardenhet": {
+                            "enhetsid": "TSTNMT2321000156-1039",
+                            "enhetsnamn": "NMT vg1 ve2",
+                            "postadress": "NMT gata 2",
+                            "postnummer": "12345",
+                            "postort": "Testhult",
+                            "telefonnummer": "0101112131415",
+                            "epost": "enhet2@webcert.invalid.se",
+                            "vardgivare": {
+                                "vardgivarid": "TSTNMT2321000156-1002",
+                                "vardgivarnamn": "NMT vg1"
+                            },
+                            "arbetsplatsKod": "1234567890"
+                        }
+                    },
+                    "patient":{"personId":"191212121212","fullstandigtNamn":"Tolvan Tolvansson","fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla","samordningsNummer":false}
+                },
+                "textVersion":"1.0","undersokningAvPatienten":"2016-05-03","journaluppgifter":"2016-05-03","anhorigsBeskrivningAvPatienten":"2016-05-03","annatGrundForMU":"2016-05-03","annatGrundForMUBeskrivning":"test","kannedomOmPatient":"2016-05-03","underlagFinns":false,"underlag":[],"sjukdomsforlopp":"test","diagnoser":[{"diagnosKod":"Z65","diagnosKodSystem":"ICD_10_SE","diagnosBeskrivning":"Problem som har samband med andra psykosociala förhållanden","diagnosDisplayName":""}],"diagnosgrund":"test","nyBedomningDiagnosgrund":false,"funktionsnedsattningIntellektuell":"test","funktionsnedsattningKommunikation":"test","funktionsnedsattningKoncentration":"test","funktionsnedsattningPsykisk":"test","funktionsnedsattningSynHorselTal":"test","funktionsnedsattningBalansKoordination":"test","funktionsnedsattningAnnan":"test","aktivitetsbegransning":"test","pagaendeBehandling":"test","avslutadBehandling":"test","planeradBehandling":"test","substansintag":"test","medicinskaForutsattningarForArbete":"test","formagaTrotsBegransning":"test","ovrigt":"test","kontaktMedFk":true,"anledningTillKontakt":"test","tillaggsfragor":[],
+                "typ":"luse","id":intygId
+            },
+            "utkastStatus":"SIGNED",
+            "revoked":false,
+            "relations":[{"intygsId":intygId,"status":"INTYG"}]
+        };
+        restTestdataHelper.createWebcertIntyg(intygId, testData).then(function(response) {
         });
     });
 
@@ -62,7 +82,7 @@ xdescribe('Generate fk luse intyg', function() {
             expect(LuseIntygPage.arendeIntygNotSentYetMessage.isDisplayed()).toBeTruthy();
         });
     });
-
+/*
     describe('send intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
@@ -75,10 +95,10 @@ xdescribe('Generate fk luse intyg', function() {
         it('open new arende panel', function() {
             LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
                 expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
-            })
+            });
         });
     });
-
+*/
 /*    describe('remove arende', function() {
         it('should clean up created arende after the test', function() {
             restTestdataHelper.deleteAllArenden();

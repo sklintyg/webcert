@@ -140,6 +140,7 @@
     <security:http security="none" pattern="/testability/questions/**"/>
     <security:http security="none" pattern="/testability/anvandare/**"/>
     <security:http security="none" pattern="/testability/arendetest/**"/>
+    <security:http security="none" pattern="/testability/utkast/**"/>
   </beans>
 
   <!-- =============================================================== -->
