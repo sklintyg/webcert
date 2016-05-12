@@ -100,7 +100,6 @@ public class CreateDraftCertificateIT {
         return result;
     }
 
-
     @Before
     public void setup() {
         RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
