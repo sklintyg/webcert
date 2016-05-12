@@ -93,14 +93,14 @@ module.exports = {
 
     deleteAllArenden: function() {
         var options = {
-            url: 'arendetest/',
+            url: 'testability/arendetest/',
             method: 'DELETE'
         };
         return restClient.run(options, 'json');
     },
     deleteArende: function(id) {
         var options = {
-            url: 'arendetest/' + id,
+            url: 'testability/arendetest/meddelandeId/' + id,
             method: 'DELETE'
         };
         return restClient.run(options, 'json');

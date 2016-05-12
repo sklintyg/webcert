@@ -50,6 +50,14 @@
  template : ''
  }
  */
+function _getIntygJson(intygOptions) {
+    var intyg = require('./../testdata/intyg.' + intygOptions.intygType + '.json');
+    if (intygOptions.intygId) {
+        intyg.id = intygOptions.intygId;
+    }
+    return intyg;
+}
+
 function _buildIntyg(intygOptions) {
 
     //    console.log("======================================================INTYG");
@@ -233,5 +241,6 @@ function overridetsBasDefaults(intyg, intygOptions) {
 }
 
 module.exports = {
+    getIntygJson: _getIntygJson,
     buildIntyg: _buildIntyg
 };

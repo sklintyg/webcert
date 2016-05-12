@@ -20,56 +20,35 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals browser,JSON,protractor*/
+/*globals browser,JSON,protractor,beforeAll,afterAll*/
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
+var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('Skapa ärende luse intyg', function() {
+fdescribe('Skapa ärende luse intyg', function() {
 
-    var intygId = testdataHelper.generateTestGuid();
+    var intygId = 'luse-arende-intyg-1';
+    var arendeId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
         var testData = {
-            "contents":{
-                "grundData":{"signeringsdatum":"2016-05-03T13:22:13.000",
-                    "skapadAv": {
-                        "personId": "TSTNMT2321000156-103F",
-                        "fullstandigtNamn": "Leonie Koehl",
-                        "forskrivarKod": "0000000",
-                        "befattningar": [ ],
-                        "specialiteter": [ ],
-                        "vardenhet": {
-                            "enhetsid": "TSTNMT2321000156-1039",
-                            "enhetsnamn": "NMT vg1 ve2",
-                            "postadress": "NMT gata 2",
-                            "postnummer": "12345",
-                            "postort": "Testhult",
-                            "telefonnummer": "0101112131415",
-                            "epost": "enhet2@webcert.invalid.se",
-                            "vardgivare": {
-                                "vardgivarid": "TSTNMT2321000156-1002",
-                                "vardgivarnamn": "NMT vg1"
-                            },
-                            "arbetsplatsKod": "1234567890"
-                        }
-                    },
-                    "patient":{"personId":"191212121212","fullstandigtNamn":"Tolvan Tolvansson","fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla","samordningsNummer":false}
-                },
-                "textVersion":"1.0","undersokningAvPatienten":"2016-05-03","journaluppgifter":"2016-05-03","anhorigsBeskrivningAvPatienten":"2016-05-03","annatGrundForMU":"2016-05-03","annatGrundForMUBeskrivning":"test","kannedomOmPatient":"2016-05-03","underlagFinns":false,"underlag":[],"sjukdomsforlopp":"test","diagnoser":[{"diagnosKod":"Z65","diagnosKodSystem":"ICD_10_SE","diagnosBeskrivning":"Problem som har samband med andra psykosociala förhållanden","diagnosDisplayName":""}],"diagnosgrund":"test","nyBedomningDiagnosgrund":false,"funktionsnedsattningIntellektuell":"test","funktionsnedsattningKommunikation":"test","funktionsnedsattningKoncentration":"test","funktionsnedsattningPsykisk":"test","funktionsnedsattningSynHorselTal":"test","funktionsnedsattningBalansKoordination":"test","funktionsnedsattningAnnan":"test","aktivitetsbegransning":"test","pagaendeBehandling":"test","avslutadBehandling":"test","planeradBehandling":"test","substansintag":"test","medicinskaForutsattningarForArbete":"test","formagaTrotsBegransning":"test","ovrigt":"test","kontaktMedFk":true,"anledningTillKontakt":"test","tillaggsfragor":[],
-                "typ":"luse","id":intygId
-            },
-            "utkastStatus":"SIGNED",
-            "revoked":false,
-            "relations":[{"intygsId":intygId,"status":"INTYG"}]
+            'contents':intygGenerator.getIntygJson({'intygType':'luse','intygId':intygId}),
+            'utkastStatus':'SIGNED',
+            'revoked':false,
+            'relations':[{'intygsId':intygId,'status':'INTYG'}]
         };
-        restTestdataHelper.createWebcertIntyg(intygId, testData).then(function(response) {
-        });
+        restTestdataHelper.createWebcertIntyg(intygId, testData);
+    });
+
+    afterAll(function() {
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteArende(arendeId);
     });
 
     describe('make sure intyg is ready to be sent', function() {
@@ -82,11 +61,12 @@ xdescribe('Skapa ärende luse intyg', function() {
             expect(LuseIntygPage.arendeIntygNotSentYetMessage.isDisplayed()).toBeTruthy();
         });
     });
-/*
+
     describe('send intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
                 expect(LuseIntygPage.skicka.statusSendInprogress.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.newArendeBtn.isPresent).toBeTruthy();
             });
         });
     });
@@ -94,20 +74,18 @@ xdescribe('Skapa ärende luse intyg', function() {
     describe('send new arende', function() {
         it('open new arende panel', function() {
             LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
+                //console.log(1,element(by.repeater('arendeListItem in arendeList').row(0)));
+                //console.log(2,element.all(by.repeater('arendeListItem in arendeList').getText()));
+                var first = element.all(by.model('arendeListItem.arende.fraga.vidarebefordrad')).first();
+                first.getAttribute('id').then(function(id) {
+                    var firstPart = id.substring(0,27);
+                    var secondPart = id.substring(27);
+                    expect(firstPart).toBe('unhandled-mark-as-notified-');
+                    arendeId = secondPart;
+                });
                 expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
             });
         });
     });
-*/
-/*    describe('remove arende', function() {
-        it('should clean up created arende after the test', function() {
-            restTestdataHelper.deleteAllArenden();
-        });
-    });
 
-    describe('remove test intyg', function() {
-        it('should clean up intyg after the test', function() {
-            restTestdataHelper.deleteIntyg(intygId);
-        });
-    });*/
 });

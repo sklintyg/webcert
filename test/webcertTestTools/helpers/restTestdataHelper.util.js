@@ -76,10 +76,10 @@ module.exports = {
     },
     deleteAllArenden: function() {
         restUtil.login();
-        return restUtil.deleteAllUtkast();
+        return restUtil.deleteAllArenden();
     },
     deleteArende: function(id) {
         restUtil.login();
-        return restUtil.deleteUtkast(id);
+        return restUtil.deleteArende(id);
     }
 };
