@@ -57,9 +57,11 @@ describe('Create and Sign luae_na utkast', function() {
                 UtkastPage.angeAndraMedicinskaUtredningar(data.andraMedicinskaUtredningar);
             });
             it('angeDiagnos', function() {
+                browser.ignoreSynchronization = false;
                 UtkastPage.angeDiagnos(data.diagnos);
             });
             it('angeSjukdomsforlopp', function() {
+                browser.ignoreSynchronization = true;
                 UtkastPage.angeSjukdomsforlopp(data.sjukdomsForlopp);
             });
             it('angeFunktionsnedsattning', function() {
