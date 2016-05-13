@@ -59,8 +59,10 @@ module.exports = {
         element(by.cssContainingText('option', name)).click();
         loginButton.click();
     },
-    loginByJSON: function(userJson) {
-        //this.disableCookieConsentBanner();
+    loginByJSON: function(userJson, giveCookieConsent) {
+        if (giveCookieConsent) {
+            this.disableCookieConsentBanner();
+        }
         jsonDisplay.clear().sendKeys(userJson);
         loginButton.click();
     }

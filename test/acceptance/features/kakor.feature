@@ -3,7 +3,7 @@
 Egenskap: Samtycke för kakor
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-	Givet att jag är inloggad som läkare
+	Givet att jag är inloggad som läkare som inte accepterat kakor
 	
 Scenario: Jag ser en varning om kakor när jag loggar in
 	Så ska jag se en varning om kakor

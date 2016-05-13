@@ -55,10 +55,14 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             underlagRow: function(index) {
                 index = index + 1; //skip header-row
                 var row = element.all(by.css('tr.underlagRow')).get(index);
+                var rowTds = row.all(by.css('td'));
                 return {
+                    // underlag: row.element(by.css('[name="andraUnderlag"]')),
+                    // datum: row.element(by.id('underlag-' + (index - 1) + '-datum')),
+                    // information: row.element(by.id('underlag-' + (index - 1) + '-hamtasFran'))
                     underlag: row.element(by.css('[name="andraUnderlag"]')),
-                    datum: row.element(by.id('underlag-'+(index-1)+'-datum')),
-                    information: row.element(by.id('underlag-'+(index-1)+'-hamtasFran'))
+                    datum: rowTds.get(1).element(by.css('input')),
+                    information: rowTds.get(2).element(by.css('input'))
                 };
             },
             laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
@@ -184,7 +188,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         promiseArr.push(nyBedomning.sendKeys(protractor.Key.SPACE).then(function() {
             if (diagnosObj.nyBedomning) {
                 //Ange diagnosForNyBedomning
-                return diagnosForNyBedomning.sendKeys(diagnosObj.diagnosForNyBedomning);
+                return browser.sleep(1000).then(function() { //fix för nåt med animering
+                    return diagnosForNyBedomning.sendKeys(diagnosObj.diagnosForNyBedomning);
+                });
             } else {
                 return Promise.resolve();
             }

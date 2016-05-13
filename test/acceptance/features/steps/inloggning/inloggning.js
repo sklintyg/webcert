@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, person, browser, intyg, logger,wcTestTools*/
+/* globals pages, protractor, person, browser, intyg, logger,wcTestTools, Promise*/
 
 'use strict';
 
@@ -35,7 +35,7 @@ function gotoPatient(pnr) {
     person.id = pnr;
 
     if (global.user.origin !== 'DJUPINTEGRATION') {
-        element(by.id('menu-skrivintyg')).sendKeys(protractor.Key.SPACE);
+        element(by.id('menu-skrivintyg')).click();
         browser.sleep(1000);
     }
     sokSkrivIntygPage.selectPersonnummer(pnr);
@@ -88,17 +88,21 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
-        logger.info('intygstyp: ' + intygsTyp);
         intyg.typ = intygsTyp;
-        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp);
-        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
+        Promise.all([
+            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp),
+            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
+        ]).then(function() {
+            // Spara intygsid för kommande steg
+            browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-1)[0];
+                logger.info('intyg.id: ' + intyg.id, function() {
+                    callback();
+                });
 
-        // Save INTYGS_ID:
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            logger.debug(intyg.id);
+            });
         });
-        callback();
+
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
