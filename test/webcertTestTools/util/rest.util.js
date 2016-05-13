@@ -100,7 +100,7 @@ module.exports = {
     },
     deleteArende: function(id) {
         var options = {
-            url: 'testability/arendetest/meddelandeId/' + id,
+            url: 'testability/arendetest/' + id,
             method: 'DELETE'
         };
         return restClient.run(options, 'json');
