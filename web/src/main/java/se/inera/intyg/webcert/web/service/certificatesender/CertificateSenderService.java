@@ -28,6 +28,6 @@ public interface CertificateSenderService {
 
     void storeCertificate(String intygsId, String intygsTyp, String jsonBody) throws CertificateSenderException;
     void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) throws CertificateSenderException;
-    void revokeCertificate(String intygsId, String xmlBody) throws CertificateSenderException;
+    void revokeCertificate(String intygsId, String xmlBody, String intygsTyp) throws CertificateSenderException;
     void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
 }

@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.service.intyg;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,8 +35,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -45,7 +42,7 @@ import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -82,8 +79,8 @@ public class IntygServiceImpl implements IntygService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
-    /** LISU, LUSE.*/
-    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(CertificateTypes.LISU.toString(), CertificateTypes.LUSE.toString(), CertificateTypes.LUAE_NA.toString());
+    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(CertificateTypes.LISU.toString(), CertificateTypes.LUSE.toString(),
+            CertificateTypes.LUAE_NA.toString(), CertificateTypes.LUAE_FS.toString());
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
@@ -93,9 +90,6 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private WebCertUserService webCertUserService;
-
-    @Autowired
-    private RevokeRequestConverter revokeRequestConverter;
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -210,7 +204,8 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
-    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList, List<String> enhetId, Personnummer personnummer) {
+    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList, List<String> enhetId,
+            Personnummer personnummer) {
         List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
 
         intygItems.removeAll(fullIntygItemList);
@@ -323,35 +318,13 @@ public class IntygServiceImpl implements IntygService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is already revoked");
         }
 
-        RevokeType revokeType = serviceConverter.buildRevokeTypeFromUtlatande(intyg.getUtlatande(), revokeMessage);
-        RevokeMedicalCertificateRequestType request = new RevokeMedicalCertificateRequestType();
-        request.setRevoke(revokeType);
-
         try {
-            String xmlBody = revokeRequestConverter.toXml(request);
-            certificateSenderService.revokeCertificate(intygsId, xmlBody);
+            certificateSenderService.revokeCertificate(intygsId, modelFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
+                    serviceConverter.buildHosPersonalFromWebCertUser(webCertUserService.getUser()), revokeMessage), intygsTyp);
             whenSuccessfulRevoke(intyg.getUtlatande());
             return IntygServiceResult.OK;
-        } catch (JAXBException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
-        } catch (CertificateSenderException e) {
+        } catch (CertificateSenderException | ModuleException | IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e.getMessage());
-        }
-    }
-
-    private void verifyIsSigned(List<Status> statuses) {
-
-        boolean isSigned = false;
-        for (Status status : statuses) {
-            if (status.getType() == CertificateState.RECEIVED && status.getTimestamp() != null) {
-                isSigned = true;
-                break;
-            }
-        }
-
-        if (!isSigned) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Certificate is not signed, cannot revoke an unsigned certificate");
         }
     }
 
@@ -404,6 +377,14 @@ public class IntygServiceImpl implements IntygService {
     }
 
     /* --------------------- Private scope --------------------- */
+
+    private void verifyIsSigned(List<Status> statuses) {
+        statuses.stream()
+                .filter(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)
+                .findAny()
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                        "Certificate is not signed, cannot revoke an unsigned certificate"));
+    }
 
     /**
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If

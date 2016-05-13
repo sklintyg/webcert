@@ -28,7 +28,8 @@ public enum CertificateTypes {
     TSDIABETES("ts-diabetes"),
     LUSE("luse"),
     LISU("lisu"),
-    LUAE_NA("luae_na");
+    LUAE_NA("luae_na"),
+    LUAE_FS("luae_fs");
 
     private final String text;
 
