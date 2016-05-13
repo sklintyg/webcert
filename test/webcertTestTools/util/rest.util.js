@@ -80,7 +80,7 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
-    createWebcertIntyg: function(id, createJson) {
+    createWebcertIntyg: function(createJson) {
         var options = {
             url: 'testability/intyg/utkast',
             method: 'POST',
@@ -91,6 +91,14 @@ module.exports = {
 
     // Ärenden
 
+    createArende: function(createJson) {
+        var options = {
+            url: 'testability/arendetest/',
+            method: 'POST',
+            body: createJson
+        };
+        return restClient.run(options, 'json');
+    },
     deleteAllArenden: function() {
         var options = {
             url: 'testability/arendetest/',

@@ -22,7 +22,7 @@
 var restUtil = require('../../../webcertTestTools/util/rest.util.js');
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
-describe('Generate fk intyg', function() {
+xdescribe('Generate fk intyg', function() {
 
     it('should login rest client and generate an fk7263 intyg', function() {
         // login with doctor Jan Nilsson

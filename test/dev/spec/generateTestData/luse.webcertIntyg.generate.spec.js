@@ -20,17 +20,55 @@
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
-var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
+var arendeFromJsonFactory = wcTestTools.arendeFromJsonFactory;
 var specHelper = wcTestTools.helpers.spec;
+var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('webcert intyg', function() {
-    it('generate luse', function() {
+fdescribe('webcert intyg', function() {
+
+    var intygId = 'luse-arende-test';
+    var arendeId;
+
+    beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        var intyg = intygFromJsonFactory.defaultWCLuse();
-        console.log(intyg);
-        restTestdataHelper.createWebcertIntyg(intyg.contents.id, intyg).then(function(response) {
-            expect(response.statusCode).toBe(200);
+
+        var intygType = 'luse';
+
+        var intygData = {
+            'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
+            'utkastStatus':'SIGNED',
+            'revoked':false,
+            'relations':[{'intygsId':intygId,'status':'INTYG'}]
+        };
+        restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
+
+            function createArende(amne, status) {
+                console.log('Creating arende:' + amne);
+                var arendeId = 'arende-test-' + amne.toLowercase();
+                var arende = arendeFromJsonFactory.get(intygType, intygId, arendeId, amne, status);
+                restTestdataHelper.createArende(arende).then(function(response){
+                    console.log('Response code:' +response.statusCode);
+                });
+            }
+
+            createArende('ARBTID', 'PENDING_INTERNAL_ACTION');
+            createArende('AVSTMN', 'PENDING_EXTERNAL_ACTION');
+            createArende('KONTKT', 'PENDING_INTERNAL_ACTION');
+            createArende('OVRIGT', 'PENDING_INTERNAL_ACTION');
+            createArende('KOMPLT', 'PENDING_INTERNAL_ACTION');
+            createArende('OVRIGT', 'CLOSED');
+            //createArende('PAMINN', 'PENDING_INTERNAL_ACTION');
         });
     });
+
+    it('generate luse', function() {
+        expect(true).toBe(true);
+    });
+
+    afterAll(function() {
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
+    });
+
 });
