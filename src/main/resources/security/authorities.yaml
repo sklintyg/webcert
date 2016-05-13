@@ -234,12 +234,10 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-          - <<: *ro030 # UTHOPP
       - <<: *p030 # KOPIERA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-          - <<: *ro030 # UTHOPP
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -259,7 +257,6 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-          - <<: *ro030 # UTHOPP
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -284,7 +281,6 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-          - <<: *ro030 # UTHOPP
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -396,9 +392,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro030 # UTHOPP
-            intygstyper:
-              - *ki010
       - <<: *p030 # KOPIERA_INTYG
         intygstyper:
           - *ki010
@@ -412,9 +405,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro030 # UTHOPP
-            intygstyper:
-              - *ki010
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         intygstyper:
           - *ki010
@@ -476,9 +466,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro030 # UTHOPP
-            intygstyper:
-              - *ki010
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         intygstyper:
           - *ki010
@@ -556,9 +543,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro030 # UTHOPP
-            intygstyper:
-              - *ki010
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
@@ -577,36 +561,29 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-          - <<: *ro030 # UTHOPP
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p090 # HANTERA_PERSONUPPGIFTER
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p100 # HANTERA_MAILSVAR
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p110 # NAVIGERING
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
 
 # Legitimerade yrkesroller
