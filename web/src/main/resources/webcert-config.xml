@@ -84,10 +84,11 @@
     </bean>
 
     <!-- Read authorites configuration to setup user roles and privileges -->
-    <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader">
+    <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.common.security.authorities.bootstrap.AuthoritiesConfigurationLoader">
       <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
     </bean>
-    <bean id="authoritiesResolver" class="se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver" />
+    <!-- <bean id="authoritiesResolver" class="se.inera.intyg.common.security.authorities.AuthoritiesResolver" />    -->
+    <bean id="commonAuthoritiesResolver" class="se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver" />
 
   </beans>
   

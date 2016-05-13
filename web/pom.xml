@@ -437,6 +437,21 @@
       <artifactId>json-schema-validator</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>security-common</artifactId>
+      <version>0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>security-common</artifactId>
+      <version>0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>security-siths</artifactId>
+      <version>0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

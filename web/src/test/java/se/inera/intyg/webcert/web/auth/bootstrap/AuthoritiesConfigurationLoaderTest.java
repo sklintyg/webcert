@@ -1,9 +1,5 @@
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,17 +7,22 @@ import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConfiguration;
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.auth.authorities.Title;
-import se.inera.intyg.webcert.web.auth.authorities.TitleCode;
+import se.inera.intyg.common.security.authorities.AuthoritiesConfiguration;
+import se.inera.intyg.common.security.authorities.bootstrap.AuthoritiesConfigurationLoader;
+import se.inera.intyg.common.security.common.model.Privilege;
+import se.inera.intyg.common.security.common.model.RequestOrigin;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.model.Title;
+import se.inera.intyg.common.security.common.model.TitleCode;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * The AuthoritiesDataLoader is not very well suited for unit-testing, given that it has a single entry-point and then

@@ -19,10 +19,6 @@
 
 package se.inera.intyg.webcert.web.auth.common;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +26,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
-
+import se.inera.intyg.common.security.siths.CommonUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
-import se.inera.intyg.webcert.web.security.WebCertUserDetailsService;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests so the unified userdetails service forwards the SAMLCredential to the correct underlying userDetailsService
@@ -51,7 +50,7 @@ public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
     @Mock
-    private WebCertUserDetailsService webCertUserDetailsService;
+    private CommonUserDetailsService webCertUserDetailsService;
 
     @InjectMocks
     private UnifiedUserDetailsService unifiedUserDetailsService;

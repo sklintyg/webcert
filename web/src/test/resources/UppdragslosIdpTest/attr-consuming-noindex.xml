@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Destination="https://test.webcert.intygstjanster.se/saml/SSO/alias/defaultAlias" ID="ID875811409381474397030848880699495358984059322409" InResponseTo="a849a9cfeeg95hb4je7bi0111e87ag" IssueInstant="2016-05-09T11:49:04.109Z" Version="2.0" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+  <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
+    https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml
+  </saml:Issuer>
+  <samlp:Status>
+    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+  </samlp:Status>
+  <saml:Assertion ID="ID420130377941335028149415557123527827287124814953" IssueInstant="2016-05-09T11:49:04.108Z" Version="2.0">
+    <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">
+      https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml
+    </saml:Issuer>
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:SignedInfo>
+        <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+        <ds:Reference URI="#ID420130377941335028149415557123527827287124814953">
+          <ds:Transforms>
+            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+            <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+          </ds:Transforms>
+          <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+          <ds:DigestValue>dHPJ96avk4mEXoqZAMLDgCP8bk5umCDX0kJCrcy6ciM=</ds:DigestValue>
+        </ds:Reference>
+      </ds:SignedInfo>
+      <ds:SignatureValue>
+        bZLNmAlD/aQQL+keMZ6G3DKqsZMEQpSU1h+ESv7IJLdnek3FdXsA+yA0K8Hlc39b/eR1AoCx60CFu3Ln3ApyZxnKwbg8RPA+ICHwkG63uv0t7EAxBwkWFkFX/SWUpP6arCsXcZ9R7OjEuQ0uZ8BPuTtqVfxos8nWVcnu9p+UXEwaqaXJAvdybhCJNMbHIG6qd7TxY0u9o+0WqiHQ2OhOA8FN77DzSMq9uGk+Nxm3O0quaEQPVsQDC7KxcrLBD+em8hNk6oCEnE+KoAZ6wDv+0TL0xLmRj5flN4erYBg/8dul2F3wuEGk7d0RL2mEpwSCfnhxs1PZ1m3Wosd99XOhXQ==
+      </ds:SignatureValue>
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>
+            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
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </ds:Signature>
+    <saml:Subject>
+      <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">TSTNMT2321000156-1024</saml:NameID>
+      <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+        <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">TSTNMT2321000156-1024</saml:NameID>
+        <saml:SubjectConfirmationData InResponseTo="a849a9cfeeg95hb4je7bi0111e87ag" NotOnOrAfter="2016-05-10T04:29:04.108Z" Recipient="https://test.webcert.intygstjanster.se/saml/SSO/alias/defaultAlias"/>
+      </saml:SubjectConfirmation>
+    </saml:Subject>
+    <saml:Conditions>
+      <saml:AudienceRestriction>
+        <saml:Audience>https://test.webcert.intygstjanster.se</saml:Audience>
+      </saml:AudienceRestriction>
+    </saml:Conditions>
+    <saml:AuthnStatement AuthnInstant="2016-05-09T11:49:04.108Z" SessionIndex="9e17cf28-a3fb-488e-bfe7-c503230f6515" SessionNotOnOrAfter="2016-05-09T12:49:04.108Z">
+      <saml:AuthnContext>
+        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</saml:AuthnContextClassRef>
+      </saml:AuthnContext>
+    </saml:AuthnStatement>
+    <saml:AttributeStatement>
+      <saml:Attribute FriendlyName="employeeHsaId" Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-1024</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="systemRole" Name="http://sambi.se/attributes/1/systemRole" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>EFK;Användare</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="assignmentName" Name="http://sambi.se/attributes/1/commissionName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>NMT_VG1_VE1_Vard_och_Behandling</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careUnitName" Name="http://sambi.se/attributes/1/healthCareUnitName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>nmt_vg1_ve1</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careUnitHsaId" Name="http://sambi.se/attributes/1/healthCareUnitHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-1003</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careProviderName" Name="http://sambi.se/attributes/1/healthCareProviderName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>nmt_vg1</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="levelOfAssurance" Name="urn:sambi:names:attribute:levelOfAssurance" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>urn:sambi:names:ac:classes:LoA3</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="titleCode" Name="http://sambi.se/attributes/1/paTitleCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>203090</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="x509IssuerName" Name="urn:sambi:names:attribute:x509IssuerName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>CN=SITHS Type 1 CA v1 PP,O=Inera AB,C=SE</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="givenName" Name="http://sambi.se/attributes/1/givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Lennart</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="middleAndSurname" Name="http://sambi.se/attributes/1/surname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Nilsson</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="assignmentHsaId" Name="http://sambi.se/attributes/1/commissionHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-101H</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="commissionPurpose" Name="http://sambi.se/attributes/1/commissionPurpose" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Vård och behandling</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="careProviderHsaId" Name="http://sambi.se/attributes/1/healthCareProviderHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-1002</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="personalPrescriptionCode" Name="http://sambi.se/attributes/1/personalPrescriptionCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>11111111</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="authnMethod" Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-1024</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:systemRole" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>EFK;Användare</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:assignmentName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>NMT_VG1_VE1_Vard_och_Behandling</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:careUnitName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>nmt_vg1_ve1</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:careUnitHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-1003</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:careProviderName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>nmt_vg1</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:titleCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>203090</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Lennart</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:middleAndSurname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Nilsson</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:assignmentHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-101H</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:commissionPurpose" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Vård och behandling</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:careProviderHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>TSTNMT2321000156-1002</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:title" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>Läkare</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute Name="urn:sambi:names:attribute:personalPrescriptionCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>11111111</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="title" Name="http://sambi.se/attributes/1/healthcareProfessionalLicense" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml:AttributeValue>LK</saml:AttributeValue>
+      </saml:Attribute>
+    </saml:AttributeStatement>
+  </saml:Assertion>
+</samlp:Response>

@@ -19,11 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.user;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +26,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
+import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.common.security.common.model.IntygUser;
+import se.inera.intyg.common.security.common.model.Privilege;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -48,15 +48,20 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
 
     @Autowired
-    private AuthoritiesResolver authoritiesResolver;
+    private CommonAuthoritiesResolver authoritiesResolver;
+
+//    @Override
+//    public WebCertUser getUser() {
+//        return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//    }
 
     @Override
     public WebCertUser getUser() {
-        return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new WebCertUser( (IntygUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
 
     @Override
-    public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
+    public void enableFeaturesOnUser(Feature... featuresToEnable) {
         enableFeatures(getUser(), featuresToEnable);
     }
 
@@ -94,7 +99,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         // User is granted privilege access, get the privilege's intygstyper
         Privilege privilege = getUser().getAuthorities().get(privilegeName);
 
-        // Return the privilege's intygstyper
+        // Return intygstyper configured for this privilege
         List<String> intygsTyper = privilege.getIntygstyper();
         if (intygsTyper == null || intygsTyper.isEmpty()) {
             // The privilege didn't have any intygstyper
@@ -154,10 +159,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
     }
 
-    void enableFeatures(WebCertUser user, WebcertFeature... featuresToEnable) {
+    void enableFeatures(WebCertUser user, Feature... featuresToEnable) {
         LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getFeatures(), ", "));
 
-        for (WebcertFeature feature : featuresToEnable) {
+        for (Feature feature : featuresToEnable) {
             user.getFeatures().add(feature.getName());
         }
 

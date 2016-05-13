@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.model;
 
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.common.security.common.model.Privilege;
+import se.inera.intyg.common.security.common.model.Role;
 
 import java.io.Serializable;
 import java.util.Map;

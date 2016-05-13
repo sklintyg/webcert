@@ -1,5 +1,7 @@
 {
     "hsaId": "IFV1239877878-104B",
+	"forNamn": "Åsa",
+	"efterNamn": "Andersson",
     "uppdrag":[
     	{
     		"enhet": "IFV1239877878-1042"
@@ -11,5 +13,6 @@
     		"enhet": "IFV1239877878-104D",
             "andamal":["Admin"]
     	}
-    ]
+    ],
+	"titel": "Läkare"
 }

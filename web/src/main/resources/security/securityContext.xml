@@ -62,7 +62,7 @@
   <bean id="unifiedUserDetailsService" class="se.inera.intyg.webcert.web.auth.common.UnifiedUserDetailsService" />
 
   <!-- These two should only be accessed directly by fake login authentication providers -->
-  <bean id="userDetailsService" class="se.inera.intyg.webcert.web.security.WebCertUserDetailsService"/>
+  <bean id="userDetailsService" class="se.inera.intyg.common.security.siths.CommonUserDetailsService"/>
   <bean id="elegWebCertUserDetailsService" class="se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService"/>
   <bean id="elegAuthenticationAttributeHelper" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationAttributeHelperImpl" />
   <bean id="elegAuthenticationMethodResolver" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolverImpl" />
@@ -82,13 +82,13 @@
         class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
     <property name="exceptionMappings">
       <props>
-        <prop key="se.inera.intyg.webcert.web.auth.exceptions.MissingMedarbetaruppdragException">
+        <prop key="se.inera.intyg.common.security.exception.MissingMedarbetaruppdragException">
           /error.jsp?reason=login.medarbetaruppdrag
         </prop>
         <prop key="org.springframework.security.authentication.BadCredentialsException">
           /error.jsp?reason=login.failed
         </prop>
-        <prop key="se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException">
+        <prop key="se.inera.intyg.common.security.exception.HsaServiceException">
           /error.jsp?reason=login.hsaerror
         </prop>
 
@@ -157,8 +157,9 @@
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
       </security:http>
       <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider ref="fakeAuthenticationProvider"/>
+    <!--    <security:authentication-provider ref="fakeAuthenticationProvider"/>    -->
         <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
+        <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
       </security:authentication-manager>
     </beans>
   </beans>
@@ -190,8 +191,9 @@
 
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
-      <security:authentication-provider ref="fakeAuthenticationProvider"/>
+     <!-- <security:authentication-provider ref="fakeAuthenticationProvider"/>    -->
       <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
+      <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
     </security:authentication-manager>
   </beans>
 
@@ -239,8 +241,14 @@
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/web/start"/>
     </bean>
+    <!--
     <bean id="fakeAuthenticationProvider"
         class="se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationProvider">
+      <property name="userDetails" ref="userDetailsService"/>
+    </bean>
+    -->
+    <bean id="commonFakeAuthenticationProvider"
+        class="se.inera.intyg.webcert.web.auth.fake.common.CommonFakeAuthenticationProvider">
       <property name="userDetails" ref="userDetailsService"/>
     </bean>
     <bean id="fakeElegAuthenticationProvider"
@@ -500,8 +508,9 @@
     <!-- SAML 2.0 Holder-of-Key WebSSO Assertion Consumer -->
     <bean id="hokWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl"/>
 
-    <!-- SAML 2.0 Web SSO profile -->
-    <bean id="webSSOprofile" class="org.springframework.security.saml.websso.WebSSOProfileImpl"/>
+    <!-- SAML 2.0 Web SSO profile. Overridden by Webcert to provide AttributeConsumerIndex -->
+    <bean id="webSSOprofile" class="se.inera.intyg.webcert.web.auth.WebcertWebSSOProfileImpl">
+    </bean>
 
     <!-- SAML 2.0 Logout Profile -->
     <bean id="logoutprofile" class="org.springframework.security.saml.websso.SingleLogoutProfileImpl"/>

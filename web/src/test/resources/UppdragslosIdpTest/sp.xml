@@ -1,0 +1,6 @@
+<AttributeConsumingService index="1">
+  <ServiceName xml:lang="sv">TestSP med HSA-uppslag</ServiceName>
+  <RequestedAttribute Name="urn:sambi:names:attribute:levelOfAssurance" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="levelOfAssurance"/>
+  <RequestedAttribute Name="urn:sambi:names:attribute:givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="givenName" isRequired="true"/>
+  <RequestedAttribute Name="urn:sambi:names:attribute:systemRole" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="systemRole"/>
+</AttributeConsumingService>

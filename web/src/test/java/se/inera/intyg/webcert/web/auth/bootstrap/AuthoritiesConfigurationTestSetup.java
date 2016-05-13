@@ -1,7 +1,8 @@
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
 import org.junit.BeforeClass;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
+import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.common.security.authorities.bootstrap.AuthoritiesConfigurationLoader;
 
 /**
  * Created by Magnus Ekstrand on 26/11/15.
@@ -11,7 +12,7 @@ public class AuthoritiesConfigurationTestSetup {
     protected static final String CONFIGURATION_LOCATION = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
 
     protected static final AuthoritiesConfigurationLoader CONFIGURATION_LOADER = new AuthoritiesConfigurationLoader(CONFIGURATION_LOCATION);;
-    protected static final AuthoritiesResolver AUTHORITIES_RESOLVER = new AuthoritiesResolver();
+    protected static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver();
 
     @BeforeClass
     public static void setupAuthoritiesConfiguration() throws Exception {

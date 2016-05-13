@@ -17,18 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.auth.fake;
-
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
-import static se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion.TITEL_KOD_ATTRIBUTE;
+package se.inera.intyg.webcert.web.auth.fake.common;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
@@ -42,15 +31,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import se.inera.intyg.common.security.siths.CommonSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
-import se.inera.intyg.common.integration.hsa.stub.Medarbetaruppdrag;
+import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
+import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 
 import java.util.ArrayList;
+
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
 /**
  * @author andreaskaltenbach
  */
-public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
+public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
     private SAMLUserDetailsService userDetails;
 
@@ -88,22 +81,7 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);
 
-        addAttribute(attributeStatement, HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId());
-        addAttribute(attributeStatement, FORNAMN_ATTRIBUTE, fakeCredentials.getFornamn());
-        addAttribute(attributeStatement, MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getEfternamn());
-        addAttribute(attributeStatement, ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId());
-        addAttribute(attributeStatement, MEDARBETARUPPDRAG_TYPE, Medarbetaruppdrag.VARD_OCH_BEHANDLING);
-        addAttribute(attributeStatement, MEDARBETARUPPDRAG_ID, fakeCredentials.getEnhetId());
-        addAttribute(attributeStatement, FORSKRIVARKOD_ATTRIBUTE, fakeCredentials.getForskrivarKod());
-
-        if (fakeCredentials.isLakare()) {
-            addAttribute(attributeStatement, TITEL_ATTRIBUTE, "Läkare");
-        }
-        if (fakeCredentials.isTandlakare()) {
-            addAttribute(attributeStatement, TITEL_ATTRIBUTE, "Tandläkare");
-        }
-
-        addAttribute(attributeStatement, TITEL_KOD_ATTRIBUTE, fakeCredentials.getBefattningsKod());
+        addAttribute(attributeStatement, CommonSakerhetstjanstAssertion.HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId());
 
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());
