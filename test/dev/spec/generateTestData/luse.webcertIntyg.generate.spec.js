@@ -24,13 +24,14 @@ var arendeFromJsonFactory = wcTestTools.arendeFromJsonFactory;
 var specHelper = wcTestTools.helpers.spec;
 var intygGenerator = wcTestTools.intygGenerator;
 
-fdescribe('webcert intyg', function() {
+describe('webcert intyg', function() {
 
-    it('generate luse', function() {
+    var intygId = 'luse-arende-test';
+
+    it('generate luse and all arendetypes', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
-        var intygId = 'luse-arende-test';
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteAllArenden();
 
@@ -61,5 +62,11 @@ fdescribe('webcert intyg', function() {
             //createArende('OVRIGT', 'CLOSED');
             //createArende('PAMINN', 'PENDING_INTERNAL_ACTION');
         });
+    });
+
+    // xit this test to keep testdata for manual testing
+    it('clean up intyg and arende', function() {
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
     });
 });
