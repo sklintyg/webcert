@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar
+@statusuppdateringar @fk7263
 Egenskap: Statusuppdateringar för FK7263
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
@@ -9,14 +9,16 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
 
 @skicka-till-fk
 Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
-   När jag fyller i fältet "Min undersökning av patienten"
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
 
-   Och jag fyller i fältet "ICD-10"
+   När jag fyller i fältet "Min undersökning av patienten"
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "1"
 
-   Och jag fyller i fältet "Arbetsförmåga"
+   Och jag fyller i fältet "ICD-10"
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "2"
+
+   Och jag fyller i fältet "Arbetsförmåga"
+   Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "3"
 
    Och jag fyller i resten av de nödvändiga fälten.
    Och jag signerar intyget
