@@ -87,9 +87,9 @@ module.exports = {
      */
 
     get: function(intygType, intygId, meddelandeId, amne, status) {
-        var arende = templateArende;
+        var arende = Object.assign({}, templateArende); // Create clone so not all callers use the same instance
         arende.intygTyp = intygType;
-        arende.intygId = intygId;
+        arende.intygsId = intygId;
         arende.meddelandeId = meddelandeId;
         arende.amne = amne;
         arende.status = status;

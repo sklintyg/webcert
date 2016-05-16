@@ -26,15 +26,15 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 fdescribe('webcert intyg', function() {
 
-    var intygId = 'luse-arende-test';
-    var arendeId;
-
-    beforeAll(function() {
+    it('generate luse', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
-        var intygType = 'luse';
+        var intygId = 'luse-arende-test';
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
 
+        var intygType = 'luse';
         var intygData = {
             'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
             'utkastStatus':'SIGNED',
@@ -43,32 +43,23 @@ fdescribe('webcert intyg', function() {
         };
         restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
 
+            var index = 1;
             function createArende(amne, status) {
                 console.log('Creating arende:' + amne);
-                var arendeId = 'arende-test-' + amne.toLowercase();
+                var arendeId = 'arende-test-' + amne.toLowerCase() + index++;
                 var arende = arendeFromJsonFactory.get(intygType, intygId, arendeId, amne, status);
                 restTestdataHelper.createArende(arende).then(function(response){
-                    console.log('Response code:' +response.statusCode);
+                    console.log('Response code:' + response.statusCode);
                 });
             }
 
             createArende('ARBTID', 'PENDING_INTERNAL_ACTION');
-            createArende('AVSTMN', 'PENDING_EXTERNAL_ACTION');
+            createArende('AVSTMN', 'PENDING_INTERNAL_ACTION');
             createArende('KONTKT', 'PENDING_INTERNAL_ACTION');
             createArende('OVRIGT', 'PENDING_INTERNAL_ACTION');
             createArende('KOMPLT', 'PENDING_INTERNAL_ACTION');
-            createArende('OVRIGT', 'CLOSED');
+            //createArende('OVRIGT', 'CLOSED');
             //createArende('PAMINN', 'PENDING_INTERNAL_ACTION');
         });
     });
-
-    it('generate luse', function() {
-        expect(true).toBe(true);
-    });
-
-    afterAll(function() {
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteAllArenden();
-    });
-
 });
