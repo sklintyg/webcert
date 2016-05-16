@@ -9,7 +9,7 @@ Bakgrund: Jag är inloggad
 	Och jag går in på en patient
 
 # Första ändring per ändringssession ska loggas
-@skapa @skriva 
+@skapa @skriva
 Scenario: Skapa intyg
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag går tillbaka

@@ -95,14 +95,30 @@ module.exports = function() {
     });
 
     this.Given(/^jag ska kunna svara med textmeddelande/, function(callback) {
-
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
-        kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE).then(function() {
-            return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys('Banan').then(function() {
-                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE)();
+        var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
+
+        var svaraPaKomplettering = kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE)
+            .then(function() {
+                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar)
+                    .then(function() {
+                        return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+
+                    });
+            });
+
+
+        svaraPaKomplettering
+            .then(function() {
+                logger.info('Kontrollerar att fråga är märkt som hanterad..');
+                expect(kompletteringsFraga.element(by.css('.qa-block-handled')).getText()).to.eventually.contain(textSvar)
+                    .then(function(value) {
+                        logger.info('OK - textsvar = ' + value);
+                    }, function(reason) {
+                        callback('FEL - textsvar: ' + reason);
+                    }).then(callback);
 
             });
-        }).then(callback());
     });
 
 
