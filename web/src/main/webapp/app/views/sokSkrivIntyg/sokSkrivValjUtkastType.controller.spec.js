@@ -123,12 +123,19 @@ describe('ChooseCertTypeCtrl', function() {
         });
 
         it('should set utkast path', function() {
+            cert.status = 'DRAFT_COMPLETE';
+            $scope.openIntyg(cert);
+            expect($location.path()).toBe('/' + cert.intygType + '/edit/' + cert.intygId);
+        });
+
+        it('should set utkast path', function() {
+            cert.status = 'DRAFT_INCOMPLETE';
             $scope.openIntyg(cert);
             expect($location.path()).toBe('/' + cert.intygType + '/edit/' + cert.intygId);
         });
 
         it('should set signed path', function() {
-            cert.source = 'IT';
+            cert.status = 'RECEIVED';
             $scope.openIntyg(cert);
             expect($location.path()).toBe('/intyg/' + cert.intygType + '/' + cert.intygId);
         });

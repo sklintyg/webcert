@@ -183,7 +183,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.openIntyg = function(cert) {
-                if (cert.source === 'WC') {
+                if (cert.status === 'DRAFT_INCOMPLETE' || cert.status === 'DRAFT_COMPLETE') {
                     $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
                 } else {
                     $location.path('/intyg/' + cert.intygType + '/' + cert.intygId);
