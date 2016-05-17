@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;
@@ -106,6 +107,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private IntygTextsService intygTextsService;
+
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -196,7 +200,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
         // Get intygstyper from the view privilege
-        Set<String> intygsTyper = webCertUserService.getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
         // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
         if (intygsTyper.isEmpty()) {

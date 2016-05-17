@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth.authorities;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.model.UserDetails;
@@ -35,6 +36,7 @@ public class AuthoritiesHelper {
 
     private AuthoritiesResolver authoritiesResolver;
 
+    @Autowired
     public AuthoritiesHelper(AuthoritiesResolver authoritiesResolver) {
         this.authoritiesResolver = authoritiesResolver;
     }
@@ -53,7 +55,7 @@ public class AuthoritiesHelper {
      * @param privilegeName the privilege name
      * @return returns a set of granted intygstyper, an empty set means no granted intygstyper for this privilege
      */
-    public Set<String> getIntygstyperForPrivilege(final UserDetails user, final String privilegeName) {
+    public Set<String> getIntygstyperForPrivilege(UserDetails user, String privilegeName) {
         Assert.notNull(privilegeName);
 
         // If user doesn't have a privilege, return an empty set

@@ -29,17 +29,12 @@ import org.springframework.util.Assert;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
 import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
 import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -65,43 +60,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         Assert.notEmpty(modulefeaturesToEnable);
 
         enableModuleFeatures(getUser(), moduleName, modulefeaturesToEnable);
-    }
-
-    /**
-     * Method returns all granted intygstyper for a certain user's privilege.
-     * If user doesn't have a privilege, an empty set is returned.
-     *
-     * Note:
-     * The configuration mindset of privileges is that if there are no
-     * intygstyper attached to a privilege, the privilege is implicitly
-     * valid for all intygstyper. However, this method will return an
-     * explicit list with granted intygstyper in all cases.
-     *
-     * @param privilegeName the privilege name
-     * @return returns a set of granted intygstyper, an empty set means no granted intygstyper for this privilege
-     */
-    @Override
-    public Set<String> getIntygstyper(String privilegeName) {
-        Assert.notNull(privilegeName);
-
-        // If user doesn't have a privilege, return an empty set
-        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        if (!authoritiesValidator.given(getUser()).privilege(privilegeName).isVerified()) {
-            return Collections.emptySet();
-        }
-
-        // User is granted privilege access, get the privilege's intygstyper
-        Privilege privilege = getUser().getAuthorities().get(privilegeName);
-
-        // Return intygstyper configured for this privilege
-        List<String> intygsTyper = privilege.getIntygstyper();
-        if (intygsTyper == null || intygsTyper.isEmpty()) {
-            // The privilege didn't have any intygstyper
-            // restrictions, return all known intygstyper
-            intygsTyper = authoritiesResolver.getIntygstyper();
-        }
-
-        return intygsTyper.stream().collect(Collectors.toSet());
     }
 
     @Override
