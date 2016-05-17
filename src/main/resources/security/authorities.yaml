@@ -241,12 +241,10 @@ roles:
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
@@ -256,26 +254,21 @@ roles:
       - <<: *p070 # FILTRERA_PA_LAKARE
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p090 # HANTERA_PERSONUPPGIFTER
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p100 # HANTERA_MAILSVAR
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p110 # NAVIGERING
         requestOrigins:
           - <<: *ro010 # NORMAL
-          - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
       - <<: *p120 # SVARA_MED_NYTT_INTYG
         requestOrigins:
@@ -300,16 +293,7 @@ roles:
       - <<: *p030 # KOPIERA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
-      - <<: *p040 # VIDAREBEFORDRA_UTKAST
-        requestOrigins:
-          - <<: *ro010 # NORMAL
-      - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
-        requestOrigins:
-          - <<: *ro010 # NORMAL
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
-        requestOrigins:
-          - <<: *ro010 # NORMAL
-      - <<: *p070 # FILTRERA_PA_LAKARE
         requestOrigins:
           - <<: *ro010 # NORMAL
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
@@ -414,10 +398,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
@@ -427,10 +407,6 @@ roles:
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
             intygstyper:
               - *ki010
               - *ki040
@@ -462,20 +438,12 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         intygstyper:
           - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
             intygstyper:
               - *ki010
               - *ki040
@@ -491,10 +459,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
@@ -507,10 +471,6 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
@@ -520,10 +480,6 @@ roles:
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
             intygstyper:
               - *ki010
               - *ki040
