@@ -53,7 +53,7 @@ public class AuthoritiesHelper {
      * @param privilegeName the privilege name
      * @return returns a set of granted intygstyper, an empty set means no granted intygstyper for this privilege
      */
-    public Set<String> getIntygstyperForPrivilege(UserDetails user, String privilegeName) {
+    public Set<String> getIntygstyperForPrivilege(final UserDetails user, final String privilegeName) {
         Assert.notNull(privilegeName);
 
         // If user doesn't have a privilege, return an empty set
@@ -62,24 +62,27 @@ public class AuthoritiesHelper {
             return Collections.emptySet();
         }
 
+        List<String> intygsTyper = new ArrayList<>();
+        List<RequestOrigin> requestOrigins = new ArrayList<>();
+
         // User is granted privilege access, get the privilege's intygstyper
         Privilege privilege = user.getAuthorities().get(privilegeName);
 
         // Return intygstyper configured for this privilege
-        List<String> intygsTyper = privilege.getIntygstyper();
+        intygsTyper.addAll(privilege.getIntygstyper());
 
-        // If the privilege doesn't have any intygstyper
+        // Get privilege's requestOrigins
+        requestOrigins.addAll(privilege.getRequestOrigins());
+
+        // If the privilege doesn't have any
         // restrictions, return all known intygstyper
-        if (intygsTyper == null || intygsTyper.isEmpty()) {
+        if (!(hasElements(intygsTyper) || hasElements(requestOrigins))) {
             return toSet(authoritiesResolver.getIntygstyper());
         }
 
-        // Get privilege's requestOrigins
-        List<RequestOrigin> requestOrigins = privilege.getRequestOrigins();
-
         // If the privilege doesn't have any requestOrigin
         // restrictions, return all the privilege's intygstyper
-        if (requestOrigins == null || requestOrigins.isEmpty()) {
+        if (!hasElements(requestOrigins)) {
             return toSet(intygsTyper);
         }
 
@@ -87,19 +90,27 @@ public class AuthoritiesHelper {
         String origin = user.getOrigin();
 
         // If user's origin can be found within one of the privilege's
-        // requestOrigins, return intygstyper for the match.
+        // requestOrigins, include these in the return statement.
         if (requestOrigins.stream().anyMatch(o -> o.getName().equalsIgnoreCase(origin))) {
             RequestOrigin ro = requestOrigins.stream().filter(o -> o.getName().equalsIgnoreCase(origin)).findFirst().get();
-            return toSet(ro.getIntygstyper());
+            intygsTyper.addAll(ro.getIntygstyper());
         }
 
-        // User's origin wasn't within thre privilege's
+        // User's origin wasn't within the privilege's
         // requestOrigins, return empty set of intygstyper.
-        return toSet(new ArrayList<>());
+        return toSet(intygsTyper);
+    }
+
+    private <T> boolean hasElements(List<T> list) {
+        if (list == null || list.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
     private Set<String> toSet(List<String> intygsTyper) {
-        return intygsTyper.stream().collect(Collectors.toSet());
+        return intygsTyper.stream().distinct().collect(Collectors.toSet());
     }
 
 }
