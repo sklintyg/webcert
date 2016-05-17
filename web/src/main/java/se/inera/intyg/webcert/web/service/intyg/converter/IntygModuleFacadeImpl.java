@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +28,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-
-import java.util.List;
 
 @Component
 public class IntygModuleFacadeImpl implements IntygModuleFacade {
@@ -92,6 +92,18 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
             throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
+        }
+    }
+
+    @Override
+    public String getRevokeCertificateRequest(String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
+            throws ModuleException, IntygModuleFacadeException {
+        try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            return moduleApi.createRevokeRequest(utlatande, skapatAv, message);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when revoking certificate", intygType);
+            throw new IntygModuleFacadeException("ModuleNotFoundException occured when revoking certificate", e);
         }
     }
 }

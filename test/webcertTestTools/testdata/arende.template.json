@@ -1,0 +1,19 @@
+{
+    "timestamp":"2016-03-31T14:42:27.849",
+    "meddelandeId":"1",
+    "intygsId":"-",
+    "patientPersonId":"191212121212",
+    "amne":"KOMPLT",
+    "rubrik":"rubrik",
+    "skickatAv":"fk",
+    "meddelande":"Här kommer ett meddeleande från era vänner på Försäkringskassan.",
+    "sistaDatumForSvar":"2016-04-04",
+    "intygTyp":"luse",
+    "status":"PENDING_INTERNAL_ACTION",
+    "vidarebefordrad":false,
+    "kontaktInfo":[
+        "test",
+        "adress",
+        "telefon"
+    ]
+}

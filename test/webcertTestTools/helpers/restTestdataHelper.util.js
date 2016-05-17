@@ -42,9 +42,9 @@ module.exports = {
         restUtil.login();
         return restUtil.deleteIntyg(id);
     },
-    createWebcertIntyg: function(id, createJson) {
+    createWebcertIntyg: function(createJson) {
         restUtil.login();
-        return restUtil.createWebcertIntyg(id, createJson);
+        return restUtil.createWebcertIntyg(createJson);
     },
     createUtkast: function(intygType, template) {
         restUtil.login();
@@ -73,6 +73,13 @@ module.exports = {
     deleteUtkast: function(id) {
         restUtil.login();
         return restUtil.deleteUtkast(id);
+    },
+
+    // Ärenden
+
+    createArende: function(createJson) {
+        restUtil.login();
+        return restUtil.createArende(createJson);
     },
     deleteAllArenden: function() {
         restUtil.login();

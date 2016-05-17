@@ -35,7 +35,6 @@ import com.google.common.annotations.VisibleForTesting;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
@@ -62,7 +61,8 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.certificate
+     * se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.
+     * certificate
      * .model.Utlatande)
      */
     @Override
@@ -77,32 +77,10 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         SendType sendType = new SendType();
         sendType.setLakarutlatande(utlatandeType);
         sendType.setAdressVard(vardAdressType);
-        sendType.setVardReferensId(buildVardReferensId(Operation.SEND, utlatande.getId()));
+        sendType.setVardReferensId(buildVardReferensId(utlatande.getId()));
         sendType.setAvsantTidpunkt(LocalDateTime.now());
 
         return sendType;
-    }
-
-    @Override
-    public RevokeType buildRevokeTypeFromUtlatande(Utlatande utlatande, String revokeMessage) {
-
-        // Lakarutlatande
-        LakarutlatandeEnkelType utlatandeType = ModelConverter.toLakarutlatandeEnkelType(utlatande);
-
-        // Vardadress
-        VardAdresseringsType vardAdressType = ModelConverter.toVardAdresseringsType(utlatande.getGrundData());
-
-        RevokeType revokeType = new RevokeType();
-        revokeType.setLakarutlatande(utlatandeType);
-        revokeType.setAdressVard(vardAdressType);
-        revokeType.setVardReferensId(buildVardReferensId(Operation.REVOKE, utlatande.getId()));
-        revokeType.setAvsantTidpunkt(LocalDateTime.now());
-
-        if (revokeMessage != null) {
-            revokeType.setMeddelande(revokeMessage);
-        }
-
-        return revokeType;
     }
 
     public String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
@@ -117,13 +95,13 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return StringUtils.normalizeSpace(sb.toString());
     }
 
-    public String buildVardReferensId(Operation op, String intygId) {
-        return buildVardReferensId(op, intygId, LocalDateTime.now());
+    public String buildVardReferensId(String intygId) {
+        return buildVardReferensId(intygId, LocalDateTime.now());
     }
 
-    public String buildVardReferensId(Operation op, String intygId, LocalDateTime ts) {
+    public String buildVardReferensId(String intygId, LocalDateTime ts) {
         String time = ts.toString(ISODateTimeFormat.basicDateTime());
-        return StringUtils.join(new Object[]{op, intygId, time}, "-");
+        return StringUtils.join(new Object[] { "SEND", intygId, time }, "-");
     }
 
     /**
@@ -210,10 +188,4 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     public void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
         this.moduleRegistry = moduleRegistry;
     }
-
-    public enum Operation {
-        SEND,
-        REVOKE;
-    }
-
 }

@@ -17,11 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, protractor, logger, JSON*/
+/* globals pages, intyg, browser, protractor, logger, JSON*/
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var helpers = require('./helpers');
+
+function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
+    return expect(element(by.cssContainingText('.qa-block-handled', kontrollnr)).isPresent()).to.eventually.be.ok;
+}
+
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
         fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
@@ -89,13 +95,76 @@ module.exports = function() {
     });
 
     this.Given(/^jag ska kunna svara med textmeddelande/, function(callback) {
-
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
-        kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE).then(function() {
-            return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys('Banan').then(function() {
-                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE)();
+        var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
+
+        var svaraPaKomplettering = kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE)
+            .then(function() {
+                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar)
+                    .then(function() {
+                        return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+
+                    });
+            });
+
+
+        svaraPaKomplettering
+            .then(function() {
+                logger.info('Kontrollerar att fråga är märkt som hanterad..');
+                expect(kompletteringsFraga.element(by.css('.qa-block-handled')).getText()).to.eventually.contain(textSvar)
+                    .then(function(value) {
+                        logger.info('OK - textsvar = ' + value);
+                    }, function(reason) {
+                        callback('FEL - textsvar: ' + reason);
+                    }).then(callback);
 
             });
-        }).then(callback());
+    });
+
+
+    this.Given(/^jag svarar på frågan$/, function(callback) {
+        browser.refresh()
+            .then(function() {
+                return helpers.fetchMessageIds();
+            })
+            .then(function() {
+                return fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck);
+            })
+            .then(callback);
+    });
+
+    this.Given(/^kan jag se mitt svar under hanterade frågor$/, function(callback) {
+        kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck).notify(callback);
+    });
+
+    this.Given(/^jag fyller i en ny fråga till Försäkringskassan$/, function(callback) {
+        fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE).then(function() {
+            fkIntygPage.question.text.sendKeys('En fråga till FK, ').then(function() {
+                fkIntygPage.question.kontakt.sendKeys(protractor.Key.SPACE).then(callback);
+            });
+        });
+    });
+
+    this.Given(/^sedan klickar på skicka$/, function(callback) {
+        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function() {
+            helpers.fetchMessageIds().then(callback);
+        });
+    });
+
+    this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
+        fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
+    });
+
+    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function(callback) {
+        browser.refresh()
+            .then(function() {
+                return helpers.fetchMessageIds();
+            })
+            .then(function() {
+                return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+            })
+            .then(callback);
+
+
     });
 };

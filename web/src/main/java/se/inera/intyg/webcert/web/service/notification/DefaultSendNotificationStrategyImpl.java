@@ -47,13 +47,19 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
 
     private final List<String> blacklisted = Arrays.asList(CertificateTypes.TSBAS.toString(), CertificateTypes.TSDIABETES.toString());
 
-    private final Map<String, SchemaVersion> certificateVersionMap = ImmutableMap.of(CertificateTypes.FK7263.toString(), SchemaVersion.V1,
-            CertificateTypes.LUSE.toString(), SchemaVersion.V2, CertificateTypes.LISU.toString(), SchemaVersion.V2, CertificateTypes.LUAE_NA.toString(), SchemaVersion.V2);
+    private final Map<String, SchemaVersion> certificateVersionMap = ImmutableMap.of(
+            CertificateTypes.FK7263.toString(), SchemaVersion.V1,
+            CertificateTypes.LUSE.toString(), SchemaVersion.V2,
+            CertificateTypes.LISU.toString(), SchemaVersion.V2,
+            CertificateTypes.LUAE_NA.toString(), SchemaVersion.V2,
+            CertificateTypes.LUAE_FS.toString(), SchemaVersion.V2);
 
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy#decideNotificationForIntyg(se.inera.intyg.webcert.web.
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.SendNotificationStrategy#decideNotificationForIntyg(se.inera.
+     * intyg.webcert.web.
      * persistence.utkast.model.Utkast)
      */
     @Override

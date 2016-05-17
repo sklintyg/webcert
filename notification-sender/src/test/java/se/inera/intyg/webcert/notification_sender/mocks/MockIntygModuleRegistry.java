@@ -169,6 +169,16 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
                 return null;
             }
 
+            @Override
+            public void revokeCertificate(String xmlBody, String logicalAddress) throws ModuleException {
+            }
+
+            @Override
+            public String createRevokeRequest(Utlatande utlatande, se.inera.intyg.common.support.model.common.internal.HoSPersonal skapatAv,
+                    String meddelande) throws ModuleException {
+                return null;
+            }
+
         };
     }
 

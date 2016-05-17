@@ -115,7 +115,7 @@ public class FmbServiceImplTest {
         assertEquals(0, fmbCaptor.getValue().size());
         Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(beskrivning, findFmbType(FmbType.FALT4, fmbCaptor.getValue()).getText());
+        assertEquals(beskrivning, findFmbType(FmbType.FUNKTIONSNEDSATTNING, fmbCaptor.getValue()).getText());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class FmbServiceImplTest {
         assertEquals(0, fmbCaptor.getValue().size());
         Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(underlag, findFmbType(FmbType.FALT8B, fmbCaptor.getValue()).getText());
+        assertEquals(underlag, findFmbType(FmbType.BESLUTSUNDERLAG_TEXTUELLT, fmbCaptor.getValue()).getText());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class FmbServiceImplTest {
         assertEquals(fmbs, fmbCaptor.getValue());
         Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(beskrivning, findFmbType(FmbType.FALT4, fmbCaptor.getValue()).getText());
+        assertEquals(beskrivning, findFmbType(FmbType.FUNKTIONSNEDSATTNING, fmbCaptor.getValue()).getText());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class FmbServiceImplTest {
         assertEquals(fmbs, fmbCaptor.getValue());
         Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(underlag, findFmbType(FmbType.FALT8B, fmbCaptor.getValue()).getText());
+        assertEquals(underlag, findFmbType(FmbType.BESLUTSUNDERLAG_TEXTUELLT, fmbCaptor.getValue()).getText());
     }
 
     @Test
@@ -269,7 +269,7 @@ public class FmbServiceImplTest {
     }
 
     private Fmb createFmbDi(String icd10, String text, String lastUpdate) {
-        return new Fmb(icd10, FmbType.FALT4, FmbCallType.DIAGNOSINFORMATION, text, lastUpdate);
+        return new Fmb(icd10, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, text, lastUpdate);
     }
 
     private Fmb createFmbFmb(String icd10, String text) {
@@ -277,7 +277,7 @@ public class FmbServiceImplTest {
     }
 
     private Fmb createFmbFmb(String icd10, String text, String lastUpdate) {
-        return new Fmb(icd10, FmbType.FALT4, FmbCallType.FMB, text, lastUpdate);
+        return new Fmb(icd10, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.FMB, text, lastUpdate);
     }
 
     private BeslutsunderlagType createBeslutsunderlag(String underlag, String... icd10Codes) {

@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata*/
+/*global testdata,intyg,logger,pages*/
 'use strict';
+var fkIntygPage = pages.intyg.fk['7263'].intyg;
 
 module.exports = {
     generateIntygByType: function(typ, id) {
@@ -33,5 +34,33 @@ module.exports = {
         } else if (typ === 'Läkarintyg för sjukpenning utökat') {
             return testdata.fk.LISU.getRandom(id);
         }
+    },
+    fetchMessageIds: function() {
+        console.log('Hämtar meddelande-id:n');
+
+        if (!intyg.messages) {
+            intyg.messages = [];
+        }
+
+        var messageIdAttributes = fkIntygPage.qaPanels.map(function(elm) {
+            return elm.getAttribute('id');
+        });
+
+        return messageIdAttributes.then(function(attr) {
+            for (var i = 0; i < attr.length; i++) {
+                var messageId = attr[i].split('-')[1];
+
+                logger.info('Meddelande-id som finns på intyget: ' + messageId);
+                intyg.messages.push({
+                    id: messageId
+                });
+            }
+        });
+    },
+    stripTrailingSlash: function(str) {
+        if (str.substr(-1) === '/') {
+            return str.substr(0, str.length - 1);
+        }
+        return str;
     }
 };

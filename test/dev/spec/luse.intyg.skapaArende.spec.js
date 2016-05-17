@@ -20,11 +20,10 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals browser,JSON,protractor,beforeAll,afterAll*/
+/*globals browser,beforeAll,afterAll*/
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
@@ -43,7 +42,7 @@ describe('Skapa ärende luse intyg', function() {
             'revoked':false,
             'relations':[{'intygsId':intygId,'status':'INTYG'}]
         };
-        restTestdataHelper.createWebcertIntyg(intygId, testData);
+        restTestdataHelper.createWebcertIntyg(testData);
     });
 
     afterAll(function() {
@@ -66,7 +65,7 @@ describe('Skapa ärende luse intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
                 expect(LuseIntygPage.skicka.statusSendInprogress.isDisplayed()).toBeTruthy();
-                expect(LuseIntygPage.newArendeBtn.isPresent).toBeTruthy();
+                expect(LuseIntygPage.newArendeBtn.isPresent()).toBeTruthy();
             });
         });
     });

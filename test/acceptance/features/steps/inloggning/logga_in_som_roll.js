@@ -81,6 +81,18 @@ module.exports = function() {
         logInAsUserRole(userObj, 'Läkare', 'DJUPINTEGRATION', 'LAKARE').and.notify(callback);
     });
 
+    this.Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"$/, function(enhetHsa, callback) {
+        var userObj = {
+            fornamn: 'Åsa',
+            efternamn: 'Svensson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: enhetHsa,
+            lakare: true,
+            forskrivarKod: '2481632'
+        };
+        logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);
+    });
+
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
         var userObj = {
             fornamn: 'Åsa',

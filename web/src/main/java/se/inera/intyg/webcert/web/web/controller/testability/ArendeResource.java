@@ -108,14 +108,6 @@ public class ArendeResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestion(@PathParam("id") Long id) {
-        arendeRepository.delete(id);
-        return Response.ok().build();
-    }
-
-    @DELETE
-    @Path("/meddelandeId/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuestion(@PathParam("id") String meddelandeId) {
         Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
         arendeRepository.delete(arende);
