@@ -86,13 +86,15 @@ module.exports = {
      * @returns {*|exports}
      */
 
-    get: function(intygType, intygId, meddelandeId, amne, status) {
+    get: function(meddelande, intygType, intygId, meddelandeId, amne, status, komplettering) {
         var arende = Object.assign({}, templateArende); // Create clone so not all callers use the same instance
         arende.intygTyp = intygType;
         arende.intygsId = intygId;
         arende.meddelandeId = meddelandeId;
+        arende.meddelande = meddelande;
         arende.amne = amne;
         arende.status = status;
+        arende.komplettering = komplettering;
         return arende;
     }
 };
