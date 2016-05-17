@@ -136,7 +136,7 @@ public class ArendeServiceImpl implements ArendeService {
     public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) throws WebCertServiceException {
         if (!VALID_VARD_AMNEN.contains(amne)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
-                  + " for new question from vard!");
+                    + " for new question from vard!");
         }
         Utkast utkast = utkastRepository.findOne(intygId);
         validateArende(intygId, utkast);
@@ -466,7 +466,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         updateRelated(arende, arende.getStatus(), arende.getSenasteHandelse());
 
-        SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(), sendMessageToFKLogicalAddress);
+        SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
+                sendMessageToFKLogicalAddress);
 
         // Send to recipient
         try {
@@ -602,17 +603,26 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setVardaktorName(webcertUserService.getUser().getNamn());
     }
 
+    // If we already have the signer's name in the information in the certificate we use this. This information could be
+    // either in skapadAv or senastSparadAv. If neither of those matches the signer of the certificate we ask HSA.
     private String getSignedByName(Utkast utkast) {
-        return Optional.ofNullable(hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null))
-                .map(GetEmployeeIncludingProtectedPersonResponseType::getPersonInformation)
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                        "HSA did not respond with information"))
-                .stream()
-                .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
-                .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
-                        ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                        : pit.getMiddleAndSurName())
-                .findFirst().orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+        if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSkapadAv().getNamn();
+        } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSenastSparadAv().getNamn();
+        } else {
+            return Optional.ofNullable(hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null))
+                    .map(GetEmployeeIncludingProtectedPersonResponseType::getPersonInformation)
+                    .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                            "HSA did not respond with information"))
+                    .stream()
+                    .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
+                    .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
+                            ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                            : pit.getMiddleAndSurName())
+                    .findFirst()
+                    .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+        }
     }
 
     public static class ArendeConversationViewTimeStampComparator implements Comparator<ArendeConversationView> {
