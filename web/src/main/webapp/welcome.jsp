@@ -562,9 +562,9 @@
                 <div class="form-group col-xs-4">
                     <div>
                         <h4>Miljö</h4>
-                        <span class="envButtons"><input type="radio" ng-model="environment.name" value="all" />All</span>
-                        <span class="envButtons"><input type="radio" ng-model="environment.name" value="dev" />Dev</span>
-                        <span class="envButtons"><input type="radio" ng-model="environment.name" value="demo" />Demo</span>
+                        <span class="envButtons"><label for="all"><input id="all" name="all" type="radio" ng-model="environment.name" value="all" /> All</label></span>
+                        <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio" ng-model="environment.name" value="dev" /> Dev</label></span>
+                        <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio" ng-model="environment.name" value="demo" /> Demo</label></span>
                     </div>
                     <div style="padding-top: 0.6em;">
                         <h4>Inloggningsprofil</h4>
