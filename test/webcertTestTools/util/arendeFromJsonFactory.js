@@ -31,40 +31,34 @@ module.exports = {
     /**
      * Example:
      {
-         "timestamp":"2016-03-31T14:42:27.849",
-         "meddelandeId":"1",
-         "intygsId":"98b80d53-d873-40bb-827f-132cfe079cb2",
-         "sistaDatumForSvar":"2016-04-04",
-         "intygTyp":"luse",
-         "status":"PENDING_INTERNAL_ACTION",
-         "vidarebefordrad":false,
-         "patientPersonId":"191212121212",
-         "amne":"KOMPLT",
-         "rubrik":"rubrik",
-         "skickatAv":"fk",
-         "kontaktInfo":[
-            "Namn",
-            "Telefon",
-            "Adress",
-            "Tex"
+         "timestamp": "2016-05-01T12:02:27.200",
+         "meddelandeId": "1",
+         "referensId": "fkid",
+         "skickatTidpunkt": "2016-03-31T14:42:27.849",
+         "intygsId": "-",
+         "patientPersonId": "191212121212",
+         "amne": "KOMPLT",
+         "rubrik": "rubrik",
+         "skickatAv": "fk",
+         "meddelande": "Här kommer ett meddeleande från era vänner på Försäkringskassan.",
+         "sistaDatumForSvar": "2016-04-04",
+         "intygTyp": "luse",
+         "status": "PENDING_INTERNAL_ACTION",
+         "vidarebefordrad": false,
+         "signeratAv": "TSTNMT2321000156-103F",
+         "signeratAvName": "Leonie Koehl",
+         "enhet": "TSTNMT2321000156-1039",
+         "senasteHandelse": "",
+         "vardaktorName": "",
+         "kontaktInfo": [
+             "test",
+             "adress",
+             "telefon"
          ],
-         "komplettering":[
-             {
-                 "frageId":"1",
-                 "instans":1,
-                 "text":"arende1"
-             },
-             {
-                 "frageId":"2",
-                 "instans":1,
-                 "text":"arende1"
-             },
-             {
-                 "frageId":"4",
-                 "instans":3,
-                 "text":"arende1"
-             }
-         ]
+        "paminnelseMeddelandeId": "",
+        "svarPaId": "",
+        "svarPaReferens": "",
+        "komplettering": "",
      }
 
      Ämnen:
