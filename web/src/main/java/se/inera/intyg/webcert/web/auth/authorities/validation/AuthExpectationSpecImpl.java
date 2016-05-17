@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import se.inera.intyg.webcert.web.auth.authorities.*;
+import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -38,7 +39,7 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
     /*
      * Instance context state
      */
-    private WebCertUser user;
+    private UserDetails user;
     private Optional<String> intygsTypeContext;
 
     /*
@@ -58,7 +59,7 @@ public class AuthExpectationSpecImpl implements AuthExpectationSpecification {
 
     private List<String> errors = new ArrayList<String>();
 
-    public AuthExpectationSpecImpl(WebCertUser user, Optional<String> intygstyp) {
+    public AuthExpectationSpecImpl(UserDetails user, Optional<String> intygstyp) {
         this.user = user;
         this.intygsTypeContext = intygstyp;
     }
