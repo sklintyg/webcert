@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.auth.authorities.validation;
 
 import java.util.Optional;
 
+import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -46,7 +47,7 @@ public final class AuthoritiesValidator {
      * @param intygstyp
      * @return
      */
-    public AuthExpectationSpecification given(WebCertUser user, String intygstyp) {
+    public AuthExpectationSpecification given(UserDetails user, String intygstyp) {
         return new AuthExpectationSpecImpl(user, Optional.of(intygstyp));
     }
 
@@ -56,7 +57,7 @@ public final class AuthoritiesValidator {
      * @param user
      * @return
      */
-    public AuthExpectationSpecification given(WebCertUser user) {
+    public AuthExpectationSpecification given(UserDetails user) {
         return new AuthExpectationSpecImpl(user, Optional.empty());
     }
 

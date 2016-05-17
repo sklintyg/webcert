@@ -23,26 +23,24 @@ import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.R
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.util.Assert;
+import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.web.auth.authorities.Privilege;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
+import se.inera.intyg.webcert.web.model.UserDetails;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.util.Assert;
-
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.model.UserDetails;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * @author andreaskaltenbach
@@ -147,14 +145,6 @@ public class WebCertUser implements UserDetails {
         this.authenticationScheme = authenticationScheme;
     }
 
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
     /**
      * Returns the privileges granted to the user. Cannot return <code>null</code>.
      *
@@ -171,6 +161,16 @@ public class WebCertUser implements UserDetails {
     @Override
     public void setAuthorities(Map<String, Privilege> authorities) {
         this.authorities = authorities;
+    }
+
+    @Override
+    public String getOrigin() {
+        return origin;
+    }
+
+    @Override
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     public String getForskrivarkod() {
