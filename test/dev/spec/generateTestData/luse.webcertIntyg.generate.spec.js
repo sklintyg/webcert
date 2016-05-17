@@ -24,7 +24,7 @@ var arendeFromJsonFactory = wcTestTools.arendeFromJsonFactory;
 var specHelper = wcTestTools.helpers.spec;
 var intygGenerator = wcTestTools.intygGenerator;
 
-fdescribe('webcert intyg', function() {
+describe('webcert intyg', function() {
 
     // direct link while intyg doesn't show up in the list: http://localhost:9089/web/dashboard#/intyg/luse/luse-arende-test
     var intygId = 'luse-arende-test';
@@ -82,7 +82,7 @@ fdescribe('webcert intyg', function() {
     });
 
     // xit this test to keep testdata for manual testing
-    xit('clean up intyg and arende', function() {
+    it('clean up intyg and arende', function() {
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteAllArenden();
     });
