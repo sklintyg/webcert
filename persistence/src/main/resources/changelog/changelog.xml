@@ -784,4 +784,15 @@
       <column name="VARDAKTOR_NAME" type="varchar(255)" />
     </addColumn>
   </changeSet>
+
+  <changeSet id="36" author="mc">
+    <comment>Update to new FMB TYP constants names</comment>
+    <sql>
+      UPDATE FMB SET TYP='SYMPTOM_PROGNOS_BEHANDLING' WHERE TYP='FALT2_SPB';
+      UPDATE FMB SET TYP='GENERELL_INFO' WHERE TYP='FALT2_GENERAL';
+      UPDATE FMB SET TYP='FUNKTIONSNEDSATTNING' WHERE TYP='FALT4';
+      UPDATE FMB SET TYP='AKTIVITETSBEGRANSNING' WHERE TYP='FALT5';
+      UPDATE FMB SET TYP='BESLUTSUNDERLAG_TEXTUELLT' WHERE TYP='FALT8B';
+    </sql>
+  </changeSet>
 </databaseChangeLog>
