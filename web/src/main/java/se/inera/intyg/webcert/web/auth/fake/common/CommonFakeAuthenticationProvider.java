@@ -27,11 +27,11 @@ import org.opensaml.saml2.core.impl.AttributeStatementBuilder;
 import org.opensaml.saml2.core.impl.NameIDBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-import se.inera.intyg.common.security.siths.CommonSakerhetstjanstAssertion;
+import se.inera.intyg.common.security.common.model.IntygUser;
+import se.inera.intyg.common.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
@@ -54,12 +54,22 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
 
         SAMLCredential credential = createSamlCredential(token);
         Object details = userDetails.loadUserBySAML(credential);
+        addAbsentAttributesFromFakeCredentials(token, details);
 
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
-                new ArrayList<GrantedAuthority>());
+                new ArrayList<>());
         result.setDetails(details);
 
         return result;
+    }
+
+    private void addAbsentAttributesFromFakeCredentials(FakeAuthenticationToken token, Object details) {
+        if (details instanceof IntygUser) {
+            IntygUser user = (IntygUser) details;
+            if (user.getNamn() == null || user.getNamn().isEmpty()) {
+                user.setNamn(((FakeCredentials) token.getCredentials()).getFornamn() + " " +  ((FakeCredentials) token.getCredentials()).getEfternamn());
+            }
+        }
     }
 
     @Override
@@ -81,7 +91,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);
 
-        addAttribute(attributeStatement, CommonSakerhetstjanstAssertion.HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId());
+        addAttribute(attributeStatement, BaseSakerhetstjanstAssertion.HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId());
 
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());

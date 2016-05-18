@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.common.security.common.model.IntygUser;
 import se.inera.intyg.common.security.common.model.Privilege;
 import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.common.security.common.service.Feature;
@@ -57,7 +56,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public WebCertUser getUser() {
-        return new WebCertUser( (IntygUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     @Override

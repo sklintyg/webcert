@@ -62,7 +62,7 @@
   <bean id="unifiedUserDetailsService" class="se.inera.intyg.webcert.web.auth.common.UnifiedUserDetailsService" />
 
   <!-- These two should only be accessed directly by fake login authentication providers -->
-  <bean id="userDetailsService" class="se.inera.intyg.common.security.siths.CommonUserDetailsService"/>
+  <bean id="webcertUserDetailsService" class="se.inera.intyg.webcert.web.auth.WebcertUserDetailsService"/>
   <bean id="elegWebCertUserDetailsService" class="se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService"/>
   <bean id="elegAuthenticationAttributeHelper" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationAttributeHelperImpl" />
   <bean id="elegAuthenticationMethodResolver" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolverImpl" />
@@ -126,7 +126,6 @@
     <!-- For non-production, allow unsecured access to swagger paths for REST doc purposes -->
     <security:http security="none" pattern="/services/swagger/**"/>
     <security:http security="none" pattern="/swagger-ui/**"/>
-
   </beans>
 
   <!-- =============================================================== -->
@@ -249,7 +248,7 @@
     -->
     <bean id="commonFakeAuthenticationProvider"
         class="se.inera.intyg.webcert.web.auth.fake.common.CommonFakeAuthenticationProvider">
-      <property name="userDetails" ref="userDetailsService"/>
+      <property name="userDetails" ref="webcertUserDetailsService"/>
     </bean>
     <bean id="fakeElegAuthenticationProvider"
         class="se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationProvider">
@@ -447,12 +446,6 @@
       <property name="hostedSPName" value="${sakerhetstjanst.saml.entityId}" />
 
     </bean>
-
-    <!-- TODO Determine if these are necessary in Webcert 4.0 since we aren't fetching metadata over http(s)
-    FUNGERAR BRA med NetID (privatläkare) och BankID (privatläkare). Behöver testas med Siths också
-    <bean id="httpClientFactory" class="se.inera.intyg.webcert.web.auth.HttpClientFactory"/>
-    <bean id="httpClient" factory-bean="httpClientFactory" factory-method="createInstance"/>
-     -->
 
     <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg -->
     <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">

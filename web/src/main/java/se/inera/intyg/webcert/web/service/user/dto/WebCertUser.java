@@ -29,17 +29,15 @@ public class WebCertUser extends IntygUser implements UserDetails {
 
     private static final long serialVersionUID = -2624303818412468774L;
 
-
-
     public WebCertUser() {
-
+        super("only-for-test-use");
     }
 
     /** The copy-constructor. */
     public WebCertUser(IntygUser intygUser) {
+        super(intygUser.getHsaId());
         this.privatLakareAvtalGodkand = intygUser.isPrivatLakareAvtalGodkand();
         this.personId = intygUser.getPersonId();
-        this.hsaId = intygUser.getHsaId();
         this.namn = intygUser.getNamn();
         this.titel = intygUser.getTitel();
         this.forskrivarkod = intygUser.getForskrivarkod();

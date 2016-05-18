@@ -24,7 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.security.siths.CommonUserDetailsService;
+import se.inera.intyg.common.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
@@ -49,8 +49,8 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
 
     /** User details service for SITHS authenticated personnel. */
     @Autowired
-    //@Qualifier("commonUserDetailsService")
-    private CommonUserDetailsService commonUserDetailsService;
+    //@Qualifier("baseUserDetailsService")
+    private BaseUserDetailsService baseUserDetailsService;
 
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
@@ -70,7 +70,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
             case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
                 return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
             case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
-                return commonUserDetailsService.loadUserBySAML(samlCredential);
+                return baseUserDetailsService.loadUserBySAML(samlCredential);
             default:
                 throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
                         + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
