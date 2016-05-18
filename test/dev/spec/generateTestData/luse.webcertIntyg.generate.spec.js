@@ -41,8 +41,8 @@ describe('webcert intyg', function() {
         var intygData = {
             'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
             'utkastStatus':'SIGNED',
-            'revoked':false,
-            'relations':[{'intygsId':intygId,'status':'INTYG'}]
+            'revoked':false/*,
+            'relations':[{'intygsId':intygId,'status':'INTYG'}]*/ // Crashed svara med nytt intyg. Fix is checked in by Mikaela but not tested.
         };
         restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
 
@@ -77,8 +77,6 @@ describe('webcert intyg', function() {
                     'text':'Här har du ett annat fel.'
                 }
             ]);
-            //createArende('OVRIGT', 'CLOSED');
-            //createArende('PAMINN', 'PENDING_INTERNAL_ACTION');
         });
     });
 
