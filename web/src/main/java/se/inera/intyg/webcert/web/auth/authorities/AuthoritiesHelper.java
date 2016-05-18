@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.web.auth.authorities;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-
 import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.model.UserDetails;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Magnus Ekstrand on 2016-05-13.
@@ -56,57 +56,14 @@ public class AuthoritiesHelper {
     public Set<String> getIntygstyperForPrivilege(UserDetails user, String privilegeName) {
         Assert.notNull(privilegeName);
 
-        // If user doesn't have a privilege, return an empty set
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        if (!authoritiesValidator.given(user).privilege(privilegeName).isVerified()) {
-            return Collections.emptySet();
-        }
+        List<String> knownIntygstyper = authoritiesResolver.getIntygstyper();
 
-        List<String> intygsTyper = new ArrayList<>();
-        List<RequestOrigin> requestOrigins = new ArrayList<>();
+        List<String> filteredList = knownIntygstyper.stream()
+                                        .filter(typ -> authoritiesValidator.given(user, typ).privilege(privilegeName).isVerified())
+                                        .collect(Collectors.toList());
 
-        // User is granted privilege access, get the privilege's intygstyper
-        Privilege privilege = user.getAuthorities().get(privilegeName);
-
-        // Return intygstyper configured for this privilege
-        intygsTyper.addAll(privilege.getIntygstyper());
-
-        // Get privilege's requestOrigins
-        requestOrigins.addAll(privilege.getRequestOrigins());
-
-        // If the privilege doesn't have any
-        // restrictions, return all known intygstyper
-        if (!(hasElements(intygsTyper) || hasElements(requestOrigins))) {
-            return toSet(authoritiesResolver.getIntygstyper());
-        }
-
-        // If the privilege doesn't have any requestOrigin
-        // restrictions, return all the privilege's intygstyper
-        if (!hasElements(requestOrigins)) {
-            return toSet(intygsTyper);
-        }
-
-        // Get user's origin
-        String origin = user.getOrigin();
-
-        // If user's origin can be found within one of the privilege's
-        // requestOrigins, include these in the return statement.
-        if (requestOrigins.stream().anyMatch(o -> o.getName().equalsIgnoreCase(origin))) {
-            RequestOrigin ro = requestOrigins.stream().filter(o -> o.getName().equalsIgnoreCase(origin)).findFirst().get();
-            intygsTyper.addAll(ro.getIntygstyper());
-        }
-
-        // User's origin wasn't within the privilege's
-        // requestOrigins, return empty set of intygstyper.
-        return toSet(intygsTyper);
-    }
-
-    private <T> boolean hasElements(List<T> list) {
-        if (list == null || list.isEmpty()) {
-            return false;
-        }
-
-        return true;
+        return toSet(filteredList);
     }
 
     private Set<String> toSet(List<String> intygsTyper) {
