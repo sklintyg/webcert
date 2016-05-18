@@ -88,6 +88,7 @@
       <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
     </bean>
     <bean id="authoritiesResolver" class="se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver" />
+    <bean id="authoritiesHelper" class="se.inera.intyg.webcert.web.auth.authorities.AuthoritiesHelper" />
 
   </beans>
   

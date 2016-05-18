@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 /**
  * Created by Magnus Ekstrand on 20/11/15.
  */
-@Service
 public class AuthoritiesResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthoritiesResolver.class);
