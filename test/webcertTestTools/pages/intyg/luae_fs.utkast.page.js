@@ -46,10 +46,11 @@ var LuaefsUtkast = FkBaseUtkast._extend({
             underlagRow: function(index) {
                 index = index + 1; //skip header-row
                 var row = element.all(by.css('tr.underlagRow')).get(index);
+                var rowTds = row.all(by.css('td'));
                 return {
                     underlag: row.element(by.css('[name="andraUnderlag"]')),
-                    datum: row.element(by.css('[name="-Date"]')),
-                    information: row.element(by.css('.input-full'))
+                    datum: rowTds.get(1).element(by.css('input')),
+                    information: rowTds.get(2).element(by.css('input'))
                 };
 
             },

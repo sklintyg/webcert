@@ -31,6 +31,7 @@ describe('Create and Sign luae_fs utkast', function() {
     var utkastId = null;
 
     beforeAll(function() {
+        browser.ignoreSynchronization = false;
         specHelper.login();
         specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
     });
@@ -50,6 +51,8 @@ describe('Create and Sign luae_fs utkast', function() {
             describe('Fyll i luae_fs intyg', function() {
 
                 it('tomt utkast skall visa lista med fel efter klick på "Visa vad som saknas"', function() {
+
+                    UtkastPage.disableAutosave();
 
                     UtkastPage.showMissingInfoButtonClick();
 
@@ -108,7 +111,6 @@ describe('Create and Sign luae_fs utkast', function() {
                 });
 
                 it('Ange diagnoser', function() {
-                    browser.ignoreSynchronization = false;
                     var diagnosObj = {
                         diagnoser: [{
                             'kod': 'J21'
@@ -124,7 +126,6 @@ describe('Create and Sign luae_fs utkast', function() {
 
                     UtkastPage.taBortDiagnos(1);
                     expect(UtkastPage.getNumberOfDiagnosRows()).toBe(2);
-                    browser.ignoreSynchronization = true;
                 });
 
                 it('Ange funktionsnedsättningar', function() {
@@ -146,14 +147,11 @@ describe('Create and Sign luae_fs utkast', function() {
 
                 it('Ange tilläggsfrågor', function() {
                     UtkastPage.tillaggsfragor0svar.sendKeys('Vad för slags fråga är det där?!?!?');
+                    UtkastPage.enableAutosave();
                     UtkastPage.tillaggsfragor1svar.sendKeys('Likheten på en struts? Båda benen är lika långa, särskilt det vänstra.');
                 });
 
                 it('Signera intyget', function() {
-
-                    // reset
-                    browser.ignoreSynchronization = false;
-
                     UtkastPage.whenSigneraButtonIsEnabled().then(function() {
                         UtkastPage.signeraButtonClick();
                         expect(IntygPage.isAt()).toBeTruthy();
