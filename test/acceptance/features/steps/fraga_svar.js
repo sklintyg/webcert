@@ -17,11 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, browser, protractor, logger, JSON*/
+/* globals pages, intyg, browser, protractor, logger, JSON, wcTestTools*/
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var helpers = require('./helpers');
+var soap = require('soap');
+var soapMessageBodies = require('./soap');
+var testdataHelper = wcTestTools.helpers.testdata;
 var helpers = require('./helpers');
 
 function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
@@ -167,4 +171,62 @@ module.exports = function() {
 
 
     });
+
+    this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
+        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+        url = url.replace('https', 'http');
+
+        // global.person.id = '19121212-1212';
+
+        //Kontrollnr for tester. Anvand i bade fraga och svar
+        global.intyg.guidcheck = testdataHelper.generateTestGuid();
+
+        var body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
+            global.person.id,
+            global.user,
+            'Enhetsnamn',
+            global.intyg.id,
+            amne,
+            'nytt meddelande: ' + global.intyg.guidcheck);
+        soap.createClient(url, function(err, client) {
+            if (err) {
+                callback(err);
+            }
+
+            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                // logger.debug(body);
+                // logger.debug(result);
+                callback(err);
+            });
+        });
+    });
+
+    this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
+
+        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
+        url = url.replace('https', 'http');
+
+        soap.createClient(url, function(err, client) {
+
+            if (err) {
+                callback(err);
+            } else {
+                var body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
+                    global.person.id,
+                    global.user.hsaId,
+                    global.user.fornamn + '' + global.user.efternamn,
+                    global.user.enhetId,
+                    'WebCert Enhet 1',
+                    'Enhetsnamn',
+                    intyg.fragaId
+                );
+                console.log(body);
+                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+                    callback(err);
+                });
+            }
+
+        });
+    });
+
 };

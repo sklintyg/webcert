@@ -11,13 +11,13 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
 Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
 
-   När jag fyller i fältet "Min undersökning av patienten"
+   När jag ändrar i fältet diagnoskod
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "1"
 
-   Och jag fyller i fältet "ICD-10"
+   När jag ändrar i fältet arbetsförmåga
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "2"
 
-   Och jag fyller i fältet "Arbetsförmåga"
+   När jag ändrar i fältet sjukskrivningsperiod
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "3"
 
    Och jag fyller i resten av de nödvändiga fälten.

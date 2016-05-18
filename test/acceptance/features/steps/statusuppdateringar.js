@@ -17,39 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global wcTestTools, pages, protractor, intyg, logger, ursprungligtIntyg */
+/* global pages, protractor, logger, ursprungligtIntyg */
 
 'use strict';
-var soap = require('soap');
-var soapMessageBodies = require('./soap');
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./dbActions');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
-var testdataHelper = wcTestTools.helpers.testdata;
-var helpers = require('./helpers');
 
-function assertDraftWithStatus(personId, intygsId, status, cb) {
-    setTimeout(function() {
-        var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-            databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
-            databaseTable + '.STATUS="' + status + '" AND ' +
-            databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
+// function assertDraftWithStatus(personId, intygsId, status, cb) {
+//     setTimeout(function() {
+//         var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+//         var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+//             databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
+//             databaseTable + '.STATUS="' + status + '" AND ' +
+//             databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
 
-        assertNumberOfEvents(query, 1, cb);
-    }, 5000);
-}
+//         assertNumberOfEvents(query, 1, cb);
+//     }, 6000);
+// }
 
-function assertDatabaseContents(intygsId, column, value, cb) {
-    setTimeout(function() {
-        var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-            databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +
-            databaseTable + '.' + column + '="' + value + '";';
+// function assertDatabaseContents(intygsId, column, value, cb) {
+//     setTimeout(function() {
+//         var databaseTable = process.env.DATABASE_NAME + '.INTYG';
+//         var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+//             databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +
+//             databaseTable + '.' + column + '="' + value + '";';
 
-        assertNumberOfEvents(query, 1, cb);
-    }, 5000);
-}
+//         assertNumberOfEvents(query, 1, cb);
+//     }, 6000);
+// }
 
 function assertEvents(intygsId, event, numEvents, cb) {
     setTimeout(function() {
@@ -86,31 +82,6 @@ module.exports = function() {
         expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
-    this.Given(/^jag fyller i fältet "([^"]*)"$/, function(arg1, callback) {
-
-        if (arg1 === 'Min undersökning av patienten') {
-            fk7263Utkast.minUndersokning.sendKeys(protractor.Key.SPACE)
-                .then(function() {
-                    fk7263Utkast.diagnosKod.sendKeys('A00').then(callback);
-                });
-        } else if (arg1 === 'Arbetsförmåga') {
-            fk7263Utkast.faktiskTjanstgoring.sendKeys('40')
-                .then(function() {
-                    fk7263Utkast.nedsattMed25Checkbox.sendKeys(protractor.Key.SPACE).then(callback);
-                });
-        } else {
-            callback();
-        }
-    });
-
-    this.Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function(callback) {
-        fk7263Utkast.funktionsNedsattning.sendKeys('Halt och lytt').then(function() {
-            fk7263Utkast.aktivitetsBegransning.sendKeys('Orkar inget').then(function() {
-                fk7263Utkast.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
-            });
-        });
-    });
-
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(arg1, arg2, callback) {
         assertEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
     });
@@ -119,74 +90,17 @@ module.exports = function() {
         assertEvents(ursprungligtIntyg.id, handelse, parseInt(antal, 10), callback);
     });
 
-    this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {
-        assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
-    });
+    // this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {
+    //     assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
+    // });
 
-    this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function(arg1, arg2, callback) {
-        assertDatabaseContents(global.intyg.id, arg1, arg2, callback);
-    });
+    // this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function(arg1, arg2, callback) {
+    //     assertDatabaseContents(global.intyg.id, arg1, arg2, callback);
+    // });
 
     this.Given(/^jag raderar intyget$/, function(callback) {
         fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
             fk7263Utkast.radera.bekrafta.sendKeys(protractor.Key.SPACE).then(callback);
-        });
-    });
-
-    this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-        url = url.replace('https', 'http');
-
-        // global.person.id = '19121212-1212';
-
-        //Kontrollnr for tester. Anvand i bade fraga och svar
-        global.intyg.guidcheck = testdataHelper.generateTestGuid();
-
-        var body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-            global.person.id,
-            global.user,
-            'Enhetsnamn',
-            global.intyg.id,
-            amne,
-            'nytt meddelande: ' + global.intyg.guidcheck);
-        soap.createClient(url, function(err, client) {
-            if (err) {
-                callback(err);
-            }
-
-            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                // logger.debug(body);
-                // logger.debug(result);
-                callback(err);
-            });
-        });
-    });
-
-    this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
-
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
-        url = url.replace('https', 'http');
-
-        soap.createClient(url, function(err, client) {
-
-            if (err) {
-                callback(err);
-            } else {
-                var body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
-                    global.person.id,
-                    global.user.hsaId,
-                    global.user.fornamn + '' + global.user.efternamn,
-                    global.user.enhetId,
-                    'WebCert Enhet 1',
-                    'Enhetsnamn',
-                    intyg.fragaId
-                );
-                console.log(body);
-                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
-                    callback(err);
-                });
-            }
-
         });
     });
 };
