@@ -19,13 +19,19 @@
 
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import se.inera.intyg.webcert.web.auth.authorities.*;
+import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.web.auth.authorities.Privilege;
+import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
+import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.model.UserDetails;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by marced on 18/12/15.
