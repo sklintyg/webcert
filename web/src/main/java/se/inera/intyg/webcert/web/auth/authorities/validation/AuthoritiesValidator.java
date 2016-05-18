@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.auth.authorities.validation;
 import java.util.Optional;
 
 import se.inera.intyg.webcert.web.model.UserDetails;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Utility class that makes it easy to express and enforce authority constraint rules in backend code.
