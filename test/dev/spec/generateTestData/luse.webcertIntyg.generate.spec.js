@@ -41,8 +41,8 @@ describe('webcert intyg', function() {
         var intygData = {
             'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
             'utkastStatus':'SIGNED',
-            'revoked':false/*,
-            'relations':[{'intygsId':intygId,'status':'INTYG'}]*/ // Crashed svara med nytt intyg. Fix is checked in by Mikaela but not tested.
+            'revoked':false,
+            'relations':[{'intygsId':intygId,'status':'INTYG'}]
         };
         restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
 
