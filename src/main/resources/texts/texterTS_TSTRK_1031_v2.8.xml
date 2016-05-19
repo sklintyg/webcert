@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texter typ="ts-diabetes" giltigFrom="2016-04-01" version="2.8" pdf="pdf/TSTRK1031-V02U08.pdf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!--
+	===============================================
+	KATEGORI: Intyg avser
+	===============================================
+	-->
+	<text id="KAT_99.RBK">Intyg avser</text>
+
+	<!--
+	===============================================
+	KATEGORI: Identitet styrkt genom
+	===============================================
+	-->
+	<text id="KAT_100.RBK">Identitet styrkt genom</text>
+
+	<!--
+	===============================================
+	KATEGORI 1: Synfuntioner
+	===============================================
+	-->
+	<text id="KAT_1.RBK">Synfunktioner</text>
+
+	<text id="FRG_3.RBK">Tecken på synfältsdefekter vid undesökning enligt Donders konfrontationsmetod?</text>
+	<text id="FRG_4.RBK">Framkommer anamnestiska uppgifter om begränsning av seendet vid nedsatt belysning?</text>
+	<text id="FRG_5.RBK">Har patienten någon progressiv ögonsjukdom?</text>
+	<text id="FRG_6.RBK">Framkommer dubbelseende vid prövning av ögats rörlighet (prövningen ska göras i de åtta huvudmeridianerna)?</text>
+	<text id="FRG_7.RBK">Förekommer nystagmus?</text>
+	<text id="FRG_8.RBK">Värden för synskärpa</text>
+
+
+	<!--
+	===============================================
+	KATEGORI 2: Hörsel- och balanssinne
+	===============================================
+	-->
+	<text id="KAT_2.RBK">Hörsel och balanssinne</text>
+
+	<text id="FRG_10.RBK">a) Har patienten överraskande anfall av balansrubbningar eller yrsel?</text>
+	<text id="FRG_11.RBK">b) Har patienten svårt att uppfatta vanlig samtalsstämma på fyra meters avstånd (hörapparat får användas)?</text>
+	<!--
+	===============================================
+	KATEGORI 3: Rörelseorganens funktioner
+	===============================================
+	-->
+	<text id="KAT_3.RBK">Rörelseorganens funktioner</text>
+
+	<text id="FRG_12.RBK">a) Har patienten någon sjukdom eller funktionsnedsättning som påverkar rörligheten och som medför att fordon inte kan köras på ett trafiksäkert sätt?</text>
+	<text id="DFR_12.2">Ange vilken typ av nedsättning eller sjukdom:</text>
+	<text id="FRG_13.RBK">b) Är rörelseförmågan otillräcklig för att kunna hjälpa passagerare in och ut ur fordonet samt med bilbälte?</text>
+
+	<!--
+	===============================================
+	KATEGORI 4: Hjärt- och kärlsjukdomar
+	===============================================
+	-->
+	<text id="KAT_4.RBK">Hjärt- och kärlsjukdomar</text>
+
+	<text id="FRG_14.RBK">a) Föreligger hjärt- eller kärlsjukdom som kan medföra en påtaglig risk för att hjärnans funktioner akut försämras eller som i övrigt innebär en trafiksäkerhetsrisk?</text>
+	<text id="FRG_15.RBK">b) Finns tecken på hjärnskada efter trauma, stroke eller annan sjukdom i centrala nervsystemet?</text>
+	<text id="FRG_16.RBK">c) Föreligger viktiga riskfaktorer för stroke (tidigare stroke eller TIA, förhöjt blodtryck, förmaksflimmer eller kärlmissbildning)?</text>
+	<text id="DFR_16.2">Typ av sjukdom:</text>
+
+	<!--
+	===============================================
+	KATEGORI 5: Diabetes
+	===============================================
+	-->
+	<text id="KAT_5.RBK">Diabetes</text>
+
+	<text id="FRG_17.RBK">Har patienten diabetes?</text>
+
+	<text id="FRG_18.RBK">Vilken typ?</text>
+
+	<text id="FRG_19.RBK">Ange behandling:</text>
+	<text id="DFR_19.1.RBK">Kost</text>
+	<text id="DFR_19.2.RBK">Tabletter</text>
+	<text id="DFR_19.3.RBK">Insulin</text>
+
+	<!--
+	===============================================
+	KATEGORI 6: Neurologiska sjukdomar
+	===============================================
+	-->
+	<text id="KAT_6.RBK">Neurologiska sjukdomar</text>
+
+	<text id="FRG_20.RBK">Finns tecken på neurologisk sjukdom?</text>
+
+	<!--
+	===============================================
+	KATEGORI 7: Epilepsi, epileptiskt anfall och annan medvetandestörning
+	===============================================
+	-->
+	<text id="KAT_7.RBK">Epilepsi, epileptiskt anfall och annan medvetandestörning</text>
+
+	<text id="FRG_21.RBK">Har eller har patienten haft epilepsi, epileptiskt anfall eller annan medvetandestörning?</text>
+	<text id="DFR_21.2.RBK">Om det är frågan om annan medvetandestörning, ange när den inträffade och orsak: </text>
+
+	<!--
+	===============================================
+	KATEGORI 8: Njursjukdomar
+	===============================================
+	-->
+	<text id="KAT_8.RBK">Njursjukdomar</text>
+
+	<text id="FRG_22.RBK">Föreligger allvarligt nedsatt njurfunktion som kan innebära en trafiksäkerhetsrisk?</text>
+
+	<!--
+	===============================================
+	KATEGORI 9: Demens och andra kognitiva störningar
+	===============================================
+	-->
+	<text id="KAT_9.RBK">Demens och andra kognitiva störningar</text>
+
+	<text id="FRG_23.RBK">Finns tecken på sviktande kognitiv funktion?</text>
+
+
+	<!--
+	===============================================
+	KATEGORI 10: Sömn- och vakenhetsstörningar
+	===============================================
+	-->
+	<text id="KAT_10.RBK">Sömn- och vakenhetsstörningar</text>
+
+	<text id="FRG_24.RBK">Finns tecken på, eller anamnestiska uppgifter som talar för sömn- eller vakenhetsstörning?</text>
+
+	<!--
+	===============================================
+	KATEGORI 11: Alkohol, narkotika och läkemedel
+	=============================================
+	-->
+	<text id="KAT_11.RBK">Alkohol, narkotika och läkemedel</text>
+
+	<text id="DFR_25.1.RBK">a) Finns journaluppgifter, anamnestiska uppgifter, resultat av laboratorieprover eller andra tecken på missbruk eller beroende av alkohol, narkotika eller läkemedel?</text>
+	<text id="DFR_25.2.RBK">b) Har patienten vid något tillfälle varit föremål för vårdinsatser för missbruk eller beroende av alkohol, narkotika eller läkemedel?</text>
+	<text id="DFR_25.3.RBK">Om någon av frågorna 11a) eller 11b) besvaras med ja, behövs det provtagning avseende aktuellt bruk av alkohol eller narkotika?</text>
+
+	<text id="FRG_26.RBK">c) Pågår regelbundet läkarordinerat bruk av läkemedel som kan innebära en trafiksäkerhetsrisk?</text>
+	<text id="DFR_26.1.RBK">Läkemedel och ordinerad dos:</text>
+
+	<!--
+	===============================================
+	KATEGORI 12: Psykiska sjukdomar och störningar
+	=============================================
+	-->
+	<text id="KAT_12.RBK">Alkohol, narkotika och läkemedel</text>
+
+	<text id="FRG_27.RBK">Har eller har patienten haft psykisk sjukdom eller störning, till exempel schizofreni, annan psykos eller bipolär (manodepressiv) sjukdom?</text>
+
+	<!--
+	===============================================
+	KATEGORI 13: ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning
+	=============================================
+	-->
+	<text id="KAT_13.RBK">ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning</text>
+
+	<text id="FRG_28.RBK">a) Har patienten någon psykisk utvecklingsstörning?</text>
+	<text id="FRG_29.RBK">b) Har patienten till exempel ADHD, ADD, DAMP, Aspergers syndrom eller Tourettes syndrom?</text>
+
+	<!--
+	===============================================
+	KATEGORI 14:  Sjukhusvård
+	=============================================
+	-->
+	<text id="KAT_14.RBK">Sjukhusvård</text>
+
+	<text id="FRG_30.RBK">Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av fälten 1-13?</text>
+	<text id="DFR_30.2.RBK">Om frågan besvarats med ja, när?</text>
+	<text id="DFR_30.3.RBK">Vårdinrättningens namn och klinik/er:</text>
+	<text id="DFR_30.4.RBK">För vad?</text>
+
+	<!--
+	===============================================
+	KATEGORI 15: Övrig medicinering
+	=============================================
+	-->
+	<text id="KAT_15.RBK">Övrig medicinering</text>
+	<text id="FRG_31.RBK">Har patienten någon stadigvarande medicinering?</text>
+	<text id="DFR_31.2.RBK">Vilken eller vilka mediciner?</text>
+
+	<!--
+	===============================================
+	KATEGORI 16: Övrig kommentar
+	=============================================
+	-->
+	<text id="KAT_16.RBK">Övrig kommentar</text>
+	<text id="FRG_32.RBK">Övriga kommentarer som är relevant ur trafiksäkerhetssynpunkt:</text>
+
+	<!--
+	===============================================
+	KATEGORI: Bedömning
+	=============================================
+	-->
+	<text id="KAT_101.RBK">Bedömning</text>
+
+	Patienten uppfyller kraven enligt Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2) för:
+
+	<text id="FRG_33.RBK">Någon av följande behörigheter:</text>
+	<text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i:</text>
+
+
+</texter>
