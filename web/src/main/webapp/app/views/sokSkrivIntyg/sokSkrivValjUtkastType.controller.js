@@ -76,7 +76,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // Load cert types user can choose from
                 UtkastProxy.getUtkastTypes(function(types) {
                     $scope.certTypes = types;
-                    $scope.intygType = PatientModel.intygType;
+                    if (PatientModel.intygType) {
+                        $scope.intygType = PatientModel.intygType;
+                    }
                 });
 
                 // Load certs for person with specified pnr
