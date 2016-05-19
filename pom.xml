@@ -217,11 +217,6 @@
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
-        <artifactId>common-services</artifactId>
-        <version>${common.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>se.inera.intyg.common</groupId>
         <artifactId>log-messages</artifactId>
         <version>${common.version}</version>
       </dependency>
