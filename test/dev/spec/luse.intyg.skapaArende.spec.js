@@ -42,6 +42,7 @@ describe('Skapa ärende luse intyg', function() {
             'revoked':false,
             'relations':[{'intygsId':intygId,'status':'INTYG'}]
         };
+        restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.createWebcertIntyg(testData);
     });
 
