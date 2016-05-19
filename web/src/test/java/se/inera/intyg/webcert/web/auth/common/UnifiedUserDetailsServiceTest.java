@@ -26,7 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
-import se.inera.intyg.common.security.siths.BaseUserDetailsService;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
 import static org.mockito.Matchers.any;
@@ -50,7 +50,7 @@ public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
     @Mock
-    private BaseUserDetailsService webCertUserDetailsService;
+    private WebcertUserDetailsService webCertUserDetailsService;
 
     @InjectMocks
     private UnifiedUserDetailsService unifiedUserDetailsService;

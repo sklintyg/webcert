@@ -20,17 +20,14 @@
 package se.inera.intyg.webcert.web.service.feature;
 
 import se.inera.intyg.common.security.common.service.CommonFeatureService;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-
-import java.util.Set;
 
 /**
  * Service which keeps track of what features are active in Webcert and installed modules.
  *
- * @author npet
+ * Add any webcert-specific feature behaviours here that doesn't have to go into the CommonFeatureService.
  *
+ * @author npet
  */
 public interface WebcertFeatureService extends CommonFeatureService {
-
 
 }

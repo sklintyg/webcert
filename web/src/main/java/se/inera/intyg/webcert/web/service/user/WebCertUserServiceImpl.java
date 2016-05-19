@@ -19,6 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.user;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
@@ -36,11 +42,6 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
 
@@ -48,11 +49,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
-
-//    @Override
-//    public WebCertUser getUser() {
-//        return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//    }
 
     @Override
     public WebCertUser getUser() {
@@ -184,5 +180,4 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             LOG.debug("Added module feature {} to user", moduleFeatureStr);
         }
     }
-
 }

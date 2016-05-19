@@ -92,7 +92,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private WebCertUser createWebCertUser(boolean fromJS) {
 
-        WebCertUser user = createUser();
+        WebCertUser user = buildUserPrincipal();
 
         user.setNamn("A Name");
         user.setHsaId("HSA-id");
@@ -131,7 +131,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         return user;
     }
 
-    private WebCertUser createUser() {
+    private WebCertUser buildUserPrincipal() {
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         WebCertUser user = new WebCertUser();
