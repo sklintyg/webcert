@@ -105,7 +105,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String intygId = "intygsid";
         final String intygTyp = "intygTyp";
         final String signeratAv = "signeratAv";
-        final String enhet = "enhet";
+        final String enhetId = "enhetId";
+        final String enhetName = "enhetName";
+        final String vardgivareName = "vardgivareName";
         final String givenName = "Test";
         final String surname = "Testorsson Svensson";
 
@@ -115,7 +117,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsTyp(intygTyp);
-        utkast.setEnhetsId(enhet);
+        utkast.setEnhetsId(enhetId);
+        utkast.setEnhetsNamn(enhetName);
+        utkast.setVardgivarNamn(vardgivareName);
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
         when(utkastRepository.findOne(intygId)).thenReturn(utkast);
@@ -130,7 +134,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(Status.PENDING_INTERNAL_ACTION, res.getStatus());
         assertEquals(intygTyp, res.getIntygTyp());
         assertEquals(signeratAv, res.getSigneratAv());
-        assertEquals(enhet, res.getEnhet());
+        assertEquals(enhetId, res.getEnhetId());
+        assertEquals(enhetName, res.getEnhetName());
+        assertEquals(vardgivareName, res.getVardgivareName());
         assertEquals("Test Testorsson Svensson", res.getSigneratAvName());
 
         verify(utkastRepository).findOne(intygId);
@@ -336,8 +342,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String givenName = "givenname";
         final String surname = "surname";
         final String vardaktorName = "vardaktor namn";
+        final String enhetName = "enhet namn";
+        final String vardgivareName = "vardgivare namn";
         Utkast utkast = new Utkast();
         utkast.setEnhetsId(enhetsId);
+        utkast.setEnhetsNamn(enhetName);
+        utkast.setVardgivarNamn(vardgivareName);
         utkast.setIntygsId(intygsId);
         utkast.setIntygsTyp(intygsTyp);
         utkast.setPatientPersonnummer(new Personnummer(patientPersonId));
@@ -357,7 +367,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(repo).save(arendeCaptor.capture());
         assertNotNull(arendeCaptor.getValue());
         assertEquals(amne, arendeCaptor.getValue().getAmne());
-        assertEquals(enhetsId, arendeCaptor.getValue().getEnhet());
+        assertEquals(enhetsId, arendeCaptor.getValue().getEnhetId());
+        assertEquals(enhetName, arendeCaptor.getValue().getEnhetName());
+        assertEquals(vardgivareName, arendeCaptor.getValue().getVardgivareName());
         assertEquals(intygsId, arendeCaptor.getValue().getIntygsId());
         assertEquals(intygsTyp, arendeCaptor.getValue().getIntygTyp());
         assertEquals(meddelande, arendeCaptor.getValue().getMeddelande());
@@ -548,8 +560,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String signeratAvName = "givenname surname";
         final String referensId = "referensId";
         final String vardaktorName = "vardaktor namn";
+        final String enhetName = "enhet namn";
+        final String vardgivareName = "vardgivare namn";
         Arende arende = new Arende();
-        arende.setEnhet(enhetsId);
+        arende.setEnhetId(enhetsId);
+        arende.setEnhetName(enhetName);
+        arende.setVardgivareName(vardgivareName);
         arende.setIntygsId(intygsId);
         arende.setIntygTyp(intygsTyp);
         arende.setPatientPersonId(patientPersonId);
@@ -575,7 +591,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende saved = arendeCaptor.getAllValues().get(0);
         assertNotNull(saved);
         assertEquals(amne, saved.getAmne());
-        assertEquals(enhetsId, saved.getEnhet());
+        assertEquals(enhetsId, saved.getEnhetId());
+        assertEquals(enhetName, saved.getEnhetName());
+        assertEquals(vardgivareName, saved.getVardgivareName());
         assertEquals(intygsId, saved.getIntygsId());
         assertEquals(intygsTyp, saved.getIntygTyp());
         assertEquals(nyttMeddelande, saved.getMeddelande());
@@ -1037,7 +1055,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setReferensId("<fk-extern-referens>");
         arende.setMeddelandeId("meddelandeId");
         arende.setId(id);
-        arende.setEnhet("enhet");
+        arende.setEnhetId("enhet");
         arende.setSkickatTidpunkt(skickadTidpunkt);
         arende.setMeddelande("frageText");
         arende.setTimestamp(timestamp);

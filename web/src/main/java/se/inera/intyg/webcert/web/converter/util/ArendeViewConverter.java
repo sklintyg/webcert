@@ -62,7 +62,7 @@ public class ArendeViewConverter {
         ArendeView.Builder template = ArendeView.builder();
         template.setAmne(arende.getAmne());
         template.setArendeType(getArendeType(arende));
-        template.setEnhetsnamn(arende.getEnhet());
+        template.setEnhetsnamn(arende.getEnhetName());
         template.setExternaKontakter(arende.getKontaktInfo());
         template.setFrageStallare(arende.getSkickatAv());
         template.setInternReferens(arende.getMeddelandeId());
@@ -76,9 +76,10 @@ public class ArendeViewConverter {
         template.setSvarPaId(arende.getSvarPaId());
         template.setSvarSkickadDatum(arende.getSkickatTidpunkt());
         template.setTimestamp(arende.getTimestamp());
-        template.setSigneratAv(arende.getSigneratAv());
+        template.setSigneratAv(arende.getSigneratAvName());
         template.setVidarebefordrad(arende.getVidarebefordrad());
         template.setVardaktorNamn(arende.getVardaktorName());
+        template.setVardgivarnamn(arende.getVardgivareName());
 
         return template.build();
     }

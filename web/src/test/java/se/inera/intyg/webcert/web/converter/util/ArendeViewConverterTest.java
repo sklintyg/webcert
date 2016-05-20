@@ -45,6 +45,7 @@ public class ArendeViewConverterTest {
     private static final String ENHETS_NAMN = "enhetsNamn";
     private static final String intygsId = "intyg-1";
     private static final String VARDAKTOR_NAMN = "vardaktor namn";
+    private static final String VARDGIVARE_NAMN = "vardgivare namn";
 
     @InjectMocks
     private ArendeViewConverter converter;
@@ -79,6 +80,8 @@ public class ArendeViewConverterTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
+        assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
+        assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
     }
 
     @Test
@@ -111,6 +114,8 @@ public class ArendeViewConverterTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
+        assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
+        assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
     }
 
     private ArendeView setupMocks(Arende arende, ModuleApi moduleApi, LocalDateTime timeStamp, Utlatande utlatande)
@@ -183,6 +188,9 @@ public class ArendeViewConverterTest {
         arende.setTimestamp(LocalDateTime.now());
         arende.setIntygTyp(intygstyp);
         arende.setVardaktorName(VARDAKTOR_NAMN);
+        arende.setEnhetId(ENHETS_ID);
+        arende.setEnhetName(ENHETS_NAMN);
+        arende.setVardgivareName(VARDGIVARE_NAMN);
 
         arende.setSkickatAv("Fragestallare");
         arende.setRubrik("rubrik");

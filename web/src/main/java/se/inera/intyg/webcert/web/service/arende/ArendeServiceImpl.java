@@ -162,7 +162,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende svarPaMeddelande = lookupArende(svarPaMeddelandeId);
 
-        verifyEnhetsAuth(svarPaMeddelande.getEnhet(), false);
+        verifyEnhetsAuth(svarPaMeddelande.getEnhetId(), false);
 
         if (!Status.PENDING_INTERNAL_ACTION.equals(svarPaMeddelande.getStatus())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Arende with id "
@@ -296,7 +296,7 @@ public class ArendeServiceImpl implements ArendeService {
         Iterator<Arende> iterator = arendeList.iterator();
         while (iterator.hasNext()) {
             Arende arende = iterator.next();
-            if (arende.getEnhet() != null && !hsaEnhetIds.contains(arende.getEnhet())) {
+            if (arende.getEnhetId() != null && !hsaEnhetIds.contains(arende.getEnhetId())) {
                 arendeList.remove(arende);
             }
         }
@@ -462,7 +462,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Arende processOutgoingMessage(Arende arende) throws WebCertServiceException {
         Arende saved = repo.save(arende);
-        monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhet(), arende.getRubrik());
+        monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getRubrik());
 
         updateRelated(arende, arende.getStatus(), arende.getSenasteHandelse());
 
@@ -556,14 +556,18 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setIntygTyp(utkast.getIntygsTyp());
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
         arende.setSigneratAvName(getSignedByName(utkast));
-        arende.setEnhet(utkast.getEnhetsId());
+        arende.setEnhetId(utkast.getEnhetsId());
+        arende.setEnhetName(utkast.getEnhetsNamn());
+        arende.setVardgivareName(utkast.getVardgivarNamn());
     }
 
     private Arende buildArendeQuestionFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
         arende.setAmne(amne);
-        arende.setEnhet(utkast.getEnhetsId());
+        arende.setEnhetId(utkast.getEnhetsId());
+        arende.setEnhetName(utkast.getEnhetsNamn());
+        arende.setVardgivareName(utkast.getVardgivarNamn());
         arende.setIntygsId(utkast.getIntygsId());
         arende.setIntygTyp(utkast.getIntygsTyp());
         arende.setMeddelande(meddelande);
@@ -581,7 +585,9 @@ public class ArendeServiceImpl implements ArendeService {
         arende.setSvarPaId(svarPaMeddelande.getMeddelandeId());
         arende.setSvarPaReferens(svarPaMeddelande.getReferensId());
         arende.setAmne(svarPaMeddelande.getAmne());
-        arende.setEnhet(svarPaMeddelande.getEnhet());
+        arende.setEnhetId(svarPaMeddelande.getEnhetId());
+        arende.setEnhetName(svarPaMeddelande.getEnhetName());
+        arende.setVardgivareName(svarPaMeddelande.getVardgivareName());
         arende.setIntygsId(svarPaMeddelande.getIntygsId());
         arende.setIntygTyp(svarPaMeddelande.getIntygTyp());
         arende.setMeddelande(meddelande);

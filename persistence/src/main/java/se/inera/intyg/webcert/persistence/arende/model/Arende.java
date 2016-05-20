@@ -104,7 +104,10 @@ public class Arende {
     private String signeratAvName;
 
     @Column(name = "ENHET")
-    private String enhet;
+    private String enhetId;
+
+    @Column(name = "ENHET_NAME")
+    private String enhetName;
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
@@ -119,6 +122,9 @@ public class Arende {
 
     @Column(name = "VARDAKTOR_NAME")
     private String vardaktorName;
+
+    @Column(name = "VARDGIVARE_NAME")
+    private String vardgivareName;
 
     public Long getId() {
         return id;
@@ -270,12 +276,20 @@ public class Arende {
         this.signeratAv = signeratAv;
     }
 
-    public String getEnhet() {
-        return enhet;
+    public String getEnhetId() {
+        return enhetId;
     }
 
-    public void setEnhet(String enhet) {
-        this.enhet = enhet;
+    public void setEnhetId(String enhetId) {
+        this.enhetId = enhetId;
+    }
+
+    public String getEnhetName() {
+        return enhetName;
+    }
+
+    public void setEnhetName(String enhetName) {
+        this.enhetName = enhetName;
     }
 
     public Status getStatus() {
@@ -320,5 +334,13 @@ public class Arende {
 
     public void setVardaktorName(String vardaktorName) {
         this.vardaktorName = vardaktorName;
+    }
+
+    public String getVardgivareName() {
+        return vardgivareName;
+    }
+
+    public void setVardgivareName(String vardgivareName) {
+        this.vardgivareName = vardgivareName;
     }
 }

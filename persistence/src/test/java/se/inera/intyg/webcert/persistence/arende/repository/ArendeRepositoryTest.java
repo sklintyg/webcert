@@ -76,7 +76,9 @@ public class ArendeRepositoryTest {
         assertEquals(read.getIntygTyp(), saved.getIntygTyp());
         assertEquals(read.getSigneratAv(), saved.getSigneratAv());
         assertEquals(read.getSigneratAvName(), saved.getSigneratAvName());
-        assertEquals(read.getEnhet(), saved.getEnhet());
+        assertEquals(read.getEnhetId(), saved.getEnhetId());
+        assertEquals(read.getEnhetName(), saved.getEnhetName());
+        assertEquals(read.getVardgivareName(), saved.getVardgivareName());
         assertEquals(read.getStatus(), saved.getStatus());
         assertEquals(read.getTimestamp(), saved.getTimestamp());
         assertEquals(read.getVidarebefordrad(), saved.getVidarebefordrad());
@@ -172,7 +174,7 @@ public class ArendeRepositoryTest {
 
         List<Arende> result = repo.findByEnhet(Arrays.asList(enhet));
         assertEquals(1, result.size());
-        assertEquals(enhet, result.get(0).getEnhet());
+        assertEquals(enhet, result.get(0).getEnhetId());
     }
 
     @Test
@@ -579,7 +581,9 @@ public class ArendeRepositoryTest {
         res.setIntygTyp("INTYG_TYP");
         res.setSigneratAv(signeratAv);
         res.setSigneratAvName(signeratAvName);
-        res.setEnhet(enhet);
+        res.setEnhetId(enhet);
+        res.setEnhetName("ENHET_NAME");
+        res.setVardgivareName("VARDGIVARE_NAME");
         res.setStatus(status);
         res.setTimestamp(LocalDateTime.now());
         res.setVidarebefordrad(vidarebefordrad);

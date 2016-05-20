@@ -352,7 +352,8 @@ public abstract class BaseRestIntegrationTest {
         arende.setSigneratAvName("Jan Nilsson");
         arende.setSigneratAv(DEFAULT_LAKARE.getHsaId());
         arende.setReferensId("FK-REF-1");
-        arende.setEnhet(DEFAULT_LAKARE.getEnhetId());
+        arende.setEnhetId(DEFAULT_LAKARE.getEnhetId());
+        arende.setEnhetName("Enhetsnamn");
         arende.setMeddelandeId(UUID.randomUUID().toString());
         arende.setKomplettering(new ArrayList<>());
         return arende;

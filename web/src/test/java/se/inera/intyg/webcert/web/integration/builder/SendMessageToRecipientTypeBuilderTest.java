@@ -126,7 +126,7 @@ public class SendMessageToRecipientTypeBuilderTest {
     private Arende buildArende() {
         Arende arende = new Arende();
         arende.setAmne(AMNE);
-        arende.setEnhet(ENHET_ID);
+        arende.setEnhetId(ENHET_ID);
         arende.setIntygsId(INTYG_ID);
         arende.setMeddelande(MEDDELANDE);
         arende.setMeddelandeId(MEDDELANDE_ID);

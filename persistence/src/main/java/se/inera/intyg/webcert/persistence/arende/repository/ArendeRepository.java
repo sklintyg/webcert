@@ -68,7 +68,7 @@ public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRep
      *
      * @return a list of names
      */
-    @Query("SELECT DISTINCT signeratAv, signeratAvName FROM Arende WHERE enhet IN (:idList) ORDER BY signeratAv ASC")
+    @Query("SELECT DISTINCT signeratAv, signeratAvName FROM Arende WHERE enhetId IN (:idList) ORDER BY signeratAv ASC")
     List<Object[]> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
 
     /**
@@ -79,6 +79,6 @@ public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRep
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
      *         an empty list.
      */
-    @Query("SELECT a FROM Arende AS a WHERE a.enhet IN (:idList) AND a.status <> 'CLOSED'")
+    @Query("SELECT a FROM Arende AS a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED'")
     List<Arende> findByEnhet(@Param("idList") List<String> enhetsIds);
 }

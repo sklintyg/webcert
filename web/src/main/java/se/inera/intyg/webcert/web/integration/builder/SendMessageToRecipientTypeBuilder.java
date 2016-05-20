@@ -67,7 +67,7 @@ public final class SendMessageToRecipientTypeBuilder {
 
     private static IntygId buildIntygId(Arende arende) {
         IntygId intygId = new IntygId();
-        intygId.setRoot(arende.getEnhet());
+        intygId.setRoot(arende.getEnhetId());
         intygId.setExtension(arende.getIntygsId());
         return intygId;
     }

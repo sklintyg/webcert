@@ -795,4 +795,11 @@
       UPDATE FMB SET TYP='BESLUTSUNDERLAG_TEXTUELLT' WHERE TYP='FALT8B';
     </sql>
   </changeSet>
+
+  <changeSet id="37" author="mn">
+    <addColumn tableName="ARENDE">
+      <column name="ENHET_NAME" type="varchar(255)" />
+      <column name="VARDGIVARE_NAME" type="varchar(255)" />
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

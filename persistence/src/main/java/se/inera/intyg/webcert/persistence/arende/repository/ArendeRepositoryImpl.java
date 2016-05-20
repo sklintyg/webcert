@@ -39,7 +39,7 @@ public class ArendeRepositoryImpl implements ArendeRepositoryCustom {
     private Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<Arende> root) {
         Predicate pred = builder.conjunction();
 
-        pred = builder.and(pred, root.get("enhet").in(filter.getEnhetsIds()));
+        pred = builder.and(pred, root.get("enhetId").in(filter.getEnhetsIds()));
         pred = builder.and(pred, root.get("paminnelseMeddelandeId").isNull());
         pred = builder.and(pred, root.get("svarPaId").isNull());
 
