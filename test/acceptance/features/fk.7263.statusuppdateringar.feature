@@ -1,6 +1,6 @@
 # language: sv
-@statusuppdateringar
-Egenskap: Statusuppdateringar skickas till vårdsystem med djupintegration
+@statusuppdateringar @fk7263
+Egenskap: Statusuppdateringar för FK7263
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare
@@ -8,15 +8,17 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-fk
-Scenario: Intyg skickas till Försäkringskassan
-   När jag fyller i fältet "Min undersökning av patienten"
+Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
 
-   Och jag fyller i fältet "ICD-10"
+   När jag ändrar i fältet diagnoskod
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "1"
 
-   Och jag fyller i fältet "Arbetsförmåga"
+   När jag ändrar i fältet arbetsförmåga
    Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "2"
+
+   När jag ändrar i fältet sjukskrivningsperiod
+   Så ska statusuppdatering "HAN11" skickas till vårdsystemet. Totalt: "3"
 
    Och jag fyller i resten av de nödvändiga fälten.
    Och jag signerar intyget
@@ -26,7 +28,7 @@ Scenario: Intyg skickas till Försäkringskassan
    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
 
 @makulera
-Scenario: Intyg makuleras
+Scenario: Statusuppdateringar då intyg makuleras
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
@@ -35,13 +37,13 @@ Scenario: Intyg makuleras
    Så ska statusuppdatering "HAN5" skickas till vårdsystemet. Totalt: "1"
 
 @radera
-Scenario: Intyg raderas
+Scenario: Statusuppdateringar då intyg raderas
    När jag fyller i alla nödvändiga fält för intyget
    Och jag raderar intyget
    Så ska statusuppdatering "HAN4" skickas till vårdsystemet. Totalt: "1"
 
 @fråga-från-fk
-Scenario: Fråga från FK
+Scenario: Statusuppdateringar vid fråga från FK
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
 
@@ -55,7 +57,7 @@ Scenario: Fråga från FK
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
 
 @fråga-till-fk
-Scenario: Fråga till FK
+Scenario: Statusuppdateringar vid fråga till FK
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
@@ -73,7 +75,7 @@ Scenario: Fråga till FK
    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    
 @komplettering
-Scenario: Komplettering med nytt intyg
+Scenario: Statusuppdateringar vid komplettering med nytt intyg
 
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget

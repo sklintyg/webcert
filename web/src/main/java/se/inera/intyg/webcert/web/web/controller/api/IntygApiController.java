@@ -20,10 +20,12 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -37,7 +39,6 @@ import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygItemListResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -67,6 +68,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Controller for the API that serves WebCert.
@@ -100,6 +102,10 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private MonitoringLogService monitoringLogService;
 
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
+
+
     public IntygApiController() {
     }
 
@@ -130,11 +136,9 @@ public class IntygApiController extends AbstractApiController {
         }
 
         CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
-
         CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
 
-        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(),
-                serviceResponse.getNewDraftIntygType() });
+        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType() });
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 
@@ -179,7 +183,7 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Create a copy that is a renewal of an existing certificate. //TODO
+     * Create a copy that is a renewal of an existing certificate.
      *
      * @param request
      * @param intygsTyp
@@ -300,23 +304,29 @@ public class IntygApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        IntygItemListResponse intygItemListResponse = intygService.listIntyg(enhetsIds, personNummer);
-        LOG.debug("Got {} intyg", intygItemListResponse.getIntygItemList().size());
+        Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(enhetsIds, personNummer);
+        LOG.debug("Got {} intyg", intygItemListResponse.getLeft().size());
 
         List<Utkast> utkastList;
 
         if (authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).isVerified()) {
-            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer.getPersonnummer(), enhetsIds,
-                    ALL_DRAFTS, getWebCertUserService().getIntygstyper(AuthoritiesConstants.PRIVILEGE_VISA_INTYG));
+            Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
+                    personNummer.getPersonnummer(),
+                    enhetsIds,
+                    ALL_DRAFTS,
+                    intygstyper);
+
             LOG.debug("Got {} utkast", utkastList.size());
         } else {
             utkastList = Collections.emptyList();
         }
 
-        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(intygItemListResponse.getIntygItemList(), utkastList);
+        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(intygItemListResponse.getLeft(), utkastList);
 
         Response.ResponseBuilder responseBuilder = Response.ok(allIntyg);
-        if (intygItemListResponse.isOfflineMode()) {
+        if (intygItemListResponse.getRight()) {
             responseBuilder = responseBuilder.header(OFFLINE_MODE, Boolean.TRUE.toString());
         }
         return responseBuilder.build();

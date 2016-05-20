@@ -21,16 +21,9 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -40,19 +33,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.dto.*;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -61,11 +55,17 @@ public class IntygResource {
 
     public static final Logger LOG = LoggerFactory.getLogger(IntygResource.class);
 
+    protected static final String UTF_8_CHARSET = ";charset=utf-8";
+    protected static final String UTF_8 = "UTF-8";
+
     @Autowired
     private UtkastRepository utkastRepository;
 
     @Autowired
     private IntygServiceConverter intygServiceConverter;
+
+    @Autowired
+    private IntygModuleRegistryImpl moduleRegistry;
 
     @DELETE
     @Path("/")
@@ -104,13 +104,52 @@ public class IntygResource {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertUtkast(Utkast utkast) {
-        utkastRepository.save(utkast);
-        return Response.ok(utkast).build();
-    }
+    @Path("/utkast")
+    public Response insertUtkast(IntygContentWrapper intygContents) throws ModuleNotFoundException, IOException {
+        String intygsTyp = intygContents.getContents().get("typ").textValue();
 
+        String model = intygContents.getContents().toString();
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+        Utlatande utlatande = moduleApi.getUtlatandeFromJson(model);
+        Utkast utkast = new Utkast();
+
+        utkast.setModel(model);
+
+        utkast.setEnhetsId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+        utkast.setEnhetsNamn(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        utkast.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
+        utkast.setIntygsTyp(utlatande.getTyp());
+        utkast.setIntygsId(utlatande.getId());
+        utkast.setPatientEfternamn(utlatande.getGrundData().getPatient().getEfternamn());
+        utkast.setPatientFornamn(utlatande.getGrundData().getPatient().getFornamn());
+        utkast.setPatientPersonnummer(utlatande.getGrundData().getPatient().getPersonId());
+
+        if (utlatande.getGrundData().getRelation() != null && utlatande.getGrundData().getRelation().getRelationIntygsId() != null) {
+            if (utlatande.getId() != null && utlatande.getId().equals(utlatande.getGrundData().getRelation().getRelationIntygsId())) {
+                LOG.error("Utkast relation to itself is invalid.");
+            } else {
+                utkast.setRelationIntygsId(utlatande.getGrundData().getRelation().getRelationIntygsId());
+                utkast.setRelationKod(utlatande.getGrundData().getRelation().getRelationKod());
+            }
+        }
+
+        utkast.setStatus(intygContents.getUtkastStatus());
+        utkast.setVidarebefordrad(false);
+        if (utkast.getStatus() == UtkastStatus.SIGNED) {
+            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model, "ruffel",
+                    "fusk");
+            utkast.setSignatur(signatur);
+        }
+        VardpersonReferens vardpersonReferens = new VardpersonReferens();
+        vardpersonReferens.setHsaId(utlatande.getGrundData().getSkapadAv().getPersonId());
+        vardpersonReferens.setNamn(utlatande.getGrundData().getSkapadAv().getFullstandigtNamn());
+        utkast.setSkapadAv(vardpersonReferens);
+        utkast.setSenastSparadAv(vardpersonReferens);
+        utkastRepository.save(utkast);
+        return Response.ok().build();
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -230,6 +269,51 @@ public class IntygResource {
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
 
             utkastRepository.save(utkast);
+        }
+    }
+
+    static class IntygContentWrapper {
+        private JsonNode contents;
+        private boolean revoked;
+        private UtkastStatus utkastStatus;
+        private List<RelationItem> relations;
+
+        IntygContentWrapper(JsonNode contents, boolean revoked, UtkastStatus utkastStatus, Optional<List<RelationItem>> relations) {
+            this.contents = contents;
+            this.revoked = revoked;
+            this.utkastStatus = utkastStatus;
+            this.relations = relations.orElse(new ArrayList<>());
+        }
+
+        IntygContentWrapper() {
+        }
+
+        JsonNode getContents() {
+            return contents;
+        }
+
+        void setContents(JsonNode contents) {
+             this.contents = contents;
+        }
+
+        boolean isRevoked() {
+            return revoked;
+        }
+
+        UtkastStatus getUtkastStatus() {
+            return utkastStatus;
+        }
+
+        void setUtkastStatus(UtkastStatus utkastStatus) {
+            this.utkastStatus = utkastStatus;
+        }
+
+        List<RelationItem> getRelations() {
+            return relations;
+        }
+
+        void setRelations(List<RelationItem> relations) {
+            this.relations = relations;
         }
     }
 }

@@ -1,0 +1,101 @@
+{
+    "id": "5875f7e1-db19-420b-a25c-5e3d04ce80f9",
+    "textVersion": "0.9",
+    "grundData": {
+        "skapadAv": {
+            "personId": "IFV1239877878-1049",
+            "fullstandigtNamn": "Jan Nilsson",
+            "vardenhet": {
+                "enhetsid": "IFV1239877878-1042",
+                "enhetsnamn": "WebCert-Enhet1",
+                "postadress": "Storgatan 1",
+                "postnummer": "12345",
+                "postort": "Småmåla",
+                "telefonnummer": "0101234567890",
+                "epost": "enhet1@webcert.invalid.se",
+                "vardgivare": {
+                    "vardgivarid": "IFV1239877878-1041",
+                    "vardgivarnamn": "WebCert-Vårdgivare1"
+                },
+                "arbetsplatsKod": "1234567890"
+            }
+        },
+        "patient": {
+            "personId": "19121212-1212",
+            "fullstandigtNamn": "Tolvan Tolvansson",
+            "fornamn": "Tolvan",
+            "efternamn": "Tolvansson",
+            "postadress": "Svensson, Storgatan 1, PL 1234",
+            "postnummer": "12345",
+            "postort": "Småmåla",
+            "samordningsNummer": false
+        },
+        "relation": {}
+    },
+    "undersokningAvPatienten": "2016-05-10",
+    "telefonkontaktMedPatienten": "2016-05-10",
+    "journaluppgifter": "2016-05-10",
+    "annatGrundForMU": "2016-05-10",
+    "annatGrundForMUBeskrivning": "Annat underlag",
+    "sysselsattning": {
+        "typ": 1
+    },
+    "nuvarandeArbete": "defenestrist",
+    "diagnoser": [{
+        "diagnosKodSystem": "ICD_10_SE",
+        "diagnosKod": "Z60",
+        "diagnosBeskrivning": "Problem som har samband med social miljö"
+    }],
+    "funktionsnedsattning": "funktionsnedsättning",
+    "aktivitetsbegransning": "aktivitetsbegränsning",
+    "pagaendeBehandling": "Pågående",
+    "planeradBehandling": "Planerad",
+    "sjukskrivningar": [{
+        "sjukskrivningsgrad": 1,
+        "period": {
+            "from": "2016-05-01",
+            "tom": "2016-05-08"
+        }
+    }, {
+        "sjukskrivningsgrad": 2,
+        "period": {
+            "from": "2016-05-09",
+            "tom": "2016-05-15"
+        }
+    }, {
+        "sjukskrivningsgrad": 3,
+        "period": {
+            "from": "2016-05-16",
+            "tom": "2016-05-22"
+        }
+    }, {
+        "sjukskrivningsgrad": 4,
+        "period": {
+            "from": "2016-05-23",
+            "tom": "2016-05-29"
+        }
+    }],
+    "forsakringsmedicinsktBeslutsstod": "Anledningen är solklar",
+    "arbetstidsforlaggning": true,
+    "arbetstidsforlaggningMotivering": "Nattetid är bäst",
+    "arbetsresor": true,
+    "formagaTrotsBegransning": "Allt eller inget",
+    "prognos": {
+        "typ": 5,
+        "dagarTillArbete": 2
+    },
+    "arbetslivsinriktadeAtgarder": [{
+        "val": 8
+    }],
+    "arbetslivsinriktadeAtgarderAktuelltBeskrivning": "Det är alltid bra",
+    "ovrigt": "Övrigt står här",
+    "kontaktMedFk": true,
+    "anledningTillKontakt": "Egentligen inte",
+    "tillaggsfragor": [{
+        "id": "9001",
+        "svar": "42"
+    }, {
+        "id": "9002",
+        "svar": "50"
+    }]
+}

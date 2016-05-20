@@ -44,7 +44,7 @@
             </div>
 
             <div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined" id="intygTypeWarning">
-              <span message key='{{"certificatetypes."+ intygType +".helptext"}}'></span>
+              <span ng-bind-html="getDetailedDescription(intygType)" class="multiline"></span>
             </div>
           </div>
 

@@ -33,7 +33,7 @@ module.exports = function() {
     });
 
     this.Given(/^går in på Ej signerade utkast$/, function(callback) {
-        unsignedPage.flikar.notSigned.sendKeys(protractor.Key.SPACE).then(callback);
+        unsignedPage.flikar.notSigned.click().then(callback);
     });
 
     this.Given(/^är kopieraknappen tillgänglig$/, function(callback) {

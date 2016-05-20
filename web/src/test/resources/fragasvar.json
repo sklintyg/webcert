@@ -1,0 +1,41 @@
+{
+    "internReferens": 14,
+    "externReferens": "FK-5003",
+    "frageStallare": "FK",
+    "amne": "OVRIGT",
+    "frageText": "Detta är ett konstigt ärende. vad menar Hr Doktor egentligen?",
+    "frageSigneringsDatum": "2012-12-23T21:00:00.000",
+    "frageSkickadDatum": "2013-09-09T00:00:00.000",
+    "senasteHandelse": "2013-09-09T00:00:00.000",
+    "sistaDatumForSvar": "2017-01-01",
+    "externaKontakter": [
+
+    ],
+    "intygsReferens": {
+        "intygsId": "intyg-1",
+        "intygsTyp": "fk7263",
+        "patientId": "19121212-1212",
+        "patientNamn": "Test Testorsson",
+        "signeringsDatum": "2012-12-23T21:00:00.000"
+    },
+    "kompletteringar": [
+
+    ],
+    "vardperson": {
+        "hsaId": "eva",
+        "namn": "Eva Holgersson",
+        "forskrivarKod": "1234567",
+        "enhetsId": "centrum-vast",
+        "arbetsplatsKod": "123456789011",
+        "enhetsnamn": "Kir mott",
+        "postadress": "Lasarettsvägen 13",
+        "postnummer": "85150",
+        "postort": "Sundsvall",
+        "telefonnummer": "060-1818000",
+        "vardgivarId": "Landstinget Norrland",
+        "vardgivarnamn": "Landstinget Norrland"
+    },
+    "status": "PENDING_INTERNAL_ACTION",
+    "vidarebefordrad": false,
+    "senasteHandelseDatum": "2013-09-09T00:00:00.000"
+}

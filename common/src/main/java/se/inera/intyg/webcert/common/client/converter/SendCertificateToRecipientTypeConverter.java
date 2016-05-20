@@ -24,16 +24,16 @@ import org.joda.time.LocalDateTime;
 import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType.SkickatAv;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Part;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 public final class SendCertificateToRecipientTypeConverter {
 
-    private static final String PERSON_ID_ROOT = "1.2.752.129.2.1.3.1";
-    private static final String HSA_ID_ROOT = "1.2.752.129.2.1.4.1";
-    public static final String ARBETSPLATSKOD_ROOT = "1.2.752.29.4.71";
     private static final String MOTTAGARE_CODE_SYSTEM = "769bb12b-bd9f-4203-a5cd-fd14f2eb3b80";
 
     private SendCertificateToRecipientTypeConverter() {
@@ -43,7 +43,7 @@ public final class SendCertificateToRecipientTypeConverter {
         SendCertificateToRecipientType request = new SendCertificateToRecipientType();
         request.setSkickatTidpunkt(LocalDateTime.now());
         request.setIntygsId(buildIntygId(intygsId));
-        request.setPatientPersonId(buildPersonId(personnummer));
+        request.setPatientPersonId(InternalConverterUtil.getPersonId(new Personnummer(personnummer)));
         request.setMottagare(buildPart(recipient));
         request.setSkickatAv(buildSkickatAv(skickatAv));
         return request;
@@ -54,13 +54,6 @@ public final class SendCertificateToRecipientTypeConverter {
         intygId.setRoot("SE5565594230-B31"); // IT:s root since unit hsaId is not available
         intygId.setExtension(intygsId);
         return intygId;
-    }
-
-    private static PersonId buildPersonId(String personnummer) {
-        PersonId personId = new PersonId();
-        personId.setRoot(PERSON_ID_ROOT);
-        personId.setExtension(personnummer);
-        return personId;
     }
 
     private static Part buildPart(String recipient) {
@@ -80,7 +73,7 @@ public final class SendCertificateToRecipientTypeConverter {
 
     private static HosPersonal buildHosPersonal(HoSPersonal source) {
         HosPersonal hosPersonal = new HosPersonal();
-        hosPersonal.setPersonalId(buildHsaId(source.getPersonId()));
+        hosPersonal.setPersonalId(InternalConverterUtil.getHsaId(source.getPersonId()));
         hosPersonal.setFullstandigtNamn(source.getFullstandigtNamn());
         hosPersonal.setForskrivarkod(source.getForskrivarKod());
         hosPersonal.setEnhet(buildEnhet(source.getVardenhet()));
@@ -89,7 +82,7 @@ public final class SendCertificateToRecipientTypeConverter {
 
     private static Enhet buildEnhet(Vardenhet sourceVardenhet) {
         Enhet vardenhet = new Enhet();
-        vardenhet.setEnhetsId(buildHsaId(sourceVardenhet.getEnhetsid()));
+        vardenhet.setEnhetsId(InternalConverterUtil.getHsaId(sourceVardenhet.getEnhetsid()));
         vardenhet.setEnhetsnamn(sourceVardenhet.getEnhetsnamn());
         vardenhet.setPostnummer(sourceVardenhet.getPostnummer());
         vardenhet.setPostadress(sourceVardenhet.getPostadress());
@@ -97,28 +90,15 @@ public final class SendCertificateToRecipientTypeConverter {
         vardenhet.setTelefonnummer(sourceVardenhet.getTelefonnummer());
         vardenhet.setEpost(sourceVardenhet.getEpost());
         vardenhet.setVardgivare(buildVardgivare(sourceVardenhet.getVardgivare()));
-        vardenhet.setArbetsplatskod(buildArbetsplatsKod(sourceVardenhet.getArbetsplatsKod()));
+        vardenhet.setArbetsplatskod(InternalConverterUtil.getArbetsplatsKod(sourceVardenhet.getArbetsplatsKod()));
         return vardenhet;
-    }
-
-    private static ArbetsplatsKod buildArbetsplatsKod(String sourceArbetsplatsKod) {
-        ArbetsplatsKod arbetsplatsKod = new ArbetsplatsKod();
-        arbetsplatsKod.setRoot(ARBETSPLATSKOD_ROOT);
-        arbetsplatsKod.setExtension(sourceArbetsplatsKod);
-        return arbetsplatsKod;
     }
 
     private static Vardgivare buildVardgivare(se.inera.intyg.common.support.model.common.internal.Vardgivare sourceVardgivare) {
         Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivareId(buildHsaId(sourceVardgivare.getVardgivarid()));
+        vardgivare.setVardgivareId(InternalConverterUtil.getHsaId(sourceVardgivare.getVardgivarid()));
         vardgivare.setVardgivarnamn(sourceVardgivare.getVardgivarnamn());
         return vardgivare;
     }
 
-    private static HsaId buildHsaId(String id) {
-        HsaId hsaId = new HsaId();
-        hsaId.setRoot(HSA_ID_ROOT);
-        hsaId.setExtension(id);
-        return hsaId;
-    }
 }

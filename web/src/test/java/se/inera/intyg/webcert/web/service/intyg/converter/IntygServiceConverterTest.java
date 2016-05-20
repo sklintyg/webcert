@@ -49,7 +49,6 @@ import se.inera.intyg.common.util.integration.integration.json.CustomObjectMappe
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl.Operation;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -128,10 +127,10 @@ public class IntygServiceConverterTest {
 
         LocalDateTime ts = LocalDateTime.parse("2014-01-01T12:34:56.123");
 
-        String res = converter.buildVardReferensId(Operation.REVOKE, "ABC123", ts);
+        String res = converter.buildVardReferensId("ABC123", ts);
 
         assertNotNull(res);
-        assertEquals(res, "REVOKE-ABC123-20140101T123456.123");
+        assertEquals(res, "SEND-ABC123-20140101T123456.123");
     }
 
     /**

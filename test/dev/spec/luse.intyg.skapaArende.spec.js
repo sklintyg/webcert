@@ -20,35 +20,35 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals browser,JSON,protractor*/
+/*globals browser,beforeAll,afterAll*/
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
+var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Generate fk luse intyg', function() {
+describe('Skapa ärende luse intyg', function() {
 
-    var intygId = testdataHelper.generateTestGuid();
-    var intyg;
+    var intygId = 'luse-arende-intyg-1';
+    var arendeId;
 
-    describe('prepare test with intyg', function() {
-        it('should generate fk luse intyg', function() {
-            browser.ignoreSynchronization = false;
-            restTestdataHelper.createIntygFromTemplate('luseMax', intygId).then(function(response) {
-                intyg = JSON.parse(response.request.body);
-                expect(intyg.id).not.toBeNull();
-            }, function(error) {
-                console.log('Error calling createIntyg');
-            });
-        });
+    beforeAll(function() {
+        browser.ignoreSynchronization = false;
+        specHelper.login();
+        var testData = {
+            'contents':intygGenerator.getIntygJson({'intygType':'luse','intygId':intygId}),
+            'utkastStatus':'SIGNED',
+            'revoked':false,
+            'relations':[{'intygsId':intygId,'status':'INTYG'}]
+        };
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.createWebcertIntyg(testData);
     });
 
-    describe('Login through the welcome page', function() {
-        it('with default user', function() {
-            specHelper.login();
-        });
+    afterAll(function() {
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteArende(arendeId);
     });
 
     describe('make sure intyg is ready to be sent', function() {
@@ -58,27 +58,34 @@ describe('Generate fk luse intyg', function() {
         });
         
         it('should make sure message that intyg must be sent to create new arenden is shown', function() {
-            expect(LuseIntygPage.notSentMessage.isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.arendeIntygNotSentYetMessage.isDisplayed()).toBeTruthy();
         });
     });
 
     describe('send intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
-                expect(LuseIntygPage.sentMessage1.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.skicka.statusSendInprogress.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.newArendeBtn.isPresent()).toBeTruthy();
             });
         });
     });
-    /*
+
     describe('send new arende', function() {
         it('open new arende panel', function() {
-            expect(true).toBeTruthy();
+            LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
+                //console.log(1,element(by.repeater('arendeListItem in arendeList').row(0)));
+                //console.log(2,element.all(by.repeater('arendeListItem in arendeList').getText()));
+                var first = element.all(by.model('arendeListItem.arende.fraga.vidarebefordrad')).first();
+                first.getAttribute('id').then(function(id) {
+                    var firstPart = id.substring(0,27);
+                    var secondPart = id.substring(27);
+                    expect(firstPart).toBe('unhandled-mark-as-notified-');
+                    arendeId = secondPart;
+                });
+                expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
+            });
         });
     });
-*/
-    describe('remove test intyg', function() {
-        it('should clean up intyg after the test', function() {
-            restTestdataHelper.deleteIntyg(intygId);
-        });
-    });
+
 });

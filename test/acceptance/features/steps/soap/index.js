@@ -149,5 +149,7 @@ module.exports = {
             '    </urn:lakarutlatande>' +
             '  </urn:Answer>' +
             '</urn:ReceiveMedicalCertificateAnswer>';
-    }
+    },
+    SendMessageToCare: require('./SendMessageToCare').SendMessageToCare,
+    CreateDraftCertificateV2: require('./CreateDraftV2').CreateDraftCertificateV2
 };

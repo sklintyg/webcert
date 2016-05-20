@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools */
+/*global intyg,wcTestTools, protractor, browser */
 
 'use strict';
 var fillIn = require('./').fillIn;
 var generateIntygByType = require('../helpers.js').generateIntygByType;
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var td = wcTestTools.testdata;
+
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
         if (!global.intyg.typ) {
@@ -37,6 +38,35 @@ module.exports = function() {
     this.Given(/^jag ändrar diagnoskod$/, function(callback) {
         fkUtkastPage.angeDiagnosKod(td.values.fk.getRandomDiagnoskod())
             .then(callback());
+    });
+
+    this.Given(/^jag ändrar i fältet (sjukskrivningsperiod|arbetsförmåga|diagnoskod)*$/, function(field, callback) {
+        if (field === 'sjukskrivningsperiod') {
+            browser.ignoreSynchronization = true;
+            fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
+                fkUtkastPage.nedsatt.med25.tom.sendKeys('2017-01-02').then(function() {
+                    browser.ignoreSynchronization = false;
+                    callback();
+                });
+            });
+        } else if (field === 'arbetsförmåga') {
+            fkUtkastPage.nedsatt.med25.checkbox.sendKeys(protractor.Key.SPACE).then(callback);
+        } else if (field === 'diagnoskod') {
+            var diagnosKod = td.values.fk.getRandomDiagnoskod();
+            fkUtkastPage.diagnosKod.sendKeys(diagnosKod).then(callback);
+        } else {
+            callback(null, 'pending');
+        }
+    });
+
+    this.Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function(callback) {
+        fkUtkastPage.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
+            fkUtkastPage.funktionsNedsattning.sendKeys('Halt och lytt').then(function() {
+                fkUtkastPage.aktivitetsBegransning.sendKeys('Orkar inget').then(function() {
+                    fkUtkastPage.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
+                });
+            });
+        });
     });
 
 

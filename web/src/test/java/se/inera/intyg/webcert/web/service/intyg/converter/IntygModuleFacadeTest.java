@@ -23,8 +23,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,9 +45,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygModuleFacadeTest {
@@ -79,6 +80,13 @@ public class IntygModuleFacadeTest {
         assertEquals("file.pdf", intygPdf.getFilename());
 
         verify(moduleApi).pdf(any(InternalModelHolder.class), any(List.class), eq(ApplicationOrigin.WEBCERT));
+    }
+
+    @Test
+    public void testGetRevokeCertificateRequest() throws Exception {
+        final String message = "revokeMessage";
+        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, null, null, message);
+        verify(moduleApi, times(1)).createRevokeRequest(eq(null), eq(null), eq(message));
     }
 
 }

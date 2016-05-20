@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 
 @Transactional
-@Api(value = "services questions", description = "REST API för testbarhet - Ärenden")
+@Api(value = "services arende", description = "REST API för testbarhet - Ärenden")
 @Path("/arendetest")
 public class ArendeResource {
     @PersistenceContext
@@ -108,8 +108,9 @@ public class ArendeResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestion(@PathParam("id") Long id) {
-        arendeRepository.delete(id);
+    public Response deleteQuestion(@PathParam("id") String meddelandeId) {
+        Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
+        arendeRepository.delete(arende);
         return Response.ok().build();
     }
 

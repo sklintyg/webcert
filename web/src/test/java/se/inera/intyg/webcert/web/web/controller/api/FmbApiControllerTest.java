@@ -104,7 +104,7 @@ public class FmbApiControllerTest {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String text = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.FALT4, FmbCallType.FMB, text, "1"));
+        fmbs.add(new Fmb("A10", FmbType.FUNKTIONSNEDSATTNING, FmbCallType.FMB, text, "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
         // When
@@ -128,8 +128,8 @@ public class FmbApiControllerTest {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "1", "1"));
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "2", "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "1", "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "2", "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
         // When
@@ -157,9 +157,9 @@ public class FmbApiControllerTest {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "a", "1"));
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "b", "1"));
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext + "a", "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "a", "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "b", "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "a", "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
         // When
@@ -187,8 +187,8 @@ public class FmbApiControllerTest {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
         String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext, "1"));
-        fmbs.add(new Fmb("A10", FmbType.FALT8B, FmbCallType.FMB, testtext, "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext, "1"));
+        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext, "1"));
         Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
         // When

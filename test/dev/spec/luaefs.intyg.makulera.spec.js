@@ -74,7 +74,7 @@ describe('Validera makulering av luae_fs Intyg', function() {
     afterAll(function() {
         testdataHelper.deleteIntyg(intygsId);
         specHelper.logout();
-        browser.ignoreSynchronization = true;
+        browser.ignoreSynchronization = false;
     });
 
 });

@@ -27,16 +27,20 @@ var restClient = require('./restclient.util.js');
 var env = require('./../environment.js').envConfig;
 
 module.exports = {
+
+    // Webcert, login, utkast, ärenden
+
     login: function(userJson) {
 
         // login with doctor Jan Nilsson if noone else is specified
         var user = userJson || {
-            'fornamn': 'Jan',
-            'efternamn': 'Nilsson',
-            'hsaId': 'IFV1239877878-1049',
-            'enhetId': 'IFV1239877878-1042',
+            'fornamn': 'Leonie',
+            'efternamn': 'Koehl',
+            'hsaId': 'TSTNMT2321000156-103F',
+            'enhetId': 'TSTNMT2321000156-1039',
             'lakare': true,
-            'forskrivarKod': '2481632'
+            'forskrivarKod': '9300005',
+            'befattningsKod': '203090'
         };
 
         var options = {
@@ -54,6 +58,14 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    saveUtkast: function(intygsTyp, intygsId, version, utkastJson) {
+        var options = {
+            url: 'moduleapi/utkast/' + intygsTyp + '/' + intygsId + '/' + version,
+            method: 'PUT',
+            body: utkastJson
+        };
+        return restClient.run(options, 'json');
+    },
     deleteAllUtkast: function() {
         var options = {
             url: 'testability/intyg',
@@ -68,6 +80,42 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    createWebcertIntyg: function(createJson) {
+        var options = {
+            url: 'testability/intyg/utkast',
+            method: 'POST',
+            body: createJson
+        };
+        return restClient.run(options, 'json');
+    },
+
+    // Ärenden
+
+    createArende: function(createJson) {
+        var options = {
+            url: 'testability/arendetest/',
+            method: 'POST',
+            body: createJson
+        };
+        return restClient.run(options, 'json');
+    },
+    deleteAllArenden: function() {
+        var options = {
+            url: 'testability/arendetest/',
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
+    deleteArende: function(id) {
+        var options = {
+            url: 'testability/arendetest/' + id,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
+
+    // Intygstjänst - intyg
+
     createIntyg: function(createJson) {
         var options = {
             url: 'certificate/',

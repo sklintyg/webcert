@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,18 +37,12 @@ import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.common.client.converter.RevokeRequestConverter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.web.auth.authorities.*;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
@@ -55,8 +52,6 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -67,7 +62,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
-
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
@@ -77,14 +71,11 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     private static final String INTYG_ID = "123";
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
-    private static final String SAMPLE_XML = "<xml></xml>";
 
     @Mock
     private FragaSvarRepository fragaSvarRepository;
     @Mock
     private FragaSvarService fragaSvarService;
-    @Mock
-    private RevokeRequestConverter revokeRequestConverter;
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
 
@@ -102,7 +93,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(revokeRequestConverter.toXml(any(RevokeMedicalCertificateRequestType.class))).thenReturn(SAMPLE_XML);
 
         setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
@@ -124,8 +114,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         signedUtkast.setIntygsId(INTYG_ID);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        // when(getCertificateService.getCertificateForCare(anyString(),
-        // any(GetCertificateForCareRequestType.class))).thenReturn(getCertResponse);
         when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
                 response);
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
@@ -133,13 +121,15 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(fragaSvarService.closeAllNonClosedQuestions(INTYG_ID)).thenReturn(new FragaSvar[0]);
 
         // do the call
-        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, REVOKE_MSG, REVOKE_MSG);
+        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
 
         // verify that services were called
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
         verify(intygRepository).save(any(Utkast.class));
+        verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));
+        verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -179,53 +169,16 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         // Verify that revoke date was added to Utkast
         verify(intygRepository).save(any(Utkast.class));
+        verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));
+        verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
 
         assertEquals(IntygServiceResult.OK, res);
     }
 
-    // TODO Move test of resend or not resend behaviour to RevokeCertificateProcessor
-    // @Test(expected = WebCertServiceException.class)
-    // public void testRevokeIntygWithApplicationErrorOnRevoke() throws Exception {
-    //
-    // ResultOfCall result = new ResultOfCall();
-    // result.setResultCode(ResultCodeEnum.ERROR);
-    // result.setErrorId(ErrorIdEnum.APPLICATION_ERROR);
-    // result.setErrorText("An application error occured");
-    //
-    // RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
-    // response.setResult(result);
-    //
-    // // Setup mock behaviour
-    // when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)),
-    // any(RevokeMedicalCertificateRequestType.class))).thenReturn(
-    // response);
-    //
-    // intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
-    //
-    // verify(intygRepository, times(0)).save(any(Utkast.class));
-    // }
-
-    // TODO Move test of resend or not resend behaviour to RevokeCertificateProcessor
-    // @Test(expected = WebServiceException.class)
-    // public void testRevokeIntygWithIOExceptionOnRevoke() throws Exception {
-    // // Throw exception when revoke is invoked
-    // when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)),
-    // any(RevokeMedicalCertificateRequestType.class))).thenThrow(
-    // new WebServiceException("WS exception", new ConnectException("IO exception")));
-    //
-    // // Do the call
-    // try {
-    // intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
-    // } catch (Exception e) {
-    // verify(intygRepository, times(0)).save(any(Utkast.class));
-    // throw e;
-    // }
-    // }
-
     @Test(expected = WebCertServiceException.class)
     public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(revokedUtkast);
-        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(IntygModuleFacadeException.class);
+        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new IntygModuleFacadeException(""));
         // Do the call
         try {
             intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);

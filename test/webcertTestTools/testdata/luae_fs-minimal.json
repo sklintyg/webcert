@@ -18,7 +18,7 @@
         "arbetsplatsKod": "45312",
         "vardgivare": {
           "vardgivarnamn": "WebCert Vårdgivare 1",
-          "vardgivarid": "IFV1239877878-1041"
+          "vardgivarid": "TSTNMT2321000156-1002"
         },
         "epost": "ve1@vg1.se",
         "telefonnummer": "0812341234",
@@ -26,7 +26,7 @@
         "postnummer": "100 10",
         "postadress": "Enhetsg. 1",
         "enhetsnamn": "Webcert Enhet 1",
-        "enhetsid": "IFV1239877878-1042"
+        "enhetsid": "TSTNMT2321000156-1039"
       },
       "specialiteter": [
         "Kirurg"
@@ -36,8 +36,8 @@
         "Forskningsledare"
       ],
       "forskrivarKod": "2481632",
-      "fullstandigtNamn": "Jan Nilsson",
-      "personId": "19650708-1234"
+      "fullstandigtNamn": "Leonie Koehl",
+      "personId": "TSTNMT2321000156-103F"
     },
     "signeringsdatum": "2015-12-07T15:48:05.000"
   },

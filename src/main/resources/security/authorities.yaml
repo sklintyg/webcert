@@ -94,23 +94,29 @@ requestOrigins:
   - &ro020
     name: *kro020
     intygstyper:
-      - *ki010 # FK7263
+      - *ki010 # fk7263
+      - *ki040 # lisu
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
   - &ro030
     name: *kro030
     intygstyper:
-      - *ki010 # FK7263
+      - *ki010 # fk7263
+      - *ki020 # ts-bas
+      - *ki030 # ts-diabetes
 
 # Rättigheter
 privileges:
   - &p000
     name: *kp000
     desc: Visa intyg
-    intygstyper:
+    intygstyper: # Implicit alla
     requestOrigins: # Implicit alla
   - &p005
     name: *kp005
     desc: Skriva intyg
-    intygstyper:
+    intygstyper: # Implicit alla
     requestOrigins: # Implicit alla
   - &p010
     name: *kp010
@@ -141,8 +147,7 @@ privileges:
   - &p050
     name: *kp050
     desc: Vidarebefordra frågasvar
-    intygstyper:
-      - *ki010 # FK7263
+    intygstyper: # Implicit alla
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
@@ -150,19 +155,17 @@ privileges:
     name: *kp060
     desc: Besvara fråga om komplettering
     intygstyper:
-      - *ki010 # FK7263
+      - *ki010 # fk7263
       - *ki040 # lisu
       - *ki050 # luse
       - *ki060 # luae_na
-    requestOrigins:
-      - *ro010 # NORMAL
-      - *ro020 # DJUPINTEGRATION
-      - *ro030 # UTHOPP
+      - *ki070 # luae_fs
+    requestOrigins: # Implicit alla
   - &p070
     name: *kp070
     desc: Filtrera på annan läkare
     intygstyper: # Implicit alla
-    requestOrigins: # Implicit alla
+    requestOrigins:
       - *ro010 # NORMAL
   - &p080
     name: *kp080
@@ -196,9 +199,11 @@ privileges:
     name: *kp120
     desc: Svara med nytt intyg
     intygstyper:
-      - *ki010 # FK7263
+      - *ki010 # fk7263
       - *ki040 # lisu
       - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION
@@ -209,35 +214,102 @@ roles:
     name: *kr010 # LAKARE
     desc: Läkare
     privileges:
-      - *p000 # VISA_INTYG
-      - *p005 # SKRIVA_INTYG
-      - *p010 # SIGNERA_INTYG
-      - *p020 # MAKULERA_INTYG
-      - *p030 # KOPIERA_INTYG
-      - *p040 # VIDAREBEFORDRA_UTKAST
-      - *p050 # VIDAREBEFORDRA_FRAGASVAR
-      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
-      - *p070 # FILTRERA_PA_LAKARE
-      - *p080 # ATKOMST_ANDRA_ENHETER
-      - *p090 # HANTERA_PERSONUPPGIFTER
-      - *p100 # HANTERA_MAILSVAR
-      - *p110 # NAVIGERING
-      - *p120 # SVARA_MED_NYTT_INTYG
+      - <<: *p000 # VISA_INTYG
+        requestOrigins:
+          - *ro010 # NORMAL
+          - *ro020 # DJUPINTEGRATION
+          - *ro030 # UTHOPP
+      - <<: *p005 # SKRIVA_INTYG
+        requestOrigins:
+          - *ro010 # NORMAL
+          - *ro020 # DJUPINTEGRATION
+          - *ro030 # UTHOPP
+      - <<: *p010 # SIGNERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
+      - <<: *p020 # MAKULERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+      - <<: *p030 # KOPIERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+      - <<: *p040 # VIDAREBEFORDRA_UTKAST
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
+      - <<: *p070 # FILTRERA_PA_LAKARE
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p080 # ATKOMST_ANDRA_ENHETER
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p090 # HANTERA_PERSONUPPGIFTER
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p100 # HANTERA_MAILSVAR
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p110 # NAVIGERING
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p120 # SVARA_MED_NYTT_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
     privileges:
-      - *p000 # VISA_INTYG
-      - *p005 # SKRIVA_INTYG
-      - *p010 # SIGNERA_INTYG
-      - *p020 # MAKULERA_INTYG
-      - *p030 # KOPIERA_INTYG
-      - *p060 # BESVARA_KOMPLETTERINGSFRAGA
-      - *p080 # ATKOMST_ANDRA_ENHETER
-      - *p090 # HANTERA_PERSONUPPGIFTER
-      - *p100 # HANTERA_MAILSVAR
-      - *p110 # NAVIGERING
-      - *p120 # SVARA_MED_NYTT_INTYG
+      - <<: *p000 # VISA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p005 # SKRIVA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p010 # SIGNERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p020 # MAKULERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p030 # KOPIERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p080 # ATKOMST_ANDRA_ENHETER
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p090 # HANTERA_PERSONUPPGIFTER
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p100 # HANTERA_MAILSVAR
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p110 # NAVIGERING
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+      - <<: *p120 # SVARA_MED_NYTT_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
   - &r030
     name: *kr030 # TANDLAKARE
     desc: Tandläkare
@@ -246,71 +318,228 @@ roles:
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p005 # SKRIVA_INTYG
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p010 # SIGNERA_INTYG
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p020 # MAKULERA_INTYG
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
       - <<: *p030 # KOPIERA_INTYG
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p070 # FILTRERA_PA_LAKARE
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p090 # HANTERA_PERSONUPPGIFTER
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p100 # HANTERA_MAILSVAR
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p110 # NAVIGERING
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
       - <<: *p120 # SVARA_MED_NYTT_INTYG
         intygstyper:
           - *ki010
           - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010
+              - *ki040
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
     privileges:
-      - *p000 # VISA_INTYG
-      - *p005 # SKRIVA_INTYG
-      - *p030 # KOPIERA_INTYG
-      - *p040 # VIDAREBEFORDRA_UTKAST
-      - *p050 # VIDAREBEFORDRA_FRAGASVAR
-      - *p080 # ATKOMST_ANDRA_ENHETER
-      - *p090 # HANTERA_PERSONUPPGIFTER
-      - *p100 # HANTERA_MAILSVAR
-      - *p110 # NAVIGERING
+      - <<: *p000 # VISA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
+      - <<: *p005 # SKRIVA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
+      - <<: *p030 # KOPIERA_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+      - <<: *p040 # VIDAREBEFORDRA_UTKAST
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p080 # ATKOMST_ANDRA_ENHETER
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p090 # HANTERA_PERSONUPPGIFTER
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p100 # HANTERA_MAILSVAR
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
+      - <<: *p110 # NAVIGERING
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro030 # UTHOPP
 
 # Legitimerade yrkesroller
 titles:

@@ -55,12 +55,32 @@ var BaseUtkast = JClass._extend({
     signeraButtonClick: function() {
         this.signeraButton.click();
     },
-    showMissingInfoButtonClick: function() {
-        this.showMissingInfoButton.click();
+    showMissingInfoButtonClick: function(optional) {
+        if (optional) {
+            var button = this.showMissingInfoButton;
+            button.isPresent().then(function(result) {
+                if (result) {
+                    button.click();
+                }
+            });
+        }
+        else {
+            this.showMissingInfoButton.click();
+        }
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {
             return items.length;
+        });
+    },
+    enableAutosave: function() {
+        browser.executeScript(function () {
+            window.autoSave = true;
+        });
+    },
+    disableAutosave: function() {
+        browser.executeScript(function () {
+            window.autoSave = false;
         });
     }
 });

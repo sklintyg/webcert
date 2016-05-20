@@ -21,7 +21,8 @@
 'use strict';
 
 module.exports = {
-    logInAsUserRole: function(userObj, roleName, newOrigin, newUserRole) {
+    logInAsUserRole: function(userObj, roleName, newOrigin, newUserRole, skipCookieConsent) {
+
         logger.info('loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
         // Fattigmans-kloning av användar-hashen.
         global.user = JSON.parse(JSON.stringify(userObj));
@@ -30,7 +31,7 @@ module.exports = {
         global.user.origin = newOrigin || 'NORMAL';
         browser.ignoreSynchronization = true;
         pages.welcome.get();
-        pages.welcome.loginByJSON(JSON.stringify(userObj));
+        pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
 
         if (newUserRole) {
             logger.info('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');

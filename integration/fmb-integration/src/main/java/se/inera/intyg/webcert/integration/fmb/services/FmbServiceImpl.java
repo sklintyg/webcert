@@ -204,25 +204,25 @@ public class FmbServiceImpl implements FmbService {
 
     private List<Fmb> createFmbsForDiagnosInfo(@Nonnull String senateAndring, @Nonnull DiagnosInformationType information) {
         final List<Fmb> fmbs = new ArrayList<>();
-        final String falt5 = information.getAktivitetsbegransningBeskrivning();
-        final String falt4 = information.getFunktionsnedsattningBeskrivning();
+        final String aktivitetsbegransningBeskrivning = information.getAktivitetsbegransningBeskrivning();
+        final String funktionsnedsattningBeskrivning = information.getFunktionsnedsattningBeskrivning();
         final OvrigFmbInformationType ovrigFmbInformation = information.getOvrigFmbInformation();
-        final String falt2Spb = ovrigFmbInformation != null ? ovrigFmbInformation.getSymtomPrognosBehandling() : null;
-        final String falt2General = ovrigFmbInformation != null ? ovrigFmbInformation.getGenrellInformation() : null;
+        final String symptomPrognosBehandling = ovrigFmbInformation != null ? ovrigFmbInformation.getSymtomPrognosBehandling() : null;
+        final String generellInformation = ovrigFmbInformation != null ? ovrigFmbInformation.getGenrellInformation() : null;
         final List<HuvuddiagnosType> huvuddxs = information.getHuvuddiagnos();
         final List<String> formatedIcd10Codes = getFormatedIcd10Codes(huvuddxs);
         for (String code : formatedIcd10Codes) {
-            if (falt2Spb != null) {
-                fmbs.add(new Fmb(code, FmbType.FALT2_SPB, FmbCallType.DIAGNOSINFORMATION, falt2Spb, senateAndring));
+            if (symptomPrognosBehandling != null) {
+                fmbs.add(new Fmb(code, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbCallType.DIAGNOSINFORMATION, symptomPrognosBehandling, senateAndring));
             }
-            if (falt2General != null) {
-                fmbs.add(new Fmb(code, FmbType.FALT2_GENERAL, FmbCallType.DIAGNOSINFORMATION, falt2General, senateAndring));
+            if (generellInformation != null) {
+                fmbs.add(new Fmb(code, FmbType.GENERELL_INFO, FmbCallType.DIAGNOSINFORMATION, generellInformation, senateAndring));
             }
-            if (falt4 != null) {
-                fmbs.add(new Fmb(code, FmbType.FALT4, FmbCallType.DIAGNOSINFORMATION, falt4, senateAndring));
+            if (funktionsnedsattningBeskrivning != null) {
+                fmbs.add(new Fmb(code, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, funktionsnedsattningBeskrivning, senateAndring));
             }
-            if (falt5 != null) {
-                fmbs.add(new Fmb(code, FmbType.FALT5, FmbCallType.DIAGNOSINFORMATION, falt5, senateAndring));
+            if (aktivitetsbegransningBeskrivning != null) {
+                fmbs.add(new Fmb(code, FmbType.AKTIVITETSBEGRANSNING, FmbCallType.DIAGNOSINFORMATION, aktivitetsbegransningBeskrivning, senateAndring));
             }
         }
         return fmbs;
@@ -258,7 +258,7 @@ public class FmbServiceImpl implements FmbService {
             final List<HuvuddiagnosType> huvuddxs = beslutsunderlag.getHuvuddiagnos();
             final List<String> formatedIcd10Codes = getFormatedIcd10Codes(huvuddxs);
             for (String code : formatedIcd10Codes) {
-                fmbs.add(new Fmb(code, FmbType.FALT8B, FmbCallType.FMB, falt8b, senateAndring));
+                fmbs.add(new Fmb(code, FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, falt8b, senateAndring));
             }
         }
         return fmbs;

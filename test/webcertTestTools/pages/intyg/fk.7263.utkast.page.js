@@ -130,6 +130,7 @@ var FkUtkast = BaseUtkast._extend({
         };
 
         this.diagnos = {
+            beskrivning: element(by.id('diagnoseDescription')),
             fortydligande: element(by.id('diagnoseClarification')),
             samsjuklighetForeligger: element(by.id('diagnoseMultipleDiagnoses'))
         };

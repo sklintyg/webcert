@@ -21,18 +21,18 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Amneskod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 public final class SendMessageToRecipientTypeBuilder {
 
     private static final String AMNE_CODE_SYSTEM = "ffa59d8f-8d7e-46ae-ac9e-31804e8e8499";
-    private static final String PERSON_ID_ROOT = "1.2.752.129.2.1.3.1";
-    private static final String HSA_ID_ROOT = "1.2.752.129.2.1.4.1";
-    private static final String ARBETSPLATSKOD_ROOT = "1.2.752.29.4.71";
 
     private SendMessageToRecipientTypeBuilder() {
     }
@@ -46,7 +46,7 @@ public final class SendMessageToRecipientTypeBuilder {
         request.setMeddelande(arende.getMeddelande());
         request.setMeddelandeId(arende.getMeddelandeId());
         request.setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId());
-        request.setPatientPersonId(buildPersonId(arende));
+        request.setPatientPersonId(InternalConverterUtil.getPersonId(new Personnummer(arende.getPatientPersonId())));
         request.setReferensId(arende.getReferensId());
         request.setRubrik(arende.getRubrik());
         request.setSistaDatumForSvar(arende.getSistaDatumForSvar());
@@ -72,16 +72,9 @@ public final class SendMessageToRecipientTypeBuilder {
         return intygId;
     }
 
-    private static PersonId buildPersonId(Arende arende) {
-        PersonId personId = new PersonId();
-        personId.setRoot(PERSON_ID_ROOT);
-        personId.setExtension(arende.getPatientPersonId().replace("-", ""));
-        return personId;
-    }
-
     private static HosPersonal buildHosPersonalFromWebCertUser(WebCertUser user) {
         HosPersonal hosPersonal = new HosPersonal();
-        hosPersonal.setPersonalId(buildHsaId(user.getHsaId()));
+        hosPersonal.setPersonalId(InternalConverterUtil.getHsaId(user.getHsaId()));
         hosPersonal.setFullstandigtNamn(user.getNamn());
         hosPersonal.setForskrivarkod(user.getForskrivarkod());
         hosPersonal.setEnhet(buildEnhet(user));
@@ -93,11 +86,8 @@ public final class SendMessageToRecipientTypeBuilder {
         SelectableVardenhet sourceVardenhet = user.getValdVardenhet();
         if (sourceVardenhet != null && sourceVardenhet instanceof AbstractVardenhet) {
             AbstractVardenhet valdVardenhet = (AbstractVardenhet) sourceVardenhet;
-            ArbetsplatsKod arbetsplatsKod = new ArbetsplatsKod();
-            arbetsplatsKod.setRoot(ARBETSPLATSKOD_ROOT);
-            arbetsplatsKod.setExtension(valdVardenhet.getArbetsplatskod());
-            enhet.setArbetsplatskod(arbetsplatsKod);
-            enhet.setEnhetsId(buildHsaId(valdVardenhet.getId()));
+            enhet.setArbetsplatskod(InternalConverterUtil.getArbetsplatsKod(valdVardenhet.getArbetsplatskod()));
+            enhet.setEnhetsId(InternalConverterUtil.getHsaId(valdVardenhet.getId()));
             enhet.setEnhetsnamn(valdVardenhet.getNamn());
             enhet.setEpost(valdVardenhet.getEpost());
             enhet.setPostadress(valdVardenhet.getPostadress());
@@ -112,7 +102,7 @@ public final class SendMessageToRecipientTypeBuilder {
     private static Vardgivare buildVardgivare(SelectableVardenhet valdVardgivare) {
         Vardgivare vardgivare = new Vardgivare();
         if (valdVardgivare != null) {
-            vardgivare.setVardgivareId(buildHsaId(valdVardgivare.getId()));
+            vardgivare.setVardgivareId(InternalConverterUtil.getHsaId(valdVardgivare.getId()));
             vardgivare.setVardgivarnamn(valdVardgivare.getNamn());
         }
         return vardgivare;
@@ -129,10 +119,4 @@ public final class SendMessageToRecipientTypeBuilder {
         }
     }
 
-    private static HsaId buildHsaId(String id) {
-        HsaId hsaId = new HsaId();
-        hsaId.setRoot(HSA_ID_ROOT);
-        hsaId.setExtension(id);
-        return hsaId;
-    }
 }

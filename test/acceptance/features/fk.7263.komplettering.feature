@@ -1,6 +1,6 @@
 # language: sv
 @komplettera @fk7263
-Egenskap: Komplettering av intyg
+Egenskap: Komplettering av FK7263-intyg
 
 
 Bakgrund: Jag befinner mig på webcerts förstasida

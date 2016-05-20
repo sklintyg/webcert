@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.web.service.user.dto;
 
 import se.inera.intyg.common.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.model.UserDetails;
+import se.inera.intyg.common.security.common.model.UserDetails;
 
 /**
  * @author andreaskaltenbach
@@ -56,6 +56,4 @@ public class WebCertUser extends IntygUser implements UserDetails {
         this.authorities = intygUser.getAuthorities();
         this.origin = intygUser.getOrigin();
     }
-
-
 }

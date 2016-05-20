@@ -7,7 +7,7 @@ Bakgrund: Logga in och gå in på en patient
 	Och går in på Sök/skriv intyg
 	Och jag går in på en patient
 
-# @vardadmin
+@hurr
 Scenario: Kan kopiera Läkarintyg FK 7263
    När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen tillgänglig

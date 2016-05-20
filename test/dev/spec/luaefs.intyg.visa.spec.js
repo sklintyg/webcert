@@ -99,7 +99,7 @@ describe('Validera visning av Intyg', function() {
     afterAll(function() {
         testdataHelper.deleteIntyg(intygsId);
         specHelper.logout();
-        browser.ignoreSynchronization = true;
+        browser.ignoreSynchronization = false;
     });
 
 });

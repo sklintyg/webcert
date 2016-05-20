@@ -87,9 +87,9 @@
     <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.common.security.authorities.bootstrap.AuthoritiesConfigurationLoader">
       <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
     </bean>
-    <!-- <bean id="authoritiesResolver" class="se.inera.intyg.common.security.authorities.AuthoritiesResolver" />    -->
-    <bean id="commonAuthoritiesResolver" class="se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver" />
 
+    <bean id="commonAuthoritiesResolver" class="se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver" />
+    <bean id="authoritiesHelper" class="se.inera.intyg.common.security.authorities.AuthoritiesHelper" />
   </beans>
   
   <beans profile="dev,wc-init-data">

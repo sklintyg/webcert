@@ -66,8 +66,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              */
 
 
-            function
-            onPageLoad() {
+            function onPageLoad() {
 
                 // Redirect to index if pnr and name isn't specified
                 if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
@@ -77,7 +76,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // Load cert types user can choose from
                 UtkastProxy.getUtkastTypes(function(types) {
                     $scope.certTypes = types;
-                    $scope.intygType = PatientModel.intygType;
+                    if (PatientModel.intygType) {
+                        $scope.intygType = PatientModel.intygType;
+                    }
                 });
 
                 // Load certs for person with specified pnr
@@ -151,6 +152,17 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 return DynamicLabelService.getProperty(key);
             };
 
+            //Use loaded module metadata to look up detailed description for a intygsType
+            $scope.getDetailedDescription = function(intygsType) {
+                var certTypes = $scope.certTypes.filter(function(certType) {
+                    return (certType.id === intygsType);
+                });
+                if (certTypes && certTypes.length>0) {
+                    return certTypes[0].detailedDescription;
+                }
+            };
+
+
             $scope.createDraft = function() {
 
                 var createDraftRequestPayload = {
@@ -173,7 +185,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.openIntyg = function(cert) {
-                if (cert.source === 'WC') {
+                if (cert.status === 'DRAFT_INCOMPLETE' || cert.status === 'DRAFT_COMPLETE') {
                     $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
                 } else {
                     $location.path('/intyg/' + cert.intygType + '/' + cert.intygId);

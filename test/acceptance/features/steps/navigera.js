@@ -17,10 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals protractor, wcTestTools, browser, intyg */
+/*globals protractor, wcTestTools, browser, intyg, logger, pages */
 
 'use strict';
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var helpers = require('./helpers');
+
 module.exports = function() {
 
     this.Given(/^jag går tillbaka$/, function(callback) {
@@ -35,5 +38,32 @@ module.exports = function() {
             .then(function() {
                 callback();
             });
+    });
+
+    this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin, callback) {
+
+        global.intyg.typ = 'Läkarintyg FK 7263';
+        var url = '';
+
+        if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
+            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+        } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
+            url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
+
+        } else if (intygstyp === 'intyget' && origin === undefined) {
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+        } else {
+            logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
+        }
+
+        browser.get(url).then(function() {
+            fkIntygPage.qaPanel.isPresent().then(function(isVisible) {
+                if (isVisible) {
+                    helpers.fetchMessageIds().then(callback);
+                } else {
+                    callback();
+                }
+            });
+        });
     });
 };

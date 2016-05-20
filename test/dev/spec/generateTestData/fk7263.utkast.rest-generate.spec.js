@@ -19,9 +19,9 @@
 
 'use strict';
 var wcTestTools = require('webcert-testtools');
-var restHelper = wcTestTools.helpers.testdata;
+var restHelper = wcTestTools.helpers.rest;
 
-describe('Generate fk utkast', function() {
+xdescribe('Generate fk utkast', function() {
     it('should generate an fk7263 utkast', function() {
         restHelper.createUtkast('fk7263').then(function(response){
             var utkast = response.body;

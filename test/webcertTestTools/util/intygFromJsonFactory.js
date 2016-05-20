@@ -5,13 +5,17 @@
 /*globals JSON*/
 'use strict';
 
+// These are pushed to intygstjänsten using restDataHelper.createIntyg
 var templateJsonObjLuaefs = require('webcert-testtools/testdata/luae_fs-minimal.json');
-var templateJsonObjLuaena = require('webcert-testtools/testdata/luae_na.json');
+var templateJsonObjLuaena = require('webcert-testtools/testdata/intyg.luae_na.json');
+
+// These are pushed to webcert using restDataHelper.createWebcertIntyg
+var templateJsonObjWCLuse = require('webcert-testtools/testdata/webcertIntyg.luse.json');
 
 module.exports = {
     defaultLuaefs: function() {
 
-        templateJsonObj.id = guid();
+        templateJsonObjLuaefs.id = guid();
 
         return {
             id: templateJsonObjLuaefs.id,
@@ -29,14 +33,17 @@ module.exports = {
             additionalInfo: '',
             deleted: false,
             deletedByCareGiver: false,
-            certificateStates: [{
-                target: 'HV',
-                state: 'RECEIVED',
-                timestamp: '2016-04-28T14:00:00.000'
-            }],
+            certificateStates: [
+                {
+                    target: 'HV',
+                    state: 'RECEIVED',
+                    timestamp: '2016-04-28T14:00:00.000'
+                }
+            ],
             revoked: false
         };
-    },defaultLuaena: function() {
+    },
+    defaultLuaena: function() {
         return {
             id: templateJsonObjLuaena.id,
             document: JSON.stringify(templateJsonObjLuaena),
@@ -53,13 +60,19 @@ module.exports = {
             additionalInfo: '',
             deleted: false,
             deletedByCareGiver: false,
-            certificateStates: [{
-                target: 'HV',
-                state: 'RECEIVED',
-                timestamp: '2016-04-28T14:00:00.000'
-            }],
+            certificateStates: [
+                {
+                    target: 'HV',
+                    state: 'RECEIVED',
+                    timestamp: '2016-04-28T14:00:00.000'
+                }
+            ],
             revoked: false
         };
+    },
+    defaultWCLuse: function() {
+        templateJsonObjWCLuse.contents.id = guid();
+        return templateJsonObjWCLuse;
     }
 };
 
@@ -69,6 +82,7 @@ function guid() {
             .toString(16)
             .substring(1);
     }
+
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();
 }

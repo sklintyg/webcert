@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="4080264e-0425-49b3-8cd9-6ca95674ce1f" activeEnvironment="Default" name="DEMO_sendMessageToCare" resourceRoot="" soapui-version="5.2.1" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="49b14921-f60a-4494-b5e3-e28834b8d117" wsaVersion="NONE" name="SendMessageToCareResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.web.intygstjanst.intyg.inera.se/}SendMessageToCareResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl"><con:part><con:url>http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="SendMessageToCareResponderImplService" targetNamespace="http://integration.web.intygstjanst.intyg.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.web.intygstjanst.intyg.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns4="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21">
+<con:soapui-project id="4080264e-0425-49b3-8cd9-6ca95674ce1f" activeEnvironment="Default" name="DEMO_sendMessageToCare" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="49b14921-f60a-4494-b5e3-e28834b8d117" wsaVersion="NONE" name="SendMessageToCareResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.web.intygstjanst.intyg.inera.se/}SendMessageToCareResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl"><con:part><con:url>http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="SendMessageToCareResponderImplService" targetNamespace="http://integration.web.intygstjanst.intyg.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.web.intygstjanst.intyg.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns4="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21">
   <wsdl:import location="http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0?wsdl=SendMessageToCareResponderInterface.wsdl" namespace="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:1:rivtabp21"></wsdl:import>
   <wsdl:binding name="SendMessageToCareResponderImplServiceSoapBinding" type="ns1:SendMessageToCareResponderInterface">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
@@ -373,36 +373,36 @@
       <wsdl:output message="ns1:SendMessageToCareResponse" name="SendMessageToCareResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0</con:endpoint></con:endpoints><con:operation id="ecbbbd8a-4154-4264-90d1-3563891ea58c" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare" name="SendMessageToCare" bindingOperationName="SendMessageToCare" type="Request-Response" outputName="SendMessageToCareResponse" inputName="SendMessageToCare" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="0c7da16c-326d-4aec-a947-0488359c3093" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://test.webcert.intygstjanster.se/services/send-message-to-care/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://10.250.34.20:8080/inera-certificate/send-message-to-care/v1.0</con:endpoint></con:endpoints><con:operation id="ecbbbd8a-4154-4264-90d1-3563891ea58c" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare" name="SendMessageToCare" bindingOperationName="SendMessageToCare" type="Request-Response" outputName="SendMessageToCareResponse" inputName="SendMessageToCare" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="0c7da16c-326d-4aec-a947-0488359c3093" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/send-message-to-care/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">
    <soapenv:Header>
       <urn:LogicalAddress>?</urn:LogicalAddress>
    </soapenv:Header>
    <soapenv:Body>
       <urn1:SendMessageToCare>
-         <urn1:meddelande-id>meddelande4</urn1:meddelande-id>
+         <urn1:meddelande-id>meddelande1</urn1:meddelande-id>
          <urn1:referens-id>ref</urn1:referens-id>
-         <urn1:skickatTidpunkt>2016-02-09T11:00:00.000</urn1:skickatTidpunkt>
+         <urn1:skickatTidpunkt>2016-02-09T11:00:00</urn1:skickatTidpunkt>
          <urn1:intygs-id>
             <urn2:root>TSTNMT2321000156-1039</urn2:root>
-            <urn2:extension>c52b1a56-1886-4557-8595-6dfbe322f984</urn2:extension>
+            <urn2:extension>21e71b3a-1d3f-4c9b-af9b-8690cb1bd710</urn2:extension>
          </urn1:intygs-id>
          <urn1:patientPerson-id>
             <urn2:root>1.2.752.129.2.1.3.3</urn2:root>
-            <urn2:extension>19121212-1212</urn2:extension>
+            <urn2:extension>191212121212</urn2:extension>
          </urn1:patientPerson-id>
          <urn1:logiskAdressMottagare>logiskaddress</urn1:logiskAdressMottagare>
          <urn1:amne>
-            <urn2:code>KOMPLT</urn2:code>
-            <urn2:codeSystem>codesystem</urn2:codeSystem>
+            <urn2:code>OVRIGT</urn2:code>
+            <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>
          </urn1:amne>
          <urn1:rubrik>Rubrik</urn1:rubrik>
          <urn1:meddelande>Meddelande</urn1:meddelande>
          <urn1:skickatAv>
             <urn1:part>
                <urn2:code>FK</urn2:code>
-               <urn2:codeSystem>codesystem</urn2:codeSystem>
+               <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>
             </urn1:part>
          </urn1:skickatAv>
       </urn1:SendMessageToCare>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1:SendMessageToCare"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>

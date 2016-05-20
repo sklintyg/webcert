@@ -42,7 +42,7 @@ function post(options, baseUrl) {
             if (message) {
                 console.log('Error message:', message.statusCode, message.statusMessage /*, body*/ );
             }
-            defer.reject({
+            defer.fulfill({
                 error: error,
                 message: message
             });

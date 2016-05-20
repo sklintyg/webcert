@@ -42,6 +42,10 @@ module.exports = {
         restUtil.login();
         return restUtil.deleteIntyg(id);
     },
+    createWebcertIntyg: function(createJson) {
+        restUtil.login();
+        return restUtil.createWebcertIntyg(createJson);
+    },
     createUtkast: function(intygType, template) {
         restUtil.login();
 
@@ -59,6 +63,9 @@ module.exports = {
         }
         return restUtil.createUtkast(intygType, utkastTemplate);
     },
+    saveUtkast: function(intygType, intygId, version, utkastJson) {
+        return restUtil.saveUtkast(intygType, intygId, version, utkastJson);
+    },
     deleteAllUtkast: function() {
         restUtil.login();
         return restUtil.deleteAllUtkast();
@@ -66,5 +73,20 @@ module.exports = {
     deleteUtkast: function(id) {
         restUtil.login();
         return restUtil.deleteUtkast(id);
+    },
+
+    // Ärenden
+
+    createArende: function(createJson) {
+        restUtil.login();
+        return restUtil.createArende(createJson);
+    },
+    deleteAllArenden: function() {
+        restUtil.login();
+        return restUtil.deleteAllArenden();
+    },
+    deleteArende: function(id) {
+        restUtil.login();
+        return restUtil.deleteArende(id);
     }
 };
