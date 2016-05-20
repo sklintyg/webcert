@@ -15,6 +15,9 @@
     "validTo": {
       "type": "string"
     },
+    "pdfPath": {
+      "type": "string"
+    },
     "texter": {
       "type": "object"
     },
