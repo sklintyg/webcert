@@ -20,21 +20,23 @@
 package se.inera.intyg.webcert.notification_sender.notifications.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.jms.Queue;
-import javax.jms.TextMessage;
 
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -44,19 +46,28 @@ import org.springframework.test.context.ContextConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIntegrationTest {
-    private static final Logger LOG = LoggerFactory.getLogger(RouteIntegrationTest.class);
 
-    private static final int SECONDS_TO_WAIT = 10;
-
+    private static final int SECONDS_TO_WAIT = 20;
     private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
+
+    @Autowired
+    private IntygModuleRegistry mockIntygModuleRegistry;
+
+    @Mock
+    private ModuleApi moduleApi;
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -71,7 +82,10 @@ public class RouteIntegrationTest {
     ObjectMapper objectMapper = new CustomObjectMapper();
 
     @Before
-    public void resetStub() {
+    public void resetStub() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        setupReturnTypeCreateNotification(moduleApi);
+        when(mockIntygModuleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         this.certificateStatusUpdateForCareResponderStub.reset();
     }
 
@@ -87,7 +101,6 @@ public class RouteIntegrationTest {
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
-            System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
             return (numberOfReceivedMessages == 3);
         });
     }
@@ -100,18 +113,12 @@ public class RouteIntegrationTest {
         NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelseType.INTYGSUTKAST_ANDRAT);
 
         sendMessage(notificationMessage1);
-        LOG.info("Message 1 sent");
         sendMessage(notificationMessage2);
-        LOG.info("Message 2 sent");
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfSuccessfulMessages = certificateStatusUpdateForCareResponderStub.getNumberOfSentMessages();
-            LOG.debug("Number of sucessful messages: {}", numberOfSuccessfulMessages);
             if (numberOfSuccessfulMessages == 2) {
                 List<String> utlatandeIds = certificateStatusUpdateForCareResponderStub.getIntygsIdsInOrder();
-                LOG.debug("Number of utlatandeIds: {}", utlatandeIds.size());
-                LOG.debug("First ID: {}", utlatandeIds.get(0));
-                LOG.debug("Second ID: {}", utlatandeIds.get(1));
                 return (utlatandeIds.size() == 2 &&
                         utlatandeIds.get(0).equals(intygsId2) &&
                         utlatandeIds.get(1).equals(intygsId1));
@@ -136,6 +143,20 @@ public class RouteIntegrationTest {
             } catch (Exception e) {
                 throw Throwables.propagate(e);
             }
+        });
+    }
+
+    private void setupReturnTypeCreateNotification(ModuleApi moduleApi) throws Exception {
+        when(moduleApi.createNotification(any(NotificationMessage.class))).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            NotificationMessage invocationMessage = (NotificationMessage) args[0];
+            CertificateStatusUpdateForCareType certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
+            UtlatandeType utlatande = new UtlatandeType();
+            UtlatandeId utlatandeId = new UtlatandeId();
+            utlatandeId.setExtension(invocationMessage.getIntygsId());
+            utlatande.setUtlatandeId(utlatandeId);
+            certificateStatusUpdateForCareType.setUtlatande(utlatande);
+            return certificateStatusUpdateForCareType;
         });
     }
 

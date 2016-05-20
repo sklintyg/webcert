@@ -21,8 +21,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-  
-  <bean id="mockIntygModuleRegistry" class="se.inera.intyg.webcert.notification_sender.mocks.MockIntygModuleRegistry" />
+
+  <bean id="mockIntygModuleRegistry" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.intyg.common.support.modules.registry.IntygModuleRegistry" />
+  </bean>
 
   <bean id="mockSendCertificateServiceClient" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl" />
 

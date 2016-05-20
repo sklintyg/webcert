@@ -36,7 +36,9 @@
     <constructor-arg value="se.inera.intyg.common.support.modules.registry.IntygModuleRegistry" />
   </bean>
 
-  <bean id="transactionManager" class="se.inera.intyg.webcert.notification_sender.mocks.MockTransactionManager"/>
+  <bean id="transactionManager" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.springframework.transaction.PlatformTransactionManager" />
+  </bean>
 
   <bean id="certificateStatusUpdateForCareResponderV1" class="se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub"/>
   <bean id="certificateStatusUpdateForCareResponderV2" class="se.inera.intyg.webcert.notification_sender.mocks.v2.CertificateStatusUpdateForCareResponderStub"/>

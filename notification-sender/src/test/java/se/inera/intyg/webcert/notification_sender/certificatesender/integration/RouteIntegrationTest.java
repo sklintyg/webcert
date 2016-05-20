@@ -55,7 +55,7 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.services.moc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIntegrationTest {
 
-    private static final int SECONDS_TO_WAIT = 10;
+    private static final int SECONDS_TO_WAIT = 20;
 
     private static final String INTYGS_ID_1 = "intygsId1";
 
@@ -85,7 +85,6 @@ public class RouteIntegrationTest {
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfReceivedMessages = sendCertificateServiceClient.getNumberOfReceivedMessages();
-            System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
             return (numberOfReceivedMessages == 3);
         });
     }
@@ -97,7 +96,6 @@ public class RouteIntegrationTest {
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
             int numberOfSentMessages = sendCertificateServiceClient.getNumberOfSentMessages();
-            System.out.println("numberOfReceivedMessages: " + numberOfSentMessages);
             return (numberOfSentMessages == 2);
         });
     }
@@ -126,7 +124,7 @@ public class RouteIntegrationTest {
     }
 
     private int numberOfDLQMessages() throws Exception {
-        Integer count = (Integer) jmsTemplate.browse(dlq,
+        Integer count = jmsTemplate.browse(dlq,
                 (session, browser) -> {
                     int counter = 0;
                     Enumeration<?> msgs = browser.getEnumeration();
