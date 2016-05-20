@@ -114,8 +114,23 @@ var BaseIntyg = JClass._extend({
             }
         }
         return false;
+    },
+    getArendeById: function(handled, id) {
+        var subgroup = 'unhandled';
+        if(handled){
+            subgroup = 'handled';
+        }
+        return element(by.id('arende-' + subgroup + '-' + id));
+    },
+    getAnswerBox: function(id) {
+        return element(by.id('answerText-' + id));
+    },
+    getAnswerButton: function(id) {
+        return element(by.id('sendAnswerBtn-' + id));
+    },
+    markArendeAsHandled: function(id) {
+        return element(by.id('handleCheck-' + id));
     }
-
 });
 
 module.exports = BaseIntyg;

@@ -25,6 +25,12 @@
 var restUtil = require('./../util/rest.util.js');
 var intygTemplates = require('./../testdata/intygTemplates.js');
 var intygGenerator = require('./../util/intygGenerator.util.js');
+var arendeFromJsonFactory = require('./../util/arendeFromJsonFactory.js');
+
+function createArende(createJson) {
+    restUtil.login();
+    return restUtil.createArende(createJson);
+}
 
 module.exports = {
     createIntygFromTemplate: function(intygTemplateName, intygId) {
@@ -76,10 +82,13 @@ module.exports = {
     },
 
     // Ärenden
-
-    createArende: function(createJson) {
-        restUtil.login();
-        return restUtil.createArende(createJson);
+    createArende: createArende,
+    createArendeFromTemplate: function(intygType, intygId, arendeId, meddelande, amne, status, komplettering) {
+        console.log('Creating arende:' + amne + ' id:' + arendeId);
+        var arende = arendeFromJsonFactory.get(meddelande, intygType, intygId, arendeId, amne, status, komplettering);
+        createArende(arende).then(function(response) {
+            console.log('Response code:' + response.statusCode);
+        });
     },
     deleteAllArenden: function() {
         restUtil.login();
