@@ -76,7 +76,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         }
     }
 
-    private void selectVardenhetFromFakeCredentials(FakeAuthenticationToken token,Object details) {
+    private void selectVardenhetFromFakeCredentials(FakeAuthenticationToken token, Object details) {
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
@@ -110,7 +110,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
                 if (ve.getId().equals(enhetId)) {
                     intygUser.setValdVardenhet(ve);    // TODO Måste troligen borra oss ner på mottagningsnivå också!
                     return;
-                } else if(ve.getMottagningar() != null) {
+                } else if (ve.getMottagningar() != null) {
                     for (Mottagning m : ve.getMottagningar()) {
                         if (m.getId().equals(enhetId)) {
                             intygUser.setValdVardenhet(m);
