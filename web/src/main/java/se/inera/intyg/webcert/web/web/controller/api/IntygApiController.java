@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -313,7 +314,7 @@ public class IntygApiController extends AbstractApiController {
             Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
-                    personNummer.getPersonnummer(),
+                    DaoUtil.formatPnrForPersistence(personNummer),
                     enhetsIds,
                     ALL_DRAFTS,
                     intygstyper);

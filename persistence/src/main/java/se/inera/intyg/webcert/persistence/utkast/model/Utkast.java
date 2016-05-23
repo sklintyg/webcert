@@ -28,6 +28,7 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 
 /**
  * A draft of a certificate.
@@ -213,7 +214,7 @@ public class Utkast {
     }
 
     public void setPatientPersonnummer(Personnummer patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer.getPersonnummer();
+        this.patientPersonnummer = patientPersonnummer != null ? DaoUtil.formatPnrForPersistence(patientPersonnummer) : null;
     }
 
     public String getPatientFornamn() {
