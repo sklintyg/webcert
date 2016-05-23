@@ -1,11 +1,11 @@
-$("input[id$='date_undersokningAvPatienten_3']").click();
-$("input[id$='date_kannedomOmPatient_8']").click();
+$("input[id*='date_undersokningAvPatienten_']").click();
+$("input[id*='date_kannedomOmPatient_']").click();
 $("#underlagFinnsNo").prop("checked", true);
 $("#underlagFinnsNo").click();
 $("#sjukdomsforlopp").val("Har blivit sjuk, är nu ännu sjukare");
 $("#sjukdomsforlopp").change();
-$("#diagnoseCode").val("A00").change();
-$("#diagnoseDescription").val("Kolera").change();
+$("#diagnoseCode").val("A00").change().blur();
+$("#diagnoseDescription").val("Kolera").change().blur();
 $("#diagnosgrund").val("I hemmet").change();
 $("#nyBedomningDiagnosgrundNo").prop("checked", true);
 $("#nyBedomningDiagnosgrundNo").click();
