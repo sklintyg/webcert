@@ -229,17 +229,17 @@
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>security-common</artifactId>
-        <version>0-SNAPSHOT</version>
+        <version>${common.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>security-authorities</artifactId>
-        <version>0-SNAPSHOT</version>
+        <version>${common.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>security-siths</artifactId>
-        <version>0-SNAPSHOT</version>
+        <version>${common.version}</version>
       </dependency>
 
       <!-- Intygstyper -->
