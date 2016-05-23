@@ -28,7 +28,7 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-fdescribe('answer arende on luse intyg', function() {
+describe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var arendeId = 'luse-arende-komplt';
@@ -69,21 +69,19 @@ fdescribe('answer arende on luse intyg', function() {
     });
 
     describe('make sure intyg page has been loaded', function() {
-        it('should view fk intyg', function() {
+        it('and showing fk intyg', function() {
             LuseIntygPage.get(intygId);
             expect(LuseIntygPage.isAt()).toBeTruthy();
         });
     });
 
-    describe('answer arende', function() {
-        it('make sure pushed arende is visible', function() {
+    describe('make sure', function() {
+        it('pushed arende is visible', function() {
             var arende = LuseIntygPage.getArendeById(false, arendeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
-    });
 
-    describe('answer arende', function() {
-        it('make sure pushed arende is visible', function() {
+        it('sign displaying komplettering should be handled in calling system is shown', function() {
             expect(LuseIntygPage.getKompletteringDisabledSign(arendeId).isDisplayed()).toBeTruthy();
         });
     });
