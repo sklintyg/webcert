@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**
@@ -79,7 +79,7 @@ public abstract class BaseIntegrationController {
      */
     protected abstract String[] getGrantedRoles();
 
-    protected abstract WebCertUserOriginType getGrantedRequestOrigin();
+    protected abstract UserOriginType getGrantedRequestOrigin();
 
     protected String getUrlBaseTemplate() {
         return urlBaseTemplate;

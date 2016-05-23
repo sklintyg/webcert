@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import se.inera.intyg.common.security.common.service.AuthenticationLogger;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 /**
@@ -26,21 +27,11 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
  * @author npet
  *
  */
-public interface MonitoringLogService {
+public interface MonitoringLogService extends AuthenticationLogger {
 
     void logMailSent(String unitHsaId, String reason);
 
     void logMailMissingAddress(String unitHsaId, String reason);
-
-    void logUserLogin(String userHsaId, String authScheme);
-
-    void logUserLogout(String userHsaId, String authScheme);
-
-    void logUserSessionExpired(String userHsaId, String authScheme);
-
-    void logMissingMedarbetarUppdrag(String userHsaId);
-
-    void logMissingMedarbetarUppdrag(String userHsaId, String enhetsId);
 
     void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne);
 

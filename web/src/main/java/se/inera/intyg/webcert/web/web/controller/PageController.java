@@ -102,7 +102,7 @@ public class PageController {
     public void populateUseMinifiedJavaScript(ModelAndView model) {
         final WebCertUser user = webCertUserService.getUser();
         if (user != null) {
-            model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED));
+            model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED.getName()));
         } else {
             model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
         }

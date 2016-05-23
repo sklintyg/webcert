@@ -19,28 +19,30 @@
 
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.ImmutableSet;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import se.inera.intyg.common.security.authorities.AuthoritiesException;
+import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.Privilege;
+import se.inera.intyg.common.security.common.model.RequestOrigin;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.web.auth.authorities.Privilege;
-import se.inera.intyg.webcert.web.auth.authorities.RequestOrigin;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import com.google.common.collect.ImmutableSet;
+;
 
 /**
  * Created by marced on 14/12/15.
@@ -146,7 +148,7 @@ public class AuthoritiesValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                origins(WebCertUserOriginType.NORMAL).isVerified());
+                origins(UserOriginType.NORMAL).isVerified());
     }
 
     @Test
@@ -156,7 +158,7 @@ public class AuthoritiesValidatorTest {
         thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
-                origins(WebCertUserOriginType.DJUPINTEGRATION).orThrow();
+                origins(UserOriginType.DJUPINTEGRATION).orThrow();
     }
 
     @Test
@@ -164,7 +166,7 @@ public class AuthoritiesValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                notOrigins(WebCertUserOriginType.DJUPINTEGRATION).isVerified());
+                notOrigins(UserOriginType.DJUPINTEGRATION).isVerified());
     }
 
     @Test
@@ -174,7 +176,7 @@ public class AuthoritiesValidatorTest {
         thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
-                notOrigins(WebCertUserOriginType.NORMAL).orThrow();
+                notOrigins(UserOriginType.NORMAL).orThrow();
     }
 
     @Test
@@ -324,8 +326,8 @@ public class AuthoritiesValidatorTest {
                 notFeatures(WebcertFeature.ARBETSGIVARUTSKRIFT).
                 roles(AuthoritiesConstants.ROLE_LAKARE).
                 notRoles("dummy_role").
-                origins(WebCertUserOriginType.NORMAL).
-                notOrigins(WebCertUserOriginType.DJUPINTEGRATION).
+                origins(UserOriginType.NORMAL).
+                notOrigins(UserOriginType.DJUPINTEGRATION).
                 privilege("p1").
                 notPrivilege("dummy_privilege").
                 isVerified());

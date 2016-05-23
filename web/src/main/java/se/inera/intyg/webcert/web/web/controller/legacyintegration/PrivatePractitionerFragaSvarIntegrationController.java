@@ -19,12 +19,11 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_PRIVATLAKARE;
-import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,13 +33,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
-import io.swagger.annotations.Api;
+import static se.inera.intyg.common.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
 
 /**
  * Created by eriklupander on 2015-10-08.
@@ -90,8 +88,8 @@ public class PrivatePractitionerFragaSvarIntegrationController extends BaseInteg
     }
 
     @Override
-    protected WebCertUserOriginType getGrantedRequestOrigin() {
-        return WebCertUserOriginType.NORMAL;
+    protected UserOriginType getGrantedRequestOrigin() {
+        return UserOriginType.NORMAL;
     }
 
 

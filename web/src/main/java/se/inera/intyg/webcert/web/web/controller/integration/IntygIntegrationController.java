@@ -19,28 +19,31 @@
 
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -59,8 +62,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
-    private static final String[] GRANTED_ROLES = new String[] { ROLE_LAKARE, ROLE_TANDLAKARE, ROLE_ADMIN };
-    private static final WebCertUserOriginType GRANTED_ORIGIN = WebCertUserOriginType.DJUPINTEGRATION;
+    private static final String[] GRANTED_ROLES = new String[] {AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN };
+    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
@@ -131,7 +134,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @Override
-    protected WebCertUserOriginType getGrantedRequestOrigin() {
+    protected UserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
 

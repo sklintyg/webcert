@@ -26,12 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.webcert.web.auth.authorities.Role;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
 
     @Autowired
-    private AuthoritiesResolver authoritiesResolver;
+    private CommonAuthoritiesResolver authoritiesResolver;
 
     @Override
     public WebCertUser getUser() {
@@ -50,7 +50,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
-    public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
+    public void enableFeaturesOnUser(Feature... featuresToEnable) {
         enableFeatures(getUser(), featuresToEnable);
     }
 
@@ -62,6 +62,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         enableModuleFeatures(getUser(), moduleName, modulefeaturesToEnable);
     }
 
+        // Return the privilege's intygstyper
     @Override
     public boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
         return checkIfAuthorizedForUnit(getUser(), vardgivarHsaId, enhetsHsaId, isReadOnlyOperation);
@@ -111,10 +112,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
     }
 
-    void enableFeatures(WebCertUser user, WebcertFeature... featuresToEnable) {
+    void enableFeatures(WebCertUser user, Feature... featuresToEnable) {
         LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getFeatures(), ", "));
 
-        for (WebcertFeature feature : featuresToEnable) {
+        for (Feature feature : featuresToEnable) {
             user.getFeatures().add(feature.getName());
         }
 
@@ -137,5 +138,4 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             LOG.debug("Added module feature {} to user", moduleFeatureStr);
         }
     }
-
 }

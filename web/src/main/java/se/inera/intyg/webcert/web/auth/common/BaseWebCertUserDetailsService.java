@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import se.inera.intyg.webcert.web.auth.authorities.AuthoritiesResolver;
+import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -40,19 +40,19 @@ public abstract class BaseWebCertUserDetailsService {
     protected static final String COMMA = ", ";
     protected static final String SPACE = " ";
 
-    private AuthoritiesResolver authoritiesResolver;
+    private CommonAuthoritiesResolver authoritiesResolver;
 
     private WebcertFeatureService webcertFeatureService;
 
 
     // - - - - - Public scope - - - - -
 
-    public AuthoritiesResolver getAuthoritiesResolver() {
+    public CommonAuthoritiesResolver getAuthoritiesResolver() {
         return authoritiesResolver;
     }
 
     @Autowired
-    public void setAuthoritiesResolver(AuthoritiesResolver authoritiesResolver) {
+    public void setAuthoritiesResolver(CommonAuthoritiesResolver authoritiesResolver) {
         this.authoritiesResolver = authoritiesResolver;
     }
 

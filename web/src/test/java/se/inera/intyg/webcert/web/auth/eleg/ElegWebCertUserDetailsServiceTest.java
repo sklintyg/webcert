@@ -19,15 +19,6 @@
 
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -46,9 +37,9 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.security.exception.HsaServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
-import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
@@ -60,6 +51,15 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
 import java.util.Collections;
 import java.util.HashSet;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -108,7 +108,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
-        AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
+        //AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
         //when(authoritiesResolver.getRole(anyString())).thenReturn(role);

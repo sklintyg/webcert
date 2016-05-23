@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.webcert.web.auth.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.dto.Vardgivare;

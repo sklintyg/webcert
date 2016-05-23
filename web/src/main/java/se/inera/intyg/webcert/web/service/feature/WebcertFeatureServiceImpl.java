@@ -19,16 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.feature;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +28,19 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
+import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+
+import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Service that keeps track of active features of Webcert and installed modules.
@@ -166,7 +165,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * WebcertFeature)
      */
     @Override
-    public boolean isFeatureActive(WebcertFeature feature) {
+    public boolean isFeatureActive(Feature feature) {
         return isFeatureActive(feature.getName());
     }
 

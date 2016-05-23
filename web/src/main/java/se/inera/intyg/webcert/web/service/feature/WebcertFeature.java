@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.feature;
 
-public enum WebcertFeature {
+import se.inera.intyg.common.security.common.service.Feature;
+
+public enum WebcertFeature implements Feature {
 
     HANTERA_FRAGOR("hanteraFragor"),
     HANTERA_INTYGSUTKAST("hanteraIntygsutkast"),

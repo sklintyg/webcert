@@ -19,14 +19,12 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,13 +35,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
-import io.swagger.annotations.Api;
+import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -60,8 +56,8 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
 
-    private static final String[] GRANTED_ROLES = new String[] { ROLE_ADMIN, ROLE_LAKARE, ROLE_TANDLAKARE };
-    private static final WebCertUserOriginType GRANTED_ORIGIN = WebCertUserOriginType.UTHOPP;
+    private static final String[] GRANTED_ROLES = new String[] {AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE };
+    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
 
     private String urlFragmentTemplate;
 
@@ -71,7 +67,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     }
 
     @Override
-    protected WebCertUserOriginType getGrantedRequestOrigin() {
+    protected UserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
 
