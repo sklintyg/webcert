@@ -48,7 +48,6 @@ describe('Skapa ärende luse intyg', function() {
 
     afterAll(function() {
         restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteArende(arendeId);
     });
 
     describe('make sure intyg is ready to be sent', function() {

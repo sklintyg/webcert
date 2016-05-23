@@ -35,8 +35,8 @@ describe('webcert intyg', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
+        // Delete utkast also removes associated Arenden
         restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteAllArenden();
 
         var intygType = 'luse';
         var intygData = {
@@ -82,8 +82,7 @@ describe('webcert intyg', function() {
     });
 
     // xit this test to keep testdata for manual testing
-    xit('clean up intyg and arende', function() {
+    it('clean up intyg and arende', function() {
         restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteAllArenden();
     });
 });

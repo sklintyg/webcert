@@ -41,6 +41,8 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.dto.*;
@@ -62,6 +64,9 @@ public class IntygResource {
     private UtkastRepository utkastRepository;
 
     @Autowired
+    private ArendeRepository arendeRepository;
+
+    @Autowired
     private IntygServiceConverter intygServiceConverter;
 
     @Autowired
@@ -81,6 +86,12 @@ public class IntygResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
         Utkast utkast = utkastRepository.findOne(id);
+        List<Arende> arenden = arendeRepository.findByIntygsId(utkast.getIntygsId());
+        if (arenden != null) {
+            for (Arende u : arenden) {
+                arendeRepository.delete(u);
+            }
+        }
         utkastRepository.delete(utkast);
         return Response.ok().build();
     }

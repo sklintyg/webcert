@@ -53,7 +53,6 @@ describe('answer arende on luse intyg', function() {
 
     afterAll(function() {
         restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteArende(arendeId);
     });
 
     describe('make sure intyg page has loaded', function() {
