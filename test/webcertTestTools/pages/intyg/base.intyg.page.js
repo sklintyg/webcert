@@ -128,6 +128,9 @@ var BaseIntyg = JClass._extend({
     getAnswerButton: function(id) {
         return element(by.id('sendAnswerBtn-' + id));
     },
+    getKompletteringDisabledSign: function(id) {
+        return element(by.id('komplettering-disabled-' + id));
+    },
     markArendeAsHandled: function(id) {
         return element(by.id('handleCheck-' + id));
     }

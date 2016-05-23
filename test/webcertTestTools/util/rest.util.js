@@ -22,13 +22,10 @@
  */
 /*globals JSON*/
 'use strict';
-var http = require('http');
 var restClient = require('./restclient.util.js');
 var env = require('./../environment.js').envConfig;
 
 module.exports = {
-
-    // Webcert, login, utkast, ärenden
 
     login: function(userJson) {
 
@@ -50,6 +47,9 @@ module.exports = {
         };
         return restClient.run(options, 'urlenc');
     },
+
+    // Utkast/intyg
+
     createUtkast: function(intygTyp, createJson) {
         var options = {
             url: 'api/utkast/' + intygTyp,

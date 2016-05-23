@@ -33,6 +33,8 @@ function createArende(createJson) {
 }
 
 module.exports = {
+
+    // Intyg services
     createIntygFromTemplate: function(intygTemplateName, intygId) {
         restUtil.login();
         var template = intygTemplates[intygTemplateName];

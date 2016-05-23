@@ -41,6 +41,14 @@ module.exports = {
         element(by.id('logoutLink')).click();
     },
 
+    // User/origin services
+    setUserRole: function(role) {
+        return browser.get('authtestability/user/role/' + role);
+    },
+    setUserOrigin: function(origin) {
+        return browser.get('authtestability/user/origin/' + origin);
+    },
+
     waitForAngularTestability: function() {
         var clientScript =
             'var asyncCallback = arguments[2];\n' +
