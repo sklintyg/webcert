@@ -64,10 +64,10 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
         it('should have dynamic texts on luae_fs draft', function() {
 
             //Min undersökning av patienten
-            expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.1.RBK')).toBe(texts['KV_FKMU_0001.1.RBK']);
+            expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
 
             //Funktionsnedsättning/påverkan
-            expect(UtkastPage.getDynamicLabelText('DFR_16.1.RBK')).toBe(texts['DFR_16.1.RBK']);
+            expect(UtkastPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
 
             //Tilläggsfråga
             expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
@@ -89,10 +89,10 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
 
         it('should have dynamic texts on certificate', function() {
             //Min undersökning av patienten
-            expect(IntygPage.getDynamicLabelText('KV_FKMU_0001.1.RBK')).toBe(texts['KV_FKMU_0001.1.RBK']);
+            expect(IntygPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
 
             //Funktionsnedsättning/påverkan
-            expect(IntygPage.getDynamicLabelText('DFR_16.1.RBK')).toBe(texts['DFR_16.1.RBK']);
+            expect(IntygPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
 
             //Tilläggsfråga
             expect(IntygPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);

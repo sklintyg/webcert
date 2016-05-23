@@ -45,12 +45,12 @@
     {
       "hamtasFran": "Skickas med posten",
       "datum": "2015-09-03",
-      "typ": 6
+      "typ": "PSYKOLOG"
     },
     {
       "hamtasFran": "Arkivet",
       "datum": "2015-09-04",
-      "typ": 2
+      "typ": "HABILITERING"
     }
   ],
   "underlagFinns": true,

@@ -45,7 +45,7 @@
     "underlagFinns": true,
     "underlag": [
         {
-            "typ": 2,
+            "typ": "HABILITERING",
             "datum": "2016-04-07",
             "hamtasFran": "Information om utredning."
         }

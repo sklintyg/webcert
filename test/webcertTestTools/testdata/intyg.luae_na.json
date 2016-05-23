@@ -49,7 +49,7 @@
     "kannedomOmPatient": "2016-05-03",
     "underlagFinns": true,
     "underlag": [{
-        "typ": 2,
+        "typ": "HABILITERING",
         "datum": "2016-04-26",
         "hamtasFran": "vårdgivare"
     }],
