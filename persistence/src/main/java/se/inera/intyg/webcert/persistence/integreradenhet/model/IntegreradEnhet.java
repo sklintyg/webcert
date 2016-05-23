@@ -54,10 +54,11 @@ public class IntegreradEnhet {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime senasteKontrollDatum;
 
-    @Column(name = "SCHEMA_VERSION")
-    @Enumerated(EnumType.STRING)
-    private SchemaVersion schemaVersion;
+    @Column(name = "SCHEMA_VERSION_1")
+    private boolean schemaVersion1;
 
+    @Column(name = "SCHEMA_VERSION_2")
+    private boolean schemaVersion2;
     @PrePersist
     void onPrePersist() {
         if (skapadDatum == null) {
@@ -73,8 +74,8 @@ public class IntegreradEnhet {
     @Override
     public String toString() {
         return "IntegreradEnhet [enhetsId=" + enhetsId + ", enhetsNamn=" + enhetsNamn + ", vardgivarId=" + vardgivarId + ", vardgivarNamn="
-                + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", schemaVersion="
-                + schemaVersion + "]";
+                + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", version1="
+                + isSchemaVersion1() + ", version2=" + isSchemaVersion2() + "]";
     }
 
     public String getEnhetsId() {
@@ -125,11 +126,19 @@ public class IntegreradEnhet {
         this.senasteKontrollDatum = senasteKontrollDatum;
     }
 
-    public SchemaVersion getSchemaVersion() {
-        return schemaVersion;
+    public boolean isSchemaVersion1() {
+        return schemaVersion1;
     }
 
-    public void setSchemaVersion(SchemaVersion schemaVersion) {
-        this.schemaVersion = schemaVersion;
+    public void setSchemaVersion1(boolean schemaVersion1) {
+        this.schemaVersion1 = schemaVersion1;
+    }
+
+    public boolean isSchemaVersion2() {
+        return schemaVersion2;
+    }
+
+    public void setSchemaVersion2(boolean schemaVersion2) {
+        this.schemaVersion2 = schemaVersion2;
     }
 }

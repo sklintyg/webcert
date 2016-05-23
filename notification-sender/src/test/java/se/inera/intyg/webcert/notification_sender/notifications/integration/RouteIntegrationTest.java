@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -48,8 +47,10 @@ import com.google.common.base.Throwables;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
@@ -65,6 +66,9 @@ public class RouteIntegrationTest {
 
     @Autowired
     private IntygModuleRegistry mockIntygModuleRegistry;
+
+    @Autowired
+    private Fk7263InternalToNotification mockFk7263Transform;
 
     @Mock
     private ModuleApi moduleApi;
@@ -82,11 +86,10 @@ public class RouteIntegrationTest {
     ObjectMapper objectMapper = new CustomObjectMapper();
 
     @Before
-    public void resetStub() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        setupReturnTypeCreateNotification(moduleApi);
+    public void init() throws Exception {
         when(mockIntygModuleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
-        this.certificateStatusUpdateForCareResponderStub.reset();
+        certificateStatusUpdateForCareResponderStub.reset();
+        setupConverter();
     }
 
     @Test
@@ -119,21 +122,39 @@ public class RouteIntegrationTest {
             int numberOfSuccessfulMessages = certificateStatusUpdateForCareResponderStub.getNumberOfSentMessages();
             if (numberOfSuccessfulMessages == 2) {
                 List<String> utlatandeIds = certificateStatusUpdateForCareResponderStub.getIntygsIdsInOrder();
-                return (utlatandeIds.size() == 2 &&
-                        utlatandeIds.get(0).equals(intygsId2) &&
-                        utlatandeIds.get(1).equals(intygsId1));
+                System.err.println(utlatandeIds);
+                return (utlatandeIds.size() == 2
+                        && utlatandeIds.get(0).equals(intygsId2)
+                        && utlatandeIds.get(1).equals(intygsId1));
             }
             return false;
         });
     }
 
     private NotificationMessage createNotificationMessage(String intygsId1, HandelseType handelseType) {
-        return new NotificationMessage(intygsId1, "FK7263", new LocalDateTime(),
-                handelseType, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0), NotificationVersion.VERSION_1);
+        return new NotificationMessage(intygsId1, "fk7263", new LocalDateTime(),
+                handelseType, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0), SchemaVersion.VERSION_1);
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
         return objectMapper.writeValueAsString(notificationMessage);
+    }
+
+    private void setupConverter() throws ModuleException {
+        when(mockFk7263Transform.createCertificateStatusUpdateForCareType(any(NotificationMessage.class))).thenAnswer(invocation -> {
+            NotificationMessage msg = (NotificationMessage) invocation.getArguments()[0];
+            if (msg == null) {
+                return null;
+            }
+            CertificateStatusUpdateForCareType request = new CertificateStatusUpdateForCareType();
+            UtlatandeType utlatande = new UtlatandeType();
+            UtlatandeId id = new UtlatandeId();
+            id.setExtension(msg.getIntygsId());
+            utlatande.setUtlatandeId(id);
+            request.setUtlatande(utlatande);
+            return request;
+        });
+
     }
 
     private void sendMessage(final NotificationMessage message) throws Exception {
@@ -145,19 +166,4 @@ public class RouteIntegrationTest {
             }
         });
     }
-
-    private void setupReturnTypeCreateNotification(ModuleApi moduleApi) throws Exception {
-        when(moduleApi.createNotification(any(NotificationMessage.class))).thenAnswer(invocation -> {
-            Object[] args = invocation.getArguments();
-            NotificationMessage invocationMessage = (NotificationMessage) args[0];
-            CertificateStatusUpdateForCareType certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
-            UtlatandeType utlatande = new UtlatandeType();
-            UtlatandeId utlatandeId = new UtlatandeId();
-            utlatandeId.setExtension(invocationMessage.getIntygsId());
-            utlatande.setUtlatandeId(utlatandeId);
-            certificateStatusUpdateForCareType.setUtlatande(utlatande);
-            return certificateStatusUpdateForCareType;
-        });
-    }
-
 }

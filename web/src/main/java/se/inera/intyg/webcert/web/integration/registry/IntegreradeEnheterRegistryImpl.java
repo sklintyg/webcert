@@ -20,6 +20,9 @@
 package se.inera.intyg.webcert.web.integration.registry;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -28,8 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.intygstyper.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.intygstyper.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
-import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 
@@ -41,40 +47,47 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Autowired
     private IntegreradEnhetRepository integreradEnhetRepository;
 
+    private final Set<String> oldIntygTypes = Stream.of(Fk7263EntryPoint.MODULE_ID).collect(Collectors.toSet());
+    private final Set<String> blacklisted = Stream.of(TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID).collect(Collectors.toSet());
+
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.service.integration.IntegreradeEnheterService#addIfNotExistsIntegreradEnhet(se.inera.intyg.webcert.web
+     * se.inera.intyg.webcert.web.service.integration.IntegreradeEnheterService#addIfNotExistsIntegreradEnhet(se.inera.
+     * intyg.webcert.web
      * .service.integration.dto.IntegreradEnhetEntry)
      */
     @Override
     @Transactional("jpaTransactionManager")
-    public void putIntegreradEnhet(IntegreradEnhetEntry entry, SchemaVersion schemaVersion) {
+    public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion2) {
 
         String enhetsId = entry.getEnhetsId();
 
         IntegreradEnhet intEnhet = getIntegreradEnhet(enhetsId);
         if (intEnhet != null) {
-            LOG.debug("Unit {} is already registered", enhetsId);
-            if (schemaVersion.isGreaterThan(intEnhet.getSchemaVersion())) {
-                intEnhet.setSchemaVersion(schemaVersion);
-                integreradEnhetRepository.save(intEnhet);
-                LOG.debug("Unit {} schema version updated to {}", enhetsId, schemaVersion);
+            LOG.debug("Updating existing integrerad enhet", enhetsId);
+            if (schemaVersion1) {
+                intEnhet.setSchemaVersion1(schemaVersion1);
             }
-            return;
+            if (schemaVersion2) {
+                intEnhet.setSchemaVersion2(schemaVersion2);
+            }
+        } else {
+            intEnhet = new IntegreradEnhet();
+            intEnhet.setEnhetsId(enhetsId);
+            intEnhet.setEnhetsNamn(entry.getEnhetsNamn());
+            intEnhet.setVardgivarId(entry.getVardgivareId());
+            intEnhet.setVardgivarNamn(entry.getVardgivareNamn());
+            if (schemaVersion2) {
+                intEnhet.setSchemaVersion1(schemaVersion1);
+            }
+            if (schemaVersion2) {
+                intEnhet.setSchemaVersion2(schemaVersion2);
+            }
+            LOG.debug("Adding unit to registry: {}", intEnhet.toString());
         }
-
-        IntegreradEnhet integreradEnhet = new IntegreradEnhet();
-        integreradEnhet.setEnhetsId(enhetsId);
-        integreradEnhet.setEnhetsNamn(entry.getEnhetsNamn());
-        integreradEnhet.setVardgivarId(entry.getVardgivareId());
-        integreradEnhet.setVardgivarNamn(entry.getVardgivareNamn());
-        integreradEnhet.setSchemaVersion(schemaVersion);
-
-        IntegreradEnhet savedIntegreradEnhet = integreradEnhetRepository.save(integreradEnhet);
-
-        LOG.debug("Added unit to registry: {}", savedIntegreradEnhet.toString());
+        integreradEnhetRepository.save(intEnhet);
     }
 
     /*
@@ -84,41 +97,63 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public boolean isEnhetIntegrerad(String enhetsHsaId) {
-        IntegreradEnhet ie = getIntegreradEnhet(enhetsHsaId);
-        return (ie != null);
+    public boolean isEnhetIntegrerad(String enhetsHsaId, String intygType) {
+        Optional<SchemaVersion> schemaVersion = getSchemaVersion(enhetsHsaId, intygType);
+        return schemaVersion.isPresent();
     }
 
     @Override
     @Transactional("jpaTransactionManager")
-    public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry) {
+    public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType) {
+        Optional<SchemaVersion> schemaVersion = getSchemaVersion(orgEnhetsHsaId, intygType);
+        if (schemaVersion.isPresent()) {
+            IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
+            IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
 
-        IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
-        IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
-
-        if ((orgEntry != null) && (orgEntry.compareTo(newEntry) != 0)) {
-            putIntegreradEnhet(newEntry, enhet.getSchemaVersion());
+            if ((orgEntry != null) && (orgEntry.compareTo(newEntry) != 0)) {
+                putIntegreradEnhet(newEntry, enhet.isSchemaVersion1(), enhet.isSchemaVersion2());
+            }
         }
     }
 
     @Override
     @Transactional("jpaTransactionManager")
     public void deleteIntegreradEnhet(String enhetsHsaId) {
-        IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
-        if (enhet != null) {
-            integreradEnhetRepository.delete(enhet);
+        IntegreradEnhet unit = integreradEnhetRepository.findOne(enhetsHsaId);
+        if (unit != null) {
+            integreradEnhetRepository.delete(unit);
             LOG.debug("IntegreradEnhet {} deleted", enhetsHsaId);
         }
     }
 
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public Optional<SchemaVersion> getSchemaVersion(String enhetsHsaId) {
-        IntegreradEnhet ie = getIntegreradEnhet(enhetsHsaId);
-        if (ie == null) {
+    public Optional<SchemaVersion> getSchemaVersion(String enhetsHsaId, String intygType) {
+        if (blacklisted.contains(intygType)) {
             return Optional.empty();
         }
-        return Optional.of(ie.getSchemaVersion());
+
+        IntegreradEnhet enhet = getIntegreradEnhet(enhetsHsaId);
+
+        if (enhet == null) {
+            return Optional.empty();
+        }
+        // This branch checks the case that the certificate is Situationsanpassat
+        if (!oldIntygTypes.contains(intygType)) {
+            return (enhet.isSchemaVersion2())
+                    ? Optional.of(SchemaVersion.VERSION_2)
+                    : Optional.empty();
+        } else { // Else we are handling a fk7263
+            if (!enhet.isSchemaVersion1()) {
+                return Optional.empty();
+            } else if (enhet.isSchemaVersion2()) {
+                // If enhetv2 is defined we should use version 2 because it is a fk7263 used in the transition from v1
+                // to v2
+                return Optional.of(SchemaVersion.VERSION_2);
+            } else {
+                return Optional.of(SchemaVersion.VERSION_1);
+            }
+        }
     }
 
     private IntegreradEnhet getIntegreradEnhet(String enhetsHsaId) {

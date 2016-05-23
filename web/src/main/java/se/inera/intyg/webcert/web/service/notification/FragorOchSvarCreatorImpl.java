@@ -30,7 +30,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
@@ -57,12 +57,12 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
      * createFragorOchSvar(java.lang.String)
      */
     @Override
-    public FragorOchSvar createFragorOchSvar(String intygsId, NotificationVersion version) {
+    public FragorOchSvar createFragorOchSvar(String intygsId, SchemaVersion version) {
         FragorOchSvar fs = null;
 
-        if (version.equals(NotificationVersion.VERSION_1)) {
+        if (version.equals(SchemaVersion.VERSION_1)) {
             fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
-        } else if (version.equals(NotificationVersion.VERSION_2)) {
+        } else if (version.equals(SchemaVersion.VERSION_2)) {
             fs = performArendeCount(arendeRepository.findByIntygsId(intygsId));
         }
 

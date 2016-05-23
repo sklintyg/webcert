@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -36,8 +35,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
-import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -70,10 +68,10 @@ public class SendNotificationStrategyTest {
 
     @Before
     public void setupIntegreradeEnheter() {
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1)).thenReturn(Optional.of(SchemaVersion.V1));
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2)).thenReturn(Optional.empty());
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3)).thenReturn(Optional.of(SchemaVersion.V1));
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4)).thenReturn(Optional.of(SchemaVersion.V2));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK)).thenReturn(Optional.empty());
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.of(SchemaVersion.VERSION_2));
     }
 
     @Before
@@ -91,52 +89,44 @@ public class SendNotificationStrategyTest {
     @Test
     public void testUtkastOk() {
 
-        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
+        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
         assertTrue(res.isPresent());
-        assertEquals(NotificationVersion.VERSION_1, res.get());
+        assertEquals(SchemaVersion.VERSION_1, res.get());
 
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1, INTYG_FK);
     }
 
     @Test
     public void testUtkastUnitNotIntegrated() {
-        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
+        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
         assertFalse(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2, INTYG_FK);
     }
 
     @Test
     public void testUtkastWrongType() {
-        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_TS)).thenReturn(Optional.empty());
+        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
         assertFalse(res.isPresent());
-        verifyZeroInteractions(mockIntegreradeEnheterRegistry);
-    }
-
-    @Test
-    public void testUtkastWrongSchemaVersionFk7263() {
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2)).thenReturn(Optional.of(SchemaVersion.V2));
-        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
-        assertFalse(res.isPresent());
-
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1, INTYG_TS);
     }
 
     @Test
     public void testUtkastWrongSchemaVersionLuse() {
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4)).thenReturn(Optional.of(SchemaVersion.V1));
-        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.empty());
+        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
         assertFalse(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4);
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
     }
 
     @Test
     public void testUtkastVersion2() {
-        Optional<NotificationVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
         assertTrue(res.isPresent());
-        assertEquals(NotificationVersion.VERSION_2, res.get());
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4);
+        assertEquals(SchemaVersion.VERSION_2, res.get());
+        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
     }
 
     private Utkast createUtkast(String intygId, String intygsTyp, String enhetsId) {

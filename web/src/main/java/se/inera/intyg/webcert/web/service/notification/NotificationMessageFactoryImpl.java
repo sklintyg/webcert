@@ -46,7 +46,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
      * persistence.utkast.model.Utkast, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
      */
     @Override
-    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, NotificationVersion version) {
+    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, SchemaVersion version) {
 
         String intygsId = utkast.getIntygsId();
         String intygsTyp = utkast.getIntygsTyp();

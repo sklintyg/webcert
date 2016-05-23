@@ -46,6 +46,11 @@
       <artifactId>webcert-common</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>fk7263</artifactId>
+    </dependency>
+
     <!-- Schemas -->
     <dependency>
       <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>

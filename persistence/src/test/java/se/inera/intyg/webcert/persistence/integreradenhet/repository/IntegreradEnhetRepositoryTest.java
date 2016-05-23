@@ -19,8 +19,10 @@
 
 package se.inera.intyg.webcert.persistence.integreradenhet.repository;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +33,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
-import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -50,14 +51,16 @@ public class IntegreradEnhetRepositoryTest {
         enhet.setEnhetsNamn("Enhet 1");
         enhet.setVardgivarId("SE1234567890-2B01");
         enhet.setVardgivarNamn("Vardgivare 1");
-        enhet.setSchemaVersion(SchemaVersion.V1);
+        enhet.setSchemaVersion1(true);
+        enhet.setSchemaVersion2(false);
 
         IntegreradEnhet savedEnhet = repository.save(enhet);
 
         assertNotNull(savedEnhet);
         assertNotNull(savedEnhet.getSkapadDatum());
         assertNull(savedEnhet.getSenasteKontrollDatum());
-        assertNotNull(savedEnhet.getSchemaVersion());
+        assertTrue(savedEnhet.isSchemaVersion1());
+        assertFalse(savedEnhet.isSchemaVersion2());
     }
 
 }

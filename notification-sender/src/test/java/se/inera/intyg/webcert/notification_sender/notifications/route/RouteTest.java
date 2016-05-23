@@ -24,23 +24,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.apache.camel.test.spring.CamelTestContextBootstrapper;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.camel.test.spring.*;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,11 +37,11 @@ import org.springframework.test.context.ContextConfiguration;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
@@ -68,6 +57,9 @@ public class RouteTest {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
+
+    @Autowired
+    private Fk7263InternalToNotification mockInternalToNotification; // this is a mock from unit-test-notification-sender-config.xml
 
     @Produce(uri = "direct:receiveNotificationRequestEndpoint")
     private ProducerTemplate producerTemplate;
@@ -88,13 +80,12 @@ public class RouteTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         MockEndpoint.resetMocks(camelContext);
-        setupReturnTypeCreateNotification();
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
     }
 
     @After
     public void cleanup() {
-        Mockito.reset(moduleRegistry, moduleApi);
+        Mockito.reset(moduleRegistry, moduleApi, mockInternalToNotification);
     }
 
     @Test
@@ -124,7 +115,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_1));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -142,7 +133,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -154,7 +145,7 @@ public class RouteTest {
     @Test
     public void testTransformationException() throws Exception {
         // Given
-        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing checked exception"));
+        when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any())).thenThrow(new ModuleException("Testing runtime exception"));
 
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV2.expectedMessageCount(0);
@@ -164,7 +155,6 @@ public class RouteTest {
         // When
         producerTemplate.sendBody(createNotificationMessage(null));
 
-        Mockito.verify(moduleRegistry).getModuleApi(anyString());
         // Then
         assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV2);
@@ -183,7 +173,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(null));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -195,7 +185,7 @@ public class RouteTest {
     @Test
     public void testRuntimeException() throws Exception {
         // Given
-        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new RuntimeException("Testing runtime exception"));
+        when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any())).thenThrow(new RuntimeException("Testing runtime exception"));
 
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV2.expectedMessageCount(0);
@@ -223,7 +213,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(null));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -233,13 +223,11 @@ public class RouteTest {
     }
 
     @Test
-    public void testTemporaryException() throws InterruptedException {
+    public void testTemporaryException() throws InterruptedException, ModuleException {
         // Given
-        notificationWSClient.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new TemporaryException("Testing application error, with exhausted retries");
-            }
+        notificationWSClient.whenAnyExchangeReceived(exchange -> {
+            System.err.println("ITS HAPPENING!");
+            throw new TemporaryException("Testing application error, with exhausted retries");
         });
 
         notificationWSClient.expectedMessageCount(1);
@@ -248,7 +236,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(null));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -260,11 +248,8 @@ public class RouteTest {
     @Test
     public void testTemporaryExceptionNotificationVersion2() throws Exception {
         // Given
-        notificationWSClientV2.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new TemporaryException("Testing application error, with exhausted retries");
-            }
+        notificationWSClientV2.whenAnyExchangeReceived(exchange -> {
+            throw new TemporaryException("Testing application error, with exhausted retries");
         });
 
         notificationWSClient.expectedMessageCount(0);
@@ -273,7 +258,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -285,11 +270,8 @@ public class RouteTest {
     @Test
     public void testPermanentException() throws InterruptedException {
         // Given
-        notificationWSClient.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new PermanentException("Testing technical error");
-            }
+        notificationWSClient.whenAnyExchangeReceived(exchange -> {
+            throw new PermanentException("Testing technical error");
         });
 
         notificationWSClient.expectedMessageCount(1);
@@ -310,11 +292,8 @@ public class RouteTest {
     @Test
     public void testPermanentExceptionNotificationVersion2() throws Exception {
         // Given
-        notificationWSClientV2.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new PermanentException("Testing technical error");
-            }
+        notificationWSClientV2.whenAnyExchangeReceived(exchange -> {
+            throw new PermanentException("Testing technical error");
         });
 
         notificationWSClient.expectedMessageCount(0);
@@ -323,7 +302,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(NotificationVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -332,19 +311,7 @@ public class RouteTest {
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
-    private void setupReturnTypeCreateNotification() throws Exception {
-        when(moduleApi.createNotification(any(NotificationMessage.class))).thenAnswer(invocation -> {
-            Object[] args = invocation.getArguments();
-            NotificationMessage invocationMessage = (NotificationMessage) args[0];
-            if (invocationMessage != null && NotificationVersion.VERSION_2.equals(invocationMessage.getVersion())) {
-                return new se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType();
-            } else {
-                return new CertificateStatusUpdateForCareType();
-            }
-        });
-    }
-
-    private String createNotificationMessage(NotificationVersion version) {
+    private String createNotificationMessage(SchemaVersion version) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",");
         if (version != null) {

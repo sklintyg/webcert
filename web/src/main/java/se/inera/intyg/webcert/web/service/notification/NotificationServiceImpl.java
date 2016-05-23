@@ -43,7 +43,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -336,7 +336,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelseType handelse) {
-        Optional<NotificationVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
+        Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
         if (!version.isPresent()) {
             LOGGER.debug("Will not send notification message for event {}", handelse);

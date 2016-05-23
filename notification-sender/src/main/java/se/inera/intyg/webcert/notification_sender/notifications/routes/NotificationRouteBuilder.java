@@ -24,7 +24,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
@@ -49,7 +49,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
                 .choice()
-                    .when(header(RouteHeaders.VERSION).isEqualTo(NotificationVersion.VERSION_2.name()))
+                    .when(header(RouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
                         .marshal("jaxbMessageDataFormatV2")
                     .otherwise()
                         .marshal("jaxbMessageDataFormat")
@@ -62,7 +62,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .choice()
-                    .when(header(RouteHeaders.VERSION).isEqualTo(NotificationVersion.VERSION_2.name()))
+                    .when(header(RouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
                         .unmarshal("jaxbMessageDataFormatV2")
                         .to("bean:notificationWSClientV2")
                     .otherwise()

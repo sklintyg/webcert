@@ -31,6 +31,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
@@ -99,7 +100,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
 
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
 
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(careUnitId)) {
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(careUnitId, Fk7263EntryPoint.MODULE_ID)) {
             sendNotificationToQueue(fragaSvar);
         } else {
             sendNotificationByMail(fragaSvar);

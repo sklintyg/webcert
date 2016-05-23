@@ -55,7 +55,7 @@ public class NotificationMessageFactoryTest {
 
         Utkast utkast = createUtkast(INTYGS_ID);
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelseType.INTYGSUTKAST_SIGNERAT,
-                NotificationVersion.VERSION_1);
+                SchemaVersion.VERSION_1);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -66,7 +66,7 @@ public class NotificationMessageFactoryTest {
         assertEquals("SE12345678-1000", msg.getLogiskAdress());
         assertEquals("{model}", msg.getUtkast());
         assertNotNull(msg.getFragaSvar());
-        assertEquals(NotificationVersion.VERSION_1, msg.getVersion());
+        assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
     }
 
     private Utkast createUtkast(String intygId) {

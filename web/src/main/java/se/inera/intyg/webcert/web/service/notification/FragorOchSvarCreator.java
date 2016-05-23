@@ -20,10 +20,10 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 
 public interface FragorOchSvarCreator {
 
-    FragorOchSvar createFragorOchSvar(String intygsId, NotificationVersion version);
+    FragorOchSvar createFragorOchSvar(String intygsId, SchemaVersion version);
 
 }

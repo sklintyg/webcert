@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,21 +33,18 @@ import javax.xml.transform.stream.StreamSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -78,8 +76,8 @@ public class ReceiveQuestionResponderImplTest {
 
     @Before
     public void integreradeEnheterExpectations() {
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(INTEGRERAD_ENHET)).thenReturn(Boolean.TRUE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(EJ_INTEGRERAD_ENHET)).thenReturn(Boolean.FALSE);
+        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.TRUE);
+        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(EJ_INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.FALSE);
     }
 
     @Before

@@ -802,4 +802,23 @@
       <column name="VARDGIVARE_NAME" type="varchar(255)" />
     </addColumn>
   </changeSet>
+
+  <changeSet id="38" author="kja">
+    <dropColumn tableName="INTEGRERADE_VARDENHETER" columnName="SCHEMA_VERSION"/>
+
+    <addColumn tableName="INTEGRERADE_VARDENHETER">
+      <column name="SCHEMA_VERSION_1" type="BOOLEAN" defaultValue="false">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+
+    <addColumn tableName="INTEGRERADE_VARDENHETER">
+      <column name="SCHEMA_VERSION_2" type="BOOLEAN" defaultValue="false">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+    <sql>
+      UPDATE INTEGRERADE_VARDENHETER SET SCHEMA_VERSION_1='TRUE';
+    </sql>
+  </changeSet>
 </databaseChangeLog>

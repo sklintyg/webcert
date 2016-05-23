@@ -95,11 +95,11 @@ public class NotificationServiceImplTest {
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(NotificationVersion.VERSION_1));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_1));
 
         NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
-                eq(NotificationVersion.VERSION_1))).thenReturn(notMsg);
+                eq(SchemaVersion.VERSION_1))).thenReturn(notMsg);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
@@ -124,14 +124,14 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_ID, captNotMsg.getIntygsId());
         assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, captNotMsg.getHandelse());
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
-        assertEquals(NotificationVersion.VERSION_1, captNotMsg.getVersion());
+        assertEquals(SchemaVersion.VERSION_1, captNotMsg.getVersion());
     }
 
     private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);
         NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs,
-                NotificationVersion.VERSION_1);
+                SchemaVersion.VERSION_1);
         return notMsg;
     }
 

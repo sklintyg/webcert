@@ -19,9 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -29,13 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.ImmutableMap;
-
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationVersion;
-import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @Component
 public class DefaultSendNotificationStrategyImpl implements SendNotificationStrategy {
@@ -44,15 +37,6 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
-
-    private final List<String> blacklisted = Arrays.asList(CertificateTypes.TSBAS.toString(), CertificateTypes.TSDIABETES.toString());
-
-    private final Map<String, SchemaVersion> certificateVersionMap = ImmutableMap.of(
-            CertificateTypes.FK7263.toString(), SchemaVersion.V1,
-            CertificateTypes.LUSE.toString(), SchemaVersion.V2,
-            CertificateTypes.LISU.toString(), SchemaVersion.V2,
-            CertificateTypes.LUAE_NA.toString(), SchemaVersion.V2,
-            CertificateTypes.LUAE_FS.toString(), SchemaVersion.V2);
 
     /*
      * (non-Javadoc)
@@ -63,36 +47,13 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
      * persistence.utkast.model.Utkast)
      */
     @Override
-    public Optional<NotificationVersion> decideNotificationForIntyg(Utkast utkast) {
+    public Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast) {
 
-        if (!isIntygsTypAllowed(utkast.getIntygsTyp())) {
-            LOG.debug("Utkast '{}' is of type '{}' and is not allowed", utkast.getIntygsId(), utkast.getIntygsTyp());
-            return Optional.empty();
-        }
-
-        Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(utkast.getEnhetsId());
+        Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(utkast.getEnhetsId(), utkast.getIntygsTyp());
         if (!schemaVersion.isPresent()) {
-            LOG.debug("Utkast '{}' belongs to a unit '{}' that is not integrated", utkast.getIntygsId(), utkast.getEnhetsId());
-            return Optional.empty();
+            LOG.debug("Utkast '{}' (type = '{}', unit = '{}') will not spawn notifications", utkast.getIntygsId(), utkast.getIntygsTyp(),
+                    utkast.getEnhetsId());
         }
-
-        if (!isSchemaVersionAllowed(utkast.getIntygsTyp(), schemaVersion.get())) {
-            LOG.debug("Schema version '{}' for unit '{}' is not valid for '{}'", schemaVersion.get(), utkast.getEnhetsId(), utkast.getIntygsTyp());
-            return Optional.empty();
-        }
-
-        Optional<NotificationVersion> ret = NotificationVersion.fromString(schemaVersion.get().name());
-        if (!ret.isPresent()) {
-            LOG.error("Schema version '{}' for unit '{}' is not valid", schemaVersion.get(), utkast.getEnhetsId());
-        }
-        return ret;
-    }
-
-    private boolean isIntygsTypAllowed(String intygsTyp) {
-        return !blacklisted.contains(intygsTyp.toLowerCase());
-    }
-
-    private boolean isSchemaVersionAllowed(String intygsTyp, SchemaVersion schemaVersion) {
-        return schemaVersion.equals(certificateVersionMap.get(intygsTyp.toLowerCase()));
+        return schemaVersion;
     }
 }

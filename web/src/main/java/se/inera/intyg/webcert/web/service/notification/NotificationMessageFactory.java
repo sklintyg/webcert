@@ -24,6 +24,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface NotificationMessageFactory {
 
-    NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, NotificationVersion version);
+    NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, SchemaVersion version);
 
 }

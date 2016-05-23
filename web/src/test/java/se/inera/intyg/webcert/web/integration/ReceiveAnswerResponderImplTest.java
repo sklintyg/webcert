@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
@@ -83,8 +85,8 @@ public class ReceiveAnswerResponderImplTest {
 
     @Before
     public void integreradeEnheterExpectations() {
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(INTEGRERAD_ENHET)).thenReturn(Boolean.TRUE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(EJ_INTEGRERAD_ENHET)).thenReturn(Boolean.FALSE);
+        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.TRUE);
+        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(EJ_INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.FALSE);
     }
 
     @Test
