@@ -30,6 +30,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import se.inera.intyg.common.integration.hsa.model.Mottagning;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.security.authorities.AuthoritiesException;
 import se.inera.intyg.common.security.common.model.IntygUser;
 import se.inera.intyg.common.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
@@ -55,7 +59,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         SAMLCredential credential = createSamlCredential(token);
         Object details = userDetails.loadUserBySAML(credential);
         addAbsentAttributesFromFakeCredentials(token, details);
-
+        selectVardenhetFromFakeCredentials(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
                 new ArrayList<>());
         result.setDetails(details);
@@ -70,6 +74,53 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
                 user.setNamn(((FakeCredentials) token.getCredentials()).getFornamn() + " " +  ((FakeCredentials) token.getCredentials()).getEfternamn());
             }
         }
+    }
+
+    private void selectVardenhetFromFakeCredentials(FakeAuthenticationToken token,Object details) {
+        if (details instanceof IntygUser) {
+            IntygUser user = (IntygUser) details;
+            FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
+            setVardenhetById(fakeCredentials.getEnhetId(), user);
+            setVardgivareByVardenhetId(fakeCredentials.getEnhetId(), user);
+        }
+    }
+
+    private void setVardgivareByVardenhetId(String enhetId, IntygUser intygUser) {
+        for (Vardgivare vg : intygUser.getVardgivare()) {
+            for (Vardenhet ve : vg.getVardenheter()) {
+                if (ve.getId().equals(enhetId)) {
+                    intygUser.setValdVardgivare(vg);
+                    return;
+                } else if (ve.getMottagningar() != null) {
+                    for (Mottagning m : ve.getMottagningar()) {
+                        if (m.getId().equals(enhetId)) {
+                            intygUser.setValdVardgivare(vg);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        throw new AuthoritiesException("Could not select a Vårdgivare given the fake credentials, not logging in.");
+    }
+
+    private void setVardenhetById(String enhetId, IntygUser intygUser) {
+        for (Vardgivare vg : intygUser.getVardgivare()) {
+            for (Vardenhet ve : vg.getVardenheter()) {
+                if (ve.getId().equals(enhetId)) {
+                    intygUser.setValdVardenhet(ve);    // TODO Måste troligen borra oss ner på mottagningsnivå också!
+                    return;
+                } else if(ve.getMottagningar() != null) {
+                    for (Mottagning m : ve.getMottagningar()) {
+                        if (m.getId().equals(enhetId)) {
+                            intygUser.setValdVardenhet(m);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        throw new AuthoritiesException("Could not select a Vardenhet given the fake credentials, not logging in.");
     }
 
     @Override
