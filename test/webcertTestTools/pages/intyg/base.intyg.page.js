@@ -133,6 +133,9 @@ var BaseIntyg = JClass._extend({
     },
     markArendeAsHandled: function(id) {
         return element(by.id('handleCheck-' + id));
+    },
+    getOnlyLakareCanKompletteraSign: function(id) {
+        return element(by.id('answerDisabledReasonPanel-' + id));
     }
 });
 
