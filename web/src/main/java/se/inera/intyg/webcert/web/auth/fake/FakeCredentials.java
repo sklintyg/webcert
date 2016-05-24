@@ -42,8 +42,6 @@ public class FakeCredentials implements Serializable {
 
     public FakeCredentials(FakeCredentialsBuilder builder) {
         this.hsaId = builder.hsaId;
-        this.fornamn = builder.fornamn;
-        this.efternamn = builder.efternamn;
         this.enhetId = builder.enhetId;
         this.lakare = builder.lakare;
         this.tandlakare = builder.tandlakare;
@@ -134,33 +132,19 @@ public class FakeCredentials implements Serializable {
 
     public static class FakeCredentialsBuilder {
         private String hsaId;
-        private String fornamn;
-        private String efternamn;
         private String enhetId;
         private boolean lakare = false;
         private boolean tandlakare = false;
         private String befattningsKod;
         private String forskrivarKod;
 
-        public FakeCredentialsBuilder(String hsaId, String fornamn, String efternamn, String enhetId) {
+        public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
-            this.fornamn = fornamn;
-            this.efternamn = efternamn;
             this.enhetId = enhetId;
         }
 
         public FakeCredentialsBuilder hsaId(String hsaId) {
             this.hsaId = hsaId;
-            return this;
-        }
-
-        public FakeCredentialsBuilder fornamn(String fornamn) {
-            this.fornamn = fornamn;
-            return this;
-        }
-
-        public FakeCredentialsBuilder efternamn(String efternamn) {
-            this.efternamn = efternamn;
             return this;
         }
 

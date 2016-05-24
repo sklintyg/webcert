@@ -36,6 +36,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
  */
 public class UserApiControllerIT extends BaseRestIntegrationTest {
 
+    private static final String DEFAULT_LAKARE_NAME = "Jan Nilsson";
+
     @Test
     public void testGetAnvandare() {
 
@@ -46,7 +48,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json")).
                 body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId())).
                 body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId())).
-                body("namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn()));
+                body("namn", equalTo(DEFAULT_LAKARE_NAME));
     }
 
     @Test
@@ -61,7 +63,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     public void testAndraValdEnhet() {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
-        FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B", "Åsa", "Multi-vardenheter",
+        FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
                 "IFV1239877878-1042").lakare(true).build();
         RestAssured.sessionId = getAuthSession(user);
 
@@ -85,7 +87,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
     public void testAndraValdEnhetMedOgiltigEnhetsId() {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
-        FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B", "Åsa", "Multi-vardenheter",
+        FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
                 "IFV1239877878-1042").lakare(true).build();
         RestAssured.sessionId = getAuthSession(user);
 

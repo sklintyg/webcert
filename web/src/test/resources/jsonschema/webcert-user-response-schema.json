@@ -660,6 +660,12 @@
       "items": {},
       "minItems": 1,
       "type": "array"
+    },
+    "systemRoles": {
+      "additionalItems": false,
+      "items": {},
+      "minItems": 0,
+      "type": "array"
     }
   },
   "required": [

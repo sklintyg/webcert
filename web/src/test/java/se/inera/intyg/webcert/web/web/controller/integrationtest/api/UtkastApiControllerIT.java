@@ -41,6 +41,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
+    private static final String DEFAULT_LAKARE_NAME = "Jan Nilsson";
+
     @Test
     public void testGetFk7263Utkast() {
         testGetUtkast("fk7263");
@@ -73,7 +75,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
                 .body("intygsTyp", equalTo(utkastRequest.getIntygType())).body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId())).body("version", equalTo(0))
-                .body("skapadAv.namn", equalTo(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn())).extract().response();
+                .body("skapadAv.namn", equalTo(DEFAULT_LAKARE_NAME)).extract().response();
 
         // The type-specific model is a serialized json "within" the model property, need to extract that first and then
         // we can assert some basic things.
