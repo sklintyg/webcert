@@ -136,7 +136,7 @@ public class Intyg extends RestClientFixture {
             deletedByCareGiver : deletedByCareGiver,
             additionalInfo : additionalInfo,
 			certificateStates: stateList,
-            document: doc
+            originalCertificate: doc
         ]
     }
 
