@@ -7,6 +7,22 @@
 	===============================================
 	-->
 	<text id="KAT_99.RBK">Intyg avser</text>
+  <text id="KORKORT_AM.RBK">AM</text>
+  <text id="KORKORT_A1.RBK">A1</text>
+  <text id="KORKORT_A2.RBK">A2</text>
+  <text id="KORKORT_A.RBK">A</text>
+  <text id="KORKORT_B.RBK">B</text>
+  <text id="KORKORT_BE.RBK">BE</text>
+  <text id="KORKORT_TRAKTOR.RBK">Traktor</text>
+  <text id="KORKORT_C1.RBK">C1</text>
+  <text id="KORKORT_C1E.RBK">C1E</text>
+  <text id="KORKORT_C.RBK">C</text>
+  <text id="KORKORT_CE.RBK">CE</text>
+  <text id="KORKORT_D1.RBK">D1</text>
+  <text id="KORKORT_D1E.RBK">D1E</text>
+  <text id="KORKORT_D.RBK">D</text>
+  <text id="KORKORT_DE.RBK">DE</text>
+  <text id="KORKORT_TAXI.RBK">Taxi</text>
 
 	<!--
 	===============================================
@@ -15,13 +31,20 @@
 	-->
 	<text id="KAT_100.RBK">Identitet styrkt genom</text>
 
+  <text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
+  <text id="IDENTITET_FORETAG_ELLER_TJANSTEKORT.RBK">Företagskort eller tjänstekort.</text>
+  <text id="IDENTITET_KORKORT.RBK">Svenskt körkort</text>
+  <text id="IDENTITET_PERS_KANNEDOM.RBK">Personlig kännedom</text>
+  <text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
+  <text id="IDENTITET_PASS.RBK">Pass</text>
+
 	<text id="FRM_1.RBK">* SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
 ** SIS-märkt företagskort eller tjänstekort.
 *** Försäkran enligt 18 kap 4 § i Transportstyrelsens föreskrifter (TSFS 2010:125, senast ändrade genom TSFS 2013:2): Identiteten får fastställas genom att en förälder, annan vårdnadshavare, make, maka eller sambo, registrerad partner eller myndigt barn skriftligen försäkrar att lämnade uppgifter om sökandens identitet är riktiga. Den som lämnar en sådan försäkran ska vara närvarande vid identitetskontrollen och kunna styrka sin egen identitet.
 	**** Svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.</text>
 
-	<text id="FRM_2.RBK">Läkaren ska uppmärksamma Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2). Intyget ska vara utfärdat tidigast 2 månader före att ansökan kom in till Transportstyrelsen och i enlighet med vad som sägs i 17 kapitlet.
-	Se: http://www.transportstyrelsen.se.</text>
+	<text id="FRM_2.RBK"><![CDATA[Läkaren ska uppmärksamma Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2). Intyget ska vara utfärdat tidigast 2 månader före att ansökan kom in till Transportstyrelsen och i enlighet med vad som sägs i 17 kapitlet.
+	Se: <a href="http://www.transportstyrelsen.se" target="_blank">http://www.transportstyrelsen.se</a>.]]></text>
 
 	<!--
 	===============================================
@@ -44,24 +67,25 @@
 	KATEGORI 2: Hypoglykemier (lågt blodsocker)
 	===============================================
 	-->
-	<text id="KAT_1.RBK">Allmänt</text>
+	<text id="KAT_2.RBK">Hypoglykemier (lågt blodsocker)</text>
 
 	<text id="FRG_36.RBK">a) Har patienten kunskap om lämpliga åtgärder vid hypoglykemi?</text>
-	<text id="FRG_37.RBK">"b) Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symtom) som bedöms kunna innebära en trafiksäkerhetsrisk?</text>
+	<text id="FRG_37.RBK">b) Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symtom) som bedöms kunna innebära en trafiksäkerhetsrisk?</text>
 	<text id="FRG_38.RBK">c) Saknar patienten förmåga att känna varningstecken på hypoglykemi ("unawareness")?</text>
 	<text id="FRG_39.RBK">d) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under det senaste året?</text>
-	<text id="DFR_39.2">Hur många sådana episoder?</text>
+	<text id="DFR_39.2.RBK">Hur många sådana episoder?</text>
 	<text id="FRG_40.RBK">e) Har patienten haft allvarlig hypoglykemi i trafiken under det senaste året?</text>
-	<text id="DFR_40.2">Hur många sådana episoder och när inträffade de?</text>
+	<text id="DFR_40.2.RBK">Hur många sådana episoder och när inträffade de?</text>
 	<text id="FRG_41.RBK">f) Genomför patienten egenkontroller av blodsocker?</text>
-	<text id="FRD_42.RBK">g) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under vaken tid det senaste året?</text>
+	<text id="FRG_42.RBK">g) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under vaken tid det senaste året?</text>
+  <text id="DFR_42.2.RBK">När?</text>
 
 	<!--
 	===============================================
 	KATEGORI 3: Synintyg
 	===============================================
 	-->
-	<text id="KAT_1.RBK">Synintyg</text>
+	<text id="KAT_3.RBK">Synintyg</text>
 
 	<text id="FRG_43.RBK">a) Ögonläkarintyg kommer att skickas in separat</text>
 	<text id="FRG_44.RBK">b) Är synfältsprövning enligt Donders konfrontationsmetod utan anmärkning?</text>
@@ -73,9 +97,16 @@
 	KATEGORI 4: Bedömning
 	===============================================
 	-->
-	<text id="KAT_1.RBK">Bedömning</text>
+	<text id="KAT_4.RBK">Bedömning</text>
+  <text id="KAT_4.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br/>A1 = lätt motorcykel<br/>A2 = mellanstor motorcykel<br/>A = motorcykel<br/>B = personbil, lätt lastbil och enbart ett lätt släpfordon<br/>BE = personbil, lätt lastbil och ett eller flera släpfordon. Släpens totalvikt får inte överstiga 3,5 ton.<br/>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation</span>]]></text>
 
-	<text id="FRG_33.RBK">Någon av följande behörighetstyper</text>
+  <text id="FRG_33.RBK"><![CDATA[Patienten uppfyller kraven enligt 6 kap. i Transportstyrelsens föreskrifter och allmänna
+    råd om
+    medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS
+    2013:2).
+    Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom anges i 17 kap.
+    Se <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.]]></text>
+	<text id="DFR_33.1.RBK">Någon av följande behörighetstyper</text>
 	<text id="FRG_45.RBK">Om patienten söker behörighet C1, C1E, C, CE, D1, D1E, D, DE eller Taxi, är han eller hon lämplig att inneha sådan behörighet med hänsyn till de körningar och arbetsformer som är aktuella vid sådant innehav? (Se 6 kap. 16 §)</text>
 
 	<text id="FRG_32.RBK">Övriga kommentarer och upplysningar</text>
