@@ -1,0 +1,23 @@
+description = 'Intyg Common (FitNesse fixturer)'
+
+dependencies {
+  compile project(':integration-util')
+
+  compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.0-RC6'
+  compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
+  compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
+  compile 'se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:1.0.1'
+  compile 'org.apache.activemq:activemq-client:5.13.0'
+  compile 'javax.jms:jms-api:1.1-rev-1'
+  compile 'org.codehaus.groovy:groovy-all:2.4.3'
+  compile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1') {
+    exclude(module: 'groovy')
+  }
+  compile 'org.fitnesse:fitnesse:20131110'
+  compile 'org.gebish:geb-core:0.10.0'
+  compile 'org.seleniumhq.selenium:selenium-server:2.48.2'
+  compile('org.skyscreamer:jsonassert:1.2.0') {
+    exclude(module: 'commons-collections')
+  }
+  compile 'org.apache.commons:commons-dbcp2:2.0'
+}
