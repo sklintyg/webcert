@@ -136,6 +136,12 @@ var BaseIntyg = JClass._extend({
     },
     getOnlyLakareCanKompletteraSign: function(id) {
         return element(by.id('answerDisabledReasonPanel-' + id));
+    },
+    getSvaraMedNyttIntygButton: function(id) {
+        return element(by.id('answerWithIntygBtn-' + id));
+    },
+    getKanEjSvaraCheck: function(id) {
+        return element(by.id('cant-komplettera-' + id));
     }
 });
 
