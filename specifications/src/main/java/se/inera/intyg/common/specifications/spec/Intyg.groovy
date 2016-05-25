@@ -25,6 +25,16 @@ import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
+import org.joda.time.LocalDateTime
+import org.springframework.core.io.ClassPathResource
+import se.inera.intyg.common.specifications.spec.util.WsClientFixture
+import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasType
+import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType
+
+import javax.xml.transform.stream.StreamSource
+import java.io.StringWriter
+import javax.xml.bind.*
 
 public class Intyg extends RestClientFixture {
 
@@ -52,7 +62,7 @@ public class Intyg extends RestClientFixture {
     
 	private String template
 
-    def certificate
+    def request
 	
 	public void setSkickat(String value) {
 		skickat = value?.equalsIgnoreCase("ja")
@@ -120,7 +130,7 @@ public class Intyg extends RestClientFixture {
         if (typ.equalsIgnoreCase("fk7263"))
             additionalInfo = "${giltigtFrån} - ${giltigtTill}"
         else if (typ.equalsIgnoreCase("ts-bas") || typ.equalsIgnoreCase("ts-diabetes")) {
-            def korkortstyper = certificate.intygAvser.korkortstyp*.type
+            def korkortstyper = request.intyg.intygAvser.korkortstyp*.value.value
             additionalInfo = "${korkortstyper.join(', ')}"
         }
         [id:String.format(id, utfärdat),
@@ -145,69 +155,65 @@ public class Intyg extends RestClientFixture {
     }
 
     protected document(typ) {
-        try {
-            // slurping the FK7263 template
-            certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("${typ}_${mall}_template.json").getInputStream()))
-        } catch (IOException e) {
-            // if template for specific type cannot be loaded, use generic template
-            certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("generic_template.json").getInputStream()))
-            certificate.typ = typ
+        if (typ == "ts-bas") {
+            JAXBContext jaxbContext = JAXBContext.newInstance(RegisterTSBasType.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            request = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("${typ}_${mall}_template.xml").getInputStream()), RegisterTSBasType.class).getValue()
+
+            request.intyg.intygsId = id
+            request.intyg.grundData.patient.personId.extension = personnr
+
+            if (patientNamn) request.intyg.grundData.patient.fullstandigtNamn = patientNamn
+            if (utfärdarId) request.intyg.grundData.skapadAv.personId.extension = utfärdarId
+            if (utfärdare) request.intyg.grundData.skapadAv.fullstandigtNamn = utfärdare
+            if (enhetsId) request.intyg.grundData.skapadAv.vardenhet.enhetsId.extension = enhetsId
+            if (enhet) request.intyg.grundData.skapadAv.vardenhet.enhetsnamn = enhet
+            if (vårdgivarId) request.intyg.grundData.skapadAv.vardenhet.vardgivare.vardgivarid.extension = vårdgivarId
+            request.intyg.grundData.signeringsTidstampel = utfärdat
+        } else if (typ == "ts-diabetes") {
+            JAXBContext jaxbContext = JAXBContext.newInstance(RegisterTSDiabetesType.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            request = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("${typ}_${mall}_template.xml").getInputStream()), RegisterTSDiabetesType.class).getValue()
+
+            request.intyg.intygsId = id
+            request.intyg.grundData.patient.personId.extension = personnr
+
+            if (patientNamn) request.intyg.grundData.patient.fullstandigtNamn = patientNamn
+            if (utfärdarId) request.intyg.grundData.skapadAv.personId.extension = utfärdarId
+            if (utfärdare) request.intyg.grundData.skapadAv.fullstandigtNamn = utfärdare
+            if (enhetsId) request.intyg.grundData.skapadAv.vardenhet.enhetsId.extension = enhetsId
+            if (enhet) request.intyg.grundData.skapadAv.vardenhet.enhetsnamn = enhet
+            if (vårdgivarId) request.intyg.grundData.skapadAv.vardenhet.vardgivare.vardgivarid.extension = vårdgivarId
+            request.intyg.grundData.signeringsTidstampel = utfärdat
+        } else {
+            try {
+                JAXBContext jaxbContext = JAXBContext.newInstance(RegisterMedicalCertificateType.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                request = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("${typ}_${mall}_template.xml").getInputStream()), RegisterMedicalCertificateType.class).getValue()
+                // slurping the FK7263 template
+                //certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("${typ}_${mall}_template.xml").getInputStream()))
+            } catch (Exception e) {
+                JAXBContext jaxbContext = JAXBContext.newInstance(RegisterMedicalCertificateType.class);
+                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                request = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("generic_template.xml").getInputStream()), RegisterMedicalCertificateType.class).getValue()
+                // if template for specific type cannot be loaded, use generic template
+                //certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("generic_template.xml").getInputStream()))
+                //certificate.typ = typ
+            }
+            request.lakarutlatande.lakarutlatandeId = id
+            request.lakarutlatande.patient.personId.extension = personnr
+
+            if (patientNamn) request.lakarutlatande.patient.fullstandigtNamn = patientNamn
+            if (utfärdarId) request.lakarutlatande.skapadAvHosPersonal.personalId.extension = utfärdarId
+            if (utfärdare) request.lakarutlatande.skapadAvHosPersonal.fullstandigtNamn = utfärdare
+            if (enhetsId) request.lakarutlatande.skapadAvHosPersonal.enhet.enhetsId.extension = enhetsId
+            if (enhet) request.lakarutlatande.skapadAvHosPersonal.enhet.enhetsnamn = enhet
+            if (vårdgivarId) request.lakarutlatande.skapadAvHosPersonal.enhet.vardgivare.vardgivareId.extension = vårdgivarId
+            request.lakarutlatande.signeringsdatum = LocalDateTime.parse(utfärdat)
         }
 
-        // setting the certificate ID
-        certificate.'id' = id
-
-        // setting personnr in certificate XML
-        certificate.grundData.patient.personId = personnr
-		
-		// Ange patientens namn
-		if (patientNamn) certificate.grundData.patient.fullstandigtNamn = patientNamn
-		
-        if (utfärdarId) certificate.grundData.skapadAv.personId = utfärdarId
-		if (utfärdare) certificate.grundData.skapadAv.fullstandigtNamn = utfärdare
-		if (enhetsId) certificate.grundData.skapadAv.vardenhet.enhetsid = enhetsId
-		if (enhet) certificate.grundData.skapadAv.vardenhet.enhetsnamn = enhet
-
-        if (vårdgivarId) certificate.grundData.skapadAv.vardenhet.vardgivare.vardgivarid = vårdgivarId
-		
-        // setting the signing date, from date and to date
-        certificate.grundData.signeringsdatum = utfärdat
-
-        if (typ == "fk7263") {
-            if (certificate.undersokningAvPatienten) certificate.undersokningAvPatienten = utfärdat
-            if (certificate.telefonkontaktMedPatienten) certificate.telefonkontaktMedPatienten = utfärdat
-            if (certificate.journaluppgifter) certificate.journaluppgifter = utfärdat
-            if (certificate.annanReferens) {
-                 certificate.annanReferens = utfärdat
-            } 
-            if (certificate.nedsattMed100) {
-                if (!certificate.nedsattMed100.from)
-                    certificate.nedsattMed100.from = giltigtFrån
-                if (!certificate.nedsattMed100.tom)
-                    certificate.nedsattMed100.tom = giltigtTill
-            } 
-            if (certificate.nedsattMed75) {
-                if (!certificate.nedsattMed75.from)
-                    certificate.nedsattMed75.from = giltigtFrån
-                if (!certificate.nedsattMed75.tom)
-                    certificate.nedsattMed75.tom = giltigtTill
-            } 
-            if (certificate.nedsattMed50) {
-                if (!certificate.nedsattMed50.from)
-                    certificate.nedsattMed50.from = giltigtFrån
-                if (!certificate.nedsattMed50.tom)
-                    certificate.nedsattMed50.tom = giltigtTill
-            } 
-            if (certificate.nedsattMed25) {
-                if (!certificate.nedsattMed25.from)
-                    certificate.nedsattMed25.from = giltigtFrån
-                if (!certificate.nedsattMed25.tom)
-                    certificate.nedsattMed25.tom = giltigtTill
-            } 
-            certificate.giltighet.from = giltigtFrån
-            certificate.giltighet.tom = giltigtTill
-        }
-        
-        JsonOutput.toJson(certificate)
+        StringWriter writer = new StringWriter()
+        JAXB.marshal(request, writer)
+        return writer.toString()
     }
 }

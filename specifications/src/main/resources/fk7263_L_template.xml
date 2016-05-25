@@ -48,19 +48,15 @@
       </skapadAvHosPersonal>
       <vardkontakt>
          <vardkontakttyp>Min_undersokning_av_patienten</vardkontakttyp>
-         <vardkontaktstid>2011-01-26</vardkontaktstid>
+         <vardkontaktstid>2013-04-01</vardkontaktstid>
       </vardkontakt>
       <vardkontakt>
          <vardkontakttyp>Min_telefonkontakt_med_patienten</vardkontakttyp>
-         <vardkontaktstid>2011-01-12</vardkontaktstid>
+         <vardkontaktstid>2013-04-01</vardkontaktstid>
       </vardkontakt>
       <referens>
          <referenstyp>Journaluppgifter</referenstyp>
-         <datum>2010-01-14</datum>
-      </referens>
-      <referens>
-         <referenstyp>Annat</referenstyp>
-         <datum>2010-01-24</datum>
+         <datum>2013-04-01</datum>
       </referens>
       <aktivitet>
          <aktivitetskod>Patienten_behover_fa_kontakt_med_Arbetsformedlingen</aktivitetskod>
@@ -93,7 +89,7 @@
          <beskrivning>Patienten klämde höger överarm vid olycka i hemmet. Problemen har pågått en längre tid.</beskrivning>
       </bedomtTillstand>
       <medicinsktTillstand>
-         <beskrivning>Klämskada på överarm. Z233 Vaccination avseende pest. Z233 Vaccination avseende pest</beskrivning>
+         <beskrivning>Klämskada på skuldra och överarm. Samsjuklighet föreligger. Z233 Vaccination avseende pest. Z600 Problem med anpassning till övergångar i livscykeln. Här förtydligar vi våra diagnoser ytterligare och skriver litegrann för att göra saker tydligare för andra som ska läsa på tex Försäkringskassan.</beskrivning>
          <tillstandskod codeSystemName="ICD-10" code="S47"/>
       </medicinsktTillstand>
       <funktionstillstand>
@@ -104,13 +100,10 @@
          <beskrivning>Patienten bör/kan inte använda armen förrän skadan läkt. Skadan förvärras vid för tidigt påtvingad belastning. Patienten kan inte lyfta armen utan den ska hållas riktad nedåt och i fast läge så mycket som möjligt under tiden för läkning.</beskrivning>
          <typAvFunktionstillstand>Aktivitet</typAvFunktionstillstand>
          <arbetsformaga>
-            <motivering>Skadan har förvärrats vid varje tillfälle patienten använt armen.
-Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg.
-Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.</motivering>
+            <motivering>Skadan har förvärrats vid varje tillfälle patienten använt armen. Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg. Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.</motivering>
             <prognosangivelse>Det_gar_inte_att_bedomma</prognosangivelse>
             <arbetsuppgift>
-               <typAvArbetsuppgift>Dirigent.
-Dirigerar en större orkester på deltid</typAvArbetsuppgift>
+               <typAvArbetsuppgift>Dirigent. Dirigerar en större orkester på deltid</typAvArbetsuppgift>
             </arbetsuppgift>
             <arbetsformagaNedsattning>
                <varaktighetFrom>2011-04-01</varaktighetFrom>
