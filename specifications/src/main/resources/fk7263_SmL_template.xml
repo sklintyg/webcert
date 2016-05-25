@@ -58,6 +58,7 @@
          <beskrivning>Patienten arbetar i kök, sjukdomen omöjliggör kontakt med matvaror.</beskrivning>
          <typAvFunktionstillstand>Aktivitet</typAvFunktionstillstand>
          <arbetsformaga>
+            <motivering>Patienten kan inte utöva sitt yrke förrän en förbättring sker med avseende på yrseln. Det är förenat med livsfara att utföra trapetskonster och samtidigt lida av yrsel. Patientens besvär kommer dock att först minska för att därefter helt upphöra efter genomförd behandling.</motivering>
             <prognosangivelse>Aterstallas_helt</prognosangivelse>
             <arbetsformagaNedsattning>
                <varaktighetFrom>2011-05-05</varaktighetFrom>
