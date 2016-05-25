@@ -28,7 +28,8 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('answer arende on luse intyg', function() {
+// TEMP DISABLED DUE TO INTYGSTJANST CHANGING TO XML FOR REST TESTDATA VIA RESOURCES
+xdescribe('answer arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var arendeId = 'luse-arende-arbtid';

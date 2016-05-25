@@ -26,10 +26,10 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
-var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-fdescribe('arende on luse intyg', function() {
+// TEMP DISABLED DUE TO INTYGSTJANST CHANGING TO XML FOR REST TESTDATA VIA RESOURCES
+xdescribe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var arendeId = 'luse-arende-komplt';
