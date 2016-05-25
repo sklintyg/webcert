@@ -66,7 +66,7 @@ public class IntegreradeEnheterRegistryImplTest {
         ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
         verify(integreradEnhetRepository).save(enhetCaptor.capture());
 
-        assertEquals(true, enhetCaptor.getValue().isSchemaVersion2());
+        assertTrue(enhetCaptor.getValue().isSchemaVersion2());
     }
 
     @Test
@@ -83,10 +83,10 @@ public class IntegreradeEnheterRegistryImplTest {
         registry.putIntegreradEnhet(entry, true, false);
 
         ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository, times(2)).save(enhetCaptor.capture());
+        verify(integreradEnhetRepository, times(1)).save(enhetCaptor.capture());
 
-        assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion1());
-        assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion2());
+        assertTrue(enhetCaptor.getValue().isSchemaVersion1());
+        assertTrue(enhetCaptor.getValue().isSchemaVersion2());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class IntegreradeEnheterRegistryImplTest {
         registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, SjukersattningEntryPoint.MODULE_ID);
 
         ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository, times(4)).save(enhetCaptor.capture());
+        verify(integreradEnhetRepository, times(3)).save(enhetCaptor.capture());
 
         assertNotNull(enhetCaptor.getAllValues().get(0).getSenasteKontrollDatum());
         assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion2());

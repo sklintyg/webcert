@@ -64,7 +64,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
 
         String enhetsId = entry.getEnhetsId();
 
-        IntegreradEnhet intEnhet = getIntegreradEnhet(enhetsId);
+        IntegreradEnhet intEnhet = integreradEnhetRepository.findOne(enhetsId);
         if (intEnhet != null) {
             LOG.debug("Updating existing integrerad enhet", enhetsId);
             if (schemaVersion1) {
@@ -79,12 +79,8 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             intEnhet.setEnhetsNamn(entry.getEnhetsNamn());
             intEnhet.setVardgivarId(entry.getVardgivareId());
             intEnhet.setVardgivarNamn(entry.getVardgivareNamn());
-            if (schemaVersion2) {
-                intEnhet.setSchemaVersion1(schemaVersion1);
-            }
-            if (schemaVersion2) {
-                intEnhet.setSchemaVersion2(schemaVersion2);
-            }
+            intEnhet.setSchemaVersion1(schemaVersion1);
+            intEnhet.setSchemaVersion2(schemaVersion2);
             LOG.debug("Adding unit to registry: {}", intEnhet.toString());
         }
         integreradEnhetRepository.save(intEnhet);
@@ -105,8 +101,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional("jpaTransactionManager")
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType) {
-        Optional<SchemaVersion> schemaVersion = getSchemaVersion(orgEnhetsHsaId, intygType);
-        if (schemaVersion.isPresent()) {
+        if (getSchemaVersion(orgEnhetsHsaId, intygType).isPresent()) {
             IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
             IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
 
@@ -138,21 +133,13 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         if (enhet == null) {
             return Optional.empty();
         }
-        // This branch checks the case that the certificate is Situationsanpassat
+
         if (!oldIntygTypes.contains(intygType)) {
-            return (enhet.isSchemaVersion2())
-                    ? Optional.of(SchemaVersion.VERSION_2)
-                    : Optional.empty();
-        } else { // Else we are handling a fk7263
-            if (!enhet.isSchemaVersion1()) {
-                return Optional.empty();
-            } else if (enhet.isSchemaVersion2()) {
-                // If enhetv2 is defined we should use version 2 because it is a fk7263 used in the transition from v1
-                // to v2
-                return Optional.of(SchemaVersion.VERSION_2);
-            } else {
-                return Optional.of(SchemaVersion.VERSION_1);
-            }
+            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_2) : Optional.empty();
+        } else if (!enhet.isSchemaVersion1()) {
+            return Optional.empty();
+        } else {
+            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_2) : Optional.of(SchemaVersion.VERSION_1);
         }
     }
 

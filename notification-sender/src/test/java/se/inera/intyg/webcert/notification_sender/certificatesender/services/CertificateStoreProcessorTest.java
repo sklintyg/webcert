@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -31,7 +30,8 @@ import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -76,9 +76,7 @@ public class CertificateStoreProcessorTest {
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        ArgumentCaptor<String> String = ArgumentCaptor.forClass(String.class);
-        verify(moduleApi).registerCertificate(String.capture(), eq(LOGICAL_ADDRESS1));
-        assertEquals(BODY, String.getValue());
+        verify(moduleApi).registerCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = TemporaryException.class)
@@ -88,9 +86,6 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = TemporaryException.class)
@@ -100,9 +95,6 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -112,9 +104,6 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -124,9 +113,6 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -136,9 +122,6 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = TemporaryException.class)
@@ -148,9 +131,6 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -160,8 +140,5 @@ public class CertificateStoreProcessorTest {
 
         // When
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-
-        // Then
-        verify(moduleApi).registerCertificate(anyString(), eq(LOGICAL_ADDRESS1));
     }
 }

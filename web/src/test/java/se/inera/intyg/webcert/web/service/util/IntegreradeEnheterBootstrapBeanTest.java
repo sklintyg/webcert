@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.util;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -52,8 +51,6 @@ public class IntegreradeEnheterBootstrapBeanTest {
             assertNotNull(enhet.getEnhetsNamn());
             assertNotNull(enhet.getVardgivarId());
             assertNotNull(enhet.getVardgivarNamn());
-            assertFalse(enhet.isSchemaVersion1());
-            assertFalse(enhet.isSchemaVersion2());
-        }
+       }
     }
 }

@@ -3,5 +3,6 @@
   "enhetsNamn": "WebCert-Integration Enhet 2",
   "vardgivarId": "SE4815162344-1A01",
   "vardgivarNamn": "WebCert-Integration Vårdgivare 1",
-  "schemaVersion": "V1"
+  "schemaVersion1": "true",
+  "schemaVersion2": "false"
 }

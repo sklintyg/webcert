@@ -226,7 +226,6 @@ public class RouteTest {
     public void testTemporaryException() throws InterruptedException, ModuleException {
         // Given
         notificationWSClient.whenAnyExchangeReceived(exchange -> {
-            System.err.println("ITS HAPPENING!");
             throw new TemporaryException("Testing application error, with exhausted retries");
         });
 
