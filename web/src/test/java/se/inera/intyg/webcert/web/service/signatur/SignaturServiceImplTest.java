@@ -22,9 +22,16 @@ package se.inera.intyg.webcert.web.service.signatur;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+
+import javax.persistence.OptimisticLockException;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -33,24 +40,19 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import se.inera.intyg.common.integration.hsa.model.*;
+import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -63,11 +65,6 @@ import se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Util;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -122,7 +119,6 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson, ENHET_ID);
         signedUtkast = createUtkast(INTYG_ID, 3, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, ENHET_ID);
 
-        InternalModelResponse internalModelResponse = new InternalModelResponse(INTYG_JSON);
         vardenhet = new Vardenhet(ENHET_ID, "testNamn");
         vardgivare = new Vardgivare("123", "vardgivare");
         vardgivare.setVardenheter(Collections.singletonList(vardenhet));
@@ -130,8 +126,8 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user = createWebCertUser(true);
 
         when(webcertUserService.getUser()).thenReturn(user);
-        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.updateBeforeSigning(anyString(), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(INTYG_JSON);
 
         setTypedField(intygSignatureService, new SignaturTicketTracker());
     }

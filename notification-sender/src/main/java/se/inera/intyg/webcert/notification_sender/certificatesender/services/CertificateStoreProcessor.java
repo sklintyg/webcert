@@ -19,19 +19,19 @@
 
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import javax.xml.ws.WebServiceException;
+
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-
-import javax.xml.ws.WebServiceException;
 
 /**
  * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages,
@@ -49,7 +49,7 @@ public class CertificateStoreProcessor {
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
         try {
-            moduleApi.registerCertificate(new InternalModelHolder(utkastAsJson), logicalAddress);
+            moduleApi.registerCertificate(utkastAsJson, logicalAddress);
         } catch (ExternalServiceCallException e) {
             switch (e.getErroIdEnum()) {
             case TECHNICAL_ERROR:

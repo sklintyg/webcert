@@ -34,7 +34,8 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
@@ -56,9 +57,9 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             PdfResponse pdfResponse;
             if (!isEmployer) {
-                pdfResponse = moduleApi.pdf(new InternalModelHolder(internalIntygJsonModel), statuses, ApplicationOrigin.WEBCERT);
+                pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT);
             } else {
-                pdfResponse = moduleApi.pdfEmployer(new InternalModelHolder(internalIntygJsonModel), statuses, ApplicationOrigin.WEBCERT);
+                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT);
             }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
@@ -88,7 +89,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            moduleApi.registerCertificate(new InternalModelHolder(internalIntygJsonModel), logicalAddress);
+            moduleApi.registerCertificate(internalIntygJsonModel, logicalAddress);
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
             throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);

@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,7 +42,6 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -73,13 +73,13 @@ public class IntygModuleFacadeTest {
 
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-        when(moduleApi.pdf(any(InternalModelHolder.class), any(List.class), any(ApplicationOrigin.class))).thenReturn(pdfResp);
+        when(moduleApi.pdf(anyString(), any(List.class), any(ApplicationOrigin.class))).thenReturn(pdfResp);
 
         IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>(), false);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
-        verify(moduleApi).pdf(any(InternalModelHolder.class), any(List.class), eq(ApplicationOrigin.WEBCERT));
+        verify(moduleApi).pdf(anyString(), any(List.class), eq(ApplicationOrigin.WEBCERT));
     }
 
     @Test

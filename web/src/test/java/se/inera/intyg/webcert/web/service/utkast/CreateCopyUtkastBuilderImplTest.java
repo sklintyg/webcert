@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -139,11 +140,10 @@ public class CreateCopyUtkastBuilderImplTest {
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
 
@@ -166,11 +166,10 @@ public class CreateCopyUtkastBuilderImplTest {
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false);
 
@@ -193,11 +192,10 @@ public class CreateCopyUtkastBuilderImplTest {
         copyRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         copyRequest.setDjupintegrerad(true);
 
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, null, false);
 
@@ -218,11 +216,10 @@ public class CreateCopyUtkastBuilderImplTest {
 
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
 
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, null, false);
 

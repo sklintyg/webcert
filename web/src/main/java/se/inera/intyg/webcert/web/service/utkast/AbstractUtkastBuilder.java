@@ -31,16 +31,10 @@ import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
+import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.integration.pu.model.Person;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Vardenhet;
@@ -105,9 +99,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        InternalModelResponse draftResponse = getInternalModel(signedIntygHolder.getContents(), moduleApi, draftCopyHolder);
-
-        String draftCopyJson = draftResponse.getInternalModel();
+        String draftCopyJson = getInternalModel(signedIntygHolder.getContents(), moduleApi, draftCopyHolder);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
@@ -162,9 +154,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        InternalModelResponse draftResponse = getInternalModel(orgUtkast.getModel(), moduleApi, draftCopyHolder);
-
-        String draftCopyJson = draftResponse.getInternalModel();
+        String draftCopyJson = getInternalModel(orgUtkast.getModel(), moduleApi, draftCopyHolder);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
@@ -184,11 +174,9 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         return builderResponse;
     }
 
-    protected InternalModelResponse getInternalModel(String jsonModel, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
+    protected String getInternalModel(String jsonModel, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
             throws ModuleException {
-        InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftCopyHolder,
-                new InternalModelHolder(jsonModel));
-        return draftResponse;
+        return moduleApi.createNewInternalFromTemplate(draftCopyHolder, jsonModel);
     }
 
     protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, boolean addRelation, Relation relation,
@@ -328,9 +316,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
     }
 
     private UtkastStatus validateDraft(ModuleApi moduleApi, String draftCopyJson) throws ModuleException {
-
-        InternalModelHolder internalModel = new InternalModelHolder(draftCopyJson);
-        ValidateDraftResponse validationResponse = moduleApi.validateDraft(internalModel);
+        ValidateDraftResponse validationResponse = moduleApi.validateDraft(draftCopyJson);
 
         ValidationStatus validationStatus = validationResponse.getStatus();
 

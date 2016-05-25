@@ -19,6 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.signatur;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+
+import javax.persistence.OptimisticLockException;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
@@ -27,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
@@ -34,15 +42,10 @@ import se.inera.intyg.common.security.common.model.IntygUser;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
@@ -55,12 +58,6 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-
-import javax.persistence.OptimisticLockException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -317,11 +314,10 @@ public class SignaturServiceImpl implements SignaturService {
         utkast.setSenastSparadAv(vardpersonReferens);
 
         try {
-            InternalModelHolder internalModel = new InternalModelHolder(utkast.getModel());
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            InternalModelResponse updatedInternal = moduleApi
-                    .updateBeforeSigning(internalModel, UpdateUserUtil.createUserObject(user), signeringstid);
-            utkast.setModel(updatedInternal.getInternalModel());
+            String updatedInternal = moduleApi
+                    .updateBeforeSigning(utkast.getModel(), UpdateUserUtil.createUserObject(user), signeringstid);
+            utkast.setModel(updatedInternal);
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }

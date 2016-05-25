@@ -19,28 +19,26 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.util.*;
+
+import javax.persistence.OptimisticLockException;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.InternalModelResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
+import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
@@ -59,22 +57,8 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -394,8 +378,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            InternalModelHolder intHolder = new InternalModelHolder(draftAsJson);
-            ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(intHolder);
+            ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(draftAsJson);
 
             draftValidation = convertToDraftValidation(validateDraftResponse);
 
@@ -485,8 +468,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            InternalModelResponse draftResponse = moduleApi.createNewInternal(draftRequest);
-            modelAsJson = draftResponse.getInternalModel();
+            modelAsJson = moduleApi.createNewInternal(draftRequest);
         } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
@@ -599,10 +581,9 @@ public class UtkastServiceImpl implements UtkastService {
         utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
 
         try {
-            InternalModelHolder internalModel = new InternalModelHolder(modelJson);
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            InternalModelResponse updatedInternal = moduleApi.updateBeforeSave(internalModel, hosPerson);
-            utkast.setModel(updatedInternal.getInternalModel());
+            String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
+            utkast.setModel(updatedInternal);
         } catch (ModuleException | ModuleNotFoundException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 // This error message is helpful when debugging save problems.
