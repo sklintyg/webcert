@@ -807,18 +807,18 @@
     <dropColumn tableName="INTEGRERADE_VARDENHETER" columnName="SCHEMA_VERSION"/>
 
     <addColumn tableName="INTEGRERADE_VARDENHETER">
-      <column name="SCHEMA_VERSION_1" type="BOOLEAN" defaultValue="false">
+      <column name="SCHEMA_VERSION_1" type="boolean" defaultValueBoolean="false">
         <constraints nullable="false" />
       </column>
     </addColumn>
 
     <addColumn tableName="INTEGRERADE_VARDENHETER">
-      <column name="SCHEMA_VERSION_2" type="BOOLEAN" defaultValue="false">
+      <column name="SCHEMA_VERSION_2" type="boolean" defaultValueBoolean="false">
         <constraints nullable="false" />
       </column>
     </addColumn>
     <sql>
-      UPDATE INTEGRERADE_VARDENHETER SET SCHEMA_VERSION_1='TRUE';
+      UPDATE INTEGRERADE_VARDENHETER SET SCHEMA_VERSION_1=true;
     </sql>
   </changeSet>
 </databaseChangeLog>
