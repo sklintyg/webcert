@@ -20,31 +20,18 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
-import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
-import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
 public class FmbApiControllerTest {

@@ -19,12 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,16 +27,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-import io.swagger.annotations.Api;
 
 /**
  * Controller exposing services to be used by modules.
@@ -71,6 +64,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
 
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
+
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp);
@@ -91,6 +86,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
         return getPdf(intygsTyp, intygsId, false);
     }
 
@@ -107,6 +103,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
     @Produces("application/pdf")
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
         return getPdf(intygsTyp, intygsId, true);
     }
 
