@@ -86,13 +86,16 @@ public class IntygResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
         Utkast utkast = utkastRepository.findOne(id);
-        List<Arende> arenden = arendeRepository.findByIntygsId(utkast.getIntygsId());
-        if (arenden != null) {
-            for (Arende u : arenden) {
-                arendeRepository.delete(u);
+        if(utkast != null)
+        {
+            List<Arende> arenden = arendeRepository.findByIntygsId(utkast.getIntygsId());
+            if (arenden != null) {
+                for (Arende u : arenden) {
+                    arendeRepository.delete(u);
+                }
             }
+            utkastRepository.delete(utkast);
         }
-        utkastRepository.delete(utkast);
         return Response.ok().build();
     }
 
