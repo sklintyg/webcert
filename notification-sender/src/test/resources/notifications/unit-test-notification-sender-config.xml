@@ -46,9 +46,6 @@
   <bean id="mockFk7263Converter" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification" />
   </bean>
-  <bean id="converterUtil" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.intygstyper.fk7263.model.converter.util.ConverterUtil" />
-  </bean>
   <bean id="fk7263-objectMapper" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="com.fasterxml.jackson.databind.ObjectMapper" />
   </bean>
