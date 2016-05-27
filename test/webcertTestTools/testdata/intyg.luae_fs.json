@@ -1,0 +1,91 @@
+{
+  "typ": "luae_fs",
+  "id": "-",
+  "textVersion": "1.0",
+  "grundData": {
+    "patient": {
+      "samordningsNummer": false,
+      "postort": "Stadby gärde",
+      "postnummer": "100 20",
+      "postadress": "Pgatan 2",
+      "efternamn": "Tolvansson",
+      "fornamn": "Tolvan",
+      "fullstandigtNamn": "Tolvan Tolvansson",
+      "personId": "191212121212"
+    },
+    "skapadAv": {
+      "vardenhet": {
+        "arbetsplatsKod": "45312",
+        "vardgivare": {
+          "vardgivarnamn": "WebCert Vårdgivare 1",
+          "vardgivarid": "TSTNMT2321000156-1002"
+        },
+        "epost": "ve1@vg1.se",
+        "telefonnummer": "0812341234",
+        "postort": "Stadby",
+        "postnummer": "100 10",
+        "postadress": "Enhetsg. 1",
+        "enhetsnamn": "Webcert Enhet 1",
+        "enhetsid": "TSTNMT2321000156-1039"
+      },
+      "specialiteter": [
+        "Kirurg"
+      ],
+      "befattningar": [
+        "Klinikchef",
+        "Forskningsledare"
+      ],
+      "forskrivarKod": "2481632",
+      "fullstandigtNamn": "Leonie Koehl",
+      "personId": "TSTNMT2321000156-103F"
+    },
+    "signeringsdatum": "2015-12-07T15:48:05.000"
+  },
+  "underlag": [
+    {
+      "hamtasFran": "Skickas med posten",
+      "datum": "2015-09-03",
+      "typ": "PSYKOLOG"
+    },
+    {
+      "hamtasFran": "Arkivet",
+      "datum": "2015-09-04",
+      "typ": "HABILITERING"
+    }
+  ],
+  "underlagFinns": true,
+  "tillaggsfragor": [
+    {
+      "id": "9001",
+      "svar": "Tämligen"
+    },
+    {
+      "id": "9002",
+      "svar": "Minst 3 fot"
+    }
+  ],
+  "kannedomOmPatient": "2015-01-07",
+  "undersokningAvPatienten": "2015-09-09",
+  "journaluppgifter":  "2015-09-10",
+  "anhorigsBeskrivningAvPatienten" : "2015-09-11",
+  "annatGrundForMU" : "2015-09-12",
+  "annatGrundForMUBeskrivning" : "Detta är en annan beskrivning",
+
+  "funktionsnedsattningDebut": "Skoldansen",
+  "funktionsnedsattningPaverkan": "Haltar när han dansar",
+  "diagnoser": [
+    {
+      "diagnosBeskrivning": "Klämskada skuldra",
+      "diagnosKodSystem": "ICD_10_SE",
+      "diagnosKod": "S47"
+    },
+    {
+      "diagnosBeskrivning": "Icke specificerad akut infektion i nedre luftvägarna",
+      "diagnosKodSystem": "ICD_10_SE",
+      "diagnosKod": "J22"
+    }
+  ],
+  "ovrigt": "Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar",
+  "kontaktMedFk": true,
+  "anledningTillKontakt": "Vill stämma av ersättningen"
+}

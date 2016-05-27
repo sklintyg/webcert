@@ -1,30 +1,44 @@
 {
-    "id": "80832895-5a9c-450a-bd74-08af43750788",
     "typ": "fk7263",
+    "id": "-",
     "grundData": {
-        "signeringsdatum": "2011-01-26T00:00:00.000",
-        "skapadAv": {
-            "personId": "Personal HSA-ID",
-            "fullstandigtNamn": "En Läkare",
-            "vardenhet": {
-                "enhetsid": "VardenhetY",
-                "enhetsnamn": "Kir mott",
-                "postadress": "Lasarettsvägen 13",
-                "postnummer": "85150",
-                "postort": "Sundsvall",
-                "telefonnummer": "060-1818000",
-                "vardgivare": {
-                    "vardgivarid": "VardgivarId",
-                    "vardgivarnamn": "Landstinget Norrland"
-                },
-                "arbetsplatsKod": "123456789011"
-            }
-        },
         "patient": {
             "personId": "19121212-1212",
-            "fullstandigtNamn": "Test Testorsson",
-            "efternamn": "Test Testorsson"
-        }
+            "fullstandigtNamn": "Tolvan Tolvansson",
+            "fornamn": "Tolvan",
+            "efternamn": "Tolvansson",
+            "postadress": "Svensson, Storgatan 1, PL 1234",
+            "postnummer": "12345",
+            "postort": "Småmåla",
+            "samordningsNummer": false
+        },
+        "skapadAv": {
+            "personId": "TSTNMT2321000156-103F",
+            "fullstandigtNamn": "Leonie Koehl",
+            "forskrivarKod": "0000000",
+            "specialiteter": [
+                "Kirurg"
+            ],
+            "befattningar": [
+                "Klinikchef",
+                "Forskningsledare"
+            ],
+            "vardenhet": {
+                "enhetsid": "TSTNMT2321000156-1039",
+                "enhetsnamn": "NMT vg1 ve2",
+                "postadress": "NMT gata 2",
+                "postnummer": "12345",
+                "postort": "Testhult",
+                "telefonnummer": "0101112131415",
+                "epost": "enhet2@webcert.invalid.se",
+                "vardgivare": {
+                    "vardgivarid": "TSTNMT2321000156-1002",
+                    "vardgivarnamn": "NMT vg1"
+                },
+                "arbetsplatsKod": "1234567890"
+            }
+        },
+        "signeringsdatum": "2016-04-28T12:40:04.000"
     },
     "giltighet":{
         "from" :"2011-01-26",

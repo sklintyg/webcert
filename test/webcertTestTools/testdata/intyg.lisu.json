@@ -1,25 +1,8 @@
 {
-    "id": "5875f7e1-db19-420b-a25c-5e3d04ce80f9",
+    "typ": "lisu",
+    "id": "-",
     "textVersion": "0.9",
     "grundData": {
-        "skapadAv": {
-            "personId": "IFV1239877878-1049",
-            "fullstandigtNamn": "Jan Nilsson",
-            "vardenhet": {
-                "enhetsid": "IFV1239877878-1042",
-                "enhetsnamn": "WebCert-Enhet1",
-                "postadress": "Storgatan 1",
-                "postnummer": "12345",
-                "postort": "Småmåla",
-                "telefonnummer": "0101234567890",
-                "epost": "enhet1@webcert.invalid.se",
-                "vardgivare": {
-                    "vardgivarid": "IFV1239877878-1041",
-                    "vardgivarnamn": "WebCert-Vårdgivare1"
-                },
-                "arbetsplatsKod": "1234567890"
-            }
-        },
         "patient": {
             "personId": "19121212-1212",
             "fullstandigtNamn": "Tolvan Tolvansson",
@@ -30,7 +13,28 @@
             "postort": "Småmåla",
             "samordningsNummer": false
         },
-        "relation": {}
+        "skapadAv": {
+            "personId": "TSTNMT2321000156-103F",
+            "fullstandigtNamn": "Leonie Koehl",
+            "forskrivarKod": "0000000",
+            "befattningar": [ ],
+            "specialiteter": [ ],
+            "vardenhet": {
+                "enhetsid": "TSTNMT2321000156-1039",
+                "enhetsnamn": "NMT vg1 ve2",
+                "postadress": "NMT gata 2",
+                "postnummer": "12345",
+                "postort": "Testhult",
+                "telefonnummer": "0101112131415",
+                "epost": "enhet2@webcert.invalid.se",
+                "vardgivare": {
+                    "vardgivarid": "TSTNMT2321000156-1002",
+                    "vardgivarnamn": "NMT vg1"
+                },
+                "arbetsplatsKod": "1234567890"
+            }
+        },
+        "signeringsdatum": "2016-04-28T12:40:04.000"
     },
     "undersokningAvPatienten": "2016-05-10",
     "telefonkontaktMedPatienten": "2016-05-10",

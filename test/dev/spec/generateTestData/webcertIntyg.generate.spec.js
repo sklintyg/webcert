@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals fdescribe, browser*/
+/*globals browser*/
 
 'use strict';
 var wcTestTools = require('webcert-testtools');
@@ -24,24 +24,35 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var specHelper = wcTestTools.helpers.spec;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('webcert intyg', function() {
+describe('generate', function() {
 
-    var intygId = 'luse-arende-test';
-
-    it('generate luse and all arendetypes', function() {
+    it('intyg of all types', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
-        restTestdataHelper.deleteUtkast(intygId);
+        function createIntyg(intygType) {
+            var intygId = intygType + '-protractor';
+            restTestdataHelper.deleteUtkast(intygId);
 
-        var intygType = 'luse';
-        var intygData = {
-            'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
-            'utkastStatus':'SIGNED',
-            'revoked':false,
-            'relations':[{'intygsId':intygId,'status':'INTYG'}]
-        };
-        restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
-        });
+            var intygData = {
+                'contents': intygGenerator.getIntygJson({'intygType': intygType, 'intygId': intygId}),
+                'utkastStatus': 'SIGNED',
+                'revoked': false,
+                'relations': [
+                    {'intygsId': intygId, 'status': 'INTYG'}
+                ]
+            };
+            restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
+                console.log('Tried to create intyg ' + intygId);
+            }, function(error) {
+                console.log('Failed to create intyg ' + intygId);
+            });
+        }
+
+        createIntyg('fk7263');
+        createIntyg('luse');
+        createIntyg('luae_na');
+        createIntyg('luae_fs');
+        createIntyg('lisu');
     });
 });
