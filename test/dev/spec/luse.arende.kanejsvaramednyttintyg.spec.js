@@ -28,8 +28,7 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-// TEMP DISABLED DUE TO INTYGSTJANST CHANGING TO XML FOR REST TESTDATA VIA RESOURCES
-xdescribe('arende on luse intyg', function() {
+describe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var arendeId = 'luse-arende-komplt';
@@ -57,10 +56,12 @@ xdescribe('arende on luse intyg', function() {
                     }
                 ]);
         });
+        restTestdataHelper.createIntygFromTemplate('luseMax', intygId);
     });
 
     afterAll(function() {
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteIntyg(intygId);
     });
 
     describe('make sure intyg page has been loaded', function() {

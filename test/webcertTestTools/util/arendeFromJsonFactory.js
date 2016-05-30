@@ -47,7 +47,7 @@ module.exports = {
          "vidarebefordrad": false,
          "signeratAv": "TSTNMT2321000156-103F",
          "signeratAvName": "Leonie Koehl",
-         "enhet": "TSTNMT2321000156-1039",
+         "enhetId": "TSTNMT2321000156-1039",
          "senasteHandelse": "",
          "vardaktorName": "",
          "kontaktInfo": [

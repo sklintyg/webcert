@@ -381,7 +381,7 @@ public class ArendeServiceImpl implements ArendeService {
     protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
         if (!webcertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsId);
+                    "User not authorized for enhet " + enhetsId);
         }
     }
 
