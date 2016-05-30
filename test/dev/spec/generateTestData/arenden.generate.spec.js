@@ -26,7 +26,7 @@ var arendeFromJsonFactory = wcTestTools.arendeFromJsonFactory;
 var specHelper = wcTestTools.helpers.spec;
 var intygGenerator = wcTestTools.intygGenerator;
 
-fdescribe('webcert intyg', function() {
+describe('webcert intyg', function() {
 
     var arendeIndex = 1;
 

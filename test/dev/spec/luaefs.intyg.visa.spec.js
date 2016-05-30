@@ -31,7 +31,6 @@ var restUtil = wcTestTools.restUtil;
 // used for some assertions of non-transformed values.
 var luaefsTemplate = require('webcert-testtools/testdata/luae_fs-minimal.json');
 
-// Use fdescribe to run in isolation.
 describe('Validera visning av Intyg', function() {
 
     var intygsId;

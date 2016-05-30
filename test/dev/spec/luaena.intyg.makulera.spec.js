@@ -29,7 +29,6 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-// Use fdescribe to run in isolation.
 describe('Validera makulering av luae_na Intyg', function() {
 
     var intyg = intygFromJsonFactory.defaultLuaena();

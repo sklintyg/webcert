@@ -28,7 +28,6 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-// Use fdescribe to run in isolation.
 describe('Validera sändning av luae_na Intyg', function() {
 
     var intyg = intygFromJsonFactory.defaultLuaena();
