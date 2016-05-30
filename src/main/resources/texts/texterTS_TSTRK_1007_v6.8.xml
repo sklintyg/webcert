@@ -6,6 +6,20 @@
 	===============================================
 	-->
 	<text id="KAT_99.RBK">Intyg avser</text>
+  <text id="KAT_99.HLP"><![CDATA[<span style="text-align:left">C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation<br/>Annat = (AM,A1,A2,A,B,BE eller Traktor)</span>]]></text>
+  <text id="FRG_1.RBK">Detta intyg ska användas vid förlängd giltighet av högre behörighet, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation.</text>
+  <text id="FRG_1.HLP">Grupp II omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C och CE.<br/> Grupp III omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C, CE, D1, D1E, D och DE.</text>
+  <text id="FRG_1.2.RBK">Intyget kan också användas när Transportstyrelsen i andra fall begärt ett läkarintyg. Markera då endast i rutan Annat nedan.</text>
+  <text id="KORKORT_C1.RBK">C1</text>
+  <text id="KORKORT_C1E.RBK">C1E</text>
+  <text id="KORKORT_C.RBK">C</text>
+  <text id="KORKORT_CE.RBK">CE</text>
+  <text id="KORKORT_D1.RBK">D1</text>
+  <text id="KORKORT_D1E.RBK">D1E</text>
+  <text id="KORKORT_D.RBK">D</text>
+  <text id="KORKORT_DE.RBK">DE</text>
+  <text id="KORKORT_TAXI.RBK">Taxi</text>
+  <text id="KORKORT_ANNAT.RBK">Annat</text>
 
 	<!--
 	===============================================
@@ -13,21 +27,30 @@
 	===============================================
 	-->
 	<text id="KAT_100.RBK">Identitet styrkt genom</text>
+  <text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
+  <text id="IDENTITET_FORETAG_ELLER_TJANSTEKORT.RBK">Företagskort eller tjänstekort.</text>
+  <text id="IDENTITET_KORKORT.RBK">Svenskt körkort</text>
+  <text id="IDENTITET_PERS_KANNEDOM.RBK">Personlig kännedom</text>
+  <text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
+  <text id="IDENTITET_PASS.RBK">Pass</text>
 
 	<!--
 	===============================================
 	KATEGORI 1: Synfuntioner
 	===============================================
 	-->
-	<text id="KAT_1.RBK">Synfunktioner</text>
+	<text id="KAT_1.RBK">1. Synfunktioner</text>
 
-	<text id="FRG_3.RBK">Tecken på synfältsdefekter vid undesökning enligt Donders konfrontationsmetod?</text>
-	<text id="FRG_4.RBK">Framkommer anamnestiska uppgifter om begränsning av seendet vid nedsatt belysning?</text>
-	<text id="FRG_5.RBK">Har patienten någon progressiv ögonsjukdom?</text>
-	<text id="FRG_6.RBK">Framkommer dubbelseende vid prövning av ögats rörlighet (prövningen ska göras i de åtta huvudmeridianerna)?</text>
-	<text id="FRG_7.RBK">Förekommer nystagmus?</text>
-	<text id="FRG_8.RBK">Värden för synskärpa</text>
-
+	<text id="FRG_3.RBK">a) Tecken på synfältsdefekter vid undesökning enligt Donders konfrontationsmetod?</text>
+	<text id="FRG_4.RBK">b) Framkommer anamnestiska uppgifter om begränsning av seendet vid nedsatt belysning?</text>
+	<text id="FRG_5.RBK">c) Har patienten någon progressiv ögonsjukdom?</text>
+  <text id="FRG_3-5.INF">Om någon av frågorna a-c besvaras med ja eller om det bedöms sannolikt att synfältsdefekter föreligger krävs läkarintyg av ögonspecialist.</text>
+	<text id="FRG_6.RBK">d) Framkommer dubbelseende vid prövning av ögats rörlighet (prövningen ska göras i de åtta huvudmeridianerna)?</text>
+	<text id="FRG_7.RBK">e) Förekommer nystagmus?</text>
+	<text id="FRG_8.RBK">f) Värden för synskärpa</text>
+  <text id="FRG_8.INF">Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0<br/><br/> OBS! Uppgifterna om synskärpa och korrektion kan grundas på tidigare utförd undersökning av bland annat legitimerad optiker. Uppgifterna ska då ingå som underlag vid läkarens samlade bedömning.</text>
+  <text id="FRG_9.RBK">Högsta styrka i något av glasen överskrider plus 8 dioptrier</text>
+  <text id="FRG_9.INF">Intyg om korrektionsglasens styrka måste skickas in.</text>
 
 	<!--
 	===============================================
@@ -46,7 +69,7 @@
 	<text id="KAT_3.RBK">Rörelseorganens funktioner</text>
 
 	<text id="FRG_12.RBK">a) Har patienten någon sjukdom eller funktionsnedsättning som påverkar rörligheten och som medför att fordon inte kan köras på ett trafiksäkert sätt?</text>
-	<text id="DFR_12.2">Ange vilken typ av nedsättning eller sjukdom:</text>
+	<text id="DFR_12.2.RBK">Ange vilken typ av nedsättning eller sjukdom:</text>
 	<text id="FRG_13.RBK">b) Är rörelseförmågan otillräcklig för att kunna hjälpa passagerare in och ut ur fordonet samt med bilbälte?</text>
 
 	<!--
@@ -59,7 +82,7 @@
 	<text id="FRG_14.RBK">a) Föreligger hjärt- eller kärlsjukdom som kan medföra en påtaglig risk för att hjärnans funktioner akut försämras eller som i övrigt innebär en trafiksäkerhetsrisk?</text>
 	<text id="FRG_15.RBK">b) Finns tecken på hjärnskada efter trauma, stroke eller annan sjukdom i centrala nervsystemet?</text>
 	<text id="FRG_16.RBK">c) Föreligger viktiga riskfaktorer för stroke (tidigare stroke eller TIA, förhöjt blodtryck, förmaksflimmer eller kärlmissbildning)?</text>
-	<text id="DFR_16.2">Typ av sjukdom:</text>
+	<text id="DFR_16.2.RBK">Typ av sjukdom:</text>
 
 	<!--
 	===============================================
@@ -76,6 +99,7 @@
 	<text id="DFR_19.1.RBK">Kost</text>
 	<text id="DFR_19.2.RBK">Tabletter</text>
 	<text id="DFR_19.3.RBK">Insulin</text>
+  <text id="DFR_19.3.INF">Har patienten tablett- eller insulinbehandlad diabetes krävs ett läkarintyg gällande sjukdomen</text>
 
 	<!--
 	===============================================
@@ -134,6 +158,7 @@
 	<text id="DFR_25.1.RBK">a) Finns journaluppgifter, anamnestiska uppgifter, resultat av laboratorieprover eller andra tecken på missbruk eller beroende av alkohol, narkotika eller läkemedel?</text>
 	<text id="DFR_25.2.RBK">b) Har patienten vid något tillfälle varit föremål för vårdinsatser för missbruk eller beroende av alkohol, narkotika eller läkemedel?</text>
 	<text id="DFR_25.3.RBK">Om någon av frågorna 11a) eller 11b) besvaras med ja, behövs det provtagning avseende aktuellt bruk av alkohol eller narkotika?</text>
+  <text id="DFR_25.3.INF">Om provtagning görs ska resultatet redovisas separat.</text>
 
 	<text id="FRG_26.RBK">c) Pågår regelbundet läkarordinerat bruk av läkemedel som kan innebära en trafiksäkerhetsrisk?</text>
 	<text id="DFR_26.1.RBK">Läkemedel och ordinerad dos:</text>
@@ -193,10 +218,9 @@
 	-->
 	<text id="KAT_101.RBK">Bedömning</text>
 
-	Patienten uppfyller kraven enligt Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2) för:
-
-	<text id="FRG_33.RBK">Någon av följande behörigheter:</text>
+  <text id="FRG_33.RBK">Patienten uppfyller kraven enligt Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2) för:</text>
+	<text id="DFR_33.1.RBK">Någon av följande behörigheter:</text>
+  <text id="DFR_33.2.RBK">Kan inte ta ställning</text>
 	<text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i:</text>
-
 
 </texter>
