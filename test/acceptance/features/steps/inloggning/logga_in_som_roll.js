@@ -59,9 +59,9 @@ module.exports = function() {
         console.log('Kakor accepteras: ' + !inteAccepteratKakor);
         var userObj = {
             fornamn: 'Åsa',
-            efternamn: 'Svensson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003',
+            efternamn: 'Andersson',
+            hsaId: 'IFV1239877878-104B',
+            enhetId: 'IFV1239877878-1042',
             lakare: true,
             forskrivarKod: '2481632'
         };
