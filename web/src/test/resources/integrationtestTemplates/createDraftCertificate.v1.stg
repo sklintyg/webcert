@@ -1,0 +1,36 @@
+delimiters "$", "$"
+
+request(data) ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:urn="urn:riv:itintegration:registry:1"
+xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>?</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:CreateDraftCertificate>
+         <urn1:utlatande>
+            <urn1:typAvUtlatande code="$data.utlatandeTyp$"/>
+            <urn1:patient>
+               <urn1:person-id root="1.2.752.129.2.1.3.1" extension="19121212+1212"/>
+               <urn1:fornamn>Tolvan</urn1:fornamn>
+               <urn1:efternamn>Tolvansson</urn1:efternamn>
+               <urn1:mellannamn>Tolv</urn1:mellannamn>
+            </urn1:patient>
+            <urn1:skapadAv>
+               <urn1:personal-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1B02"/>
+               <urn1:fullstandigtNamn>Journa La System</urn1:fullstandigtNamn>
+               <urn1:enhet>
+                  <urn1:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A03"/>
+                  <urn1:enhetsnamn>Sjukhuset</urn1:enhetsnamn>
+               </urn1:enhet>
+            </urn1:skapadAv>
+         </urn1:utlatande>
+      </urn1:CreateDraftCertificate>
+   </soapenv:Body>
+</soapenv:Envelope>
+>>
+
+brokenrequest() ::= <<
+<not-even-valid-xml>This mess will trigger a soapfault</xml>
+>>
