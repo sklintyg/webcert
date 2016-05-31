@@ -20,11 +20,11 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import se.inera.certificate.modules.fkparent.model.converter.RespConstants;
-import se.inera.certificate.modules.sjukersattning.model.internal.SjukersattningUtlatande;
-import se.inera.certificate.modules.sjukersattning.model.internal.SjukersattningUtlatande.Builder;
-import se.inera.certificate.modules.sjukersattning.rest.SjukersattningModuleApi;
-import se.inera.certificate.modules.sjukpenning_utokad.model.internal.SjukpenningUtokadUtlatande;
-import se.inera.certificate.modules.sjukpenning_utokad.rest.SjukpenningUtokadModuleApi;
+import se.inera.certificate.modules.lisu.model.internal.LisuUtlatande;
+import se.inera.certificate.modules.lisu.rest.LisuModuleApi;
+import se.inera.certificate.modules.luse.model.internal.LuseUtlatande;
+import se.inera.certificate.modules.luse.model.internal.LuseUtlatande.Builder;
+import se.inera.certificate.modules.luse.rest.LuseModuleApi;
 import se.inera.intyg.common.support.model.*;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
@@ -59,13 +59,13 @@ public class ArendeViewConverterTest {
     private se.inera.intyg.webcert.persistence.model.Status webcertStatus = se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION;;
 
     @Test
-    public void testConvertToArendeForSjukersattning() throws ModuleNotFoundException {
+    public void testConvertToArendeForLuse() throws ModuleNotFoundException {
         Arende arende = buildArende("luse");
 
-        SjukersattningModuleApi moduleApi = new SjukersattningModuleApi();
+        LuseModuleApi moduleApi = new LuseModuleApi();
         LocalDateTime timeStamp = LocalDateTime.now().minusDays(2);
         String skapadAvNamn = "Test Testsson";
-        SjukersattningUtlatande utlatande = buildSjukersattningsUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
+        LuseUtlatande utlatande = buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
                 SKAPADAV_PERSON_ID,
                 timeStamp);
         ArendeView result = setupMocks(arende, moduleApi, timeStamp, utlatande);
@@ -93,13 +93,13 @@ public class ArendeViewConverterTest {
     }
 
     @Test
-    public void testConvertToArendeForSjukpenning() throws ModuleNotFoundException {
+    public void testConvertToArendeForLisu() throws ModuleNotFoundException {
         Arende arende = buildArende("lisu");
 
-        SjukpenningUtokadModuleApi moduleApi = new SjukpenningUtokadModuleApi();
+        LisuModuleApi moduleApi = new LisuModuleApi();
         LocalDateTime timeStamp = LocalDateTime.now().minusDays(2);
         String skapadAvNamn = "Test Testsson";
-        SjukpenningUtokadUtlatande utlatande = buildSjukpenningUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
+        LisuUtlatande utlatande = buildLisuUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
                 SKAPADAV_PERSON_ID,
                 timeStamp);
         ArendeView result = setupMocks(arende, moduleApi, timeStamp, utlatande);
@@ -129,11 +129,10 @@ public class ArendeViewConverterTest {
         return converter.convert(arende);
     }
 
-    private SjukpenningUtokadUtlatande buildSjukpenningUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
+    private LisuUtlatande buildLisuUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
             String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
 
-        se.inera.certificate.modules.sjukpenning_utokad.model.internal.SjukpenningUtokadUtlatande.Builder template = SjukpenningUtokadUtlatande
-                .builder();
+        LisuUtlatande.Builder template = LisuUtlatande.builder();
 
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsNamn, patientPersonId, skapadavPersonId, timeStamp);
@@ -144,9 +143,9 @@ public class ArendeViewConverterTest {
         return template.build();
     }
 
-    private SjukersattningUtlatande buildSjukersattningsUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,
+    private LuseUtlatande buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,
             String string, String skapadAvId, LocalDateTime timeStamp) {
-        Builder template = SjukersattningUtlatande.builder();
+        Builder template = LuseUtlatande.builder();
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsnamn, patientPersonId, skapadAvId, timeStamp);
         template.setGrundData(grundData);

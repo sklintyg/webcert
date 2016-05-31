@@ -37,7 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.certificate.modules.sjukersattning.support.SjukersattningEntryPoint;
+import se.inera.certificate.modules.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
@@ -125,7 +125,7 @@ public class IntegreradeEnheterRegistryImplTest {
         when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
-        registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, SjukersattningEntryPoint.MODULE_ID);
+        registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
 
         ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
         verify(integreradEnhetRepository, times(3)).save(enhetCaptor.capture());
@@ -146,7 +146,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
 
-        registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, SjukersattningEntryPoint.MODULE_ID);
+        registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
 
         ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
         verify(integreradEnhetRepository, times(2)).save(enhetCaptor.capture());
@@ -212,7 +212,7 @@ public class IntegreradeEnheterRegistryImplTest {
         when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
 
         assertFalse(registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID).isPresent());
-        assertFalse(registry.getSchemaVersion(enhetsId, SjukersattningEntryPoint.MODULE_ID).isPresent());
+        assertFalse(registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID).isPresent());
     }
 
     @Test
@@ -224,7 +224,7 @@ public class IntegreradeEnheterRegistryImplTest {
         enhet.setSchemaVersion2(true);
         when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(enhet);
 
-        Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, SjukersattningEntryPoint.MODULE_ID);
+        Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
         assertEquals(SchemaVersion.VERSION_2, result.get());
     }

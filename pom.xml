@@ -245,12 +245,12 @@
       <!-- Intygstyper -->
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
-        <artifactId>sjukersattning</artifactId>
+        <artifactId>luse</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
-        <artifactId>sjukpenning-utokad</artifactId>
+        <artifactId>lisu</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
       <dependency>

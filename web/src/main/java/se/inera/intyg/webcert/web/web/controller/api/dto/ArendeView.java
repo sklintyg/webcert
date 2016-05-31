@@ -96,7 +96,7 @@ public abstract class ArendeView {
     public abstract String getVardaktorNamn();
 
     /*
-     * Retrieve a builder from an existing SjukersattningUtlatande object. The builder can then be used
+     * Retrieve a builder from an existing ArendeView object. The builder can then be used
      * to create a new copy with modified attributes.
      */
     public abstract Builder toBuilder();

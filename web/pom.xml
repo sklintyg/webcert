@@ -138,11 +138,11 @@
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
-      <artifactId>sjukersattning</artifactId>
+      <artifactId>luse</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
-      <artifactId>sjukpenning-utokad</artifactId>
+      <artifactId>lisu</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>

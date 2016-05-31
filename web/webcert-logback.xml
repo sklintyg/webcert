@@ -111,9 +111,9 @@
 
   <logger name="se.inera.certificate.modules.fkparent" level="debug" />
 
-  <logger name="se.inera.certificate.modules.sjukpenning_utokad" level="debug" />
+  <logger name="se.inera.certificate.modules.lisu" level="debug" />
 
-  <logger name="se.inera.certificate.modules.sjukersattning" level="debug" />
+  <logger name="se.inera.certificate.modules.luse" level="debug" />
 
   <logger name="org.apache.camel" level="error" />
 
