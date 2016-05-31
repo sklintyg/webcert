@@ -65,6 +65,15 @@
         serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
         address="${cgi.funktionstjanster.grp.url}" />
 
+    <jaxws:client id="registerCertificateClient"
+        serviceClass="se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v2.RegisterCertificateResponderInterface"
+        address="${intygstjanst.registercertificate.v2.endpoint.url}">
+    </jaxws:client>
+
+    <jaxws:client id="getCertificateClient"
+        serviceClass="se.riv.clinicalprocess.healthcond.certificate.getCertificate.v1.GetCertificateResponderInterface"
+        address="${intygstjanst.getcertificate.endpoint.url}">
+    </jaxws:client>
   </beans>
 
   <beans profile="!dev,wc-security-test">
