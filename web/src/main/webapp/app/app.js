@@ -141,9 +141,13 @@
     });
 
     // Inject language resources
-    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel) {
+    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig) {
 
+            // Configure formly to use default hide directive.
+            // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
+            // With ng-show they are always in DOM and those phases won't happen.
+            formlyConfig.extras.defaultHideDirective = 'ng-if';
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
