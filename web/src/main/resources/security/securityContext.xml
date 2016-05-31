@@ -218,13 +218,14 @@
       <security:authentication-provider ref="samlAuthenticationProvider"/>
     </security:authentication-manager>
 
-    <!-- Make sure swagger is unavailable in prod -->
+    <!-- Make sure swagger is unavailable in prod
     <security:http use-expressions="true">
       <security:intercept-url pattern="/swagger-ui/**"
           access="denyAll"/>
       <security:intercept-url pattern="/services/swagger/**"
           access="denyAll"/>
     </security:http>
+    -->
   </beans>
 
 
