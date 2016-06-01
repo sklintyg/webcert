@@ -1,0 +1,20 @@
+delimiters "$", "$"
+
+request() ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:urn="urn:riv:itintegration:registry:1"
+xmlns:urn1="urn:riv:infrastructure:directory:privatepractitioner:GetPrivatePractitionerTermsResponder:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>1</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:GetPrivatePractitionerTerms>
+         <!--You may enter ANY elements at this point-->
+      </urn1:GetPrivatePractitionerTerms>
+   </soapenv:Body>
+</soapenv:Envelope>
+>>
+
+brokenrequest() ::= <<
+<not-even-valid-xml>This mess will trigger a soapfault</xml>
+>>

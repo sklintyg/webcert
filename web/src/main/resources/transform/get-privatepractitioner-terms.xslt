@@ -18,17 +18,52 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                           xmlns:ppt="urn:riv:infrastructure:directory:privatepractitioner:GetPrivatePractitionerTermsResponder:1">
+<xsl:stylesheet version="2.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:ppt="urn:riv:infrastructure:directory:privatepractitioner:GetPrivatePractitionerTermsResponder:1">
 
-  <xsl:include href="transform/general-insuranceprocess-healthreporting-transform.xslt"/>
+  <!-- Copy all XML nodes, if no more specific template matches. -->
+  <xsl:template match="@*|node()">
+    <xsl:copy>
+      <xsl:apply-templates select="@*|node()"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- Transform <soap:Fault> element into a proper WS response. -->
+  <xsl:template match="soap:Fault">
+    <!--
+      Here we call the 'abstract' template named response. Has to be provided by
+      all XSLTs which include this one.
+      -->
+    <xsl:call-template name="response"/>
+  </xsl:template>
+
+  <!-- Transform <faultcode> and <faultstring> elements to <resultCode>, <resultText> -->
+  <xsl:template name="result">
+    <ppt:resultCode>ERROR</ppt:resultCode>
+
+    <xsl:choose>
+      <xsl:when test="contains(faultstring/text(), 'Unmarshalling Error')">
+        <!-- Schema validation errors are transformed to VALIDATION_ERROR -->
+        <ppt:resultText>VALIDATION_ERROR</ppt:resultText>
+      </xsl:when>
+      <xsl:when test="contains(faultcode/text(), 'soap:Client')">
+        <!-- 'soap:Client' is transformed to VALIDATION_ERROR -->
+        <ppt:resultText>VALIDATION_ERROR</ppt:resultText>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- 'soap:Server' is transformed to APPLICATION_ERROR -->
+        <ppt:resultText>APPLICATION_ERROR</ppt:resultText>
+      </xsl:otherwise>
+    </xsl:choose>
+
+  </xsl:template>
 
   <xsl:template name="response">
-     <ppt:GetPrivatePractitionerTermsResponder>
-       <ppt:result>
+     <ppt:GetPrivatePractitionerTermsResponse>
          <xsl:call-template name="result"/>
-       </ppt:result>
-     </ppt:GetPrivatePractitionerTermsResponder>
+     </ppt:GetPrivatePractitionerTermsResponse>
    </xsl:template>
 
 </xsl:stylesheet>
