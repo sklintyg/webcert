@@ -51,7 +51,7 @@
 	KATEGORI 1: Allmänt
 	===============================================
 	-->
-	<text id="KAT_1.RBK">Allmänt</text>
+	<text id="KAT_1.RBK">1. Allmänt</text>
 
 	<text id="FRG_35.RBK">Vilket år ställdes diagnosen diabetes?</text>
 	<text id="FRG_18.RBK">Patienten har diabetes</text>
@@ -67,7 +67,7 @@
 	KATEGORI 2: Hypoglykemier (lågt blodsocker)
 	===============================================
 	-->
-	<text id="KAT_2.RBK">Hypoglykemier (lågt blodsocker)</text>
+	<text id="KAT_2.RBK">2. Hypoglykemier (lågt blodsocker)</text>
 
 	<text id="FRG_36.RBK">a) Har patienten kunskap om lämpliga åtgärder vid hypoglykemi?</text>
 	<text id="FRG_37.RBK">b) Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symtom) som bedöms kunna innebära en trafiksäkerhetsrisk?</text>
@@ -85,7 +85,7 @@
 	KATEGORI 3: Synintyg
 	===============================================
 	-->
-	<text id="KAT_3.RBK">Synintyg</text>
+	<text id="KAT_3.RBK">3. Synintyg</text>
 
 	<text id="FRG_43.RBK">a) Ögonläkarintyg kommer att skickas in separat</text>
 	<text id="FRG_44.RBK">b) Är synfältsprövning enligt Donders konfrontationsmetod utan anmärkning?</text>
@@ -97,7 +97,7 @@
 	KATEGORI 4: Bedömning
 	===============================================
 	-->
-	<text id="KAT_4.RBK">Bedömning</text>
+	<text id="KAT_4.RBK">4. Bedömning</text>
   <text id="KAT_4.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br/>A1 = lätt motorcykel<br/>A2 = mellanstor motorcykel<br/>A = motorcykel<br/>B = personbil, lätt lastbil och enbart ett lätt släpfordon<br/>BE = personbil, lätt lastbil och ett eller flera släpfordon. Släpens totalvikt får inte överstiga 3,5 ton.<br/>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation</span>]]></text>
 
   <text id="FRG_33.RBK"><![CDATA[Patienten uppfyller kraven enligt 6 kap. i Transportstyrelsens föreskrifter och allmänna

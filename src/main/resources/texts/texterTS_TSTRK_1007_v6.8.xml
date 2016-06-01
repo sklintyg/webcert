@@ -48,7 +48,7 @@
 	<text id="FRG_6.RBK">d) Framkommer dubbelseende vid prövning av ögats rörlighet (prövningen ska göras i de åtta huvudmeridianerna)?</text>
 	<text id="FRG_7.RBK">e) Förekommer nystagmus?</text>
 	<text id="FRG_8.RBK">f) Värden för synskärpa</text>
-  <text id="FRG_8.INF">Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0<br/><br/> OBS! Uppgifterna om synskärpa och korrektion kan grundas på tidigare utförd undersökning av bland annat legitimerad optiker. Uppgifterna ska då ingå som underlag vid läkarens samlade bedömning.</text>
+  <text id="FRG_8.INF"><![CDATA[Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0<br/><br/> OBS! Uppgifterna om synskärpa och korrektion kan grundas på tidigare utförd undersökning av bland annat legitimerad optiker. Uppgifterna ska då ingå som underlag vid läkarens samlade bedömning.]]></text>
   <text id="FRG_9.RBK">Högsta styrka i något av glasen överskrider plus 8 dioptrier</text>
   <text id="FRG_9.INF">Intyg om korrektionsglasens styrka måste skickas in.</text>
 
@@ -57,7 +57,7 @@
 	KATEGORI 2: Hörsel- och balanssinne
 	===============================================
 	-->
-	<text id="KAT_2.RBK">Hörsel och balanssinne</text>
+	<text id="KAT_2.RBK">2. Hörsel och balanssinne</text>
 
 	<text id="FRG_10.RBK">a) Har patienten överraskande anfall av balansrubbningar eller yrsel?</text>
 	<text id="FRG_11.RBK">b) Har patienten svårt att uppfatta vanlig samtalsstämma på fyra meters avstånd (hörapparat får användas)?</text>
@@ -66,7 +66,7 @@
 	KATEGORI 3: Rörelseorganens funktioner
 	===============================================
 	-->
-	<text id="KAT_3.RBK">Rörelseorganens funktioner</text>
+	<text id="KAT_3.RBK">3. Rörelseorganens funktioner</text>
 
 	<text id="FRG_12.RBK">a) Har patienten någon sjukdom eller funktionsnedsättning som påverkar rörligheten och som medför att fordon inte kan köras på ett trafiksäkert sätt?</text>
 	<text id="DFR_12.2.RBK">Ange vilken typ av nedsättning eller sjukdom:</text>
@@ -77,7 +77,7 @@
 	KATEGORI 4: Hjärt- och kärlsjukdomar
 	===============================================
 	-->
-	<text id="KAT_4.RBK">Hjärt- och kärlsjukdomar</text>
+	<text id="KAT_4.RBK">4. Hjärt- och kärlsjukdomar</text>
 
 	<text id="FRG_14.RBK">a) Föreligger hjärt- eller kärlsjukdom som kan medföra en påtaglig risk för att hjärnans funktioner akut försämras eller som i övrigt innebär en trafiksäkerhetsrisk?</text>
 	<text id="FRG_15.RBK">b) Finns tecken på hjärnskada efter trauma, stroke eller annan sjukdom i centrala nervsystemet?</text>
@@ -89,7 +89,7 @@
 	KATEGORI 5: Diabetes
 	===============================================
 	-->
-	<text id="KAT_5.RBK">Diabetes</text>
+	<text id="KAT_5.RBK">5. Diabetes</text>
 
 	<text id="FRG_17.RBK">Har patienten diabetes?</text>
 
@@ -106,7 +106,7 @@
 	KATEGORI 6: Neurologiska sjukdomar
 	===============================================
 	-->
-	<text id="KAT_6.RBK">Neurologiska sjukdomar</text>
+	<text id="KAT_6.RBK">6. Neurologiska sjukdomar</text>
 
 	<text id="FRG_20.RBK">Finns tecken på neurologisk sjukdom?</text>
 
@@ -115,7 +115,7 @@
 	KATEGORI 7: Epilepsi, epileptiskt anfall och annan medvetandestörning
 	===============================================
 	-->
-	<text id="KAT_7.RBK">Epilepsi, epileptiskt anfall och annan medvetandestörning</text>
+	<text id="KAT_7.RBK">7. Epilepsi, epileptiskt anfall och annan medvetandestörning</text>
 
 	<text id="FRG_21.RBK">Har eller har patienten haft epilepsi, epileptiskt anfall eller annan medvetandestörning?</text>
 	<text id="DFR_21.2.RBK">Om det är frågan om annan medvetandestörning, ange när den inträffade och orsak: </text>
@@ -125,7 +125,7 @@
 	KATEGORI 8: Njursjukdomar
 	===============================================
 	-->
-	<text id="KAT_8.RBK">Njursjukdomar</text>
+	<text id="KAT_8.RBK">8. Njursjukdomar</text>
 
 	<text id="FRG_22.RBK">Föreligger allvarligt nedsatt njurfunktion som kan innebära en trafiksäkerhetsrisk?</text>
 
@@ -134,7 +134,7 @@
 	KATEGORI 9: Demens och andra kognitiva störningar
 	===============================================
 	-->
-	<text id="KAT_9.RBK">Demens och andra kognitiva störningar</text>
+	<text id="KAT_9.RBK">9. Demens och andra kognitiva störningar</text>
 
 	<text id="FRG_23.RBK">Finns tecken på sviktande kognitiv funktion?</text>
 
@@ -144,7 +144,7 @@
 	KATEGORI 10: Sömn- och vakenhetsstörningar
 	===============================================
 	-->
-	<text id="KAT_10.RBK">Sömn- och vakenhetsstörningar</text>
+	<text id="KAT_10.RBK">10. Sömn- och vakenhetsstörningar</text>
 
 	<text id="FRG_24.RBK">Finns tecken på, eller anamnestiska uppgifter som talar för sömn- eller vakenhetsstörning?</text>
 
@@ -153,7 +153,7 @@
 	KATEGORI 11: Alkohol, narkotika och läkemedel
 	=============================================
 	-->
-	<text id="KAT_11.RBK">Alkohol, narkotika och läkemedel</text>
+	<text id="KAT_11.RBK">11. Alkohol, narkotika och läkemedel</text>
 
 	<text id="DFR_25.1.RBK">a) Finns journaluppgifter, anamnestiska uppgifter, resultat av laboratorieprover eller andra tecken på missbruk eller beroende av alkohol, narkotika eller läkemedel?</text>
 	<text id="DFR_25.2.RBK">b) Har patienten vid något tillfälle varit föremål för vårdinsatser för missbruk eller beroende av alkohol, narkotika eller läkemedel?</text>
@@ -168,7 +168,7 @@
 	KATEGORI 12: Psykiska sjukdomar och störningar
 	=============================================
 	-->
-	<text id="KAT_12.RBK">Alkohol, narkotika och läkemedel</text>
+	<text id="KAT_12.RBK">12. Alkohol, narkotika och läkemedel</text>
 
 	<text id="FRG_27.RBK">Har eller har patienten haft psykisk sjukdom eller störning, till exempel schizofreni, annan psykos eller bipolär (manodepressiv) sjukdom?</text>
 
@@ -177,7 +177,7 @@
 	KATEGORI 13: ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning
 	=============================================
 	-->
-	<text id="KAT_13.RBK">ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning</text>
+	<text id="KAT_13.RBK">13. ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning</text>
 
 	<text id="FRG_28.RBK">a) Har patienten någon psykisk utvecklingsstörning?</text>
 	<text id="FRG_29.RBK">b) Har patienten till exempel ADHD, ADD, DAMP, Aspergers syndrom eller Tourettes syndrom?</text>
@@ -187,7 +187,7 @@
 	KATEGORI 14:  Sjukhusvård
 	=============================================
 	-->
-	<text id="KAT_14.RBK">Sjukhusvård</text>
+	<text id="KAT_14.RBK">14. Sjukhusvård</text>
 
 	<text id="FRG_30.RBK">Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av fälten 1-13?</text>
 	<text id="DFR_30.2.RBK">Om frågan besvarats med ja, när?</text>
@@ -199,7 +199,7 @@
 	KATEGORI 15: Övrig medicinering
 	=============================================
 	-->
-	<text id="KAT_15.RBK">Övrig medicinering</text>
+	<text id="KAT_15.RBK">15. Övrig medicinering</text>
 	<text id="FRG_31.RBK">Har patienten någon stadigvarande medicinering?</text>
 	<text id="DFR_31.2.RBK">Vilken eller vilka mediciner?</text>
 
