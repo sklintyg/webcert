@@ -19,16 +19,16 @@
   -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:cdc="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1">
+                xmlns:smtc="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1">
 
   <xsl:include href="transform/clinicalprocess-healthcond-2/general-clinicalprocess-healthcond-transform.xslt"/>
 
   <xsl:template name="response">
-     <cdc:CreateDraftCertificateResponse>
-       <cdc:result>
+     <smtc:SendMessageToCareResponse>
+       <smtc:result>
          <xsl:call-template name="result"/>
-       </cdc:result>
-     </cdc:CreateDraftCertificateResponse>
+       </smtc:result>
+     </smtc:SendMessageToCareResponse>
    </xsl:template>
 
 </xsl:stylesheet>
