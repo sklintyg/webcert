@@ -55,7 +55,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
     @Before
     public void setup() throws IOException {
         // Setup String template resource
-        templateGroup = new STGroupFile("integrationtestTemplates/GetPrivatePractitionerTerms.v1.stg");
+        templateGroup = new STGroupFile("integrationtestTemplates/getPrivatePractitionerTerms.v1.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
