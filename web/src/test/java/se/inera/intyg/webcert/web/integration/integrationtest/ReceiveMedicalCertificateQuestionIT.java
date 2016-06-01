@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
+package se.inera.intyg.webcert.web.integration.integrationtest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
@@ -26,7 +26,6 @@ import static org.hamcrest.core.Is.is;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
@@ -36,20 +35,16 @@ import org.stringtemplate.v4.STGroupFile;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.RestAssured;
 
-import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
-import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
-import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
  */
-public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
+public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
 
-    private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
-    private static final String CREATE_DRAFT_CERTIFICATE_V1_0 = "services/create-draft-certificate/v1.0";
-    private static final String FK_7263 = "fk7263";
+    private static final String BASE = "Envelope.Body.ReceiveMedicalCertificateQuestionResponse.";
+    private static final String RECEIVE_QUESTION_V1_0 = "services/receive-question/v1.0";
 
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -59,57 +54,55 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Before
     public void setup() throws IOException {
         // Setup String template resource
-        templateGroup = new STGroupFile("integrationtestTemplates/createDraftCertificate.v1.stg");
+        templateGroup = new STGroupFile("integrationtestTemplates/receiveMedicalCertificateQuestion.v1.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_1.0.xsd");
+                .load("interactions/ReceiveMedicalCertificateQuestionInteraction/ReceiveMedicalCertificateQuestionResponder_1.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:1"),
-                "soap:Envelope/soap:Body/lc:CreateDraftCertificateResponse");
+                ImmutableMap.of("lc", "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"),
+                "soap:Envelope/soap:Body/lc:ReceiveMedicalCertificateQuestionResponse");
     }
 
-    private String createRequestBody(String utlatandeTyp) {
-        requestTemplate.add("data", new UtlatandeData(utlatandeTyp));
+    private String createRequestBody(String amne) {
+        requestTemplate.add("data", new QuestionData(amne));
         return requestTemplate.render();
     }
 
     @Test
-    public void testCreateFk7263Draft() throws IOException {
+    public void testReceiveQuestion() throws IOException {
 
-        given().body(createRequestBody(FK_7263))
+        given().body(createRequestBody("Komplettering_av_lakarintyg"))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.OK.value()))
-                .body("utlatande-id.@extension.size()", is(1));
-
+                .body("result.resultCode", is(ResultCodeType.OK.value()));
     }
 
     @Test
-    public void testMatchesSchema() throws IOException {
+    public void testResponseMatchesSchema() throws IOException {
         given().filter(
                 responseBodyExtractorFilter)
-                .body(createRequestBody(FK_7263))
+                .body(createRequestBody("Komplettering_av_lakarintyg"))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
-                .body(matchesXsd(IOUtils.toString(xsdInputstream)).with(new ClasspathSchemaResourceResolver()));
+                .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
 
     }
 
     @Test
-    public void testCreateDraftForUnknownTypeFailsWithValidationError() {
+    public void testCreateQuestionForUnknownAmneFailsWithValidationError() {
 
-        given().body(createRequestBody("NON_EXISTING_TYPE"))
+        given().body(createRequestBody("NON_EXISTING_AMNE"))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -118,14 +111,14 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     }
 
     /**
-     * Check that even when sending invalid request, Soap faults gets transformed to a valid error response
+     * Check that even when sending invalid request, Soap faults should get transformed to a valid error response
      */
     @Test
-    public void testCreateDraftWithInvalidXMLFailsWithApplicationError() {
+    public void testCreateQuestionWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -134,11 +127,11 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     }
 
     // String Template Data object
-    private static final class UtlatandeData {
-        public final String utlatandeTyp;
+    private static final class QuestionData {
+        public final String amne;
 
-        public UtlatandeData(String utlatandeTyp) {
-            this.utlatandeTyp = utlatandeTyp;
+        public QuestionData(String amne) {
+            this.amne = amne;
         }
     }
 }

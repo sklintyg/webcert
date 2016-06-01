@@ -38,8 +38,9 @@ import com.jayway.restassured.RestAssured;
 
 import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
 import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
-import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathResourceResolver;
+import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -68,8 +69,8 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
         templateGroup = new STGroupFile("integrationtestTemplates/createDraftCertificate.v2.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
-        xsdInputstream = ClasspathResourceResolver.load(null,
-                "interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_2.0.xsd");
+        xsdInputstream = ClasspathSchemaResourceResolver
+                .load("interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_2.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
@@ -92,7 +93,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is("OK"))
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
                 .body("intygs-id.extension.size()", is(1));
 
         testMatchesSchemaForType(LUAE_FS);
@@ -108,7 +109,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is("OK"))
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
                 .body("intygs-id.extension.size()", is(1));
 
         testMatchesSchemaForType(LUAE_NA);
@@ -123,7 +124,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is("OK"))
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
                 .body("intygs-id.extension.size()", is(1));
 
         testMatchesSchemaForType(LUSE);
@@ -138,7 +139,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is("OK"))
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
                 .body("intygs-id.extension.size()", is(1));
 
         testMatchesSchemaForType(LISU);
@@ -152,7 +153,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
-                .body(matchesXsd(IOUtils.toString(xsdInputstream)).with(new ClasspathResourceResolver()));
+                .body(matchesXsd(IOUtils.toString(xsdInputstream)).with(new ClasspathSchemaResourceResolver()));
 
     }
 
@@ -165,7 +166,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is("ERROR"))
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
                 .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
@@ -181,7 +182,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
-                .body("result.resultCode", is("ERROR"))
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
                 .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 

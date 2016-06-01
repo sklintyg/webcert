@@ -765,6 +765,9 @@
               <goal>verify</goal>
             </goals>
             <configuration>
+              <!-- Added this so that the actual integrationtests have the same classpath as the container (i.e run in the same JVM).
+              Otherwise some xsd imports can't be resolved by restAssured. -->
+              <forkCount>0</forkCount>
               <skipTests>${skip.integration.tests}</skipTests>
               <systemPropertyVariables>
                 <integration.tests.baseUrl>http://localhost:9088/</integration.tests.baseUrl>
