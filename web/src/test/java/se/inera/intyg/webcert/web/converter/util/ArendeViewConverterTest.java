@@ -4,38 +4,44 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.Optional;
-
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import se.inera.certificate.modules.fkparent.model.converter.RespConstants;
-import se.inera.certificate.modules.lisu.model.internal.LisuUtlatande;
-import se.inera.certificate.modules.lisu.rest.LisuModuleApi;
-import se.inera.certificate.modules.luse.model.internal.LuseUtlatande;
-import se.inera.certificate.modules.luse.model.internal.LuseUtlatande.Builder;
-import se.inera.certificate.modules.luse.rest.LuseModuleApi;
-import se.inera.intyg.common.support.model.*;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.InternalDate;
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.persistence.arende.model.*;
+import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
+import se.inera.intyg.intygstyper.lisu.model.internal.LisuUtlatande;
+import se.inera.intyg.intygstyper.lisu.rest.LisuModuleApi;
+import se.inera.intyg.intygstyper.luse.model.internal.LuseUtlatande;
+import se.inera.intyg.intygstyper.luse.rest.LuseModuleApi;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeViewConverterTest {
@@ -145,7 +151,7 @@ public class ArendeViewConverterTest {
 
     private LuseUtlatande buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,
             String string, String skapadAvId, LocalDateTime timeStamp) {
-        Builder template = LuseUtlatande.builder();
+        LuseUtlatande.Builder template = LuseUtlatande.builder();
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsnamn, patientPersonId, skapadAvId, timeStamp);
         template.setGrundData(grundData);
