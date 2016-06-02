@@ -78,9 +78,11 @@ public class ArendeListItemConverterTest {
         final LocalDateTime skickatTidpunkt = LocalDateTime.now();
         final Status status = Status.ANSWERED;
         final Boolean vidarebefordrad = Boolean.TRUE;
+        final String enhetsnamn = "enhetsnamn";
+        final String vardgivarnamn = "vardgivarnamn";
 
         Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt, status,
-                vidarebefordrad);
+                vidarebefordrad, enhetsnamn, vardgivarnamn);
         ArendeListItem result = ArendeListItemConverter.convert(arende);
 
         assertEquals(amne.name(), result.getAmne());
@@ -93,13 +95,15 @@ public class ArendeListItemConverterTest {
         assertEquals(skickatTidpunkt, result.getReceivedDate());
         assertEquals(status, result.getStatus());
         assertEquals(true, result.isVidarebefordrad());
+        assertEquals(enhetsnamn, result.getEnhetsnamn());
+        assertEquals(vardgivarnamn, result.getVardgivarnamn());
     }
 
     @Test
     public void testConvertArendeVidarebefordradNull() {
         Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName", "skickatAv",
                 LocalDateTime.now(), Status.ANSWERED,
-                null);
+                null, "enhetsnamn", "vardgivarnamn");
         ArendeListItem result = ArendeListItemConverter.convert(arende);
 
         assertEquals(false, result.isVidarebefordrad());
@@ -125,7 +129,7 @@ public class ArendeListItemConverterTest {
     }
 
     private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
-            String signeratAvName, String skickatAv, LocalDateTime skickatTidpunkt, Status status, Boolean vidarebefordrad) {
+            String signeratAvName, String skickatAv, LocalDateTime skickatTidpunkt, Status status, Boolean vidarebefordrad, String enhetName, String vardgivareName) {
         Arende arende = new Arende();
         arende.setAmne(amne);
         arende.setIntygsId(intygsId);
@@ -137,6 +141,8 @@ public class ArendeListItemConverterTest {
         arende.setSkickatTidpunkt(skickatTidpunkt);
         arende.setStatus(status);
         arende.setVidarebefordrad(vidarebefordrad);
+        arende.setEnhetName(enhetName);
+        arende.setVardgivareName(vardgivareName);
         return arende;
     }
 }

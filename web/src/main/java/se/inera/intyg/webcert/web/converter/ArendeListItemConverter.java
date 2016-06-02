@@ -61,6 +61,8 @@ public final class ArendeListItemConverter {
         res.setSigneratAvNamn(arende.getSigneratAvName());
         res.setStatus(arende.getStatus());
         res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
+        res.setEnhetsnamn(arende.getEnhetName());
+        res.setVardgivarnamn(arende.getVardgivareName());
         return res;
     }
 
