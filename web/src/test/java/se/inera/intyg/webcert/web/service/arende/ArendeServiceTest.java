@@ -1,31 +1,37 @@
 package se.inera.intyg.webcert.web.service.arende;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalDateTime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Privilege;
-import se.inera.intyg.common.security.common.model.Role;
-import se.inera.intyg.common.security.common.model.UserDetails;
+import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
+import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -38,42 +44,15 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderExc
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
-import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -274,7 +253,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn("signeratav");
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
-        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenReturn(null);
+        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenThrow(new WebServiceException());
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -1128,16 +1107,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         return user;
     }
 
-    private GetEmployeeIncludingProtectedPersonResponseType createHsaResponse(String givenName, String middleAndSurname) {
-        GetEmployeeIncludingProtectedPersonResponseType res = new GetEmployeeIncludingProtectedPersonResponseType();
+    private List<PersonInformationType> createHsaResponse(String givenName, String middleAndSurname) {
         PersonInformationType pit = new PersonInformationType();
         pit.setGivenName(givenName);
         pit.setMiddleAndSurName(middleAndSurname);
-        res.getPersonInformation().add(new PersonInformationType());
-        res.getPersonInformation().add(pit);
-        res.getPersonInformation().add(new PersonInformationType());
-        res.getPersonInformation().add(new PersonInformationType());
-        return res;
+        return Arrays.asList(new PersonInformationType(), pit, new PersonInformationType(), new PersonInformationType());
     }
 
 }

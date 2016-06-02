@@ -48,7 +48,7 @@
     <rivta-clinicalprocess.version>2.0.RC5.1</rivta-clinicalprocess.version>
     <rivta-insuranceprocess.version>3.1.0.1</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.1</rivta-itintegration-monitoring.version>
-   <!-- <rivta-ehr-commission.version>1.0.0</rivta-ehr-commission.version>    -->
+    <!-- <rivta-ehr-commission.version>1.0.0</rivta-ehr-commission.version>    -->
     <rivta-ehr-logstore.version>1.2.1</rivta-ehr-logstore.version>
     <rivta-population-residentmaster.version>1.1.3.2</rivta-population-residentmaster.version>
     <rivta-processmanagement-decisionsupport.version>1.0.RC4.1</rivta-processmanagement-decisionsupport.version>
@@ -268,7 +268,7 @@
         <artifactId>ts-bas</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
@@ -311,7 +311,7 @@
         <version>${rivta-insuranceprocess.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.riv.itintegration.monitoring</groupId>
+         <groupId>se.riv.itintegration.monitoring</groupId>
         <artifactId>itintegration-monitoring-schemas</artifactId>
         <version>${rivta-itintegration-monitoring.version}</version>
       </dependency>

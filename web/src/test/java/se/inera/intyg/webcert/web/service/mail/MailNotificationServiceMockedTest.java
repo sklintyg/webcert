@@ -26,9 +26,7 @@ import static org.mockito.Mockito.when;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
+import javax.xml.soap.*;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Before;
@@ -41,12 +39,10 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitResponseType;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,8 +51,6 @@ public class MailNotificationServiceMockedTest {
     @Mock
     private JavaMailSender mailSender;
 
-//    @Mock
-//    private HSAWebServiceCalls hsaClient;
     @Mock
     private OrganizationUnitService organizationUnitService;
 
@@ -90,17 +84,15 @@ public class MailNotificationServiceMockedTest {
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
     }
 
-    private void mockOrganizationUnitServiceGetUnit() {
-        GetUnitResponseType getHsaUnitResponseType = new GetUnitResponseType();
+    private void mockOrganizationUnitServiceGetUnit() throws ExternalServiceCallException {
         UnitType unit = new UnitType();
         unit.setMail("test@test.invalid");
         unit.setUnitHsaId("enhetsid");
-        getHsaUnitResponseType.setUnit(unit);
-        when(organizationUnitService.getUnit(anyString())).thenReturn(getHsaUnitResponseType);
+        when(organizationUnitService.getUnit(anyString())).thenReturn(unit);
     }
 
     @Test
-    public void testNoHSAResponse() {
+    public void testNoHSAResponse() throws ExternalServiceCallException {
         try {
             SOAPFault soapFault = SOAPFactory.newInstance().createFault();
             soapFault.setFaultString("Connection reset");

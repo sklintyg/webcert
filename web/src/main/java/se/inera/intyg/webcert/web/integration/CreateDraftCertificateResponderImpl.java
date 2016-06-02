@@ -29,6 +29,7 @@ import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -119,7 +120,12 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
-        List<CommissionType> miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
+        List<CommissionType> miusOnUnit;
+        try {
+            miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
+        } catch (ExternalServiceCallException e) {
+            return null;
+        }
 
         switch (miusOnUnit.size()) {
         case 0:

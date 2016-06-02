@@ -38,6 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -89,9 +90,11 @@ public class CreateDraftCertificateResponderImplTest {
      * When a new certificate draft is being created the caller
      * should get a success response returned and any stakeholder
      * should be notified with a notification message.
+     *
+     * @throws ExternalServiceCallException
      */
     @Test
-    public void whenNewCertificateDraftSuccessResponse() {
+    public void whenNewCertificateDraftSuccessResponse() throws ExternalServiceCallException {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();

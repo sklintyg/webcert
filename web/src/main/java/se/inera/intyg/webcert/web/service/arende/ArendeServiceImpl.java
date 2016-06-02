@@ -19,6 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -28,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
@@ -50,36 +57,16 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderExc
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
-import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
-
-import javax.xml.bind.JAXBException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -663,17 +650,19 @@ public class ArendeServiceImpl implements ArendeService {
         } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
-            return Optional.ofNullable(hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null))
-                    .map(GetEmployeeIncludingProtectedPersonResponseType::getPersonInformation)
-                    .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                            "HSA did not respond with information"))
-                    .stream()
-                    .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
-                    .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
-                            ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                            : pit.getMiddleAndSurName())
-                    .findFirst()
-                    .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+            try {
+                return hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null)
+                        .stream()
+                        .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
+                        .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
+                                ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                                : pit.getMiddleAndSurName())
+                        .findFirst()
+                        .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+            } catch (WebServiceException e) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                        "Could not communicate with HSA. Cause: " + e.getMessage());
+            }
         }
     }
 
