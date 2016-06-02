@@ -1,0 +1,18 @@
+delimiters "$", "$"
+
+request() ::= <<
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+   xmlns:urn="urn:riv:itintegration:registry:1"
+   xmlns:urn1="urn:riv:itintegration:monitoring:PingForConfigurationResponder:1">
+   <soapenv:Header>
+      <urn:LogicalAddress>1</urn:LogicalAddress>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn1:PingForConfiguration>
+         <urn1:serviceContractNamespace>scns</urn1:serviceContractNamespace>
+         <urn1:logicalAddress>2</urn1:logicalAddress>
+         <!--You may enter ANY elements at this point-->
+      </urn1:PingForConfiguration>
+   </soapenv:Body>
+</soapenv:Envelope>
+>>
