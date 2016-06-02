@@ -377,8 +377,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 // Launch mail client
                 var arendeMailModel = {
                     intygId: arende.intygId,
-                    enhetsnamn: arende.fraga.enhetsnamn,
-                    vardgivarnamn: arende.fraga.vardgivarnamn
+                    enhetsnamn: arende.enhetsnamn,
+                    vardgivarnamn: arende.vardgivarnamn
                 };
                 $window.location = ArendeVidarebefordraHelper.buildMailToLink(arendeMailModel);
             };
