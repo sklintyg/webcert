@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -93,7 +94,7 @@ public class CreateDraftCertificateResponderImplTest {
     private CreateDraftCertificateResponderImpl responder;
 
     @Test
-    public void testCreateDraftCertificateSuccess() {
+    public void testCreateDraftCertificateSuccess() throws ExternalServiceCallException {
         List<CommissionType> miuList = Collections.singletonList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
@@ -136,7 +137,7 @@ public class CreateDraftCertificateResponderImplTest {
     }
 
     @Test
-    public void testCreateDraftCertificateNoMIUs() {
+    public void testCreateDraftCertificateNoMIUs() throws ExternalServiceCallException {
         List<CommissionType> miuList = new ArrayList<CommissionType>();
         CreateDraftCertificateType certificateType = createCertificateType();
 
@@ -153,7 +154,7 @@ public class CreateDraftCertificateResponderImplTest {
     }
 
     @Test
-    public void testCreateDraftCertificateMultipleMIUs() {
+    public void testCreateDraftCertificateMultipleMIUs() throws ExternalServiceCallException {
         List<CommissionType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)),
                 createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
@@ -181,7 +182,7 @@ public class CreateDraftCertificateResponderImplTest {
     }
 
     @Test
-    public void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() {
+    public void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws ExternalServiceCallException {
         List<CommissionType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)),
                 createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));

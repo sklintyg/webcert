@@ -37,15 +37,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.GetHealthCareUnitResponseType;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitResponseType;
+import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
+import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.v1.ResultCodeEnum;
 
 /**
  * @author andreaskaltenbach
@@ -69,6 +69,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Value("${mail.from}")
     private String fromAddress;
+
     // package scope for testability
     void setFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
@@ -79,9 +80,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Autowired
     private JavaMailSender mailSender;
-
-    //@Autowired
-    //private HSAWebServiceCalls hsaClient;
 
     @Autowired
     private OrganizationUnitService organizationUnitService;
@@ -97,7 +95,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Autowired
     private UtkastRepository utkastRepository;
-
 
     private void logError(String type, FragaSvar fragaSvar, Exception e) {
         Long id = fragaSvar.getInternReferens();
@@ -158,7 +155,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         this.webCertHostUrl = webCertHostUrl;
     }
 
-    private void sendNotificationMailToEnhet(String type, FragaSvar fragaSvar, String subject, String body, MailNotificationEnhet receivingEnhet, String reason) throws MessagingException {
+    private void sendNotificationMailToEnhet(String type, FragaSvar fragaSvar, String subject, String body, MailNotificationEnhet receivingEnhet,
+            String reason) throws MessagingException {
 
         String recipientAddress = receivingEnhet.getEmail();
 
@@ -184,16 +182,16 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private String getParentMailAddress(String mottagningsId) {
         // Ändring: Vi nyttjar här getHealthCareUnit för att explicit få mottagningen i ett objekt som inkluderar hsaId
-        //          till föräldern.
-        GetHealthCareUnitResponseType response = organizationUnitService.getHealthCareUnit(mottagningsId);
-       // GetCareUnitResponseType response = hsaClient.callGetCareunit(mottagningsId);
-        if (response != null && response.getResultCode() != ResultCodeEnum.ERROR) {
-            MailNotificationEnhet parentEnhet = getHsaUnit(response.getHealthCareUnit().getHealthCareUnitHsaId());
-            if (parentEnhet != null) {
-                return parentEnhet.getEmail();
-            }
+        // till föräldern.
+        HealthCareUnitType response;
+        try {
+            response = organizationUnitService.getHealthCareUnit(mottagningsId);
+        } catch (ExternalServiceCallException e) {
+            LOG.warn("Could not call HSA for {}, cause: {}", mottagningsId, e.getMessage());
+            return null;
         }
-        return null;
+        MailNotificationEnhet parentEnhet = getHsaUnit(response.getHealthCareUnitHsaId());
+        return (parentEnhet != null) ? parentEnhet.getEmail() : null;
     }
 
     private String mailBodyForFraga(MailNotificationEnhet unit, FragaSvar fragaSvar) {
@@ -257,12 +255,13 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private MailNotificationEnhet getHsaUnit(String careUnitId) {
         try {
-            GetUnitResponseType response = organizationUnitService.getUnit(careUnitId);
-            if (response == null || response.getUnit() == null) {
-                throw new IllegalArgumentException("HSA Id " + careUnitId + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
+            UnitType response = organizationUnitService.getUnit(careUnitId);
+            if (response == null) {
+                throw new IllegalArgumentException(
+                        "HSA Id " + careUnitId + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
             }
-            return new MailNotificationEnhet(response.getUnit().getUnitHsaId(), response.getUnit().getUnitName(), response.getUnit().getMail());
-        } catch (WebServiceException e) {
+            return new MailNotificationEnhet(response.getUnitHsaId(), response.getUnitName(), response.getMail());
+        } catch (WebServiceException | ExternalServiceCallException e) {
             LOG.error("Failed to contact HSA to get HSA Id '" + careUnitId + "' : " + e.getMessage());
             return null;
         }
@@ -286,7 +285,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Override
     public String intygsUrl(FragaSvar fragaSvar) {
-        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/" + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getIntygsReferens().getIntygsId()) + "/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
+        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/"
+                + resolvePathSegment(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getIntygsReferens().getIntygsId()) + "/"
+                + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
         LOG.debug("Intygsurl: " + url);
         return url;
     }

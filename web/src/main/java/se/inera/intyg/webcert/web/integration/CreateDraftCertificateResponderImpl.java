@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
@@ -120,7 +121,12 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
-        List<CommissionType> miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
+        List<CommissionType> miusOnUnit;
+        try {
+            miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
+        } catch (ExternalServiceCallException e) {
+            return null;
+        }
 
         switch (miusOnUnit.size()) {
         case 0:

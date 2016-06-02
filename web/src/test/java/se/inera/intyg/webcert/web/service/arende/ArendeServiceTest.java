@@ -13,6 +13,8 @@ import static org.mockito.Mockito.when;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.xml.ws.WebServiceException;
+
 import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.*;
@@ -43,12 +45,9 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -224,7 +223,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn("signeratav");
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
-        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenReturn(null);
+        when(hsaEmployeeService.getEmployee(anyString(), eq(null))).thenThrow(new WebServiceException());
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -617,7 +616,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setRubrik("rubrik");
         arende.setSkickatAv("Avsandare");
         arende.setVidarebefordrad(false);
-        
+
         return arende;
     }
 
@@ -649,16 +648,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         return user;
     }
 
-    private GetEmployeeIncludingProtectedPersonResponseType createHsaResponse(String givenName, String middleAndSurname) {
-        GetEmployeeIncludingProtectedPersonResponseType res = new GetEmployeeIncludingProtectedPersonResponseType();
+    private List<PersonInformationType> createHsaResponse(String givenName, String middleAndSurname) {
         PersonInformationType pit = new PersonInformationType();
         pit.setGivenName(givenName);
         pit.setMiddleAndSurName(middleAndSurname);
-        res.getPersonInformation().add(new PersonInformationType());
-        res.getPersonInformation().add(pit);
-        res.getPersonInformation().add(new PersonInformationType());
-        res.getPersonInformation().add(new PersonInformationType());
-        return res;
+        return Arrays.asList(new PersonInformationType(), pit, new PersonInformationType(), new PersonInformationType());
     }
 
 }
