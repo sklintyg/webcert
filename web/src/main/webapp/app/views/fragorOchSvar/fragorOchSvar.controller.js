@@ -22,9 +22,10 @@
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
     ['$rootScope', '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'common.fragaSvarCommonService', 'webcert.QuestionAnswer',
+        'common.fragaSvarCommonService', 'webcert.QuestionAnswer', 'common.ArendeProxy',
+        'common.ArendeVidarebefordraHelper',
         function($rootScope, $cookies, $filter, $location, $log, $scope, $timeout, $window, dialogService,
-            fragaSvarCommonService, QuestionAnswer) {
+            fragaSvarCommonService, QuestionAnswer, ArendeProxy, ArendeVidarebefordraHelper) {
             'use strict';
 
             var PAGE_SIZE = 10;
@@ -362,37 +363,44 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 return false;
             };
 
-            $scope.onVidareBefordradChange = function(qa) {
-                qa.updateInProgress = true;
-                $log.debug('onVidareBefordradChange: fragaSvarId: ' + qa.meddelandeId + ' intysTyp: ' + qa.intygTyp);
-                fragaSvarCommonService.setVidareBefordradState(qa.meddelandeId, qa.intygTyp,
-                    qa.vidarebefordrad, function(result) {
-                        qa.updateInProgress = false;
-
-                        if (result !== null) {
-                            qa.vidarebefordrad = result.vidarebefordrad;
-                        } else {
-                            qa.vidarebefordrad = !qa.vidarebefordrad;
-                            dialogService
-                                .showErrorMessageDialog('Kunde inte markera/avmarkera frågan som ' +
-                                'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. ' +
-                                'Annars kan du kontakta supporten');
-                        }
-                    });
-            };
-
             $scope.openIntyg = function(intygId, intygTyp) {
                 $log.debug('open intyg ' + intygId + ' of type ' + intygTyp);
                 $location.url('/fragasvar/' + intygTyp.toLowerCase() + '/' + intygId, true);
             };
 
             // Handle vidarebefordra dialog
-            $scope.openMailDialog = function(qa) {
+            $scope.openMailDialog = function(arende) {
                 $timeout(function() {
-                    fragaSvarCommonService.handleVidareBefodradToggle(qa, $scope.onVidareBefordradChange);
+                    ArendeVidarebefordraHelper.handleVidareBefodradToggle(arende, $scope.onVidareBefordradChange);
                 }, 1000);
+
                 // Launch mail client
-                $window.location = fragaSvarCommonService.buildMailToLink(qa);
+                var arendeMailModel = {
+                    intygId: arende.intygId,
+                    enhetsnamn: arende.fraga.enhetsnamn,
+                    vardgivarnamn: arende.fraga.vardgivarnamn
+                };
+                $window.location = ArendeVidarebefordraHelper.buildMailToLink(arendeMailModel);
+            };
+
+            $scope.onVidareBefordradChange = function(arende) {
+                arende.updateInProgress = true;
+                $log.debug('onVidareBefordradChange: fragaSvarId: ' + arende.meddelandeId + ' intysTyp: ' +
+                    arende.intygTyp);
+                ArendeProxy.setVidarebefordradState(arende.meddelandeId, arende.intygTyp,
+                    arende.vidarebefordrad, function(result) {
+                        arende.updateInProgress = false;
+
+                        if (result !== null) {
+                            arende.vidarebefordrad = result.fraga.vidarebefordrad;
+                        } else {
+                            arende.vidarebefordrad = !arende.vidarebefordrad;
+                            dialogService
+                                .showErrorMessageDialog('Kunde inte markera/avmarkera frågan som ' +
+                                    'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. ' +
+                                    'Annars kan du kontakta supporten');
+                        }
+                    });
             };
 
             // Broadcast by statService on poll
@@ -402,6 +410,11 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     $scope.widgetState.filterFormCollapsed = false;
                 }
             });
+
+            var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
+                fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
+            });
+            $scope.$on('$destroy', unbindLocationChange);
 
             // Broadcast by wcCareUnitClinicSelector directive on load and selection
             $scope.$on('qa-filter-select-care-unit', function(event, unit) {
@@ -429,11 +442,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                 $log.debug('on qa-filter-select-care-unit ---------------');
             });
-
-            var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
-                fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
-            });
-            $scope.$on('$destroy', unbindLocationChange);
 
             // Load filter form from cookie if available (for first page load)
             loadSearchForm();
