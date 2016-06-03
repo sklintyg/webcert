@@ -377,6 +377,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 // Launch mail client
                 var arendeMailModel = {
                     intygId: arende.intygId,
+                    intygType: arende.intygTyp,
                     enhetsnamn: arende.enhetsnamn,
                     vardgivarnamn: arende.vardgivarnamn
                 };
