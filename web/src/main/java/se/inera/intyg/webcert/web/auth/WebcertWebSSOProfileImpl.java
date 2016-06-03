@@ -45,6 +45,7 @@ public class WebcertWebSSOProfileImpl extends org.springframework.security.saml.
      * @throws SAMLException             error creating the message
      * @throws MetadataProviderException error retreiving metadata
      */
+    @Override
     protected AuthnRequest getAuthnRequest(SAMLMessageContext context, WebSSOProfileOptions options,
                                            AssertionConsumerService assertionConsumer,
                                            SingleSignOnService bindingService) throws SAMLException, MetadataProviderException {

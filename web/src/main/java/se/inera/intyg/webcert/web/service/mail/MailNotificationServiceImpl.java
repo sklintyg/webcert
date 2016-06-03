@@ -19,14 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.mail;
 
-import java.util.Locale;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.xml.ws.WebServiceException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +27,6 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -46,6 +37,13 @@ import se.riv.infrastructure.directory.organization.getunitresponder.v1.GetUnitR
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.v1.ResultCodeEnum;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.xml.ws.WebServiceException;
+import java.util.Locale;
 
 /**
  * @author andreaskaltenbach
@@ -59,7 +57,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "basic-certificate";
     private static final String QA_NOTIFICATION_PRIVATE_PRACTITIONER_PATH_SEGMENT = "pp-certificate";
 
-    private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan";
+    private static final String INCOMING_QUESTION_SUBJECT = "Försäkringskassan har ställt en fråga angående ett intyg";
     private static final String INCOMING_ANSWER_SUBJECT = "Försäkringskassan har svarat på en fråga";
 
     static final String PRIVATE_PRACTITIONER_HSAID_PREFIX = "SE165565594230-WEBCERT";
@@ -197,13 +195,13 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private String mailBodyForFraga(MailNotificationEnhet unit, FragaSvar fragaSvar) {
-        return "<p>En ny fråga-svar har inkommit till " + unit.getName()
-                + " i Webcert.<br><a href=\"" + intygsUrl(fragaSvar) + "\">Svara i Webcert</a></p>";
+        return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg." +
+                "<br><a href=\"" + intygsUrl(fragaSvar) + "\">Läs och besvara frågan i Webcert</a></p>";
     }
 
     private String mailBodyForSvar(MailNotificationEnhet unit, FragaSvar fragaSvar) {
-        return "<p>En fråga-svar från " + unit.getName() + " har besvarats"
-                + ".<br><a href=\"" + intygsUrl(fragaSvar) + "\">Se svaret i Webcert</a></p>";
+        return "<p>Det har kommit ett svar från Försäkringskassan på en fråga som " + unit.getName() + " har ställt"
+                + ".<br><a href=\"" + intygsUrl(fragaSvar) + "\">Läs svaret i Webcert</a></p>";
     }
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
