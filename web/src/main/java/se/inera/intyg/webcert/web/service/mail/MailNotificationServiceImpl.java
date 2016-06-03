@@ -195,8 +195,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private String mailBodyForFraga(MailNotificationEnhet unit, FragaSvar fragaSvar) {
-        return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg." +
-                "<br><a href=\"" + intygsUrl(fragaSvar) + "\">Läs och besvara frågan i Webcert</a></p>";
+        return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg."
+                + "<br><a href=\"" + intygsUrl(fragaSvar) + "\">Läs och besvara frågan i Webcert</a></p>";
     }
 
     private String mailBodyForSvar(MailNotificationEnhet unit, FragaSvar fragaSvar) {
