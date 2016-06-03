@@ -22,5 +22,7 @@
         "test",
         "adress",
         "telefon"
-    ]
+    ],
+    "enhetName": "Enhet",
+    "vardgivareName": "Vardgivare"
 }
