@@ -67,6 +67,10 @@
       <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
       <artifactId>intyg-insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.transportstyrelsen</groupId>
+      <artifactId>intyg-transportstyrelsen-schemas</artifactId>
+    </dependency>
 
     <!-- Others -->
     <dependency>
