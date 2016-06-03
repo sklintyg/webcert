@@ -28,6 +28,8 @@ describe('UnhandledQACtrlSpec', function() {
     var $timeout;
     var controller;
     var fragaSvarCommonService;
+    var ArendeProxy;
+    var ArendeVidarebefordraHelper;
 
     var testDefaultQuery = {
         enhetId: undefined,
@@ -144,6 +146,11 @@ describe('UnhandledQACtrlSpec', function() {
                 [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState',
                     'buildMailToLink', 'checkQAonlyDialog' ]));
             $provide.value('common.User', {});
+            ArendeProxy = jasmine.createSpyObj('common.ArendeProxy', [ 'setVidarebefordradState' ]);
+            $provide.value('common.ArendeProxy', ArendeProxy);
+
+            ArendeVidarebefordraHelper = jasmine.createSpyObj('common.ArendeVidarebefordraHelper', [ 'handleVidareBefodradToggle', 'buildMailToLink' ]);
+            $provide.value('common.ArendeVidarebefordraHelper', ArendeVidarebefordraHelper);
 
             var modalMock;
             var dialogService = jasmine.createSpyObj('common.dialogService', [ 'showDialog' ]);
@@ -250,15 +257,15 @@ describe('UnhandledQACtrlSpec', function() {
 
         it('should change forwarded state on a QA when clicking a forward checkbox', function() {
             $scope.onVidareBefordradChange(testQAResponse.results[0]);
-            expect(fragaSvarCommonService.setVidareBefordradState).toHaveBeenCalled();
+            expect(ArendeProxy.setVidarebefordradState).toHaveBeenCalled();
         });
 
         it('should open external mail client when user wants to forward a QA', function() {
 
             $scope.openMailDialog(testQAResponse.results[0]);
             $timeout.flush();
-            expect(fragaSvarCommonService.handleVidareBefodradToggle).toHaveBeenCalled();
-            expect(fragaSvarCommonService.buildMailToLink).toHaveBeenCalled();
+            expect(ArendeVidarebefordraHelper.handleVidareBefodradToggle).toHaveBeenCalled();
+            expect(ArendeVidarebefordraHelper.buildMailToLink).toHaveBeenCalled();
         });
     });
 
