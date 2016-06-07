@@ -22,7 +22,13 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -88,7 +94,7 @@ public class UserApiController extends AbstractApiController {
         return Response.ok(mutFeatures).build();
     }
 
-    private void updateFeatures(boolean feature, String name, Set<String>features) {
+    private void updateFeatures(boolean feature, String name, Set<String> features) {
         if (feature) {
             features.add(name);
         } else {
@@ -165,5 +171,13 @@ public class UserApiController extends AbstractApiController {
     public Response getAvtal() {
          Avtal avtal = avtalService.getLatestAvtal();
         return Response.ok(avtal).build();
+    }
+
+    @GET
+    @Path("/ping")
+    public Response clientPing() {
+        // Any active user session will be extended just by accessing an endpoint.
+        LOG.debug("wc-client pinged server");
+        return Response.ok().build();
     }
 }
