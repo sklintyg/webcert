@@ -27,10 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 
+import com.jayway.restassured.RestAssured;
+
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import com.jayway.restassured.RestAssured;
 
 /**
  * Check that basic-certificate-links are redirected correctly.
@@ -38,6 +38,7 @@ import com.jayway.restassured.RestAssured;
 public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest {
 
     private static final String DEFAULT_INTYGSID = "abcd123-abcd123-abcd123";
+    private static final String INTYGSTYP = "luse";
 
     @Test
     public void testRedirectSuccess() {
@@ -63,6 +64,33 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/basic-certificate/{intygsId}/questions").
+                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
+    }
+
+    @Test
+    public void testRedirectWithTypeSuccess() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        given().redirects().follow(false).and().pathParams("intygsId", DEFAULT_INTYGSID, "intygsTyp", INTYGSTYP).
+                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+                when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions").
+                then().
+                header(HttpHeaders.LOCATION, endsWith("/intyg/" + INTYGSTYP + "/" + DEFAULT_INTYGSID));
+    }
+
+    @Test
+    public void testRedirectWithTypeFailsWithInvalidRole() {
+
+        FakeElegCredentials fakeElegCredentials = new FakeElegCredentials();
+        fakeElegCredentials.setPersonId("19121212-1212");
+        fakeElegCredentials.setPrivatLakare(true);
+
+        RestAssured.sessionId = getAuthSession(fakeElegCredentials);
+
+        given().redirects().follow(false).and().pathParams("intygsId", DEFAULT_INTYGSID, "intygsTyp", INTYGSTYP).
+                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+                when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions").
                 then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
     }
 }

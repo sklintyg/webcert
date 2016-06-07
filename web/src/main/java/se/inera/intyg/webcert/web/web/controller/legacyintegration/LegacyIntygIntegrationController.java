@@ -19,27 +19,24 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
+import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -58,8 +55,12 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
 
     private static final String[] GRANTED_ROLES = new String[] {AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE };
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
+    private static final String DEFAULT_TYPE = FK7263.toString();
 
     private String urlFragmentTemplate;
+
+    @Value("${certificate.view.url.intyg.fragment.template}")
+    private String urlArendeFragmentTemplate;
 
     @Override
     protected String[] getGrantedRoles() {
@@ -79,12 +80,30 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
      *            The id of the certificate to view.
      */
     @GET
+    @Path("/{type}/{intygId}/questions")
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("intygId") String intygId) {
+
+        super.validateRedirectToIntyg(intygId);
+
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
+
+        return buildRedirectResponse(uriInfo, type, intygId);
+    }
+
+    /**
+     * Fetches a certificate from IT and then performs a redirect to the view that displays
+     * the certificate. Used for FK7263 only.
+     *
+     * @param intygId
+     *            The id of the certificate to view.
+     */
+    @GET
     @Path("/{intygId}/questions")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
         super.validateRedirectToIntyg(intygId);
 
-        String intygType = FK7263.toString();
+        String intygType = DEFAULT_TYPE;
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 
         return buildRedirectResponse(uriInfo, intygType, intygId);
@@ -104,7 +123,8 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
+        String fragment = (DEFAULT_TYPE.equals(certificateType)) ? urlFragmentTemplate : urlArendeFragmentTemplate;
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(fragment).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
