@@ -35,7 +35,7 @@ Testar WEBCERT-2006
 
 |Mail har skickats|
 |avsändare|mottagare|ämne|resultat?|
-| !-no-reply@webcert.intygstjanster.se-! | !-fitnesse.testsson@privatenhet.pe-! |Inkommen fråga från Försäkringskassan|true|
+| !-no-reply@webcert.intygstjanster.se-! | !-fitnesse.testsson@privatenhet.pe-! |Försäkringskassan har ställt en fråga angående ett intyg|true|
 
 
 

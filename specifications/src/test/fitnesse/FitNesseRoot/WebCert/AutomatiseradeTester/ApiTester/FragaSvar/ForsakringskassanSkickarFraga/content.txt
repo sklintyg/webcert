@@ -66,7 +66,7 @@ Ignorerad i väntan på WEBCERT-2206
 
 |Mail har skickats|
 |avsändare|mottagare|ämne|resultat?|
-|!-no-reply@webcert.intygstjanster.se-!|!-enhet1@webcert.invalid.se-!|Inkommen fråga från Försäkringskassan|true|
+|!-no-reply@webcert.intygstjanster.se-!|!-enhet1@webcert.invalid.se-!|Försäkringskassan har ställt en fråga angående ett intyg|true|
 
 !3 Ta bort test-intyg, frågor och mail
 
