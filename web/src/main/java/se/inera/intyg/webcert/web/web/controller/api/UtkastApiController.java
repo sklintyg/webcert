@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
@@ -74,7 +75,10 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .orThrow();
 
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());

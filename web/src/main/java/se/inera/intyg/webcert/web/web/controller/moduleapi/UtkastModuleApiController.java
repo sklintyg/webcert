@@ -114,7 +114,10 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .orThrow();
 
         Utkast utkast = utkastService.getDraft(intygsId);
 
@@ -148,7 +151,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version,
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .orThrow();
 
         LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
 
@@ -230,7 +236,10 @@ public class UtkastModuleApiController extends AbstractApiController {
             @PathParam("version") long version,
             @Context HttpServletRequest request) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .orThrow();
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
