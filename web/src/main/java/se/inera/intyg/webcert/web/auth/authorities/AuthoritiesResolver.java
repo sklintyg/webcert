@@ -19,12 +19,13 @@
 
 package se.inera.intyg.webcert.web.auth.authorities;
 
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_ADMIN;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.ROLE_TANDLAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLECODE_AT_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_LAKARE;
-import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.TITLE_TANDLAKARE;
+import static se.inera.intyg.webcert.web.auth.authorities.AuthoritiesConstants.*;
+
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
@@ -33,21 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationLoader;
 import se.inera.intyg.webcert.web.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.web.security.SakerhetstjanstAssertion;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Created by Magnus Ekstrand on 20/11/15.
@@ -285,7 +277,10 @@ public class AuthoritiesResolver {
 
         for (PersonInformationType userType : hsaUserTypes) {
             if (userType.getPaTitle() != null) {
-                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
+                List<String> hsaTitles = userType.getPaTitle().stream()
+                        .map(paTitle -> paTitle.getPaTitleName())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
                 lygSet.addAll(hsaTitles);
             }
         }

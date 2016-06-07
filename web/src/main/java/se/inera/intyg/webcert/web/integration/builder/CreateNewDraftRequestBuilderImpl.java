@@ -20,24 +20,22 @@
 package se.inera.intyg.webcert.web.integration.builder;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.web.service.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.riv.infrastructure.directory.v1.CommissionType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
+import se.riv.infrastructure.directory.v1.*;
 
 @Component
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
@@ -73,9 +71,14 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         if (hsaPersonResponse != null && hsaPersonResponse.size() > 0) {
             PersonInformationType personInfo = hsaPersonResponse.get(0);
 
-            // Use first PaTitle to set befattning
+            // Use first non null PaTitleName to set befattning
             if (personInfo.getPaTitle() != null && personInfo.getPaTitle().size() > 0) {
-                hosPerson.setBefattning(personInfo.getPaTitle().get(0).getPaTitleName());
+                hosPerson.setBefattning(
+                        personInfo.getPaTitle().stream()
+                                .map(PaTitleType::getPaTitleName)
+                                .filter(Objects::nonNull)
+                                .findFirst()
+                                .orElse(null));
             }
 
             // Use specialityNames
@@ -91,7 +94,6 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
                 hosPerson.getSpecialiseringar().clear();
                 hosPerson.getSpecialiseringar().addAll(sortedSpecialiseringar);
             }
-
 
         }
     }
@@ -121,7 +123,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         HoSPerson hoSPerson = new HoSPerson();
         hoSPerson.setNamn(hoSPersonType.getFullstandigtNamn());
         hoSPerson.setHsaId(hoSPersonType.getPersonalId().getExtension());
-        hoSPerson.setForskrivarkod(hoSPerson.getForskrivarkod());    // ????
+        hoSPerson.setForskrivarkod(hoSPerson.getForskrivarkod()); // ????
         return hoSPerson;
     }
 

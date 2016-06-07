@@ -46,13 +46,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -70,7 +66,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     @Autowired
     private MonitoringLogService monitoringLogService;
-
 
     // ~ API
     // =====================================================================================
@@ -103,11 +98,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
                 throw e;
             }
 
-            LOG.error("Error building user {}, failed with message {}", getAssertion(credential).getHsaId(), e.getMessage());
+            LOG.error("Error building user {}, failed with message {}", getAssertion(credential).getHsaId(), e);
             throw new RuntimeException(getAssertion(credential).getHsaId(), e);
         }
     }
-
 
     // ~ Protected scope
     // =====================================================================================
@@ -145,7 +139,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         return hsaPersonInfo;
     }
-
 
     // ~ Package scope
     // =====================================================================================
@@ -203,7 +196,8 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
-    private WebCertUser createWebCertUser(Role role, SAMLCredential credential, List<Vardgivare> authorizedVardgivare, List<PersonInformationType> personInfo) {
+    private WebCertUser createWebCertUser(Role role, SAMLCredential credential, List<Vardgivare> authorizedVardgivare,
+            List<PersonInformationType> personInfo) {
         LOG.debug("Decorate/populate user object with additional information");
 
         SakerhetstjanstAssertion sa = getAssertion(credential);
@@ -238,7 +232,8 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return webcertUser;
     }
 
-    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser, SAMLCredential credential, List<PersonInformationType> hsaPersonInfo) {
+    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser, SAMLCredential credential,
+            List<PersonInformationType> hsaPersonInfo) {
 
         List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
         List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(hsaPersonInfo);
@@ -256,7 +251,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         for (PersonInformationType userType : hsaPersonInfo) {
             if (userType.getPaTitle() != null) {
-                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
+                List<String> hsaTitles = userType.getPaTitle().stream()
+                        .map(paTitle -> paTitle.getPaTitleName())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
                 befattningar.addAll(hsaTitles);
             }
         }
@@ -316,7 +314,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         for (PersonInformationType userType : hsaUserTypes) {
             if (userType.getPaTitle() != null) {
-                List<String> hsaTitles = userType.getPaTitle().stream().map(paTitle -> paTitle.getPaTitleName()).collect(Collectors.toList());
+                List<String> hsaTitles = userType.getPaTitle().stream()
+                        .map(paTitle -> paTitle.getPaTitleName())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
                 lygSet.addAll(hsaTitles);
             }
         }
@@ -337,18 +338,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return new ArrayList<>(specSet);
     }
 
-//    private String extractTitel(List<PersonInformationType> hsaUserTypes) {
-//        List<String> titlar = new ArrayList<>();
-//
-//        for (PersonInformationType userType : hsaUserTypes) {
-//            if (StringUtils.isNotBlank(userType.getTitle())) {
-//                titlar.add(userType.getTitle());
-//            }
-//        }
-//
-//        return StringUtils.join(titlar, COMMA);
-//    }
-
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
         Vardgivare firstVardgivare = user.getVardgivare().get(0);
         user.setValdVardgivare(firstVardgivare);
@@ -358,5 +347,4 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         return true;
     }
-
 }

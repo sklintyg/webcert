@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.integration.v2.builder;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.web.service.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
-import se.riv.infrastructure.directory.v1.CommissionType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
+import se.riv.infrastructure.directory.v1.*;
 
 @Component(value = "createNewDraftRequestBuilderImplV2")
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
@@ -87,9 +87,14 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         if (hsaPersonResponse != null && hsaPersonResponse.size() > 0) {
             PersonInformationType personInfo = hsaPersonResponse.get(0);
 
-            // Use first PaTitle to set befattning
+            // Use first non null PaTitleName to set befattning
             if (personInfo.getPaTitle() != null && personInfo.getPaTitle().size() > 0) {
-                hosPerson.setBefattning(personInfo.getPaTitle().get(0).getPaTitleName());
+                hosPerson.setBefattning(
+                        personInfo.getPaTitle().stream()
+                                .map(PaTitleType::getPaTitleName)
+                                .filter(Objects::nonNull)
+                                .findFirst()
+                                .orElse(null));
             }
 
             // Use specialityNames

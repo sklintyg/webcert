@@ -64,14 +64,4 @@ public enum HSABefattning {
     public String getNamn() {
         return namn;
     }
-
-//    public static HSABefattning getByCode(String code) {
-//        for (HSABefattning bef : values()) {
-//            if (bef.getCode().equals(code)) {
-//                return bef;
-//            }
-//        }
-//
-//        return null;
-//    }
 }
