@@ -76,7 +76,7 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions").
                 then().
-                header(HttpHeaders.LOCATION, endsWith("/intyg/" + INTYGSTYP + "/" + DEFAULT_INTYGSID));
+                header(HttpHeaders.LOCATION, endsWith("/fragasvar/" + INTYGSTYP + "/" + DEFAULT_INTYGSID));
     }
 
     @Test

@@ -31,7 +31,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
@@ -58,9 +57,6 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     private static final String DEFAULT_TYPE = FK7263.toString();
 
     private String urlFragmentTemplate;
-
-    @Value("${certificate.view.url.intyg.fragment.template}")
-    private String urlArendeFragmentTemplate;
 
     @Override
     protected String[] getGrantedRoles() {
@@ -123,8 +119,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
-        String fragment = (DEFAULT_TYPE.equals(certificateType)) ? urlFragmentTemplate : urlArendeFragmentTemplate;
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(fragment).buildFromMap(urlParams);
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
