@@ -69,23 +69,20 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
             // Use PaTitle to set befattning
             if (personInfo.getPaTitle() != null) {
-                List<String> sortedBefattningar = personInfo.getPaTitle().stream()
+                hosPerson.getBefattningar().addAll(personInfo.getPaTitle().stream()
                         .map(PaTitleType::getPaTitleName)
                         .filter(Objects::nonNull)
                         .sorted()
-                        .collect(Collectors.toList());
-                hosPerson.getBefattningar().addAll(sortedBefattningar);
+                        .collect(Collectors.toList()));
+
             }
 
             // Use specialityNames
             if (personInfo.getSpecialityName() != null) {
-                // Sort
-                List<String> sortedSpecialiseringar = personInfo.getSpecialityName().stream()
+                hosPerson.getSpecialiteter().addAll(personInfo.getSpecialityName().stream()
                         .sorted()
-                        .collect(Collectors.toList());
-                hosPerson.getSpecialiteter().addAll(sortedSpecialiseringar);
+                        .collect(Collectors.toList()));
             }
-
 
         }
     }
