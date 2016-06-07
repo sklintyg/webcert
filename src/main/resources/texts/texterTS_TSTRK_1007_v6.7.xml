@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<texter typ="TS-BAS" giltigFrom="2016-04-01" version="6.8" pdf="pdf/TSTRK1007-V06U08.pdf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<texter typ="TS-BAS" giltigFrom="2016-04-01" version="6.7" pdf="pdf/TSTRK1007-V06U08.pdf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<!--
 	===============================================
 	KATEGORI: Intyg avser
@@ -36,11 +36,11 @@
 
   <text id="FRM_1.RBK">* SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
 ** SIS-märkt företagskort eller tjänstekort.
-*** Försäkran enligt 18 kap 4 § i Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+*** Försäkran enligt 18 kap 4 § i Transportstyrelsens föreskrifter (TSFS 2010:125, senast ändrade genom TSFS 2013:2): Identiteten får fastställas genom att en förälder, annan vårdnadshavare, make, maka eller sambo, registrerad partner eller myndigt barn skriftligen försäkrar att lämnade uppgifter om sökandens identitet är riktiga. Den som lämnar en sådan försäkran ska vara närvarande vid identitetskontrollen och kunna styrka sin egen identitet.
 **** Svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.</text>
 
-  <text id="FRM_2.RBK">Läkaren ska uppmärksamma Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av
-    körkort m.m.</text>
+  <text id="FRM_2.RBK"><![CDATA[Läkaren ska uppmärksamma Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2). Intyget ska vara utfärdat tidigast 2 månader före att ansökan kom in till Transportstyrelsen och i enlighet med vad som sägs i 17 kapitlet.
+Se: <a href="http://www.transportstyrelsen.se" target="_blank">http://www.transportstyrelsen.se</a>.]]></text>
 
 	<!--
 	===============================================
@@ -78,7 +78,7 @@
 
 	<text id="FRG_12.RBK">a) Har patienten någon sjukdom eller funktionsnedsättning som påverkar rörligheten och som medför att fordon inte kan köras på ett trafiksäkert sätt?</text>
 	<text id="DFR_12.2.RBK">Ange vilken typ av nedsättning eller sjukdom:</text>
-	<text id="FRG_13.RBK">b) För innehav av behörigheterna D1, D1E, D, DE eller taxi: Finns en nedsättning av rörelseförmågan som gör att patienten inte kan hjälpa passagerare in och ut ur fordonet samt med bilbälte?</text>
+	<text id="FRG_13.RBK">b) Är rörelseförmågan otillräcklig för att kunna hjälpa passagerare in och ut ur fordonet samt med bilbälte?</text>
 
 	<!--
 	===============================================
