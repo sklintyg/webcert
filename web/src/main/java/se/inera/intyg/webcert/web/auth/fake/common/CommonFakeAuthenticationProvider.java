@@ -39,6 +39,7 @@ import se.inera.intyg.common.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 import java.util.ArrayList;
 
@@ -58,13 +59,29 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
 
         SAMLCredential credential = createSamlCredential(token);
         Object details = userDetails.loadUserBySAML(credential);
+
         addAbsentAttributesFromFakeCredentials(token, details);
         selectVardenhetFromFakeCredentials(token, details);
+        applyUserOrigin(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
                 new ArrayList<>());
         result.setDetails(details);
 
         return result;
+    }
+
+    private void applyUserOrigin(FakeAuthenticationToken token, Object details) {
+        if (details instanceof IntygUser) {
+            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
+                String origin = ((FakeCredentials) token.getCredentials()).getOrigin();
+                try {
+                    WebCertUserOriginType.valueOf(origin);       // Type check.
+                    ((IntygUser) details).setOrigin(origin);
+                } catch (IllegalArgumentException e) {
+                    throw new AuthoritiesException("Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
+                }
+            }
+        }
     }
 
     private void addAbsentAttributesFromFakeCredentials(FakeAuthenticationToken token, Object details) {

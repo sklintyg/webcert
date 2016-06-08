@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.auth.fake;
 
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+
 import java.io.Serializable;
 
 /**
@@ -36,6 +38,7 @@ public class FakeCredentials implements Serializable {
     private boolean tandlakare = false;
     private String befattningsKod;
     private String forskrivarKod;
+    private String origin = WebCertUserOriginType.NORMAL.name();
 
     public FakeCredentials() {
     }
@@ -47,6 +50,7 @@ public class FakeCredentials implements Serializable {
         this.tandlakare = builder.tandlakare;
         this.befattningsKod = builder.befattningsKod;
         this.forskrivarKod = builder.forskrivarKod;
+        this.origin = builder.origin;
     }
 
     // ~ Getter and setters
@@ -112,6 +116,13 @@ public class FakeCredentials implements Serializable {
         this.tandlakare = tandlakare;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
 
     // ~ Public methods
     // ~====================================================================================
@@ -137,6 +148,7 @@ public class FakeCredentials implements Serializable {
         private boolean tandlakare = false;
         private String befattningsKod;
         private String forskrivarKod;
+        private String origin;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
@@ -170,6 +182,11 @@ public class FakeCredentials implements Serializable {
 
         public FakeCredentialsBuilder befattningsKod(String befattningsKod) {
             this.befattningsKod = befattningsKod;
+            return this;
+        }
+
+        public FakeCredentialsBuilder origin(String origin) {
+            this.origin = origin;
             return this;
         }
 

@@ -460,18 +460,29 @@
             controller('welcomeController', function($scope) {
                 $scope.loginModel = loginArr;
                 $scope.selectedIndex = '0';
-                $scope.$watch('selectedIndex', function(newSelected, oldVal) {
-                  var jsonEl = angular.element( document.querySelector( '#userJson' ) );
-                  var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
-                  var selector = angular.element( document.querySelector( '#jsonSelect' ) );
 
-                  var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
-                  jsonElView.text( loginJson );
-                  jsonEl.text( escape( loginJson ) );
-                });
+                $scope.$watch('selectedIndex', function(newSelected, oldVal) {
+                    $scope.updateUserContext(newSelected, oldVal);
+                }, true);
+
+            $scope.$watch('environment.origin', function() {
+                $scope.updateUserContext($scope.selectedIndex);
+            });
+
+            $scope.updateUserContext = function(newSelected, oldVal) {
+                var jsonEl = angular.element( document.querySelector( '#userJson' ) );
+                var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
+                var selector = angular.element( document.querySelector( '#jsonSelect' ) );
+                var origin = $scope.environment.origin;
+                $scope.loginModel[newSelected].origin = origin;
+                var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
+                jsonElView.text( loginJson );
+                jsonEl.text( escape( loginJson ) );
+            };
 
                 $scope.environment = {
-                  name: 'all'
+                  name: 'all',
+                    origin: 'NORMAL'
                 };
 
                 $scope.whichEnv = function(env) {
@@ -565,6 +576,12 @@
                         <span class="envButtons"><label for="all"><input id="all" name="all" type="radio" ng-model="environment.name" value="all" /> All</label></span>
                         <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio" ng-model="environment.name" value="dev" /> Dev</label></span>
                         <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio" ng-model="environment.name" value="demo" /> Demo</label></span>
+                    </div>
+                    <div>
+                        <h4>Origin</h4>
+                        <span class="originButtons"><label for="NORMAL"><input id="NORMAL" name="origin" type="radio" ng-model="environment.origin" value="NORMAL" checked/> NORMAL</label></span>
+                        <span class="originButtons"><label for="DJUPINTEGRATION"><input id="DJUPINTEGRATION" name="origin" type="radio" ng-model="environment.origin" value="DJUPINTEGRATION" /> DJUPINTEGRATION</label></span>
+                        <span class="originButtons"><label for="UTHOPP"><input id="UTHOPP" name="origin" type="radio" ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
                     </div>
                     <div style="padding-top: 0.6em;">
                         <h4>Inloggningsprofil</h4>

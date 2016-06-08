@@ -19,11 +19,14 @@
 
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Fake container for approx. CGI SAML ticket attributes.
  *
  * Created by eriklupander on 2015-06-16.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FakeElegCredentials {
 
     // Subject_SerialNumber
