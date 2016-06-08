@@ -38,32 +38,33 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som vårdadministratör$/, function(callback) {
         var userObj = {
-            fornamn: 'Åsa',
-            efternamn: 'Svensson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003'
+            fornamn: 'Susanne',
+            efternamn: 'Johansson Karlsson',
+            hsaId: 'TSTNMT2321000156-105J',
+            enhetId: 'TSTNMT2321000156-105F'
         };
         logInAsUserRole(userObj, 'Vårdadministratör').and.notify(callback);
     });
 
     this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function(callback) {
         var userObj = {
-            fornamn: 'Åsa',
-            efternamn: 'Svensson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003'
+            fornamn: 'Susanne',
+            efternamn: 'Johansson Karlsson',
+            hsaId: 'TSTNMT2321000156-105J',
+            enhetId: 'TSTNMT2321000156-105F'
         };
         logInAsUserRole(userObj, 'Vårdadministratör', 'UTHOPP', 'VARDADMINISTRATOR').then(callback);
     });
     this.Given(/^att jag är inloggad som läkare( som inte accepterat kakor)?$/, function(inteAccepteratKakor, callback) {
         console.log('Kakor accepteras: ' + !inteAccepteratKakor);
         var userObj = {
-            fornamn: 'Åsa',
-            efternamn: 'Andersson',
-            hsaId: 'IFV1239877878-104B',
-            enhetId: 'IFV1239877878-1042',
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: 'TSTNMT2321000156-105F',
             lakare: true,
-            forskrivarKod: '2481632'
+            forskrivarKod: '9300005',
+            befattningsKod: '204090'
         };
         logInAsUserRole(userObj, 'Läkare', null, null, inteAccepteratKakor).and.notify(callback);
     });
