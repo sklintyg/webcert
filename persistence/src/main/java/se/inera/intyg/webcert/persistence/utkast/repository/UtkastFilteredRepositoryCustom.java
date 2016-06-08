@@ -19,16 +19,30 @@
 
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import java.util.List;
-
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+
+import java.util.List;
+import java.util.Set;
 
 @Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastFilteredRepositoryCustom {
 
-    List<Utkast> filterIntyg(UtkastFilter filter);
+    /**
+     * Filtrera på utkast givet ett utkastfilter och tillåtna intygstyper.
+     *
+     * @param filter Ett filter med värden som satts av användaren
+     * @param authorizedIntygstyper Användarens tillåtna intygstyper
+     * @return
+     */
+    List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
 
-    int countFilterIntyg(UtkastFilter filter);
+    /**
+     * Returnera antalet filtrerade utkast givet ett utkastfilter och tillåtna intygstyper.
+     *
+     * @param filter Ett filter med värden som satts av användaren
+     * @param authorizedIntygstyper Användarens tillåtna intygstyper
+     * @return
+     */
+    int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
 }

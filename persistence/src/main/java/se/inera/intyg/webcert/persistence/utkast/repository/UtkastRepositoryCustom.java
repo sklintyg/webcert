@@ -49,8 +49,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @param enhetsIds List of hsa unit id's that should match the counted intyg entities
      * @return A count of {@link Utkast} matching the search criteria.
      */
-    @Query("SELECT u.enhetsId, count(u) FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) GROUP BY u.enhetsId")
-    List<Object[]> countIntygWithStatusesGroupedByEnhetsId(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses);
+    @Query("SELECT u.enhetsId, count(u) FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper) GROUP BY u.enhetsId")
+    List<Object[]> countIntygWithStatusesGroupedByEnhetsId(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and having selected statuses.
@@ -60,8 +60,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @param statuses
      * @return
      */
-    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:allowedIntygTypes)")
-    List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("allowedIntygTypes") Set<String> allowedIntygTypes);
+    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied enhetsId.

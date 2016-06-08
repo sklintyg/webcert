@@ -19,30 +19,30 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.*;
-
-import javax.persistence.OptimisticLockException;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.dto.Patient;
@@ -57,8 +57,15 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.util.*;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -98,7 +105,11 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
-        return utkastRepository.countFilterIntyg(filter);
+
+        // Get intygstyper from write privilege
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+        return utkastRepository.countFilterIntyg(filter, intygsTyper);
     }
 
     @Override
@@ -183,8 +194,9 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
-        // Get intygstyper from the view privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+        // Get intygstyper from write privilege
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
         if (intygsTyper.isEmpty()) {
@@ -192,10 +204,11 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         // Get a list of drafts
-        List<Utkast> utkastList = utkastRepository.filterIntyg(filter);
+        List<Utkast> utkastList = utkastRepository.filterIntyg(filter, intygsTyper);
 
         // If there are intygstyper in the set, then user is only granted access to
         // view intyg of intygstyper that are in the set.
+/*
         Iterator<Utkast> i = utkastList.iterator();
         while (i.hasNext()) {
             Utkast utkast = i.next();
@@ -203,6 +216,7 @@ public class UtkastServiceImpl implements UtkastService {
                 i.remove();
             }
         }
+*/
 
         return utkastList;
     }
@@ -250,8 +264,10 @@ public class UtkastServiceImpl implements UtkastService {
             return resultsMap;
         }
 
-        List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES);
+        // Get intygstyper from write privilege
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
+        List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
         for (Object[] resultArr : countResults) {
             resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
         }

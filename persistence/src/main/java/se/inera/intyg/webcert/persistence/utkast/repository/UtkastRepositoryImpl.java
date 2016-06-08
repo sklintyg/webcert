@@ -19,7 +19,11 @@
 
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -29,13 +33,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-import org.springframework.transaction.annotation.Transactional;
-
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
@@ -44,13 +44,13 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public List<Utkast> filterIntyg(UtkastFilter filter) {
+    public List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Utkast> cq = cb.createQuery(Utkast.class);
         Root<Utkast> root = cq.from(Utkast.class);
 
-        cq.where(createPredicate(filter, cb, root));
+        cq.where(createPredicate(filter, cb, root, authorizedIntygstyper));
         cq.orderBy(cb.desc(root.get("senastSparadDatum")));
 
         TypedQuery<Utkast> query = entityManager.createQuery(cq);
@@ -65,24 +65,23 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public int countFilterIntyg(UtkastFilter filter) {
+    public int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Utkast> root = cq.from(Utkast.class);
         cq.select(cb.count(root));
 
-        cq.where(createPredicate(filter, cb, root));
+        cq.where(createPredicate(filter, cb, root, authorizedIntygstyper));
 
         Query query = entityManager.createQuery(cq);
 
         return ((Long) query.getSingleResult()).intValue();
     }
 
-    private Predicate createPredicate(UtkastFilter filter, CriteriaBuilder builder, Root<Utkast> root) {
+    private Predicate createPredicate(UtkastFilter filter, CriteriaBuilder builder, Root<Utkast> root, Set<String> authorizedIntygstyper) {
 
         Predicate pred = builder.conjunction();
-
         pred = builder.and(pred, builder.equal(root.get("enhetsId"), filter.getUnitHsaId()));
 
         if (StringUtils.isNotEmpty(filter.getSavedByHsaId())) {
@@ -98,15 +97,18 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
         }
 
         if (filter.getSavedFrom() != null) {
-            pred = builder.and(pred,
-                    builder.greaterThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedFrom()));
+            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedFrom()));
         }
 
         if (filter.getSavedTo() != null) {
-            pred = builder.and(pred,
-                    builder.lessThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedTo()));
+            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedTo()));
         }
 
+        if (authorizedIntygstyper == null) {
+            authorizedIntygstyper = new HashSet<>();
+        }
+
+        pred = builder.and(pred, root.<String>get("intygsTyp").in(authorizedIntygstyper));
         return pred;
     }
 

@@ -72,22 +72,18 @@ public class StatModuleApiController extends AbstractApiController {
         StatsResponse statsResponse = new StatsResponse();
 
         WebCertUser user = getWebCertUserService().getUser();
-
         if (user == null) {
             LOG.warn("getStatistics was called, but webcertUser was null!");
             return Response.ok(statsResponse).build();
         }
 
         List<String> allUnitIds = user.getIdsOfAllVardenheter();
-
         if (allUnitIds == null || allUnitIds.isEmpty()) {
-            LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}", user.getHsaId(),
-                    user.getAsJson());
+            LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}", user.getHsaId(), user.getAsJson());
             return Response.ok(statsResponse).build();
         }
 
         Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds);
-
         Map<String, Long> intygStatsMap = intygDraftService.getNbrOfUnsignedDraftsByCareUnits(allUnitIds);
 
         List<String> unitIdsOfSelected = user.getIdsOfSelectedVardenhet();
@@ -95,23 +91,19 @@ public class StatModuleApiController extends AbstractApiController {
         @SuppressWarnings("unchecked")
         List<String> unitIdsOfNotSelected = (List<String>) CollectionUtils.subtract(allUnitIds, unitIdsOfSelected);
 
-        long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected,
-                fragaSvarStatsMap);
+        long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected, fragaSvarStatsMap);
         statsResponse.setTotalNbrOfUnhandledFragaSvarOnOtherThanSelected(fragaSvarOnOtherUnitThanTheSelected);
 
         long fragaSvarOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, fragaSvarStatsMap);
         statsResponse.setTotalNbrOfUnhandledFragaSvarOnSelected(fragaSvarOnSelected);
 
-        long unsignedDraftsOnOtherThanSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected,
-                intygStatsMap);
+        long unsignedDraftsOnOtherThanSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected, intygStatsMap);
         statsResponse.setTotalNbrOfUnsignedDraftsOnOtherThanSelected(unsignedDraftsOnOtherThanSelected);
 
         long unsignedDraftsOnSelected = getSafeStatValueFromMap(user.getValdVardenhet().getId(), intygStatsMap);
-
         statsResponse.setTotalNbrOfUnsignedDraftsOnSelected(unsignedDraftsOnSelected);
 
         populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, fragaSvarStatsMap);
-
         return Response.ok(statsResponse).build();
     }
 
@@ -132,8 +124,7 @@ public class StatModuleApiController extends AbstractApiController {
 
         for (Vardgivare vg : vardgivare) {
             vgStats = new VardgivareStats(vg.getNamn(), vg.getId());
-            vgStats.getVardenheter().addAll(
-                    createAndPopulateVardenheterWithStats(vg.getVardenheter(), intygStats, fragaSvarStats));
+            vgStats.getVardenheter().addAll(createAndPopulateVardenheterWithStats(vg.getVardenheter(), intygStats, fragaSvarStats));
             statsResponse.getVardgivare().add(vgStats);
         }
     }

@@ -22,9 +22,6 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +31,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -46,6 +49,8 @@ public class UtkastFilteredRepositoryTest {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    Set<String> authorizedIntygstyper = Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new));
 
     @Before
     public void setup() {
@@ -68,7 +73,7 @@ public class UtkastFilteredRepositoryTest {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(6, res.size());
     }
@@ -79,7 +84,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(5, res.size());
     }
@@ -90,7 +95,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(3, res.size());
     }
@@ -101,7 +106,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_2_ID);
         filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(4, res.size());
     }
@@ -113,7 +118,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
         filter.setSavedTo(LocalDateTime.parse("2014-03-04"));
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(3, res.size());
     }
@@ -124,7 +129,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setStatusList(Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(4, res.size());
     }
@@ -136,7 +141,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
         filter.setStatusList(Arrays.asList(UtkastStatus.SIGNED));
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(2, res.size());
     }
@@ -150,7 +155,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
         filter.setStatusList(Arrays.asList(UtkastStatus.SIGNED));
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(1, res.size());
     }
@@ -162,7 +167,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setPageSize(2);
         filter.setStartFrom(2);
 
-        List<Utkast> res = utkastRepository.filterIntyg(filter);
+        List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(2, res.size());
 
@@ -179,7 +184,7 @@ public class UtkastFilteredRepositoryTest {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(6, res);
     }
@@ -190,7 +195,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(5, res);
     }
@@ -201,7 +206,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(3, res);
     }
@@ -212,7 +217,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_2_ID);
         filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(4, res);
     }
@@ -224,7 +229,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
         filter.setSavedTo(LocalDateTime.parse("2014-03-04"));
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(3, res);
     }
@@ -235,7 +240,7 @@ public class UtkastFilteredRepositoryTest {
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setStatusList(Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(4, res);
     }
@@ -247,7 +252,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
         filter.setStatusList(Arrays.asList(UtkastStatus.SIGNED));
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(2, res);
     }
@@ -261,7 +266,7 @@ public class UtkastFilteredRepositoryTest {
         filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
         filter.setStatusList(Arrays.asList(UtkastStatus.SIGNED));
 
-        int res = utkastRepository.countFilterIntyg(filter);
+        int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
         assertEquals(1, res);
     }

@@ -19,18 +19,10 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.*;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -43,7 +35,18 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -78,7 +81,7 @@ public class UtkastApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
             .features(WebcertFeature.HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
+            .orThrow();
 
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
