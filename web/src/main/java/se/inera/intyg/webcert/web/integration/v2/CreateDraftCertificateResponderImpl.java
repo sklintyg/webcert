@@ -28,14 +28,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.v2.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v2.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -186,11 +186,11 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     private void addVardenhetToRegistry(CreateNewDraftRequest utkastsRequest) {
 
-        Vardenhet vardenhet = utkastsRequest.getVardenhet();
+        Vardenhet vardenhet = utkastsRequest.getHosPerson().getVardenhet();
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
-        IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
-                vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
+        IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getEnhetsid(),
+                vardenhet.getEnhetsnamn(), vardgivare.getVardgivarid(), vardgivare.getVardgivarnamn());
 
         integreradeEnheterRegistry.putIntegreradEnhet(integreradEnhet, false, true);
     }

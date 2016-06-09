@@ -19,35 +19,34 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.io.IOException;
+import java.util.*;
+
+import javax.persistence.OptimisticLockException;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
+import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -57,15 +56,8 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.util.*;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -102,6 +94,9 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
+    @Autowired
+    private IntygServiceConverter serviceConverter;
+
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
@@ -133,10 +128,11 @@ public class UtkastServiceImpl implements UtkastService {
         sendNotification(savedUtkast, Event.CREATED);
 
         // Create a PDL log for this action
-        logCreateDraftPDL(savedUtkast, request.getVardenhet().getVardgivare().getHsaId(),
-                request.getVardenhet().getVardgivare().getNamn(), request.getVardenhet().getHsaId(),
-                request.getVardenhet().getNamn(), request.getHosPerson().getHsaId(),
-                request.getHosPerson().getNamn());
+        Vardenhet vardenhet = request.getHosPerson().getVardenhet();
+        logCreateDraftPDL(savedUtkast, vardenhet.getVardgivare().getVardgivarid(),
+                vardenhet.getVardgivare().getVardgivarnamn(), vardenhet.getEnhetsid(),
+                vardenhet.getEnhetsnamn(), request.getHosPerson().getPersonId(),
+                request.getHosPerson().getFullstandigtNamn());
 
         return savedUtkast;
     }
@@ -436,30 +432,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
-
-        Vardgivare reqVardgivare = request.getVardenhet().getVardgivare();
-        se.inera.intyg.common.support.modules.support.api.dto.Vardgivare vardgivare = new se.inera.intyg.common.support.modules.support.api.dto.Vardgivare(
-                reqVardgivare.getHsaId(), reqVardgivare.getNamn());
-
-        Vardenhet reqVardenhet = request.getVardenhet();
-        se.inera.intyg.common.support.modules.support.api.dto.Vardenhet vardenhet = new se.inera.intyg.common.support.modules.support.api.dto.Vardenhet(
-                reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
-                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(),
-                reqVardenhet.getArbetsplatskod(), vardgivare);
-
-        HoSPerson reqHosPerson = request.getHosPerson();
-        se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal(
-                reqHosPerson.getHsaId(),
-                reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
-
-        Patient reqPatient = request.getPatient();
-
-        se.inera.intyg.common.support.modules.support.api.dto.Patient patient = new se.inera.intyg.common.support.modules.support.api.dto.Patient(
-                reqPatient.getFornamn(),
-                reqPatient.getMellannamn(), reqPatient.getEfternamn(), reqPatient.getPersonnummer(), reqPatient.getPostadress(),
-                reqPatient.getPostnummer(), reqPatient.getPostort());
-
-        return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
+        return new CreateNewDraftHolder(request.getIntygId(), request.getHosPerson(), request.getPatient());
     }
 
     private Utkast getIntygAsDraft(String intygsId) {
@@ -524,7 +497,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Patient patient = request.getPatient();
 
-        utkast.setPatientPersonnummer(patient.getPersonnummer());
+        utkast.setPatientPersonnummer(patient.getPersonId());
         utkast.setPatientFornamn(patient.getFornamn());
         utkast.setPatientMellannamn(patient.getMellannamn());
         utkast.setPatientEfternamn(patient.getEfternamn());
@@ -536,15 +509,15 @@ public class UtkastServiceImpl implements UtkastService {
 
         utkast.setModel(draftAsJson);
 
-        Vardenhet vardenhet = request.getVardenhet();
+        Vardenhet vardenhet = request.getHosPerson().getVardenhet();
 
-        utkast.setEnhetsId(vardenhet.getHsaId());
-        utkast.setEnhetsNamn(vardenhet.getNamn());
+        utkast.setEnhetsId(vardenhet.getEnhetsid());
+        utkast.setEnhetsNamn(vardenhet.getEnhetsnamn());
 
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
-        utkast.setVardgivarId(vardgivare.getHsaId());
-        utkast.setVardgivarNamn(vardgivare.getNamn());
+        utkast.setVardgivarId(vardgivare.getVardgivarid());
+        utkast.setVardgivarNamn(vardgivare.getVardgivarnamn());
 
         VardpersonReferens creator = UpdateUserUtil.createVardpersonFromHosPerson(request.getHosPerson());
 
@@ -593,14 +566,15 @@ public class UtkastServiceImpl implements UtkastService {
 
     private void updateWithUser(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getUser();
-        se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal hosPerson = UpdateUserUtil.createUserObject(user);
-        utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
 
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(modelJson).getGrundData().getSkapadAv().getVardenhet();
+            HoSPersonal hosPerson = serviceConverter.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
+            utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
             utkast.setModel(updatedInternal);
-        } catch (ModuleException | ModuleNotFoundException e) {
+        } catch (ModuleException | ModuleNotFoundException | IOException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 // This error message is helpful when debugging save problems.
                 LOG.debug(e.getCause().getCause().getMessage());

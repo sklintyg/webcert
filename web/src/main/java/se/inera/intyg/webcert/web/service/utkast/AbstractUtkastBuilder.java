@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -36,14 +35,10 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-//import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
@@ -208,28 +203,22 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         LOG.debug("Created id '{}' for the new copy", newDraftCopyId);
 
-        Vardgivare reqVardgivare = copyRequest.getVardenhet().getVardgivare();
-        se.inera.intyg.common.support.modules.support.api.dto.Vardgivare vardgivare = new se.inera.intyg.common.support.modules.support.api.dto.Vardgivare(
-                reqVardgivare.getHsaId(), reqVardgivare.getNamn());
-
-        Vardenhet reqVardenhet = copyRequest.getVardenhet();
-        se.inera.intyg.common.support.modules.support.api.dto.Vardenhet vardenhet = new se.inera.intyg.common.support.modules.support.api.dto.Vardenhet(
-                reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
-                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(),
-                reqVardenhet.getArbetsplatskod(), vardgivare);
-
-        HoSPerson reqHosPerson = copyRequest.getHosPerson();
-        se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal(
-                reqHosPerson.getHsaId(),
-                reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
-
-        CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, hosPerson, relation);
+        CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, copyRequest.getHosPerson(), relation);
 
         if (person != null) {
-            se.inera.intyg.common.support.modules.support.api.dto.Patient patient = new se.inera.intyg.common.support.modules.support.api.dto.Patient(
-                    person.getFornamn(),
-                    person.getMellannamn(), person.getEfternamn(), person.getPersonnummer(), person.getPostadress(), person.getPostnummer(),
-                    person.getPostort());
+            Patient patient = new Patient();
+            patient.setFornamn(person.getFornamn());
+            patient.setMellannamn(person.getMellannamn());
+            patient.setEfternamn(person.getEfternamn());
+            patient.setPersonId(person.getPersonnummer());
+            patient.setPostadress(person.getPostadress());
+            patient.setPostnummer(person.getPostnummer());
+            patient.setPostort(person.getPostort());
+            if (StringUtils.isBlank(patient.getMellannamn())) {
+                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
+            } else {
+                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
+            }
             newDraftCopyHolder.setPatient(patient);
             LOG.debug("Added new patient data to CreateDraftCopyHolder");
         }
@@ -243,15 +232,15 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
     }
 
     private void populateUtkastWithVardenhetAndHoSPerson(Utkast utkast, CreateCopyRequest copyRequest) {
-        Vardenhet vardenhet = copyRequest.getVardenhet();
+        Vardenhet vardenhet = copyRequest.getHosPerson().getVardenhet();
 
-        utkast.setEnhetsId(vardenhet.getHsaId());
-        utkast.setEnhetsNamn(vardenhet.getNamn());
+        utkast.setEnhetsId(vardenhet.getEnhetsid());
+        utkast.setEnhetsNamn(vardenhet.getEnhetsnamn());
 
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
-        utkast.setVardgivarId(vardgivare.getHsaId());
-        utkast.setVardgivarNamn(vardgivare.getNamn());
+        utkast.setVardgivarId(vardgivare.getVardgivarid());
+        utkast.setVardgivarNamn(vardgivare.getVardgivarnamn());
 
         VardpersonReferens creator = UpdateUserUtil.createVardpersonFromHosPerson(copyRequest.getHosPerson());
 

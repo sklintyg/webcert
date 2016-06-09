@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.integration.v2.builder;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,11 @@ import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.web.service.dto.*;
+import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
-import se.riv.infrastructure.directory.v1.CommissionType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
+import se.riv.infrastructure.directory.v1.*;
 
 @Component(value = "createNewDraftRequestBuilderImplV2")
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
@@ -49,63 +49,46 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
         utkastsRequest.setIntygType(intyg.getTypAvIntyg().getCode().toLowerCase());
 
-        se.inera.intyg.webcert.web.service.dto.Patient patient = createPatient(intyg.getPatient());
+        Patient patient = TransportConverterUtil.getPatient(intyg.getPatient());
         utkastsRequest.setPatient(patient);
 
-        Vardenhet vardenhet = createVardenhetFromMIU(miuOnUnit);
-        utkastsRequest.setVardenhet(vardenhet);
-
-        HoSPerson hosPerson = createHoSPerson(intyg.getSkapadAv());
+        HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
         utkastsRequest.setHosPerson(hosPerson);
         return utkastsRequest;
     }
 
-    private HoSPerson createHoSPerson(se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType) {
-        HoSPerson hoSPerson = new HoSPerson();
-        hoSPerson.setNamn(hoSPersonType.getFullstandigtNamn());
-        hoSPerson.setHsaId(hoSPersonType.getPersonalId().getExtension());
-        hoSPerson.setForskrivarkod(hoSPerson.getForskrivarkod());
+    private HoSPersonal createHoSPerson(se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType,
+            Vardenhet vardenhet) {
+        HoSPersonal hoSPerson = new HoSPersonal();
+        hoSPerson.setFullstandigtNamn(hoSPersonType.getFullstandigtNamn());
+        hoSPerson.setPersonId(hoSPersonType.getPersonalId().getExtension());
+        hoSPerson.setVardenhet(vardenhet);
         return hoSPerson;
     }
 
-    private se.inera.intyg.webcert.web.service.dto.Patient createPatient(
-            se.riv.clinicalprocess.healthcond.certificate.v2.Patient patientType) {
-        se.inera.intyg.webcert.web.service.dto.Patient patient = new se.inera.intyg.webcert.web.service.dto.Patient();
-        patient.setPersonnummer(new Personnummer(patientType.getPersonId().getExtension()));
-        patient.setFornamn(patientType.getFornamn());
-        patient.setMellannamn(patientType.getMellannamn());
-        patient.setEfternamn(patientType.getEfternamn());
-        patient.setPostadress(patientType.getPostadress());
-        patient.setPostnummer(patientType.getPostnummer());
-        patient.setPostort(patientType.getPostort());
-        return patient;
-    }
-
-    private void enrichHoSPerson(HoSPerson hosPerson) {
-        List<PersonInformationType> hsaPersonResponse = hsaPersonService.getHsaPersonInfo(hosPerson.getHsaId());
+    private void enrichHoSPerson(HoSPersonal hosPerson) {
+        List<PersonInformationType> hsaPersonResponse = hsaPersonService.getHsaPersonInfo(hosPerson.getPersonId());
         if (hsaPersonResponse != null && hsaPersonResponse.size() > 0) {
             PersonInformationType personInfo = hsaPersonResponse.get(0);
 
-            // Use first PaTitle to set befattning
-            if (personInfo.getPaTitle() != null && personInfo.getPaTitle().size() > 0) {
-                hosPerson.setBefattning(personInfo.getPaTitle().get(0).getPaTitleName());
+            // Use PaTitle to set befattning
+            if (personInfo.getPaTitle() != null) {
+                List<String> sortedBefattningar = personInfo.getPaTitle().stream()
+                        .map(PaTitleType::getPaTitleName)
+                        .filter(Objects::nonNull)
+                        .sorted()
+                        .collect(Collectors.toList());
+                hosPerson.getBefattningar().addAll(sortedBefattningar);
             }
 
             // Use specialityNames
             if (personInfo.getSpecialityName() != null) {
-                for (String specialityName : personInfo.getSpecialityName()) {
-                    hosPerson.getSpecialiseringar().add(specialityName);
-                }
-
-                // Sort
-                List<String> sortedSpecialiseringar = hosPerson.getSpecialiseringar().stream()
+                List<String> sortedSpecialiseringar = personInfo.getSpecialityName().stream()
                         .sorted()
                         .collect(Collectors.toList());
-                hosPerson.getSpecialiseringar().clear();
-                hosPerson.getSpecialiseringar().addAll(sortedSpecialiseringar);
+                hosPerson.getSpecialiteter().addAll(sortedSpecialiseringar);
             }
-
         }
     }
 
@@ -114,17 +97,17 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         se.inera.intyg.common.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getHealthCareUnitHsaId());
 
         Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setNamn(hsaVardenhet.getNamn());
-        vardenhet.setHsaId(hsaVardenhet.getId());
-        vardenhet.setArbetsplatskod(hsaVardenhet.getArbetsplatskod());
+        vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());
+        vardenhet.setEnhetsid(hsaVardenhet.getId());
+        vardenhet.setArbetsplatsKod(hsaVardenhet.getArbetsplatskod());
         vardenhet.setPostadress(hsaVardenhet.getPostadress());
         vardenhet.setPostnummer(hsaVardenhet.getPostnummer());
         vardenhet.setPostort(hsaVardenhet.getPostort());
         vardenhet.setTelefonnummer(hsaVardenhet.getTelefonnummer());
 
         Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setHsaId(miu.getHealthCareProviderHsaId());
-        vardgivare.setNamn(miu.getHealthCareProviderName());
+        vardgivare.setVardgivarid(miu.getHealthCareProviderHsaId());
+        vardgivare.setVardgivarnamn(miu.getHealthCareProviderName());
         vardenhet.setVardgivare(vardgivare);
 
         return vardenhet;

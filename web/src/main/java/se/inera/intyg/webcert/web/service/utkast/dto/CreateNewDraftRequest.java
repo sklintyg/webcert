@@ -19,10 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 
 public class CreateNewDraftRequest {
 
@@ -34,21 +33,18 @@ public class CreateNewDraftRequest {
 
     private Patient patient;
 
-    private HoSPerson hosPerson;
-
-    private Vardenhet vardenhet;
+    private HoSPersonal hosPerson;
 
     public CreateNewDraftRequest() {
 
     }
 
-    public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPerson hosPerson,
-            Vardenhet vardenhet, Patient patient) {
+    public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPersonal hosPerson,
+            Patient patient) {
         this.intygId = intygId;
         this.intygType = intygType;
         this.status = status;
         this.hosPerson = hosPerson;
-        this.vardenhet = vardenhet;
         this.patient = patient;
     }
 
@@ -84,19 +80,11 @@ public class CreateNewDraftRequest {
         this.patient = patient;
     }
 
-    public HoSPerson getHosPerson() {
+    public HoSPersonal getHosPerson() {
         return hosPerson;
     }
 
-    public void setHosPerson(HoSPerson hosPerson) {
+    public void setHosPerson(HoSPersonal hosPerson) {
         this.hosPerson = hosPerson;
-    }
-
-    public Vardenhet getVardenhet() {
-        return vardenhet;
-    }
-
-    public void setVardenhet(Vardenhet vardenhet) {
-        this.vardenhet = vardenhet;
     }
 }

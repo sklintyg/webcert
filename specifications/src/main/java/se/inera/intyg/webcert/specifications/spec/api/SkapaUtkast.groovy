@@ -122,8 +122,8 @@ class SkapaUtkast extends RestClientFixture {
     }
 
     private json() {
-        [intygId  : intygId, intygType: intygTyp, patient: [personnummer: patientPersonnummer, fornamn: patientFornamn, efternamn: patientEfternamn],
-            hosPerson: [namn: "Namn", hsaId: "hsaid", forskivarkod: "1234567890"],
-            vardenhet: [hsaId: enhetId, namn: enhetnamn, vardgivare: [hsaId: vardgivarId, namn: vardgivarnamn]]]
+        [intygId  : intygId, intygType: intygTyp, patient: [personId: patientPersonnummer, fornamn: patientFornamn, efternamn: patientEfternamn],
+            hosPerson: [fullstandigtNamn: "Namn", personId: "hsaId", forskivarKod: "1234567890",
+            vardenhet: [enhetsid: enhetId, enhetsnamn: enhetnamn, vardgivare: [vardgivarid: vardgivarId, vardgivarnamn: vardgivarnamn]]]]
     }
 }

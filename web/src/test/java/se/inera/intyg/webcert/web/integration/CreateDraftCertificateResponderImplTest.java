@@ -37,17 +37,18 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.infrastructure.directory.v1.CommissionType;
@@ -134,22 +135,23 @@ public class CreateDraftCertificateResponderImplTest {
     private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
         CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
         draftRequest.setIntygId(UTKAST_ID);
-        draftRequest.setVardenhet(vardenhet);
+        draftRequest.setHosPerson(new HoSPersonal());
+        draftRequest.getHosPerson().setVardenhet(vardenhet);
         return draftRequest;
     }
 
     private Vardenhet createVardenhet(Vardgivare vardgivare) {
         Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setHsaId("SE1234567890-1A01");
-        vardenhet.setNamn("Vardenheten");
+        vardenhet.setEnhetsid("SE1234567890-1A01");
+        vardenhet.setEnhetsnamn("Vardenheten");
         vardenhet.setVardgivare(vardgivare);
         return vardenhet;
     }
 
     private Vardgivare createVardgivare() {
         Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setHsaId("SE1234567890-2B01");
-        vardgivare.setNamn("Vardgivaren");
+        vardgivare.setVardgivarid("SE1234567890-2B01");
+        vardgivare.setVardgivarnamn("Vardgivaren");
         return vardgivare;
     }
 

@@ -8,9 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,28 +19,21 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.security.authorities.AuthoritiesException;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Privilege;
-import se.inera.intyg.common.security.common.model.RequestOrigin;
+import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationStatus;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastModuleApiControllerTest {
@@ -73,6 +64,9 @@ public class UtkastModuleApiControllerTest {
 
     @Mock
     private WebCertUserService webcertUserService;
+
+    @Mock
+    private IntygServiceConverter serviceConverter;
 
     @InjectMocks
     private UtkastModuleApiController moduleApiController = new UtkastModuleApiController();
@@ -120,7 +114,7 @@ public class UtkastModuleApiControllerTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
-    @Test(expected = AuthoritiesException.class) 
+    @Test(expected = AuthoritiesException.class)
     public void saveDraftWithoutPrivilegeSkrivaIntygFails() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";

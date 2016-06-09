@@ -148,12 +148,22 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     }
 
     @Override
-    public HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user) {
+    public HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user, Vardenhet vardenhet) {
         HoSPersonal hosPersonal = new HoSPersonal();
         hosPersonal.setPersonId(user.getHsaId());
         hosPersonal.setFullstandigtNamn(user.getNamn());
         hosPersonal.setForskrivarKod(user.getForskrivarkod());
-        hosPersonal.setVardenhet(buildVardenhet(user));
+        if (user.getBefattningar() != null) {
+            hosPersonal.getBefattningar().addAll(user.getBefattningar());
+        }
+        if (user.getSpecialiseringar() != null) {
+            hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
+        }
+        if (vardenhet != null) {
+            hosPersonal.setVardenhet(vardenhet);
+        } else {
+            hosPersonal.setVardenhet(buildVardenhet(user));
+        }
         return hosPersonal;
     }
 

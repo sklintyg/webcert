@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-
 public class SaveAndValidateDraftRequest {
 
     private String intygId;
@@ -31,10 +29,7 @@ public class SaveAndValidateDraftRequest {
 
     private Boolean autoSave;
 
-    private HoSPerson savedBy;
-
     public SaveAndValidateDraftRequest() {
-
     }
 
     public String getIntygId() {
@@ -67,14 +62,6 @@ public class SaveAndValidateDraftRequest {
 
     public void setAutoSave(Boolean autoSave) {
         this.autoSave = autoSave;
-    }
-
-    public HoSPerson getSavedBy() {
-        return savedBy;
-    }
-
-    public void setSavedBy(HoSPerson savedBy) {
-        this.savedBy = savedBy;
     }
 
 }

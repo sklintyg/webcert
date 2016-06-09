@@ -21,8 +21,7 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -81,7 +80,7 @@ public class IntygServiceConverterTest {
 
         assertNotNull(res.getAvsantTidpunkt());
 
-        assertThat(res.getVardReferensId(), containsString("SEND-123-"));
+        assertTrue(res.getVardReferensId().contains("SEND-123-"));
 
         assertEquals("123", res.getLakarutlatande().getLakarutlatandeId());
         assertEquals("Test Testorsson", res.getLakarutlatande().getPatient().getFullstandigtNamn());
@@ -179,7 +178,7 @@ public class IntygServiceConverterTest {
         user.setNamn(namn);
         user.setValdVardenhet(valdVardenhet);
         user.setValdVardgivare(valdVardgivare);
-        HoSPersonal result = converter.buildHosPersonalFromWebCertUser(user);
+        HoSPersonal result = converter.buildHosPersonalFromWebCertUser(user, null);
 
         assertEquals(forskrivarkod, result.getForskrivarKod());
         assertEquals(hsaId, result.getPersonId());
@@ -194,6 +193,83 @@ public class IntygServiceConverterTest {
         assertEquals(telefonnummer, result.getVardenhet().getTelefonnummer());
         assertEquals(vardgivarId, result.getVardenhet().getVardgivare().getVardgivarid());
         assertEquals(vardgivarnamn, result.getVardenhet().getVardgivare().getVardgivarnamn());
+    }
+
+    @Test
+    public void testBuildHosPersonalFromWebCertUserWithVardenhet() {
+        final String forskrivarkod = "forskrivarkod";
+        final String hsaId = "hsaid";
+        final String namn = "namn";
+        final String arbetsplatskod = "arbetsplatskod";
+        final String epost = "epost";
+        final String enhetsId = "enhetsId";
+        final String enhetsnamn = "enhetsnamn";
+        final String postadress = "postadress";
+        final String postnummer = "postnummer";
+        final String postort = "postort";
+        final String telefonnummer = "telefonnummer";
+        final String vardgivarId = "vardgivarId";
+        final String vardgivarnamn = "vardgivarnamn";
+        se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare = new se.inera.intyg.common.support.model.common.internal.Vardgivare();
+        vardgivare.setVardgivarid(vardgivarId);
+        vardgivare.setVardgivarnamn(vardgivarnamn);
+        se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+        vardenhet.setArbetsplatsKod(arbetsplatskod);
+        vardenhet.setEpost(epost);
+        vardenhet.setEnhetsid(enhetsId);
+        vardenhet.setEnhetsnamn(enhetsnamn);
+        vardenhet.setPostadress(postadress);
+        vardenhet.setPostnummer(postnummer);
+        vardenhet.setPostort(postort);
+        vardenhet.setTelefonnummer(telefonnummer);
+        vardenhet.setVardgivare(vardgivare);
+        WebCertUser user = new WebCertUser();
+        user.setForskrivarkod(forskrivarkod);
+        user.setHsaId(hsaId);
+        user.setNamn(namn);
+
+        HoSPersonal result = converter.buildHosPersonalFromWebCertUser(user, vardenhet);
+
+        assertEquals(forskrivarkod, result.getForskrivarKod());
+        assertEquals(hsaId, result.getPersonId());
+        assertEquals(namn, result.getFullstandigtNamn());
+        assertEquals(arbetsplatskod, result.getVardenhet().getArbetsplatsKod());
+        assertEquals(epost, result.getVardenhet().getEpost());
+        assertEquals(enhetsId, result.getVardenhet().getEnhetsid());
+        assertEquals(enhetsnamn, result.getVardenhet().getEnhetsnamn());
+        assertEquals(postadress, result.getVardenhet().getPostadress());
+        assertEquals(postnummer, result.getVardenhet().getPostnummer());
+        assertEquals(postort, result.getVardenhet().getPostort());
+        assertEquals(telefonnummer, result.getVardenhet().getTelefonnummer());
+        assertEquals(vardgivarId, result.getVardenhet().getVardgivare().getVardgivarid());
+        assertEquals(vardgivarnamn, result.getVardenhet().getVardgivare().getVardgivarnamn());
+    }
+
+    @Test
+    public void testBuildHosPersonalFromWebCertUserWithSpecialiseringarAndBefattningar() {
+        final String hsaId = "hsaid";
+        final String namn = "namn";
+        final String befattning1 = "befattning1";
+        final String befattning2 = "befattning2";
+        final String specialisering1 = "specialisering1";
+        final String specialisering2 = "specialisering2";
+        se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+        WebCertUser user = new WebCertUser();
+        user.setHsaId(hsaId);
+        user.setNamn(namn);
+        user.setBefattningar(Arrays.asList(befattning1, befattning2));
+        user.setSpecialiseringar(Arrays.asList(specialisering1, specialisering2));
+
+        HoSPersonal result = converter.buildHosPersonalFromWebCertUser(user, vardenhet);
+
+        assertEquals(hsaId, result.getPersonId());
+        assertEquals(namn, result.getFullstandigtNamn());
+        assertEquals(2, result.getBefattningar().size());
+        assertEquals(befattning1, result.getBefattningar().get(0));
+        assertEquals(befattning2, result.getBefattningar().get(1));
+        assertEquals(2, result.getSpecialiteter().size());
+        assertEquals(specialisering1, result.getSpecialiteter().get(0));
+        assertEquals(specialisering2, result.getSpecialiteter().get(1));
     }
 
     private Utlatande createUtlatandeFromJson() throws Exception {

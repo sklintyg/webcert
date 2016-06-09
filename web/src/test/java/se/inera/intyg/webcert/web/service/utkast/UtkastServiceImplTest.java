@@ -41,6 +41,7 @@ import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.*;
@@ -49,8 +50,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -97,36 +98,42 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @InjectMocks
     private UtkastService draftService = new UtkastServiceImpl();
 
+    @Mock
+    private IntygServiceConverter serviceConverter;
+
+    @Mock
+    private ModuleApi mockModuleApi;
+
     private Utkast utkast;
     private Utkast signedUtkast;
-    private HoSPerson hoSPerson;
+    private HoSPersonal hoSPerson;
 
     @Before
     public void setup() {
-        hoSPerson = new HoSPerson();
-        hoSPerson.setHsaId("AAA");
-        hoSPerson.setNamn("Dr Dengroth");
-        hoSPerson.setBefattning("Befattning");
-        hoSPerson.getSpecialiseringar().add("Ortoped");
+        hoSPerson = new HoSPersonal();
+        hoSPerson.setPersonId("AAA");
+        hoSPerson.setFullstandigtNamn("Dr Dengroth");
+        hoSPerson.getBefattningar().add("Befattning");
+        hoSPerson.getSpecialiteter().add("Ortoped");
 
-        se.inera.intyg.webcert.web.service.dto.Vardgivare vardgivare = new se.inera.intyg.webcert.web.service.dto.Vardgivare();
-        vardgivare.setHsaId("SE234234");
-        vardgivare.setNamn("Vårdgivaren");
+        se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare = new se.inera.intyg.common.support.model.common.internal.Vardgivare();
+        vardgivare.setVardgivarid("SE234234");
+        vardgivare.setVardgivarnamn("Vårdgivaren");
 
-        se.inera.intyg.webcert.web.service.dto.Vardenhet vardenhet = new se.inera.intyg.webcert.web.service.dto.Vardenhet();
-        vardenhet.setArbetsplatskod("00000");
-        vardenhet.setNamn("Vårdenheten");
-        vardenhet.setHsaId("SE234897348");
+        se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+        vardenhet.setArbetsplatsKod("00000");
+        vardenhet.setEnhetsnamn("Vårdenheten");
+        vardenhet.setEnhetsid("SE234897348");
         vardenhet.setPostadress("Sjukvägen 1");
         vardenhet.setPostnummer("12345");
-        vardenhet.setNamn("Testberga");
+        vardenhet.setPostort("Testberga");
         vardenhet.setTelefonnummer("0123-456789");
         vardenhet.setEpost("ingen@ingen.se");
         vardenhet.setVardgivare(vardgivare);
 
         VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(hoSPerson.getHsaId());
-        vardperson.setNamn(hoSPerson.getNamn());
+        vardperson.setHsaId(hoSPerson.getPersonId());
+        vardperson.setNamn(hoSPerson.getFullstandigtNamn());
 
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
@@ -210,16 +217,19 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveAndValidateDraftFirstSave() throws Exception {
-
-        ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
@@ -244,16 +254,19 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveAndValidateDraftSecondSave() throws Exception {
-
-        ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
@@ -288,15 +301,18 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
-
-        ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockModuleApi.validateDraft(anyString())).thenThrow(ModuleException.class);
 
         draftService.saveAndValidateDraft(request, false);
@@ -334,7 +350,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         request.setIntygId(utkast.getIntygsId());
         request.setVersion(utkast.getVersion());
         request.setDraftAsJson(utkast.getModel());
-        request.setSavedBy(hoSPerson);
         request.setAutoSave(false);
         return request;
     }

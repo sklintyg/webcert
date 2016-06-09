@@ -14,21 +14,16 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.integration.hsa.model.*;
 import se.inera.intyg.common.security.authorities.AuthoritiesException;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Privilege;
-import se.inera.intyg.common.security.common.model.RequestOrigin;
+import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -57,6 +52,9 @@ public class UtkastApiControllerTest {
 
     @Mock
     private WebCertUserService webcertUserService;
+
+    @Mock
+    private IntygServiceConverter serviceConverter;
 
     @InjectMocks
     private UtkastApiController utkastController;

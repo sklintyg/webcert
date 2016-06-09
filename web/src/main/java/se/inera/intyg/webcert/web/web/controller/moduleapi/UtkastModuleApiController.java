@@ -25,31 +25,20 @@ import java.util.List;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
@@ -57,16 +46,10 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftValidationStatus;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SaveDraftResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
-import io.swagger.annotations.Api;
 
 /**
  * Controller for module interaction with drafts.
@@ -191,9 +174,6 @@ public class UtkastModuleApiController extends AbstractApiController {
         request.setVersion(version);
         request.setDraftAsJson(draftAsJson);
         request.setAutoSave(autoSave);
-
-        HoSPerson savedBy = createHoSPersonFromUser();
-        request.setSavedBy(savedBy);
 
         return request;
     }

@@ -19,43 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.util;
 
-import java.util.stream.Collectors;
-
-import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.api.dto.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public final class UpdateUserUtil {
 
     private UpdateUserUtil() {
-    }
-
-    /**
-     * Create a user object from WebCertUser.
-     *
-     * Note that befattningar (a List) is concatenated into a string with ", " as separator.
-     *
-     * @param user {@link WebCertUser}
-     */
-    public static HoSPersonal createUserObject(WebCertUser user) {
-        SelectableVardenhet valdVardgivare = user.getValdVardgivare();
-        se.inera.intyg.common.support.modules.support.api.dto.Vardgivare vardgivare = new se.inera.intyg.common.support.modules.support.api.dto.Vardgivare(
-                valdVardgivare.getId(), valdVardgivare.getNamn());
-
-        AbstractVardenhet valdVardenhet = (AbstractVardenhet) user.getValdVardenhet();
-        Vardenhet vardenhet = new se.inera.intyg.common.support.modules.support.api.dto.Vardenhet(
-                valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(),
-                valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
-
-        String befattning = user.getBefattningar().stream().collect(Collectors.joining(", "));
-        HoSPersonal hosPerson = new HoSPersonal(
-                user.getHsaId(),
-                user.getNamn(), user.getForskrivarkod(), befattning, user.getSpecialiseringar(), vardenhet);
-        return hosPerson;
     }
 
     public static VardpersonReferens createVardpersonFromWebCertUser(WebCertUser user) {
@@ -66,10 +36,10 @@ public final class UpdateUserUtil {
         return vardPerson;
     }
 
-    public static VardpersonReferens createVardpersonFromHosPerson(HoSPerson hosPerson) {
+    public static VardpersonReferens createVardpersonFromHosPerson(HoSPersonal hosPerson) {
         VardpersonReferens vardPerson = new VardpersonReferens();
-        vardPerson.setNamn(hosPerson.getNamn());
-        vardPerson.setHsaId(hosPerson.getHsaId());
+        vardPerson.setNamn(hosPerson.getFullstandigtNamn());
+        vardPerson.setHsaId(hosPerson.getPersonId());
         return vardPerson;
     }
 

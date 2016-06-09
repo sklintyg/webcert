@@ -21,9 +21,8 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 
 public abstract class CreateCopyRequest {
     private String originalIntygId;
@@ -34,18 +33,15 @@ public abstract class CreateCopyRequest {
 
     private Personnummer nyttPatientPersonnummer;
 
-    private HoSPerson hosPerson;
-
-    private Vardenhet vardenhet;
+    private HoSPersonal hosPerson;
 
     private boolean djupintegrerad = false;
 
-    public CreateCopyRequest(String orginalIntygsId, String intygsTyp, Personnummer patientPersonnummer, HoSPerson hosPerson, Vardenhet vardenhet) {
+    public CreateCopyRequest(String orginalIntygsId, String intygsTyp, Personnummer patientPersonnummer, HoSPersonal hosPerson) {
         this.originalIntygId = orginalIntygsId;
         this.typ = intygsTyp;
         this.patientPersonnummer = patientPersonnummer;
         this.hosPerson = hosPerson;
-        this.vardenhet = vardenhet;
     }
 
     public CreateCopyRequest() {
@@ -88,20 +84,12 @@ public abstract class CreateCopyRequest {
         this.nyttPatientPersonnummer = nyttPatientPersonnummer;
     }
 
-    public HoSPerson getHosPerson() {
+    public HoSPersonal getHosPerson() {
         return hosPerson;
     }
 
-    public void setHosPerson(HoSPerson hosPerson) {
+    public void setHosPerson(HoSPersonal hosPerson) {
         this.hosPerson = hosPerson;
-    }
-
-    public Vardenhet getVardenhet() {
-        return vardenhet;
-    }
-
-    public void setVardenhet(Vardenhet vardenhet) {
-        this.vardenhet = vardenhet;
     }
 
     public boolean isDjupintegrerad() {

@@ -25,11 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -46,38 +44,12 @@ public abstract class AbstractApiController {
     @Autowired
     private WebCertUserService webCertUserService;
 
-    protected HoSPerson createHoSPersonFromUser() {
+    @Autowired
+    private IntygServiceConverter serviceConverter;
+
+    protected HoSPersonal createHoSPersonFromUser() {
         WebCertUser user = webCertUserService.getUser();
-        return HoSPerson.create(user);
-    }
-
-    protected Vardenhet createVardenhetFromUser() {
-
-        WebCertUser user = webCertUserService.getUser();
-        AbstractVardenhet valdEnhet = getValdEnhet(user);
-
-        Vardenhet enhet = new Vardenhet();
-        enhet.setHsaId(valdEnhet.getId());
-        enhet.setNamn(valdEnhet.getNamn());
-        enhet.setEpost(valdEnhet.getEpost());
-        enhet.setTelefonnummer(valdEnhet.getTelefonnummer());
-        enhet.setPostadress(valdEnhet.getPostadress());
-        enhet.setPostnummer(valdEnhet.getPostnummer());
-        enhet.setPostort(valdEnhet.getPostort());
-        enhet.setArbetsplatskod(valdEnhet.getArbetsplatskod());
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setHsaId(user.getValdVardgivare().getId());
-        vardgivare.setNamn(user.getValdVardgivare().getNamn());
-        enhet.setVardgivare(vardgivare);
-        return enhet;
-    }
-
-    private AbstractVardenhet getValdEnhet(WebCertUser user) {
-        if (user.getValdVardenhet() instanceof AbstractVardenhet) {
-            return (AbstractVardenhet) user.getValdVardenhet();
-        } else {
-            return null;
-        }
+        return serviceConverter.buildHosPersonalFromWebCertUser(user, null);
     }
 
     protected List<String> getEnhetIdsForCurrentUser() {

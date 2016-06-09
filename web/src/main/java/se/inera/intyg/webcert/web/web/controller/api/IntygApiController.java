@@ -19,15 +19,25 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
+import java.util.*;
+
+import javax.persistence.OptimisticLockException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -36,40 +46,14 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
-
-import javax.persistence.OptimisticLockException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 
 /**
  * Controller for the API that serves WebCert.
@@ -221,11 +205,10 @@ public class IntygApiController extends AbstractApiController {
     }
 
     private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
-        HoSPerson hosPerson = createHoSPersonFromUser();
-        Vardenhet vardenhet = createVardenhetFromUser();
+        HoSPersonal hosPerson = createHoSPersonFromUser();
         Personnummer patientPersonnummer = request.getPatientPersonnummer();
 
-        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
+        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patientPersonnummer, hosPerson);
 
         if (request.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");
@@ -241,12 +224,10 @@ public class IntygApiController extends AbstractApiController {
 
     private CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
             CopyIntygRequest copyRequest) {
-        HoSPerson hosPerson = createHoSPersonFromUser();
-        Vardenhet vardenhet = createVardenhetFromUser();
+        HoSPersonal hosPerson = createHoSPersonFromUser();
         Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
 
-        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patientPersonnummer, hosPerson,
-                vardenhet);
+        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patientPersonnummer, hosPerson);
 
         if (copyRequest.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");
@@ -262,12 +243,10 @@ public class IntygApiController extends AbstractApiController {
     }
 
     private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
-
-        HoSPerson hosPerson = createHoSPersonFromUser();
-        Vardenhet vardenhet = createVardenhetFromUser();
+        HoSPersonal hosPerson = createHoSPersonFromUser();
         Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
 
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson);
 
         if (copyRequest.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");

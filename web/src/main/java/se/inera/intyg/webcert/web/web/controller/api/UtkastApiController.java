@@ -19,34 +19,32 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.dto.Patient;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import java.util.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -153,9 +151,14 @@ public class UtkastApiController extends AbstractApiController {
         srvReq.setIntygType(req.getIntygType());
 
         Patient pat = new Patient();
-        pat.setPersonnummer(req.getPatientPersonnummer());
+        pat.setPersonId(req.getPatientPersonnummer());
         pat.setFornamn(req.getPatientFornamn());
         pat.setMellannamn(req.getPatientMellannamn());
+        if (StringUtils.isBlank(pat.getMellannamn())) {
+            pat.setFullstandigtNamn(pat.getFornamn() + " " + pat.getEfternamn());
+        } else {
+            pat.setFullstandigtNamn(pat.getFornamn() + " " + pat.getMellannamn() + " " + pat.getEfternamn());
+        }
         pat.setEfternamn(req.getPatientEfternamn());
         pat.setPostadress(req.getPatientPostadress());
         pat.setPostnummer(req.getPatientPostnummer());
@@ -163,7 +166,6 @@ public class UtkastApiController extends AbstractApiController {
         srvReq.setPatient(pat);
 
         srvReq.setHosPerson(createHoSPersonFromUser());
-        srvReq.setVardenhet(createVardenhetFromUser());
 
         return srvReq;
     }

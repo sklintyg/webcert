@@ -40,6 +40,7 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.*;
@@ -51,9 +52,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-import se.inera.intyg.webcert.web.service.dto.Vardenhet;
-import se.inera.intyg.webcert.web.service.dto.Vardgivare;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
@@ -108,27 +106,26 @@ public class CopyCompletionUtkastBuilderTest {
 
     private ModuleApi mockModuleApi;
 
-    private HoSPerson hoSPerson;
-
-    private Vardenhet vardenhet;
+    private HoSPersonal hoSPerson;
 
     @InjectMocks
     private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
 
     @Before
     public void setup() {
-        hoSPerson = new HoSPerson();
-        hoSPerson.setHsaId(HOSPERSON_ID);
-        hoSPerson.setNamn(HOSPERSON_NAME);
+        hoSPerson = new HoSPersonal();
+        hoSPerson.setPersonId(HOSPERSON_ID);
+        hoSPerson.setFullstandigtNamn(HOSPERSON_NAME);
 
         Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setHsaId(VARDGIVARE_ID);
-        vardgivare.setNamn(VARDGIVARE_NAME);
+        vardgivare.setVardgivarid(VARDGIVARE_ID);
+        vardgivare.setVardgivarnamn(VARDGIVARE_NAME);
 
-        vardenhet = new Vardenhet();
-        vardenhet.setHsaId(VARDENHET_ID);
-        vardenhet.setNamn(VARDENHET_NAME);
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(VARDENHET_ID);
+        vardenhet.setEnhetsnamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);
+        hoSPerson.setVardenhet(vardenhet);
     }
 
     @Before
@@ -255,7 +252,7 @@ public class CopyCompletionUtkastBuilderTest {
     }
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
-        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, PATIENT_SSN, hoSPerson, vardenhet);
+        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, PATIENT_SSN, hoSPerson);
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {

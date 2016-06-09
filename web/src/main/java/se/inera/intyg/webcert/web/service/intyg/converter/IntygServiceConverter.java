@@ -22,8 +22,7 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 import java.util.List;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -36,5 +35,5 @@ public interface IntygServiceConverter {
 
     Utlatande buildUtlatandeFromUtkastModel(Utkast utkast);
 
-    HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user);
+    HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user, Vardenhet vardenhet);
 }

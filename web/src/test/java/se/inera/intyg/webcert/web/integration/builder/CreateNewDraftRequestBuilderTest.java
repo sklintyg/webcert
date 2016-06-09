@@ -21,9 +21,11 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -36,19 +38,9 @@ import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
-import se.riv.infrastructure.directory.v1.CommissionType;
-import se.riv.infrastructure.directory.v1.PaTitleType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
-
-import java.util.ArrayList;
-import java.util.List;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.*;
+import se.riv.infrastructure.directory.v1.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {
@@ -87,21 +79,21 @@ public class CreateNewDraftRequestBuilderTest {
 
         assertEquals(CERT_TYPE, res.getIntygType());
 
-        assertEquals(USER_HSAID, res.getHosPerson().getHsaId());
-        assertNotNull(res.getHosPerson().getNamn());
+        assertEquals(USER_HSAID, res.getHosPerson().getPersonId());
+        assertNotNull(res.getHosPerson().getFullstandigtNamn());
 
-        assertEquals(UNIT_HSAID, res.getVardenhet().getHsaId());
-        assertNotNull(res.getVardenhet().getNamn());
-        assertNotNull(res.getVardenhet().getArbetsplatskod());
-        assertNotNull(res.getVardenhet().getTelefonnummer());
-        assertNotNull(res.getVardenhet().getPostadress());
-        assertNotNull(res.getVardenhet().getPostnummer());
-        assertNotNull(res.getVardenhet().getPostort());
+        assertEquals(UNIT_HSAID, res.getHosPerson().getVardenhet().getEnhetsid());
+        assertNotNull(res.getHosPerson().getVardenhet().getEnhetsnamn());
+        assertNotNull(res.getHosPerson().getVardenhet().getArbetsplatsKod());
+        assertNotNull(res.getHosPerson().getVardenhet().getTelefonnummer());
+        assertNotNull(res.getHosPerson().getVardenhet().getPostadress());
+        assertNotNull(res.getHosPerson().getVardenhet().getPostnummer());
+        assertNotNull(res.getHosPerson().getVardenhet().getPostort());
 
-        assertEquals(CAREGIVER_HSAID, res.getVardenhet().getVardgivare().getHsaId());
-        assertNotNull(res.getVardenhet().getVardgivare().getNamn());
+        assertEquals(CAREGIVER_HSAID, res.getHosPerson().getVardenhet().getVardgivare().getVardgivarid());
+        assertNotNull(res.getHosPerson().getVardenhet().getVardgivare().getVardgivarnamn());
 
-        assertEquals("19121212-1212", res.getPatient().getPersonnummer().getPersonnummer());
+        assertEquals("19121212-1212", res.getPatient().getPersonId().getPersonnummer());
         assertEquals("Adam Bertil", res.getPatient().getFornamn());
         assertEquals("Cesarsson Davidsson", res.getPatient().getMellannamn());
         assertEquals("Eriksson", res.getPatient().getEfternamn());
@@ -124,9 +116,9 @@ public class CreateNewDraftRequestBuilderTest {
         assertNotNull(res);
 
         assertNotNull(res.getHosPerson());
-        assertEquals("Läkare", res.getHosPerson().getBefattning());
-        assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiseringar().get(0));
-        assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiseringar().get(1));
+        assertEquals("Läkare", res.getHosPerson().getBefattningar().get(0));
+        assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiteter().get(0));
+        assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiteter().get(1));
     }
 
 

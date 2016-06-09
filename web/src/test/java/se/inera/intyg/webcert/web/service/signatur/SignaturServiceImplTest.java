@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
@@ -41,21 +42,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.integration.hsa.model.*;
+import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
@@ -94,26 +97,29 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private ASN1Util asn1Util;
 
+    @Mock
+    private IntygServiceConverter serviceConverter;
+
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
 
     private Utkast utkast;
     private Utkast completedUtkast;
     private Utkast signedUtkast;
-    private HoSPerson hoSPerson;
+    private HoSPersonal hoSPerson;
     private Vardenhet vardenhet;
     private Vardgivare vardgivare;
     private WebCertUser user;
 
     @Before
-    public void setup() throws ModuleException, ModuleNotFoundException {
-        hoSPerson = new HoSPerson();
-        hoSPerson.setHsaId("AAA");
-        hoSPerson.setNamn("Dr Dengroth");
+    public void setup() throws Exception {
+        hoSPerson = new HoSPersonal();
+        hoSPerson.setPersonId("AAA");
+        hoSPerson.setFullstandigtNamn("Dr Dengroth");
 
         VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(hoSPerson.getHsaId());
-        vardperson.setNamn(hoSPerson.getNamn());
+        vardperson.setHsaId(hoSPerson.getPersonId());
+        vardperson.setNamn(hoSPerson.getFullstandigtNamn());
 
         utkast = createUtkast(INTYG_ID, 1, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, ENHET_ID);
         completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson, ENHET_ID);
@@ -128,6 +134,11 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(anyString(), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(INTYG_JSON);
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
 
         setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
@@ -141,8 +152,8 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
-        user.setNamn(hoSPerson.getNamn());
-        user.setHsaId(hoSPerson.getHsaId());
+        user.setNamn(hoSPerson.getFullstandigtNamn());
+        user.setHsaId(hoSPerson.getPersonId());
         user.setVardgivare(Collections.singletonList(vardgivare));
         user.setValdVardenhet(vardenhet);
         user.setValdVardgivare(vardgivare);

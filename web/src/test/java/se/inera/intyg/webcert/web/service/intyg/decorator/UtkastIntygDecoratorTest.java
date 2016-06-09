@@ -19,6 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,21 +32,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
-
-import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-06-23.
@@ -63,7 +62,7 @@ public class UtkastIntygDecoratorTest {
 
     @Before
     public void setup() {
-        HoSPerson person = buildHosPerson();
+        HoSPersonal person = buildHosPerson();
         VardpersonReferens vardperson = buildVardpersonReferens(person);
 
         signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
@@ -157,7 +156,6 @@ public class UtkastIntygDecoratorTest {
         return response;
     }
 
-    // TODO copied from AbstractIntygServiceTest, refactor to avoid duplication
     private CertificateMetaData buildCertificateMetaData() {
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<Status>());
@@ -166,10 +164,10 @@ public class UtkastIntygDecoratorTest {
         return metaData;
     }
 
-    private HoSPerson buildHosPerson() {
-        HoSPerson person = new HoSPerson();
-        person.setHsaId("AAA");
-        person.setNamn("Dr Dengroth");
+    private HoSPersonal buildHosPerson() {
+        HoSPersonal person = new HoSPersonal();
+        person.setPersonId("AAA");
+        person.setFullstandigtNamn("Dr Dengroth");
         return person;
     }
 
@@ -186,10 +184,10 @@ public class UtkastIntygDecoratorTest {
         return intyg;
     }
 
-    private VardpersonReferens buildVardpersonReferens(HoSPerson person) {
+    private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {
         VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(person.getHsaId());
-        vardperson.setNamn(person.getNamn());
+        vardperson.setHsaId(person.getPersonId());
+        vardperson.setNamn(person.getFullstandigtNamn());
         return vardperson;
     }
 

@@ -81,18 +81,18 @@ public class CreateNewDraftRequestBuilderTest {
 
         assertNotNull(res);
         assertEquals(CERT_TYPE.toLowerCase(), res.getIntygType());
-        assertEquals(USER_HSAID, res.getHosPerson().getHsaId());
-        assertNotNull(res.getHosPerson().getNamn());
-        assertEquals(UNIT_HSAID, res.getVardenhet().getHsaId());
-        assertNotNull(res.getVardenhet().getNamn());
-        assertNotNull(res.getVardenhet().getArbetsplatskod());
-        assertNotNull(res.getVardenhet().getTelefonnummer());
-        assertNotNull(res.getVardenhet().getPostadress());
-        assertNotNull(res.getVardenhet().getPostnummer());
-        assertNotNull(res.getVardenhet().getPostort());
-        assertEquals(CAREGIVER_HSAID, res.getVardenhet().getVardgivare().getHsaId());
-        assertNotNull(res.getVardenhet().getVardgivare().getNamn());
-        assertEquals(PERSONNUMMER, res.getPatient().getPersonnummer().getPersonnummer());
+        assertEquals(USER_HSAID, res.getHosPerson().getPersonId());
+        assertNotNull(res.getHosPerson().getFullstandigtNamn());
+        assertEquals(UNIT_HSAID, res.getHosPerson().getVardenhet().getEnhetsid());
+        assertNotNull(res.getHosPerson().getVardenhet().getEnhetsnamn());
+        assertNotNull(res.getHosPerson().getVardenhet().getArbetsplatsKod());
+        assertNotNull(res.getHosPerson().getVardenhet().getTelefonnummer());
+        assertNotNull(res.getHosPerson().getVardenhet().getPostadress());
+        assertNotNull(res.getHosPerson().getVardenhet().getPostnummer());
+        assertNotNull(res.getHosPerson().getVardenhet().getPostort());
+        assertEquals(CAREGIVER_HSAID, res.getHosPerson().getVardenhet().getVardgivare().getVardgivarid());
+        assertNotNull(res.getHosPerson().getVardenhet().getVardgivare().getVardgivarnamn());
+        assertEquals(PERSONNUMMER, res.getPatient().getPersonId().getPersonnummer());
         assertEquals(FORNAMN, res.getPatient().getFornamn());
         assertEquals(MELLANNAMN, res.getPatient().getMellannamn());
         assertEquals(EFTERNAMN, res.getPatient().getEfternamn());
@@ -112,9 +112,9 @@ public class CreateNewDraftRequestBuilderTest {
 
         assertNotNull(res);
         assertNotNull(res.getHosPerson());
-        assertEquals("Läkare", res.getHosPerson().getBefattning());
-        assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiseringar().get(0));
-        assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiseringar().get(1));
+        assertEquals("Läkare", res.getHosPerson().getBefattningar().get(0));
+        assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiteter().get(0));
+        assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiteter().get(1));
     }
 
     private Vardenhet createHsaVardenhet() {

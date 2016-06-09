@@ -19,6 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -29,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
@@ -36,14 +47,13 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
-import se.inera.intyg.webcert.web.auth.authorities.*;
-import se.inera.intyg.webcert.web.service.dto.HoSPerson;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
@@ -52,16 +62,6 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
@@ -84,7 +84,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Before
     public void setup() throws Exception {
-        HoSPerson person = buildHosPerson();
+        HoSPersonal person = buildHosPerson();
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
 
@@ -189,10 +189,10 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         }
     }
 
-    private HoSPerson buildHosPerson() {
-        HoSPerson person = new HoSPerson();
-        person.setHsaId("AAA");
-        person.setNamn("Dr Dengroth");
+    private HoSPersonal buildHosPerson() {
+        HoSPersonal person = new HoSPersonal();
+        person.setPersonId("AAA");
+        person.setFullstandigtNamn("Dr Dengroth");
         return person;
     }
 
@@ -232,21 +232,21 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return f;
     }
 
-    private VardpersonReferens buildVardpersonReferens(HoSPerson person) {
+    private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {
         VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(person.getHsaId());
-        vardperson.setNamn(person.getNamn());
+        vardperson.setHsaId(person.getPersonId());
+        vardperson.setNamn(person.getFullstandigtNamn());
         return vardperson;
     }
 
-    private WebCertUser buildWebCertUser(HoSPerson person) {
+    private WebCertUser buildWebCertUser(HoSPersonal person) {
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
-        user.setNamn(person.getNamn());
-        user.setHsaId(person.getHsaId());
+        user.setNamn(person.getFullstandigtNamn());
+        user.setHsaId(person.getPersonId());
 
         return user;
     }

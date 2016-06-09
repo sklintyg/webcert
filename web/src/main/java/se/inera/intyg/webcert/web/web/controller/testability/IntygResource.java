@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -45,7 +45,6 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.dto.*;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
@@ -172,7 +171,7 @@ public class IntygResource {
 
         Patient patient = request.getPatient();
 
-        utkast.setPatientPersonnummer(patient.getPersonnummer());
+        utkast.setPatientPersonnummer(patient.getPersonId());
         utkast.setPatientFornamn(patient.getFornamn());
         utkast.setPatientMellannamn(patient.getMellannamn());
         utkast.setPatientEfternamn(patient.getEfternamn());
@@ -182,19 +181,19 @@ public class IntygResource {
 
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
-        Vardenhet vardenhet = request.getVardenhet();
+        Vardenhet vardenhet = request.getHosPerson().getVardenhet();
 
-        utkast.setEnhetsId(vardenhet.getHsaId());
-        utkast.setEnhetsNamn(vardenhet.getNamn());
+        utkast.setEnhetsId(vardenhet.getEnhetsid());
+        utkast.setEnhetsNamn(vardenhet.getEnhetsnamn());
 
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
-        utkast.setVardgivarId(vardgivare.getHsaId());
-        utkast.setVardgivarNamn(vardgivare.getNamn());
+        utkast.setVardgivarId(vardgivare.getVardgivarid());
+        utkast.setVardgivarNamn(vardgivare.getVardgivarnamn());
 
         VardpersonReferens vardPerson = new VardpersonReferens();
-        vardPerson.setNamn(request.getHosPerson().getNamn());
-        vardPerson.setHsaId(request.getHosPerson().getHsaId());
+        vardPerson.setNamn(request.getHosPerson().getFullstandigtNamn());
+        vardPerson.setHsaId(request.getHosPerson().getPersonId());
 
         utkast.setSenastSparadAv(vardPerson);
         utkast.setSkapadAv(vardPerson);
