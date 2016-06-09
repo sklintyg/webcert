@@ -526,12 +526,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds) {
-        return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
-    }
-
-    @Override
     public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper) {
 
         Map<String, Long> resultsMap = new HashMap<>();

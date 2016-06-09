@@ -27,10 +27,12 @@ var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
+var EC = protractor.ExpectedConditions;
 
-describe('Validera sändning av luae_fs Intyg', function() {
+fdescribe('Validera att man med roll Tandläkare ej kan se Ärende tillhörande luae_fs intyg samt att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben', function() {
 
     var intygsId;
+    var arendeId = 'luaefs-arende-arbtid';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -65,10 +67,36 @@ describe('Validera sändning av luae_fs Intyg', function() {
             expect(isIntygSent(intygsId)).toBeTruthy();
         });
 
+        it('Skapa ärende på intyget', function() {
+            testdataHelper.createArendeFromTemplate('luae_fs', intygsId, arendeId, 'Hur är det med arbetstiden?',
+                'ARBTID', 'PENDING_INTERNAL_ACTION');
+        });
+
+        it('Klicka på tabben för Fråga/svar', function() {
+            element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
+            expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
+            expect(element(by.css('.table-qa tr td button')).getText()).toBe('Visa');
+        });
+
+        it('Byt läkarens roll till TANDLAKARE mha testbarhets-API, klicka på tabben igen', function() {
+            browser.getCurrentUrl().then(function(url) {
+                browser.driver.get(browser.baseUrl + '/authtestability/user/role/TANDLAKARE').then(function() {
+                    browser.get(url);
+                });
+            });
+        });
+
+        it('Verifiera att tandläkaren INTE ser något ärende/fråga längre och att ingen siffra visas på tabben', function() {
+            browser.wait(EC.invisibilityOf(element(by.id('stat-unitstat-unhandled-question-count'))), 5000);
+            browser.wait(EC.invisibilityOf(element(by.id('.table-qa tr td'))), 5000);
+        });
     });
 
+
     afterAll(function() {
+        testdataHelper.deleteUtkast(intygsId);
         testdataHelper.deleteIntyg(intygsId);
+        testdataHelper.deleteAllArenden();
         specHelper.logout();
         browser.ignoreSynchronization = false;
     });
