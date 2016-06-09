@@ -1,0 +1,77 @@
+<h3>Övergripande komponenter för navigation mm</h3>
+
+<p>Cookie banner<br>
+<a ng-click="doShowCookieBanner()">Klicka här för att toggla fram cookiebannern</a>
+<div ng-if="showCookieBanner">
+  <wc-cookie-banner></wc-cookie-banner>
+</div
+></p>
+
+<h2>Navigationsmeny</h2>
+Används bara på ett ställe
+<div>
+  <div class="header clearfix">
+    <div class="headerbox">
+      <span wc-authority="NAVIGERING" class="headerbox-logo pull-left">
+        <a id="webcertLogoLink" href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png" /></a></span>
+      <span wc-authority="!NAVIGERING" class="headerbox-logo pull-left">
+        <img alt="Till startsidan" src="/img/webcert_logo.png" /></span>
+      <span class="headerbox-date pull-left">
+                  <span id="wc-header-location-date" class="location">{{today | date:"shortDate"}}</span>
+                  <span id="wc-header-location-care-giver" class="location"> - {{user.valdVardgivare.namn}}</span>
+                  <span id="wc-header-location-care-unit" class="location" wc-authority role="!PRIVATLAKARE"> - {{user.valdVardenhet.namn}}</span><br>
+                  <span id="otherLocations" class="otherLocations" wc-authority="ATKOMST_ANDRA_ENHETER"
+                        ng-show="(stat.intygAndraEnheter+stat.fragaSvarAndraEnheter) > 0"><span
+                      style="font-weight:bold">{{stat.intygAndraEnheter+stat.fragaSvarAndraEnheter}}</span> ej hanterade frågor och ej signerade utkast på andra vårdenheter.</span>
+        <a wc-authority="ATKOMST_ANDRA_ENHETER" id="wc-care-unit-clinic-selector-link" tabindex="0" href
+           class="otherLocations" ng-show="user.totaltAntalVardenheter > 1" data-ng-click="openChangeCareUnitDialog()">Byt
+          vårdenhet</a>
+      </span>
+    </div>
+    <div class="headerbox-user pull-right">
+      <div class="headerbox-user-profile headerbox-avatar">
+        <div ng-show="user.namn.length">
+          <span id="logged-in-role">
+            <strong>{{user.role}}</strong>
+          </span> - <span class="logged-in">{{user.namn}}</span>
+        </div>
+        <a id="editUserLink" wc-authority role="PRIVATLAKARE" style="padding-right:30px" class="pull-left"
+           ng-click="goToPrivatPortalen()">Ändra uppgifter</a>
+        <a href="" id="logoutLink" wc-authority="NAVIGERING" class="pull-right" ng-click="logout()">Logga ut</a>
+        <a href="" id="aboutLink" wc-authority="!NAVIGERING" class="pull-right" ng-click="goToAbout()">Om Webcert</a>
+      </div>
+    </div>
+  </div>
+
+  <div ui-view="headerExtra">
+
+  </div>
+  <div ui-view="dialogs"></div>
+</div>
+
+
+<h2>Navigationsmeny</h2>
+Används bara på ett ställe
+<div id="huvudmeny" class="navbar navbar-default">
+  <div class="container-fluid">
+    <button type="button" class="navbar-toggle" ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="navbar-collapse collapse" ng-class="!navCollapsed && 'in'">
+      <ul class="nav navbar-nav">
+        <li ng-class="{active: isActive(menu.id)}" ng-repeat="menu in menuDefs">
+          <a ng-href="{{menu.link}}" id="{{menu.id}}">{{menu.label}}
+              <span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="stat-circle stat-circle-active"
+                    title="{{menu.statTooltip}}">{{menu.getStat()}}</span></a>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+</div>
+
+
+
+</div>

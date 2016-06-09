@@ -1,0 +1,116 @@
+<h1>Bootstrap komponenter</h1>
+
+<h2>Rubriker</h2>
+
+<h1>H1</h1><h2>H2</h2><h3>H3</h3><h3>H4</h3>
+
+<h2>Meddelanderutor</h2>
+<div class="alert alert-info">
+  <span>Information (alert-info)<br>
+    Skall användas för meddelanden av informationskaraktär.
+  </span>
+</div>
+<div class="alert alert-warning">
+  <span>Varning (alert-warning)<br>
+    Bör användas för att uppmärksamma användaren på något som är avvikande men inte direkt felaktigt.
+  </span>
+</div>
+<div class="alert alert-danger">
+  <span>Fel (alert-danger)<br>
+    Används för att uppmärksamma användaren på att något är / har gått fel.
+  </span>
+</div>
+
+<div uib-alert type="info" close="onHideAlert()"  id="arende-is-sent-to-fk-message-text" ng-if="!hideAlert">
+  <strong>Dom kan också vara 'dismissable'</strong><br><span> Då försvinner dom när man klickar på krysset. (I just detta exempel kommer den tillbaka efter en stund)</span>
+</div>
+
+<h2>ActionKnappar</h2>
+<div class="form-group">
+  Normal state<br>
+  <button type="button" class="btn btn-success" ng-disabled="false">btn-success</button>
+  <button type="button" class="btn btn-info" ng-disabled="false">btn-info</button>
+  <button type="button" class="btn btn-primary" ng-disabled="false">btn-primary</button>
+  <button type="button" class="btn btn-default btn-secondary" ng-disabled="false">btn-default btn-secondary</button>
+  <button type="button" class="btn btn-inverse" ng-disabled="false">btn-inverse</button>
+</div>
+
+<div class="form-group">
+  Disabled state<br>
+  <button type="button" class="btn btn-success" ng-disabled="true">btn-success</button>
+  <button type="button" class="btn btn-info" ng-disabled="true">btn-info</button>
+  <button type="button" class="btn btn-primary" ng-disabled="true">btn-primary</button>
+  <button type="button" class="btn btn-default btn-secondary" ng-disabled="true">btn-default btn-secondary</button>
+  <button type="button" class="btn btn-inverse" ng-disabled="true">btn-inverse</button>
+</div>
+
+<h1>Knappar med mer avancerat state, toggling, spinners (de flesta kan klickas på för att se olika states)</h1>
+
+<h2>  Vidarebefodrad knapp (både action och indikator på vidarebefordrad state)<h2>
+  <button type="button" class="btn btn-default vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
+    <img ng-if="!cert1.vidarebefordrad" src="/img/mail.png">
+    <img ng-if="cert1.vidarebefordrad" src="/img/mail_dark.png">
+  </button>
+
+
+<h2> Knapp med tooltip (mouseover)</h2>
+<button type="button" id="makuleraBtn" class="btn btn-inverse" uib-popover="Makulera intyg innebär att intyget återtas. Vid behov kan intyget ersättas med ett nytt." popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true">
+  Makulera
+</button>
+
+
+
+
+<h2>Toggleknapp (i form av länk, te x för att toggla sökfilter) </h2>
+<button type="button" class="btn btn-link btn-link-minimal"
+        ng-click="linkBtnState = !linkBtnState"
+        ng-switch="linkBtnState">
+  <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
+</button>
+
+<h2>  Toggleknapp för att hämta fler träffar i lista<h2>
+<button type="button" id="hamtaFl‘er" class="btn btn-default" title="Hämta fler träffar"
+        ng-disabled="fetchingMoreInProgress" ng-click="simulateFetchMore()">
+  <img src="/img/loader-small.gif" ng-show="fetchingMoreInProgress"> Hämta fler träffar
+</button>
+
+
+<h2>Actionknapp (med progressindikator)</h2>
+<button type="button" class="btn btn-success" ng-disabled="!acceptprogressdone" ng-click="simulateProgress()">
+  <img ng-hide="acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
+  <span>Klicka på mig</span>
+</button>
+
+<h2>Dropdown knapp (exempelvis vid val av utskriftstyp)</h2>
+<div class="btn-group">
+  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Skriv ut <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#" onClick="return false;">Fullständigt intyg</a></li>
+    <li title="Minimalt intyg enligt sjuklönelagens krav på intyg som kan lämnas till arbetsgivare">
+      <a href="#" onClick="return false;">Minimalt intyg</a>
+    </li>
+  </ul>
+</div>
+
+
+
+<h2>Striped table (exempelvis vid visa utkastlista, frågasvarslista)</h2>
+<div class="row" id="prevCertTable">
+  <table class="col-md-12 table table-striped table-qa">
+    <tr>
+      <th title="Kolumn0 title">Kolumn0</th>
+      <th title="Kolumn1 title">Kolumn1</th>
+      <th title="Kolumn2 title">Kolumn2</th>
+      <th title="Kolumn3 title">Kolumn3</th>
+    </tr>
+    <tr ng-repeat="item in tableitems">
+      <td class="unbreakable"><button type="button" class="btn btn-info">knapp</button></td>
+      <td class="unbreakable">{{item.value}}</td>
+      <td class="unbreakable">{{item.value}}</td>
+      <td class="unbreakable table-qa-last">{{item.value}}</td>
+    </tr>
+  </table>
+
+</div>
