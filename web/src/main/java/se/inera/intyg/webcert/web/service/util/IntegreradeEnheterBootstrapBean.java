@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class IntegreradeEnheterBootstrapBean {
     private void addIntegreradEnhet(Resource res) {
         try {
             IntegreradEnhet integreradEnhet = new CustomObjectMapper().readValue(res.getInputStream(), IntegreradEnhet.class);
+            integreradEnhet.setSkapadDatum(LocalDateTime.now());
             integreradEnhetRepository.save(integreradEnhet);
         } catch (IOException e) {
             throw new RuntimeException(e);

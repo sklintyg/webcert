@@ -784,7 +784,7 @@
     <profile>
       <id>local</id>
       <properties>
-        <system.mode>local</system.mode>
+        <system.mode>local,dev</system.mode>
       </properties>
     </profile>
 
