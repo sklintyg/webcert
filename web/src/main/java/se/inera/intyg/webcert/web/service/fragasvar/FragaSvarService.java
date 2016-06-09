@@ -19,16 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import java.util.List;
-import java.util.Map;
-
 import org.joda.time.LocalDateTime;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -102,8 +102,9 @@ public interface FragaSvarService {
     long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds);
 
     /**
-     * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care unit as key.
+     * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care unit
+     * as key and related to an intyg of one of the specified types.
      */
-    Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds);
+    Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper);
 
 }

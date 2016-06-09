@@ -25,12 +25,14 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.integration.hsa.model.Mottagning;
 import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
@@ -42,10 +44,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author marced
@@ -62,7 +68,13 @@ public class StatModuleApiController extends AbstractApiController {
     private FragaSvarService fragaSvarService;
 
     @Autowired
+    private ArendeService arendeService;
+
+    @Autowired
     private UtkastService intygDraftService;
+
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
 
     @GET
     @Path("/")
@@ -83,7 +95,11 @@ public class StatModuleApiController extends AbstractApiController {
             return Response.ok(statsResponse).build();
         }
 
-        Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+        Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds, intygsTyper);
+        Map<String, Long> arendeStatsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(allUnitIds, intygsTyper);
+
+        Map<String, Long> mergedMap = mergeArendeAndFragaSvarMaps(fragaSvarStatsMap, arendeStatsMap);
         Map<String, Long> intygStatsMap = intygDraftService.getNbrOfUnsignedDraftsByCareUnits(allUnitIds);
 
         List<String> unitIdsOfSelected = user.getIdsOfSelectedVardenhet();
@@ -91,10 +107,10 @@ public class StatModuleApiController extends AbstractApiController {
         @SuppressWarnings("unchecked")
         List<String> unitIdsOfNotSelected = (List<String>) CollectionUtils.subtract(allUnitIds, unitIdsOfSelected);
 
-        long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected, fragaSvarStatsMap);
+        long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected, mergedMap);
         statsResponse.setTotalNbrOfUnhandledFragaSvarOnOtherThanSelected(fragaSvarOnOtherUnitThanTheSelected);
 
-        long fragaSvarOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, fragaSvarStatsMap);
+        long fragaSvarOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, mergedMap);
         statsResponse.setTotalNbrOfUnhandledFragaSvarOnSelected(fragaSvarOnSelected);
 
         long unsignedDraftsOnOtherThanSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected, intygStatsMap);
@@ -103,8 +119,21 @@ public class StatModuleApiController extends AbstractApiController {
         long unsignedDraftsOnSelected = getSafeStatValueFromMap(user.getValdVardenhet().getId(), intygStatsMap);
         statsResponse.setTotalNbrOfUnsignedDraftsOnSelected(unsignedDraftsOnSelected);
 
-        populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, fragaSvarStatsMap);
+        populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, mergedMap);
         return Response.ok(statsResponse).build();
+    }
+
+    // Package-public for unit testing.
+    Map<String, Long> mergeArendeAndFragaSvarMaps(Map<String, Long> fragaSvarStatsMap, Map<String, Long> arendeStatsMap) {
+        Map<String, Long> mergedMap = new HashMap<>();
+
+        Set<String> uniqueEnhetsId = Stream.of(fragaSvarStatsMap.keySet(), arendeStatsMap.keySet()).flatMap(Collection::stream).distinct().collect(Collectors.toSet());
+
+        for (String enhetId : uniqueEnhetsId) {
+            Long sum = (fragaSvarStatsMap.get(enhetId) != null ? fragaSvarStatsMap.get(enhetId) : 0) + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
+            mergedMap.put(enhetId, sum);
+        }
+        return mergedMap;
     }
 
     private long calcSumFromSelectedUnits(List<String> unitIdsList, Map<String, Long> statsMap) {

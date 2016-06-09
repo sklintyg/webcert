@@ -19,13 +19,13 @@
 
 package se.inera.intyg.webcert.web.converter;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+
+import java.util.List;
+import java.util.Set;
 
 public final class FilterConverter {
 
@@ -34,7 +34,7 @@ public final class FilterConverter {
     private FilterConverter() {
     }
 
-    public static Filter convert(QueryFragaSvarParameter source, List<String> unitIds) {
+    public static Filter convert(QueryFragaSvarParameter source, List<String> unitIds, Set<String> intygsTyper) {
         Filter filter = new Filter();
 
         filter.getEnhetsIds().addAll(unitIds);
@@ -55,6 +55,8 @@ public final class FilterConverter {
 
         filter.setPageSize((source.getPageSize() == null) ? DEFAULT_PAGE_SIZE : source.getPageSize());
         filter.setStartFrom((source.getStartFrom() == null) ? Integer.valueOf(0) : source.getStartFrom());
+
+        filter.setIntygsTyper(intygsTyper);
 
         return filter;
     }

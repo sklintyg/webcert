@@ -19,11 +19,6 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,12 +29,18 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
-import se.inera.intyg.webcert.persistence.model.*;
+import se.inera.intyg.webcert.persistence.model.Filter;
+import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.persistence.model.VantarPa;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test for filtering FragaSvar.
@@ -65,13 +66,20 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterFragaFromWC() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
+
         filter.setQuestionFromWC(true);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
         Assert.assertEquals(5, fsList.size());
+    }
+
+    private Filter buildDefaultFilter() {
+        Filter filter = new Filter();
+        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        filter.getIntygsTyper().add("fk7263");
+        return filter;
     }
 
     /**
@@ -82,6 +90,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
         Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_2_ID);
+        filter.getIntygsTyper().add("fk7263");
 
         int res = fragasvarRepository.filterCountFragaSvar(filter);
         Assert.assertEquals(3, res);
@@ -93,8 +102,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterFragaWithPaging() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setPageSize(10);
         filter.setStartFrom(0);
 
@@ -108,8 +116,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterHsaId() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setHsaId(HSA_ID_2);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -120,8 +127,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedFrom() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:10:00"));
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -132,8 +138,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedTo() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -149,8 +154,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedBetween() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:00:00"));
         filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
 
@@ -162,8 +166,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterVidarebefordrad() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setVidarebefordrad(true);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -177,8 +180,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterWaitingForReplyFromCare() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setVantarPa(VantarPa.SVAR_FRAN_VARDEN);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -192,8 +194,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterWaitingForReplyFromFK() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -207,8 +208,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterMarkAsHandled() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setVantarPa(VantarPa.MARKERA_SOM_HANTERAD);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -222,8 +222,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterVantaPaKomplettering() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setVantarPa(VantarPa.KOMPLETTERING_FRAN_VARDEN);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -237,8 +236,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterAllNotHandled() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setVantarPa(VantarPa.ALLA_OHANTERADE);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -253,8 +251,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterChangedBetweenAndAwaitingReplyFromFK() {
 
-        Filter filter = new Filter();
-        filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        Filter filter = buildDefaultFilter();
         filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:03:00"));
         filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
         filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
@@ -274,6 +271,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
         Filter filter = new Filter();
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_2_ID);
         filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_1_ID);
+        filter.getIntygsTyper().add("fk7263");
         filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);

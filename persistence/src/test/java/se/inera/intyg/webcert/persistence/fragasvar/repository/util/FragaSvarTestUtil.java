@@ -44,7 +44,7 @@ public final class FragaSvarTestUtil {
     private static final LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2014-10-21T11:11:11");
     private static final LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2014-10-21T12:00:00");
 
-    private static final IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", new Personnummer("19121212-1212"),
+    private static final IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk7263", new Personnummer("19121212-1212"),
             "Sven Persson", FRAGE_SENT_DATE);
 
     public static String ENHET_1_ID = "ENHET_TEST_1_ID";

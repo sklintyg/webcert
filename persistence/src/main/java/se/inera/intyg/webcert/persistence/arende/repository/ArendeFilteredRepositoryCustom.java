@@ -16,12 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.persistence.arende.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.model.Filter;
 
-public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRepositoryCustom {
+import java.util.List;
 
+/**
+ * Created by eriklupander on 2016-06-08.
+ */
+public interface ArendeFilteredRepositoryCustom {
+
+    List<Arende> filterArende(Filter filter);
+
+    int filterArendeCount(Filter filter);
 }

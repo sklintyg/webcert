@@ -19,19 +19,22 @@
 
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.*;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
-
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FilterConverterTest {
 
@@ -54,7 +57,7 @@ public class FilterConverterTest {
                 questionFromWC, replyLatest, startFrom, vantarPa, vidarebefordrad);
         List<String> unitIds = Arrays.asList(otherEnhetId, otherEnhetId2);
 
-        Filter result = FilterConverter.convert(source, unitIds);
+        Filter result = FilterConverter.convert(source, unitIds, Stream.of("fk7263").collect(Collectors.toSet()));
 
         assertEquals(changedFrom, result.getChangedFrom());
         assertTrue(changedTo.isBefore(result.getChangedTo()));
@@ -76,7 +79,7 @@ public class FilterConverterTest {
         QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", 5, null,
                 null, LocalDate.now(), 0, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
 
-        Filter result = FilterConverter.convert(source, new ArrayList<String>());
+        Filter result = FilterConverter.convert(source, new ArrayList<>(), Stream.of("fk7263").collect(Collectors.toSet()));
         assertFalse(result.isQuestionFromFK());
         assertFalse(result.isQuestionFromWC());
     }
@@ -86,7 +89,7 @@ public class FilterConverterTest {
         QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", null, Boolean.FALSE,
                 Boolean.TRUE, LocalDate.now(), null, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
 
-        Filter result = FilterConverter.convert(source, new ArrayList<String>());
+        Filter result = FilterConverter.convert(source, new ArrayList<>(), Stream.of("fk7263").collect(Collectors.toSet()));
 
         assertEquals(Integer.valueOf(0), result.getStartFrom());
         assertEquals(FilterConverter.DEFAULT_PAGE_SIZE, result.getPageSize());

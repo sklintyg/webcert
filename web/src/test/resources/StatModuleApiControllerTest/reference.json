@@ -1,7 +1,7 @@
 {
 	
-	"fragaSvarValdEnhet" : "8",
-	"fragaSvarAndraEnheter" : "3",
+	"fragaSvarValdEnhet" : "16",
+	"fragaSvarAndraEnheter" : "6",
 	"intygValdEnhet" : "0",
 	"intygAndraEnheter" : "2",
 	"vardgivare" : [{
@@ -10,22 +10,22 @@
 		"vardenheter" : [{
 			"namn" : "Vardenhet1",
 			"id" : "VE1",
-			"fragaSvar" : "2",
+			"fragaSvar" : "4",
 			"intyg" : "0"	
 		},{
 			"namn" : "Vardenhet1 - Mottagning1",
 			"id" : "VE1M1",
-			"fragaSvar" : "3",
+			"fragaSvar" : "6",
 			"intyg" : "1"
 		},{
 			"namn" : "Vardenhet1 - Mottagning2",
 			"id" : "VE1M2",
-			"fragaSvar" : "3",
+			"fragaSvar" : "6",
 			"intyg" : "2"
 		},{
 			"namn" : "Vardenhet2",
 			"id" : "VE2",
-			"fragaSvar" : "2",
+			"fragaSvar" : "4",
 			"intyg" : "2"
 		},{
 			"namn" : "Vardenhet2 - Mottagning3",
@@ -35,7 +35,7 @@
 		},{
 			"namn" : "Vardenhet3",
 			"id" : "VE3",
-			"fragaSvar" : "1",
+			"fragaSvar" : "2",
 			"intyg" : "0"
 		},{
 			"namn" : "Vardenhet4",

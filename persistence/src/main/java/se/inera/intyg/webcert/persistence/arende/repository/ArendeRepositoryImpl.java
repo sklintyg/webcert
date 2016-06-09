@@ -19,91 +19,26 @@
 
 package se.inera.intyg.webcert.persistence.arende.repository;
 
-import java.util.List;
-
-import javax.persistence.*;
-import javax.persistence.criteria.*;
-
 import org.apache.commons.lang.StringUtils;
-
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 
-public class ArendeRepositoryImpl implements ArendeRepositoryCustom {
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.List;
+
+public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    private Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<Arende> root) {
-        Predicate pred = builder.conjunction();
-
-        pred = builder.and(pred, root.get("enhetId").in(filter.getEnhetsIds()));
-        pred = builder.and(pred, root.get("paminnelseMeddelandeId").isNull());
-        pred = builder.and(pred, root.get("svarPaId").isNull());
-
-        if (filter.isQuestionFromFK()) {
-            pred = builder.and(pred, builder.equal(root.get("skickatAv"), "FK"));
-        }
-
-        if (filter.isQuestionFromWC()) {
-            pred = builder.and(pred, builder.equal(root.get("skickatAv"), "WC"));
-        }
-
-        if (StringUtils.isNotEmpty(filter.getHsaId())) {
-            pred = builder.and(pred, builder.equal(root.get("signeratAv"), filter.getHsaId()));
-        }
-
-        if (filter.getVidarebefordrad() != null) {
-            pred = builder.and(pred, builder.equal(root.get("vidarebefordrad"), filter.getVidarebefordrad()));
-        }
-
-        if (filter.getChangedFrom() != null) {
-            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.get("senasteHandelse"), filter.getChangedFrom()));
-        }
-
-        if (filter.getChangedTo() != null) {
-            pred = builder.and(pred, builder.lessThan(root.get("senasteHandelse"), filter.getChangedTo()));
-        }
-
-        if (filter.getReplyLatest() != null) {
-            pred = builder.and(pred, builder.lessThanOrEqualTo(root.get("sistaDatumForSvar"), filter.getReplyLatest()));
-        }
-
-        switch (filter.getVantarPa()) {
-        case ALLA_OHANTERADE:
-            pred = builder.and(pred, builder.notEqual(root.get("status"), Status.CLOSED));
-            break;
-        case HANTERAD:
-            pred = builder.and(pred, builder.equal(root.get("status"), Status.CLOSED));
-            break;
-        case KOMPLETTERING_FRAN_VARDEN:
-            pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION),
-                    builder.equal(root.get("amne"), ArendeAmne.KOMPLT));
-            break;
-        case SVAR_FRAN_VARDEN:
-            Predicate careReplyAmnePred = builder.or(builder.equal(root.get("amne"), ArendeAmne.OVRIGT),
-                    builder.equal(root.get("amne"), ArendeAmne.ARBTID), builder.equal(root.get("amne"), ArendeAmne.AVSTMN),
-                    builder.equal(root.get("amne"), ArendeAmne.KONTKT));
-            pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
-            break;
-        case SVAR_FRAN_FK:
-            pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_EXTERNAL_ACTION));
-            break;
-        case MARKERA_SOM_HANTERAD:
-            Predicate amnePred;
-            amnePred = builder.and(builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION),
-                    builder.equal(root.get("amne"), ArendeAmne.PAMINN));
-
-            pred = builder.and(pred, builder.or(amnePred, builder.equal(root.get("status"), Status.ANSWERED)));
-            break;
-        case ALLA:
-        default:
-            break;
-        }
-        return pred;
-    }
 
     @Override
     public List<Arende> filterArende(Filter filter) {
@@ -140,4 +75,74 @@ public class ArendeRepositoryImpl implements ArendeRepositoryCustom {
         return ((Long) query.getSingleResult()).intValue();
     }
 
+
+    private Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<Arende> root) {
+        Predicate pred = builder.conjunction();
+
+        pred = builder.and(pred, root.get("enhetId").in(filter.getEnhetsIds()));
+        pred = builder.and(pred, root.get("intygTyp").in(filter.getIntygsTyper()));
+        pred = builder.and(pred, root.get("paminnelseMeddelandeId").isNull());
+        pred = builder.and(pred, root.get("svarPaId").isNull());
+
+        if (filter.isQuestionFromFK()) {
+            pred = builder.and(pred, builder.equal(root.get("skickatAv"), "FK"));
+        }
+
+        if (filter.isQuestionFromWC()) {
+            pred = builder.and(pred, builder.equal(root.get("skickatAv"), "WC"));
+        }
+
+        if (StringUtils.isNotEmpty(filter.getHsaId())) {
+            pred = builder.and(pred, builder.equal(root.get("signeratAv"), filter.getHsaId()));
+        }
+
+        if (filter.getVidarebefordrad() != null) {
+            pred = builder.and(pred, builder.equal(root.get("vidarebefordrad"), filter.getVidarebefordrad()));
+        }
+
+        if (filter.getChangedFrom() != null) {
+            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.get("senasteHandelse"), filter.getChangedFrom()));
+        }
+
+        if (filter.getChangedTo() != null) {
+            pred = builder.and(pred, builder.lessThan(root.get("senasteHandelse"), filter.getChangedTo()));
+        }
+
+        if (filter.getReplyLatest() != null) {
+            pred = builder.and(pred, builder.lessThanOrEqualTo(root.get("sistaDatumForSvar"), filter.getReplyLatest()));
+        }
+
+        switch (filter.getVantarPa()) {
+            case ALLA_OHANTERADE:
+                pred = builder.and(pred, builder.notEqual(root.get("status"), Status.CLOSED));
+                break;
+            case HANTERAD:
+                pred = builder.and(pred, builder.equal(root.get("status"), Status.CLOSED));
+                break;
+            case KOMPLETTERING_FRAN_VARDEN:
+                pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION),
+                        builder.equal(root.get("amne"), ArendeAmne.KOMPLT));
+                break;
+            case SVAR_FRAN_VARDEN:
+                Predicate careReplyAmnePred = builder.or(builder.equal(root.get("amne"), ArendeAmne.OVRIGT),
+                        builder.equal(root.get("amne"), ArendeAmne.ARBTID), builder.equal(root.get("amne"), ArendeAmne.AVSTMN),
+                        builder.equal(root.get("amne"), ArendeAmne.KONTKT));
+                pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
+                break;
+            case SVAR_FRAN_FK:
+                pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_EXTERNAL_ACTION));
+                break;
+            case MARKERA_SOM_HANTERAD:
+                Predicate amnePred;
+                amnePred = builder.and(builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION),
+                        builder.equal(root.get("amne"), ArendeAmne.PAMINN));
+
+                pred = builder.and(pred, builder.or(amnePred, builder.equal(root.get("status"), Status.ANSWERED)));
+                break;
+            case ALLA:
+            default:
+                break;
+        }
+        return pred;
+    }
 }

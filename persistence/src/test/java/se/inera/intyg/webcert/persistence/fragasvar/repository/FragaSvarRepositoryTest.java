@@ -19,11 +19,6 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,20 +27,27 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -66,7 +68,7 @@ public class FragaSvarRepositoryTest {
     private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
     private LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-04-01T12:00:00");
 
-    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk", new Personnummer("19121212-1212"),
+    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk7263", new Personnummer("19121212-1212"),
             "Sven Persson", FRAGA_SENT_DATE);
 
     private static String ENHET_1_ID = "ENHET_1_ID";
@@ -97,6 +99,8 @@ public class FragaSvarRepositoryTest {
         assertEquals(read.getFrageStallare(), saved.getFrageStallare());
         assertEquals(read.getFrageText(), saved.getFrageText());
         assertEquals(read.getIntygsReferens(), saved.getIntygsReferens());
+
+
     }
 
     @Test
@@ -144,7 +148,7 @@ public class FragaSvarRepositoryTest {
     }
 
     @Test
-    public void testcountUnhandledByEnhet() {
+    public void testCountUnhandledByEnhet() {
 
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
@@ -155,9 +159,32 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
-        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIds(Arrays.asList(ENHET_1_ID, ENHET_2_ID));
+        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
         assertNotNull(res);
         assertEquals(2, res.size());
+    }
+
+    @Test
+    public void testCountUnhandledByEnhetAndIntygsTyper() {
+
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
+
+        // With valid type
+        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
+        assertNotNull(res);
+        assertEquals(2, res.size());
+
+        // With unknown type
+        res = fragasvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("other-type"));
+        assertNotNull(res);
+        assertEquals(0, res.size());
     }
 
     @Test
@@ -325,5 +352,43 @@ public class FragaSvarRepositoryTest {
         assertTrue(lakare.get(0)[0].equals(HSA_1_ID));
         assertTrue(lakare.get(1)[0].equals(HSA_2_ID));
         assertTrue(lakare.get(2)[0].equals(HSA_3_ID));
+    }
+
+    @Test
+    public void testFilterFragaSvarMatchesOnIntygsTyp() {
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
+
+        Filter filter = new Filter();
+        filter.getIntygsTyper().add("fk7263");
+        filter.getEnhetsIds().add(ENHET_1_ID);
+        List<FragaSvar> fragaSvar = fragasvarRepository.filterFragaSvar(filter);
+        assertEquals(1, fragaSvar.size());
+    }
+
+    @Test
+    public void testFilterFragaSvarFiltersOutByIntygsTyp() {
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
+
+        Filter filter = new Filter();
+        filter.getIntygsTyper().add("annan-typ");
+        filter.getEnhetsIds().add(ENHET_1_ID);
+        List<FragaSvar> fragaSvar = fragasvarRepository.filterFragaSvar(filter);
+
+        assertEquals(0, fragaSvar.size());
+    }
+
+    @Test
+    public void testFilterFragaSvarFiltersOutNoIntygsTyp() {
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
+
+        Filter filter = new Filter();
+        filter.getEnhetsIds().add(ENHET_1_ID);
+        List<FragaSvar> fragaSvar = fragasvarRepository.filterFragaSvar(filter);
+
+        assertEquals(0, fragaSvar.size());
+    }
+
+    private Set<String> set(String ... vals) {
+        return Stream.of(vals).collect(Collectors.toSet());
     }
 }

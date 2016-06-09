@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.util.List;
-
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -28,6 +26,10 @@ import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface ArendeService {
 
@@ -64,4 +66,6 @@ public interface ArendeService {
     ArendeConversationView closeArendeAsHandled(String meddelandeId);
 
     Arende getArende(String meddelandeId);
+
+    Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> allUnitIds, Set<String> intygsTyper);
 }

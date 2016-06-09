@@ -19,11 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -33,8 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -45,8 +42,6 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.ArendeViewConverter;
@@ -55,17 +50,36 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderExc
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
 import se.riv.infrastructure.directory.employee.getemployeeincludingprotectedpersonresponder.v1.GetEmployeeIncludingProtectedPersonResponseType;
+
+import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -88,13 +102,16 @@ public class ArendeServiceImpl implements ArendeService {
     private String sendMessageToFKLogicalAddress;
 
     @Autowired
-    private ArendeRepository repo;
+    private ArendeRepository arendeRepository;
 
     @Autowired
     private UtkastRepository utkastRepository;
 
     @Autowired
     private WebCertUserService webcertUserService;
+
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
 
     @Autowired
     private MonitoringLogService monitoringLog;
@@ -116,7 +133,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
-        if (repo.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
+        if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "meddelandeId not unique");
         }
 
@@ -129,7 +146,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
 
-        return repo.save(arende);
+        return arendeRepository.save(arende);
     }
 
     @Override
@@ -204,11 +221,11 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = lookupArende(meddelandeId);
         arende.setVidarebefordrad(vidarebefordrad);
 
-        Arende updatedArende = repo.save(arende);
+        Arende updatedArende = arendeRepository.save(arende);
 
         ArendeView arendeViewQuestion = arendeViewConverter.convert(updatedArende);
         ArendeView arendeViewAnswer = null;
-        List<Arende> svar = repo.findBySvarPaId(meddelandeId);
+        List<Arende> svar = arendeRepository.findBySvarPaId(meddelandeId);
         if (CollectionUtils.isNotEmpty(svar)) {
             arendeViewAnswer = arendeViewConverter.convert(svar.get(0));
         }
@@ -220,7 +237,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public ArendeConversationView openArendeAsUnhandled(String meddelandeId) {
         Arende arende = lookupArende(meddelandeId);
-        boolean arendeIsAnswered = !repo.findBySvarPaId(meddelandeId).isEmpty();
+        boolean arendeIsAnswered = !arendeRepository.findBySvarPaId(meddelandeId).isEmpty();
 
         // Enforce business rule FS-011, from FK + answer should remain closed
         if (!FrageStallare.WEBCERT.isKodEqual(arende.getSkickatAv())
@@ -240,7 +257,7 @@ public class ArendeServiceImpl implements ArendeService {
                 arende.setStatus(Status.PENDING_INTERNAL_ACTION);
             }
         }
-        Arende openedArende = repo.save(arende);
+        Arende openedArende = arendeRepository.save(arende);
 
         if (notificationEvent != null) {
             sendNotification(openedArende, notificationEvent);
@@ -248,7 +265,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         ArendeView arendeViewQuestion = arendeViewConverter.convert(openedArende);
         ArendeView arendeViewAnswer = null;
-        List<Arende> svar = repo.findBySvarPaId(meddelandeId);
+        List<Arende> svar = arendeRepository.findBySvarPaId(meddelandeId);
         if (CollectionUtils.isNotEmpty(svar)) {
             arendeViewAnswer = arendeViewConverter.convert(svar.get(0));
         }
@@ -268,7 +285,7 @@ public class ArendeServiceImpl implements ArendeService {
             enhetsIdParams.addAll(webcertUserService.getUser().getIdsOfSelectedVardenhet());
         }
 
-        List<Lakare> arendeList = repo.findSigneratAvByEnhet(enhetsIdParams).stream()
+        List<Lakare> arendeList = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
                 .map(arr -> new Lakare((String) arr[0], (String) arr[1]))
                 .collect(Collectors.toList());
 
@@ -283,12 +300,12 @@ public class ArendeServiceImpl implements ArendeService {
         WebCertUser user = webcertUserService.getUser();
         List<String> unitIds = user.getIdsOfSelectedVardenhet();
 
-        return repo.findByEnhet(unitIds);
+        return arendeRepository.findByEnhet(unitIds);
     }
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
-        List<Arende> arendeList = repo.findByIntygsId(intygsId);
+        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
 
         WebCertUser user = webcertUserService.getUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
@@ -314,12 +331,16 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
+
+        WebCertUser user = webcertUserService.getUser();
+        Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
         Filter filter;
         if (StringUtils.isNotEmpty(filterParameters.getEnhetId())) {
             verifyEnhetsAuth(filterParameters.getEnhetId(), true);
-            filter = FilterConverter.convert(filterParameters, Arrays.asList(filterParameters.getEnhetId()));
+            filter = FilterConverter.convert(filterParameters, Arrays.asList(filterParameters.getEnhetId()), intygstyperForPrivilege);
         } else {
-            filter = FilterConverter.convert(filterParameters, webcertUserService.getUser().getIdsOfSelectedVardenhet());
+            filter = FilterConverter.convert(filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
         }
 
         int originalStartFrom = filter.getStartFrom();
@@ -329,13 +350,13 @@ public class ArendeServiceImpl implements ArendeService {
         filter.setStartFrom(Integer.valueOf(0));
         filter.setPageSize(originalPageSize + originalStartFrom);
 
-        List<ArendeListItem> results = repo.filterArende(filter).stream()
+        List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
                 .map(ArendeListItemConverter::convert)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
 
-        int totalResultsCount = repo.filterArendeCount(filter) + fsResults.getTotalCount();
+        int totalResultsCount = arendeRepository.filterArendeCount(filter) + fsResults.getTotalCount();
 
         results.addAll(fsResults.getResults());
         results.sort(Comparator.comparing(ArendeListItem::getReceivedDate));
@@ -364,7 +385,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         ArendeView arendeViewQuestion = arendeViewConverter.convert(closedArende);
         ArendeView arendeViewAnswer = null;
-        List<Arende> svar = repo.findBySvarPaId(meddelandeId);
+        List<Arende> svar = arendeRepository.findBySvarPaId(meddelandeId);
         if (CollectionUtils.isNotEmpty(svar)) {
             arendeViewAnswer = arendeViewConverter.convert(svar.get(0));
         }
@@ -375,7 +396,32 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public Arende getArende(String meddelandeId) {
-        return repo.findOneByMeddelandeId(meddelandeId);
+        return arendeRepository.findOneByMeddelandeId(meddelandeId);
+    }
+
+    @Override
+    public Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper) {
+        Map<String, Long> resultsMap = new HashMap<>();
+
+        if ((vardenheterIds == null) || vardenheterIds.isEmpty()) {
+            LOG.warn("No ids for Vardenheter was supplied");
+            return resultsMap;
+        }
+
+        if ((intygsTyper == null) || intygsTyper.isEmpty()) {
+            LOG.warn("No intygsTyper for querying Arenden was supplied");
+            return resultsMap;
+        }
+
+        List<Object[]> results = arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+
+        for (Object[] resArr : results) {
+            String id = (String) resArr[0];
+            Long nbr = (Long) resArr[1];
+            resultsMap.put(id, nbr);
+        }
+
+        return resultsMap;
     }
 
     protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
@@ -435,11 +481,11 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Arende closeArendeAsHandled(Arende arende) {
         arende.setStatus(Status.CLOSED);
-        return repo.save(arende);
+        return arendeRepository.save(arende);
     }
 
     private Arende lookupArende(String meddelandeId) {
-        Arende arende = repo.findOneByMeddelandeId(meddelandeId);
+        Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
         if (arende == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Could not find Arende with id:" + meddelandeId);
@@ -461,7 +507,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private Arende processOutgoingMessage(Arende arende) throws WebCertServiceException {
-        Arende saved = repo.save(arende);
+        Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getRubrik());
 
         updateRelated(arende, arende.getStatus(), arende.getSenasteHandelse());
@@ -484,7 +530,7 @@ public class ArendeServiceImpl implements ArendeService {
     private List<ArendeView> getPaminnelser(String meddelandeId) {
         List<ArendeView> arendeViewPaminnelser = new ArrayList<>();
 
-        List<Arende> paminnelser = repo.findByPaminnelseMeddelandeId(meddelandeId);
+        List<Arende> paminnelser = arendeRepository.findByPaminnelseMeddelandeId(meddelandeId);
         for (Arende paminnelse : paminnelser) {
             arendeViewPaminnelser.add(arendeViewConverter.convert(paminnelse));
         }
@@ -534,15 +580,15 @@ public class ArendeServiceImpl implements ArendeService {
 
     private void updateRelated(Arende arende, Status status, LocalDateTime now) {
         if (arende.getSvarPaId() != null) {
-            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getSvarPaId())).ifPresent(a -> {
+            Optional.ofNullable(arendeRepository.findOneByMeddelandeId(arende.getSvarPaId())).ifPresent(a -> {
                 a.setSenasteHandelse(now);
                 a.setStatus(status);
-                repo.save(a);
+                arendeRepository.save(a);
             });
         } else if (arende.getPaminnelseMeddelandeId() != null) {
-            Optional.ofNullable(repo.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId())).ifPresent(a -> {
+            Optional.ofNullable(arendeRepository.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId())).ifPresent(a -> {
                 a.setSenasteHandelse(now);
-                repo.save(a);
+                arendeRepository.save(a);
             });
         }
     }

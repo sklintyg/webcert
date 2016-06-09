@@ -14,10 +14,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Privilege;
 import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.model.UserDetails;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -55,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,6 +92,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private WebCertUserService webcertUserService;
+
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
 
     @Mock
     private MonitoringLogService monitoringLog;
@@ -990,6 +996,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testFilterArendeSelection() {
 
         when(webcertUserService.getUser()).thenReturn(createUser());
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString())).thenReturn(new HashSet<>());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, LocalDateTime.now(), null));

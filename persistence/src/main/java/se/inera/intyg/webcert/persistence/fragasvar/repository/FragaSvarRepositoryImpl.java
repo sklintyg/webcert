@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
@@ -35,7 +34,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import java.util.List;
 
 /**
@@ -46,10 +44,49 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     @PersistenceContext
     private EntityManager entityManager;
 
+
+
+    @Override
+    public List<FragaSvar> filterFragaSvar(Filter filter) {
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<FragaSvar> cq = builder.createQuery(FragaSvar.class);
+
+        Root<FragaSvar> root = cq.from(FragaSvar.class);
+
+        cq.where(createPredicate(filter, builder, root));
+        cq.orderBy(builder.desc(root.get("senasteHandelse")));
+
+        TypedQuery<FragaSvar> query = entityManager.createQuery(cq);
+
+        if (filter.hasPageSizeAndStartFrom()) {
+            query.setMaxResults(filter.getPageSize());
+            query.setFirstResult(filter.getStartFrom());
+        }
+
+        return query.getResultList();
+    }
+
+    @Override
+    public int filterCountFragaSvar(Filter filter) {
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<FragaSvar> root = cq.from(FragaSvar.class);
+        cq.select(cb.count(root));
+
+        cq.where(createPredicate(filter, cb, root));
+
+        Query query = entityManager.createQuery(cq);
+
+        return ((Long) query.getSingleResult()).intValue();
+    }
+
     private Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<FragaSvar> root) {
         Predicate pred = builder.conjunction();
 
         pred = builder.and(pred, root.get("vardperson").get("enhetsId").in(filter.getEnhetsIds()));
+        pred = builder.and(pred, root.get("intygsReferens").get("intygsTyp").in(filter.getIntygsTyper()));
 
         if (filter.isQuestionFromFK()) {
             pred = builder.and(pred, builder.equal(root.get("frageStallare"), "FK"));
@@ -111,41 +148,4 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         }
         return pred;
     }
-
-    @Override
-    public List<FragaSvar> filterFragaSvar(Filter filter) {
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<FragaSvar> cq = builder.createQuery(FragaSvar.class);
-
-        Root<FragaSvar> root = cq.from(FragaSvar.class);
-
-        cq.where(createPredicate(filter, builder, root));
-        cq.orderBy(builder.desc(root.get("senasteHandelse")));
-
-        TypedQuery<FragaSvar> query = entityManager.createQuery(cq);
-
-        if (filter.hasPageSizeAndStartFrom()) {
-            query.setMaxResults(filter.getPageSize());
-            query.setFirstResult(filter.getStartFrom());
-        }
-
-        return query.getResultList();
-    }
-
-    @Override
-    public int filterCountFragaSvar(Filter filter) {
-
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<FragaSvar> root = cq.from(FragaSvar.class);
-        cq.select(cb.count(root));
-
-        cq.where(createPredicate(filter, cb, root));
-
-        Query query = entityManager.createQuery(cq);
-
-        return ((Long) query.getSingleResult()).intValue();
-    }
-
 }

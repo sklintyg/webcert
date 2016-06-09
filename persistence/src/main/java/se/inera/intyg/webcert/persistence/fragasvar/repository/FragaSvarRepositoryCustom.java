@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -56,8 +57,8 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
      * @return A list that contains an array with enhets id and the number of unhandled for that enhet.
      */
-    @Query("SELECT DISTINCT fs.vardperson.enhetsId, count(fs.vardperson.enhetsId) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' GROUP BY fs.vardperson.enhetsId")
-    List<Object[]> countUnhandledGroupedByEnhetIds(@Param("idList") List<String> enhetsIds);
+    @Query("SELECT DISTINCT fs.vardperson.enhetsId, count(fs.vardperson.enhetsId) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper) GROUP BY fs.vardperson.enhetsId")
+    List<Object[]> countUnhandledGroupedByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to) where matches the supplied id.
@@ -117,5 +118,4 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      * @return
      */
     List<FragaSvar> findBySvarsTextLike(String svarsText);
-
 }

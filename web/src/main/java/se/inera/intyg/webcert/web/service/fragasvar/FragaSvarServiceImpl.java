@@ -78,6 +78,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -531,7 +532,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
+    public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper) {
 
         Map<String, Long> resultsMap = new HashMap<>();
 
@@ -540,7 +541,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             return resultsMap;
         }
 
-        List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIds(vardenheterIds);
+        if (intygsTyper == null || intygsTyper.isEmpty()) {
+            LOGGER.warn("No intygsTyper for querying FragaSvar was supplied");
+            return resultsMap;
+        }
+
+        List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
 
         for (Object[] resArr : results) {
             String id = (String) resArr[0];

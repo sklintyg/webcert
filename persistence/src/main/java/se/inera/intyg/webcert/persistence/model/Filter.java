@@ -19,11 +19,13 @@
 
 package se.inera.intyg.webcert.persistence.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pehr on 10/21/13.
@@ -49,6 +51,8 @@ public class Filter {
     private Integer startFrom;
 
     private Integer pageSize;
+
+    private Set<String> intygsTyper = new HashSet<>();
 
     public boolean hasPageSizeAndStartFrom() {
         return (pageSize != null && startFrom != null);
@@ -140,5 +144,13 @@ public class Filter {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public Set<String> getIntygsTyper() {
+        return intygsTyper;
+    }
+
+    public void setIntygsTyper(Set<String>  intygsTyper) {
+        this.intygsTyper = intygsTyper;
     }
 }
