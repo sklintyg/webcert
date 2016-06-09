@@ -3,7 +3,7 @@ description = 'Intyg Common (FitNesse fixturer)'
 dependencies {
   compile project(':integration-util')
 
-  compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.0-RC6'
+  compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
   compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
   compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
   compile 'se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:1.0.1'
