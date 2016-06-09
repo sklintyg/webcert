@@ -175,12 +175,13 @@ function createTsIntyg(typ, status, cb) {
     var standardUser = global.user;
 
     var userObj = {
-        fornamn: 'Åsa',
-        efternamn: 'Svensson',
-        hsaId: 'TSTNMT2321000156-100L',
-        enhetId: 'TSTNMT2321000156-1003',
+        fornamn: 'Erik',
+        efternamn: 'Nilsson',
+        hsaId: 'TSTNMT2321000156-105H',
+        enhetId: 'TSTNMT2321000156-105F',
         lakare: true,
-        forskrivarKod: '2481632'
+        forskrivarKod: '2481632',
+        befattningsKod: '204090'
     };
     loginHelpers.logInAsUserRole(userObj, 'Läkare')
         .and.notify(function() {
