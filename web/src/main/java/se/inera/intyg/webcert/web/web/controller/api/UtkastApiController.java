@@ -154,12 +154,12 @@ public class UtkastApiController extends AbstractApiController {
         pat.setPersonId(req.getPatientPersonnummer());
         pat.setFornamn(req.getPatientFornamn());
         pat.setMellannamn(req.getPatientMellannamn());
+        pat.setEfternamn(req.getPatientEfternamn());
         if (StringUtils.isBlank(pat.getMellannamn())) {
             pat.setFullstandigtNamn(pat.getFornamn() + " " + pat.getEfternamn());
         } else {
             pat.setFullstandigtNamn(pat.getFornamn() + " " + pat.getMellannamn() + " " + pat.getEfternamn());
         }
-        pat.setEfternamn(req.getPatientEfternamn());
         pat.setPostadress(req.getPatientPostadress());
         pat.setPostnummer(req.getPatientPostnummer());
         pat.setPostort(req.getPatientPostort());
