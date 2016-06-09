@@ -101,10 +101,7 @@ requestOrigins:
       - *ki070 # luae_fs
   - &ro030
     name: *kro030
-    intygstyper:
-      - *ki010 # fk7263
-      - *ki020 # ts-bas
-      - *ki030 # ts-diabetes
+    intygstyper: # Implicit alla
 
 # Rättigheter
 privileges:
