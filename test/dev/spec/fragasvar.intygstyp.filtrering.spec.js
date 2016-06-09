@@ -29,7 +29,7 @@ var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var EC = protractor.ExpectedConditions;
 
-fdescribe('Validera att man med roll Tandläkare ej kan se Ärende tillhörande luae_fs intyg samt att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben', function() {
+describe('Validera att man med roll Tandläkare ej kan se Ärende tillhörande luae_fs intyg samt att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben', function() {
 
     var intygsId;
     var arendeId = 'luaefs-arende-arbtid';
