@@ -67,6 +67,11 @@ module.exports = function() {
         callback();
     });
 
+    this.After(function(scenario) {
+        browser.executeScript('window.sessionStorage.clear();');
+        browser.executeScript('window.localStorage.clear();');
+    });
+
     logger.on('logging', function(transport, level, msg, meta) {
         if (global.scenario) {
             global.scenario.attach(level + ': ' + msg);
