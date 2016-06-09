@@ -46,7 +46,17 @@
 
 <h1>Knappar med mer avancerat state, toggling, spinners (de flesta kan klickas på för att se olika states)</h1>
 
-<h2>  Vidarebefodrad knapp (både action och indikator på vidarebefordrad state)<h2>
+<h2>Tillbakaknapp</h2>
+  Används bla i skriv utkastsidan.<br>
+<a id="tillbakaButton" class="backlink-icon" href="" title="Tillbaka till Skriv intyg"></a>
+
+  <h2>wc-help-mark</h2>
+Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
+    <div wc-help-mark="" field-help-text="här visas  tooltiptexten"></div>
+
+
+
+<h2>Vidarebefodrad knapp (både action och indikator på vidarebefordrad state)</h2>
   <button type="button" class="btn btn-default vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
     <img ng-if="!cert1.vidarebefordrad" src="/img/mail.png">
     <img ng-if="cert1.vidarebefordrad" src="/img/mail_dark.png">
@@ -68,7 +78,7 @@
   <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
 </button>
 
-<h2>  Toggleknapp för att hämta fler träffar i lista<h2>
+<h2>  Toggleknapp för att hämta fler träffar i lista</h2>
 <button type="button" id="hamtaFl‘er" class="btn btn-default" title="Hämta fler träffar"
         ng-disabled="fetchingMoreInProgress" ng-click="simulateFetchMore()">
   <img src="/img/loader-small.gif" ng-show="fetchingMoreInProgress"> Hämta fler träffar
@@ -112,5 +122,8 @@
       <td class="unbreakable table-qa-last">{{item.value}}</td>
     </tr>
   </table>
-
 </div>
+
+
+<h2>wc-date-picker-field</h2>
+<span dom-id="filter-changedate-from" target-model="dummyModelProp" wc-date-picker-field add-date-parser="strict"></span>
