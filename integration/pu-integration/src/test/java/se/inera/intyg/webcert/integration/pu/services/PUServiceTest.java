@@ -27,9 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.xml.soap.SOAPConstants;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.*;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Before;
@@ -44,9 +42,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.*;
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -91,7 +87,17 @@ public class PUServiceTest {
         assertEquals("Pärsson", person.getEfternamn());
         assertEquals("Svensson", person.getMellannamn());
     }
-    
+
+    @Test
+    public void checkExistingPersonWithoutAddress() {
+        Person person = service.getPerson(new Personnummer("19520529-2260")).getPerson();
+        assertEquals("Maria Lousie", person.getFornamn());
+        assertEquals("Pärsson", person.getEfternamn());
+        assertNull(person.getPostadress());
+        assertNull(person.getPostnummer());
+        assertNull(person.getPostort());
+    }
+
     @Test
     public void checkNonExistingPerson() {
         Person person = service.getPerson(new Personnummer("19121212-7169")).getPerson();

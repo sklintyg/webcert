@@ -28,19 +28,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.*;
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
-import se.riv.population.residentmaster.types.v1.JaNejTYPE;
-import se.riv.population.residentmaster.types.v1.NamnTYPE;
-import se.riv.population.residentmaster.types.v1.ResidentType;
-import se.riv.population.residentmaster.types.v1.SvenskAdressTYPE;
-
-import com.google.common.annotations.VisibleForTesting;
+import se.riv.population.residentmaster.types.v1.*;
 
 public class PUServiceImpl implements PUService {
 
@@ -75,9 +70,16 @@ public class PUServiceImpl implements PUService {
 
             SvenskAdressTYPE adress = resident.getPersonpost().getFolkbokforingsadress();
 
-            String adressRader = buildAdress(adress);
+            String adressRader = null;
+            String postnr = null;
+            String postort = null;
+            if (adress != null) {
+                adressRader = buildAdress(adress);
+                postnr = adress.getPostNr();
+                postort = adress.getPostort();
+            }
             Person person = new Person(personId, resident.getSekretessmarkering() == JaNejTYPE.J, namn.getFornamn(),
-                    namn.getMellannamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
+                    namn.getMellannamn(), namn.getEfternamn(), adressRader, postnr, postort);
             LOG.debug("Person '{}' found", personId.getPnrHash());
 
             return new PersonSvar(person, PersonSvar.Status.FOUND);
