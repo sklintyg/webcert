@@ -21,28 +21,19 @@
 'use strict';
 
 module.exports = {
-    logInAsUserRole: function(userObj, roleName, newOrigin, newUserRole, skipCookieConsent) {
+    logInAsUserRole: function(userObj, roleName, skipCookieConsent) {
+        if (skipCookieConsent) {
+            logger.info('Lämnar inte samtycke för kakor');
+        }
+        logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
 
-        logger.info('loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
         // Fattigmans-kloning av användar-hashen.
         global.user = JSON.parse(JSON.stringify(userObj));
-        global.user.role = newUserRole;
-        global.user.roleName = roleName;
-        global.user.origin = newOrigin || 'NORMAL';
+
         browser.ignoreSynchronization = true;
         pages.welcome.get();
+        browser.sleep(1000);
         pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
-
-        if (newUserRole) {
-            logger.info('Testability-api, sätter ny roll ' + newUserRole + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
-            browser.get('testability/user/role/' + newUserRole);
-            browser.get('/web/dashboard#/create/choose-patient/index');
-        }
-        if (newOrigin) {
-            logger.info('Testability-api, sätter ny origin ' + newOrigin + ' för ' + userObj.fornamn + ' ' + userObj.efternamn + '..');
-            browser.get('testability/user/origin/' + newOrigin);
-            browser.get('/web/dashboard#/create/choose-patient/index');
-        }
 
         browser.ignoreSynchronization = false;
         browser.sleep(3000);

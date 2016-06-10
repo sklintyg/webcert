@@ -1,5 +1,5 @@
 # language: sv
-@behorighet 
+@behorighet @uthopp
 Egenskap: Behörigheter för en uthoppsläkare
 
 Bakgrund: Inloggad som uthoppsläkare

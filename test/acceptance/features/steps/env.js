@@ -68,6 +68,7 @@ module.exports = function() {
     });
 
     this.After(function(scenario) {
+        console.log('Rensar local-storage');
         browser.executeScript('window.sessionStorage.clear();');
         browser.executeScript('window.localStorage.clear();');
     });

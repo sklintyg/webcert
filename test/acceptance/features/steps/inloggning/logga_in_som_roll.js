@@ -21,42 +21,40 @@
 
 'use strict';
 var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
-// var webcertBasePage = pages.webcertBase;
-// var webcertBase = pages.webcertBase;
 
 module.exports = function() {
 
-    this.Given(/^att jag är inloggad som tandläkare$/, function(callback) {
+    this.Given(/^att jag är inloggad som tandläkare$/, function() {
         var userObj = {
             fornamn: 'Louise',
             efternamn: 'Ericsson',
             hsaId: 'TSTNMT2321000156-103B',
             enhetId: 'TSTNMT2321000156-1039'
         };
-        logInAsUserRole(userObj, 'Tandläkare').and.notify(callback);
+        return logInAsUserRole(userObj, 'Tandläkare');
     });
 
-    this.Given(/^att jag är inloggad som vårdadministratör$/, function(callback) {
+    this.Given(/^att jag är inloggad som vårdadministratör$/, function() {
         var userObj = {
             fornamn: 'Susanne',
             efternamn: 'Johansson Karlsson',
             hsaId: 'TSTNMT2321000156-105J',
             enhetId: 'TSTNMT2321000156-105F'
         };
-        logInAsUserRole(userObj, 'Vårdadministratör').and.notify(callback);
+        return logInAsUserRole(userObj, 'Vårdadministratör');
     });
 
-    this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function(callback) {
+    this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function() {
         var userObj = {
             fornamn: 'Susanne',
             efternamn: 'Johansson Karlsson',
             hsaId: 'TSTNMT2321000156-105J',
-            enhetId: 'TSTNMT2321000156-105F'
+            enhetId: 'TSTNMT2321000156-105F',
+            origin: 'UTHOPP'
         };
-        logInAsUserRole(userObj, 'Vårdadministratör', 'UTHOPP', 'VARDADMINISTRATOR').then(callback);
+        return logInAsUserRole(userObj, 'Vårdadministratör');
     });
-    this.Given(/^att jag är inloggad som läkare( som inte accepterat kakor)?$/, function(inteAccepteratKakor, callback) {
-        console.log('Kakor accepteras: ' + !inteAccepteratKakor);
+    this.Given(/^att jag är inloggad som läkare( som inte accepterat kakor)?$/, function(inteAccepteratKakor) {
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
@@ -65,19 +63,20 @@ module.exports = function() {
             forskrivarKod: '9300005',
             befattningsKod: '204090'
         };
-        logInAsUserRole(userObj, 'Läkare', null, null, inteAccepteratKakor).and.notify(callback);
+        return logInAsUserRole(userObj, 'Läkare', inteAccepteratKakor);
     });
 
-    this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function(callback) {
+    this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function() {
 
         var userObj = {
             fornamn: 'Åsa',
             efternamn: 'Svensson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003',
-            forskrivarKod: '2481632'
+            forskrivarKod: '2481632',
+            origin: 'DJUPINTEGRATION'
         };
-        logInAsUserRole(userObj, 'Läkare', 'DJUPINTEGRATION', 'LAKARE').and.notify(callback);
+        return logInAsUserRole(userObj, 'Läkare');
     });
 
     this.Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"$/, function(enhetHsa, callback) {
@@ -86,20 +85,22 @@ module.exports = function() {
             efternamn: 'Svensson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: enhetHsa,
-            forskrivarKod: '2481632'
+            forskrivarKod: '2481632',
+            origin: 'DJUPINTEGRATION'
         };
-        logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);
+        return logInAsUserRole(userObj, 'Läkare');
     });
 
-    this.Given(/^att jag är inloggad som uthoppsläkare$/, function(callback) {
+    this.Given(/^att jag är inloggad som uthoppsläkare$/, function() {
         var userObj = {
             fornamn: 'Åsa',
             efternamn: 'Svensson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003',
-            forskrivarKod: '2481632'
+            forskrivarKod: '2481632',
+            origin: 'UTHOPP'
         };
-        logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);
+        return logInAsUserRole(userObj, 'Läkare');
     });
 
     this.Given(/^ska jag ha rollen "([^"]*)"$/, function(roll, callback) {
@@ -111,8 +112,8 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^jag ska ha origin "([^"]*)"/, function(origin, callback) {
-        expect(checkUserOrigin()).to.eventually.be.equal(origin).and.notify(callback);
+    this.Given(/^jag ska ha origin "([^"]*)"/, function(origin) {
+        return expect(checkUserOrigin()).to.eventually.be.equal(origin);
     });
 };
 

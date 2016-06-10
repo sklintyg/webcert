@@ -29,14 +29,14 @@ var jsonDisplay = element(by.id('userJsonDisplay'));
 
 module.exports = {
     get: function() {
-        browser.get('welcome.jsp');
+        return browser.get('welcome.jsp');
     },
 
     disableCookieConsentBanner: function() {
         //Having this flag in localStorage will suppress the cookieBanner.(This is what will be set
         //when a user gives consent). We pre-set this before logging in to avoid having to click on that button
         //for every test.
-        browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","1");');
+        return browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","1");');
     },
     enableCookieConsentBanner: function() {
         browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","0");');
@@ -63,7 +63,8 @@ module.exports = {
         if (giveCookieConsent) {
             this.disableCookieConsentBanner();
         }
-        jsonDisplay.clear().sendKeys(userJson);
-        loginButton.click();
+        return jsonDisplay.clear().sendKeys(userJson).then(function() {
+            return loginButton.click();
+        });
     }
 };
