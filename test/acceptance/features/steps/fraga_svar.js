@@ -50,14 +50,15 @@ module.exports = function() {
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
         if (!intyg.messages || intyg.messages.length <= 0) {
             callback('Inga frågor hittades');
-        }
+        } else {
 
-        fkIntygPage.svaraMedNyttIntyg(intyg.messages[0].id)
-            .then(function() {
-                //Fulhack för att inte global ska innehålla en referens
-                global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
-                callback();
-            });
+            fkIntygPage.svaraMedNyttIntyg(intyg.messages[0].id)
+                .then(function() {
+                    //Fulhack för att inte global ska innehålla en referens
+                    global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
+                    callback();
+                });
+        }
     });
 
     this.Given(/^ska jag se kompletteringsfrågan på utkast\-sidan$/, function(callback) {
@@ -129,7 +130,7 @@ module.exports = function() {
     this.Given(/^jag svarar på frågan$/, function(callback) {
         browser.refresh()
             .then(function() {
-                return helpers.fetchMessageIds();
+                return helpers.fetchMessageIds(intyg.typ);
             })
             .then(function() {
                 return fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck);
@@ -151,7 +152,7 @@ module.exports = function() {
 
     this.Given(/^sedan klickar på skicka$/, function(callback) {
         fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function() {
-            helpers.fetchMessageIds().then(callback);
+            helpers.fetchMessageIds(intyg.typ).then(callback);
         });
     });
 
@@ -162,7 +163,7 @@ module.exports = function() {
     this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function(callback) {
         browser.refresh()
             .then(function() {
-                return helpers.fetchMessageIds();
+                return helpers.fetchMessageIds(intyg.typ);
             })
             .then(function() {
                 return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);

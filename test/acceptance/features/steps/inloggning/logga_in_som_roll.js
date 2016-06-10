@@ -62,7 +62,6 @@ module.exports = function() {
             efternamn: 'Nilsson',
             hsaId: 'TSTNMT2321000156-105H',
             enhetId: 'TSTNMT2321000156-105F',
-            lakare: true,
             forskrivarKod: '9300005',
             befattningsKod: '204090'
         };
@@ -76,7 +75,6 @@ module.exports = function() {
             efternamn: 'Svensson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003',
-            lakare: true,
             forskrivarKod: '2481632'
         };
         logInAsUserRole(userObj, 'Läkare', 'DJUPINTEGRATION', 'LAKARE').and.notify(callback);
@@ -88,7 +86,6 @@ module.exports = function() {
             efternamn: 'Svensson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: enhetHsa,
-            lakare: true,
             forskrivarKod: '2481632'
         };
         logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);
@@ -100,7 +97,6 @@ module.exports = function() {
             efternamn: 'Svensson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003',
-            lakare: true,
             forskrivarKod: '2481632'
         };
         logInAsUserRole(userObj, 'Läkare', 'UTHOPP', 'LAKARE').and.notify(callback);

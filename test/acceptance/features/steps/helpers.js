@@ -20,6 +20,7 @@
 /*global testdata,intyg,logger,pages*/
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var fkLusePage = pages.intyg.luse.intyg;
 
 module.exports = {
     generateIntygByType: function(typ, id) {
@@ -35,21 +36,33 @@ module.exports = {
             return testdata.fk.LISU.getRandom(id);
         }
     },
-    fetchMessageIds: function() {
+    fetchMessageIds: function(intygtyp) {
         console.log('Hämtar meddelande-id:n');
+        var isSMIIntyg = intygtyp.indexOf('Läkarutlåtande för') > -1;
 
         if (!intyg.messages) {
             intyg.messages = [];
         }
+        var panels;
 
-        var messageIdAttributes = fkIntygPage.qaPanels.map(function(elm) {
+        if (isSMIIntyg) {
+            panels = fkLusePage.qaPanels;
+        } else {
+            panels = fkIntygPage.qaPanels;
+        }
+        var messageIdAttributes = panels.map(function(elm) {
             return elm.getAttribute('id');
         });
 
         return messageIdAttributes.then(function(attr) {
             for (var i = 0; i < attr.length; i++) {
-                var messageId = attr[i].split('-')[1];
+                var messageId;
 
+                if (isSMIIntyg) {
+                    messageId = attr[i].replace('arende-unhandled-', ''); // arende-unhandled-4c78e939-e187-122b-ce86-66937dfbe012
+                } else {
+                    messageId = attr[i].split('-')[1];
+                }
                 logger.info('Meddelande-id som finns på intyget: ' + messageId);
                 intyg.messages.push({
                     id: messageId

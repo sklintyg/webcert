@@ -26,20 +26,22 @@ function addDays(date, days) {
     return date;
 }
 
-module.exports.SendMessageToCare = function(user, person, intyg) {
+module.exports.SendMessageToCare = function(user, person, intyg, message) {
     var amneCode = 'KOMPLT';
     var amneDisplayName = 'Komplettering';
     var messageID = testdataHelper.generateTestGuid();
     var skickatTidpunkt = new Date();
     var sistaDatumForSvar = addDays(skickatTidpunkt, 5);
 
-    var kompletteringar = new Array(26);
-
+    var kompletteringar = [];
     for (var k = 1; k <= 26; k++) {
+        if (k === 24) {
+            continue;
+        } // Frage-id 24 finns inte
         kompletteringar.push(
             '<komplettering>' +
             '<frage-id>' + k + '</frage-id>' +
-            '<text>Kompletterning #' + k + '/text>' +
+            '<text>Kompletterning #' + k + '</text>' +
             '</komplettering>'
         );
     }
@@ -68,7 +70,7 @@ module.exports.SendMessageToCare = function(user, person, intyg) {
         '<types:displayName>' + amneDisplayName + '</types:displayName>' +
         '</amne>' +
         '<rubrik>KOMPLT</rubrik>' +
-        '<meddelande>Inledande text för komplettering avseende LUSE</meddelande>' +
+        '<meddelande>' + message + '</meddelande>' +
         '<skickatAv>' +
         '<part>' +
         '<types:code>FKASSA</types:code>' +
@@ -77,98 +79,7 @@ module.exports.SendMessageToCare = function(user, person, intyg) {
         '</part>' +
         '<kontaktInfo>MAX antal kategorier. Automatiskt test </kontaktInfo>' +
         '</skickatAv>' +
-        '<komplettering>' +
-        '<frage-id>1</frage-id>' +
-        '<text>1a MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>2</frage-id>' +
-        '<text>2a. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>3</frage-id>' +
-        '<text>3e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>4</frage-id>' +
-        '<text>4e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>5</frage-id>' +
-        '<text>5e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>6</frage-id>' +
-        '<text>6e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>7</frage-id>' +
-        '<text>7e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>8</frage-id>' +
-        '<text>8e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>9</frage-id>' +
-        '<text>9e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>10</frage-id>' +
-        '<text>10e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>11</frage-id>' +
-        '<text>11e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>12</frage-id>' +
-        '<text>12e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>13</frage-id>' +
-        '<text>13e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>14</frage-id>' +
-        '<text>14e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>17</frage-id>' +
-        '<text>17e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>18</frage-id>' +
-        '<text>18e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>19</frage-id>' +
-        '<text>19e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>20</frage-id>' +
-        '<text>20e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>21</frage-id>' +
-        '<text>21a. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>22</frage-id>' +
-        '<text>22a. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>23</frage-id>' +
-        '<text>23e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>25</frage-id>' +
-        '<text>25e. MAX</text>' +
-        '</komplettering>' +
-        '<komplettering>' +
-        '<frage-id>26</frage-id>' +
-        '<text>26e. MAX</text>' +
-        '</komplettering>' +
+        kompletteringar.join('\n') +
         '<sistaDatumForSvar>' + testdataHelper.dateFormat(sistaDatumForSvar) + '</sistaDatumForSvar>' +
         '</SendMessageToCare>';
 };

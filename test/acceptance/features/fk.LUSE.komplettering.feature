@@ -1,7 +1,7 @@
 # language: sv
-@komplettera @luse @notReady
+@komplettera @luse @waitingForFix
+ # kompletteringsfråga saknas på utkast-sida
 Egenskap: Komplettering av LUSE-intyg
-
 
 Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare

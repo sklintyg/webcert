@@ -100,6 +100,8 @@ var BaseSmiIntygPage = BaseIntyg._extend({
             anledning: element(by.id('anledningTillKontakt'))
         };
 
+        this.qaPanels = element.all(by.css('.arende-panel'));
+
         this.tillaggsfragor = {
             getFraga: function(index) {
                 index = index + 1 || 1;

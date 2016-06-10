@@ -65,62 +65,31 @@ module.exports = function() {
     this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"$/, function(intygstyp, callback) {
         global.intyg.typ = intygstyp;
         global.person.id = testdataHelpers.shuffle(testvalues.patienter)[0];
-        var body = soapMessageBodies.CreateDraftCertificateV2(
-            global.person.id,
-            global.user,
-            intygstyp
-        );
-        console.log(body);
+        var body, path;
+        var isSMIIntyg = intygstyp.indexOf('Läkarutlåtande för') > -1;
 
-        var path = '/services/create-draft-certificate/v2.0?wsdl';
+        if (isSMIIntyg) {
+            path = '/services/create-draft-certificate/v2.0?wsdl';
+            body = soapMessageBodies.CreateDraftCertificateV2(
+                global.person.id,
+                global.user,
+                intygstyp
+            );
+
+        } else {
+            path = '/services/create-draft-certificate/v1.0?wsdl';
+            body = soapMessageBodies.CreateDraftCertificate(
+                global.person.id,
+                global.user.hsaId,
+                global.user.fornamn + '' + global.user.efternamn,
+                global.user.enhetId,
+                'Enhetsnamn'
+            );
+        }
+        console.log(body);
         var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
         url = url.replace('https', 'http');
 
         sendCreateDraft(url, body, callback);
     });
-
-    this.Given(/^att vårdsystemet skapat ett intygsutkast$/, function(callback) {
-        global.person.id = testdataHelpers.shuffle(testvalues.patienter)[0];
-
-        var body = soapMessageBodies.CreateDraftCertificate(
-            global.person.id,
-            global.user.hsaId,
-            global.user.fornamn + '' + global.user.efternamn,
-            global.user.enhetId,
-            'Enhetsnamn'
-        );
-        console.log(body);
-
-        var path = '/services/create-draft-certificate/v1.0?wsdl';
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
-        url = url.replace('https', 'http');
-        sendCreateDraft(url, body, callback);
-        // soap.createClient(url, function(err, client) {
-        //     logger.info(url);
-        //     if (err) {
-        //         callback(err);
-        //     } else {
-        //         client.CreateDraftCertificate(body, function(err, result, resBody) {
-        //             console.log(resBody);
-        //             if (err) {
-        //                 callback(err);
-        //             } else {
-        //                 var resultcode = result.result.resultCode;
-        //                 logger.info('ResultCode: ' + resultcode);
-        //                 console.log(result);
-        //                 if (resultcode !== 'OK') {
-        //                     logger.info(result);
-        //                     callback('ResultCode: ' + resultcode + '\n' + resBody);
-        //                 } else {
-        //                     intyg.id = result['utlatande-id'].attributes.extension;
-        //                     logger.info('intyg.id: ' + intyg.id);
-        //                     callback();
-        //                 }
-        //             }
-        //         });
-        //     }
-        // });
-    });
-
-
 };

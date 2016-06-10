@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
     Givet att jag är inloggad som läkare
     När jag går in på en patient
 
-@keepIntyg
+@keepIntyg @signera
 Scenario: Skapa och signera ett intyg
     När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
     Och jag fyller i alla nödvändiga fält för intyget

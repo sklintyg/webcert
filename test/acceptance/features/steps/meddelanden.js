@@ -16,15 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals logger, JSON*/
+/*globals logger, JSON, wcTestTools*/
 
 'use strict';
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
+var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = function() {
     this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
-        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg);
+        global.intyg.guidcheck = testdataHelper.generateTestGuid();
+
+        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär komplettering' + global.intyg.guidcheck);
         console.log(body);
         // var path = '/send-message-to-care/v1.0?wsdl';
         // var url = process.env.INTYGTJANST_URL + path;
