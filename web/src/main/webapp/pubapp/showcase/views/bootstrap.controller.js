@@ -1,6 +1,6 @@
 angular.module('showcase').controller('showcase.BootstrapCtrl',
-    ['$scope', '$timeout',
-        function($scope, $timeout) {
+    ['$scope', '$timeout', 'common.dialogService',
+        function($scope, $timeout, dialogService) {
             'use strict';
 
             //Vidarebefodra knapp states
@@ -42,6 +42,16 @@ angular.module('showcase').controller('showcase.BootstrapCtrl',
             for (var i = 0; i < 10; i++) {
                 $scope.tableitems.push({id: i, value: "Item " + i});
             }
+
+            //modal dialog sample
+            $scope.showDialog = function() {
+
+               dialogService.showDialog({
+                    dialogId: 'showcase-bootstrap-dialog',
+                    templateUrl: '/pubapp/showcase/views/modal-dialog.html',
+                    autoClose: true
+                });
+            };
 
         }]);
 

@@ -60,7 +60,7 @@ angular.module('showcase').controller('showcase.navigationCtrl',
 
             $scope.isActive = function(id) {
                 return id === "activeOne";
-            }
+            };
 
 
 

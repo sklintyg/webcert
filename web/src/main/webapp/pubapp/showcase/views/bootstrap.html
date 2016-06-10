@@ -1,4 +1,4 @@
-<h1>Bootstrap komponenter</h1>
+<h1>Bootstrap css / ui-bootstrap  komponenter</h1>
 
 <h2>Rubriker</h2>
 
@@ -64,9 +64,12 @@ Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
 
 
 <h2> Knapp med tooltip (mouseover)</h2>
-<button type="button" id="makuleraBtn" class="btn btn-inverse" uib-popover="Makulera intyg innebär att intyget återtas. Vid behov kan intyget ersättas med ett nytt." popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true">
-  Makulera
-</button>
+
+<div style="margin-left: 150px;">
+  <button type="button" id="makuleraBtn" class="btn btn-inverse" uib-popover="Makulera intyg innebär att intyget återtas. Vid behov kan intyget ersättas med ett nytt." popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true">
+      Makulera
+    </button>
+</div>
 
 
 
@@ -78,8 +81,8 @@ Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
   <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
 </button>
 
-<h2>  Toggleknapp för att hämta fler träffar i lista</h2>
-<button type="button" id="hamtaFl‘er" class="btn btn-default" title="Hämta fler träffar"
+<h2> Actionknapp (med progressindikator) för att hämta fler träffar i lista</h2>
+<button type="button" id="hamtaFler" class="btn btn-default" title="Hämta fler träffar"
         ng-disabled="fetchingMoreInProgress" ng-click="simulateFetchMore()">
   <img src="/img/loader-small.gif" ng-show="fetchingMoreInProgress"> Hämta fler träffar
 </button>
@@ -89,6 +92,11 @@ Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
 <button type="button" class="btn btn-success" ng-disabled="!acceptprogressdone" ng-click="simulateProgress()">
   <img ng-hide="acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
   <span>Klicka på mig</span>
+</button>
+
+<h2>Actionknapp med ikon (vi använder <a href="http://glyphicons.bootstrapcheatsheets.com/" target="_blank">glyphicons</a> ikoner)</h2>
+<button type="button" id="ta-bort-utkast" class="btn btn-default btn-secondary ng-scope" ng-if="!viewState.common.isSigned" ng-click="discard()" title="Klicka på papperskorgen för att radera utkastet.">
+  <i class="glyphicon glyphicon-trash"></i>
 </button>
 
 <h2>Dropdown knapp (exempelvis vid val av utskriftstyp)</h2>
@@ -127,3 +135,6 @@ Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
 
 <h2>wc-date-picker-field</h2>
 <span dom-id="filter-changedate-from" target-model="dummyModelProp" wc-date-picker-field add-date-parser="strict"></span>
+
+<h2>Modala dialoger</h2>
+<button class="btn btn-primary" ng-click="showDialog()">Öppna modal dialog</button>
