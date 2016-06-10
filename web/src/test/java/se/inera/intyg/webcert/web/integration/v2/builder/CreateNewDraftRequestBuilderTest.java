@@ -59,6 +59,7 @@ public class CreateNewDraftRequestBuilderTest {
     public static final String PATIENT_POSTORT = "postort";
     public static final String FULLSTANDIGT_NAMN = "Abel Baker";
     public static final String INVARTES_MEDICIN = "Invärtes medicin";
+    public static final String TITLE_CODE = "203010";
     public static final String TITLE_NAME = "Läkare";
     public static final String ALLMAN_MEDICIN = "Allmänmedicin";
 
@@ -112,7 +113,7 @@ public class CreateNewDraftRequestBuilderTest {
 
         assertNotNull(res);
         assertNotNull(res.getHosPerson());
-        assertEquals("Läkare", res.getHosPerson().getBefattningar().get(0));
+        assertEquals(TITLE_CODE, res.getHosPerson().getBefattningar().get(0));
         assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiteter().get(0));
         assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiteter().get(1));
     }
@@ -136,6 +137,7 @@ public class CreateNewDraftRequestBuilderTest {
         pit.setPersonHsaId(USER_HSAID);
         pit.setGivenName(FULLSTANDIGT_NAMN);
         PaTitleType befattning = new PaTitleType();
+        befattning.setPaTitleCode(TITLE_CODE);
         befattning.setPaTitleName(TITLE_NAME);
         pit.getPaTitle().add(befattning);
         pit.getSpecialityName().add(INVARTES_MEDICIN);

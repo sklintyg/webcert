@@ -20,8 +20,6 @@
 package se.inera.intyg.webcert.web.integration.builder;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +27,15 @@ import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.integration.hsa.util.HsaAttributeExtractor;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.riv.infrastructure.directory.v1.*;
+import se.riv.infrastructure.directory.v1.CommissionType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 @Component
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
@@ -47,6 +47,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     @Autowired
     private HsaPersonService hsaPersonService;
+
+    private HsaAttributeExtractor hsaAttributeExtractor = new HsaAttributeExtractor();
 
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Utlatande utlatande, CommissionType miuOnUnit) {
@@ -66,25 +68,9 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     private void enrichHoSPerson(HoSPersonal hosPerson) {
         List<PersonInformationType> hsaPersonResponse = hsaPersonService.getHsaPersonInfo(hosPerson.getPersonId());
         if (hsaPersonResponse != null && hsaPersonResponse.size() > 0) {
-            PersonInformationType personInfo = hsaPersonResponse.get(0);
-
-            // Use PaTitle to set befattning
-            if (personInfo.getPaTitle() != null) {
-                hosPerson.getBefattningar().addAll(personInfo.getPaTitle().stream()
-                        .map(PaTitleType::getPaTitleName)
-                        .filter(Objects::nonNull)
-                        .sorted()
-                        .collect(Collectors.toList()));
-
-            }
-
-            // Use specialityNames
-            if (personInfo.getSpecialityName() != null) {
-                hosPerson.getSpecialiteter().addAll(personInfo.getSpecialityName().stream()
-                        .sorted()
-                        .collect(Collectors.toList()));
-            }
-
+            // set befattningar and specialiteter from hsa response
+            hosPerson.getBefattningar().addAll(hsaAttributeExtractor.extractBefattningar(hsaPersonResponse));
+            hosPerson.getSpecialiteter().addAll(hsaAttributeExtractor.extractSpecialiseringar(hsaPersonResponse));
         }
     }
 
