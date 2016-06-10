@@ -1,7 +1,9 @@
 angular.module('showcase').controller('showcase.ArendeCtrl',
-    [ '$scope', 'common.ArendenViewStateService',
-        function($scope, ArendenViewStateService) {
+    [ '$scope', 'common.ArendenViewStateService', '$httpBackend',
+        function($scope, ArendenViewStateService, $httpBackend) {
             'use strict';
+
+
 
             $scope.arendeList = [
                 {
@@ -42,6 +44,30 @@ angular.module('showcase').controller('showcase.ArendeCtrl',
                     ]
                 }
             ];
+            //Mocka response för när man klickar på vidarebefordrad
+            $httpBackend.whenPUT(/^\/moduleapi\/arende\/.+\/vidarebefordrad*/).respond(
+                {"fraga":{
+                "kompletteringar":[
+
+                ],
+                "internReferens":"6",
+                "status":"PENDING_INTERNAL_ACTION",
+                "amne":"OVRIGT",
+                "meddelandeRubrik":"En rubrik",
+                "vidarebefordrad":true,
+                "frageStallare":"FK",
+                "externaKontakter":[
+
+                ],
+                "meddelande":"Hej, hur står det till idag?",
+                "signeratAv":"Jan Nilsson",
+                "svarSkickadDatum":"2014-11-22T14:53:00.000",
+                "intygId":"421f06cd-a6d1-4bcb-a42b-570c6047f030",
+                "enhetsnamn":"WebCert-Enhet1",
+                "vardgivarnamn":"WebCert-Vårdgivare1",
+                "timestamp":"2016-06-08T15:50:02.596",
+                "arendeType":"FRAGA"
+            }});
 
             ArendenViewStateService.intyg = {
                 "typ": "luae_fs",

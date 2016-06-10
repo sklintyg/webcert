@@ -599,7 +599,7 @@
                 <a href="/version.jsp" target="_blank">Versions- och bygginformation</a><br/>
                 <a href="/healthcheck.jsp" target="_blank">Healthcheck</a><br/>
                 <a href="/swagger-ui/index.html" target="_blank">REST-dokumentation</a><br/>
-                <a href="/showcase/index.html" target="_blank">Komponentbilbiotek (kräver inloggning först)</a><br/>
+                <a href="/pubapp/showcase/index.html" target="_blank">Komponentbilbiotek (kräver ej inloggning)</a><br/>
             </div>
         </div>
     </div>

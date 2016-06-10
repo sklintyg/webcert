@@ -386,25 +386,19 @@
         "role":"Läkare"
     };
 
-   /* function getUser() {
-        var restPath = '/api/anvandare';
-        return $.get(restPath).then(function(data) {
-            //user = data;
-            user.jsMinified = false;
-            return data;
-        });
-    }*/
 
 
-    var app = angular.module('webcert',
+    var wc_app = angular.module('webcert',
         ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap']);
 
-    var showCaseApp = angular.module('showcase',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'webcert', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap']);
+    var app = angular.module('showcase',
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'webcert', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap', 'ngMockE2E']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000
     });
+
+
 
     app.config(['$httpProvider', '$logProvider',
         function($httpProvider, $logProvider) {
@@ -440,8 +434,8 @@
     });
 
     // Inject language resources
-    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig) {
+    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig', '$httpBackend',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig, $httpBackend) {
 
             // Configure formly to use default hide directive.
             // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
@@ -455,72 +449,58 @@
             UserModel.termsAccepted = true;
             UserModel.transitioning = false;
 
-            messageService.addResources(wcMessages);
+            //Kanske vi kan (i resp controller) sätta upp 'when' mockning så att direktiven kan köra som i en sandbox (Se exempel i arendehantering.controller.js)?
+            // Detta kanske gör det möjligt att kunna laborera med ett direktivs alla funktioner som även kräver backendkommunikation.
+            $httpBackend.whenGET(/^\/api\/*/).respond(200);
+            $httpBackend.whenPOST(/^\/api\/*/).respond(200);
+            $httpBackend.whenPUT(/^\/api\/*/).respond(200);
 
+            $httpBackend.whenGET(/^\/moduleapi\/*/).respond(200);
+            $httpBackend.whenPOST(/^\/moduleapi\/*/).respond(200);
+           // $httpBackend.whenPUT(/^\/moduleapi\/*/).respond(200);
 
+            //Ev. templates skall få hämtas på riktigt
+            $httpBackend.whenGET(/^.+\.html/).passThrough();
 
         }]);
 
 
-    // Get a list of all modules to find all files to load.
-    //getUser().then(function(data) {
-     //   user = data;
-        $.get('/api/modules/map').then(function(modules) {
+    // Ladda alla dependencies
+    $.get('/api/modules/map').then(function(modules) {
 
 
-            var modulesIds = [];
-            var modulePromises = [];
-            modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.js'));
-            modulePromises.push($.get('/web/webjars/common/webcert/module-deps.json'));
-            modulePromises.push($.get('/app/app-deps.json'));
+        var modulesIds = [];
+        var modulePromises = [];
+        //Add wc/common resources
+        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js'));
 
-            // Prevent jQuery from appending cache buster to the url to make it easier to debug.
+        angular.forEach(modules, function(module) {
+            modulesIds.push(module.id);
+            loadCssFromUrl(module.cssPath);
+            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js'));
 
-            angular.forEach(modules, function(module) {
-                modulesIds.push(module.id);
-                loadCssFromUrl(module.cssPath);
-
-                modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
-                modulePromises.push($.get(module.dependencyDefinitionPath));
-
-            });
-
-            // Wait for all modules and module dependency definitions to load.
-            $.when.apply(this, modulePromises).then(function() {
-                var dependencyPromises = [];
-
-
-                    angular.forEach(arguments, function(data) {
-                        if (data !== undefined && data[0] instanceof Array) {
-                            angular.forEach(data[0], function(depdendency) {
-                                dependencyPromises.push(loadScriptFromUrl(depdendency));
-                            });
-                        }
-                    });
-
-                // Wait for all dependencies to load (for production dependencies are empty which is resolved immediately)
-                $.when.apply(this, dependencyPromises).then(function() {
-                    angular.element(document).ready(function() {
-
-                        var allModules = [app.name, 'showcase', 'common'].concat(Array.prototype.slice.call(modulesIds, 0));
-
-                        // Everything is loaded, bootstrap the application with all dependencies.
-                        document.documentElement.setAttribute('ng-app', 'showcase');
-                        angular.bootstrap(document, allModules);
-
-                    });
-                }).fail(function(error) {
-                    if (window.console) {
-                        console.log(error);
-                    }
-                });
-            }).fail(function(error) {
-                if (window.console) {
-                    console.log(error);
-                }
-            });
         });
-   // });
+
+        // Wait for all modules and module dependency definitions to load.
+        $.when.apply(this, modulePromises).then(function() {
+
+            angular.element(document).ready(function() {
+
+                var allModules = [app.name, 'showcase', 'common'].concat(Array.prototype.slice.call(modulesIds, 0));
+
+
+
+                // Everything is loaded, bootstrap the application with all dependencies.
+                document.documentElement.setAttribute('ng-app', 'showcase');
+                angular.bootstrap(document, allModules);
+
+            });
+        }).fail(function(error) {
+            if (window.console) {
+                console.log(error);
+            }
+        });
+    });
 
     function loadCssFromUrl(url) {
 
@@ -536,10 +516,7 @@
 
 
         var result = $.Deferred();
-        if (url.indexOf('router.js')!= -1) {
 
-            return;
-        }
         var script = document.createElement('script');
         script.async = 'async';
         script.type = 'text/javascript';

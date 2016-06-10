@@ -2,13 +2,13 @@
 angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     'use strict';
 
-
+ var templateRoot = '/pubapp/showcase/'
     $stateProvider.
 
     state('showcase', {
         views: {
             'header@': {
-                templateUrl: '/showcase/header.html'
+                templateUrl: templateRoot +'header.html'
             }
         }
     }).
@@ -17,7 +17,7 @@ angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $
         url: '/bootstrap-components',
         views: {
             'content@': {
-                templateUrl: '/showcase/views/bootstrap.html',
+                templateUrl: templateRoot + 'views/bootstrap.html',
                 controller: 'showcase.BootstrapCtrl'
             }
         }
@@ -26,7 +26,7 @@ angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $
         url: '/arendehantering',
         views: {
             'content@': {
-                templateUrl: '/showcase/views/arendehantering.html',
+                templateUrl: templateRoot + 'views/arendehantering.html',
                 controller: 'showcase.ArendeCtrl'
             }
         }
@@ -35,7 +35,7 @@ angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $
         url: '/navigation',
         views: {
             'content@': {
-                templateUrl: '/showcase/views/navigation.html',
+                templateUrl: templateRoot + 'views/navigation.html',
                 controller: 'showcase.navigationCtrl'
             }
         }

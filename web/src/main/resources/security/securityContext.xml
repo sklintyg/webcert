@@ -32,6 +32,7 @@
 
   <!-- Unsecured pages -->
   <security:http security="none" pattern="/webjars/**"/>
+  <security:http security="none" pattern="/vendor/**"/>
   <security:http security="none" pattern="/web/webjars/**"/>
   <security:http security="none" pattern="/web/eleglogin" />
   <security:http security="none" pattern="/api/modules/map"/>
