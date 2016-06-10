@@ -37,15 +37,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.common.internal.*;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
@@ -66,10 +64,7 @@ public class IntygResource {
     private ArendeRepository arendeRepository;
 
     @Autowired
-    private IntygServiceConverter intygServiceConverter;
-
-    @Autowired
-    private IntygModuleRegistryImpl moduleRegistry;
+    private IntygModuleFacade moduleFacade;
 
     @DELETE
     @Path("/")
@@ -123,8 +118,7 @@ public class IntygResource {
         String intygsTyp = intygContents.getContents().get("typ").textValue();
 
         String model = intygContents.getContents().toString();
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
-        Utlatande utlatande = moduleApi.getUtlatandeFromJson(model);
+        Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(intygsTyp, model);
         Utkast utkast = new Utkast();
 
         utkast.setModel(model);
@@ -261,7 +255,7 @@ public class IntygResource {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
-            Utlatande utlatande = intygServiceConverter.buildUtlatandeFromUtkastModel(utkast);
+            Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
             utlatande.getGrundData().setSigneringsdatum(LocalDateTime.now());
             try {
                 CustomObjectMapper mapper = new CustomObjectMapper();

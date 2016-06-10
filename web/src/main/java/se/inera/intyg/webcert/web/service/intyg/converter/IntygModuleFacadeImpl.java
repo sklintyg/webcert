@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @Component
@@ -105,6 +108,17 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when revoking certificate", intygType);
             throw new IntygModuleFacadeException("ModuleNotFoundException occured when revoking certificate", e);
+        }
+    }
+
+    @Override
+    public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel) {
+        try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            return moduleApi.getUtlatandeFromJson(internalModel);
+        } catch (IOException | ModuleNotFoundException e) {
+            LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
     }
 }

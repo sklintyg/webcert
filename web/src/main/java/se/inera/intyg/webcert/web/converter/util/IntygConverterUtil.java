@@ -17,21 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.intyg.converter;
+package se.inera.intyg.webcert.web.converter.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.google.common.annotations.VisibleForTesting;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
@@ -41,37 +34,18 @@ import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.common.internal.*;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@Component
-public class IntygServiceConverterImpl implements IntygServiceConverter {
+public final class IntygConverterUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygServiceConverterImpl.class);
+    private IntygConverterUtil() {
+    }
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
+    public static SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.
-     * certificate
-     * .model.Utlatande)
-     */
-    @Override
-    public SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
-
-        // Lakarutlatande
         LakarutlatandeEnkelType utlatandeType = ModelConverter.toLakarutlatandeEnkelType(utlatande);
 
-        // Vardadress
         VardAdresseringsType vardAdressType = ModelConverter.toVardAdresseringsType(utlatande.getGrundData());
 
         SendType sendType = new SendType();
@@ -83,23 +57,27 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return sendType;
     }
 
-    public String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(StringUtils.join(fNames, " "));
+    public static String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
+        return concatPatientName(StringUtils.join(fNames, " "), StringUtils.join(mNames, " "), lName);
+    }
 
-        if (!mNames.isEmpty()) {
-            sb.append(" ").append(StringUtils.join(mNames, " "));
+    public static String concatPatientName(String fName, String mName, String lName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(fName);
+
+        if (mName != null) {
+            sb.append(" ").append(mName);
         }
 
         sb.append(" ").append(lName);
         return StringUtils.normalizeSpace(sb.toString());
     }
 
-    public String buildVardReferensId(String intygId) {
+    public static String buildVardReferensId(String intygId) {
         return buildVardReferensId(intygId, LocalDateTime.now());
     }
 
-    public String buildVardReferensId(String intygId, LocalDateTime ts) {
+    public static String buildVardReferensId(String intygId, LocalDateTime ts) {
         String time = ts.toString(ISODateTimeFormat.basicDateTime());
         return StringUtils.join(new Object[] { "SEND", intygId, time }, "-");
     }
@@ -111,8 +89,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
      * <li>If draft has a aterkalledDatum, a CANCELLED status is added</li>
      * <li>If there is a signature with a signature date, a RECEIVED status is added.</li>
      */
-    @Override
-    public List<se.inera.intyg.common.support.model.Status> buildStatusesFromUtkast(Utkast draft) {
+    public static List<se.inera.intyg.common.support.model.Status> buildStatusesFromUtkast(Utkast draft) {
         List<se.inera.intyg.common.support.model.Status> statuses = new ArrayList<>();
 
         if (draft.getSkickadTillMottagareDatum() != null) {
@@ -133,22 +110,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return statuses;
     }
 
-    /**
-     * Given the model (e.g. JSON representation of the Intyg stored in the Utkast), build an @{link Utlatande}
-     */
-    @Override
-    public Utlatande buildUtlatandeFromUtkastModel(Utkast utkast) {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            return moduleApi.getUtlatandeFromJson(utkast.getModel());
-        } catch (IOException | ModuleNotFoundException e) {
-            LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
-        }
-    }
-
-    @Override
-    public HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user, Vardenhet vardenhet) {
+    public static HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user, Vardenhet vardenhet) {
         HoSPersonal hosPersonal = new HoSPersonal();
         hosPersonal.setPersonId(user.getHsaId());
         hosPersonal.setFullstandigtNamn(user.getNamn());
@@ -167,7 +129,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return hosPersonal;
     }
 
-    private Vardenhet buildVardenhet(WebCertUser user) {
+    private static Vardenhet buildVardenhet(WebCertUser user) {
         Vardenhet vardenhet = new Vardenhet();
         SelectableVardenhet sourceVardenhet = user.getValdVardenhet();
         if (sourceVardenhet != null && sourceVardenhet instanceof AbstractVardenhet) {
@@ -185,17 +147,12 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return vardenhet;
     }
 
-    private Vardgivare buildVardgivare(SelectableVardenhet valdVardgivare) {
+    private static Vardgivare buildVardgivare(SelectableVardenhet valdVardgivare) {
         Vardgivare vardgivare = new Vardgivare();
         if (valdVardgivare != null) {
             vardgivare.setVardgivarid(valdVardgivare.getId());
             vardgivare.setVardgivarnamn(valdVardgivare.getNamn());
         }
         return vardgivare;
-    }
-
-    @VisibleForTesting
-    public void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
-        this.moduleRegistry = moduleRegistry;
     }
 }

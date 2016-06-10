@@ -45,8 +45,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -93,9 +93,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
-
-    @Autowired
-    private IntygServiceConverter serviceConverter;
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -570,7 +567,7 @@ public class UtkastServiceImpl implements UtkastService {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(modelJson).getGrundData().getSkapadAv().getVardenhet();
-            HoSPersonal hosPerson = serviceConverter.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
+            HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
             utkast.setModel(updatedInternal);

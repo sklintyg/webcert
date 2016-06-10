@@ -28,6 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -89,4 +91,9 @@ public class IntygModuleFacadeTest {
         verify(moduleApi, times(1)).createRevokeRequest(eq(null), eq(null), eq(message));
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testUtlatandBuiltFromInvalidJson() throws IOException {
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenThrow(new IOException());
+        moduleFacade.getUtlatandeFromInternalModel(CERTIFICATE_TYPE, "X");
+    }
 }

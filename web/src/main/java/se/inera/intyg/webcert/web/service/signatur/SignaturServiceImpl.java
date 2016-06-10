@@ -49,8 +49,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -93,9 +93,6 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private ASN1Util asn1Util;
-
-    @Autowired
-    private IntygServiceConverter serviceConverter;
 
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
@@ -323,7 +320,7 @@ public class SignaturServiceImpl implements SignaturService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
             String updatedInternal = moduleApi
-                    .updateBeforeSigning(utkast.getModel(), serviceConverter.buildHosPersonalFromWebCertUser(user, vardenhetFromJson), signeringstid);
+                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson), signeringstid);
             utkast.setModel(updatedInternal);
         } catch (ModuleException | ModuleNotFoundException | IOException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);

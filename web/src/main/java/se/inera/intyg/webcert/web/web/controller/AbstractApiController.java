@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -44,12 +44,9 @@ public abstract class AbstractApiController {
     @Autowired
     private WebCertUserService webCertUserService;
 
-    @Autowired
-    private IntygServiceConverter serviceConverter;
-
     protected HoSPersonal createHoSPersonFromUser() {
         WebCertUser user = webCertUserService.getUser();
-        return serviceConverter.buildHosPersonalFromWebCertUser(user, null);
+        return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
     }
 
     protected List<String> getEnhetIdsForCurrentUser() {

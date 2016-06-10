@@ -40,4 +40,5 @@ public interface IntygModuleFacade {
     String getRevokeCertificateRequest(String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
             throws ModuleException, IntygModuleFacadeException;
 
+    Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel);
 }

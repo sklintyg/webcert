@@ -26,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -155,11 +155,7 @@ public class UtkastApiController extends AbstractApiController {
         pat.setFornamn(req.getPatientFornamn());
         pat.setMellannamn(req.getPatientMellannamn());
         pat.setEfternamn(req.getPatientEfternamn());
-        if (StringUtils.isBlank(pat.getMellannamn())) {
-            pat.setFullstandigtNamn(pat.getFornamn() + " " + pat.getEfternamn());
-        } else {
-            pat.setFullstandigtNamn(pat.getFornamn() + " " + pat.getMellannamn() + " " + pat.getEfternamn());
-        }
+        pat.setFullstandigtNamn(IntygConverterUtil.concatPatientName(pat.getFornamn(), pat.getMellannamn(), pat.getEfternamn()));
         pat.setPostadress(req.getPatientPostadress());
         pat.setPostnummer(req.getPatientPostnummer());
         pat.setPostort(req.getPatientPostort());

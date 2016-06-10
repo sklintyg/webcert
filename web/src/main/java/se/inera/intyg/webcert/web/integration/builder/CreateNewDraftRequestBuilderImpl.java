@@ -31,6 +31,7 @@ import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
@@ -122,11 +123,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         patient.setFornamn(joinNames(patientType.getFornamn()));
         patient.setMellannamn(joinNames(patientType.getMellannamn()));
         patient.setEfternamn(patientType.getEfternamn());
-        if (StringUtils.isBlank(patient.getMellannamn())) {
-            patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
-        } else {
-            patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
-        }
+        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
         return patient;
     }
 

@@ -158,8 +158,14 @@ public class CopyCompletionUtkastBuilderTest {
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
-
         assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
+
+        ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
+        verify(mockModuleApi).createNewInternalFromTemplate(requestCaptor.capture(), anyString());
+
+        // verify full name is set
+        assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
+        assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME, requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test

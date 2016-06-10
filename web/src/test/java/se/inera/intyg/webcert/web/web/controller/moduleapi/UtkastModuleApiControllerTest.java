@@ -28,7 +28,6 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -64,9 +63,6 @@ public class UtkastModuleApiControllerTest {
 
     @Mock
     private WebCertUserService webcertUserService;
-
-    @Mock
-    private IntygServiceConverter serviceConverter;
 
     @InjectMocks
     private UtkastModuleApiController moduleApiController = new UtkastModuleApiController();

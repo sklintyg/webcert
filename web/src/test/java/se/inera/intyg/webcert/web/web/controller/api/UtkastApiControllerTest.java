@@ -2,8 +2,11 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -17,13 +20,15 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import se.inera.intyg.common.integration.hsa.model.*;
 import se.inera.intyg.common.security.authorities.AuthoritiesException;
 import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -53,9 +58,6 @@ public class UtkastApiControllerTest {
     @Mock
     private WebCertUserService webcertUserService;
 
-    @Mock
-    private IntygServiceConverter serviceConverter;
-
     @InjectMocks
     private UtkastApiController utkastController;
 
@@ -64,7 +66,7 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkast() {
+    public void testCreateUtkast() throws JsonParseException, JsonMappingException, IOException {
         String intygsTyp = "fk7263";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
 
@@ -72,6 +74,42 @@ public class UtkastApiControllerTest {
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
         assertEquals(OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testCreateUtkastSetsPatientFullName() throws JsonParseException, JsonMappingException, IOException {
+        String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        Response response = utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
+        assertEquals(OK.getStatusCode(), response.getStatus());
+
+        ArgumentCaptor<CreateNewDraftRequest> requestCaptor = ArgumentCaptor.forClass(CreateNewDraftRequest.class);
+        verify(utkastService).createNewDraft(requestCaptor.capture());
+        assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
+        assertEquals(PATIENT_FORNAMN + " " + PATIENT_MELLANNAMN + " " + PATIENT_EFTERNAMN,
+                requestCaptor.getValue().getPatient().getFullstandigtNamn());
+    }
+
+    @Test
+    public void testCreateUtkastSetsPatientFullNameWithoutMiddlename() throws JsonParseException, JsonMappingException, IOException {
+        String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        CreateUtkastRequest utkastRequest = buildRequest("fk7263");
+        utkastRequest.setPatientMellannamn(null); // no middlename
+        Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
+        assertEquals(OK.getStatusCode(), response.getStatus());
+
+        ArgumentCaptor<CreateNewDraftRequest> requestCaptor = ArgumentCaptor.forClass(CreateNewDraftRequest.class);
+        verify(utkastService).createNewDraft(requestCaptor.capture());
+        assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
+        assertEquals(PATIENT_FORNAMN + " " + PATIENT_EFTERNAMN,
+                requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test(expected = AuthoritiesException.class)

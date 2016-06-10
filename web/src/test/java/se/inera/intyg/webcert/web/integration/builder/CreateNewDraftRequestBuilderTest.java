@@ -101,6 +101,20 @@ public class CreateNewDraftRequestBuilderTest {
     }
 
     @Test
+    public void testBuildSetsPatientFullName() {
+        when(orgServiceMock.getVardenhet(anyString())).thenReturn(createHsaVardenhet());
+        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
+
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createUtlatande(),
+                createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+
+        assertNotNull(res);
+
+        assertNotNull(res.getPatient().getFullstandigtNamn());
+        assertEquals("Adam Bertil Cesarsson Davidsson Eriksson", res.getPatient().getFullstandigtNamn());
+    }
+
+    @Test
     public void testWithHsaBefattningAndSpecialityNames() {
 
         Vardenhet hsaVardenhet = createHsaVardenhet();

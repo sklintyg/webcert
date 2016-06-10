@@ -53,6 +53,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -98,9 +99,6 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private IntygModuleFacade modelFacade;
-
-    @Autowired
-    private IntygServiceConverter serviceConverter;
 
     @Autowired
     private LogService logService;
@@ -326,7 +324,7 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             certificateSenderService.revokeCertificate(intygsId, modelFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
-                    serviceConverter.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp);
+                    IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp);
             whenSuccessfulRevoke(intyg.getUtlatande());
             return IntygServiceResult.OK;
         } catch (CertificateSenderException | ModuleException | IntygModuleFacadeException e) {
@@ -345,7 +343,7 @@ public class IntygServiceImpl implements IntygService {
         String intygsId = intyg.getId();
         String recipient = sendConfig.getRecipient();
         String intygsTyp = intyg.getTyp();
-        HoSPersonal skickatAv = serviceConverter.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null);
+        HoSPersonal skickatAv = IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null);
 
         try {
             LOG.debug("Sending intyg {} of type {} to recipient {}", intygsId, intygsTyp, recipient);
@@ -444,14 +442,15 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private IntygContentHolder buildIntygContentHolder(Utkast utkast) {
-        Utlatande utlatande = serviceConverter.buildUtlatandeFromUtkastModel(utkast);
-        List<Status> statuses = serviceConverter.buildStatusesFromUtkast(utkast);
+        Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+        List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null, Optional.empty());
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? serviceConverter.buildUtlatandeFromUtkastModel(utkast) : getIntygData(intygId, typ, false).getUtlatande();
+        return (utkast != null) ? modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel())
+                : getIntygData(intygId, typ, false).getUtlatande();
     }
 
     /**

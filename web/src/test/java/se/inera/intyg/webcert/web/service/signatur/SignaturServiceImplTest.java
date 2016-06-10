@@ -58,7 +58,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
@@ -96,9 +95,6 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private ModuleApi moduleApi;
     @Mock
     private ASN1Util asn1Util;
-
-    @Mock
-    private IntygServiceConverter serviceConverter;
 
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();

@@ -32,6 +32,8 @@ import org.junit.Before;
 import org.mockito.*;
 import org.springframework.core.io.ClassPathResource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -47,7 +49,6 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderSer
 import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -55,8 +56,6 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -99,10 +98,6 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     @Mock
     protected ObjectMapper objectMapper;
 
-    // Here we test the real converter
-    @Spy
-    protected IntygServiceConverterImpl serviceConverter = new IntygServiceConverterImpl();
-
     // Here we use the real config manager
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
@@ -130,10 +125,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
-
-        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        serviceConverter.setModuleRegistry(moduleRegistry);
+        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
     }
 
     private CertificateMetaData buildCertificateMetaData() {

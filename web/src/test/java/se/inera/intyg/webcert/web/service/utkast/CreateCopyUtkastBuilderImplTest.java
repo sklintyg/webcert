@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
@@ -152,6 +153,12 @@ public class CreateCopyUtkastBuilderImplTest {
         assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
 
+        ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
+        verify(mockModuleApi).createNewInternalFromTemplate(requestCaptor.capture(), anyString());
+
+        // verify full name is set
+        assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
+        assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME, requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test

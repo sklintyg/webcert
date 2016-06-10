@@ -35,6 +35,7 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
@@ -214,11 +215,8 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
             patient.setPostadress(person.getPostadress());
             patient.setPostnummer(person.getPostnummer());
             patient.setPostort(person.getPostort());
-            if (StringUtils.isBlank(patient.getMellannamn())) {
-                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
-            } else {
-                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
-            }
+            patient.setFullstandigtNamn(
+                    IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
             newDraftCopyHolder.setPatient(patient);
             LOG.debug("Added new patient data to CreateDraftCopyHolder");
         }

@@ -51,7 +51,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygServiceConverter;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -97,9 +96,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @InjectMocks
     private UtkastService draftService = new UtkastServiceImpl();
-
-    @Mock
-    private IntygServiceConverter serviceConverter;
 
     @Mock
     private ModuleApi mockModuleApi;
