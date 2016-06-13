@@ -103,7 +103,7 @@ public class CreateNewDraftRequestBuilderTest {
     }
 
     @Test
-    public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
+    public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityCodes() {
         when(orgServiceMock.getVardenhet(anyString())).thenReturn(createHsaVardenhet());
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
 
@@ -140,8 +140,8 @@ public class CreateNewDraftRequestBuilderTest {
         befattning.setPaTitleCode(TITLE_CODE);
         befattning.setPaTitleName(TITLE_NAME);
         pit.getPaTitle().add(befattning);
-        pit.getSpecialityName().add(INVARTES_MEDICIN);
-        pit.getSpecialityName().add(ALLMAN_MEDICIN);
+        pit.getSpecialityCode().add(INVARTES_MEDICIN);
+        pit.getSpecialityCode().add(ALLMAN_MEDICIN);
         pitList.add(pit);
         return pitList;
     }

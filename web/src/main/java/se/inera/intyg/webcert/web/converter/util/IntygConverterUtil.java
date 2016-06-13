@@ -115,12 +115,8 @@ public final class IntygConverterUtil {
         hosPersonal.setPersonId(user.getHsaId());
         hosPersonal.setFullstandigtNamn(user.getNamn());
         hosPersonal.setForskrivarKod(user.getForskrivarkod());
-        if (user.getBefattningar() != null) {
-            hosPersonal.getBefattningar().addAll(user.getBefattningar());
-        }
-        if (user.getSpecialiseringar() != null) {
-            hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
-        }
+        hosPersonal.getBefattningar().addAll(user.getBefattningar());
+        hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
         if (vardenhet != null) {
             hosPersonal.setVardenhet(vardenhet);
         } else {
