@@ -118,6 +118,12 @@
               </div>
             </c:when>
 
+            <c:when test="${param.reason eq 'missing-parameter'}">
+              <h1><spring:message code="error.missing-parameter.title" /></h1>
+              <div id="missingParameter" class="alert alert-danger">
+                <spring:message code="error.missing-parameter.text" />
+              </div>
+            </c:when>
             <c:when test="${param.reason eq 'notfound'}">
               <h1><spring:message code="error.notfound.title" /></h1>
               <div id="notFound" class="alert alert-danger">

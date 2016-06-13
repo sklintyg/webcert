@@ -64,6 +64,7 @@ describe('ChooseCertTypeCtrl', function() {
             IntygProxy = jasmine.createSpyObj('webcert.IntygProxy', [ 'getIntygForPatient' ]);
             $provide.value('webcert.IntygProxy', IntygProxy);
 
+            $provide.value('common.IntygCopyRequestModel', {});
             $provide.value('common.IntygFornyaRequestModel', IntygFornyaRequestModelSpy);
             $provide.value('common.IntygService', CommonIntygServiceSpy);
             $provide.value('common.PatientModel', PatientModelMock);

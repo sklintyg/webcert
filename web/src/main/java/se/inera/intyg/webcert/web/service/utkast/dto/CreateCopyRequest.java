@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 import org.apache.commons.lang3.StringUtils;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public abstract class CreateCopyRequest {
@@ -29,18 +30,18 @@ public abstract class CreateCopyRequest {
 
     private String typ;
 
-    private Personnummer patientPersonnummer;
-
     private Personnummer nyttPatientPersonnummer;
+
+    private Patient patient;
 
     private HoSPersonal hosPerson;
 
     private boolean djupintegrerad = false;
 
-    public CreateCopyRequest(String orginalIntygsId, String intygsTyp, Personnummer patientPersonnummer, HoSPersonal hosPerson) {
+    public CreateCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
         this.originalIntygId = orginalIntygsId;
         this.typ = intygsTyp;
-        this.patientPersonnummer = patientPersonnummer;
+        this.patient = patient;
         this.hosPerson = hosPerson;
     }
 
@@ -68,20 +69,20 @@ public abstract class CreateCopyRequest {
         this.typ = typ;
     }
 
-    public Personnummer getPatientPersonnummer() {
-        return patientPersonnummer;
-    }
-
-    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer;
-    }
-
     public Personnummer getNyttPatientPersonnummer() {
         return nyttPatientPersonnummer;
     }
 
     public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
         this.nyttPatientPersonnummer = nyttPatientPersonnummer;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
     public HoSPersonal getHosPerson() {

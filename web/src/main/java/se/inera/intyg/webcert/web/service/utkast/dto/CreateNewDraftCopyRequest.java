@@ -20,11 +20,11 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 
 public class CreateNewDraftCopyRequest extends CreateCopyRequest {
 
-    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, Personnummer patientPersonnummer, HoSPersonal hosPerson) {
-        super(orginalIntygsId, intygsTyp, patientPersonnummer, hosPerson);
+    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
+        super(orginalIntygsId, intygsTyp, patient, hosPerson);
     }
 }

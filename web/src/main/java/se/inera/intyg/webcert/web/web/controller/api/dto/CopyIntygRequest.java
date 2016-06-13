@@ -28,6 +28,13 @@ public class CopyIntygRequest {
 
     private Personnummer nyttPatientPersonnummer;
 
+    private String fornamn;
+    private String efternamn;
+    private String mellannamn;
+    private String postadress;
+    private String postnummer;
+    private String postort;
+
     public CopyIntygRequest() {
 
     }
@@ -54,5 +61,53 @@ public class CopyIntygRequest {
 
     public boolean isValid() {
         return patientPersonnummer != null && StringUtils.isNotBlank(patientPersonnummer.getPersonnummer());
+    }
+
+    public String getFornamn() {
+        return fornamn;
+    }
+
+    public void setFornamn(String fornamn) {
+        this.fornamn = fornamn;
+    }
+
+    public String getEfternamn() {
+        return efternamn;
+    }
+
+    public void setEfternamn(String efternamn) {
+        this.efternamn = efternamn;
+    }
+
+    public String getMellannamn() {
+        return mellannamn;
+    }
+
+    public void setMellannamn(String mellannamn) {
+        this.mellannamn = mellannamn;
+    }
+
+    public String getPostadress() {
+        return postadress;
+    }
+
+    public void setPostadress(String postadress) {
+        this.postadress = postadress;
+    }
+
+    public String getPostnummer() {
+        return postnummer;
+    }
+
+    public void setPostnummer(String postnummer) {
+        this.postnummer = postnummer;
+    }
+
+    public String getPostort() {
+        return postort;
+    }
+
+    public void setPostort(String postort) {
+        this.postort = postort;
     }
 }

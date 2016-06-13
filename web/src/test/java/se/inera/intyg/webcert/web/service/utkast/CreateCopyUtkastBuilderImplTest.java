@@ -103,6 +103,8 @@ public class CreateCopyUtkastBuilderImplTest {
 
     private HoSPersonal hoSPerson;
 
+    private Patient patient;
+
     @InjectMocks
     private CreateCopyUtkastBuilder copyBuilder = new CreateCopyUtkastBuilder();
 
@@ -121,6 +123,9 @@ public class CreateCopyUtkastBuilderImplTest {
         vardenhet.setEnhetsnamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);
         hoSPerson.setVardenhet(vardenhet);
+
+        patient = new Patient();
+        patient.setPersonId(PATIENT_SSN);
     }
 
     @Before
@@ -267,7 +272,7 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     private CreateNewDraftCopyRequest buildCopyRequest() {
-        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson);
+        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson);
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {

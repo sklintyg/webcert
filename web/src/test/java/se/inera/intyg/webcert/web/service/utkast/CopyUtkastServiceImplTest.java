@@ -115,6 +115,8 @@ public class CopyUtkastServiceImplTest {
 
     private HoSPersonal hoSPerson;
 
+    private Patient patient;
+
     @Before
     public void setup() {
         hoSPerson = new HoSPersonal();
@@ -130,6 +132,9 @@ public class CopyUtkastServiceImplTest {
         vardenhet.setEnhetsnamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);
         hoSPerson.setVardenhet(vardenhet);
+
+        patient = new Patient();
+        patient.setPersonId(PATIENT_SSN);
     }
 
     @Before
@@ -294,11 +299,11 @@ public class CopyUtkastServiceImplTest {
     }
 
     private CreateNewDraftCopyRequest buildCopyRequest() {
-        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson);
+        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson);
     }
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
-        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, PATIENT_SSN, hoSPerson);
+        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);
     }
 
     // testCreateNewDraftCopyPUtjanstFailed()

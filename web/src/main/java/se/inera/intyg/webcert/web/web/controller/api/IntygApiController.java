@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -206,9 +208,9 @@ public class IntygApiController extends AbstractApiController {
 
     private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
-        Personnummer patientPersonnummer = request.getPatientPersonnummer();
+        Patient patient = createPatientFromCopyIntygRequest(request);
 
-        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patientPersonnummer, hosPerson);
+        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
         if (request.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");
@@ -225,9 +227,9 @@ public class IntygApiController extends AbstractApiController {
     private CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
             CopyIntygRequest copyRequest) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
-        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
+        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
-        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patientPersonnummer, hosPerson);
+        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
 
         if (copyRequest.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");
@@ -244,9 +246,9 @@ public class IntygApiController extends AbstractApiController {
 
     private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
-        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
+        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson);
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson);
 
         if (copyRequest.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");
@@ -259,6 +261,27 @@ public class IntygApiController extends AbstractApiController {
         }
 
         return req;
+    }
+
+    private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
+        Patient patient = new Patient();
+
+        patient.setPersonId(copyRequest.getPatientPersonnummer());
+
+        // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
+        if (!StringUtils.isBlank(copyRequest.getFornamn())
+                && !StringUtils.isBlank(copyRequest.getEfternamn())
+                && !StringUtils.isBlank(copyRequest.getPostadress())
+                && !StringUtils.isBlank(copyRequest.getPostnummer())
+                && !StringUtils.isBlank(copyRequest.getPostort())) {
+            patient.setFornamn(copyRequest.getFornamn());
+            patient.setEfternamn(copyRequest.getEfternamn());
+            patient.setMellannamn(copyRequest.getMellannamn());
+            patient.setPostadress(copyRequest.getPostadress());
+            patient.setPostnummer(copyRequest.getPostnummer());
+            patient.setPostort(copyRequest.getPostort());
+        }
+        return patient;
     }
 
     /**

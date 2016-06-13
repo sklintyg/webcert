@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -201,11 +203,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
             throws ModuleNotFoundException, ModuleException {
-        Person patientDetails = null;
 
-        if (!copyRequest.isDjupintegrerad()) {
-            patientDetails = refreshPatientDetails(copyRequest);
-        }
+        Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
@@ -219,11 +218,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,
             boolean addRelation) throws ModuleNotFoundException, ModuleException {
-        Person patientDetails = null;
 
-        if (!copyRequest.isDjupintegrerad()) {
-            patientDetails = refreshPatientDetails(copyRequest);
-        }
+        Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
@@ -238,11 +234,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     // TODO
     private CopyUtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId,
             boolean addRelation) throws ModuleNotFoundException, ModuleException {
-        Person patientDetails = null;
 
-        if (!copyRequest.isDjupintegrerad()) {
-            patientDetails = refreshPatientDetails(copyRequest);
-        }
+        Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
@@ -254,9 +247,44 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return builderResponse;
     }
 
-    private Person refreshPatientDetails(CreateCopyRequest copyRequest) {
+    private Person updatePatientDetails(CreateCopyRequest copyRequest) {
+        // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyrequest.
+        // I djupintegration version 2 (nya fkintygen) är patientinformation i copyrequest obligatorisk.
+        if (copyRequest.isDjupintegrerad()) {
+            return copyPatientDetailsFromRequest(copyRequest);
+        } else {
+            return refreshPatientDetailsFromPUService(copyRequest);
+        }
+    }
 
-        Personnummer patientPersonnummer = copyRequest.getPatientPersonnummer();
+    private boolean hasRequiredPatientDetails(Patient patient) {
+        // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
+        return patient != null
+                && !StringUtils.isBlank(patient.getFornamn())
+                && !StringUtils.isBlank(patient.getEfternamn())
+                && !StringUtils.isBlank(patient.getPostadress())
+                && !StringUtils.isBlank(patient.getPostnummer())
+                && !StringUtils.isBlank(patient.getPostort());
+    }
+
+    private Person copyPatientDetailsFromRequest(CreateCopyRequest copyRequest) {
+        if (!hasRequiredPatientDetails(copyRequest.getPatient())) {
+            return null;
+        }
+        return new Person(
+                copyRequest.getPatient().getPersonId(),
+                false,
+                copyRequest.getPatient().getFornamn(),
+                copyRequest.getPatient().getMellannamn(),
+                copyRequest.getPatient().getEfternamn(),
+                copyRequest.getPatient().getPostadress(),
+                copyRequest.getPatient().getPostnummer(),
+                copyRequest.getPatient().getPostort());
+    }
+
+    private Person refreshPatientDetailsFromPUService(CreateCopyRequest copyRequest) {
+
+        Personnummer patientPersonnummer = copyRequest.getPatient().getPersonId();
 
         if (copyRequest.containsNyttPatientPersonnummer()) {
             patientPersonnummer = copyRequest.getNyttPatientPersonnummer();

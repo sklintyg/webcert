@@ -22,6 +22,8 @@ package se.inera.intyg.webcert.web.web.handlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.security.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -67,6 +69,11 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
 
     private Response handleRuntimeException(RuntimeException re) {
         LOG.error("Unhandled RuntimeException occured!", re);
+        if (re instanceof WebCertServiceException) {
+            if (((WebCertServiceException) re).getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
+                return buildErrorRedirectResponse("missing-parameter");
+            }
+        }
         return buildErrorRedirectResponse("unknown");
     }
 
