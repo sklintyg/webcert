@@ -42,6 +42,8 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
+import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
@@ -126,6 +128,7 @@ public class RouteTest {
 
     @Test
     public void testNormalRouteNotificationVersion2() throws Exception {
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
         // Given
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV2.expectedMessageCount(1);
@@ -250,6 +253,7 @@ public class RouteTest {
         notificationWSClientV2.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("Testing application error, with exhausted retries");
         });
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
 
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV2.expectedMessageCount(1);
@@ -294,6 +298,7 @@ public class RouteTest {
         notificationWSClientV2.whenAnyExchangeReceived(exchange -> {
             throw new PermanentException("Testing technical error");
         });
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
 
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV2.expectedMessageCount(1);
@@ -318,7 +323,19 @@ public class RouteTest {
             sb.append(version.name());
             sb.append("\",");
         }
-        sb.append("\"utkast\":{\"id\":\"1234\",\"typ\":\"fk7263\"},\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
+        sb.append("\"utkast\":{\"id\":\"1234\",\"typ\":\"fk7263\" },\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
         return sb.toString();
     }
+
+    private Intyg createIntyg() {
+        Intyg intyg = new Intyg();
+        HosPersonal hosPersonal = new HosPersonal();
+        Enhet enhet = new Enhet();
+        enhet.setVardgivare(new Vardgivare());
+        enhet.setArbetsplatskod(new ArbetsplatsKod());
+        hosPersonal.setEnhet(enhet);
+        intyg.setSkapadAv(hosPersonal);
+        return intyg;
+    }
+
 }

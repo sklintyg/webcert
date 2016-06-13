@@ -36,14 +36,16 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationTransformerTest {
@@ -129,6 +131,13 @@ public class NotificationTransformerTest {
         IntygId intygsId = new IntygId();
         intygsId.setExtension(INTYGS_ID);
         intyg.setIntygsId(intygsId);
+        HosPersonal hosPersonal = new HosPersonal();
+        Enhet enhet = new Enhet();
+        enhet.setArbetsplatskod(new ArbetsplatsKod());
+        enhet.setVardgivare(new Vardgivare());
+        hosPersonal.setEnhet(enhet);
+        intyg.setSkapadAv(hosPersonal);
+
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(intyg);
 
         transformer.process(message);
