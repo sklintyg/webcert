@@ -35,7 +35,7 @@ Scenario: Besvara kompleteringsfråga
 
 @djup_lakare @notReady
 Scenario: Svara med nytt intyg
-   
+
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
 
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

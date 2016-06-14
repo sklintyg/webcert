@@ -1,6 +1,6 @@
 # language: sv
 
-@pdl
+@pdl @fk7263
 Egenskap: PDL-loggning för FK7263
 #Saknas: TF för läsning av intyg på annan VE
 

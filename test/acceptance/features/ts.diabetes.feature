@@ -14,8 +14,8 @@ Scenario: Skapa och signera ett intyg
     Och jag signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
-    
-@keepIntyg
+
+@keepIntyg @skicka
 Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
@@ -24,6 +24,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
     När jag går till Mina intyg för patienten
     Så ska intygets status i Mina intyg visa "Mottaget av Transportstyrelsens system"
 
+@makulera
 Scenario: Makulera ett skickat intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"
     Och jag makulerar intyget

@@ -7,6 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
 
+@nyttIntyg
 Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
    Och jag fyller i alla nödvändiga fält för intyget
@@ -23,6 +24,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
+@textsvar
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
