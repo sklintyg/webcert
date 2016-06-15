@@ -19,20 +19,24 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 public class BootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(BootstrapBean.class);
@@ -40,17 +44,21 @@ public class BootstrapBean {
     @Autowired
     private IntygStore intygStore;
 
-    private JAXBContext jaxbContext;
+    private ObjectMapper objectMapper = new CustomObjectMapper();
 
     @PostConstruct
     public void initData() {
         try {
             LOG.debug("Intygstjanst Stub : initializing intyg data...");
-            jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
 
-            List<Resource> files = getResourceListing("bootstrap-intyg/*.xml");
+            List<Resource> files = getResourceListing("bootstrap-intyg/*.json");
             for (Resource res : files) {
                 addIntyg(res);
+            }
+
+            List<Resource> contentTemplates = getResourceListing("content/*.xml");
+            for (Resource res : contentTemplates) {
+                addContentTemplate(res);
             }
 
         } catch (JAXBException | IOException e) {
@@ -69,10 +77,16 @@ public class BootstrapBean {
     }
 
     private void addIntyg(Resource res) throws JAXBException, IOException {
-        GetCertificateForCareResponseType response = jaxbContext.createUnmarshaller().unmarshal(new StreamSource(res.getInputStream()),
-                GetCertificateForCareResponseType.class).getValue();
-
+        CertificateHolder response = objectMapper.readValue(res.getInputStream(), CertificateHolder.class);
         intygStore.addIntyg(response);
     }
 
+    private void addContentTemplate(Resource res) {
+        try {
+            String contentTemplate = IOUtils.toString(res.getInputStream(), "UTF-8");
+            intygStore.addContentTemplate(res.getFilename(), contentTemplate);
+        } catch (IOException e) {
+            LOG.error("Error converting content template file {}: {}", res.getFilename(), e.getMessage());
+        }
+    }
 }

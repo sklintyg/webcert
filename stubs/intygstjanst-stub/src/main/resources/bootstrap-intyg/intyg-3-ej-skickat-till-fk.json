@@ -1,0 +1,10 @@
+{"id": "intyg-3",
+    "type": "fk7263",
+    "civicRegistrationNumber": "19121212-1212",
+    "signedDate": "2013-01-01T00:00:00.000",
+    "signingDoctorName": "En Läkare",
+    "careUnitId": "centrum-vast",
+    "states": [],
+    "careUnitName": "Kir mott",
+    "careGiverId": "vastmanland"
+}

@@ -51,6 +51,7 @@
       <artifactId>guava</artifactId>
     </dependency>
 
+
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -73,6 +74,24 @@
     <dependency>
       <groupId>se.inera.intyg.transportstyrelsen</groupId>
       <artifactId>intyg-transportstyrelsen-schemas</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>integration-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
 
     <dependency>
