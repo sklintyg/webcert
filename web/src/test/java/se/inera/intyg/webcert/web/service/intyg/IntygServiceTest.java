@@ -43,7 +43,6 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -92,9 +91,6 @@ public class IntygServiceTest {
 
     @Mock
     private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
-
-    @Mock
-    private GetMedicalCertificateForCareResponderInterface getMedicalCertificateForCareResponderInterface;
 
     @Mock
     private IntygModuleFacade moduleFacade;
