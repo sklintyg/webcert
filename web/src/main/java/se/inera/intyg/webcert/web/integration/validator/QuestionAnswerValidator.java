@@ -104,7 +104,8 @@ public final class QuestionAnswerValidator {
     }
 
     private static void validatePatient(List<String> messages, PatientType patient) {
-        if (!Constants.PERSON_ID_OID.equals(patient.getPersonId().getRoot())) {
+        if (!Constants.SAMORDNING_ID_OID.equals(patient.getPersonId().getRoot())
+                && !Constants.PERSON_ID_OID.equals(patient.getPersonId().getRoot())) {
             messages.add("Felaktig root på personid");
         }
         if (StringUtils.isEmpty(patient.getPersonId().getExtension())) {
