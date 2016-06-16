@@ -1,0 +1,59 @@
+<registerCertificateType xmlns:ns2="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:2" xmlns:ns4="urn:riv:clinicalprocess:healthcond:certificate:2" xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+    <ns2:intyg>
+        <ns4:intygs-id>
+            <ns3:root>TSTNMT2321000156-1039</ns3:root>
+            <ns3:extension>CERTIFICATE_ID</ns3:extension>
+        </ns4:intygs-id>
+        <ns4:typ>
+            <ns3:code>CERTIFICATE_TYPE</ns3:code>
+            <ns3:codeSystem>f6fb361a-e31d-48b8-8657-99b63912dd9b</ns3:codeSystem>
+            <ns3:displayName>Läkarutlåtande för sjukersättning</ns3:displayName>
+        </ns4:typ>
+        <ns4:version>1.0</ns4:version>
+        <ns4:signeringstidpunkt>SIGNED_DATE</ns4:signeringstidpunkt>
+        <ns4:skickatTidpunkt>2016-04-28T12:40:04</ns4:skickatTidpunkt>
+        <ns4:patient>
+            <ns4:person-id>
+                <ns3:root>1.2.752.129.2.1.3.1</ns3:root>
+                <ns3:extension>PATIENT_CRN</ns3:extension>
+            </ns4:person-id>
+            <ns4:fornamn>Tolvan</ns4:fornamn>
+            <ns4:efternamn>Tolvansson</ns4:efternamn>
+            <ns4:postadress>Svensson, Storgatan 1, PL 1234</ns4:postadress>
+            <ns4:postnummer>12345</ns4:postnummer>
+            <ns4:postort>Småmåla</ns4:postort>
+        </ns4:patient>
+        <ns4:skapadAv>
+            <ns4:personal-id>
+                <ns3:root>1.2.752.129.2.1.4.1</ns3:root>
+                <ns3:extension>TSTNMT2321000156-103F</ns3:extension>
+            </ns4:personal-id>
+            <ns4:fullstandigtNamn>DOCTOR_NAME</ns4:fullstandigtNamn>
+            <ns4:forskrivarkod>0000000</ns4:forskrivarkod>
+            <ns4:enhet>
+                <ns4:enhets-id>
+                    <ns3:root>1.2.752.129.2.1.4.1</ns3:root>
+                    <ns3:extension>CAREUNIT_ID</ns3:extension>
+                </ns4:enhets-id>
+                <ns4:arbetsplatskod>
+                    <ns3:root>1.2.752.29.4.71</ns3:root>
+                    <ns3:extension>1234567890</ns3:extension>
+                </ns4:arbetsplatskod>
+                <ns4:enhetsnamn>CAREUNIT_NAME</ns4:enhetsnamn>
+                <ns4:postadress>NMT gata 2</ns4:postadress>
+                <ns4:postnummer>12345</ns4:postnummer>
+                <ns4:postort>Testhult</ns4:postort>
+                <ns4:telefonnummer>0101112131415</ns4:telefonnummer>
+                <ns4:epost>enhet2@webcert.invalid.se</ns4:epost>
+                <ns4:vardgivare>
+                    <ns4:vardgivare-id>
+                        <ns3:root>1.2.752.129.2.1.4.1</ns3:root>
+                        <ns3:extension>CAREGIVER_ID</ns3:extension>
+                    </ns4:vardgivare-id>
+                    <ns4:vardgivarnamn>NMT vg1</ns4:vardgivarnamn>
+                </ns4:vardgivare>
+            </ns4:enhet>
+        </ns4:skapadAv>
+        <!-- skips svar -->
+    </ns2:intyg>
+</registerCertificateType>

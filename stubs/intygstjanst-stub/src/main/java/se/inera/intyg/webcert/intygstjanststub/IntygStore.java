@@ -19,8 +19,10 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.common.support.modules.support.api.CertificateStateHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 /**
  * @author marced
@@ -50,6 +53,13 @@ public class IntygStore {
 
     public Map<String, CertificateHolder> getAllIntyg() {
         return intyg;
+    }
+
+    public List<CertificateHolder> getIntygForEnhetAndPersonnummer(final List<String> enhetsIds,
+            final String personnummer) {
+        Personnummer pnr = new Personnummer(personnummer);
+        return intyg.values().stream().filter(s -> enhetsIds.contains(s.getCareUnitId()) && pnr.equals(s.getCivicRegistrationNumber()))
+                .collect(Collectors.toList());
     }
 
     public CertificateHolder getIntygForCertificateId(String certificateId) {

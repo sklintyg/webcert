@@ -88,6 +88,10 @@
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>integration-util</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>luse</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>commons-io</groupId>
