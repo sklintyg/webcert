@@ -34,7 +34,7 @@
          <ns3:skickatTidpunkt>2012-12-23T21:00:00</ns3:skickatTidpunkt>
          <ns3:patient>
             <ns3:person-id>
-               <root>1.2.752.129.2.1.3.3</root>
+               <root>1.2.752.129.2.1.3.1</root>
                <extension>191212121212</extension>
             </ns3:person-id>
             <ns3:fornamn/>
@@ -175,7 +175,7 @@
          <ns3:skickatTidpunkt>2015-12-23T21:00:00</ns3:skickatTidpunkt>
          <ns3:patient>
             <ns3:person-id>
-               <root>1.2.752.129.2.1.3.3</root>
+               <root>1.2.752.129.2.1.3.1</root>
                <extension>191212121212</extension>
             </ns3:person-id>
             <ns3:fornamn/>
