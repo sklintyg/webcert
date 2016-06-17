@@ -1,0 +1,7 @@
+
+description = 'Webcert (Liquibase Runner)'
+dependencies {
+    compile group: 'mysql', name: 'mysql-connector-java', version:'5.1.24'
+    compile group: 'org.liquibase', name: 'liquibase-core', version:'3.3.1'
+  compile project(':webcert-persistence')
+}

@@ -1,0 +1,48 @@
+description = 'Webcert (Log Sender)'
+
+apply plugin: 'war'
+
+dependencies {
+  compile project(':webcert-common')
+
+  compile 'se.inera.intyg.common:log-messages:0-SNAPSHOT'
+  compile 'se.inera.intyg.common:loggtjanst-stub:0-SNAPSHOT'
+  compile 'se.inera.intyg.common:logging-util:0-SNAPSHOT'
+  compile 'se.riv.ehr.logstore:ehr-logstore-schemas:1.2.1'
+  compile 'ch.qos.logback:logback-classic:1.0.11'
+  compile 'org.slf4j:slf4j-api:1.7.5'
+  compile 'org.slf4j:jcl-over-slf4j:1.7.5'
+  compile 'org.slf4j:log4j-over-slf4j:1.7.5'
+  compile 'org.springframework:spring-web:4.2.2.RELEASE'
+  compile 'org.springframework:spring-webmvc:4.2.2.RELEASE'
+  compile 'org.springframework:spring-context:4.2.2.RELEASE'
+  compile 'org.springframework:spring-context-support:4.2.2.RELEASE'
+  compile 'org.springframework:spring-tx:4.2.2.RELEASE'
+  compile 'org.springframework:spring-jms:4.2.2.RELEASE'
+  compile 'org.apache.camel:camel-spring:2.16.0'
+  compile 'org.apache.activemq:activemq-camel:5.9.1'
+  compile 'org.apache.commons:commons-lang3:3.1'
+  compile 'commons-io:commons-io:2.4'
+  compile 'org.apache.cxf:cxf-rt-transports-http:3.1.3'
+  compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
+  compile(group: 'se.inera.intyg.common', name: 'integration-util', version:'0-SNAPSHOT') {
+    exclude(module: 'logging-util')
+  }
+
+  testCompile 'org.kubek2k:springockito:1.0.8'
+  testCompile 'org.springframework:spring-test:4.2.2.RELEASE'
+  testCompile 'xmlunit:xmlunit:1.4'
+  testCompile 'com.jayway.awaitility:awaitility:1.4.0'
+  testCompile 'org.apache.camel:camel-test-spring:2.16.0'
+  testCompile 'org.apache.activemq:activemq-spring:5.13.0'
+  testCompile 'org.apache.activemq:activemq-broker:5.13.0'
+  testCompile(group: 'org.mockito', name: 'mockito-core', version:'1.9.0') {
+    exclude(module: 'hamcrest-core')
+  }
+  testCompile(group: 'junit', name: 'junit', version:'4.12') {
+    exclude(module: 'hamcrest-core')
+  }
+
+  providedCompile 'javax.servlet:servlet-api:2.5'
+  providedCompile 'org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1'
+}

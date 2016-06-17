@@ -1,0 +1,24 @@
+allprojects  {
+  apply plugin: 'maven'
+
+  group = 'se.inera.intyg.webcert'
+  version = '0-SNAPSHOT'
+}
+
+subprojects {
+  apply plugin: 'java'
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
+  repositories {
+    mavenLocal()
+
+    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/nightly/" }
+    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
+    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/thirdparty/" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+  }
+
+}
