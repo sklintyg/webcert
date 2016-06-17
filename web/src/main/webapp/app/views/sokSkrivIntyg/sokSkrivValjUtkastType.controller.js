@@ -60,14 +60,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             // Format: { id: 'default', label: '' }
             $scope.certTypes = [];
 
+
             /**
              * Private functions
              * @private
              */
 
-
             function onPageLoad() {
-
                 // Redirect to index if pnr and name isn't specified
                 if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
                     $location.url(changePatientUrl, true);
@@ -100,8 +99,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         $scope.intygType = newValue;
                     }
                 });
-
-
             }
 
             function hasUnsigned(list) {

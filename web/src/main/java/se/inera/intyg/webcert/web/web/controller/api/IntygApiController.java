@@ -19,22 +19,13 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.*;
-
-import javax.persistence.OptimisticLockException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
@@ -55,7 +46,20 @@ import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+
+import javax.persistence.OptimisticLockException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Controller for the API that serves WebCert.
@@ -308,7 +312,7 @@ public class IntygApiController extends AbstractApiController {
         }
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(enhetsIds, personNummer);
-        LOG.debug("Got {} intyg", intygItemListResponse.getLeft().size());
+        LOG.debug("Got #{} intyg", intygItemListResponse.getLeft().size());
 
         List<Utkast> utkastList;
 
@@ -321,7 +325,7 @@ public class IntygApiController extends AbstractApiController {
                     ALL_DRAFTS,
                     intygstyper);
 
-            LOG.debug("Got {} utkast", utkastList.size());
+            LOG.debug("Got #{} utkast", utkastList.size());
         } else {
             utkastList = Collections.emptyList();
         }
@@ -332,6 +336,7 @@ public class IntygApiController extends AbstractApiController {
         if (intygItemListResponse.getRight()) {
             responseBuilder = responseBuilder.header(OFFLINE_MODE, Boolean.TRUE.toString());
         }
+
         return responseBuilder.build();
     }
 

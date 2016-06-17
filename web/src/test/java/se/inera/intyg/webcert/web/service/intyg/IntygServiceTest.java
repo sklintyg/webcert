@@ -23,14 +23,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.util.*;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,20 +36,26 @@ import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
@@ -66,7 +69,19 @@ import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -83,10 +98,7 @@ public class IntygServiceTest {
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
 
     private ListCertificatesForCareResponseType listResponse;
-    private ListCertificatesForCareResponseType listErrorResponse;
-
     private VardpersonReferens vardpersonReferens;
-
     private String json;
 
     @Mock
@@ -128,15 +140,16 @@ public class IntygServiceTest {
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
-
         vardpersonReferens = new VardpersonReferens();
         vardpersonReferens.setHsaId(HSA_ID);
         vardpersonReferens.setNamn(CREATED_BY_NAME);
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         Utlatande utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<Status>());
+
         CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
@@ -144,17 +157,11 @@ public class IntygServiceTest {
 
     @Before
     public void setupIntygstjanstListResponse() throws Exception {
-
         ClassPathResource response = new ClassPathResource("IntygServiceTest/response-list-certificates.xml");
 
         JAXBContext context = JAXBContext.newInstance(ListCertificatesForCareResponseType.class);
         listResponse = context.createUnmarshaller()
                 .unmarshal(new StreamSource(response.getInputStream()), ListCertificatesForCareResponseType.class)
-                .getValue();
-
-        ClassPathResource errorResponse = new ClassPathResource("IntygServiceTest/response-list-certificates-error.xml");
-        listErrorResponse = context.createUnmarshaller()
-                .unmarshal(new StreamSource(errorResponse.getInputStream()), ListCertificatesForCareResponseType.class)
                 .getValue();
     }
 
@@ -163,12 +170,9 @@ public class IntygServiceTest {
         Set<String> set = new HashSet<>();
         set.add("fk7263");
 
-        //AuthoritiesHelper authoritiesHelper = new AuthoritiesHelper(mock(AuthoritiesResolver.class));
-
         when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
-        //when(webCertUserService.getIntygstyper(anyString())).thenReturn(set);
     }
 
     @Before
@@ -266,14 +270,6 @@ public class IntygServiceTest {
         assertEquals(enhetsId, argument.getValue().getEnhetsId().get(0).getExtension());
         assertNotNull(argument.getValue().getPersonId().getRoot());
         assertEquals("191212121212", argument.getValue().getPersonId().getExtension());
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testListIntygWithIntygstjanstReturningError() {
-        // setup intygstjansten WS mock to return intyg information
-        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(listErrorResponse);
-
-        intygService.listIntyg(Collections.singletonList("enhet-1"), new Personnummer("19121212-1212"));
     }
 
     @SuppressWarnings("unchecked")
