@@ -114,6 +114,8 @@
     <bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl" />
     <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl" />
 
+    <bean id="specialistKompetensService" class="se.inera.intyg.common.support.services.SpecialistkompetensService" />
+
     <!-- Used to send notifications of type fk7263 on schema version 1 -->
     <bean class="se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification" />
 
