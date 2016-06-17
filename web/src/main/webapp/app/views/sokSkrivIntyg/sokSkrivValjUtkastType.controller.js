@@ -71,6 +71,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // Redirect to index if pnr and name isn't specified
                 if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
                     $location.url(changePatientUrl, true);
+                    return;
                 }
 
                 // Load cert types user can choose from
