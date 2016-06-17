@@ -45,7 +45,7 @@ module.exports = function(grunt) {
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
-    var DEST_DIR = 'target/webapp/app/';
+    var DEST_DIR = 'build/resources/main/webapp/app/';
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
@@ -75,11 +75,11 @@ module.exports = function(grunt) {
         }
         module.src =
             '/../../' + module.base + '/src/main/resources/META-INF/resources/webjars/' + moduleName + '/webcert';
-        module.dest = '/../../' + module.base + '/target/classes/META-INF/resources/webjars/' + moduleName + '/webcert';
+        module.dest = '/../../' + module.base + '/build/resources/main/META-INF/resources/webjars/' + moduleName + '/webcert';
     });
 
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
-    var CSS_COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/css';
+    var CSS_COMMON_DEST_DIR = '/../../common/web/build/resources/main/META-INF/resources/webjars/common/css';
 
     function buildListForAllModules(callback) {
         var list = [];
@@ -260,7 +260,7 @@ module.exports = function(grunt) {
         }), { webcert: {
             cwd: __dirname + '/src/main/webapp',
             src: ['app/views/**/**.html', 'app/partials/**/**.html'],
-            dest: __dirname + '/target/webapp/app/templates.js',
+            dest: __dirname + '/build/webapp/app/templates.js',
             options: {
                 module: 'webcert',
                 url: function(url) {

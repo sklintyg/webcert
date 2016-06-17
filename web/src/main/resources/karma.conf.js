@@ -23,7 +23,7 @@ module.exports = function(config) {
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = SRC_DIR;
-    var WEBJAR_DIR = 'target/webjardependencies/';
+    var WEBJAR_DIR = 'build/webjars/';
 
     config.set({
 
