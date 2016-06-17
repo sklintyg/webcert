@@ -193,7 +193,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSignatur(mock(Signatur.class));
 
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
+        when(utkastRepository.findOne(eq(intygId))).thenReturn(utkast);
         when(hsaEmployeeService.getEmployee(eq(signeratAv), eq(null))).thenReturn(createHsaResponse("sune", "svensson"));
         when(repo.save(any(Arende.class))).thenReturn(svararende);
         when(repo.findOneByMeddelandeId(eq(frageid))).thenReturn(fragearende);
@@ -229,7 +229,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSignatur(mock(Signatur.class));
 
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
+        when(utkastRepository.findOne(eq(intygId))).thenReturn(utkast);
         when(hsaEmployeeService.getEmployee(eq(signeratAv), eq(null))).thenReturn(createHsaResponse("sune", "svensson"));
         when(repo.save(any(Arende.class))).thenReturn(svararende);
         when(repo.findOneByMeddelandeId(eq(paminnelseid))).thenReturn(paminnelse);
