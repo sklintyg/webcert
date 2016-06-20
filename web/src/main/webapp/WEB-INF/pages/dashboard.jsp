@@ -77,7 +77,7 @@
 
   <c:choose>
     <c:when test="${useMinifiedJavaScript == 'true'}">
-      <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/jquery/1.11.1/jquery.min.js"></script>
       <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/i18n/angular-locale_sv-se.js"></script>
@@ -95,7 +95,7 @@
       <script type="text/javascript" src="/app/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
-	  <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
+	  <script type="text/javascript" src="/web/webjars/jquery/1.11.1/jquery.js"></script>
       <script type="text/javascript" src="/web/webjars/bootstrap/3.1.1/js/bootstrap.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/i18n/angular-locale_sv-se.js"></script>

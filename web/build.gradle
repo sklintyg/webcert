@@ -27,6 +27,13 @@ sourceSets {
   }
 }
 
+// TODO: just for now. Pin bootstrap version.
+configurations.all {
+  resolutionStrategy {
+    force 'org.webjars:bootstrap:3.1.1'
+  }
+}
+
 // TODO: this list should not be required, copy dependencies whose group is org.webjars instead
 List webjars = [[group: 'org.webjars', name: 'angularjs', version: '1.4.10'],
                 [group: 'org.webjars', name: 'angular-ui-bootstrap', version: '0.12.1'],
@@ -67,7 +74,11 @@ task jsInclude(type: NodeTask, dependsOn: [npmInstall]) {
     args = ['default']
 }
 
-jar.dependsOn(jsInclude)
+war.dependsOn(jsInclude)
+
+war {
+  from( "${buildDir}/apps" )
+}
 
 test {
   exclude '**/*IT*'
