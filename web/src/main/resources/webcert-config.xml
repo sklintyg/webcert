@@ -35,7 +35,6 @@
   <import resource="classpath:/fmb-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
   <import resource="classpath:/pp-services-config.xml" />
-  <import resource="classpath:/pp-stub-context.xml" />
   <import resource="jms-config.xml" />
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />
