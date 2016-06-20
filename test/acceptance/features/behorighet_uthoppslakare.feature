@@ -24,18 +24,21 @@ Scenario: Kan inte kopiera intyg Läkarintyg FK 7263
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
+@kopiera @ts @bas
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
+@kopiera @ts @diabetes
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
+@makulera @fk7263
 Scenario: Kan inte makulera intyg
    När jag går in på en patient
    Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"

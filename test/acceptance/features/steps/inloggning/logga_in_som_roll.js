@@ -59,9 +59,7 @@ module.exports = function() {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
             hsaId: 'TSTNMT2321000156-105H',
-            enhetId: 'TSTNMT2321000156-105F',
-            forskrivarKod: '9300005',
-            befattningsKod: '204090'
+            enhetId: 'TSTNMT2321000156-105F'
         };
         return logInAsUserRole(userObj, 'Läkare', inteAccepteratKakor);
     });
@@ -69,11 +67,10 @@ module.exports = function() {
     this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function() {
 
         var userObj = {
-            fornamn: 'Åsa',
-            efternamn: 'Svensson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003',
-            forskrivarKod: '2481632',
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: 'TSTNMT2321000156-105F',
             origin: 'DJUPINTEGRATION'
         };
         return logInAsUserRole(userObj, 'Läkare');
@@ -93,11 +90,10 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function() {
         var userObj = {
-            fornamn: 'Åsa',
-            efternamn: 'Svensson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003',
-            forskrivarKod: '2481632',
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: 'TSTNMT2321000156-105F',
             origin: 'UTHOPP'
         };
         return logInAsUserRole(userObj, 'Läkare');

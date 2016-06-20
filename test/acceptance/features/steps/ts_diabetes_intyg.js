@@ -178,10 +178,8 @@ function createTsIntyg(typ, status, cb) {
         fornamn: 'Erik',
         efternamn: 'Nilsson',
         hsaId: 'TSTNMT2321000156-105H',
-        enhetId: 'TSTNMT2321000156-105F',
-        lakare: true,
-        forskrivarKod: '2481632',
-        befattningsKod: '204090'
+        enhetId: standardUser.enhetId,
+        lakare: true
     };
     loginHelpers.logInAsUserRole(userObj, 'Läkare')
         .and.notify(function() {
@@ -203,10 +201,10 @@ function createTsIntyg(typ, status, cb) {
                     hsaId: standardUser.hsaId,
                     enhetId: standardUser.enhetId,
                     lakare: standardUser.lakare,
-                    forskrivarKod: standardUser.forskrivarKod
+                    origin: standardUser.origin
                 };
 
-                loginHelpers.logInAsUserRole(userObj, standardUser.roleName, standardUser.origin, standardUser.role).and.notify(cb);
+                loginHelpers.logInAsUserRole(userObj, standardUser.roleName).and.notify(cb);
             });
         });
 }
