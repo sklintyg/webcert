@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.relation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,22 +37,31 @@ public class RelationServiceImpl implements RelationService {
     private UtkastRepository utkastRepo;
 
     @Override
-    public List<RelationItem> getRelations(String intygsId) {
+    public List<RelationItem> getParentRelations(String intygsId) {
         List<RelationItem> relationList = new ArrayList<>();
         Utkast reference = utkastRepo.findOne(intygsId);
 
-        // While we have a parent in the reference utkast
+        // While we have a parent in the reference intyg
         while (reference != null && StringUtils.isNotEmpty(reference.getRelationIntygsId())) {
-            relationList.add(new RelationItem(reference.getIntygsId(), reference.getRelationKod(), reference.getStatus()));
-
-            // Update the reference to its parent
             reference = utkastRepo.findOne(reference.getRelationIntygsId());
-        }
-        // Finally we need to add the base utkast/intyg of the series of related ones
-        if (reference != null) {
-            relationList.add(new RelationItem(reference.getIntygsId(), null, reference.getStatus()));
+            relationList.add(new RelationItem(reference));
         }
         return relationList;
     }
 
+    @Override
+    public List<RelationItem> getChildRelations(String intygsId) {
+        return utkastRepo.findAllByRelationIntygsId(intygsId).stream()
+                .map(RelationItem::new)
+                .sorted(Comparator.comparing(RelationItem::getDate).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RelationItem> getRelations(String intygsId) {
+        List<RelationItem> res = getChildRelations(intygsId);
+        res.add(new RelationItem(utkastRepo.findOne(intygsId)));
+        res.addAll(getParentRelations(intygsId));
+        return res;
+    }
 }
