@@ -39,6 +39,28 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.at = element(by.css('.edit-form'));
 
+        this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
+        this.relatedIntygList = {
+            isDisplayed: function() {
+                return element(by.id('intygRelations')).isDisplayed();
+            },
+            rows: function() {
+                return element.all(by.css('#intygRelations tr'));
+            },
+            row: function(index) {
+                var rowTds = element.all(by.css('#intygRelations tr:nth-child('+index+') td'));
+                return {
+                    visa: {
+                        getText: function() { return rowTds.get(0).getText(); },
+                        click: function() { rowTds.get(0).element(by.css('button')).sendKeys(protractor.Key.SPACE); }
+                    },
+                    relation: rowTds.get(1),
+                    status: rowTds.get(2),
+                    datum: rowTds.get(3)
+                };
+            }
+        };
+
         this.diagnoseCode = element(by.id('diagnoseCode'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
