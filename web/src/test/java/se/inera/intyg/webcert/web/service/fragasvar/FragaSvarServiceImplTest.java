@@ -19,21 +19,38 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.xml.soap.*;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -52,11 +69,7 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -71,33 +84,6 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -507,13 +493,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, Optional.empty());
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null);
     }
 
     private IntygContentHolder getUnsentIntygContentHolder() {
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, Optional.empty());
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null);
     }
 
     private IntygContentHolder getRevokedIntygContentHolder() {
@@ -521,7 +507,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HV", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED, "HV", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, true, Optional.empty());
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, true, null);
     }
 
     @Test(expected = WebCertServiceException.class)

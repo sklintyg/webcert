@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import java.util.*;
+
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -26,6 +28,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 public final class RelationItem {
+
+    public static final String UTKAST = "UTKAST";
+    public static final String INTYG = "INTYG";
 
     private final String intygsId;
     private final String kod;
@@ -39,6 +44,13 @@ public final class RelationItem {
         date = getDate(reference);
     }
 
+    public RelationItem(String intygsId, String status, LocalDateTime date) {
+        this.intygsId = intygsId;
+        this.status = status;
+        this.date = date;
+        kod = null;
+    }
+
     private LocalDateTime getDate(final Utkast reference) {
         return UtkastStatus.SIGNED.equals(reference.getStatus())
                 ? reference.getSignatur().getSigneringsDatum()
@@ -48,9 +60,9 @@ public final class RelationItem {
     private String convert(UtkastStatus status) {
         switch (status) {
         case SIGNED:
-            return "INTYG";
+            return INTYG;
         default:
-            return "UTKAST";
+            return UTKAST;
         }
     }
 
@@ -72,6 +84,12 @@ public final class RelationItem {
 
     public LocalDateTime getDate() {
         return date;
+    }
+
+    public static List<RelationItem> createBaseCase(String intygId, LocalDateTime signeringsdatum, String status) {
+        ArrayList<RelationItem> res = new ArrayList<>();
+        res.add(new RelationItem(intygId, status, signeringsdatum));
+        return res;
     }
 
 }

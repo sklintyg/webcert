@@ -82,6 +82,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         when(utkastService.getDraft(CERTIFICATE_ID)).thenReturn(buildUtkast(intygTyp, intygId));
+        when(relationService.getRelations(eq(intygId))).thenReturn(Optional.empty());
 
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
         verify(utkastService).getDraft(CERTIFICATE_ID);

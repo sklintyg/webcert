@@ -28,7 +28,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -281,7 +282,7 @@ public class CreateCopyUtkastBuilderImplTest {
         status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
-        return new IntygContentHolder("<external-json/>", utlatande, status, false, Optional.empty());
+        return new IntygContentHolder("<external-json/>", utlatande, status, false, null);
     }
 
     private Utkast createOriginalUtkast() {
