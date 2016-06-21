@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.*;
+import org.joda.time.LocalDate;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -335,6 +337,9 @@ public class RouteTest {
         enhet.setArbetsplatskod(new ArbetsplatsKod());
         hosPersonal.setEnhet(enhet);
         intyg.setSkapadAv(hosPersonal);
+        // DatePeriodType must be allowed
+        intyg.getSvar().add(InternalConverterUtil.aSvar("")
+                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1))).build());
         return intyg;
     }
 
