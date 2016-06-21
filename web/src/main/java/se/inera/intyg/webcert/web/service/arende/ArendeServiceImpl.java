@@ -267,7 +267,7 @@ public class ArendeServiceImpl implements ArendeService {
         int totalResultsCount = repo.filterArendeCount(filter) + fsResults.getTotalCount();
 
         results.addAll(fsResults.getResults());
-        results.sort(Comparator.comparing(ArendeListItem::getReceivedDate));
+        results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
 
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
         if (originalStartFrom >= results.size()) {

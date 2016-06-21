@@ -57,7 +57,7 @@ public final class ArendeListItemConverter {
         res.setIntygTyp(arende.getIntygTyp());
         res.setMeddelandeId(arende.getMeddelandeId());
         res.setPatientId(arende.getPatientPersonId());
-        res.setReceivedDate(arende.getSkickatTidpunkt());
+        res.setReceivedDate(arende.getSenasteHandelse());
         res.setSigneratAvNamn(arende.getSigneratAvName());
         res.setStatus(arende.getStatus());
         res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));

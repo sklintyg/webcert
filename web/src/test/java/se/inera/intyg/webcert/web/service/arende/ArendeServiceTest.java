@@ -587,16 +587,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         QueryFragaSvarResponse response = service.filterArende(params);
 
         assertEquals(3, response.getResults().size());
-        assertEquals(intygId1, response.getResults().get(0).getIntygId());
+        assertEquals(intygId3, response.getResults().get(0).getIntygId());
         assertEquals(intygId2, response.getResults().get(1).getIntygId());
-        assertEquals(intygId3, response.getResults().get(2).getIntygId());
+        assertEquals(intygId1, response.getResults().get(2).getIntygId());
     }
 
-    private Arende buildArende(Long id, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {
-        return buildArende(id, "<intygsId>", skickadTidpunkt, timestamp);
+    private Arende buildArende(Long id, LocalDateTime senasteHandelse, LocalDateTime timestamp) {
+        return buildArende(id, "<intygsId>", senasteHandelse, timestamp);
     }
 
-    private Arende buildArende(Long id, String intygId, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {
+    private Arende buildArende(Long id, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setAmne(ArendeAmne.OVRIGT);
@@ -604,14 +604,14 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setMeddelandeId("meddelandeId");
         arende.setId(id);
         arende.setEnhet("enhet");
-        arende.setSkickatTidpunkt(skickadTidpunkt);
+        arende.setSenasteHandelse(senasteHandelse);
         arende.setMeddelande("frageText");
         arende.setTimestamp(timestamp);
         List<MedicinsktArende> komplettering = new ArrayList<MedicinsktArende>();
         arende.setIntygsId(intygId);
         arende.setPatientPersonId(PATIENT_ID.getPersonnummer());
         arende.setSigneratAv("Signatur");
-        arende.setSistaDatumForSvar(skickadTidpunkt.plusDays(7).toLocalDate());
+        arende.setSistaDatumForSvar(senasteHandelse.plusDays(7).toLocalDate());
         arende.setKomplettering(komplettering);
         arende.setRubrik("rubrik");
         arende.setSkickatAv("Avsandare");
