@@ -24,7 +24,8 @@ var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = function() {
-    this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
+    // this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
+    this.Given(/^Försäkringskassan skickar ett (.*) på intyget$/, function(type, callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
         var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär komplettering' + global.intyg.guidcheck);

@@ -35,9 +35,23 @@ module.exports = function() {
 
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {
         var url;
-
+        var isSMIIntyg;
+        if (intyg && intyg.typ) {
+            isSMIIntyg = intyg.typ.indexOf('Läkarutlåtande för') > -1;
+        }
         if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
-            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+            if (isSMIIntyg) {
+                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+                url = url + '?';
+                url += 'fornamn=test&';
+                url += 'efternamn=testsson&';
+                url += 'postadress=Langgatan 12&';
+                url += 'postnummer=990 90&';
+                url += 'postort=Simrishamn';
+
+            } else {
+                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+            }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
             url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
 

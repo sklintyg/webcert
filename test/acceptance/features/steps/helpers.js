@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages*/
+/*global testdata,intyg,logger,pages,Promise*/
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -50,25 +50,31 @@ module.exports = {
         } else {
             panels = fkIntygPage.qaPanels;
         }
-        var messageIdAttributes = panels.map(function(elm) {
-            return elm.getAttribute('id');
-        });
 
-        return messageIdAttributes.then(function(attr) {
-            for (var i = 0; i < attr.length; i++) {
-                var messageId;
+        if (typeof panels === 'undefined') {
+            return Promise.resolve('Inga frågor hittades');
+        } else {
+            var messageIdAttributes = panels.map(function(elm) {
+                return elm.getAttribute('id');
+            });
 
-                if (isSMIIntyg) {
-                    messageId = attr[i].replace('arende-unhandled-', ''); // arende-unhandled-4c78e939-e187-122b-ce86-66937dfbe012
-                } else {
-                    messageId = attr[i].split('-')[1];
+            return messageIdAttributes.then(function(attr) {
+                for (var i = 0; i < attr.length; i++) {
+                    var messageId;
+
+                    if (isSMIIntyg) {
+                        messageId = attr[i].replace('arende-unhandled-', ''); // arende-unhandled-4c78e939-e187-122b-ce86-66937dfbe012
+                    } else {
+                        messageId = attr[i].split('-')[1];
+                    }
+                    logger.info('Meddelande-id som finns på intyget: ' + messageId);
+                    intyg.messages.push({
+                        id: messageId
+                    });
                 }
-                logger.info('Meddelande-id som finns på intyget: ' + messageId);
-                intyg.messages.push({
-                    id: messageId
-                });
-            }
-        });
+            });
+        }
+
     },
     stripTrailingSlash: function(str) {
         if (str.substr(-1) === '/') {
