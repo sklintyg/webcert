@@ -160,19 +160,19 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp))).thenReturn(content);
+        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(false))).thenReturn(content);
 
-        Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
+        Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID, false);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(intygContent, ((IntygContentHolder) response.getEntity()).getContents());
-        verify(intygService, times(1)).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp));
+        verify(intygService, times(1)).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(false));
     }
 
     @Test(expected = AuthoritiesException.class)
     public void testGetIntygNotAuthorised() {
         setupUser("", "");
-        moduleApiController.getIntyg("fk7263", CERTIFICATE_ID);
+        moduleApiController.getIntyg("fk7263", CERTIFICATE_ID, false);
     }
 
     @Test

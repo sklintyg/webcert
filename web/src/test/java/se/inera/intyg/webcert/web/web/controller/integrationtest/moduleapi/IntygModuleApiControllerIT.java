@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
@@ -144,6 +146,61 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("message", not(isEmptyString()));
 
         deleteUtkast(intygsId);
+    }
+
+    /**
+     * Verify that coherent journaling works, i.e that requests with the parameter sjf=true can access certificates created
+     * on different care units than the currently active / selected one.
+     */
+    @Test
+    public void testGetIntygFromDifferentCareUnitWithCoherentJournalingFlagSuccess() {
+        // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        // Then logout
+        given()
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().get("logout");
+
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        given().redirects().follow(false).and().pathParam("intygsId", intygsId)
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().get("moduleapi/intyg/fk7263/{intygsId}?sjf=true")
+                .then()
+                    .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+                    .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                    .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+    }
+
+    /**
+     * Requests without the parameter sjf=true should get an INTERNAL_SERVER_ERROR  with error message AUTHORIZATION_PROBLEM
+     * when accessing certificates on different care units than the currently active / selected one.
+     */
+    @Test
+    public void testGetIntygFromDifferentCareUnitWithoutCoherentJournalingFlagFail() {
+        // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        // Then logout
+        given()
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().get("logout");
+
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        given().redirects().follow(false).and().pathParam("intygsId", intygsId)
+            .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+            .when().get("moduleapi/intyg/fk7263/{intygsId}")
+                .then()
+                    .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                    .body("message", not(isEmptyString()));
     }
 
     private void signeraUtkastWithTestbarhetsApi(String intygsId) {

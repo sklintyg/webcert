@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 16/12/15.

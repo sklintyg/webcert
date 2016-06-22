@@ -176,7 +176,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntyg() throws Exception {
 
-        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
@@ -194,20 +194,20 @@ public class IntygServiceTest {
 
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new IntygModuleFacadeException(""));
 
-        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testFetchIntygWithFailingAuth() {
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(false);
 
-        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
     }
 
     @Test
     public void testFetchIntygData() throws Exception {
 
-        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
@@ -219,7 +219,7 @@ public class IntygServiceTest {
     public void testFetchIntygDataWithRelation() throws Exception {
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
 
-        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         assertNotNull(res);
         assertNotNull(res.getRelations());
@@ -313,7 +313,7 @@ public class IntygServiceTest {
     public void testFetchIntygDataWhenIntygstjanstIsUnavailable() throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, null, null));
-        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 1);
         assertNotNull(intygContentHolder.getUtlatande());
 
@@ -328,7 +328,7 @@ public class IntygServiceTest {
     public void testFetchIntygDataHasSentStatusWhenIntygstjanstIsUnavailableAndDraftHadSentDate() throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, LocalDateTime.now(), null));
-        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 2);
         assertEquals(intygContentHolder.getStatuses().get(0).getType(), CertificateState.SENT);
         assertNotNull(intygContentHolder.getUtlatande());
@@ -344,7 +344,7 @@ public class IntygServiceTest {
     public void testFetchIntygDataHasSentAndRevokedStatusesWhenIntygstjanstIsUnavailableAndDraftHadSentDateAndRevokedDate() throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
-        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 3);
         assertEquals(intygContentHolder.getStatuses().get(0).getType(), CertificateState.SENT);
         assertEquals(intygContentHolder.getStatuses().get(1).getType(), CertificateState.CANCELLED);
@@ -363,7 +363,7 @@ public class IntygServiceTest {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
         try {
-            intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         } catch (Exception e) {
             // ensure that correct call is made to moduleFacade
             verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);

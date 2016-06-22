@@ -62,13 +62,14 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+    public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @DefaultValue("false") @QueryParam("sjf") boolean coherentJournaling) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
 
-        LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
+        LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
-        IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp);
+        IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
 
         return Response.ok().entity(intygAsExternal).build();
     }

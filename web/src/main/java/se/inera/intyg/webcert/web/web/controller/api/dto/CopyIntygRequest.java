@@ -34,9 +34,9 @@ public class CopyIntygRequest {
     private String postadress;
     private String postnummer;
     private String postort;
+    private boolean coherentJournaling = false;
 
     public CopyIntygRequest() {
-
     }
 
     public Personnummer getPatientPersonnummer() {
@@ -53,6 +53,14 @@ public class CopyIntygRequest {
 
     public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
         this.nyttPatientPersonnummer = nyttPatientPersonnummer;
+    }
+
+    public boolean isCoherentJournaling() {
+        return coherentJournaling;
+    }
+
+    public void setCoherentJournaling(boolean coherentJournaling) {
+        this.coherentJournaling = coherentJournaling;
     }
 
     public boolean containsNewPersonnummer() {

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -122,7 +123,7 @@ public class ArendeViewConverterTest {
         IntygContentHolder content = new IntygContentHolder("", utlatande, Arrays.asList(status), false, null);
 
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(intygService.fetchIntygData(any(String.class), any(String.class))).thenReturn(content);
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(content);
 
         return converter.convert(arende);
     }

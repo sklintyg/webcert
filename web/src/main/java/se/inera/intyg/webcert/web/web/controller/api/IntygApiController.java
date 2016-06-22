@@ -96,7 +96,6 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
-
     public IntygApiController() {
     }
 
@@ -119,7 +118,8 @@ public class IntygApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
                 .orThrow();
 
-        LOG.debug("Attempting to create a draft copy of {} with id '{}'", intygsTyp, orgIntygsId);
+        LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
+                request.isCoherentJournaling());
 
         if (!request.isValid()) {
             LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
@@ -129,7 +129,8 @@ public class IntygApiController extends AbstractApiController {
         CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
         CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
 
-        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType() });
+        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}",
+                new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType() });
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 
@@ -252,7 +253,8 @@ public class IntygApiController extends AbstractApiController {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson);
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson,
+            copyRequest.isCoherentJournaling());
 
         if (copyRequest.containsNewPersonnummer()) {
             LOG.debug("Adding new personnummer to request");
@@ -317,7 +319,8 @@ public class IntygApiController extends AbstractApiController {
         List<Utkast> utkastList;
 
         if (authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).isVerified()) {
-            Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+            Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(),
+                    AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
                     DaoUtil.formatPnrForPersistence(personNummer),

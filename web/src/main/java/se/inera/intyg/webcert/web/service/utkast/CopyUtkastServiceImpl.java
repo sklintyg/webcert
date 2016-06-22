@@ -109,7 +109,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             CopyUtkastBuilderResponse builderResponse;
 
             builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
-            // builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId, false);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
@@ -208,9 +207,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false);
+            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false, copyRequest.isCoherentJournaling());
         } else {
-            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
+            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false, copyRequest.isCoherentJournaling());
         }
 
         return builderResponse;
@@ -223,15 +222,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
+            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation, false);
         } else {
-            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
+            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation, false);
         }
 
         return builderResponse;
     }
 
-    // TODO
     private CopyUtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId,
             boolean addRelation) throws ModuleNotFoundException, ModuleException {
 
@@ -239,9 +237,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation, false);
         } else {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation, false);
         }
 
         return builderResponse;
