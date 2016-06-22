@@ -38,7 +38,8 @@ module.exports = {
     },
     fetchMessageIds: function(intygtyp) {
         console.log('Hämtar meddelande-id:n');
-        var isSMIIntyg = intygtyp.indexOf('Läkarutlåtande för') > -1;
+
+        var isSMIIntyg = (intygtyp && intygtyp.indexOf('Läkarutlåtande för') > -1);
 
         if (!intyg.messages) {
             intyg.messages = [];
