@@ -64,21 +64,25 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
      */
     private Response handleAuthorityException(AuthoritiesException e) {
         LOG.warn("AuthValidation occured: ", e);
-        return buildErrorRedirectResponse("auth-exception");
+        return buildErrorRedirectResponse("auth-exception", e.getMessage());
     }
 
     private Response handleRuntimeException(RuntimeException re) {
         LOG.error("Unhandled RuntimeException occured!", re);
         if (re instanceof WebCertServiceException) {
-            if (((WebCertServiceException) re).getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
-                return buildErrorRedirectResponse("missing-parameter");
+            WebCertServiceException we = (WebCertServiceException) re;
+            if (we.getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
+                return buildErrorRedirectResponse("missing-parameter", we.getMessage());
             }
         }
-        return buildErrorRedirectResponse("unknown");
+        return buildErrorRedirectResponse("unknown", re.getMessage());
     }
 
-    private Response buildErrorRedirectResponse(String errorReason) {
-        URI location = uriInfo.getBaseUriBuilder().replacePath("/error.jsp").queryParam("reason", errorReason).build();
+    private Response buildErrorRedirectResponse(String errorReason, String message) {
+        URI location = uriInfo.getBaseUriBuilder().replacePath("/error.jsp").
+                queryParam("reason", errorReason).
+                queryParam("message", message).
+                build();
         return Response.temporaryRedirect(location).build();
     }
 }
