@@ -1,11 +1,11 @@
 {
-    "name": "webcert-testtools",
-    "version": "1.0.62",
-    "description": "",
-    "main": "webcertTestTools.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "dependencies": {}
+  "name": "webcert-testtools",
+  "version": "1.0.64",
+  "description": "",
+  "main": "webcertTestTools.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {}
 }

@@ -2,7 +2,7 @@
     "name": "e2e-test",
     "version": "0.1.0",
     "dependencies": {
-        "webcert-testtools": "file:webcertTestTools"
+        "webcert-testtools": "latest"
     },
     "devDependencies": {
         "chai": "^3.5.0",
@@ -20,12 +20,10 @@
         "jasmine-reporters": "^2.0.7",
         "jclass": "^1.1.9",
         "mysql": "^2.5.4",
-        "node-soap": "^1.0.0",
         "protractor": "^3.0.0",
         "protractor-cucumber-framework": "latest",
         "protractor-jasmine2-screenshot-reporter": "^0.1.7",
         "request": "^2.65.0",
-        "soap": "^0.14.0",
         "time-grunt": "^1.3.0",
         "winston": "^2.2.0",
         "xml2js": "^0.4.4"
