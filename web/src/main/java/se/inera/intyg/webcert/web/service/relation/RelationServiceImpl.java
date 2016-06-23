@@ -44,6 +44,9 @@ public class RelationServiceImpl implements RelationService {
         // While we have a parent in the reference intyg
         while (reference != null && StringUtils.isNotEmpty(reference.getRelationIntygsId())) {
             reference = utkastRepo.findOne(reference.getRelationIntygsId());
+            if (reference == null) {
+                break;
+            }
             relationList.add(new RelationItem(reference));
         }
         return relationList;
