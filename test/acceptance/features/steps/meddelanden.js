@@ -24,8 +24,7 @@ var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = function() {
-    // this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
-    this.Given(/^Försäkringskassan skickar ett (.*) på intyget$/, function(type, callback) {
+    this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
         var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär komplettering' + global.intyg.guidcheck);
@@ -62,4 +61,45 @@ module.exports = function() {
             }
         });
     });
+
+    this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(type, callback) {
+        global.intyg.guidcheck = testdataHelper.generateTestGuid();
+
+        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + type + ' ' + global.intyg.guidcheck);
+        // console.log(body);
+        // var path = '/send-message-to-care/v1.0?wsdl';
+        // var url = process.env.INTYGTJANST_URL + path;
+        var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
+        url = url.replace('https', 'http');
+
+        soap.createClient(url, function(err, client) {
+            logger.info(url);
+            if (err) {
+                callback(err);
+            } else {
+                client.SendMessageToCare(body, function(err, result, resBody) {
+                    console.log(resBody);
+                    if (err) {
+                        callback(err);
+                    } else {
+                        var resultcode = result.result.resultCode;
+                        logger.info('ResultCode: ' + resultcode);
+                        // console.log(result);
+                        if (resultcode !== 'OK') {
+                            logger.info(result);
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        } else {
+                            logger.info('ResultCode: ' + resultcode);
+                            // console.log(JSON.stringify(result));
+                            callback();
+                        }
+
+                    }
+                });
+            }
+        });
+    });
+
+
+
 };

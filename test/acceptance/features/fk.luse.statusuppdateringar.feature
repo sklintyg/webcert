@@ -35,13 +35,13 @@ Scenario: Statusuppdateringar då intyg raderas
 
 # @fråga-från-fk @notReady
 # Scenario: Statusuppdateringar vid fråga från FK
-#    När jag fyller i alla nödvändiga fält för intyget
-#    Och jag signerar intyget
-#    Och jag skickar intyget till Försäkringskassan
-#    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+    # När jag fyller i alla nödvändiga fält för intyget
+    # Och jag signerar intyget
+    # Och jag skickar intyget till Försäkringskassan
+    # Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-#    När Försäkringskassan ställer en "Kontakt" fråga om intyget
-#    Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
+    # När Försäkringskassan skickar ett "Kontakt" meddelande på intyget
+    # Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
 
     # När jag går in på intygsutkastet via djupintegrationslänk
     # Och jag svarar på frågan

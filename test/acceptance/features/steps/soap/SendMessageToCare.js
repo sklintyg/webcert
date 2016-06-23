@@ -47,7 +47,6 @@ module.exports.SendMessageToCare = function(user, person, intyg, message) {
     }
 
 
-
     return '<SendMessageToCare' +
         ' xmlns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1"' +
         ' xmlns:core="urn:riv:clinicalprocess:healthcond:certificate:2"' +
