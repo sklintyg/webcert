@@ -2,6 +2,7 @@
     "timestamp": "2016-05-01T12:02:27.200",
     "meddelandeId": "1",
     "referensId": "fkid",
+    "paminnelseMeddelandeId": "",
     "skickatTidpunkt": "2016-03-31T14:42:27.849",
     "intygsId": "-",
     "patientPersonId": "19121212-1212",

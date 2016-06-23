@@ -114,6 +114,5 @@
     </c:otherwise>
   </c:choose>
   <script type="text/javascript" src="/vendor/netid-1.0.5.js"></script>
-
 </body>
 </html>
