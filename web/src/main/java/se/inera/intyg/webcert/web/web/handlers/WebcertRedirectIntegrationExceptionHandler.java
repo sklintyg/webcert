@@ -79,10 +79,14 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     }
 
     private Response buildErrorRedirectResponse(String errorReason, String message) {
-        URI location = uriInfo.getBaseUriBuilder().replacePath("/error.jsp").
-                queryParam("reason", errorReason).
-                queryParam("message", message).
-                build();
+        URI location = "missing-parameter".equals(errorReason) ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+                .queryParam("reason", errorReason)
+                .queryParam("message", message)
+                .build()
+                : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+                    .queryParam("reason", errorReason)
+                    .build();
+
         return Response.temporaryRedirect(location).build();
     }
 }
