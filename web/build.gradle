@@ -15,6 +15,7 @@ node {
   distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
 }
 
+// TODO: these still show up in the built war file.
 sourceSets {
   main {
     resources {
@@ -102,7 +103,11 @@ gretty {
     "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
     "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
     "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
+    "-Dwebcert.useMinifiedJavaScript=false"
   ]
+
+  // TODO: bättre namn. Synka med gruntfilen.
+  extraResourceBase 'build/apps/'
 
   // TODO: use?
   //   debugSuspend = false
