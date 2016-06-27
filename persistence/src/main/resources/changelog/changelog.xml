@@ -847,7 +847,7 @@
         tableName="ANVANDARE_PREFERENCE" />
 
     <addUniqueConstraint
-        columnNames="HSA_ID, KEY, VALUE"
+        columnNames="HSA_ID, KEY"
         constraintName="ANVANDARE_PREFERENCE_UNIQUE_CONST"
         tableName="ANVANDARE_PREFERENCE"/>
 
