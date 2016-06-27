@@ -48,11 +48,13 @@ module.exports = function() {
     });
 
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
+        var fragaText = global.intyg.guidcheck;
+
         if (!intyg.messages || intyg.messages.length <= 0) {
             callback('Inga frågor hittades');
         } else {
-
-            fkIntygPage.svaraMedNyttIntyg(intyg.messages[0].id)
+            var svaraBtn = fkIntygPage.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara med nytt intyg'));
+            svaraBtn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
                     global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
@@ -127,19 +129,18 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag svarar på frågan$/, function(callback) {
-        browser.refresh()
+    this.Given(/^jag svarar på frågan$/, function() {
+        return browser.refresh()
             .then(function() {
                 return helpers.fetchMessageIds(intyg.typ);
             })
             .then(function() {
                 return fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck);
-            })
-            .then(callback);
+            });
     });
 
-    this.Given(/^kan jag se mitt svar under hanterade frågor$/, function(callback) {
-        kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck).notify(callback);
+    this.Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
+        return kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck);
     });
 
     this.Given(/^jag fyller i en ny fråga till Försäkringskassan$/, function(callback) {
@@ -228,6 +229,11 @@ module.exports = function() {
             }
 
         });
+    });
+
+    this.Given(/^ska frågan vara hanterad$/, function(callback) {
+        // Write code here that turns the phrase above into concrete actions
+        callback(null, 'pending');
     });
 
 };

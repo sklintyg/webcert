@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.*;
-import org.joda.time.LocalDate;
+import org.joda.time.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -45,6 +45,7 @@ import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotific
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateTypeFormatEnum;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
@@ -337,9 +338,10 @@ public class RouteTest {
         enhet.setArbetsplatskod(new ArbetsplatsKod());
         hosPersonal.setEnhet(enhet);
         intyg.setSkapadAv(hosPersonal);
-        // DatePeriodType must be allowed
+        // DatePeriodType and PartialDateType must be allowed
         intyg.getSvar().add(InternalConverterUtil.aSvar("")
-                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1))).build());
+                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
+                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, new Partial(DateTimeFieldType.year(), 1999))).build());
         return intyg;
     }
 

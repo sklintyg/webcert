@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.DatePeriodType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateType;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -95,7 +96,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
     private JaxbDataFormat initializeJaxbMessageDataFormatV2() throws JAXBException {
         // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
-        JaxbDataFormat jaxbMessageDataFormatV2 = new JaxbDataFormat(JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class));
+        JaxbDataFormat jaxbMessageDataFormatV2 = new JaxbDataFormat(JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class));
         jaxbMessageDataFormatV2.setPartClass("se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType");
         jaxbMessageDataFormatV2.setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:2", "CertificateStatusUpdateForCare"));
         return jaxbMessageDataFormatV2;

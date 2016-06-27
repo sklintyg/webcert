@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
 
-@nyttIntyg
+@nyttIntyg @waitingForFix @INTYG-2652
 Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
    Och jag fyller i alla nödvändiga fält för intyget

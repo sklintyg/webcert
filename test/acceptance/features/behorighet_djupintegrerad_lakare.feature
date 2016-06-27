@@ -12,25 +12,25 @@ Scenario: Kan makulera sjukintyg
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
 
-Scenario: Kan kopiera och signera ett (kopierat)intyg
+Scenario: Kan förnya och signera ett intyg
 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-	Och jag kopierar intyget
+	Och jag förnyar intyget
+   Och jag anger datum för Baserat på
+   Och jag anger datum för arbetsförmåga
+   Och jag anger kontakt med FK
 	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
-@notReady
-Scenario: Kan kopiera ett intyg från tidigare intyg listan (utan att gå in i intyget)
-	När kopierar ett signerat intyg
-	Så ska intygets status vara "Intyget är signerat"
+Scenario: Det går att förnya signerade och mottagna intyg från intygslistan
+	Så ska Förnya-knappen visas för alla signerade eller mottagna "Läkarintyg FK 7263"-intyg
 
-@notReady
-Scenario: Besvara kompleteringsfråga
+Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag svarar på frågan
-   Så ska frågan vara hanterad
+   Så kan jag se mitt svar under hanterade frågor
 
-@notReady
+@waitingForFix @INTYG-2652
 Scenario: Svara med nytt intyg
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

@@ -39,7 +39,7 @@ module.exports = {
     fetchMessageIds: function(intygtyp) {
         console.log('Hämtar meddelande-id:n');
 
-        var isSMIIntyg = this.isSMIIntyg(intygtyp);
+        var isSMIIntyg = (intygtyp && intygtyp.indexOf('Läkarutlåtande för') > -1);
 
         if (!intyg.messages) {
             intyg.messages = [];
@@ -83,12 +83,15 @@ module.exports = {
         }
         return str;
     },
-    isSMIIntyg: function(intygsType) {
-        var regex = /(Läkarintyg|Läkarutlåtande)/g;
-        var res = (intygsType !== 'undefined') ? intygsType.match(regex) : 0;
-        if (res.length > 0) {
-            return true;
-        }
-        return false;
+    getIntygElementRow: function(intygstyp, status, cb) {
+        var qaTable = element(by.css('table.table-qa'));
+        qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
+            return elem.all(by.css('td')).get(2).getText().then(function(text) {
+                return (text === intygstyp);
+            });
+        }).then(function(filteredElements) {
+            cb(filteredElements[0]);
+        });
     }
+
 };

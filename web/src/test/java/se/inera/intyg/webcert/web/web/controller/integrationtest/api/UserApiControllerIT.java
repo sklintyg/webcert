@@ -19,18 +19,18 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.core.IsEqual.equalTo;
-
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-
+import org.junit.Test;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Created by marced on 17/11/15.
@@ -129,4 +129,32 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).expect().statusCode(200).when().get("api/anvandare/ping");
     }
 
+    @Test
+    public void testStoreAnvandarPreference() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        WebUserPreferenceStorageRequest storeRequest = new WebUserPreferenceStorageRequest();
+        storeRequest.setKey("key1");
+        storeRequest.setValue("value1");
+        given().contentType(ContentType.JSON).and().body(storeRequest).when().put("api/anvandare/preferences").then().statusCode(200);
+
+        given().expect().statusCode(200).when().get("api/anvandare").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                .body("anvandarPreference.key1", equalTo("value1"));
+    }
+
+    @Test
+    public void testDeleteAnvandarPreference() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        WebUserPreferenceStorageRequest storeRequest = new WebUserPreferenceStorageRequest();
+        storeRequest.setKey("key1");
+        storeRequest.setValue("value1");
+        given().contentType(ContentType.JSON).and().body(storeRequest).when().put("api/anvandare/preferences").then().statusCode(200);
+        given().contentType(ContentType.JSON).when().delete("api/anvandare/preferences/key1").then().statusCode(200);
+
+        given().expect().statusCode(200).when().get("api/anvandare").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                .body("anvandarPreference.key1", nullValue());
+    }
 }

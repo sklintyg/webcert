@@ -74,8 +74,6 @@ public class ArendeServiceImpl implements ArendeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
-    private static final ArendeConversationViewTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeConversationViewTimeStampComparator();
-
     private static final List<String> BLACKLISTED = Arrays.asList(CertificateTypes.FK7263.toString(), CertificateTypes.TSBAS.toString(),
             CertificateTypes.TSDIABETES.toString());
 
@@ -313,7 +311,17 @@ public class ArendeServiceImpl implements ArendeService {
             arendeViews.add(latestDraft);
         }
         List<ArendeConversationView> arendeConversations = buildArendeConversations(arendeViews);
-        Collections.sort(arendeConversations, ARENDE_TIMESTAMP_COMPARATOR);
+        Collections.sort(arendeConversations, (a, b) -> {
+            boolean aIsEmpty = a.getPaminnelser().isEmpty();
+            boolean bIsEmpty = b.getPaminnelser().isEmpty();
+            if (aIsEmpty == bIsEmpty) {
+                return b.getSenasteHandelse().compareTo(a.getSenasteHandelse());
+            } else if (aIsEmpty) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
 
         return arendeConversations;
     }
@@ -524,6 +532,7 @@ public class ArendeServiceImpl implements ArendeService {
         for (Arende paminnelse : paminnelser) {
             arendeViewPaminnelser.add(arendeViewConverter.convert(paminnelse));
         }
+        Collections.sort(arendeViewPaminnelser, Comparator.comparing(ArendeView::getTimestamp).reversed());
         return arendeViewPaminnelser;
     }
 
@@ -556,6 +565,9 @@ public class ArendeServiceImpl implements ArendeService {
                     senasteHandelse = view.getTimestamp();
                 }
             }
+
+            Collections.sort(paminnelser, Comparator.comparing(ArendeView::getTimestamp).reversed());
+
             // Since fraga is required to be nonNull by AutoValue_ArendeConversationView need to make sure this is
             // enforced to avoid throwing an exception and showing nothing at all
             if (fraga != null) {
@@ -671,22 +683,6 @@ public class ArendeServiceImpl implements ArendeService {
             } catch (WebServiceException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                         "Could not communicate with HSA. Cause: " + e.getMessage());
-            }
-        }
-    }
-
-    public static class ArendeConversationViewTimeStampComparator implements Comparator<ArendeConversationView> {
-
-        @Override
-        public int compare(ArendeConversationView f1, ArendeConversationView f2) {
-            if (f1.getSenasteHandelse() == null && f2.getSenasteHandelse() == null) {
-                return 0;
-            } else if (f1.getSenasteHandelse() == null) {
-                return -1;
-            } else if (f2.getSenasteHandelse() == null) {
-                return 1;
-            } else {
-                return f2.getSenasteHandelse().compareTo(f1.getSenasteHandelse());
             }
         }
     }
