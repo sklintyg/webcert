@@ -37,7 +37,7 @@ module.exports = function() {
         var url;
         var isSMIIntyg;
         if (intyg && intyg.typ) {
-            isSMIIntyg = intyg.typ.indexOf('Läkarutlåtande för') > -1;
+            isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         }
         if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
             if (isSMIIntyg) {
@@ -45,8 +45,8 @@ module.exports = function() {
                 url = url + '?';
                 url += 'fornamn=test&';
                 url += 'efternamn=testsson&';
-                url += 'postadress=Langgatan 12&';
-                url += 'postnummer=990 90&';
+                url += 'postadress=Langgatan%2012&';
+                url += 'postnummer=990%2090&';
                 url += 'postort=Simrishamn';
 
             } else {
