@@ -782,16 +782,22 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arendeList.add(buildArende(2L, JANUARY, JANUARY));
         arendeList.add(buildArende(3L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         arendeList.add(buildArende(4L, FEBRUARY, FEBRUARY));
+        arendeList.add(buildArende(5L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        arendeList.add(buildArende(6L, JANUARY, JANUARY));
         arendeViewList.add(buildArendeView(arendeList.get(0), arendeList.get(0).getMeddelandeId(), null, null, FEBRUARY)); // fraga
         arendeViewList.add(buildArendeView(arendeList.get(1), "meddelandeId2", arendeList.get(0).getMeddelandeId(), null, JANUARY)); // svar
         arendeViewList.add(buildArendeView(arendeList.get(2), "meddelandeId3", null, arendeList.get(0).getMeddelandeId(), DECEMBER_YEAR_9999)); // paminnelse
         arendeViewList.add(buildArendeView(arendeList.get(3), "meddelandeId4", null, null, FEBRUARY)); // fraga
+        arendeViewList.add(buildArendeView(arendeList.get(4), "meddelandeId5", null, null, DECEMBER_YEAR_9999)); // fraga
+        arendeViewList.add(buildArendeView(arendeList.get(5), "meddelandeId6", null, null, JANUARY)); // fraga
 
         when(repo.findByIntygsId("intyg-1")).thenReturn(arendeList);
         when(arendeViewConverter.convert(arendeList.get(0))).thenReturn(arendeViewList.get(0));
         when(arendeViewConverter.convert(arendeList.get(1))).thenReturn(arendeViewList.get(1));
         when(arendeViewConverter.convert(arendeList.get(2))).thenReturn(arendeViewList.get(2));
         when(arendeViewConverter.convert(arendeList.get(3))).thenReturn(arendeViewList.get(3));
+        when(arendeViewConverter.convert(arendeList.get(4))).thenReturn(arendeViewList.get(4));
+        when(arendeViewConverter.convert(arendeList.get(5))).thenReturn(arendeViewList.get(5));
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 
@@ -800,14 +806,18 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(repo).findByIntygsId("intyg-1");
         verify(webcertUserService).getUser();
 
-        assertEquals(2, result.size());
+        assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());
         assertEquals(arendeViewList.get(0), result.get(0).getFraga());
         assertEquals(arendeViewList.get(1), result.get(0).getSvar());
         assertEquals(arendeViewList.get(2), result.get(0).getPaminnelser().get(0));
-        assertEquals(arendeViewList.get(3), result.get(1).getFraga());
+        assertEquals(arendeViewList.get(3).getInternReferens(), result.get(2).getFraga().getInternReferens());
+        assertEquals(arendeViewList.get(4).getInternReferens(), result.get(1).getFraga().getInternReferens());
+        assertEquals(arendeViewList.get(5).getInternReferens(), result.get(3).getFraga().getInternReferens());
         assertEquals(DECEMBER_YEAR_9999, result.get(0).getSenasteHandelse());
-        assertEquals(FEBRUARY, result.get(1).getSenasteHandelse());
+        assertEquals(DECEMBER_YEAR_9999, result.get(1).getSenasteHandelse());
+        assertEquals(FEBRUARY, result.get(2).getSenasteHandelse());
+        assertEquals(JANUARY, result.get(3).getSenasteHandelse());
     }
 
     private ArendeView buildArendeView(Arende arende, String meddelandeId, String svarPaId, String paminnelseMeddelandeId, LocalDateTime timestamp) {
@@ -1066,7 +1076,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setSenasteHandelse(senasteHandelse);
         arende.setMeddelande("frageText");
         arende.setTimestamp(timestamp);
-        List<MedicinsktArende> komplettering = new ArrayList<MedicinsktArende>();
+        List<MedicinsktArende> komplettering = new ArrayList<>();
         arende.setIntygsId(intygId);
         arende.setPatientPersonId(PATIENT_ID.getPersonnummer());
         arende.setSigneratAv("Signatur");
