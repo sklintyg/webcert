@@ -852,4 +852,11 @@
         tableName="ANVANDARE_PREFERENCE"/>
 
   </changeSet>
+
+  <changeSet id="40" author="el">
+    <createIndex indexName="IDX_ANV_PREF_HSA_ID"
+        tableName="ANVANDARE_PREFERENCE" unique="false">
+      <column name="HSA_ID"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>
