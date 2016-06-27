@@ -31,7 +31,7 @@ var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var SokSkrivIntyg = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastTyp = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
-describe('Generate fk intyg', function() {
+fdescribe('Generate fk intyg', function() {
 
     var intygId = testdataHelper.generateTestGuid();
     var intyg;

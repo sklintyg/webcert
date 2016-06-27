@@ -16,25 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.user;
 
-import se.inera.intyg.common.security.common.service.CommonUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-public interface WebCertUserService extends CommonUserService {
+/**
+ * Created by erikl.
+ */
+public class WebUserPreferenceStorageRequest {
 
-     WebCertUser getUser();
+    private String key;
+    private String value;
 
-    /**
-     * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
-     *
-     * @param key
-     *         An arbitrary string-based key.
-     *
-     * @param value
-     *         An arbitrary string-based value.
-     */
-     void storeUserPreference(String key, String value);
+    public String getKey() {
+        return key;
+    }
 
-    void deleteUserPreference(String key);
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

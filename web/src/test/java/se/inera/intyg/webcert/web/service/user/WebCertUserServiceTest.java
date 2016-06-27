@@ -19,12 +19,43 @@
 
 package se.inera.intyg.webcert.web.service.user;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
-//@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
-   /*
+
     public static final String VARDGIVARE_1 = "VG1";
     public static final String VARDGIVARE_2 = "VG2";
 
@@ -33,6 +64,8 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     public static final String VARDENHET_3 = "VG2VE1";
     public static final String VARDENHET_4 = "VG2VE2";
 
+    @Mock
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
     @InjectMocks
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
@@ -90,6 +123,45 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(4, user.getFeatures().size());
     }
 
+    @Test
+    public void testStoreExistingUserMetadata() {
+        WebCertUser user = createWebCertUser(false);
+        applyUserToThreadLocalCtx(user);
+        when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1")).thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
+
+        webcertUserService.storeUserPreference("key1", "value1");
+        assertEquals("value1", user.getAnvandarPreference().get("key1"));
+        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+        verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
+    }
+
+    @Test
+    public void testStoreNonExistingUserMetadata() {
+        WebCertUser user = createWebCertUser(false);
+        applyUserToThreadLocalCtx(user);
+        when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1")).thenReturn(null);
+
+        webcertUserService.storeUserPreference("key1", "value1");
+        assertEquals("value1", user.getAnvandarPreference().get("key1"));
+        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+        verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
+    }
+
+    private void applyUserToThreadLocalCtx(final WebCertUser user) {
+        Authentication auth = new AbstractAuthenticationToken(null) {
+            @Override
+            public Object getCredentials() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return user;
+            }
+        };
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
     private WebCertUser createWebCertUser(boolean fromJS) {
 
         WebCertUser user = buildUserPrincipal();
@@ -140,5 +212,5 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
         return user;
     }
-        */
+
 }

@@ -31,6 +31,8 @@ import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -44,9 +46,37 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
 
+    @Autowired
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
     @Override
     public WebCertUser getUser() {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @Override
+    public void storeUserPreference(String key, String value) {
+        WebCertUser user = getUser();
+        String hsaId = user.getHsaId();
+        AnvandarPreference am = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, key);
+        if (am == null) {
+            anvandarPreferenceRepository.save(new AnvandarPreference(hsaId, key, value));
+        } else {
+            am.setValue(value);
+            anvandarPreferenceRepository.save(am);
+        }
+        user.getAnvandarPreference().put(key, value);
+    }
+
+    @Override
+    public void deleteUserPreference(String key) {
+        WebCertUser user = getUser();
+        String hsaId = user.getHsaId();
+        AnvandarPreference am = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, key);
+        if (am != null) {
+            anvandarPreferenceRepository.delete(am);
+        }
+        user.getAnvandarPreference().remove(key);
     }
 
     @Override

@@ -28,6 +28,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -47,6 +48,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
 
 /**
  * Controller for accessing the users security context.
@@ -178,6 +180,24 @@ public class UserApiController extends AbstractApiController {
     public Response clientPing() {
         // Any active user session will be extended just by accessing an endpoint.
         LOG.debug("wc-client pinged server");
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/preferences")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response storeUserMetdataEntry(WebUserPreferenceStorageRequest request) {
+        LOG.debug("User stored user preference entry for key: " + request.getKey());
+        getWebCertUserService().storeUserPreference(request.getKey(), request.getValue());
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/preferences/{key}")
+    public Response deleteUserPreferenceEntry(@PathParam("key") String prefKey) {
+        LOG.debug("User deleted user preference entry for key: " + prefKey);
+        getWebCertUserService().deleteUserPreference(prefKey);
         return Response.ok().build();
     }
 }
