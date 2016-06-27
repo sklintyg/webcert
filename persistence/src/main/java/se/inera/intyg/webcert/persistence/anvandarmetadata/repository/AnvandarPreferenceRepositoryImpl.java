@@ -52,10 +52,12 @@ public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepos
 
     @Override
     public boolean exists(String hsaId, String key) {
-        return entityManager.createQuery("SELECT COUNT(am) FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", AnvandarPreference.class)
+        Number number = entityManager.createQuery("SELECT COUNT(am) FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", Number.class)
                 .setParameter("hsaId", hsaId)
                 .setParameter("key", key)
-                .getResultList().size() > 0;
+                .getSingleResult();
+
+        return number.longValue() > 0L;
     }
 
     @Override

@@ -147,6 +147,27 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
     }
 
+    @Test
+    public void testDeleteStoredAnvandarPreference() {
+        AnvandarPreference anvandarPreference = new AnvandarPreference("HSA-id", "key1", "value1");
+        WebCertUser user = createWebCertUser(false);
+        applyUserToThreadLocalCtx(user);
+        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(anvandarPreference);
+        webcertUserService.deleteUserPreference("key1");
+        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+        verify(anvandarPreferenceRepository, times(1)).delete(anvandarPreference);
+    }
+
+    @Test
+    public void testDeleteUnknownAnvandarPreference() {
+        WebCertUser user = createWebCertUser(false);
+        applyUserToThreadLocalCtx(user);
+        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(null);
+        webcertUserService.deleteUserPreference("key1");
+        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+        verify(anvandarPreferenceRepository, times(0)).delete(any(AnvandarPreference.class));
+    }
+
     private void applyUserToThreadLocalCtx(final WebCertUser user) {
         Authentication auth = new AbstractAuthenticationToken(null) {
             @Override

@@ -34,6 +34,8 @@ import javax.persistence.PersistenceContext;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -69,10 +71,36 @@ public class AnvandarPreferenceRepositoryTest {
         AnvandarPreference savedOther = buildAnvandarPreference("other-id", "key3", "value3");
         anvandarMetadataRepository.save(savedOther);
 
-        Map<String, String> anvandarMetadata = anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
-        assertEquals(2, anvandarMetadata.size());
-        assertEquals("value1", anvandarMetadata.get("key1"));
-        assertEquals("value2", anvandarMetadata.get("key2"));
+        Map<String, String> anvandarPref = anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
+        assertEquals(2, anvandarPref.size());
+        assertEquals("value1", anvandarPref.get("key1"));
+        assertEquals("value2", anvandarPref.get("key2"));
+    }
+
+    @Test
+    public void testFindByHsaAndKeyWhenNotExists() {
+        AnvandarPreference anvandarPreference = anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, "key1");
+        assertNull(anvandarPreference);
+    }
+
+    @Test
+    public void testFindByHsaAndKey() {
+        AnvandarPreference saved = buildAnvandarPreference(HSA_ID, "key1", "value1");
+        anvandarMetadataRepository.save(saved);
+
+        AnvandarPreference anvandarPreference = anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, "key1");
+        assertEquals(saved, anvandarPreference);
+    }
+
+    @Test
+    public void testDeleteAnvandarPreferenceThatExists() {
+        AnvandarPreference saved = buildAnvandarPreference(HSA_ID, "key1", "value1");
+        anvandarMetadataRepository.save(saved);
+        anvandarMetadataRepository.delete(saved);
+        boolean exists = anvandarMetadataRepository.exists(HSA_ID, "key1");
+        assertFalse(exists);
+        Map<String, String> anvandarPreferenceMap = anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
+        assertEquals(0, anvandarPreferenceMap.size());
     }
 
     private AnvandarPreference buildAnvandarPreference(String hsaId, String key, String value) {
