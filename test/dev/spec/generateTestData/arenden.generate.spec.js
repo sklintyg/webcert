@@ -58,16 +58,15 @@ fdescribe('webcert intyg', function() {
                         console.log('Response code:' + response.statusCode);
                     });
 
-                    return arendeIndex;
+                    return arendeOptions.meddelandeId;
                 }
 
-                /*
-                createArende('Hur är det med arbetstiden?', 'ARBTID', 'PENDING_INTERNAL_ACTION');
-                createArende('Vi behöver prata.', 'AVSTMN', 'PENDING_INTERNAL_ACTION');
-                createArende('Vi behöver kontakt.', 'KONTKT', 'PENDING_INTERNAL_ACTION');
-                createArende('Övriga frågor?', 'OVRIGT', 'PENDING_INTERNAL_ACTION');*/
+                createArende({meddelande:'Hur är det med arbetstiden?', amne:'ARBTID', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Vi behöver prata.', amne:'AVSTMN', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Vi behöver kontakt.', amne:'KONTKT', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Övriga frågor?', amne:'OVRIGT', status:'PENDING_INTERNAL_ACTION'});
 
-                var kompltIndex = createArende({
+                var meddelandeId = createArende({
                     meddelande:'Komplettera mera.',
                     amne:'KOMPLT',
                     status:'PENDING_INTERNAL_ACTION',
@@ -94,7 +93,7 @@ fdescribe('webcert intyg', function() {
                     meddelande: 'Du har facking glömt att komplettera loser!',
                     amne:'PAMINN',
                     status:'PENDING_INTERNAL_ACTION',
-                    paminnelseMeddelandeId: kompltIndex});
+                    paminnelseMeddelandeId: meddelandeId});
             });
         }
 

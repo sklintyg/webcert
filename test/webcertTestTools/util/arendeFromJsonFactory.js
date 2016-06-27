@@ -86,6 +86,7 @@ module.exports = {
         arende.intygTyp = arendeOptions.intygType;
         arende.intygsId = arendeOptions.intygId;
         arende.meddelandeId = arendeOptions.meddelandeId;
+        arende.paminnelseMeddelandeId = typeof arendeOptions.paminnelseMeddelandeId !== 'undefined' ? arendeOptions.paminnelseMeddelandeId : undefined;
         arende.meddelande = arendeOptions.meddelande;
         arende.amne = arendeOptions.amne;
         arende.status = arendeOptions.status;
