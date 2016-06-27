@@ -16,25 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.user;
 
-import se.inera.intyg.common.security.common.service.CommonUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
-public interface WebCertUserService extends CommonUserService {
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
-     WebCertUser getUser();
+/**
+ * Created by eriklupander on 2015-08-05.
+ */
+public interface AnvandarPreferenceRepository extends JpaRepository<AnvandarPreference, Long>, AnvandarPreferenceRepositoryCustom {
 
-    /**
-     * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
-     *
-     * @param key
-     *         An arbitrary string-based key.
-     *
-     * @param value
-     *         An arbitrary string-based value.
-     */
-     void storeUserPreference(String key, String value);
-
-    void deleteUserPreference(String key);
 }

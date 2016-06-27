@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.specifications.spec.web
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
 import se.inera.intyg.webcert.specifications.pages.fk7263.VisaFk7263Page
+import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
@@ -180,7 +181,8 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
     }
 
     void aktiveraKopieraDialogen() {
-        Browser.deleteCookie("wc.dontShowCopyDialog");
+       // Browser.deleteCookie("wc.dontShowCopyDialog");
+        WebcertRestUtils.deleteUserPreference("wc.dontShowCopyDialog")
     }
 
     void kopieraIntygUtanDialog() {

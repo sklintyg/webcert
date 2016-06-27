@@ -222,7 +222,7 @@ public class UtkastServiceImpl implements UtkastService {
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast, coherentJournaling);
             if (!coherentJournaling) {
                 abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
-            } 
+            }
 
             // Log read to PDL
             logService.logReadIntyg(logRequest);

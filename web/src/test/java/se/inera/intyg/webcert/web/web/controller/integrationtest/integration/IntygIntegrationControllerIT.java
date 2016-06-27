@@ -215,6 +215,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().redirects().follow(false).and().pathParam("intygsId", utkastId).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").
-                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter"));
+                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
     }
 }

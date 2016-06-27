@@ -60,7 +60,7 @@ Om du inte känner patienten ska hen styrka sin identitet genom legitimation med
 	<text id="KAT_4.RBK">Diagnos</text>
 	<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
 	<text id="FRG_6.HLP">Ange diagnoser för sjukdom som orsakar nedsatt arbetsförmåga. Huvuddiagnosen för arbetsförmågans nedsättning anges först.</text>
-	<text id="DFR_6.2 .RBK">Diagnoskod enligt ICD-10 SE</text>
+	<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
 	<text id="FRG_7.RBK">När och var ställdes diagnosen/diagnoserna?</text>
   <text id="DFR_7.2.RBK">Finns skäl till att revidera/uppdatera tidigare satt diagnos?</text>
   <text id="DFR_7.2.HLP">Möjliga anledningar kan vara:

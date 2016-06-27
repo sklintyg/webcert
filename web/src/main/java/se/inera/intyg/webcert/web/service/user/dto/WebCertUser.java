@@ -22,12 +22,17 @@ package se.inera.intyg.webcert.web.service.user.dto;
 import se.inera.intyg.common.security.common.model.IntygUser;
 import se.inera.intyg.common.security.common.model.UserDetails;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author andreaskaltenbach
  */
 public class WebCertUser extends IntygUser implements UserDetails {
 
     private static final long serialVersionUID = -2624303818412468774L;
+
+    private Map<String, String> anvandarPreference;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -55,5 +60,16 @@ public class WebCertUser extends IntygUser implements UserDetails {
         this.roles = intygUser.getRoles();
         this.authorities = intygUser.getAuthorities();
         this.origin = intygUser.getOrigin();
+    }
+
+    public Map<String, String> getAnvandarPreference() {
+        if (anvandarPreference == null) {
+            anvandarPreference = new HashMap<>();
+        }
+        return anvandarPreference;
+    }
+
+    public void setAnvandarPreference(Map<String, String> anvandarMetadata) {
+        this.anvandarPreference = anvandarMetadata;
     }
 }
