@@ -42,10 +42,10 @@ public class AnvandarPreference {
     @Column(name = "HSA_ID", nullable = false)
     private String hsaId;
 
-    @Column(name = "KEY", nullable = false)
+    @Column(name = "PREF_KEY", nullable = false)
     private String key;
 
-    @Column(name = "VALUE", nullable = true)
+    @Column(name = "PREF_VALUE", nullable = true)
     private String value;
 
     public AnvandarPreference() {

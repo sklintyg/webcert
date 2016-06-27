@@ -831,10 +831,10 @@
       <column name="HSA_ID" type="varchar(255)">
         <constraints nullable="false" />
       </column>
-      <column name="KEY" type="varchar(255)">
+      <column name="PREF_KEY" type="varchar(255)">
         <constraints nullable="false" />
       </column>
-      <column name="VALUE" type="varchar(4096)">
+      <column name="PREF_VALUE" type="varchar(4096)">
         <constraints nullable="true" />
       </column>
     </createTable>
@@ -847,7 +847,7 @@
         tableName="ANVANDARE_PREFERENCE" />
 
     <addUniqueConstraint
-        columnNames="HSA_ID, KEY"
+        columnNames="HSA_ID, PREF_KEY"
         constraintName="ANVANDARE_PREFERENCE_UNIQUE_CONST"
         tableName="ANVANDARE_PREFERENCE"/>
 
