@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.model;
 
 import javax.persistence.Column;
@@ -16,6 +34,7 @@ import javax.persistence.Table;
 @Table(name = "ANVANDARE_PREFERENCE")
 public class AnvandarPreference {
 
+    public static final int INT = 31;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long internReferens;
@@ -73,13 +92,23 @@ public class AnvandarPreference {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AnvandarPreference)) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof AnvandarPreference)) {
+            return false;
+        }
+
 
         AnvandarPreference that = (AnvandarPreference) o;
 
-        if (!hsaId.equals(that.hsaId)) return false;
-        if (!key.equals(that.key)) return false;
+        if (!hsaId.equals(that.hsaId)) {
+            return false;
+        }
+        if (!key.equals(that.key)) {
+            return false;
+        }
         return value != null ? value.equals(that.value) : that.value == null;
 
     }
@@ -87,8 +116,8 @@ public class AnvandarPreference {
     @Override
     public int hashCode() {
         int result = hsaId.hashCode();
-        result = 31 * result + key.hashCode();
-        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = INT * result + key.hashCode();
+        result = INT * result + (value != null ? value.hashCode() : 0);
         return result;
     }
 }
