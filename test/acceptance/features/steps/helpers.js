@@ -82,5 +82,16 @@ module.exports = {
             return str.substr(0, str.length - 1);
         }
         return str;
+    },
+    getIntygElementRow: function(intygstyp, status, cb) {
+        var qaTable = element(by.css('table.table-qa'));
+        qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
+            return elem.all(by.css('td')).get(2).getText().then(function(text) {
+                return (text === intygstyp);
+            });
+        }).then(function(filteredElements) {
+            cb(filteredElements[0]);
+        });
     }
+
 };

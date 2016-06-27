@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, logger */
+/* globals pages, protractor, logger, Promise */
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -83,6 +83,59 @@ module.exports = function() {
         }, function(reason) {
             callback('FEL : ' + reason);
         }).then(callback);
+    });
+
+    this.Given(/^ska Förnya\-knappen visas för alla signerade eller mottagna "([^"]*)"\-intyg$/, function(intygstyp) {
+
+        element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
+
+        function checkRowForBtnWithText(rowText, buttonText, shouldBePresent) {
+            var qaTable = element(by.css('table.table-qa'));
+            return qaTable.all(by.cssContainingText('tr', rowText)).filter(function(elem, index) {
+                return elem.all(by.css('td')).get(2).getText().then(function(text) {
+                    return (text === intygstyp);
+                });
+            }).then(function(els) {
+                logger.info('Antal ' + rowText + '-rader som visas: ' + els.length);
+                var notText = '';
+                if (!shouldBePresent) {
+                    notText = ' inte';
+                }
+                var rowChecks = [];
+
+                function onSucc(value) {
+                    //console.log('kontrollerart att rad ' + notText + ' har en ' + buttonText + '-knapp');
+                }
+
+                function onFail(reason) {
+                    console.log(reason.message);
+                    throw reason;
+                }
+
+                function printText(txt) {
+                    console.log(txt);
+                }
+
+                for (var k = 0; k < els.length; k++) {
+                    els[k].getText().then(printText);
+
+                    if (shouldBePresent) {
+                        rowChecks.push(expect(els[k].getText()).to.eventually.contain(buttonText)
+                            .then(onSucc, onFail));
+                    } else {
+                        rowChecks.push(expect(els[k].getText()).to.eventually.not.contain(buttonText)
+                            .then(onSucc, onFail));
+                    }
+
+                }
+                return Promise.all(rowChecks);
+            });
+        }
+        return Promise.all([
+            checkRowForBtnWithText('Signerat', 'Förnya', true),
+            checkRowForBtnWithText('Mottaget', 'Förnya', true),
+            checkRowForBtnWithText('Makulerat', 'Förnya', false)
+        ]);
     });
 
     this.Given(/^är signeraknappen tillgänglig$/, function(callback) {

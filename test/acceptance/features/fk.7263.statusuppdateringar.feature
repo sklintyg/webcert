@@ -74,7 +74,7 @@ Scenario: Statusuppdateringar vid fråga till FK
    Och jag markerar svaret från Försäkringskassan som hanterat
    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    
-@komplettering
+@komplettering @waitingForFix @INTYG-2652
 Scenario: Statusuppdateringar vid komplettering med nytt intyg
 
    När jag fyller i alla nödvändiga fält för intyget
