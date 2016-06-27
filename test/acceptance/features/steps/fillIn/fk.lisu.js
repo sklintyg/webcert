@@ -30,13 +30,34 @@ module.exports = {
         //Baserat på
         lisuUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox.sendKeys(protractor.Key.SPACE);
         lisuUtkastPage.baseratPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
-        //lisuUtkastPage.baseratPa.anhorigBeskrivning.checkbox.sendKeys(protractor.Key.SPACE);
 
+        // Sysselsättning
+        lisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning);
+
+        // Diagnos
         lisuUtkastPage.diagnoseCode.sendKeys(intyg.diagnos.kod);
         lisuUtkastPage.diagnoseCode.sendKeys(protractor.Key.TAB);
 
-        // logger.info('aktivitetsbegransning: ' + intyg.aktivitetsbegransning);
-        lisuUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning);
+        // Konsekvenser för patient
+        lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.funktionsnedsattning);
+        lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning);
+
+        // Bedömin
+        lisuUtkastPage.sjukskrivning[100].fran.sendKeys(intyg.sjukskrivning.fran);
+        lisuUtkastPage.sjukskrivning[100].till.sendKeys(intyg.sjukskrivning.till);
+        lisuUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning.sendKeys(intyg.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning);
+        lisuUtkastPage.sjukskrivning.arbetsresor.ja.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.sjukskrivning.formagaTrotsBegransningBeskrivning);
+        lisuUtkastPage.sjukskrivning.prognos.typ[1].sendKeys(protractor.Key.SPACE);
+
+        // Åtgärd
+        lisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
+        browser.ignoreSynchronization = false; // Cannot ignore synchronization in this step
+        lisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning.sendKeys(intyg.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning);
+        browser.ignoreSynchronization = true;
+
+
 
         browser.ignoreSynchronization = false;
 
