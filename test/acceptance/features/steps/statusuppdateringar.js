@@ -104,14 +104,6 @@ module.exports = function() {
         assertEvents(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
     });
 
-    // this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {
-    //     assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
-    // });
-
-    // this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function(arg1, arg2, callback) {
-    //     assertDatabaseContents(global.intyg.id, arg1, arg2, callback);
-    // });
-
     this.Given(/^jag raderar intyget$/, function(callback) {
         fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
             fk7263Utkast.radera.bekrafta.sendKeys(protractor.Key.SPACE).then(callback);

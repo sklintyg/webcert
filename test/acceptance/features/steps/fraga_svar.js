@@ -143,20 +143,6 @@ module.exports = function() {
         return kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck);
     });
 
-    this.Given(/^jag fyller i en ny fråga till Försäkringskassan$/, function(callback) {
-        fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.question.text.sendKeys('En fråga till FK, ').then(function() {
-                fkIntygPage.question.kontakt.sendKeys(protractor.Key.SPACE).then(callback);
-            });
-        });
-    });
-
-    this.Given(/^sedan klickar på skicka$/, function(callback) {
-        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE).then(function() {
-            helpers.fetchMessageIds(intyg.typ).then(callback);
-        });
-    });
-
     this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
         fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });

@@ -73,17 +73,17 @@ module.exports = function() {
         }).then(callback);
     });
 
-    this.Given(/^avbryter jag vidarebefodran$/, function(callback) {
-        element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
-    });
+    // this.Given(/^avbryter jag vidarebefodran$/, function(callback) {
+    //     element(by.id('buttonNo')).sendKeys(protractor.Key.SPACE).then(callback);
+    // });
 
-    this.Given(/^kopierar ett signerat intyg$/, function(callback) {
-        expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function() {
-            logger.info('OK - Kopiera knappen hittad');
-        }, function(reason) {
-            callback('FEL : ' + reason);
-        }).then(callback);
-    });
+    // this.Given(/^kopierar ett signerat intyg$/, function(callback) {
+    //     expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function() {
+    //         logger.info('OK - Kopiera knappen hittad');
+    //     }, function(reason) {
+    //         callback('FEL : ' + reason);
+    //     }).then(callback);
+    // });
 
     this.Given(/^ska Förnya\-knappen visas för alla signerade eller mottagna "([^"]*)"\-intyg$/, function(intygstyp) {
 
