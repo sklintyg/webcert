@@ -39,7 +39,7 @@ module.exports = {
     fetchMessageIds: function(intygtyp) {
         console.log('Hämtar meddelande-id:n');
 
-        var isSMIIntyg = (intygtyp && intygtyp.indexOf('Läkarutlåtande för') > -1);
+        var isSMIIntyg = this.isSMIIntyg(intygtyp);
 
         if (!intyg.messages) {
             intyg.messages = [];
@@ -92,6 +92,14 @@ module.exports = {
         }).then(function(filteredElements) {
             cb(filteredElements[0]);
         });
+    },
+    isSMIIntyg: function(intygsType) {
+        var regex = /(Läkarintyg|Läkarutlåtande)/g;
+        var res = (intygsType !== 'undefined') ? intygsType.match(regex) : 0;
+        if (res.length > 0) {
+            return true;
+        }
+        return false;
     }
 
 };
