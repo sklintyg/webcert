@@ -95,7 +95,7 @@ module.exports = {
     },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg|Läkarutlåtande)/g;
-        var res = (intygsType !== 'undefined') ? intygsType.match(regex) : 0;
+        var res = (typeof intygsType !== 'undefined') ? intygsType.match(regex) : 0;
         if (res.length > 0) {
             return true;
         }
