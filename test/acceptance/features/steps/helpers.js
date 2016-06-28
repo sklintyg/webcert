@@ -94,12 +94,8 @@ module.exports = {
         });
     },
     isSMIIntyg: function(intygsType) {
-        var regex = /(Läkarintyg|Läkarutlåtande)/g;
-        var res = (typeof intygsType !== 'undefined') ? intygsType.match(regex) : 0;
-        if (res.length > 0) {
-            return true;
-        }
-        return false;
+        var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
+        return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
     }
 
 };
