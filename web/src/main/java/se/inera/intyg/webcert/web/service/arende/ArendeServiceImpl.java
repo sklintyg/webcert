@@ -351,6 +351,13 @@ public class ArendeServiceImpl implements ArendeService {
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
                 .map(ArendeListItemConverter::convert)
                 .filter(Objects::nonNull)
+                // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
+                // they want to display this information to the user. We cannot do this without a database access, hence
+                // we do it after the convert
+                .map(item -> {
+                    item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty());
+                    return item;
+                })
                 .collect(Collectors.toList());
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
 

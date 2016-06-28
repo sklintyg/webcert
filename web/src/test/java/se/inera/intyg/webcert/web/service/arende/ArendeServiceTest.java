@@ -1022,15 +1022,20 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String intygId1 = "intygid1";
         final String intygId2 = "intygid2";
         final String intygId3 = "intygid3";
+        final String meddelandeId = "arendeWithPaminnelseMeddelandeId";
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, intygId3, LocalDateTime.now().plusDays(2), null));
-        queryResults.add(buildArende(2L, intygId2, LocalDateTime.now(), null));
+
+        Arende arendeWithPaminnelse = buildArende(2L, intygId2, LocalDateTime.now(), null);
+        arendeWithPaminnelse.setMeddelandeId(meddelandeId);
+        queryResults.add(arendeWithPaminnelse);
 
         when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
         when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size());
+        when(repo.findByPaminnelseMeddelandeId(eq(meddelandeId))).thenReturn(Arrays.asList(new Arende()));
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
