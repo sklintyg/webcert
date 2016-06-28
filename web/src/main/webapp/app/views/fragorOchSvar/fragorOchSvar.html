@@ -176,7 +176,7 @@
                                             <span ng-if="qa.updateInProgress"> <img
                                                 src="/img/ajax-loader-kit-16x16.gif"></span>
                     </td>
-                    <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
+                    <td><span ng-show="qa.paminnelse">Påminnelse:</span> <span message key="qa.measure.{{qa.measureResKey}}"></span></td>
                     <td><span message key="qa.fragestallare.{{qa.fragestallare}}"></span></td>
                     <td id="patientId-{{qa.meddelandeId}}" class="unbreakable">{{qa.patientId}}</td>
                     <td>{{qa.signeratAvNamn}}</td>
