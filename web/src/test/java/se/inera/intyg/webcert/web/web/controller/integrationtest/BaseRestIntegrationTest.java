@@ -62,6 +62,9 @@ public abstract class BaseRestIntegrationTest {
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
             "IFV1239877878-1042").lakare(true).build();
+    
+    protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
+            "TSTNMT2321000156-1039").lakare(true).build();
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
     protected static final String DEFAULT_INTYGSTYP = "fk7263";
 

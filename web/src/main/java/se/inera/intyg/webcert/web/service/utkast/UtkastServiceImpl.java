@@ -216,13 +216,15 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId) {
+    public Utkast getDraft(String intygId, boolean coherentJournaling) {
         Utkast utkast = getIntygAsDraft(intygId);
         if (utkast != null) {
-            abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast, coherentJournaling);
+            if (!coherentJournaling) {
+                abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+            }
 
             // Log read to PDL
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
             logService.logReadIntyg(logRequest);
 
             // Log read to monitoring log

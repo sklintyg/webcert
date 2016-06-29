@@ -20,12 +20,17 @@
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -35,18 +40,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -202,6 +199,26 @@ public class UtkastRepositoryTest {
         assertEquals(UtkastTestUtil.ENHET_1_ID, read.getEnhetsId());
         assertEquals(relationIntygsId, read.getRelationIntygsId());
         assertEquals(relationKod, read.getRelationKod());
+    }
+
+    @Test
+    public void testFindAllByRelationIntygsId() {
+        String relationIntygsId = "parentCertificate";
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, RelationKod.KOMPLT));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, "someOtherCertificate", RelationKod.KOMPLT));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, RelationKod.KOMPLT));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, RelationKod.KOMPLT));
+        List<Utkast> res = utkastRepository.findAllByRelationIntygsId(relationIntygsId);
+
+        assertNotNull(res);
+        assertEquals(3, res.size());
+    }
+
+    @Test
+    public void testFindAllByRelationIntygsIdNoMatches() {
+        List<Utkast> res = utkastRepository.findAllByRelationIntygsId("parentCertificate");
+        assertNotNull(res);
+        assertTrue(res.isEmpty());
     }
 
 }

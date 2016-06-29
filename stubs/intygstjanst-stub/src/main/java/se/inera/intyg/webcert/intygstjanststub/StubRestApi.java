@@ -21,12 +21,7 @@ package se.inera.intyg.webcert.intygstjanststub;
 
 import java.util.Collection;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,12 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubMode;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeSingleton;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
 /**
  * This REST API is used to introspect stub state and modify its characteristics during runtime, e.g. put it into
@@ -60,28 +52,15 @@ public class StubRestApi {
     @GET
     @Path("/intyg")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<GetCertificateForCareResponseType> getAllIntyg() {
+    public Collection<CertificateHolder> getAllIntyg() {
         return intygStore.getAllIntyg().values();
     }
 
     @GET
     @Path("/intyg/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public GetCertificateForCareResponseType getIntyg(@PathParam("id") String id) {
-        GetCertificateForCareResponseType resp = intygStore.getAllIntyg().get(id);
-        ResultType resultType = new ResultType();
-        if (resp == null) {
-            resp = new GetCertificateForCareResponseType();
-
-            resultType.setResultCode(ResultCodeType.ERROR);
-            resultType.setErrorId(ErrorIdType.APPLICATION_ERROR);
-            resultType.setResultText("Intyg " + id + " does not exist in stub. At least not yet.");
-            resp.setResult(resultType);
-            return resp;
-        }
-        resultType.setResultCode(ResultCodeType.OK);
-        resp.setResult(resultType);
-        return resp;
+    public CertificateHolder getIntyg(@PathParam("id") String id) {
+        return intygStore.getIntygForCertificateId(id);
     }
 
     @DELETE

@@ -129,7 +129,7 @@ public class ArendeListItemConverterTest {
     }
 
     private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
-            String signeratAvName, String skickatAv, LocalDateTime skickatTidpunkt, Status status, Boolean vidarebefordrad, String enhetName, String vardgivareName) {
+            String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad, String enhetName, String vardgivareName) {
         Arende arende = new Arende();
         arende.setAmne(amne);
         arende.setIntygsId(intygsId);
@@ -138,7 +138,7 @@ public class ArendeListItemConverterTest {
         arende.setPatientPersonId(patientPersonId);
         arende.setSigneratAvName(signeratAvName);
         arende.setSkickatAv(skickatAv);
-        arende.setSkickatTidpunkt(skickatTidpunkt);
+        arende.setSenasteHandelse(senasteHandelse);
         arende.setStatus(status);
         arende.setVidarebefordrad(vidarebefordrad);
         arende.setEnhetName(enhetName);

@@ -66,8 +66,7 @@ module.exports = function() {
         global.intyg.typ = intygstyp;
         global.person.id = testdataHelpers.shuffle(testvalues.patienter)[0];
         var body, path;
-        var isSMIIntyg = intygstyp.indexOf('Läkarutlåtande för') > -1;
-
+        var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
         if (isSMIIntyg) {
             path = '/services/create-draft-certificate/v2.0?wsdl';
             body = soapMessageBodies.CreateDraftCertificateV2(

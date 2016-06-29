@@ -19,31 +19,50 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import java.util.*;
+
+import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
-public class RelationItem {
+public final class RelationItem {
 
-    private String intygsId;
-    private String kod;
-    private String status;
+    public static final String UTKAST = "UTKAST";
+    public static final String INTYG = "INTYG";
 
-    public RelationItem(String intygsId, RelationKod relationsKod, UtkastStatus status) {
-        this.intygsId = intygsId;
-        this.kod = convert(relationsKod);
-        this.status = convert(status);
+    private final String intygsId;
+    private final String kod;
+    private final String status;
+    private final LocalDateTime date;
+
+    public RelationItem(final Utkast reference) {
+        intygsId = reference.getIntygsId();
+        kod = convert(reference.getRelationKod());
+        status = convert(reference.getStatus());
+        date = getDate(reference);
     }
 
-    public RelationItem() {
+    public RelationItem(String intygsId, String status, LocalDateTime date) {
+        this.intygsId = intygsId;
+        this.status = status;
+        this.date = date;
+        kod = null;
+    }
 
+    private LocalDateTime getDate(final Utkast reference) {
+        return UtkastStatus.SIGNED.equals(reference.getStatus())
+                ? reference.getSignatur().getSigneringsDatum()
+                : reference.getSenastSparadDatum();
     }
 
     private String convert(UtkastStatus status) {
         switch (status) {
         case SIGNED:
-            return "INTYG";
+            return INTYG;
         default:
-            return "UTKAST";
+            return UTKAST;
         }
     }
 
@@ -55,23 +74,22 @@ public class RelationItem {
         return intygsId;
     }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
-
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getKod() {
         return kod;
     }
 
-    public void setKod(String kod) {
-        this.kod = kod;
+    public LocalDateTime getDate() {
+        return date;
     }
+
+    public static List<RelationItem> createBaseCase(String intygId, LocalDateTime signeringsdatum, String status) {
+        ArrayList<RelationItem> res = new ArrayList<>();
+        res.add(new RelationItem(intygId, status, signeringsdatum));
+        return res;
+    }
+
 }

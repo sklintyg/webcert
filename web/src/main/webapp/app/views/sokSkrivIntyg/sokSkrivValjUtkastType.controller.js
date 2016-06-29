@@ -18,7 +18,7 @@
  */
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
-        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.IntygFornyaRequestModel',
+        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'common.PatientModel', 'common.messageService',
         function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
             IntygProxy, UtkastProxy, IntygFornyaRequestModel, IntygCopyRequestModel, PatientModel, messageService) {
@@ -60,17 +60,17 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             // Format: { id: 'default', label: '' }
             $scope.certTypes = [];
 
+
             /**
              * Private functions
              * @private
              */
 
-
             function onPageLoad() {
-
                 // Redirect to index if pnr and name isn't specified
                 if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
                     $location.url(changePatientUrl, true);
+                    return;
                 }
 
                 // Load cert types user can choose from
@@ -99,8 +99,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         $scope.intygType = newValue;
                     }
                 });
-
-
             }
 
             function hasUnsigned(list) {

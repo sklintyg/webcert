@@ -31,5 +31,6 @@ public enum WebCertServiceErrorCodeEnum {
     DATA_NOT_FOUND,                     // Certificate (or other resource) not found
     CERTIFICATE_REVOKED,
     CONCURRENT_MODIFICATION,
-    GRP_PROBLEM
+    GRP_PROBLEM,
+    MISSING_PARAMETER
 }

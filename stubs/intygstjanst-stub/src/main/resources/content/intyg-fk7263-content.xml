@@ -1,0 +1,120 @@
+<registerMedicalCertificateType xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns4="urn:riv:insuranceprocess:healthreporting:mu7263:3" xmlns:ns3="urn:riv:insuranceprocess:healthreporting:RegisterMedicalCertificateResponder:3">
+    <ns3:lakarutlatande>
+        <ns4:lakarutlatande-id>CERTIFICATE_ID</ns4:lakarutlatande-id>
+        <ns4:typAvUtlatande>Läkarintyg enligt 3 kap, 8 § lagen (1962:381) om allmän försäkring</ns4:typAvUtlatande>
+        <ns4:kommentar>Prognosen att återgå till arbete är svår att bedömma förrän utredningen är genomförd.</ns4:kommentar>
+        <ns4:signeringsdatum>SIGNED_DATE</ns4:signeringsdatum>
+        <ns4:skickatDatum>2011-01-26T00:00:00</ns4:skickatDatum>
+        <ns4:patient>
+            <ns2:person-id root="1.2.752.129.2.1.3.1" extension="PATIENT_CRN"/>
+            <ns2:fullstandigtNamn>Test Testorsson</ns2:fullstandigtNamn>
+        </ns4:patient>
+        <ns4:skapadAvHosPersonal>
+            <ns2:personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID"/>
+            <ns2:fullstandigtNamn>DOCTOR_NAME</ns2:fullstandigtNamn>
+            <ns2:enhet>
+                <ns2:enhets-id root="1.2.752.129.2.1.4.1" extension="CAREUNIT_ID"/>
+                <ns2:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011"/>
+                <ns2:enhetsnamn>CAREUNIT_NAME</ns2:enhetsnamn>
+                <ns2:postadress>Lasarettsvägen 13</ns2:postadress>
+                <ns2:postnummer>85150</ns2:postnummer>
+                <ns2:postort>Sundsvall</ns2:postort>
+                <ns2:telefonnummer>060-1818000</ns2:telefonnummer>
+                <ns2:vardgivare>
+                    <ns2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="CAREGIVER_ID"/>
+                    <ns2:vardgivarnamn>Vårdgivarnamn</ns2:vardgivarnamn>
+                </ns2:vardgivare>
+            </ns2:enhet>
+        </ns4:skapadAvHosPersonal>
+        <ns4:vardkontakt>
+            <ns4:vardkontakttyp>Min_undersokning_av_patienten</ns4:vardkontakttyp>
+            <ns4:vardkontaktstid>2011-01-26</ns4:vardkontaktstid>
+        </ns4:vardkontakt>
+        <ns4:vardkontakt>
+            <ns4:vardkontakttyp>Min_telefonkontakt_med_patienten</ns4:vardkontakttyp>
+            <ns4:vardkontaktstid>2011-01-12</ns4:vardkontaktstid>
+        </ns4:vardkontakt>
+        <ns4:referens>
+            <ns4:referenstyp>Journaluppgifter</ns4:referenstyp>
+            <ns4:datum>2010-01-14</ns4:datum>
+        </ns4:referens>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Patienten_behover_fa_kontakt_med_Arbetsformedlingen</ns4:aktivitetskod>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Patienten_behover_fa_kontakt_med_foretagshalsovarden</ns4:aktivitetskod>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Ovrigt</ns4:aktivitetskod>
+            <ns4:beskrivning>När skadan förbättrats rekommenderas muskeluppbyggande sjukgymnastik</ns4:beskrivning>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Planerad_eller_pagaende_behandling_eller_atgard_inom_sjukvarden</ns4:aktivitetskod>
+            <ns4:beskrivning>Utreds om operation är nödvändig</ns4:beskrivning>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Planerad_eller_pagaende_annan_atgard</ns4:aktivitetskod>
+            <ns4:beskrivning>Patienten ansvarar för att armen hålls i stillhet</ns4:beskrivning>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Gar_ej_att_bedomma_om_arbetslivsinriktad_rehabilitering_ar_aktuell</ns4:aktivitetskod>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Forandrat_ressatt_till_arbetsplatsen_ar_ej_aktuellt</ns4:aktivitetskod>
+        </ns4:aktivitet>
+        <ns4:aktivitet>
+            <ns4:aktivitetskod>Kontakt_med_Forsakringskassan_ar_aktuell</ns4:aktivitetskod>
+        </ns4:aktivitet>
+        <ns4:bedomtTillstand>
+            <ns4:beskrivning>Patienten klämde höger överarm vid olycka i hemmet. Problemen har pågått en längre tid.</ns4:beskrivning>
+        </ns4:bedomtTillstand>
+        <ns4:medicinsktTillstand>
+            <ns4:beskrivning>Klämskada på skuldra och överarm. Samsjuklighet föreligger. Z233 Vaccination avseende pest. Z600 Problem med anpassning till övergångar i livscykeln. Här förtydligar vi våra diagnoser ytterligare och skriver litegrann för att göra saker tydligare för andra som ska läsa på tex Försäkringskassan.</ns4:beskrivning>
+            <ns4:tillstandskod code="S47" codeSystemName="ICD-10"/>
+        </ns4:medicinsktTillstand>
+        <ns4:funktionstillstand>
+            <ns4:beskrivning>Kraftigt nedsatt rörlighet i överarmen pga skadan. Böj- och sträckförmågan är mycket dålig. Smärtar vid rörelse vilket ger att patienten inte kan använda armen särkilt mycket.</ns4:beskrivning>
+            <ns4:typAvFunktionstillstand>Kroppsfunktion</ns4:typAvFunktionstillstand>
+        </ns4:funktionstillstand>
+        <ns4:funktionstillstand>
+            <ns4:beskrivning>Patienten bör/kan inte använda armen förrän skadan läkt. Skadan förvärras vid för tidigt påtvingad belastning. Patienten kan inte lyfta armen utan den ska hållas riktad nedåt och i fast läge så mycket som möjligt under tiden för läkning.</ns4:beskrivning>
+            <ns4:typAvFunktionstillstand>Aktivitet</ns4:typAvFunktionstillstand>
+            <ns4:arbetsformaga>
+                <ns4:motivering>Skadan har förvärrats vid varje tillfälle patienten använt armen. Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg. Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.</ns4:motivering>
+                <ns4:prognosangivelse>Aterstallas_helt</ns4:prognosangivelse>
+                <ns4:arbetsuppgift>
+                    <ns4:typAvArbetsuppgift>Dirigent. Dirigerar en större orkester på deltid</ns4:typAvArbetsuppgift>
+                </ns4:arbetsuppgift>
+                <ns4:arbetsformagaNedsattning>
+                    <ns4:varaktighetFrom>2017-04-01</ns4:varaktighetFrom>
+                    <ns4:varaktighetTom>2017-05-31</ns4:varaktighetTom>
+                    <ns4:nedsattningsgrad>Nedsatt_med_1/4</ns4:nedsattningsgrad>
+                </ns4:arbetsformagaNedsattning>
+                <ns4:arbetsformagaNedsattning>
+                    <ns4:varaktighetFrom>2017-03-07</ns4:varaktighetFrom>
+                    <ns4:varaktighetTom>2017-03-31</ns4:varaktighetTom>
+                    <ns4:nedsattningsgrad>Nedsatt_med_1/2</ns4:nedsattningsgrad>
+                </ns4:arbetsformagaNedsattning>
+                <ns4:arbetsformagaNedsattning>
+                    <ns4:varaktighetFrom>2017-02-14</ns4:varaktighetFrom>
+                    <ns4:varaktighetTom>2017-03-06</ns4:varaktighetTom>
+                    <ns4:nedsattningsgrad>Nedsatt_med_3/4</ns4:nedsattningsgrad>
+                </ns4:arbetsformagaNedsattning>
+                <ns4:arbetsformagaNedsattning>
+                    <ns4:varaktighetFrom>2017-01-26</ns4:varaktighetFrom>
+                    <ns4:varaktighetTom>2017-02-13</ns4:varaktighetTom>
+                    <ns4:nedsattningsgrad>Helt_nedsatt</ns4:nedsattningsgrad>
+                </ns4:arbetsformagaNedsattning>
+                <ns4:sysselsattning>
+                    <ns4:typAvSysselsattning>Nuvarande_arbete</ns4:typAvSysselsattning>
+                </ns4:sysselsattning>
+                <ns4:sysselsattning>
+                    <ns4:typAvSysselsattning>Arbetsloshet</ns4:typAvSysselsattning>
+                </ns4:sysselsattning>
+                <ns4:sysselsattning>
+                    <ns4:typAvSysselsattning>Foraldraledighet</ns4:typAvSysselsattning>
+                </ns4:sysselsattning>
+            </ns4:arbetsformaga>
+        </ns4:funktionstillstand>
+    </ns3:lakarutlatande>
+</registerMedicalCertificateType>

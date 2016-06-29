@@ -821,4 +821,42 @@
       UPDATE INTEGRERADE_VARDENHETER SET SCHEMA_VERSION_1=true;
     </sql>
   </changeSet>
+
+  <changeSet id="39" author="el">
+
+    <createTable tableName="ANVANDARE_PREFERENCE">
+      <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="HSA_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="PREF_KEY" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="PREF_VALUE" type="varchar(4096)">
+        <constraints nullable="true" />
+      </column>
+    </createTable>
+
+
+
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="bigint"
+        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+        tableName="ANVANDARE_PREFERENCE" />
+
+    <addUniqueConstraint
+        columnNames="HSA_ID, PREF_KEY"
+        constraintName="ANVANDARE_PREFERENCE_UNIQUE_CONST"
+        tableName="ANVANDARE_PREFERENCE"/>
+
+  </changeSet>
+
+  <changeSet id="40" author="el">
+    <createIndex indexName="IDX_ANV_PREF_HSA_ID"
+        tableName="ANVANDARE_PREFERENCE" unique="false">
+      <column name="HSA_ID"/>
+    </createIndex>
+  </changeSet>
 </databaseChangeLog>

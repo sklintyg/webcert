@@ -25,10 +25,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
-
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -47,6 +42,13 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygApiControllerTest {
@@ -81,7 +83,6 @@ public class IntygApiControllerTest {
 
     @Before
     public void setupExpectations() {
-
         mockUser();
         USER_INTYGSTYPER.clear();
         USER_INTYGSTYPER.add("fk7263");
@@ -92,13 +93,11 @@ public class IntygApiControllerTest {
     private void mockUser() {
         user = mock(WebCertUser.class);
         SelectableVardenhet vardenhet = mock(SelectableVardenhet.class);
-        when(vardenhet.getId()).thenReturn(ENHET_ID);
 
+        //when(vardenhet.getId()).thenReturn(ENHET_ID);
         when(user.getValdVardenhet()).thenReturn(vardenhet);
-
         when(user.getIdsOfSelectedVardenhet()).thenReturn(ENHET_IDS);
         when(user.getValdVardenhet().getId()).thenReturn(ENHET_ID);
-
         when(webCertUserService.getUser()).thenReturn(user);
     }
 
@@ -133,8 +132,7 @@ public class IntygApiControllerTest {
 
     @Test
     public void testListIntygOfflineMode() {
-        Pair<List<ListIntygEntry>, Boolean> offlineIntygItemListResponse = Pair.of(TestIntygFactory.createListWithIntygItems(),
-                true);
+        Pair<List<ListIntygEntry>, Boolean> offlineIntygItemListResponse = Pair.of(TestIntygFactory.createListWithIntygItems(), true);
 
         // Mock call to Intygstjanst
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(offlineIntygItemListResponse);

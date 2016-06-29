@@ -19,14 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -39,7 +40,7 @@ public interface IntygService {
      * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
      * an attempt to find an utkast stored in Webcert will be performed.
      */
-    IntygContentHolder fetchIntygData(String intygId, String typ);
+    IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling);
 
     /**
      * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
@@ -49,7 +50,7 @@ public interface IntygService {
      *
      * Also includes a list of the relations the intyg has to other intyg.
      */
-    IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ);
+    IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ, boolean coherentJournaling);
 
     /**
      * Returns all certificates for the given patient within all the given units.

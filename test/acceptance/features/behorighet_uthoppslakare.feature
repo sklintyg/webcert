@@ -9,6 +9,7 @@ Scenario: Inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"
 
+@fk7263 @signera
 Scenario: Kan signera intyg
    När jag går in på en patient
    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
@@ -17,24 +18,27 @@ Scenario: Kan signera intyg
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
-Scenario: Kan inte kopiera intyg Läkarintyg FK 7263 
+Scenario: Kan inte kopiera intyg Läkarintyg FK 7263
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
-Scenario: Kan inte kopiera Transportstyrelsens läkarintyg 
+@kopiera @ts @bas
+Scenario: Kan inte kopiera Transportstyrelsens läkarintyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
+@kopiera @ts @diabetes
 Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så är kopieraknappen inte tillgänglig
 
+@makulera @fk7263
 Scenario: Kan inte makulera intyg
    När jag går in på en patient
    Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
@@ -42,7 +46,7 @@ Scenario: Kan inte makulera intyg
 
 Scenario: Kan inte filtrera osignerade intyg på läkare
    När går in på Ej signerade utkast
-   Och väljer att visa sökfilter 
+   Och väljer att visa sökfilter
    Så ska sökfiltret Sparat av inte vara tillgängligt
 
 Scenario: Ska kunna svara på frågor från Försäkringskassan

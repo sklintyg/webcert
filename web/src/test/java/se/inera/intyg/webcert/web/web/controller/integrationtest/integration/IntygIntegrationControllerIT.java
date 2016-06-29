@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 16/12/15.
@@ -109,5 +109,112 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").
                 then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
+    }
+
+    /**
+     * Verify that a djupintegrerad lakare can use a utkast redirect link for intygstypluse and gets redirected to
+     * the correct url.
+     */
+    @Test
+    public void testRedirectSuccessUtkastLuse() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsId", utkastId);
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
+        queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("fornamn", "patientfornamn");
+        queryParams.put("efternamn", "patientefternamn");
+        queryParams.put("mellannamn", "patientmellannamn");
+        queryParams.put("postadress", "patientpostadress");
+        queryParams.put("postnummer", "patientpostnummer");
+        queryParams.put("postort", "patientpostort");
+
+        given().redirects()
+                .follow(false)
+                .pathParam("intygsId", utkastId)
+                .queryParams(queryParams)
+                .
+                expect()
+                .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .
+                when()
+                .get("/visa/intyg/{intygsId}")
+                .
+                then()
+                .header(HttpHeaders.LOCATION,
+                        endsWith("/luse/edit/" + utkastId
+                                + "?patientId=" + queryParams.get("alternatePatientSSn")
+                                + "&hospName=" + queryParams.get("responsibleHospName")
+                                + "&fornamn=" + queryParams.get("fornamn")
+                                + "&mellannamn=" + queryParams.get("mellannamn")
+                                + "&efternamn=" + queryParams.get("efternamn")
+                                + "&postadress=" + queryParams.get("postadress")
+                                + "&postnummer=" + queryParams.get("postnummer")
+                                + "&postort=" + queryParams.get("postort")
+                        )
+                );
+    }
+
+    /**
+     * Verify that a djupintegrerad lakare can use a intyg redirect link for intygstyp luse and gets redirected to
+     * the correct url (that is different from an utkast link).
+     */
+    @Test
+    public void testRedirectSuccessSigneratIntygLuse() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsId = createSignedIntyg("luse", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
+        queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("fornamn", "patientfornamn");
+        queryParams.put("efternamn", "patientefternamn");
+        queryParams.put("mellannamn", "patientmellannamn");
+        queryParams.put("postadress", "patientpostadress");
+        queryParams.put("postnummer", "patientpostnummer");
+        queryParams.put("postort", "patientpostort");
+
+        given().redirects().follow(false).and().pathParam("intygsId", intygsId).and().queryParams(queryParams)
+                .
+                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+                when().get("/visa/intyg/{intygsId}").
+                then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId
+                        + "?patientId=" + queryParams.get("alternatePatientSSn")
+                        + "&fornamn=" + queryParams.get("fornamn")
+                        + "&mellannamn=" + queryParams.get("mellannamn")
+                        + "&efternamn=" + queryParams.get("efternamn")
+                        + "&postadress=" + queryParams.get("postadress")
+                        + "&postnummer=" + queryParams.get("postnummer")
+                        + "&postort=" + queryParams.get("postort")));
+    }
+
+    /**
+     * Verify that patientinformation is required for intygstyp luse
+     */
+    @Test
+    public void testRedirectFailsForLuseWithMissingPatientInformation() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        given().redirects().follow(false).and().pathParam("intygsId", utkastId).
+                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+                when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").
+                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
     }
 }

@@ -24,4 +24,17 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public interface WebCertUserService extends CommonUserService {
 
      WebCertUser getUser();
+
+    /**
+     * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
+     *
+     * @param key
+     *         An arbitrary string-based key.
+     *
+     * @param value
+     *         An arbitrary string-based value.
+     */
+     void storeUserPreference(String key, String value);
+
+    void deleteUserPreference(String key);
 }

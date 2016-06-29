@@ -33,6 +33,7 @@ public class ArendeListItem {
     private String patientId;
     private LocalDateTime receivedDate;
     private boolean vidarebefordrad;
+    private boolean paminnelse;
     private String fragestallare;
     private String amne;
     private String enhetsnamn;
@@ -132,6 +133,14 @@ public class ArendeListItem {
 
     public void setVardgivarnamn(String vardgivarnamn) {
         this.vardgivarnamn = vardgivarnamn;
+    }
+
+    public boolean isPaminnelse() {
+        return paminnelse;
+    }
+
+    public void setPaminnelse(boolean paminnelse) {
+        this.paminnelse = paminnelse;
     }
 
 }

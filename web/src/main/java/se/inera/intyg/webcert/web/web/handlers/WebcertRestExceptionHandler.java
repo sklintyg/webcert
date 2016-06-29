@@ -64,6 +64,7 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
                 .build();
     }
 
+
     /**
      * Exceptions thrown by us should be logged as warnings as they are thrown deliberately.
      *

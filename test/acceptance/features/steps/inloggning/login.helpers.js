@@ -29,10 +29,11 @@ module.exports = {
 
         // Fattigmans-kloning av användar-hashen.
         global.user = JSON.parse(JSON.stringify(userObj));
+        global.user.roleName = roleName;
 
         browser.ignoreSynchronization = true;
         pages.welcome.get();
-        browser.sleep(1000);
+        browser.sleep(2000);
         pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
 
         browser.ignoreSynchronization = false;

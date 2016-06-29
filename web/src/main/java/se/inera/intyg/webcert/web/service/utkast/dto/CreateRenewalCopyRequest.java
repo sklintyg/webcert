@@ -20,13 +20,12 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 
 public class CreateRenewalCopyRequest extends CreateCopyRequest {
 
-    public CreateRenewalCopyRequest(String orginalIntygsId, String intygsTyp, Personnummer patientPersonnummer,
-            HoSPersonal hosPerson) {
-        super(orginalIntygsId, intygsTyp, patientPersonnummer, hosPerson);
+    public CreateRenewalCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
+        super(orginalIntygsId, intygsTyp, patient, hosPerson);
     }
 
     public CreateRenewalCopyRequest() {

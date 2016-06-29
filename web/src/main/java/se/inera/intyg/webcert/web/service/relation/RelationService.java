@@ -20,18 +20,38 @@
 package se.inera.intyg.webcert.web.service.relation;
 
 import java.util.List;
+import java.util.Optional;
 
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 public interface RelationService {
 
     /**
-     * Returns a list of relations going backwards in time, starting with the utkast/intyg specified by
-     * <code>intygsId</code>.
+     * Returns a list of {@link RelationItem} going backwards in time.
      *
      * @param intygsId
-     *            the starting point of the relations list
+     *            the child
+     * @return a list of all the utkast/intyg which has a parent relation to <code>intygsId</code>
+     */
+    List<RelationItem> getParentRelations(String intygsId);
+
+    /**
+     * Returns a list of children to <code>intygsId</code> represented as {@link RelationItem}.
+     *
+     * @param intygsId
+     *            the parent
+     * @return a list of all the utkast/intyg which has a child relation to <code>intygsId</code>
+     */
+    List<RelationItem> getChildRelations(String intygsId);
+
+    /**
+     * Returns a list of {@link RelationItem} for the utkast/intyg specified by <code>intygsId</code>.
+     *
+     * This returns the concatenated list of both child and parent relations
+     *
+     * @param intygsId
+     *            the utkast/intyg to get the relations for
      * @return a list of all the utkast/intyg which has a relation to <code>intygsId</code>
      */
-    List<RelationItem> getRelations(String intygsId);
+    Optional<List<RelationItem>> getRelations(String intygsId);
 }

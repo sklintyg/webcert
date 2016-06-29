@@ -6,17 +6,17 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@RegisterMedicalCertificate @minaintyg @keepIntyg
+@RegisterMedicalCertificate @minaintyg @keepIntyg @signera
 Scenario: Skapa och signera ett intyg
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
-	Så ska intygets status vara "Intyget är signerat"	
+	Så ska intygets status vara "Intyget är signerat"
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
-	
-@SendMedicalCertificate @minaintyg @keepIntyg @intygTillFK
+
+@SendMedicalCertificate @minaintyg @keepIntyg @intygTillFK @skicka
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
@@ -41,4 +41,3 @@ Scenario: Kopiera ett signerat intyg
 	Och jag signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
-

@@ -6,11 +6,11 @@
 	"legitimeradeYrkesgrupper" : [
 		"Läkare"],
 	"specialiseringar": [{
-		"kod": "1001",
-		"namn": "Allergi"
+		"kod": "77",
+		"namn": "Allergisjukdomar"
 	},{
-		"kod": "1006",
-		"namn": "Barn och ungdoms kirurgi"
+		"kod": "10080",
+		"namn": "Barn- och ungdomskirurgi"
 	}],
     "uppdrag":[
     	{

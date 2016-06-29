@@ -115,6 +115,8 @@ public class CopyUtkastServiceImplTest {
 
     private HoSPersonal hoSPerson;
 
+    private Patient patient;
+
     @Before
     public void setup() {
         hoSPerson = new HoSPersonal();
@@ -130,6 +132,9 @@ public class CopyUtkastServiceImplTest {
         vardenhet.setEnhetsnamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);
         hoSPerson.setVardenhet(vardenhet);
+
+        patient = new Patient();
+        patient.setPersonId(PATIENT_SSN);
     }
 
     @Before
@@ -157,7 +162,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class))).thenReturn(resp);
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -168,7 +173,7 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verify(mockPUService).getPerson(PATIENT_SSN);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class));
+        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -184,7 +189,8 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class), any(boolean.class))).thenReturn(resp);
+        when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateCompletionCopyRequest copyReq = buildCompletionRequest();
 
@@ -196,7 +202,8 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_ID, copyResp.getOriginalIntygId());
 
         verify(mockPUService).getPerson(PATIENT_SSN);
-        verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class), any(boolean.class));
+        verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -208,7 +215,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class))).thenReturn(resp);
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setDjupintegrerad(true);
@@ -220,7 +227,7 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verifyZeroInteractions(mockPUService);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class));
+        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class), anyString());
 
@@ -237,7 +244,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class))).thenReturn(resp);
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
@@ -250,7 +257,7 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verifyZeroInteractions(mockPUService);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class));
+        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class), anyString());
 
@@ -294,11 +301,11 @@ public class CopyUtkastServiceImplTest {
     }
 
     private CreateNewDraftCopyRequest buildCopyRequest() {
-        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson);
+        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
     }
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
-        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, PATIENT_SSN, hoSPerson);
+        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);
     }
 
     // testCreateNewDraftCopyPUtjanstFailed()

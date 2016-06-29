@@ -105,7 +105,7 @@ public class ArendeViewConverter {
     private String getJsonPropertyHandle(MedicinsktArende arende, String intygsId, String intygsTyp)
             throws ModuleNotFoundException, ModuleException {
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
-        IntygContentHolder content = intygService.fetchIntygData(intygsId, intygsTyp);
+        IntygContentHolder content = intygService.fetchIntygData(intygsId, intygsTyp, false);
         Utlatande utlatande = content.getUtlatande();
         String frageId = arende.getFrageId();
 

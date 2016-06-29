@@ -19,21 +19,15 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponderInterface;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponseType;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType;
+import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
+import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.*;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;
 import se.inera.intygstjanster.ts.services.v1.ResultatTyp;
-import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-import se.riv.clinicalprocess.healthcond.certificate.v1.Patient;
-import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
 
 /**
  * Created by eriklupander on 2015-06-10.
@@ -47,27 +41,7 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
     @StubModeAware
     public RegisterTSDiabetesResponseType registerTSDiabetes(String logicalAddress, RegisterTSDiabetesType parameters) {
 
-        GetCertificateForCareResponseType req = new GetCertificateForCareResponseType();
-        Utlatande cert = new Utlatande();
-        UtlatandeId utlatandeId = new UtlatandeId();
-        utlatandeId.setExtension(parameters.getIntyg().getIntygsId());
-        TypAvUtlatande typAvUtlatande = new TypAvUtlatande();
-        typAvUtlatande.setCode(parameters.getIntyg().getIntygsTyp());
-
-        Patient patient = new Patient();
-        PersonId personId = new PersonId();
-        personId.setExtension(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension());
-
-        patient.setPersonId(personId);
-        cert.setPatient(patient);
-        cert.setTypAvUtlatande(typAvUtlatande);
-        cert.setUtlatandeId(utlatandeId);
-        req.setCertificate(cert);
-
-        CertificateMetaType certificateMetaType = buildStubInternalMeta(parameters);
-        req.setMeta(certificateMetaType);
-
-        intygStore.addIntyg(req);
+        intygStore.addIntyg(buildStubInternalCertificate(parameters));
 
         RegisterTSDiabetesResponseType resp = new RegisterTSDiabetesResponseType();
         ResultatTyp resultatTyp = new ResultatTyp();
@@ -76,11 +50,17 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         return resp;
     }
 
-    private CertificateMetaType buildStubInternalMeta(RegisterTSDiabetesType parameters) {
-        CertificateMetaType meta = new CertificateMetaType();
-        meta.setCertificateId(parameters.getIntyg().getIntygsId());
-        meta.setCertificateType(parameters.getIntyg().getIntygsTyp());
-
-        return meta;
+    private CertificateHolder buildStubInternalCertificate(RegisterTSDiabetesType parameters) {
+        CertificateHolder certificate = new CertificateHolder();
+        certificate.setId(parameters.getIntyg().getIntygsId());
+        certificate.setType(parameters.getIntyg().getIntygsTyp());
+        certificate.setCivicRegistrationNumber(new Personnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
+        certificate.setSignedDate(LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel()));
+        certificate.setCareUnitId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());
+        certificate.setCareUnitName(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
+        certificate.setSigningDoctorName(parameters.getIntyg().getGrundData().getSkapadAv().getFullstandigtNamn());
+        certificate.setAdditionalInfo(parameters.getIntyg().getOvrigKommentar());
+        certificate.setCareGiverId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
+        return certificate;
     }
 }

@@ -80,15 +80,17 @@ module.exports = {
      * @returns {*|exports}
      */
 
-    get: function(meddelande, intygType, intygId, meddelandeId, amne, status, komplettering) {
+    get: function(arendeOptions) {
         var arende = Object.assign({}, templateArende); // Create clone so not all callers use the same instance
-        arende.intygTyp = intygType;
-        arende.intygsId = intygId;
-        arende.meddelandeId = meddelandeId;
-        arende.meddelande = meddelande;
-        arende.amne = amne;
-        arende.status = status;
-        arende.komplettering = komplettering;
+
+        arende.intygTyp = arendeOptions.intygType;
+        arende.intygsId = arendeOptions.intygId;
+        arende.meddelandeId = arendeOptions.meddelandeId;
+        arende.paminnelseMeddelandeId = typeof arendeOptions.paminnelseMeddelandeId !== 'undefined' ? arendeOptions.paminnelseMeddelandeId : undefined;
+        arende.meddelande = arendeOptions.meddelande;
+        arende.amne = arendeOptions.amne;
+        arende.status = arendeOptions.status;
+        arende.komplettering = arendeOptions.kompletteringar;
         return arende;
     }
 };

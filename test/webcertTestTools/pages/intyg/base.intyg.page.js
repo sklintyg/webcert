@@ -69,6 +69,21 @@ var BaseIntyg = JClass._extend({
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
     },
+    getIntegration: function(intygId, params) {
+        var url = '/visa/intyg/' + intygId;
+        var first = true;
+        Object.keys(params).forEach(function(name) {
+            var value = params[name];
+            if (first) {
+                url += '?';
+                first = false;
+            } else {
+                url += '&';
+            }
+            url += name + '=' + encodeURIComponent(value);
+        });
+        browser.get(url);
+    },
     isAt: function() {
         return this.at.isDisplayed();
     },

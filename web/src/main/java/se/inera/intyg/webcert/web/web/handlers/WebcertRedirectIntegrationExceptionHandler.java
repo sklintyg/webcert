@@ -22,6 +22,8 @@ package se.inera.intyg.webcert.web.web.handlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.security.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -62,16 +64,29 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
      */
     private Response handleAuthorityException(AuthoritiesException e) {
         LOG.warn("AuthValidation occured: ", e);
-        return buildErrorRedirectResponse("auth-exception");
+        return buildErrorRedirectResponse("auth-exception", e.getMessage());
     }
 
     private Response handleRuntimeException(RuntimeException re) {
         LOG.error("Unhandled RuntimeException occured!", re);
-        return buildErrorRedirectResponse("unknown");
+        if (re instanceof WebCertServiceException) {
+            WebCertServiceException we = (WebCertServiceException) re;
+            if (we.getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
+                return buildErrorRedirectResponse("missing-parameter", we.getMessage());
+            }
+        }
+        return buildErrorRedirectResponse("unknown", re.getMessage());
     }
 
-    private Response buildErrorRedirectResponse(String errorReason) {
-        URI location = uriInfo.getBaseUriBuilder().replacePath("/error.jsp").queryParam("reason", errorReason).build();
+    private Response buildErrorRedirectResponse(String errorReason, String message) {
+        URI location = "missing-parameter".equals(errorReason) ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+                .queryParam("reason", errorReason)
+                .queryParam("message", message)
+                .build()
+                : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+                    .queryParam("reason", errorReason)
+                    .build();
+
         return Response.temporaryRedirect(location).build();
     }
 }

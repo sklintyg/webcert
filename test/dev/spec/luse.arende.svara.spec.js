@@ -39,10 +39,7 @@ describe('answer arende on luse intyg', function() {
         var testData = {
             'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
             'utkastStatus': 'SIGNED',
-            'revoked': false,
-            'relations': [
-                {'intygsId': intygId, 'status': 'INTYG'}
-            ]
+            'revoked': false
         };
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.createWebcertIntyg(testData).then(function() {

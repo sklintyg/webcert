@@ -55,10 +55,6 @@
       <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
       <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
-    <dependency>
-      <groupId>se.inera.intyg.clinicalprocess.healthcond.certificate</groupId>
-      <artifactId>intyg-clinicalprocess-healthcond-certificate-schemas</artifactId>
-    </dependency>
 
     <!-- Misc -->
     <dependency>

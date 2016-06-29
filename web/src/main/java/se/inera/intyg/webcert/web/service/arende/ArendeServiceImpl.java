@@ -74,8 +74,6 @@ public class ArendeServiceImpl implements ArendeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
-    private static final ArendeConversationViewTimeStampComparator ARENDE_TIMESTAMP_COMPARATOR = new ArendeConversationViewTimeStampComparator();
-
     private static final List<String> BLACKLISTED = Arrays.asList(CertificateTypes.FK7263.toString(), CertificateTypes.TSBAS.toString(),
             CertificateTypes.TSDIABETES.toString());
 
@@ -125,11 +123,13 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
+
         validateArende(arende.getIntygsId(), utkast);
+
         LocalDateTime now = LocalDateTime.now();
         decorateArende(arende, utkast, now);
 
-        updateRelated(arende, arende.getStatus(), now);
+        updateRelated(arende, now);
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
 
@@ -143,6 +143,7 @@ public class ArendeServiceImpl implements ArendeService {
                     + " for new question from vard!");
         }
         Utkast utkast = utkastRepository.findOne(intygId);
+
         validateArende(intygId, utkast);
 
         verifyEnhetsAuth(utkast.getEnhetsId(), false);
@@ -310,7 +311,17 @@ public class ArendeServiceImpl implements ArendeService {
             arendeViews.add(latestDraft);
         }
         List<ArendeConversationView> arendeConversations = buildArendeConversations(arendeViews);
-        Collections.sort(arendeConversations, ARENDE_TIMESTAMP_COMPARATOR);
+        Collections.sort(arendeConversations, (a, b) -> {
+            boolean aIsEmpty = a.getPaminnelser().isEmpty();
+            boolean bIsEmpty = b.getPaminnelser().isEmpty();
+            if (aIsEmpty == bIsEmpty) {
+                return b.getSenasteHandelse().compareTo(a.getSenasteHandelse());
+            } else if (aIsEmpty) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
 
         return arendeConversations;
     }
@@ -340,13 +351,20 @@ public class ArendeServiceImpl implements ArendeService {
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
                 .map(ArendeListItemConverter::convert)
                 .filter(Objects::nonNull)
+                // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
+                // they want to display this information to the user. We cannot do this without a database access, hence
+                // we do it after the convert
+                .map(item -> {
+                    item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty());
+                    return item;
+                })
                 .collect(Collectors.toList());
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
 
         int totalResultsCount = arendeRepository.filterArendeCount(filter) + fsResults.getTotalCount();
 
         results.addAll(fsResults.getResults());
-        results.sort(Comparator.comparing(ArendeListItem::getReceivedDate));
+        results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
 
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
         if (originalStartFrom >= results.size()) {
@@ -497,7 +515,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getRubrik());
 
-        updateRelated(arende, arende.getStatus(), arende.getSenasteHandelse());
+        updateRelated(arende, arende.getSenasteHandelse());
 
         SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
                 sendMessageToFKLogicalAddress);
@@ -521,6 +539,7 @@ public class ArendeServiceImpl implements ArendeService {
         for (Arende paminnelse : paminnelser) {
             arendeViewPaminnelser.add(arendeViewConverter.convert(paminnelse));
         }
+        Collections.sort(arendeViewPaminnelser, Comparator.comparing(ArendeView::getTimestamp).reversed());
         return arendeViewPaminnelser;
     }
 
@@ -554,7 +573,13 @@ public class ArendeServiceImpl implements ArendeService {
                 }
             }
 
-            arendeConversations.add(ArendeConversationView.create(fraga, svar, senasteHandelse, paminnelser));
+            Collections.sort(paminnelser, Comparator.comparing(ArendeView::getTimestamp).reversed());
+
+            // Since fraga is required to be nonNull by AutoValue_ArendeConversationView need to make sure this is
+            // enforced to avoid throwing an exception and showing nothing at all
+            if (fraga != null) {
+                arendeConversations.add(ArendeConversationView.create(fraga, svar, senasteHandelse, paminnelser));
+            }
         }
         return arendeConversations;
     }
@@ -565,18 +590,21 @@ public class ArendeServiceImpl implements ArendeService {
         return meddelandeId;
     }
 
-    private void updateRelated(Arende arende, Status status, LocalDateTime now) {
+    private void updateRelated(Arende arende, LocalDateTime dateTime) {
+        Arende orig;
         if (arende.getSvarPaId() != null) {
-            Optional.ofNullable(arendeRepository.findOneByMeddelandeId(arende.getSvarPaId())).ifPresent(a -> {
-                a.setSenasteHandelse(now);
-                a.setStatus(status);
-                arendeRepository.save(a);
-            });
+            orig = arendeRepository.findOneByMeddelandeId(arende.getSvarPaId());
+            if (orig != null) {
+                orig.setSenasteHandelse(dateTime);
+                orig.setStatus(arende.getStatus());
+                arendeRepository.save(orig);
+            }
         } else if (arende.getPaminnelseMeddelandeId() != null) {
-            Optional.ofNullable(arendeRepository.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId())).ifPresent(a -> {
-                a.setSenasteHandelse(now);
-                arendeRepository.save(a);
-            });
+            orig = arendeRepository.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId());
+            if (orig != null) {
+                orig.setSenasteHandelse(dateTime);
+                arendeRepository.save(orig);
+            }
         }
     }
 
@@ -662,22 +690,6 @@ public class ArendeServiceImpl implements ArendeService {
             } catch (WebServiceException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                         "Could not communicate with HSA. Cause: " + e.getMessage());
-            }
-        }
-    }
-
-    public static class ArendeConversationViewTimeStampComparator implements Comparator<ArendeConversationView> {
-
-        @Override
-        public int compare(ArendeConversationView f1, ArendeConversationView f2) {
-            if (f1.getSenasteHandelse() == null && f2.getSenasteHandelse() == null) {
-                return 0;
-            } else if (f1.getSenasteHandelse() == null) {
-                return -1;
-            } else if (f2.getSenasteHandelse() == null) {
-                return 1;
-            } else {
-                return f2.getSenasteHandelse().compareTo(f1.getSenasteHandelse());
             }
         }
     }

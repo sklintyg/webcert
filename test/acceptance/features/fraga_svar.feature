@@ -1,5 +1,5 @@
 # language: sv
-@meddelanden
+@meddelanden @fk7263
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
@@ -10,6 +10,7 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
 
+@avstammningsmote
 Scenario: Avstämningsmöte
    När Försäkringskassan ställer en "Avstamningsmote" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
@@ -18,6 +19,7 @@ Scenario: Avstämningsmöte
    Och jag svarar på frågan
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
 
+@paminnelse
 Scenario: Påminnelse
    När Försäkringskassan ställer en "Paminnelse" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
@@ -26,6 +28,7 @@ Scenario: Påminnelse
    Och jag markerar frågan från Försäkringskassan som hanterad
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
 
+@kontakt
 Scenario: Kontakt
    När Försäkringskassan ställer en "Kontakt" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
@@ -34,6 +37,7 @@ Scenario: Kontakt
    Och jag markerar frågan från Försäkringskassan som hanterad
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
 
+@arbetstidsforlaggnings
 Scenario: Arbetstidsförläggning
    När Försäkringskassan ställer en "Arbetstidsforlaggning" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
@@ -41,7 +45,3 @@ Scenario: Arbetstidsförläggning
    Och jag går in på intygsutkastet via djupintegrationslänk
    Och jag markerar frågan från Försäkringskassan som hanterad
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
-
-
-
-          

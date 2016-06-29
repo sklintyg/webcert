@@ -561,7 +561,8 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
     // ------- utils
 
     void ateraktiveraKopieraDialogen() {
-        Browser.deleteCookie("wc.dontShowCopyDialog");
+       // Browser.deleteCookie("wc.dontShowCopyDialog");
+        WebcertRestUtils.deleteUserPreference("wc.dontShowCopyDialog")
     }
 
     def kopiaintygsid() {

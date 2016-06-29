@@ -25,11 +25,16 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 
 public final class LogRequestFactory {
 
+    private static final String COHERENT_JOURNALING_LOG_POST = "Läsning i enlighet med sammanhållen journalföring";
+
     private LogRequestFactory() {
     }
 
     public static LogRequest createLogRequestFromUtkast(Utkast utkast) {
+        return createLogRequestFromUtkast(utkast, false);
+    }
 
+    public static LogRequest createLogRequestFromUtkast(Utkast utkast, boolean coherentJournaling) {
         LogRequest logRequest = new LogRequest();
 
         logRequest.setIntygId(utkast.getIntygsId());
@@ -42,11 +47,18 @@ public final class LogRequestFactory {
         logRequest.setIntygCareGiverId(utkast.getVardgivarId());
         logRequest.setIntygCareGiverName(utkast.getVardgivarNamn());
 
+        if (coherentJournaling) {
+            logRequest.setAdditionalInfo(COHERENT_JOURNALING_LOG_POST);
+        }
+
         return logRequest;
     }
 
     public static LogRequest createLogRequestFromUtlatande(Utlatande utlatande) {
+        return createLogRequestFromUtlatande(utlatande, false);
+    }
 
+    public static LogRequest createLogRequestFromUtlatande(Utlatande utlatande, boolean coherentJournaling) {
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId(utlatande.getId());
 
@@ -58,6 +70,10 @@ public final class LogRequestFactory {
 
         logRequest.setIntygCareGiverId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         logRequest.setIntygCareGiverName(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
+
+        if (coherentJournaling) {
+            logRequest.setAdditionalInfo(COHERENT_JOURNALING_LOG_POST);
+        }
 
         return logRequest;
     }

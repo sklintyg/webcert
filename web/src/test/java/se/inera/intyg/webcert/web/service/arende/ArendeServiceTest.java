@@ -193,7 +193,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSignatur(mock(Signatur.class));
 
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
+        when(utkastRepository.findOne(eq(intygId))).thenReturn(utkast);
         when(hsaEmployeeService.getEmployee(eq(signeratAv), eq(null))).thenReturn(createHsaResponse("sune", "svensson"));
         when(repo.save(any(Arende.class))).thenReturn(svararende);
         when(repo.findOneByMeddelandeId(eq(frageid))).thenReturn(fragearende);
@@ -229,7 +229,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSignatur(mock(Signatur.class));
 
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
+        when(utkastRepository.findOne(eq(intygId))).thenReturn(utkast);
         when(hsaEmployeeService.getEmployee(eq(signeratAv), eq(null))).thenReturn(createHsaResponse("sune", "svensson"));
         when(repo.save(any(Arende.class))).thenReturn(svararende);
         when(repo.findOneByMeddelandeId(eq(paminnelseid))).thenReturn(paminnelse);
@@ -782,16 +782,22 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arendeList.add(buildArende(2L, JANUARY, JANUARY));
         arendeList.add(buildArende(3L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         arendeList.add(buildArende(4L, FEBRUARY, FEBRUARY));
+        arendeList.add(buildArende(5L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        arendeList.add(buildArende(6L, JANUARY, JANUARY));
         arendeViewList.add(buildArendeView(arendeList.get(0), arendeList.get(0).getMeddelandeId(), null, null, FEBRUARY)); // fraga
         arendeViewList.add(buildArendeView(arendeList.get(1), "meddelandeId2", arendeList.get(0).getMeddelandeId(), null, JANUARY)); // svar
         arendeViewList.add(buildArendeView(arendeList.get(2), "meddelandeId3", null, arendeList.get(0).getMeddelandeId(), DECEMBER_YEAR_9999)); // paminnelse
         arendeViewList.add(buildArendeView(arendeList.get(3), "meddelandeId4", null, null, FEBRUARY)); // fraga
+        arendeViewList.add(buildArendeView(arendeList.get(4), "meddelandeId5", null, null, DECEMBER_YEAR_9999)); // fraga
+        arendeViewList.add(buildArendeView(arendeList.get(5), "meddelandeId6", null, null, JANUARY)); // fraga
 
         when(repo.findByIntygsId("intyg-1")).thenReturn(arendeList);
         when(arendeViewConverter.convert(arendeList.get(0))).thenReturn(arendeViewList.get(0));
         when(arendeViewConverter.convert(arendeList.get(1))).thenReturn(arendeViewList.get(1));
         when(arendeViewConverter.convert(arendeList.get(2))).thenReturn(arendeViewList.get(2));
         when(arendeViewConverter.convert(arendeList.get(3))).thenReturn(arendeViewList.get(3));
+        when(arendeViewConverter.convert(arendeList.get(4))).thenReturn(arendeViewList.get(4));
+        when(arendeViewConverter.convert(arendeList.get(5))).thenReturn(arendeViewList.get(5));
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 
@@ -800,14 +806,18 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(repo).findByIntygsId("intyg-1");
         verify(webcertUserService).getUser();
 
-        assertEquals(2, result.size());
+        assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());
         assertEquals(arendeViewList.get(0), result.get(0).getFraga());
         assertEquals(arendeViewList.get(1), result.get(0).getSvar());
         assertEquals(arendeViewList.get(2), result.get(0).getPaminnelser().get(0));
-        assertEquals(arendeViewList.get(3), result.get(1).getFraga());
+        assertEquals(arendeViewList.get(3).getInternReferens(), result.get(2).getFraga().getInternReferens());
+        assertEquals(arendeViewList.get(4).getInternReferens(), result.get(1).getFraga().getInternReferens());
+        assertEquals(arendeViewList.get(5).getInternReferens(), result.get(3).getFraga().getInternReferens());
         assertEquals(DECEMBER_YEAR_9999, result.get(0).getSenasteHandelse());
-        assertEquals(FEBRUARY, result.get(1).getSenasteHandelse());
+        assertEquals(DECEMBER_YEAR_9999, result.get(1).getSenasteHandelse());
+        assertEquals(FEBRUARY, result.get(2).getSenasteHandelse());
+        assertEquals(JANUARY, result.get(3).getSenasteHandelse());
     }
 
     private ArendeView buildArendeView(Arende arende, String meddelandeId, String svarPaId, String paminnelseMeddelandeId, LocalDateTime timestamp) {
@@ -1012,15 +1022,20 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String intygId1 = "intygid1";
         final String intygId2 = "intygid2";
         final String intygId3 = "intygid3";
+        final String meddelandeId = "arendeWithPaminnelseMeddelandeId";
 
         when(webcertUserService.getUser()).thenReturn(createUser());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(1L, intygId3, LocalDateTime.now().plusDays(2), null));
-        queryResults.add(buildArende(2L, intygId2, LocalDateTime.now(), null));
+
+        Arende arendeWithPaminnelse = buildArende(2L, intygId2, LocalDateTime.now(), null);
+        arendeWithPaminnelse.setMeddelandeId(meddelandeId);
+        queryResults.add(arendeWithPaminnelse);
 
         when(repo.filterArende(any(Filter.class))).thenReturn(queryResults);
         when(repo.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size());
+        when(repo.findByPaminnelseMeddelandeId(eq(meddelandeId))).thenReturn(Arrays.asList(new Arende()));
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1034,9 +1049,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         QueryFragaSvarResponse response = service.filterArende(params);
 
         assertEquals(3, response.getResults().size());
-        assertEquals(intygId1, response.getResults().get(0).getIntygId());
+        assertEquals(intygId3, response.getResults().get(0).getIntygId());
         assertEquals(intygId2, response.getResults().get(1).getIntygId());
-        assertEquals(intygId3, response.getResults().get(2).getIntygId());
+        assertEquals(intygId1, response.getResults().get(2).getIntygId());
     }
 
     @Test
@@ -1051,11 +1066,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(id, res.getId());
     }
 
-    private Arende buildArende(Long id, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {
-        return buildArende(id, "<intygsId>", skickadTidpunkt, timestamp);
+    private Arende buildArende(Long id, LocalDateTime senasteHandelse, LocalDateTime timestamp) {
+        return buildArende(id, "<intygsId>", senasteHandelse, timestamp);
     }
 
-    private Arende buildArende(Long id, String intygId, LocalDateTime skickadTidpunkt, LocalDateTime timestamp) {
+    private Arende buildArende(Long id, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setAmne(ArendeAmne.OVRIGT);
@@ -1063,14 +1078,14 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setMeddelandeId("meddelandeId");
         arende.setId(id);
         arende.setEnhetId("enhet");
-        arende.setSkickatTidpunkt(skickadTidpunkt);
+        arende.setSenasteHandelse(senasteHandelse);
         arende.setMeddelande("frageText");
         arende.setTimestamp(timestamp);
-        List<MedicinsktArende> komplettering = new ArrayList<MedicinsktArende>();
+        List<MedicinsktArende> komplettering = new ArrayList<>();
         arende.setIntygsId(intygId);
         arende.setPatientPersonId(PATIENT_ID.getPersonnummer());
         arende.setSigneratAv("Signatur");
-        arende.setSistaDatumForSvar(skickadTidpunkt.plusDays(7).toLocalDate());
+        arende.setSistaDatumForSvar(senasteHandelse.plusDays(7).toLocalDate());
         arende.setKomplettering(komplettering);
         arende.setRubrik("rubrik");
         arende.setSkickatAv("Avsandare");

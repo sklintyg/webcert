@@ -26,14 +26,26 @@ var fkValues = require('./testvalues.js').fk;
 module.exports = {
     getRandom: function(intygsID) {
         return {
-            intygId: intygsID,
+            id: intygsID,
             typ: 'Läkarintyg för sjukpenning utökat',
+
+            nuvarandeArbeteBeskrivning: testdataHelper.randomTextString(),
 
             diagnos: {
                 kod: shuffle(fkValues.ICD10)[0],
                 bakgrund: testdataHelper.randomTextString()
             },
-            aktivitetsbegransning: testdataHelper.randomTextString()
+            funktionsnedsattning: testdataHelper.randomTextString(),
+            aktivitetsbegransning: testdataHelper.randomTextString(),
+
+            sjukskrivning: {
+                fran: testdataHelper.dateFormat(new Date()),
+                till: testdataHelper.dateFormat(new Date(new Date().setYear(new Date().getFullYear() + 1))),
+                forsakringsmedicinsktBeslutsstodBeskrivning: testdataHelper.randomTextString(),
+                formagaTrotsBegransningBeskrivning: testdataHelper.randomTextString()
+            },
+
+            arbetslivsinriktadeAtgarderEjAktuelltBeskrivning: testdataHelper.randomTextString()
         };
     }
 };

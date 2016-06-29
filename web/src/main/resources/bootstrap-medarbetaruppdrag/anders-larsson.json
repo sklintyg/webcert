@@ -1,8 +1,12 @@
 {
     "hsaId": "IFV1239877878-104M",
+    "forNamn": "Anders",
+    "efterNamn": "Larsson",
     "uppdrag":[
     	{
-    		"enhet":"IFV1239877878-1045"
+    		"enhet":"IFV1239877878-1045",
+            "andamal":["Vård och behandling"]
     	}
-    ]
+    ],
+    "befattningsKod": "204010"
 }

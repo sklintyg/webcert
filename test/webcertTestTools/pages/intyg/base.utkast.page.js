@@ -38,7 +38,7 @@ var BaseUtkast = JClass._extend({
         this.backBtn = element(by.id('tillbakaButton'));
         this.showMissingInfoButton = element(by.id('showCompleteButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
-
+        this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);

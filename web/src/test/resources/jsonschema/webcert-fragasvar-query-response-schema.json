@@ -45,6 +45,9 @@
           "signeratAvNamn": {
             "type": "string"
           },
+          "paminnelse": {
+            "type": "boolean"
+          },
           "enhetsnamn": {
             "type": "string"
           },

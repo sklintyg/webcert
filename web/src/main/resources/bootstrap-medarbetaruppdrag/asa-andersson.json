@@ -14,5 +14,5 @@
             "andamal":["Admin"]
     	}
     ],
-	"titel": "Läkare"
+	"legitimeradeYrkesgrupper": ["Läkare"]
 }
