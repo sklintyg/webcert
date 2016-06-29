@@ -33,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.intygstyper.ts_bas.support.TsBasEntryPoint;
-import se.inera.intyg.intygstyper.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -48,7 +46,6 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     private IntegreradEnhetRepository integreradEnhetRepository;
 
     private final Set<String> oldIntygTypes = Stream.of(Fk7263EntryPoint.MODULE_ID).collect(Collectors.toSet());
-    private final Set<String> blacklisted = Stream.of(TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID).collect(Collectors.toSet());
 
     /*
      * (non-Javadoc)
@@ -124,10 +121,6 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public Optional<SchemaVersion> getSchemaVersion(String enhetsHsaId, String intygType) {
-        if (blacklisted.contains(intygType)) {
-            return Optional.empty();
-        }
-
         IntegreradEnhet enhet = getIntegreradEnhet(enhetsHsaId);
 
         if (enhet == null) {
@@ -138,8 +131,8 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
          * This is complicated because we have a transition period for fk7263 where we still send notifications for
          * events for old certificates.
          *
-         * First if-case handles new (which means rivta version 2 - SIT certificates). These certificates should only
-         * use VERSION_2.
+         * First if-case handles new (which means rivta version 2 - SIT certificates, but also TS certificates).
+         * These certificates should only use VERSION_2.
          *
          * Then we get to the case where fk7263 is handled during a transition period. When this is the case VERSION_1
          * will always be set to true - which means they have previously accepted notifications for certificates written
