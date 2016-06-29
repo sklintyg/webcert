@@ -42,6 +42,43 @@ angular.module('showcase').controller('showcase.ArendeCtrl',
                     "kompletteringar":[
 
                     ]
+                },
+                {
+                    "answerDisabled":false,
+                    "svaraMedNyttIntygDisabled":false,
+                    "svaraMedNyttIntygDisabledReason":"",
+                    "atgardMessageId":"svarfranfk",
+                    "arende":{
+                        "paminnelser":[
+
+                        ],
+                        "senasteHandelse":"2016-06-08T15:50:02.596",
+                        "fraga":{
+                            "kompletteringar":[
+
+                            ],
+                            "internReferens":"7",
+                            "status":"PENDING_EXTERNAL_ACTION",
+                            "amne":"AVSTMN",
+                            "meddelandeRubrik":"En rubrik",
+                            "vidarebefordrad":false,
+                            "frageStallare":"WC",
+                            "externaKontakter":[
+
+                            ],
+                            "meddelande":"Hej, hur står det till idag?",
+                            "signeratAv":"Jan Nilsson",
+                            "svarSkickadDatum":"2014-11-22T14:53:00.000",
+                            "intygId":"421f06cd-a6d1-4bcb-a42b-570c6047f030",
+                            "enhetsnamn":"WebCert-Enhet1",
+                            "vardgivarnamn":"WebCert-Vårdgivare1",
+                            "timestamp":"2016-06-08T15:50:02.596",
+                            "arendeType":"FRAGA"
+                        }
+                    },
+                    "kompletteringar":[
+
+                    ]
                 }
             ];
             //Mocka response för när man klickar på vidarebefordrad

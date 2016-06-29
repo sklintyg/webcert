@@ -31,6 +31,15 @@ angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $
             }
         }
     }).
+    state('showcase.utkast', {
+        url: '/utkast',
+        views: {
+            'content@': {
+                templateUrl: templateRoot + 'views/utkast.html',
+                controller: 'showcase.UtkastCtrl'
+            }
+        }
+    }).
     state('showcase.navigation', {
         url: '/navigation',
         views: {

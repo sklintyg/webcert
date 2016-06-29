@@ -32,9 +32,13 @@
     <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
     <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
   </Call>
+  <Call name="setInitParameter">
+    <Arg>org.eclipse.jetty.servlet.Default.useFileMappedBuffer</Arg>
+    <Arg>false</Arg>
+  </Call>
   <New id="DataSource" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="webAppContext" />
+      <Ref refid="webAppContext"/>
     </Arg>
     <Arg>jdbc/webcert</Arg>
     <Arg>
@@ -47,31 +51,31 @@
   </New>
   <New id="ConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="webAppContext" />
+      <Ref refid="webAppContext"/>
     </Arg>
     <Arg>jms/ConnectionFactory</Arg>
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
         <Arg>vm://localhost?broker.persistent=false</Arg>
         <!--  <Arg>tcp://localhost:61616</Arg>         -->
-</New>
-</Arg>
-</New>
-<New id="AsyncConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
-<Arg>
-<Ref refid="webAppContext" />
-</Arg>
-<Arg>jms/AsyncConnectionFactory</Arg>
-<Arg>
-<New class="org.apache.activemq.ActiveMQConnectionFactory">
-      <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
-      <!--<Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=3&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=6000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=4000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>-->
+      </New>
+    </Arg>
+  </New>
+  <New id="AsyncConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="webAppContext"/>
+    </Arg>
+    <Arg>jms/AsyncConnectionFactory</Arg>
+    <Arg>
+      <New class="org.apache.activemq.ActiveMQConnectionFactory">
+        <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
+        <!--<Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=3&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=6000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=4000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>-->
       </New>
     </Arg>
   </New>
   <New id="Queue" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="webAppContext" />
+      <Ref refid="webAppContext"/>
     </Arg>
     <Arg>jms/Queue</Arg>
     <Arg>
@@ -82,7 +86,7 @@
   </New>
   <New id="NotificationQueue" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="webAppContext" />
+      <Ref refid="webAppContext"/>
     </Arg>
     <Arg>jms/NotificationQueue</Arg>
     <Arg>
@@ -93,7 +97,7 @@
   </New>
   <New id="NotificationWSQueue" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="webAppContext" />
+      <Ref refid="webAppContext"/>
     </Arg>
     <Arg>jms/NotificationWSQueue</Arg>
     <Arg>
@@ -104,7 +108,7 @@
   </New>
   <New id="CertificateSenderQueue" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="webAppContext" />
+      <Ref refid="webAppContext"/>
     </Arg>
     <Arg>jms/CertificateSenderQueue</Arg>
     <Arg>

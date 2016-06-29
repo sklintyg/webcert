@@ -1,0 +1,94 @@
+<h2>Utkast komponenter</h2>
+
+<h3>wcDecimal</h3>
+<input type="text" class="form-control small-decimal" wc-decimal-number wc-decimal-max-numbers="2"
+                         id="synHogerOgaUtanKorrektion" ng-model="viewState.intygModel.syn.hoger.utanKorrektion"
+                         maxlength="4">
+
+<h3>wcUtkastErrorSummary</h3>
+<div wc-utkast-error-summary view-state="viewState"></div>
+
+
+<h3>wcFieldSingle</h3>
+
+<div wc-field-single field-number="1" field-help-text="fk7263.helptext.smittskydd">
+  <label for="smittskydd" class="control-label title-single">
+    <input id="smittskydd" name="smittskydd" type="checkbox" ng-model="model.avstangningSmittskydd"
+           wc-focus-on="focusFirstInput" ng-change="onSmittskyddChange()">&nbsp;<span message
+                                                                                      key="fk7263.label.smittskydd"></span>
+  </label>
+</div>
+
+
+<h3>wcField</h3>
+<div wc-field field-label="fk7263.label.vardenhet" field-number="15" field-help-text="fk7263.helptext.adress"
+     id="vardenhetForm" field-has-errors="viewState.common.validationMessagesGrouped.vardenhet">
+
+  wc-field wrappar vilka kontroller som helst. Här är några exempel på vanliga html form element som vi använder och hur
+  de ser ut.
+
+  <div class="form-group">
+    <label class="col-xs-3 control-label">Label med text field</label>
+
+    <div class="col-xs-9">
+      <input type="text" class="form-control" id="clinicInfoPhone" name="clinicInfo.phone" ng-model="model.textfield">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label">Textarea med teckenräknare</label>
+    <div>
+        <textarea id="otherInformation" name="otherInformation" rows='10' class='form-control otherInformation'
+                  ng-model="model.kommentar" ng-change="viewState.limitOtherField('kommentar')"></textarea>
+      <div class="counter">Tecken kvar: {{teckenKvar()}}</div>
+    </div>
+
+  </div>
+
+  <div class="form-group form-inline">
+    <label class="control-label">Datepicker</label>
+    <span wc-date-picker-field target-model="dates.undersokningAvPatienten" dom-id="undersokningAvPatientenDate"></span>
+  </div>
+
+  <div class="form-group form-inline">
+    <label class="checkbox inline-block" style="min-width: 250px"><input type="checkbox" id="basedOnExamination"
+                                                                         name="informationBasedOn.examination"
+                                                                         class="checkbox-inline"
+                                                                         ng-model="basedOnState.check.undersokningAvPatienten"
+                                                                         ng-change="toggleBaseradPaDate('undersokningAvPatienten')"
+                                                                         value="true">
+      Checkbox med label</label>
+  </div>
+
+  <div class="form-group form-inline">
+    <label class="radio">
+      <input type="radio" name="radiobuttontest" class="big-radio" ng-model="model.radiochoice" ng-value="">
+      Stor radioknapp med label
+    </label>
+  </div>
+
+  <div class="form-group form-inline">
+    <div id="kontakt">
+      <div class="form-inline">
+        <label class="checkbox checkbox-inline">
+          <input type="checkbox" class="big-checkbox" ng-model="model.kontaktMedFk" id="kontakttest" name="kontakttest">
+          Checkbox som öppnar animerad textarea
+        </label>
+      </div>
+    </div>
+    <div ng-if="!field.hide" class="formly-field fold-animation fold-slide-fade-animation" options="field"
+         model="field.model || model">
+      <div>
+        <div class="form-group">
+          <label class="control-label inline-block">
+            Label till textarea
+          </label>
+          <textarea id="anledningTillKontakt" name="anledningTillKontakt" rows="6" class="form-control"
+                    ng-model="model">
+          </textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
