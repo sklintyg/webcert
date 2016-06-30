@@ -18,7 +18,31 @@
  */
 
 angular.module('showcase').controller('showcase.UtkastCtrl',
-    [ '$scope',  '$httpBackend',
-        function($scope, $httpBackend) {
+    [ '$scope',  '$httpBackend', 'common.UtkastViewStateService',
+        function($scope, $httpBackend, CommonViewState) {
             'use strict';
+
+            $scope.model = {
+                decimal: 1,
+                kommentar: '',
+                text: ''
+            };
+
+            $scope.viewState = {
+                common: CommonViewState,
+                show: false
+            };
+
+            CommonViewState.validationSections = [
+                'diagnos',
+                'aktuellt-sjukdomsforlopp'
+            ];
+
+            CommonViewState.intyg = {
+                type: 'fk7263'
+            };
+
+            CommonViewState.showComplete = true;
+            CommonViewState.intyg.isComplete = false;
         }]);
+
