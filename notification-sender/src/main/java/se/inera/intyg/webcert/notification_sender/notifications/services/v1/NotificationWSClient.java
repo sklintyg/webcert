@@ -27,9 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
@@ -57,7 +55,7 @@ public class NotificationWSClient {
         ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
-            if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
+            if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
                 throw new TemporaryException(String.format("NotificationWSClient failed with error code: %s and message %s",
                         result.getErrorId(),
                         result.getResultText()));
