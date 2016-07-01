@@ -133,7 +133,16 @@ public class ArendeServiceImpl implements ArendeService {
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
 
-        return arendeRepository.save(arende);
+        Arende saved = arendeRepository.save(arende);
+
+        if (saved.getPaminnelseMeddelandeId() != null) {
+            notificationService.sendNotificationForQuestionReceived(saved);
+        } else if (saved.getSvarPaId() != null) {
+            notificationService.sendNotificationForAnswerRecieved(saved);
+        } else {
+            notificationService.sendNotificationForQuestionReceived(saved);
+        }
+        return saved;
     }
 
     @Override
@@ -451,7 +460,7 @@ public class ArendeServiceImpl implements ArendeService {
         if (FrageStallare.WEBCERT.equals(frageStallare)) {
             if (Status.ANSWERED.equals(arendeSvarStatus)) {
                 return NotificationEvent.ANSWER_FROM_FK_HANDLED;
-            } else if (Status.CLOSED.equals(arendeSvarStatus) && StringUtils.isNotEmpty(arende.getMeddelande())) {
+            } else if (Status.CLOSED.equals(arendeSvarStatus)) {
                 return NotificationEvent.ANSWER_FROM_FK_UNHANDLED;
             }
         }
