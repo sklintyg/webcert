@@ -32,6 +32,9 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande
 import se.inera.intyg.webcert.specifications.spec.util.WsClientFixtureNyaKontraktet
 
 /**
+ * TODO Används endast av ManuellaTester - JournalSystemSkaparUtkast - och jag tvivlar starkt på att någon kört
+ * ManuellaTester-sviterna på bra länge. Således kandidat för städning.
+ *
  * @author andreaskaltenbach
  */
 class JournalsystemSkaparUtkast extends WsClientFixtureNyaKontraktet {

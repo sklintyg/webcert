@@ -12,7 +12,7 @@ xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
    <soapenv:Body>
       <urn:ReceiveMedicalCertificateQuestion>
          <urn:Question>
-            <urn:fkReferens-id>1234</urn:fkReferens-id>
+            <urn:fkReferens-id>$data.fkReferens$</urn:fkReferens-id>
             <urn:amne>$data.amne$</urn:amne>
             <urn:fraga>
                <urn1:meddelandeText>Text</urn1:meddelandeText>
@@ -35,7 +35,7 @@ xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
             </urn:adressVard>
 
             <urn:lakarutlatande>
-               <urn1:lakarutlatande-id>6a7f4d81-34f7-4a1f-a655-df58dfabb211</urn1:lakarutlatande-id>
+               <urn1:lakarutlatande-id>$data.intygsId$</urn1:lakarutlatande-id>
                <urn1:signeringsTidpunkt>2016-04-09T21:00:00.000</urn1:signeringsTidpunkt>
                <urn1:patient>
                   <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212"/>

@@ -19,28 +19,26 @@
 
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
-
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
-
 import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
 import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
 import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -57,6 +55,9 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V2_0 = "services/create-draft-certificate/v2.0";
+
+    private static final String DEFAULT_LAKARE_HSAID = "IFV1239877878-1049";
+    private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
 
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -79,15 +80,15 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 "soap:Envelope/soap:Body/lc:CreateDraftCertificateResponse");
     }
 
-    private String createRequestBody(String intygstyp) {
-        requestTemplate.add("data", new IntygsData(intygstyp));
+    private String createRequestBody(String intygstyp, String lakareHsaId) {
+        requestTemplate.add("data", new IntygsData(intygstyp, lakareHsaId));
         return requestTemplate.render();
     }
 
     @Test
     public void testCreateLuaefsDraft() throws IOException {
 
-        given().body(createRequestBody(LUAE_FS))
+        given().body(createRequestBody(LUAE_FS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -103,7 +104,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuaenaDraft() throws IOException {
 
-        given().body(createRequestBody(LUAE_NA))
+        given().body(createRequestBody(LUAE_NA, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -118,7 +119,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuseDraft() throws IOException {
 
-        given().body(createRequestBody(LUSE))
+        given().body(createRequestBody(LUSE, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -133,7 +134,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLisuDraft() throws IOException {
 
-        given().body(createRequestBody(LISU))
+        given().body(createRequestBody(LISU, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -148,7 +149,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     private void testMatchesSchemaForType(String type) throws IOException {
         given().filter(
                 responseBodyExtractorFilter)
-                .body(createRequestBody(type))
+                .body(createRequestBody(type, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -160,7 +161,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftForUnknownTypeFailsWithValidationError() {
 
-        given().body(createRequestBody("NON_EXISTING_TYPE"))
+        given().body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -186,12 +187,30 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 
+    /**
+     * Check that VALIDATION_ERROR is found when utfärdare does not have medarbetaruppdrag on the specified Vårdenhet.
+     */
+    @Test
+    public void testCreateDraftFailsWithValidationErrorWhenIssuerHasNoMiUOnUnit() {
+
+        given().body(createRequestBody(LISU, OTHER_LAKARE_HSAID))
+                .when()
+                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+    }
+
     // String Template Data object
     private static final class IntygsData {
         public final String intygstyp;
+        public final String lakareHsaId;
 
-        public IntygsData(String intygstyp) {
+        public IntygsData(String intygstyp, String lakareHsaId) {
             this.intygstyp = intygstyp;
+            this.lakareHsaId = lakareHsaId;
         }
     }
 }
