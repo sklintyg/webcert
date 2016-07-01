@@ -243,7 +243,7 @@ public class ArendeServiceImpl implements ArendeService {
                     "FS-011: Cant revert status for question " + meddelandeId);
         }
 
-        NotificationEvent notificationEvent = determineNotificationEvent(arende);
+        NotificationEvent notificationEvent = determineNotificationEvent(arende, arendeIsAnswered);
 
         if (arendeIsAnswered) {
             arende.setStatus(Status.ANSWERED);
@@ -390,7 +390,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Transactional
     public ArendeConversationView closeArendeAsHandled(String meddelandeId) {
         Arende arendeToClose = lookupArende(meddelandeId);
-        NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose);
+        NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose, false);
         Arende closedArende = closeArendeAsHandled(arendeToClose);
 
         if (notificationEvent != null) {
@@ -445,7 +445,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
-    private NotificationEvent determineNotificationEvent(Arende arende) {
+    private NotificationEvent determineNotificationEvent(Arende arende, boolean arendeIsAnswered) {
         FrageStallare frageStallare = FrageStallare.getByKod(arende.getSkickatAv());
         Status arendeSvarStatus = arende.getStatus();
 
@@ -460,7 +460,7 @@ public class ArendeServiceImpl implements ArendeService {
         if (FrageStallare.WEBCERT.equals(frageStallare)) {
             if (Status.ANSWERED.equals(arendeSvarStatus)) {
                 return NotificationEvent.ANSWER_FROM_FK_HANDLED;
-            } else if (Status.CLOSED.equals(arendeSvarStatus)) {
+            } else if (Status.CLOSED.equals(arendeSvarStatus) && arendeIsAnswered) {
                 return NotificationEvent.ANSWER_FROM_FK_UNHANDLED;
             }
         }

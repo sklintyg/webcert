@@ -5,10 +5,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -796,6 +793,23 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
+    public void closeArendeAsHandledFromWCNoAnswerTest() {
+        final String meddelandeId = "meddelandeId";
+        Arende arende = new Arende();
+        arende.setSkickatAv(FrageStallare.WEBCERT.getKod());
+        arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
+        when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
+        when(repo.save(any(Arende.class))).thenReturn(new Arende());
+        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
+
+        service.closeArendeAsHandled(meddelandeId);
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo).save(arendeCaptor.capture());
+        assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
+        verifyNoMoreInteractions(notificationService);
+    }
+
+    @Test
     public void closeArendeAsHandledAnswerTest() {
         final String meddelandeId = "meddelandeId";
         Arende arende = new Arende();
@@ -865,10 +879,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void openArendeAsUnhandledTest() {
+    public void openArendeAsUnhandledQuestionFromWCTest() {
         final String meddelandeId = "meddelandeId";
         Arende arende = new Arende();
         arende.setSkickatAv(FrageStallare.WEBCERT.getKod());
+        arende.setStatus(Status.CLOSED);
         when(repo.findOneByMeddelandeId(meddelandeId)).thenReturn(arende);
         when(repo.save(any(Arende.class))).thenReturn(new Arende());
         when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
@@ -877,6 +892,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_EXTERNAL_ACTION, arendeCaptor.getValue().getStatus());
+        verifyNoMoreInteractions(notificationService);
     }
 
     @Test
