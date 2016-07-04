@@ -31,6 +31,7 @@ module.exports = function() {
             callback('Intyg.typ odefinierad.');
         } else {
             global.intyg = generateIntygByType(intyg.typ, intyg.id);
+            console.log(intyg);
             fillIn(global.intyg, callback);
         }
     });
