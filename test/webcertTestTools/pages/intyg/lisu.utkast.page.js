@@ -257,7 +257,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
                 if (sysselsattning.yrkesAktiviteter) {
                     return sysselsattningEL.nuvarandeArbeteBeskrivning.sendKeys(sysselsattning.yrkesAktiviteter);
                 } else if (sysselsattning.programAktiviteter) {
-                    return sysselsattningEL.arbetsmarknadspolitisktProgram.sendKeys(sysselsattning.programAktiviteter);
+                    return sysselsattningEL.arbetsmarknadspolitisktProgramBeskrivning.sendKeys(sysselsattning.programAktiviteter);
                 } else {
                     return Promise.resolve();
                 }

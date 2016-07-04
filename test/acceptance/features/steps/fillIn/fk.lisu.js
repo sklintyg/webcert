@@ -113,10 +113,7 @@ module.exports = {
 
         Promise.all(promiseArr)
             .then(function() {
-                element(by.id('showCompleteButton').click()).then(function() {
-                    cb();
-                });
-
+                cb();
             });
     }
 };

@@ -25,11 +25,10 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
 module.exports = function() {
-    this.Given(/^jag signerar intyget$/, function(callback) {
-
-        // element(by.id('showCompleteButton')).sendKeys(protractor.Key.SPACE).then(function() {
-        fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
-        // });
+    this.Given(/^jag signerar intyget$/, function() {
+        return browser.sleep(2000).then(function() { // fix för nåt med animering?
+            return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+        });
     });
 
     this.Given(/^jag makulerar intyget$/, function(callback) {
