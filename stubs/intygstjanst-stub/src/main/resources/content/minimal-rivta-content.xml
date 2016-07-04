@@ -6,7 +6,7 @@
         </ns4:intygs-id>
         <ns4:typ>
             <ns3:code>CERTIFICATE_TYPE</ns3:code>
-            <ns3:codeSystem>f6fb361a-e31d-48b8-8657-99b63912dd9b</ns3:codeSystem>
+            <ns3:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</ns3:codeSystem>
             <ns3:displayName>Läkarutlåtande för sjukersättning</ns3:displayName>
         </ns4:typ>
         <ns4:version>1.0</ns4:version>
