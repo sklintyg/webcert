@@ -474,7 +474,7 @@ public class ArendeServiceImpl implements ArendeService {
             notificationService.sendNotificationForAnswerHandled(arende);
             break;
         case ANSWER_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForAnswerRecieved(arende);
+            notificationService.sendNotificationForAnswerHandled(arende);
             break;
         case ANSWER_SENT_TO_FK:
             notificationService.sendNotificationForQuestionHandled(arende);
@@ -483,7 +483,7 @@ public class ArendeServiceImpl implements ArendeService {
             notificationService.sendNotificationForQuestionHandled(arende);
             break;
         case QUESTION_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForQuestionReceived(arende);
+            notificationService.sendNotificationForQuestionHandled(arende);
             break;
         case QUESTION_SENT_TO_FK:
             notificationService.sendNotificationForQuestionSent(arende);

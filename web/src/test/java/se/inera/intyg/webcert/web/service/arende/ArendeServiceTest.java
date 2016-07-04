@@ -841,6 +841,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(repo.findBySvarPaId(meddelandeId)).thenReturn(Arrays.asList(new Arende())); // there are answers
 
         service.openArendeAsUnhandled(meddelandeId);
+        verifyNoMoreInteractions(notificationService);
     }
 
     @Test
@@ -857,7 +858,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_INTERNAL_ACTION, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
     }
 
     @Test
@@ -875,7 +876,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.ANSWERED, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForAnswerRecieved(any(Arende.class));
+        verify(notificationService).sendNotificationForAnswerHandled(any(Arende.class));
     }
 
     @Test
