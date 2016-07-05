@@ -19,15 +19,12 @@
 
 /* globals logger, pages, browser, JSON, Promise */
 
-'use strict';
+
 var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
 module.exports = {
-    fillIn: function(intyg, cb) {
-
-
+    fillIn: function(intyg) {
+        'use strict';
         var promiseArr = [];
-
-
         promiseArr.push(tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
                 logger.info('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
 
@@ -41,21 +38,21 @@ module.exports = {
                             .then(function() {
                                 logger.info('OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(intyg.rorelseorganensFunktioner));
                             }, function(reason) {
-                                cb('FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(intyg.rorelseorganensFunktioner) + reason);
+                                throw ('FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(intyg.rorelseorganensFunktioner) + reason);
                             });
 
                     }, function(reason) {
-                        cb('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
+                        throw ('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
                     });
             },
             function(reason) {
-                cb('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
+                throw ('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
             }));
 
         promiseArr.push(tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
             logger.info('OK - fillInIdentitetStyrktGenom:' + intyg.identitetStyrktGenom.toString());
         }, function(reason) {
-            cb('FEL, fillInIdentitetStyrktGenom,' + reason);
+            throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
         }));
 
         browser.ignoreSynchronization = true;
@@ -69,81 +66,80 @@ module.exports = {
         promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(intyg).then(function() {
             logger.info('OK - fillInSynfunktioner');
         }, function(reason) {
-            cb('FEL, fillInSynfunktioner,' + reason);
+            throw ('FEL, fillInSynfunktioner,' + reason);
         }));
 
         promiseArr.push(tsBasUtkastPage.fillInHjartOchKarlsjukdomar(intyg).then(function() {
             logger.info('OK - fillInHjartOchKarlsjukdomar');
         }, function(reason) {
-            cb('FEL, fillInHjartOchKarlsjukdomar,' + reason);
+            throw ('FEL, fillInHjartOchKarlsjukdomar,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInDiabetes(intyg.diabetes).then(function() {
             logger.info('OK - fillInDiabetes: ' + JSON.stringify(intyg.diabetes));
         }, function(reason) {
-            cb('FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
+            throw ('FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInNeurologiskaSjukdomar(intyg).then(function() {
             logger.info('OK - fillInNeurologiskaSjukdomar');
         }, function(reason) {
-            cb('FEL, fillInNeurologiskaSjukdomar,' + reason);
+            throw ('FEL, fillInNeurologiskaSjukdomar,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInEpilepsi(intyg).then(function() {
             logger.info('OK - fillInEpilepsi');
         }, function(reason) {
-            cb('FEL, fillInEpilepsi,' + reason);
+            throw ('FEL, fillInEpilepsi,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInNjursjukdomar(intyg).then(function() {
             logger.info('OK - fillInNjursjukdomar');
         }, function(reason) {
-            cb('FEL, fillInNjursjukdomar,' + reason);
+            throw ('FEL, fillInNjursjukdomar,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInDemens(intyg).then(function() {
             logger.info('OK - fillInDemens');
         }, function(reason) {
-            cb('FEL, fillInDemens,' + reason);
+            throw ('FEL, fillInDemens,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInSomnOchVakenhet(intyg).then(function() {
             logger.info('OK - fillInSomnOchVakenhet');
         }, function(reason) {
-            cb('FEL, fillInSomnOchVakenhet,' + reason);
+            throw ('FEL, fillInSomnOchVakenhet,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(intyg).then(function() {
             logger.info('OK - fillInAlkoholNarkotikaLakemedel');
         }, function(reason) {
-            cb('FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
+            throw ('FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInPsykiska(intyg).then(function() {
             logger.info('OK - fillInPsykiska');
         }, function(reason) {
-            cb('FEL, fillInPsykiska,' + reason);
+            throw ('FEL, fillInPsykiska,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInAdhd(intyg).then(function() {
             logger.info('OK - fillInAdhd');
         }, function(reason) {
-            cb('FEL, fillInAdhd,' + reason);
+            throw ('FEL, fillInAdhd,' + reason);
         }));
         promiseArr.push(tsBasUtkastPage.fillInSjukhusvard(intyg).then(function() {
             logger.info('OK - fillInSjukhusvard');
         }, function(reason) {
-            cb('FEL, fillInSjukhusvard,' + reason);
+            throw ('FEL, fillInSjukhusvard,' + reason);
         }));
 
         promiseArr.push(tsBasUtkastPage.fillInOvrigMedicinering(intyg).then(function() {
             logger.info('OK - fillInOvrigMedicinering');
         }, function(reason) {
-            cb('FEL, fillInOvrigMedicinering,' + reason);
+            throw ('FEL, fillInOvrigMedicinering,' + reason);
         }));
 
         promiseArr.push(tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
             logger.info('OK - fillInBedomning');
         }, function(reason) {
-            cb('FEL, fillInBedomning,' + reason);
+            throw ('FEL, fillInBedomning,' + reason);
         }));
 
         return Promise.all(promiseArr)
             .then(function(value) {
                 browser.ignoreSynchronization = false;
-                cb();
             });
     }
 };

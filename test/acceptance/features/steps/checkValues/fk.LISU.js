@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger */
+/* globals logger, Promise */
 
 'use strict';
 
@@ -28,6 +28,7 @@ module.exports = {
     checkValues: function(intyg, callback) {
         logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
         logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
-        callback();
+        return Promise.all([ //kommer snart
+        ]);
     }
 };

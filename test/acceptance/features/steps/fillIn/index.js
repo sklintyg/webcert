@@ -19,25 +19,20 @@
 'use strict';
 
 module.exports = {
-    fillIn: function(intyg, cb) {
+    fillIn: function(intyg) {
         switch (intyg.typ) {
             case 'Transportstyrelsens läkarintyg':
-                require('./ts.bas.js').fillIn(intyg, cb);
-                break;
+                return require('./ts.bas.js').fillIn(intyg);
             case 'Transportstyrelsens läkarintyg, diabetes':
-                require('./ts.diabetes.js').fillIn(intyg, cb);
-                break;
+                return require('./ts.diabetes.js').fillIn(intyg);
             case 'Läkarintyg FK 7263':
-                require('./fk.7263.js').fillIn(intyg, cb);
-                break;
+                return require('./fk.7263.js').fillIn(intyg);
             case 'Läkarutlåtande för sjukersättning':
-                require('./fk.LUSE.js').fillIn(intyg, cb);
-                break;
+                return require('./fk.LUSE.js').fillIn(intyg);
             case 'Läkarintyg för sjukpenning utökat':
-                require('./fk.lisu.js').fillIn(intyg, cb);
-                break;
+                return require('./fk.lisu.js').fillIn(intyg);
             default:
-                cb('Intyg.typ odefinierad.');
+                throw 'Intyg.typ odefinierad.';
         }
     }
 };

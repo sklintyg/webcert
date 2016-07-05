@@ -43,7 +43,7 @@ module.exports = {
         var ele = element(by.id(_element));
         if (_val !== null) {
             // logger.info('Kontrollerar '+_element+' : '+ _val);
-            expect(ele.getText()).to.eventually.equal(_val).then(function(value) {
+            return expect(ele.getText()).to.eventually.equal(_val).then(function(value) {
                 logger.info('OK - ' + _element + ' = ' + value);
             }, function(reason) {
                 logger.info('FEL, ' + _element + ', ' + reason);

@@ -43,16 +43,15 @@ module.exports = function() {
         fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
-    this.Given(/^jag kopierar intyget$/, function(callback) {
-        fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
+    this.Given(/^jag kopierar intyget$/, function() {
+        return fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
+            return fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
                 .then(function() {
-                    browser.getCurrentUrl()
+                    return browser.getCurrentUrl()
                         .then(function(text) {
                             intyg.id = text.split('/').slice(-1)[0];
                             intyg.id = intyg.id.split('?')[0];
                             logger.info('intyg.id: ' + intyg.id);
-                            callback();
                         });
                 });
         });
