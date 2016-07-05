@@ -210,9 +210,10 @@ public class IntygServiceTest {
         intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verifyNoMoreInteractions(intygRepository);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(relationService, times(0)).getRelations(any());
+        verifyNoMoreInteractions(relationService);
     }
 
     @Test
@@ -225,6 +226,42 @@ public class IntygServiceTest {
         assertNotNull(res.getRelations());
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService).getRelations(eq(CERTIFICATE_ID));
+    }
+
+    @Test
+    public void testFetchIntygDataWithRelationNotFoundInIT() throws Exception {
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new IntygModuleFacadeException(""));
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, null, null));
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRepository).findOne(CERTIFICATE_ID);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService).getRelations(eq(CERTIFICATE_ID));
+    }
+
+    @Test
+    public void testFetchIntygDataWithRelationITUnavailable() throws Exception {
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new WebServiceException(""));
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, null, null));
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRepository).findOne(CERTIFICATE_ID);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));

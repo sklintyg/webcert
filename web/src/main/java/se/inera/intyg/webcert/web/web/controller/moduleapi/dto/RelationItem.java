@@ -82,4 +82,9 @@ public final class RelationItem {
         return res;
     }
 
+    public static List<RelationItem> createBaseCase(final Utkast utkast) {
+        ArrayList<RelationItem> res = new ArrayList<>();
+        res.add(new RelationItem(utkast));
+        return res;
+    }
 }

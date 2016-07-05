@@ -430,7 +430,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolder(utkast);
+            return buildIntygContentHolder(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findOne(intygId);
@@ -439,7 +439,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolder(utkast);
+            return buildIntygContentHolder(utkast, relations);
         }
     }
 
@@ -450,13 +450,15 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? buildIntygContentHolder(utkast) : getIntygData(intygId, intygTyp, false);
+        return (utkast != null) ? buildIntygContentHolder(utkast, false) : getIntygData(intygId, intygTyp, false);
     }
 
-    private IntygContentHolder buildIntygContentHolder(Utkast utkast) {
+    private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null, null);
+        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
+                relations ? relationService.getRelations(utkast.getIntygsId())
+                        .orElse(RelationItem.createBaseCase(utkast)) : null);
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {

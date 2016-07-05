@@ -116,7 +116,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setContent(utkast.getModel());
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
         draftHolder.getRelations().addAll(relationService.getRelations(utkast.getIntygsId())
-                .orElse(RelationItem.createBaseCase(utkast.getIntygsId(), utkast.getSenastSparadDatum(), utkast.getStatus().name())));
+                .orElse(RelationItem.createBaseCase(utkast)));
 
         return Response.ok(draftHolder).build();
     }
