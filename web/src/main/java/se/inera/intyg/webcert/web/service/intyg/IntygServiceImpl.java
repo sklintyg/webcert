@@ -19,12 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -32,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
@@ -72,14 +74,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
 
 /**
  * @author andreaskaltenbach
@@ -426,7 +421,7 @@ public class IntygServiceImpl implements IntygService {
                     certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
                     relations ? relationService.getRelations(intygId)
-                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), RelationItem.INTYG)) : null);
+                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name())) : null);
 
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing

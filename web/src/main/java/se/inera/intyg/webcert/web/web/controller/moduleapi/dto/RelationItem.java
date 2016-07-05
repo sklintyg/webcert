@@ -19,18 +19,17 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 
 public final class RelationItem {
-
-    public static final String UTKAST = "UTKAST";
-    public static final String INTYG = "INTYG";
 
     private final String intygsId;
     private final String kod;
@@ -40,7 +39,7 @@ public final class RelationItem {
     public RelationItem(final Utkast reference) {
         intygsId = reference.getIntygsId();
         kod = convert(reference.getRelationKod());
-        status = convert(reference.getStatus());
+        status = IntygDraftsConverter.resolveStatus(reference);
         date = getDate(reference);
     }
 
@@ -55,15 +54,6 @@ public final class RelationItem {
         return UtkastStatus.SIGNED.equals(reference.getStatus())
                 ? reference.getSignatur().getSigneringsDatum()
                 : reference.getSenastSparadDatum();
-    }
-
-    private String convert(UtkastStatus status) {
-        switch (status) {
-        case SIGNED:
-            return INTYG;
-        default:
-            return UTKAST;
-        }
     }
 
     private String convert(RelationKod relationsKod) {

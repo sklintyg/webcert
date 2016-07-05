@@ -90,7 +90,7 @@ describe('arende on luse intyg', function() {
             expect(LuseUtkastPage.relatedIntygList.rows().count()).toBe(3);
             expect(LuseUtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
             expect(LuseUtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Komplettering');
-            expect(LuseUtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast');
+            expect(LuseUtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast, kan signeras');
             expect(LuseUtkastPage.relatedIntygList.row(3).relation.getText()).toBe('');
             expect(LuseUtkastPage.relatedIntygList.row(3).status.getText()).toBe('Signerat');
         });
