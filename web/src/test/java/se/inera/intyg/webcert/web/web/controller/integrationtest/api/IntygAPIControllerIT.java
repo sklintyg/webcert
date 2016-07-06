@@ -21,10 +21,10 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -42,9 +42,7 @@ import com.jayway.restassured.http.ContentType;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
@@ -213,12 +211,12 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
-        
+
         // Then logout
         given()
         .expect().statusCode(HttpServletResponse.SC_OK)
         .when().get("logout");
-        
+
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
@@ -231,7 +229,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", intygsId);
-        
+
         given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
                 .when().post("api/intyg/{intygsTyp}/{intygsId}/kopiera")
