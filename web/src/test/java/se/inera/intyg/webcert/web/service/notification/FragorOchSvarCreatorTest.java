@@ -35,6 +35,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
@@ -347,6 +348,7 @@ public class FragorOchSvarCreatorTest {
         Arende arende = new Arende();
         arende.setSkickatAv(FRAGESTALLARE_FK);
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        arende.setAmne(ArendeAmne.PAMINN);
         arende.setPaminnelseMeddelandeId("paminnelseMeddelandeId");
         return arende;
     }

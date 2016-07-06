@@ -135,7 +135,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = arendeRepository.save(arende);
 
-        if (saved.getPaminnelseMeddelandeId() != null) {
+        if (ArendeAmne.PAMINN == saved.getAmne()) {
             notificationService.sendNotificationForQuestionReceived(saved);
         } else if (saved.getSvarPaId() != null) {
             notificationService.sendNotificationForAnswerRecieved(saved);

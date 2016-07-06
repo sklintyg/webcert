@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
@@ -85,7 +86,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         }
 
         for (Arende arende : arenden) {
-            if (StringUtils.isNotBlank(arende.getPaminnelseMeddelandeId()) || StringUtils.isNotBlank(arende.getSvarPaId())) {
+            if (ArendeAmne.PAMINN == arende.getAmne() || StringUtils.isNotBlank(arende.getSvarPaId())) {
                 // skip answers and reminders
                 continue;
             }
