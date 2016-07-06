@@ -1,5 +1,6 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,6 +112,58 @@ public class UtkastApiControllerTest {
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
         assertEquals(PATIENT_FORNAMN + " " + PATIENT_EFTERNAMN,
                 requestCaptor.getValue().getPatient().getFullstandigtNamn());
+    }
+
+    @Test
+    public void testCreateUtkastFornamnOk() throws JsonParseException, JsonMappingException, IOException {
+        String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
+        utkastRequest.setPatientFornamn(StringUtils.repeat("a", 255));
+        Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
+        assertEquals(OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testCreateUtkastFornamnTooLong() throws JsonParseException, JsonMappingException, IOException {
+        String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
+        utkastRequest.setPatientFornamn(StringUtils.repeat("a", 256));
+        Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testCreateUtkastEfternamnOk() throws JsonParseException, JsonMappingException, IOException {
+        String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
+        utkastRequest.setPatientEfternamn(StringUtils.repeat("a", 255));
+        Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
+        assertEquals(OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testCreateUtkastEfternamnTooLong() throws JsonParseException, JsonMappingException, IOException {
+        String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
+        utkastRequest.setPatientEfternamn(StringUtils.repeat("a", 256));
+        Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test(expected = AuthoritiesException.class)
