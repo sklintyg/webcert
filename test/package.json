@@ -2,11 +2,8 @@
     "name": "e2e-test",
     "version": "0.1.0",
     "dependencies": {
-        "cucumber": "^1.2.1",
+        "webcert-testtools": "latest",
         "soap": "^0.16.0",
-        "webcert-testtools": "latest"
-    },
-    "devDependencies": {
         "chai": "^3.5.0",
         "chai-as-promised": "^5.2.0",
         "cucumber": "^1.2.1",
