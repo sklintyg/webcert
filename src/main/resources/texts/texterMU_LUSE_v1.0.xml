@@ -22,7 +22,11 @@ Om du inte känner patienten ska hen styrka sin identitet genom legitimation med
 	<text id="KAT_1.RBK">Grund för medicinskt underlag </text>
 	<text id="FRG_1.RBK">Utlåtandet är baserat på </text>
 	<text id="DFR_1.3.RBK">Ange vad annat är:</text>
-	<text id="FRG_2.RBK">Jag har känt patienten seden den  </text>
+	<text id="FRG_2.RBK">Jag har känt patienten sedan den  </text>
+	<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
+	<text id="FRG_4.RBK">Ange utredning eller underlag</text>
+	<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
+	<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>
 	
 	<!-- Text och hjälptext för typ av underlag ur kodverk -->
 	<text id="KV_FKMU_0001.UNDERSOKNING.RBK">Min undersökning av patienten</text>
@@ -30,17 +34,6 @@ Om du inte känner patienten ska hen styrka sin identitet genom legitimation med
 	<text id="KV_FKMU_0001.ANHORIG.RBK">Anhörigs beskrivning av patienten</text>
 	<text id="KV_FKMU_0001.ANNAT.RBK">Annat</text>
 	
-	<!--
-	===============================================
-	KATEGORI 2: Andra medicinska utredningar eller underlag
-	===============================================
-	-->
-	<text id="KAT_2.RBK">Andra medicinska utredningar eller underlag</text>
-	<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
-	<text id="FRG_4.RBK">Ange utredning eller underlag</text>
-	<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
-	<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>
-
 	<!-- Text och hjälptext för typ av underlag ur kodverk -->
 	<text id="KV_FKMU_0005.NEUROPSYKIATRISKT.RBK">Neuropsykiatriskt utlåtande</text>
 	<text id="KV_FKMU_0005.HABILITERING.RBK">Underlag från habiliteringen</text>
@@ -113,7 +106,6 @@ Med social interaktion avses förmågan att på ett teoretiskt plan sätta sig i
 
 Exempel: Svårigheter som till exempel uppmärksamhetsbrister, impulskontrollbrist, personlighetsstörningar och affektiva sjukdomar kan leda till svårigheter med social interaktion. Om svårigheterna med social interaktion är omfattande ställs diagnos inom det så kallade autismspektrat.</text>
 	<text id="DFR_9.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
-	<text id="DFR_9.1.HLP"/>
 	<text id="FRG_10.RBK">Uppmärksamhet, koncentration och exekutiv funktion</text>
 	<text id="FRG_10.HLP">Uppmärksamhet, koncentration och exekutiv funktion
 
