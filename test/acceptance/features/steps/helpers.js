@@ -96,6 +96,28 @@ module.exports = {
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
+    },
+    sendMessageToCareSubjectCode: {
+        KOMPLT: 'Komplettering',
+        PAMINN: 'Paminnelse',
+        ARBTID: '',
+        AVSTMN: '',
+        KONTKT: '',
+        OVRIGT: ''
+    },
+    getSubjectCode: function(value) {
+        for (var key in this.sendMessageToCareSubjectCode) {
+            if (this.sendMessageToCareSubjectCode[key] === value) {
+                return key.toString();
+            }
+        }
+    },
+    getSubject: function(inKey) {
+        for (var key in this.sendMessageToCareSubjectCode) {
+            if (key === inKey) {
+                return this.sendMessageToCareSubjectCode[key];
+            }
+        }
     }
 
 };

@@ -22,12 +22,13 @@
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
+var helpers = require('./helpers');
 
 module.exports = function() {
     this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
-
-        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär komplettering' + global.intyg.guidcheck);
+        var amneCode = helpers.getSubjectCode(helpers.sendMessageToCareSubjectCode.KOMPLT);
+        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär komplettering' + global.intyg.guidcheck, amneCode);
         console.log(body);
         var path = '/send-message-to-care/v1.0?wsdl';
         var url = process.env.INTYGTJANST_URL + path;

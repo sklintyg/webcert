@@ -20,32 +20,42 @@
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
+var helpers = require('../helpers');
 
 function addDays(date, days) {
     date.setDate(date.getDate() + days);
     return date;
 }
 
-module.exports.SendMessageToCare = function(user, person, intyg, message) {
-    var amneCode = 'KOMPLT';
-    var amneDisplayName = 'Komplettering';
+module.exports.SendMessageToCare = function(user, person, intyg, message, amneCode) {
+    var amneDisplayName = helpers.getSubject(amneCode);
     var messageID = testdataHelper.generateTestGuid();
     var skickatTidpunkt = new Date();
     var sistaDatumForSvar = addDays(skickatTidpunkt, 5);
 
-    var kompletteringar = [];
-    for (var k = 1; k <= 26; k++) {
-        if (k === 24) {
-            continue;
-        } // Frage-id 24 finns inte
-        kompletteringar.push(
-            '<komplettering>' +
-            '<frage-id>' + k + '</frage-id>' +
-            '<text>Kompletterning #' + k + '</text>' +
-            '</komplettering>'
-        );
+    var paminnelseMeddelandeId;
+    if (global.previousGuid) {
+        paminnelseMeddelandeId = '<paminnelseMeddelande-id>' + global.previousGuid + '</paminnelseMeddelande-id>';
     }
 
+    var kompletteringar = [];
+    if (amneCode === Object.keys(helpers.sendMessageToCareSubjectCode)[0]) {
+        global.previousGuid = messageID;
+
+        for (var k = 1; k <= 26; k++) {
+            if (k === 24) {
+                continue;
+            } // Frage-id 24 finns inte
+            kompletteringar.push(
+                '<komplettering>' +
+                '<frage-id>' + k + '</frage-id>' +
+                '<text>Kompletterning #' + k + '</text>' +
+                '</komplettering>'
+            );
+        }
+    }
+
+    console.log('global.previousGuid: ' + global.previousGuid);
 
     return '<SendMessageToCare' +
         ' xmlns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1"' +
@@ -68,8 +78,9 @@ module.exports.SendMessageToCare = function(user, person, intyg, message) {
         '<types:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</types:codeSystem>' +
         '<types:displayName>' + amneDisplayName + '</types:displayName>' +
         '</amne>' +
-        '<rubrik>KOMPLT</rubrik>' +
+        '<rubrik>' + amneCode + '</rubrik>' +
         '<meddelande>' + message + '</meddelande>' +
+        ((paminnelseMeddelandeId) ? paminnelseMeddelandeId : '') +
         '<skickatAv>' +
         '<part>' +
         '<types:code>FKASSA</types:code>' +
@@ -78,7 +89,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message) {
         '</part>' +
         '<kontaktInfo>MAX antal kategorier. Automatiskt test </kontaktInfo>' +
         '</skickatAv>' +
-        kompletteringar.join('\n') +
+        ((kompletteringar.length > 0) ? kompletteringar.join('\n') : '') +
         '<sistaDatumForSvar>' + testdataHelper.dateFormat(sistaDatumForSvar) + '</sistaDatumForSvar>' +
         '</SendMessageToCare>';
 };

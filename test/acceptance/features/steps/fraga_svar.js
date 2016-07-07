@@ -26,7 +26,6 @@ var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
-var helpers = require('./helpers');
 
 function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
     return expect(element(by.cssContainingText('.qa-block-handled', kontrollnr)).isPresent()).to.eventually.be.ok;
@@ -143,6 +142,14 @@ module.exports = function() {
         return kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck);
     });
 
+    this.Given(/^kan jag se påminnelse under hanterade frågor$/, function() {
+        return browser.refresh().then(function() {
+            var fragaText = global.intyg.guidcheck;
+            console.log('Letar efter fråga som innehåller text: ' + fragaText);
+            return expect(element(by.cssContainingText('.arende-block', fragaText)).isPresent()).to.eventually.become(true);
+        });
+    });
+
     this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
         fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });
@@ -161,32 +168,84 @@ module.exports = function() {
     });
 
     this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-        url = url.replace('https', 'http');
-
-        // global.person.id = '19121212-1212';
-
-        //Kontrollnr for tester. Anvand i bade fraga och svar
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
-        var body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-            global.person.id,
-            global.user,
-            'Enhetsnamn',
-            global.intyg.id,
-            amne,
-            'nytt meddelande: ' + global.intyg.guidcheck);
-        soap.createClient(url, function(err, client) {
-            if (err) {
-                callback(err);
+        var url;
+        var body;
+
+        var isSMIIntyg;
+        if (intyg && intyg.typ) {
+            isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        }
+
+        if (isSMIIntyg) {
+            var amneCode;
+            switch (amne) {
+                case helpers.sendMessageToCareSubjectCode.KOMPLT:
+                    amneCode = helpers.getSubjectCode(helpers.sendMessageToCareSubjectCode.KOMPLT);
+                    break;
+                case helpers.sendMessageToCareSubjectCode.PAMINN:
+                    amneCode = helpers.getSubjectCode(helpers.sendMessageToCareSubjectCode.PAMINN);
+                    break;
+                default:
+                    // default code block
             }
 
-            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                // logger.debug(body);
-                // logger.debug(result);
-                callback(err);
+            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
+            var path = '/send-message-to-care/v1.0?wsdl';
+            url = process.env.INTYGTJANST_URL + path;
+            // var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
+            url = url.replace('https', 'http');
+
+            soap.createClient(url, function(err, client) {
+                logger.info(url);
+                if (err) {
+                    callback(err);
+                } else {
+                    client.SendMessageToCare(body, function(err, result, resBody) {
+                        console.log(resBody);
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var resultcode = result.result.resultCode;
+                            logger.info('ResultCode: ' + resultcode);
+                            console.log(result);
+                            if (resultcode !== 'OK') {
+                                logger.info(result);
+                                callback('ResultCode: ' + resultcode + '\n' + resBody);
+                            } else {
+                                logger.info('ResultCode: ' + resultcode);
+                                console.log(JSON.stringify(result));
+                                callback();
+                            }
+
+                        }
+                    });
+                }
             });
-        });
+        } else {
+            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+            url = url.replace('https', 'http');
+
+            body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
+                global.person.id,
+                global.user,
+                'Enhetsnamn',
+                global.intyg.id,
+                amne,
+                'nytt meddelande: ' + global.intyg.guidcheck);
+            soap.createClient(url, function(err, client) {
+                if (err) {
+                    callback(err);
+                }
+
+                client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                    // logger.debug(body);
+                    // logger.debug(result);
+                    callback(err);
+                });
+            });
+        }
     });
 
     this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
