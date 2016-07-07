@@ -89,4 +89,6 @@
 
   <amq:queue id="notificationQueue" physicalName="notificationQueue"/>
 
+  <amq:queue id="notificationQueueForAggregation" physicalName="notificationQueueForAggregation"/>
+
 </beans>

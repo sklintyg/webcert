@@ -19,14 +19,14 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-public final class RouteHeaders {
+public final class NotificationRouteHeaders {
 
-    private RouteHeaders() {
+    private NotificationRouteHeaders() {
     }
 
     public static final String LOGISK_ADRESS = "logiskAdress";
     public static final String INTYGS_ID = "intygsId";
+    public static final String INTYGS_TYP = "intygsTyp";
     public static final String HANDELSE = "handelse";
     public static final String VERSION = "version";
-
 }

@@ -2,6 +2,9 @@
     "hsaId": "TSTNMT2321000156-1067",
 	"forNamn": "Elin",
 	"efterNamn": "Johansson",
+	"legitimeradeYrkesgrupper" : [
+		"Läkare"
+	],
     "uppdrag":[
     	{
     		"enhet": "TSTNMT2321000156-1062",

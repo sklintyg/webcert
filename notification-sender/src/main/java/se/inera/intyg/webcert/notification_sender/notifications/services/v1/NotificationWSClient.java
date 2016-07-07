@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
@@ -39,7 +39,7 @@ public class NotificationWSClient {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-            @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
+            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
         LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().getExtension());
 

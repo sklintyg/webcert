@@ -43,6 +43,7 @@ public final class Constants {
     public static final String RECIPIENT = "RECIPIENT";
 
     public static final String JMSX_GROUP_ID = "JMSXGroupID";
+    public static final String JMSX_GROUP_SEQ = "JMSXGroupSeq";
     public static final String JMS_REDELIVERED = "JMSRedelivered";
 
 }

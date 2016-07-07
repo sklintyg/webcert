@@ -41,9 +41,9 @@
       <property name="sessionTransacted" value="true" />
     </bean>
   
-    <bean id="jmsNotificationTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <bean id="jmsNotificationTemplateForAggregation" class="org.springframework.jms.core.JmsTemplate">
       <property name="connectionFactory" ref="connectionFactory" />
-      <property name="defaultDestination" ref="notificationQueue" />
+      <property name="defaultDestination" ref="notificationQueueForAggregation" />
       <!-- Make transactional aware -->
       <property name="sessionTransacted" value="true" />
     </bean>
@@ -69,9 +69,19 @@
     <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/Queue" />
     </bean>
+    <bean id="notificationQueueForAggregation" class="org.apache.activemq.command.ActiveMQQueue">
+      <property name="physicalName" value="NOTIFICATIONSENDERFORAGGREGATION.QUEUE?consumer.exclusive=true;consumer.prefetchSize=11" />
+    </bean>
+    <!--
+    <bean id="notificationQueueForAggregation" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/NotificationQueueForAggregation" />
+    </bean>
+    -->
+    <!--
     <bean id="notificationQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationQueue" />
     </bean>
+    -->
     <bean id="notificationWSQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationWSQueue" />
     </bean>

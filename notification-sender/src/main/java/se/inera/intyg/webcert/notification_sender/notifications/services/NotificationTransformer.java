@@ -33,7 +33,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
 public class NotificationTransformer {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
@@ -54,13 +54,18 @@ public class NotificationTransformer {
 
         NotificationMessage notificationMessage = message.getBody(NotificationMessage.class);
 
-        message.setHeader(RouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
-        message.setHeader(RouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
-        message.setHeader(RouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
+        message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
+        message.setHeader(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
+
+        // Note that this header have been set already by the original sender to accommodate header-based routing
+        // in the aggreagatorRoute. It is 100% safe to overwrite it at this point.
+
+        message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
+
         if (notificationMessage.getVersion() != null) {
-            message.setHeader(RouteHeaders.VERSION, notificationMessage.getVersion().name());
+            message.setHeader(NotificationRouteHeaders.VERSION, notificationMessage.getVersion().name());
         } else {
-            message.setHeader(RouteHeaders.VERSION, SchemaVersion.VERSION_1.name());
+            message.setHeader(NotificationRouteHeaders.VERSION, SchemaVersion.VERSION_1.name());
         }
 
         if (SchemaVersion.VERSION_2.equals(notificationMessage.getVersion())) {
