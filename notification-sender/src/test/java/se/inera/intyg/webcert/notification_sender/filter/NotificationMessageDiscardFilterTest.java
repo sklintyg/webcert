@@ -62,7 +62,6 @@ public class NotificationMessageDiscardFilterTest {
         assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT, notificationMessage.getHandelse());
     }
 
-
     @Test
     public void testFiltersOutAndratButRetainsOthers() throws JsonProcessingException {
         List<Message> processed = testee.process(buildMsgList(HandelseType.INTYGSUTKAST_SKAPAT, HandelseType.INTYGSUTKAST_SIGNERAT, HandelseType.INTYGSUTKAST_ANDRAT, HandelseType.INTYGSUTKAST_ANDRAT, HandelseType.INTYGSUTKAST_RADERAT));
@@ -110,14 +109,6 @@ public class NotificationMessageDiscardFilterTest {
 
     private NotificationMessage buildNotificationMessage(String intygsId, HandelseType ht) {
          return buildNotificationMessage(intygsId, ht, LocalDateTime.now());
-    }
-
-    private void sleep() {
-        try {
-            Thread.sleep(2L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 }

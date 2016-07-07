@@ -71,11 +71,13 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         JaxbDataFormat jaxbMessageDataFormatV2 = initializeJaxbMessageDataFormatV2();
 
         // Start for aggregation route. All notifications enter this route. Draft saved and signed for non fk7263
-        // goes into an aggregation state where we once per minute perform filtering so only the newest SAVED per intygsId
-        // OR a SIGNED are forwarded to the 'receiveNotificationRequestEndpoint' queue. The others are discarded.
-        // Do note that the above only applies to non-fk7263 SAVED and SIGNED, all others will be forwarded directly.
+        // goes into an aggregation state where we once per minute perform filtering so only the newest ANDRAD per intygsId
+        // OR a SIGNERAD are forwarded to the 'receiveNotificationRequestEndpoint' queue. The others are discarded.
+        // Do note that the above only applies to non-fk7263 ANDRAD and SIGNERAD, all others will be forwarded directly.
 
         from(notificationForAggregationQueue).routeId("aggregateNotification")
+                .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
+                .transacted()
                 .log(LoggingLevel.INFO, LOG, simple("ENTER - route: aggregateNotification: Header: ${header[handelse]}").getText())
                 .removeHeader(Constants.JMSX_GROUP_ID)
                 .removeHeader(Constants.JMSX_GROUP_SEQ)
@@ -83,15 +85,16 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(FK_7263_INTYGSTYP))
                     .to(notificationQueue)
                 .when(directRoutingPredicate())
-                      .to(notificationQueue)
+                    .to(notificationQueue)
                 .otherwise()
                     .aggregate(new GroupedExchangeAggregationStrategy())
                     .constant(true)
                     .completionInterval(batchAggregationTimeout)
+                    .forceCompletionOnStop()
                     .to("bean:notificationAggregator")
                     .split(body())
                     .to(notificationQueue).end()
-                .stop();
+                .end();
 
         // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters 'receiveNotificationRequestEndpoint'
         // should have normal resend semantics etc.

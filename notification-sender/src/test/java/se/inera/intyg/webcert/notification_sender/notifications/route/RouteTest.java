@@ -77,7 +77,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.Vardgivare;
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @MockEndpointsAndSkip("bean:notificationAggregator||bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RouteTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
@@ -86,7 +85,7 @@ public class RouteTest {
     CamelContext camelContext;
 
     @Mock
-    private ModuleApi moduleApi;
+    private ModuleApi moduleApi; // this is a mock from unit-test-notification-sender-config.xml
 
     @Autowired
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml

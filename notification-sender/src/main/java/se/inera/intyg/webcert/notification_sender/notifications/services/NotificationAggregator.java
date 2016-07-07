@@ -22,14 +22,14 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Extracts the List of individual {@link Exchange}s that have been aggregated during the last minutes and lets
+ * Extracts the List of individual {@link Exchange}s that have been aggregated during the last minute and lets
  * the {@link NotificationMessageDiscardFilter} filter out those not applicable to be forwarded to the notificationQueue.
  *
  * Note that this processor returns a List of messages as its output - typically the next processor should be a standard
@@ -50,7 +50,7 @@ public class NotificationAggregator {
 
         if (grouped == null || grouped.size() == 0) {
             LOG.info("No aggregated log messages, this is normal if camel aggregator has a batch timeout. Doing nothing.");
-            throw new PermanentException("No aggregated messages, no reason to retry");
+            return Collections.emptyList();
         }
 
         // Pull the inbound messages from the exchanges
@@ -58,9 +58,8 @@ public class NotificationAggregator {
                 .map(Exchange::getIn)
                 .collect(Collectors.toList());
 
-        // And finally let the filtering component do its job, passing on a List of those messages we want to pass down the route.
-        List<Message> l = new NotificationMessageDiscardFilter().process(aggregatedList);
-
-        return l;
+        // And finally let the filtering component do its job, passing on a List of those messages we want to pass down
+        // the route.
+        return new NotificationMessageDiscardFilter().process(aggregatedList);
     }
 }

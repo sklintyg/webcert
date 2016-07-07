@@ -403,11 +403,11 @@ public class NotificationServiceImpl implements NotificationService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             TextMessage textMessage = session.createTextMessage(this.value);
+            textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, this.intygsId);
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, this.intygsTyp);
             textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
             textMessage.setStringProperty(Constants.JMSX_GROUP_ID, this.intygsId);
             switch (this.handelseTyp) {
-                case INTYGSUTKAST_SKAPAT:
                 case INTYGSUTKAST_ANDRAT:
                 case INTYGSUTKAST_SIGNERAT:
                     break;
