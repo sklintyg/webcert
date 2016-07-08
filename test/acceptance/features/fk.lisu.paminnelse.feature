@@ -7,7 +7,6 @@ Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning utökat"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@notReady
 Scenario: Påminnelse
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget

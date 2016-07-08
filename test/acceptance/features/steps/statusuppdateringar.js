@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, protractor, logger, ursprungligtIntyg */
+/* global pages, protractor, logger, ursprungligtIntyg, Promise, JSON */
 
 'use strict';
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
@@ -26,20 +26,39 @@ var tsBasintygtPage = pages.intyg.ts.bas.intyg;
 
 var handelseRegex = /(HAN\d{1,2})/g;
 
-function assertEvents(intygsId, handelsekod, numEvents, cb) {
-
+function getLogEntries(intygsId, handelsekod, numEvents) {
     // Select table and extension based on if 'händelse' contains the pattern HAN{1-2digit} or NOT
     var table = selectTable(handelsekod);
     var extensionType = selectExtension(handelsekod);
 
-    setTimeout(function() {
-        var databaseTable = table;
-        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-            databaseTable + '.handelseKod = "' + handelsekod + '" AND ' +
-            databaseTable + '.' + extensionType + ' = "' + intygsId + '" ;';
+    var databaseTable = table;
+    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+        databaseTable + '.handelseKod = "' + handelsekod + '" AND ' +
+        databaseTable + '.' + extensionType + ' = "' + intygsId + '" ;';
 
-        assertNumberOfEvents(query, numEvents, cb);
-    }, 5000);
+    console.log('query: ' + query);
+    return assertNumberOfEvents(query, numEvents);
+}
+
+function waitForCount(intygsId, count, handelsekod, numEvents, cb) {
+    var intervall = 5000;
+
+    getLogEntries(intygsId, handelsekod, numEvents).then(function(result) {
+        if (result.length >= count) {
+            console.log('Hittade rader: ' + JSON.stringify(result));
+            cb();
+        } else {
+            console.log('Hittade färre än ' + count + 'rader i databasen');
+            console.log('Ny kontroll sker efter ' + intervall + 'ms');
+            setTimeout(function() {
+                waitForCount(intygsId, count, handelsekod, numEvents, cb);
+            }, intervall);
+        }
+
+    }, function(err) {
+        cb(err);
+
+    });
 }
 
 function selectTable(handelsekod) {
@@ -72,22 +91,25 @@ function selectExtension(handelsekod) {
     }
 }
 
-function assertNumberOfEvents(query, numEvents, cb) {
-    // logger.debug('Assert number of events. Query: ' + query);
+function assertNumberOfEvents(query, numEvents) {
     var conn = db.makeConnection();
     conn.connect();
-    conn.query(query,
-        function(err, rows, fields) {
-            conn.end();
-            if (err) {
-                cb(err);
-            } else if (rows[0].Counter !== numEvents) {
-                cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
-            } else {
-                logger.info('OK - Antal händelser i db ' + rows[0].Counter + '(' + numEvents + ')');
-                cb();
-            }
-        });
+    var promise = new Promise(function(resolve, reject) {
+        conn.query(query,
+            function(err, rows, fields) {
+                conn.end();
+                if (err) {
+                    reject(err);
+                } else if (rows[0].Counter !== numEvents) {
+                    // console.log('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
+                    resolve([]);
+                } else {
+                    console.log('OK - Antal händelser i db ' + rows[0].Counter + '(' + numEvents + ')');
+                    resolve(rows);
+                }
+            });
+    });
+    return promise;
 }
 
 module.exports = function() {
@@ -97,11 +119,11 @@ module.exports = function() {
     });
 
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
-        assertEvents(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
+        waitForCount(global.intyg.id, 1, handelsekod, parseInt(antal, 10), callback);
     });
 
     this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
-        assertEvents(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
+        waitForCount(ursprungligtIntyg.id, 1, handelsekod, parseInt(antal, 10), callback);
     });
 
     this.Given(/^jag raderar intyget$/, function(callback) {
