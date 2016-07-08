@@ -69,14 +69,10 @@
     <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/Queue" />
     </bean>
-    <bean id="notificationQueueForAggregation" class="org.apache.activemq.command.ActiveMQQueue">
-      <property name="physicalName" value="NOTIFICATIONSENDERFORAGGREGATION.QUEUE?consumer.exclusive=true;consumer.prefetchSize=11" />
-    </bean>
-    <!--
+
     <bean id="notificationQueueForAggregation" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationQueueForAggregation" />
     </bean>
-    -->
     <!--
     <bean id="notificationQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationQueue" />
