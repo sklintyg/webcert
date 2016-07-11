@@ -55,7 +55,7 @@ describe('Create and Sign luae_fs utkast', function() {
 
                     UtkastPage.showMissingInfoButtonClick();
 
-                    expect(UtkastPage.getMissingInfoMessagesCount()).toBe(4);
+                    expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
 
                 });
 

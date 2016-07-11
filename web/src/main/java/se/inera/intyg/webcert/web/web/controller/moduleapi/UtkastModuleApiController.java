@@ -93,16 +93,17 @@ public class UtkastModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @Context HttpServletRequest request) {
+    public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @DefaultValue("false") @QueryParam("sjf") boolean coherentJournaling, @Context HttpServletRequest request) {
 
-        LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
+        LOG.debug("Retrieving Intyg with id {} and type {}, coherent journaling: {}", intygsId, intygsTyp, coherentJournaling);
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
-        Utkast utkast = utkastService.getDraft(intygsId);
+        Utkast utkast = utkastService.getDraft(intygsId, coherentJournaling);
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -114,7 +115,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         draftHolder.setContent(utkast.getModel());
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
-        draftHolder.getRelations().addAll(relationService.getRelations(utkast.getIntygsId()));
+        draftHolder.getRelations().addAll(relationService.getRelations(utkast.getIntygsId())
+                .orElse(RelationItem.createBaseCase(utkast)));
 
         return Response.ok(draftHolder).build();
     }
@@ -135,8 +137,8 @@ public class UtkastModuleApiController extends AbstractApiController {
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
         LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
@@ -217,8 +219,8 @@ public class UtkastModuleApiController extends AbstractApiController {
             @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
         LOG.debug("Deleting draft with id {}", intygsId);

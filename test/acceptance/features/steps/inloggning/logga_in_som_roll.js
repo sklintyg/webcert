@@ -76,7 +76,7 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Läkare');
     });
 
-    this.Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"$/, function(enhetHsa, callback) {
+    this.Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"$/, function(enhetHsa) {
         var userObj = {
             fornamn: 'Åsa',
             efternamn: 'Svensson',

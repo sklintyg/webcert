@@ -17,33 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.api.dto;
+package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-public class CompletionResponse {
+public final class NotificationRouteHeaders {
 
-    private String intygsUtkastId;
-
-    private String intygsTyp;
-
-    public CompletionResponse(String intygsUtkastId, String intygsTyp) {
-        super();
-        this.intygsUtkastId = intygsUtkastId;
-        this.intygsTyp = intygsTyp;
+    private NotificationRouteHeaders() {
     }
 
-    public String getIntygsUtkastId() {
-        return intygsUtkastId;
-    }
-
-    public void setIntygsUtkastId(String intygsUtkastId) {
-        this.intygsUtkastId = intygsUtkastId;
-    }
-
-    public String getIntygsTyp() {
-        return intygsTyp;
-    }
-
-    public void setIntygsTyp(String intygsTyp) {
-        this.intygsTyp = intygsTyp;
-    }
+    public static final String LOGISK_ADRESS = "logiskAdress";
+    public static final String INTYGS_ID = "intygsId";
+    public static final String INTYGS_TYP = "intygsTyp";
+    public static final String HANDELSE = "handelse";
+    public static final String VERSION = "version";
 }

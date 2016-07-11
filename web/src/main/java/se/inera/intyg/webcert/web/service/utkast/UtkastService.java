@@ -34,7 +34,7 @@ public interface UtkastService {
 
     Utkast createNewDraft(CreateNewDraftRequest request);
 
-    Utkast getDraft(String intygId);
+    Utkast getDraft(String intygId, boolean coherentJournaling);
 
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 

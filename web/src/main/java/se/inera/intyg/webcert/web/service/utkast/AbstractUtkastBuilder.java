@@ -32,12 +32,18 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
@@ -60,6 +66,12 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
     @Autowired
     private UtkastRepository utkastRepository;
 
+    @Autowired
+    private WebCertUserService webCertUserService;
+
+    @Autowired
+    private LogService logService;
+
     /*
      * (non-Javadoc)
      *
@@ -68,14 +80,15 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
      * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation)
-            throws ModuleNotFoundException,
-            ModuleException {
+    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
+            boolean coherentJournaling)
+                    throws ModuleNotFoundException,
+                    ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String intygsTyp = copyRequest.getTyp();
 
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, intygsTyp);
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, intygsTyp, coherentJournaling);
 
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
 
@@ -127,13 +140,23 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
      */
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation)
-            throws ModuleNotFoundException,
-            ModuleException {
+    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
+            boolean coherentJournaling)
+                    throws ModuleNotFoundException,
+                    ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
+
+        // Perform enhets auth if coherent journaling is not active.
+        if (!coherentJournaling) {
+            verifyEnhetsAuth(orgUtkast, true);
+        } else {
+            // If it is, log the read to PDL with additional info indicating that coherent journaling is active.
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
+            logService.logReadIntyg(logRequest);
+        }
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
@@ -168,6 +191,16 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         builderResponse.setUtkastCopy(utkast);
 
         return builderResponse;
+    }
+
+    protected void verifyEnhetsAuth(Utkast utlatande, boolean isReadOnlyOperation) {
+        String vardgivarId = utlatande.getVardgivarId();
+        String enhetsId = utlatande.getEnhetsId();
+        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetsId, isReadOnlyOperation)) {
+            String msg = "User not authorized for enhet " + enhetsId;
+            LOG.debug(msg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
+        }
     }
 
     protected String getInternalModel(String jsonModel, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)

@@ -1,0 +1,100 @@
+<h2>Utkast komponenter</h2>
+
+<h3>wcDecimal</h3>
+<div class="form-group">
+  <input type="text" class="form-control small-decimal" wc-decimal-number wc-decimal-max-numbers="2"
+         ng-model="model.decimal" maxlength="4">
+</div>
+
+<h3>wcUtkastErrorSummary</h3>
+<div class="form-group">
+  <div wc-utkast-error-summary view-state="viewState"></div>
+</div>
+
+<div class="edit-form">
+
+  <h3>wcFieldSingle</h3>
+
+  <div wc-field-single field-number="1" field-help-text="fk7263.helptext.smittskydd">
+    <label for="smittskydd" class="control-label title-single">
+      <input id="smittskydd" name="smittskydd" type="checkbox" ng-model="model.avstangningSmittskydd"
+             wc-focus-on="focusFirstInput" ng-change="onSmittskyddChange()">&nbsp;<span message
+                                                                                        key="fk7263.label.smittskydd"></span>
+    </label>
+  </div>
+
+
+  <h3>wcField</h3>
+  <div wc-field field-label="fk7263.label.vardenhet" field-number="15" field-help-text="fk7263.helptext.adress"
+       id="vardenhetForm" field-has-errors="viewState.common.validationMessagesGrouped.vardenhet">
+
+    <p>wc-field wrappar vilka kontroller som helst. Här är några exempel på vanliga html form element som vi använder
+      och hur
+      de ser ut.</p>
+
+    <div class="row form-group">
+      <label class="col-xs-3 control-label">Label med text field</label>
+
+      <div class="col-xs-9">
+        <input type="text" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label">Textarea med teckenräknare</label>
+      <div>
+        <textarea rows='10' class='form-control'
+                  ng-model="model.kommentar"></textarea>
+        <div class="counter">Tecken kvar: {{500 - model.kommentar.length}}</div>
+      </div>
+
+    </div>
+
+    <div class="form-group form-inline">
+      <label class="control-label">Datepicker</label>
+      <span wc-date-picker-field target-model="dates.undersokningAvPatienten"
+            dom-id="undersokningAvPatientenDate"></span>
+    </div>
+
+    <div class="form-group form-inline">
+      <label class="checkbox inline-block" style="min-width: 250px"><input type="checkbox" id="basedOnExamination"
+                                                                           name="informationBasedOn.examination"
+                                                                           class="checkbox-inline"
+                                                                           ng-model="basedOnState.check.undersokningAvPatienten"
+                                                                           ng-change="toggleBaseradPaDate('undersokningAvPatienten')"
+                                                                           value="true">
+        Checkbox med label</label>
+    </div>
+
+    <div class="form-group form-inline">
+      <label class="radio">
+        <input type="radio" name="radiobuttontest" class="big-radio" ng-model="model.radiochoice" ng-value="">
+        Stor radioknapp med label
+      </label>
+    </div>
+
+    <div class="form-group form-inline">
+      <div id="kontakt">
+        <div class="form-inline">
+          <label class="checkbox checkbox-inline">
+            <input type="checkbox" class="big-checkbox" ng-model="viewState.show" id="kontakttest"
+                   name="kontakttest">
+            Checkbox som öppnar animerad textarea
+          </label>
+        </div>
+      </div>
+      <div ng-if="viewState.show" class="formly-field fold-animation fold-slide-fade-animation">
+        <div>
+          <div class="form-group">
+            <label class="control-label inline-block">
+              Label till textarea
+            </label><br>
+          <textarea id="anledningTillKontakt" name="anledningTillKontakt" rows="6" class="form-control"
+                    ng-model="model.text">
+          </textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

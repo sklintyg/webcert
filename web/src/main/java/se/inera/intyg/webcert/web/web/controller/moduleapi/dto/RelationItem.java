@@ -19,11 +19,15 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 
 public final class RelationItem {
 
@@ -35,23 +39,21 @@ public final class RelationItem {
     public RelationItem(final Utkast reference) {
         intygsId = reference.getIntygsId();
         kod = convert(reference.getRelationKod());
-        status = convert(reference.getStatus());
+        status = IntygDraftsConverter.resolveStatus(reference);
         date = getDate(reference);
+    }
+
+    public RelationItem(String intygsId, String status, LocalDateTime date) {
+        this.intygsId = intygsId;
+        this.status = status;
+        this.date = date;
+        kod = null;
     }
 
     private LocalDateTime getDate(final Utkast reference) {
         return UtkastStatus.SIGNED.equals(reference.getStatus())
                 ? reference.getSignatur().getSigneringsDatum()
                 : reference.getSenastSparadDatum();
-    }
-
-    private String convert(UtkastStatus status) {
-        switch (status) {
-        case SIGNED:
-            return "INTYG";
-        default:
-            return "UTKAST";
-        }
     }
 
     private String convert(RelationKod relationsKod) {
@@ -74,4 +76,15 @@ public final class RelationItem {
         return date;
     }
 
+    public static List<RelationItem> createBaseCase(String intygId, LocalDateTime signeringsdatum, String status) {
+        ArrayList<RelationItem> res = new ArrayList<>();
+        res.add(new RelationItem(intygId, status, signeringsdatum));
+        return res;
+    }
+
+    public static List<RelationItem> createBaseCase(final Utkast utkast) {
+        ArrayList<RelationItem> res = new ArrayList<>();
+        res.add(new RelationItem(utkast));
+        return res;
+    }
 }

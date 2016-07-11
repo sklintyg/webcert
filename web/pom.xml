@@ -538,6 +538,14 @@
               <value>9088</value>
             </systemProperty>
             <systemProperty>
+              <name>h2.tcp.port</name>
+              <value>9094</value>
+            </systemProperty>
+            <systemProperty>
+              <name>h2.web.port</name>
+              <value>9090</value>
+            </systemProperty>
+            <systemProperty>
               <name>java.awt.headless</name>
               <value>true</value>
             </systemProperty>

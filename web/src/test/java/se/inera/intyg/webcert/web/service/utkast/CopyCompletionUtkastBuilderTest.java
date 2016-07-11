@@ -37,6 +37,7 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
+import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -54,6 +55,8 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
@@ -95,6 +98,9 @@ public class CopyCompletionUtkastBuilderTest {
 
     @Mock
     private ArendeService arendeService;
+
+    @Mock
+    private WebCertUserService webcertUserService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -139,11 +145,17 @@ public class CopyCompletionUtkastBuilderTest {
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
     }
 
+    @Before
+    public void expectCallToWebcertUserService() {
+        when(webcertUserService.getUser()).thenReturn(createWebcertUser());
+        when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true)).thenReturn(true);
+    }
+
     @Test
     public void testPopulateCompletionFromSignedIntyg() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId("meddelandeId");
@@ -154,7 +166,7 @@ public class CopyCompletionUtkastBuilderTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
+        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -189,7 +201,7 @@ public class CopyCompletionUtkastBuilderTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
+        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -210,7 +222,7 @@ public class CopyCompletionUtkastBuilderTest {
         Arende arende = new Arende();
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
-        when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp)).thenReturn(createIntygContentHolder());
+        when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
@@ -220,7 +232,7 @@ public class CopyCompletionUtkastBuilderTest {
         copyRequest.setTyp(intygsTyp);
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
-        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true);
+        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), anyString());
@@ -244,13 +256,14 @@ public class CopyCompletionUtkastBuilderTest {
         when(mockModuleApi.validateDraft(anyString())).thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(webcertUserService.isAuthorizedForUnit(any(String.class), any(boolean.class))).thenReturn(true);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);
         copyRequest.setTyp(intygsTyp);
         Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
-        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
+        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), anyString());
@@ -272,7 +285,7 @@ public class CopyCompletionUtkastBuilderTest {
         status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
-        return new IntygContentHolder("<external-json/>", utlatande, status, false, Optional.empty());
+        return new IntygContentHolder("<external-json/>", utlatande, status, false, null);
     }
 
     private Utkast createOriginalUtkast() {
@@ -300,4 +313,18 @@ public class CopyCompletionUtkastBuilderTest {
         return orgUtkast;
     }
 
+    private WebCertUser createWebcertUser() {
+        WebCertUser user = new WebCertUser();
+        user.setHsaId(HOSPERSON_ID);
+        user.setNamn(HOSPERSON_NAME);
+        se.inera.intyg.common.integration.hsa.model.Vardgivare vGivare = new se.inera.intyg.common.integration.hsa.model.Vardgivare();
+        vGivare.setId(VARDGIVARE_ID);
+        vGivare.setNamn(VARDENHET_NAME);
+        user.setVardgivare(Arrays.asList(vGivare));
+        AbstractVardenhet vardenhet = new  se.inera.intyg.common.integration.hsa.model.Vardenhet();
+        vardenhet.setId(VARDENHET_ID);
+        vardenhet.setNamn(VARDENHET_NAME);
+        user.setValdVardenhet(vardenhet);
+        return user;
+    }
 }

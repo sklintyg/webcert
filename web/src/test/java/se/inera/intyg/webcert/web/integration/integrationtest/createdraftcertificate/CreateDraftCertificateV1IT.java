@@ -19,28 +19,26 @@
 
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
-
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
-
 import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
 import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
 import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -50,6 +48,8 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V1_0 = "services/create-draft-certificate/v1.0";
     private static final String FK_7263 = "fk7263";
+    private static final String DEFAULT_LAKARE_HSAID = "SE4815162344-1B02";
+    private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
 
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -72,15 +72,15 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
                 "soap:Envelope/soap:Body/lc:CreateDraftCertificateResponse");
     }
 
-    private String createRequestBody(String utlatandeTyp) {
-        requestTemplate.add("data", new UtlatandeData(utlatandeTyp));
+    private String createRequestBody(String utlatandeTyp, String lakareHsaId) {
+        requestTemplate.add("data", new UtlatandeData(utlatandeTyp, lakareHsaId));
         return requestTemplate.render();
     }
 
     @Test
     public void testCreateFk7263Draft() throws IOException {
 
-        given().body(createRequestBody(FK_7263))
+        given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -95,7 +95,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     public void testMatchesSchema() throws IOException {
         given().filter(
                 responseBodyExtractorFilter)
-                .body(createRequestBody(FK_7263))
+                .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -107,7 +107,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftForUnknownTypeFailsWithValidationError() {
 
-        given().body(createRequestBody("NON_EXISTING_TYPE"))
+        given().body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -133,12 +133,29 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
                 .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 
+    /**
+     * Check that VALIDATION_ERROR is found when utfärdare does not have medarbetaruppdrag on the specified Vårdenhet.
+     */
+    @Test
+    public void testCreateDraftFailsWithValidationErrorWhenNoMiUOnUnit() {
+        given().body(createRequestBody(FK_7263, OTHER_LAKARE_HSAID))
+                .when()
+                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+    }
+
     // String Template Data object
     private static final class UtlatandeData {
         public final String utlatandeTyp;
+        public final String lakareHsaId;
 
-        public UtlatandeData(String utlatandeTyp) {
+        public UtlatandeData(String utlatandeTyp, String lakareHsaId) {
             this.utlatandeTyp = utlatandeTyp;
+            this.lakareHsaId = lakareHsaId;
         }
     }
 }

@@ -24,7 +24,7 @@
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 
 module.exports = {
-    checkValues: function(intyg, callback) {
+    checkValues: function(intyg) {
         logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
 
         var promiseArr = [];
@@ -38,7 +38,7 @@ module.exports = {
         promiseArr.push(expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function(value) {
             logger.info('OK - Körkortstyper = ' + value);
         }, function(reason) {
-            callback('FEL - Körkortstyper: ' + reason);
+            throw ('FEL - Körkortstyper: ' + reason);
         }));
 
         if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
@@ -46,16 +46,16 @@ module.exports = {
             promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(txt).then(function(value) {
                 logger.info('OK - Identitet styrkt genom = ' + value);
             }, function(reason) {
-                callback('FEL - Identitet styrkt genom: ' + reason);
+                throw ('FEL - Identitet styrkt genom: ' + reason);
             }));
         } else {
             promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).then(function(value) {
                 logger.info('OK - Identitet styrkt genom = ' + value);
             }, function(reason) {
-                callback('FEL - Identitet styrkt genom: ' + reason);
+                throw ('FEL - Identitet styrkt genom: ' + reason);
             }));
         }
 
-        Promise.all(promiseArr).then(callback());
+        return Promise.all(promiseArr);
     }
 };

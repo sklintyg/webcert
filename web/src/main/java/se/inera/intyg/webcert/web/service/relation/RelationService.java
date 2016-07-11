@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.relation;
 
 import java.util.List;
+import java.util.Optional;
 
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
@@ -52,5 +53,5 @@ public interface RelationService {
      *            the utkast/intyg to get the relations for
      * @return a list of all the utkast/intyg which has a relation to <code>intygsId</code>
      */
-    List<RelationItem> getRelations(String intygsId);
+    Optional<List<RelationItem>> getRelations(String intygsId);
 }

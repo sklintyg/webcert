@@ -2,12 +2,11 @@
     "name": "e2e-test",
     "version": "0.1.0",
     "dependencies": {
-        "webcert-testtools": "file:webcertTestTools"
-    },
-    "devDependencies": {
+        "webcert-testtools": "latest",
+        "soap": "^0.16.0",
         "chai": "^3.5.0",
         "chai-as-promised": "^5.2.0",
-        "cucumber": "^0.10.0",
+        "cucumber": "^1.2.1",
         "grunt": "^0.4.0",
         "grunt-cli": "^1.2.0",
         "grunt-contrib-jshint": "^1.0.0",
@@ -20,12 +19,10 @@
         "jasmine-reporters": "^2.0.7",
         "jclass": "^1.1.9",
         "mysql": "^2.5.4",
-        "node-soap": "^1.0.0",
         "protractor": "^3.0.0",
         "protractor-cucumber-framework": "latest",
         "protractor-jasmine2-screenshot-reporter": "^0.1.7",
         "request": "^2.65.0",
-        "soap": "^0.14.0",
         "time-grunt": "^1.3.0",
         "winston": "^2.2.0",
         "xml2js": "^0.4.4"

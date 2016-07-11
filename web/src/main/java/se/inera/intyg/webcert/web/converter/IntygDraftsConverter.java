@@ -130,7 +130,7 @@ public final class IntygDraftsConverter {
         }
     }
 
-    private static String resolveStatus(Utkast draft) {
+    public static String resolveStatus(Utkast draft) {
         if (draft.getAterkalladDatum() != null) {
             return CertificateState.CANCELLED.name();
         }

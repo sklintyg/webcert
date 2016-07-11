@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals browser,beforeAll,afterAll*/
+/*globals browser,beforeAll,afterAll,protractor*/
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
@@ -40,10 +40,7 @@ describe('arende on luse intyg', function() {
         var testData = {
             'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
             'utkastStatus': 'SIGNED',
-            'revoked': false,
-            'relations': [
-                {'intygsId': intygId, 'status': 'INTYG'}
-            ]
+            'revoked': false
         };
 
         restTestdataHelper.deleteUtkast(intygId);
@@ -79,6 +76,28 @@ describe('arende on luse intyg', function() {
         it('click svara med nytt intyg', function() {
             LuseIntygPage.getSvaraMedNyttIntygButton(arendeId).click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
+        });
+    });
+
+    describe('show related intyg', function() {
+        it('should not be visible as default', function() {
+            expect(LuseUtkastPage.relatedIntygList.isDisplayed()).toBeFalsy();
+        });
+
+        it('should become visible when toggled', function() {
+            LuseUtkastPage.togglerelatedIntygList.click();
+            expect(LuseUtkastPage.relatedIntygList.isDisplayed()).toBeTruthy();
+            expect(LuseUtkastPage.relatedIntygList.rows().count()).toBe(3);
+            expect(LuseUtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
+            expect(LuseUtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Komplettering');
+            expect(LuseUtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast, kan signeras');
+            expect(LuseUtkastPage.relatedIntygList.row(3).relation.getText()).toBe('');
+            expect(LuseUtkastPage.relatedIntygList.row(3).status.getText()).toBe('Signerat');
+        });
+
+        it('should return to intyg when Visa button is clicked', function() {
+            LuseUtkastPage.relatedIntygList.row(3).visa.click();
+            expect(LuseIntygPage.isAt()).toBeTruthy();
         });
     });
 

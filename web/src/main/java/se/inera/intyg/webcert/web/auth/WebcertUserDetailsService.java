@@ -18,11 +18,13 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.IntygUser;
 import se.inera.intyg.common.security.siths.BaseUserDetailsService;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -33,6 +35,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 @Service(value = "webcertUserDetailsService")
 public class WebcertUserDetailsService extends BaseUserDetailsService {
+
+    @Autowired
+    AnvandarPreferenceRepository anvandarMetadataRepository;
 
     /**
      * Calls the default super() impl. from the base class and then builds a {@link WebCertUser} which is passed upwards
@@ -46,7 +51,9 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
     @Override
     protected WebCertUser buildUserPrincipal(SAMLCredential credential) {
         IntygUser user = super.buildUserPrincipal(credential);
-        return new WebCertUser(user);
+        WebCertUser webCertUser = new WebCertUser(user);
+        webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
+        return webCertUser;
     }
 
     /**

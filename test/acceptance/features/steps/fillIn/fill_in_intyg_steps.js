@@ -26,12 +26,13 @@ var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var td = wcTestTools.testdata;
 
 module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function(callback) {
+    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
         if (!global.intyg.typ) {
-            callback('Intyg.typ odefinierad.');
+            throw 'Intyg.typ odefinierad.';
         } else {
             global.intyg = generateIntygByType(intyg.typ, intyg.id);
-            fillIn(global.intyg, callback);
+            console.log(intyg);
+            return fillIn(global.intyg);
         }
     });
 

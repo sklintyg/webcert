@@ -27,7 +27,7 @@ Om du inte känner patienten ska hen styrka sin identitet genom legitimation med
 	<text id="KAT_1.RBK">Grund för medicinskt underlag</text>
 	<text id="FRG_1.RBK">Underlaget är baserat på </text>
 	<text id="DFR_1.3.RBK">Ange vad annat är:</text>
-	<text id="FRG_2.RBK">Jag har känt patienten seden den </text>
+	<text id="FRG_2.RBK">Jag har känt patienten sedan den </text>
 	<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
 	<text id="FRG_4.RBK">Ange utredning eller underlag</text>
 	<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
@@ -60,14 +60,8 @@ Om du inte känner patienten ska hen styrka sin identitet genom legitimation med
 	<text id="KAT_4.RBK">Diagnos</text>
 	<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
 	<text id="FRG_6.HLP">Ange diagnoser för sjukdom som orsakar nedsatt arbetsförmåga. Huvuddiagnosen för arbetsförmågans nedsättning anges först.</text>
-	<text id="DFR_6.2 .RBK">Diagnoskod enligt ICD-10 SE</text>
+	<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
 	<text id="FRG_7.RBK">När och var ställdes diagnosen/diagnoserna?</text>
-  <text id="DFR_7.2.RBK">Finns skäl till att revidera/uppdatera tidigare satt diagnos?</text>
-  <text id="DFR_7.2.HLP">Möjliga anledningar kan vara:
-    - att det var länge sedan utredningen gjordes
-    - att ny bedömning har rekommenderats i tidigare utlåtande eller
-    - att den kliniska bilden avviker från vad som kan förväntas utifrån ställd diagnos.</text>
-  <text id="DFR_7.3.RBK">Beskriv vilken eller vilka diagnoser som avses</text>
 	<text id="FRG_45.RBK">Finns skäl till att revidera/uppdatera tidigare satt diagnos?</text>
 	<text id="FRG_45.HLP">Möjliga anledningar kan vara:
 - att det var länge sedan utredningen gjordes

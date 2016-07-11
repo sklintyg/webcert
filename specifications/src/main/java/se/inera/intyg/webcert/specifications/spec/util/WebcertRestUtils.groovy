@@ -241,6 +241,17 @@ public class WebcertRestUtils extends RestClientFixture {
     }
 
     /**
+     * Removes a stored user preference. Used to remove Copy and Renew dialog "cookies".
+     *
+     * @param key
+     */
+    public static void deleteUserPreference(String key) {
+        def restPath = "/api/anvandare/preferences/" + key
+        def response = webcert.delete(path : restPath,
+                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+    }
+
+    /**
      * Instructs the Stub for Intygstjänsten (if active) to go into either ONLINE (normal operation) or OFFLINE (will throw
      * WebServiceException for annotated methods) mode.
      *

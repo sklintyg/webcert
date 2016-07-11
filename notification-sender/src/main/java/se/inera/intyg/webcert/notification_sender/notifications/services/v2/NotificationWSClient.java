@@ -26,10 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.RouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 
@@ -41,7 +39,7 @@ public class NotificationWSClient {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-            @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
+            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
         LOG.debug("Sending status update with version 2 to '{}' for intyg '{}'", logicalAddress, request.getIntyg().getIntygsId().getExtension());
 
@@ -57,7 +55,7 @@ public class NotificationWSClient {
         ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
-            if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
+            if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
                 throw new TemporaryException(String.format("NotificationWSClient failed with error code: %s and message %s",
                         result.getErrorId(),
                         result.getResultText()));

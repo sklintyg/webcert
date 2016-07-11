@@ -42,41 +42,58 @@ fdescribe('webcert intyg', function() {
             var intygData = {
                 'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
                 'utkastStatus':'SIGNED',
-                'revoked':false,
-                'relations':[{'intygsId':intygId,'status':'INTYG'}]
+                'revoked':false
             };
             restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
 
-                function createArende(meddelande, amne, status, komplettering) {
-                    console.log('Creating arende:' + amne);
-                    var arendeId = 'arende-test-' + amne.toLowerCase() + arendeIndex++;
-                    var arende = arendeFromJsonFactory.get(meddelande, intygType, intygId, arendeId, amne, status, komplettering);
+                function createArende(arendeOptions) {
+                    console.log('Creating arende:' + arendeOptions.amne);
+
+                    arendeOptions.meddelandeId = 'arende-test-' + arendeOptions.amne.toLowerCase() + arendeIndex++;
+                    arendeOptions.intygType = intygType;
+                    arendeOptions.intygId = intygId;
+
+                    var arende = arendeFromJsonFactory.get(arendeOptions);
                     restTestdataHelper.createArende(arende).then(function(response){
                         console.log('Response code:' + response.statusCode);
                     });
+
+                    return arendeOptions.meddelandeId;
                 }
 
-                createArende('Hur är det med arbetstiden?', 'ARBTID', 'PENDING_INTERNAL_ACTION');
-                createArende('Vi behöver prata.', 'AVSTMN', 'PENDING_INTERNAL_ACTION');
-                createArende('Vi behöver kontakt.', 'KONTKT', 'PENDING_INTERNAL_ACTION');
-                createArende('Övriga frågor?', 'OVRIGT', 'PENDING_INTERNAL_ACTION');
-                createArende('Komplettera mera.', 'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                    {
-                        'frageId':'1',
-                        'instans':1,
-                        'text':'Fixa.'
-                    },
-                    {
-                        'frageId':'2',
-                        'instans':1,
-                        'text':'Här har du ett fel.'
-                    },
-                    {
-                        'frageId':'4',
-                        'instans':3,
-                        'text':'Här har du ett annat fel.'
-                    }
-                ]);
+                createArende({meddelande:'Hur är det med arbetstiden?', amne:'ARBTID', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Vi behöver prata.', amne:'AVSTMN', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Vi behöver kontakt.', amne:'KONTKT', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Övriga frågor?', amne:'OVRIGT', status:'PENDING_INTERNAL_ACTION'});
+
+                var meddelandeId = createArende({
+                    meddelande:'Komplettera mera.',
+                    amne:'KOMPLT',
+                    status:'PENDING_INTERNAL_ACTION',
+                    kompletteringar:[
+                        {
+                            'frageId':'1',
+                            'instans':1,
+                            'text':'Fixa.'
+                        },
+                        {
+                            'frageId':'2',
+                            'instans':1,
+                            'text':'Här har du ett fel.'
+                        },
+                        {
+                            'frageId':'4',
+                            'instans':3,
+                            'text':'Här har du ett annat fel.'
+                        }
+                    ]
+                });
+
+                createArende({
+                    meddelande: 'Du har facking glömt att komplettera loser!',
+                    amne:'PAMINN',
+                    status:'PENDING_INTERNAL_ACTION',
+                    paminnelseMeddelandeId: meddelandeId});
             });
         }
 

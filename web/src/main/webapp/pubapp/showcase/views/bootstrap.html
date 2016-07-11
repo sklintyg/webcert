@@ -50,31 +50,31 @@
   Används bla i skriv utkastsidan.<br>
 <a id="tillbakaButton" class="backlink-icon" href="" title="Tillbaka till Skriv intyg"></a>
 
-  <h2>wc-help-mark</h2>
-Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
-    <div wc-help-mark="" field-help-text="här visas  tooltiptexten"></div>
 
+<h2>wc-help-mark</h2>
+Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
+<div wc-help-mark="" field-help-text="här visas tooltiptexten"></div>
 
 
 <h2>Vidarebefodrad knapp (både action och indikator på vidarebefordrad state)</h2>
-  <button type="button" class="btn btn-default vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
-    <img ng-if="!cert1.vidarebefordrad" src="/img/mail.png">
-    <img ng-if="cert1.vidarebefordrad" src="/img/mail_dark.png">
-  </button>
+<button type="button" class="btn btn-default vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
+  <img ng-if="!cert1.vidarebefordrad" src="/img/mail.png">
+  <img ng-if="cert1.vidarebefordrad" src="/img/mail_dark.png">
+</button>
 
 
-<h2> Knapp med tooltip (mouseover)</h2>
+<h2>Knapp med tooltip (mouseover)</h2>
 
 <div style="margin-left: 150px;">
-  <button type="button" id="makuleraBtn" class="btn btn-inverse" uib-popover="Makulera intyg innebär att intyget återtas. Vid behov kan intyget ersättas med ett nytt." popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true">
-      Makulera
-    </button>
+  <button type="button" id="makuleraBtn" class="btn btn-inverse" uib-popover="Detta är en popover som syns efter 300 ms delay." popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true">
+    Makulera
+  </button>
 </div>
 
+<button type="button" class="btn btn-default" title="Detta är en browsertooltip. Den har ett fast utseende och försvinner efter några sekunder.">Håll över mig för att se browser tooltip</button>
 
 
-
-<h2>Toggleknapp (i form av länk, te x för att toggla sökfilter) </h2>
+<h2>Toggleknapp (i form av länk, te x för att toggla sökfilter)</h2>
 <button type="button" class="btn btn-link btn-link-minimal"
         ng-click="linkBtnState = !linkBtnState"
         ng-switch="linkBtnState">

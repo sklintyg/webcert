@@ -25,11 +25,10 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 
 module.exports = function() {
-    this.Given(/^jag signerar intyget$/, function(callback) {
-
-        // element(by.id('showCompleteButton')).sendKeys(protractor.Key.SPACE).then(function() {
-        fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE).then(callback);
-        // });
+    this.Given(/^jag signerar intyget$/, function() {
+        return browser.sleep(2000).then(function() { // fix för nåt med animering?
+            return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+        });
     });
 
     this.Given(/^jag makulerar intyget$/, function(callback) {
@@ -44,16 +43,15 @@ module.exports = function() {
         fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
     });
 
-    this.Given(/^jag kopierar intyget$/, function(callback) {
-        fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
+    this.Given(/^jag kopierar intyget$/, function() {
+        return fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
+            return fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
                 .then(function() {
-                    browser.getCurrentUrl()
+                    return browser.getCurrentUrl()
                         .then(function(text) {
                             intyg.id = text.split('/').slice(-1)[0];
                             intyg.id = intyg.id.split('?')[0];
                             logger.info('intyg.id: ' + intyg.id);
-                            callback();
                         });
                 });
         });

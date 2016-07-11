@@ -17,43 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
-
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 /**
- * Simple DTO for holding statEntries for units and user.
- * {@see StatModuleApiController}
- *
- * @author marced
+ * Created by erikl.
  */
-public class StatRequestResponse {
+public class WebUserPreferenceStorageRequest {
 
-    private StatEntry unitStat;
-    private StatEntry userStat;
+    private String key;
+    private String value;
 
-    public StatRequestResponse(StatEntry unitStat, StatEntry userStat) {
-        super();
-        this.unitStat = unitStat;
-        this.userStat = userStat;
+    public String getKey() {
+        return key;
     }
 
-    public StatRequestResponse() {
+    public void setKey(String key) {
+        this.key = key;
     }
 
-    public StatEntry getUnitStat() {
-        return unitStat;
+    public String getValue() {
+        return value;
     }
 
-    public void setUnitStat(StatEntry unitStat) {
-        this.unitStat = unitStat;
+    public void setValue(String value) {
+        this.value = value;
     }
-
-    public StatEntry getUserStat() {
-        return userStat;
-    }
-
-    public void setUserStat(StatEntry userStat) {
-        this.userStat = userStat;
-    }
-
 }

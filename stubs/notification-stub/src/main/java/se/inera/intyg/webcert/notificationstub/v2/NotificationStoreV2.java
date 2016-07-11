@@ -17,16 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.notification_sender.notifications.routes;
+package se.inera.intyg.webcert.notificationstub.v2;
 
-public final class RouteHeaders {
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 
-    private RouteHeaders() {
-    }
+import java.util.Collection;
 
-    public static final String LOGISK_ADRESS = "logiskAdress";
-    public static final String INTYGS_ID = "intygsId";
-    public static final String HANDELSE = "handelse";
-    public static final String VERSION = "version";
+
+public interface NotificationStoreV2 {
+
+    void put(String utlatandeId, CertificateStatusUpdateForCareType request);
+
+    Collection<CertificateStatusUpdateForCareType> getNotifications();
+
+    void clear();
 
 }

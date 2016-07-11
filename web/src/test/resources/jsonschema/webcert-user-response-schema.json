@@ -666,6 +666,11 @@
       "items": {},
       "minItems": 0,
       "type": "array"
+    },
+    "anvandarPreference": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
     }
   },
   "required": [

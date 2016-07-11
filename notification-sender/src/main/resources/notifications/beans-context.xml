@@ -24,6 +24,8 @@
 
   <bean id="notificationTransformer" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer"/>
 
+  <bean id="notificationAggregator" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator"/>
+
   <bean id="notificationWSClient" class="se.inera.intyg.webcert.notification_sender.notifications.services.v1.NotificationWSClient"></bean>
 
   <bean id="notificationWSClientV2" class="se.inera.intyg.webcert.notification_sender.notifications.services.v2.NotificationWSClient"></bean>
@@ -43,17 +45,6 @@
     <property name="partNamespace">
       <bean class="javax.xml.namespace.QName">
         <constructor-arg value="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1"/>
-        <constructor-arg value="CertificateStatusUpdateForCare"/>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="jaxbMessageDataFormatV2" class="org.apache.camel.converter.jaxb.JaxbDataFormat">
-    <constructor-arg value="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2"/>
-    <property name="partClass" value="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType"/>
-    <property name="partNamespace">
-      <bean class="javax.xml.namespace.QName">
-        <constructor-arg value="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:2"/>
         <constructor-arg value="CertificateStatusUpdateForCare"/>
       </bean>
     </property>

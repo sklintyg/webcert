@@ -17,59 +17,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, JSON, browser */
+/* globals logger, pages, JSON, browser, Promise */
 
-'use strict';
+
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
+
+
 module.exports = {
-    fillIn: function(intyg, cb) {
-        //Ange körkortstyper
-        tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function() {
-            logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
-        }, function(reason) {
-            cb('FEL, fillInKorkortstyper,' + reason);
-        });
+    fillIn: function(intyg) {
+        'use strict';
 
-        //Ange Identitet styrkt genom
-        tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
-            logger.info('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
-        }, function(reason) {
-            cb('FEL, fillInIdentitetStyrktGenom,' + reason);
-        });
+        return Promise.all([
+            //Ange körkortstyper
+            tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function() {
+                logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
+            }, function(reason) {
+                throw ('FEL, fillInKorkortstyper,' + reason);
+            }).then(function() {
+                //Ange hypoglykemier efter att körkortstyper är ifyllda
+                return tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier).then(function() {
+                    logger.info('OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
+                }, function(reason) {
+                    throw ('FEL, fillInHypoglykemier,' + reason);
+                });
+            }),
 
-        browser.ignoreSynchronization = true;
+            //Ange Identitet styrkt genom
+            tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
+                logger.info('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
+            }, function(reason) {
+                throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
+            }),
 
-        //Ange postadress osv
-        browser.element(by.id('patientPostadress')).sendKeys('Postadress 1');
-        browser.element(by.id('patientPostnummer')).sendKeys('66130');
-        browser.element(by.id('patientPostort')).sendKeys('postort');
+            function() {
+                browser.ignoreSynchronization = true;
+            },
 
-        //Ange allmänt
-        tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
-            logger.info('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
-        }, function(reason) {
-            cb('FEL, fillInAllmant,' + reason);
-        });
+            //Ange postadress osv
+            browser.element(by.id('patientPostadress')).sendKeys('Postadress 1'),
+            browser.element(by.id('patientPostnummer')).sendKeys('66130'),
+            browser.element(by.id('patientPostort')).sendKeys('postort'),
 
-        //Ange hypoglykemier
-        tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier).then(function() {
-            logger.info('OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
-        }, function(reason) {
-            cb('FEL, fillInHypoglykemier,' + reason);
-        });
+            //Ange allmänt
+            tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
+                logger.info('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
+            }, function(reason) {
+                throw ('FEL, fillInAllmant,' + reason);
+            }),
 
-        tsdUtkastPage.fillInSynintyg(intyg.synintyg).then(function() {
-            logger.info('OK - fillInSynintyg :' + JSON.stringify(intyg.synintyg));
-        }, function(reason) {
-            cb('FEL, fillInSynintyg,' + reason);
-        });
+            tsdUtkastPage.fillInSynintyg(intyg.synintyg).then(function() {
+                logger.info('OK - fillInSynintyg :' + JSON.stringify(intyg.synintyg));
+            }, function(reason) {
+                throw ('FEL, fillInSynintyg,' + reason);
+            }),
 
-        browser.ignoreSynchronization = false;
+            function() {
+                browser.ignoreSynchronization = false;
+            },
 
-        tsdUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
-            logger.info('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
-        }, function(reason) {
-            cb('FEL, fillInBedomning,' + reason);
-        }).then(cb);
+            tsdUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
+                logger.info('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
+            }, function(reason) {
+                throw ('FEL, fillInBedomning,' + reason);
+            })
+        ]);
     }
 };

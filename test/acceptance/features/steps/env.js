@@ -39,7 +39,7 @@ module.exports = function() {
             logger.info('scenario failed');
             browser.takeScreenshot().then(function(png) {
                 //var base64Image = new Buffer(png, 'binary').toString('base64');
-                var decodedImage = new Buffer(png, 'base64').toString('binary');
+                var decodedImage = new Buffer(png, 'base64'); //.toString('binary'); //cucumber v1.2 fix
                 scenario.attach(decodedImage, 'image/png', function(err) {
                     callback(err);
                 });

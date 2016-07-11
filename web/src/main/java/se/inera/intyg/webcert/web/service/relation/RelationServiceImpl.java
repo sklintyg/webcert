@@ -44,6 +44,9 @@ public class RelationServiceImpl implements RelationService {
         // While we have a parent in the reference intyg
         while (reference != null && StringUtils.isNotEmpty(reference.getRelationIntygsId())) {
             reference = utkastRepo.findOne(reference.getRelationIntygsId());
+            if (reference == null) {
+                break;
+            }
             relationList.add(new RelationItem(reference));
         }
         return relationList;
@@ -58,10 +61,15 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
-    public List<RelationItem> getRelations(String intygsId) {
-        List<RelationItem> res = getChildRelations(intygsId);
-        res.add(new RelationItem(utkastRepo.findOne(intygsId)));
-        res.addAll(getParentRelations(intygsId));
-        return res;
+    public Optional<List<RelationItem>> getRelations(String intygsId) {
+        Utkast findOne = utkastRepo.findOne(intygsId);
+        if (findOne != null) {
+            List<RelationItem> res = getChildRelations(intygsId);
+            res.add(new RelationItem(findOne));
+            res.addAll(getParentRelations(intygsId));
+            return Optional.of(res);
+        } else {
+            return Optional.empty();
+        }
     }
 }

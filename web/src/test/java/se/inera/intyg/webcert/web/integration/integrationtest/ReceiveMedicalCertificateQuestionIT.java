@@ -19,24 +19,22 @@
 
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
-
-import java.io.IOException;
-import java.io.InputStream;
-
+import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
-
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -45,6 +43,8 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.ReceiveMedicalCertificateQuestionResponse.";
     private static final String RECEIVE_QUESTION_V1_0 = "services/receive-question/v1.0";
+
+    private static final String INTYGS_ID = "6a7f4d81-34f7-4a1f-a655-df58dfabb211";
 
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -67,15 +67,19 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
                 "soap:Envelope/soap:Body/lc:ReceiveMedicalCertificateQuestionResponse");
     }
 
-    private String createRequestBody(String amne) {
-        requestTemplate.add("data", new QuestionData(amne));
+    private String createRequestBody(String amne, String intygsId) {
+        return createRequestBody(amne, intygsId, "fk-" + System.currentTimeMillis());
+    }
+
+    private String createRequestBody(String amne, String intygsId, String fkReferens) {
+        requestTemplate.add("data", new QuestionData(amne, intygsId, fkReferens));
         return requestTemplate.render();
     }
 
     @Test
     public void testReceiveQuestion() throws IOException {
 
-        given().body(createRequestBody("Komplettering_av_lakarintyg"))
+        given().body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
                 .when()
                 .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
@@ -88,7 +92,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     public void testResponseMatchesSchema() throws IOException {
         given().filter(
                 responseBodyExtractorFilter)
-                .body(createRequestBody("Komplettering_av_lakarintyg"))
+                .body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
                 .when()
                 .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
@@ -100,7 +104,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     @Test
     public void testCreateQuestionForUnknownAmneFailsWithValidationError() {
 
-        given().body(createRequestBody("NON_EXISTING_AMNE"))
+        given().body(createRequestBody("NON_EXISTING_AMNE", INTYGS_ID))
                 .when()
                 .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
@@ -129,9 +133,13 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     // String Template Data object
     private static final class QuestionData {
         public final String amne;
+        public final String intygsId;
+        public final String fkReferens;
 
-        public QuestionData(String amne) {
+        public QuestionData(String amne, String intygsId, String fkReferens) {
             this.amne = amne;
+            this.intygsId = intygsId;
+            this.fkReferens = fkReferens;
         }
     }
 }

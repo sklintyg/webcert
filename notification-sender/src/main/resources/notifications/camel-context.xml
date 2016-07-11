@@ -31,6 +31,9 @@
     <!-- Endpoint connected to AMQ to recieve messages on -->
     <camel:endpoint id="receiveNotificationRequestEndpoint" uri="${receiveNotificationRequestEndpointUri}"/>
 
+    <camel:endpoint id="receiveNotificationForAggregationRequestEndpointUri" uri="${receiveNotificationForAggregationRequestEndpointUri}"/>
+
+
     <!-- Endpoint for transformed messages, ready to be sent to WS  -->
     <camel:endpoint id="sendNotificationWSEndpoint" uri="${sendNotificationWSEndpointUri}"/>
 

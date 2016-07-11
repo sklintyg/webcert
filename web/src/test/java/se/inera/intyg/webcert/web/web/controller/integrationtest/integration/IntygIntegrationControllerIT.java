@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 16/12/15.
@@ -215,6 +215,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().redirects().follow(false).and().pathParam("intygsId", utkastId).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").
-                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter"));
+                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
     }
 }

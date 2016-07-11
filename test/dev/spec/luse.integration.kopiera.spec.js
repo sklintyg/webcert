@@ -36,10 +36,7 @@ describe('Djupintegration on luse intyg', function() {
         var testData = {
             'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
             'utkastStatus': 'SIGNED',
-            'revoked': false,
-            'relations': [
-                {'intygsId': intygId, 'status': 'INTYG'}
-            ]
+            'revoked': false
         };
 
         // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin

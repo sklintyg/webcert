@@ -39,12 +39,16 @@ public class IntygContentHolder {
     private final boolean revoked;
     private final List<RelationItem> relations;
 
-    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, Optional<List<RelationItem>> relations) {
+    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, List<RelationItem> relations) {
         this.contents = contents;
         this.utlatande = utlatande;
         this.statuses = statuses;
         this.revoked = revoked;
-        this.relations = relations.orElse(new ArrayList<>());
+        if (relations == null) {
+            this.relations = new ArrayList<>();
+        } else {
+            this.relations = relations;
+        }
     }
 
     public String getContents() {

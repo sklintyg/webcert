@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.service.relation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
@@ -121,7 +122,7 @@ public class RelationServiceImplTest {
 
     @Test
     public void testGetRelations() {
-        List<RelationItem> res = relationService.getRelations(INTYGID_3);
+        List<RelationItem> res = relationService.getRelations(INTYGID_3).get();
         assertNotNull(res);
         assertEquals(5, res.size());
 
@@ -135,6 +136,11 @@ public class RelationServiceImplTest {
         verify(utkastRepo, times(1)).findOne(eq(INTYGID_1));
         verify(utkastRepo, times(1)).findOne(eq(INTYGID_2));
         verify(utkastRepo, times(2)).findOne(eq(INTYGID_3));
+    }
+
+    @Test
+    public void testGetRelationsNotExisting() {
+        assertFalse(relationService.getRelations("doesNotExist").isPresent());
     }
 
     private static Utkast createUtkast(String intygid, String parent, RelationKod kod) {

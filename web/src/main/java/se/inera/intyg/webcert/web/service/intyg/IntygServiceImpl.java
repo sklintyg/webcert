@@ -19,8 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -28,15 +31,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Relation;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -59,9 +63,7 @@ import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -70,18 +72,9 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
-
-import javax.xml.ws.WebServiceException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
 
 /**
  * @author andreaskaltenbach
@@ -140,13 +133,13 @@ public class IntygServiceImpl implements IntygService {
     private AuthoritiesHelper authoritiesHelper;
 
     @Override
-    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp) {
-        return fetchIntygData(intygsId, intygsTyp, false);
+    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
+        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling);
     }
 
     @Override
-    public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp) {
-        return fetchIntygData(intygId, intygsTyp, true);
+    public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp, boolean coherentJournaling) {
+        return fetchIntygData(intygId, intygsTyp, true, coherentJournaling);
     }
 
     /**
@@ -161,12 +154,15 @@ public class IntygServiceImpl implements IntygService {
      *            operations). Use sparsely.
      * @return
      */
-    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations) {
+    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
-        verifyEnhetsAuth(intygsData.getUtlatande(), true);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
+
+        if (!coherentJournaling) {
+            verifyEnhetsAuth(intygsData.getUtlatande(), true);
+        }
 
         // Log read to PDL
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande());
         logService.logReadIntyg(logRequest);
 
         // Log read to monitoring log
@@ -208,7 +204,8 @@ public class IntygServiceImpl implements IntygService {
 
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList) {
         // Get intygstyper from the view privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+                AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
         // The user is only granted access to view intyg of intygstyper that are in the set.
         return fullIntygItemList.stream().filter(i -> intygsTyper.contains(i.getIntygType())).collect(Collectors.toList());
@@ -217,7 +214,8 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
-    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList, List<String> enhetId, Personnummer personnummer) {
+    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList, List<String> enhetId,
+            Personnummer personnummer) {
         List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
         intygItems.removeAll(fullIntygItemList);
         fullIntygItemList.addAll(intygItems);
@@ -227,9 +225,11 @@ public class IntygServiceImpl implements IntygService {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
 
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+                AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId, statuses, intygsTyper);
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId, statuses,
+                intygsTyper);
 
         return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
     }
@@ -420,7 +420,9 @@ public class IntygServiceImpl implements IntygService {
                     certificate.getUtlatande(),
                     certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
-                    relations ? Optional.of(relationService.getRelations(intygId)) : Optional.empty());
+                    relations ? relationService.getRelations(intygId)
+                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name())) : null);
+
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
             // exception
@@ -428,7 +430,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolder(utkast);
+            return buildIntygContentHolder(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findOne(intygId);
@@ -437,7 +439,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolder(utkast);
+            return buildIntygContentHolder(utkast, relations);
         }
     }
 
@@ -448,13 +450,15 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? buildIntygContentHolder(utkast) : getIntygData(intygId, intygTyp, false);
+        return (utkast != null) ? buildIntygContentHolder(utkast, false) : getIntygData(intygId, intygTyp, false);
     }
 
-    private IntygContentHolder buildIntygContentHolder(Utkast utkast) {
+    private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null, Optional.empty());
+        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
+                relations ? relationService.getRelations(utkast.getIntygsId())
+                        .orElse(RelationItem.createBaseCase(utkast)) : null);
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {

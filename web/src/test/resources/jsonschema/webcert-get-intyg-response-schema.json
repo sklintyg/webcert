@@ -59,6 +59,9 @@
           },
           "status": {
             "type": "string"
+          },
+          "date": {
+            "type": "string"
           }
         },
         "additionalProperties": false,

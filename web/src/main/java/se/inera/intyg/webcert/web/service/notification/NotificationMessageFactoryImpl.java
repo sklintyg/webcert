@@ -58,7 +58,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
         // Add a count of questions to the message
         if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
-            fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId, version);
+            fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId, intygsTyp);
         }
 
         String utkastJson = utkast.getModel();

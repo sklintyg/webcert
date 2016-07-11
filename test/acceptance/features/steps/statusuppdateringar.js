@@ -17,63 +17,99 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, protractor, logger, ursprungligtIntyg */
+/* global pages, protractor, logger, ursprungligtIntyg, Promise, JSON */
 
 'use strict';
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./dbActions');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
 
-// function assertDraftWithStatus(personId, intygsId, status, cb) {
-//     setTimeout(function() {
-//         var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-//         var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-//             databaseTable + '.PATIENT_PERSONNUMMER="' + personId + '" AND ' +
-//             databaseTable + '.STATUS="' + status + '" AND ' +
-//             databaseTable + '.INTYGS_ID="' + intygsId + '" ;';
+var handelseRegex = /(HAN\d{1,2})/g;
 
-//         assertNumberOfEvents(query, 1, cb);
-//     }, 6000);
-// }
+function getLogEntries(intygsId, handelsekod, numEvents) {
+    // Select table and extension based on if 'händelse' contains the pattern HAN{1-2digit} or NOT
+    var table = selectTable(handelsekod);
+    var extensionType = selectExtension(handelsekod);
 
-// function assertDatabaseContents(intygsId, column, value, cb) {
-//     setTimeout(function() {
-//         var databaseTable = process.env.DATABASE_NAME + '.INTYG';
-//         var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-//             databaseTable + '.INTYGS_ID="' + intygsId + '" AND ' +
-//             databaseTable + '.' + column + '="' + value + '";';
+    var databaseTable = table;
+    var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
+        databaseTable + '.handelseKod = "' + handelsekod + '" AND ' +
+        databaseTable + '.' + extensionType + ' = "' + intygsId + '" ;';
 
-//         assertNumberOfEvents(query, 1, cb);
-//     }, 6000);
-// }
-
-function assertEvents(intygsId, event, numEvents, cb) {
-    setTimeout(function() {
-        var databaseTable = 'webcert_requests.requests';
-        var query = 'SELECT COUNT(*) AS Counter FROM ' + databaseTable + ' WHERE ' +
-            databaseTable + '.handelseKod = "' + event + '" AND ' +
-            databaseTable + '.utlatandeExtension="' + intygsId + '" ;';
-
-        assertNumberOfEvents(query, numEvents, cb);
-    }, 5000);
+    console.log('query: ' + query);
+    return assertNumberOfEvents(query, numEvents);
 }
 
-function assertNumberOfEvents(query, numEvents, cb) {
-    // logger.debug('Assert number of events. Query: ' + query);
+function waitForCount(intygsId, count, handelsekod, numEvents, cb) {
+    var intervall = 5000;
+
+    getLogEntries(intygsId, handelsekod, numEvents).then(function(result) {
+        if (result.length >= count) {
+            console.log('Hittade rader: ' + JSON.stringify(result));
+            cb();
+        } else {
+            console.log('Hittade färre än ' + count + 'rader i databasen');
+            console.log('Ny kontroll sker efter ' + intervall + 'ms');
+            setTimeout(function() {
+                waitForCount(intygsId, count, handelsekod, numEvents, cb);
+            }, intervall);
+        }
+
+    }, function(err) {
+        cb(err);
+
+    });
+}
+
+function selectTable(handelsekod) {
+    var res = handelsekod.match(handelseRegex);
+    if (res) {
+        if (res.length > 1) {
+            logger.error('ERROR: More than one "händelse" found.');
+            return;
+        }
+        console.log('Database: webcert_requests.requests');
+        return 'webcert_requests.requests';
+    } else {
+        console.log('Database: webcert_requests.statusupdates_2');
+        return 'webcert_requests.statusupdates_2';
+    }
+}
+
+function selectExtension(handelsekod) {
+    var res = handelsekod.match(handelseRegex);
+    if (res) {
+        if (res.length > 1) {
+            logger.error('ERROR: More than one "händelse" found. Cannot select determine extension');
+            return;
+        }
+        console.log('Extension: utlatandeExtension');
+        return 'utlatandeExtension';
+    } else {
+        console.log('Extension: intygsExtension');
+        return 'intygsExtension';
+    }
+}
+
+function assertNumberOfEvents(query, numEvents) {
     var conn = db.makeConnection();
     conn.connect();
-    conn.query(query,
-        function(err, rows, fields) {
-            conn.end();
-            if (err) {
-                cb(err);
-            } else if (rows[0].Counter !== numEvents) {
-                cb('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
-            } else {
-                logger.info('OK - Antal händelser i db ' + rows[0].Counter + '(' + numEvents + ')');
-                cb();
-            }
-        });
+    var promise = new Promise(function(resolve, reject) {
+        conn.query(query,
+            function(err, rows, fields) {
+                conn.end();
+                if (err) {
+                    reject(err);
+                } else if (rows[0].Counter !== numEvents) {
+                    // console.log('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
+                    resolve([]);
+                } else {
+                    console.log('OK - Antal händelser i db ' + rows[0].Counter + '(' + numEvents + ')');
+                    resolve(rows);
+                }
+            });
+    });
+    return promise;
 }
 
 module.exports = function() {
@@ -82,21 +118,13 @@ module.exports = function() {
         expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
-    this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(arg1, arg2, callback) {
-        assertEvents(global.intyg.id, arg1, parseInt(arg2, 10), callback);
+    this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
+        waitForCount(global.intyg.id, 1, handelsekod, parseInt(antal, 10), callback);
     });
 
-    this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelse, callback) {
-        assertEvents(ursprungligtIntyg.id, handelse, parseInt(antal, 10), callback);
+    this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
+        waitForCount(ursprungligtIntyg.id, 1, handelsekod, parseInt(antal, 10), callback);
     });
-
-    // this.Given(/^är intygets status "([^"]*)"$/, function(arg1, callback) {
-    //     assertDraftWithStatus(global.person.id, global.intyg.id, arg1, callback);
-    // });
-
-    // this.Given(/^är innehåller databasfältet "([^"]*)" värdet "([^"]*)"$/, function(arg1, arg2, callback) {
-    //     assertDatabaseContents(global.intyg.id, arg1, arg2, callback);
-    // });
 
     this.Given(/^jag raderar intyget$/, function(callback) {
         fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
