@@ -559,8 +559,7 @@
 
                 <h1>Testinloggningar Webcert</h1>
 
-                <p class="well">Templatelista till vänster - Manuella ändringar kan göras i jsonstrukturen - detta
-                    omvandlas till inloggad userContext</p>
+                <p class="well">Template-lista till vänster. Observera att identitet knuten till hsaId behöver finnas i antingen HSA-stubbe (dev,test) eller i test-HSA över NTjP (demo,qa). 'hsaId' kan ändras i inloggningsprofilen i högerspalten om man har ett känt hsaId vars identitet finns i stubbe eller test-HSA men som inte förekommer i template-listan.</p>
 
                 <div class="form-group col-xs-8">
                     <h4>Mallar</h4>
