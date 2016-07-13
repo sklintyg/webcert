@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId = 'luse-arende-komplt';
+    var meddelandeId = 'luse-arende-komplt';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -48,7 +48,7 @@ describe('arende on luse intyg', function() {
             browser.ignoreSynchronization = false;
             restTestdataHelper.deleteUtkast(intygId);
             restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
+                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
                     'KOMPLT', 'PENDING_INTERNAL_ACTION', [
                         {
                             'frageId':'1',
@@ -73,12 +73,12 @@ describe('arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId);
+            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('sign displaying komplettering should be handled by lakare is shown', function() {
-            expect(LuseIntygPage.getOnlyLakareCanKompletteraSign(arendeId).isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.getOnlyLakareCanKompletteraSign(meddelandeId).isDisplayed()).toBeTruthy();
         });
     });
 
