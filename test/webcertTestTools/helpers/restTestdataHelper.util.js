@@ -85,14 +85,16 @@ module.exports = {
 
     // Ärenden
     createArende: createArende,
-    createArendeFromTemplate: function(intygType, intygId, arendeId, meddelande, amne, status, komplettering) {
-        console.log('Creating arende:' + amne + ' id:' + arendeId);
-        var arende = arendeFromJsonFactory.get(meddelande, intygType, intygId, arendeId, amne, status, komplettering);
-        createArende(arende).then(function(response) {
-            console.log('Response code:' + response.statusCode);
+    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering) {
+    	var arende = arendeFromJsonFactory.get({intygType:intygType, intygId:intygId, meddelandeId:meddelandeId, meddelande:'Hur är det med arbetstiden?', amne:amne, status:status, kompletteringar:komplettering});
+        
+    	console.log('arende to be created: '+JSON.stringify(arende));
+    	createArende(arende).then(function(response) {
+            console.log('response code:' + response.statusCode);
         });
     },
     deleteAllArenden: function() {
+    	console.log('deleting all arenden');
         restUtil.login();
         return restUtil.deleteAllArenden();
     },
