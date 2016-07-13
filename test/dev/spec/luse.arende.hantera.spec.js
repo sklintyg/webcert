@@ -42,6 +42,7 @@ describe('answer arende on luse intyg', function() {
             'revoked': false
         };
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
             restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
                 'ARBTID', 'PENDING_EXTERNAL_ACTION');
@@ -49,7 +50,7 @@ describe('answer arende on luse intyg', function() {
     });
 
     afterAll(function() {
-        restTestdataHelper.deleteUtkast(intygId);
+       restTestdataHelper.deleteUtkast(intygId);
     });
 
     describe('make sure intyg page has loaded', function() {
