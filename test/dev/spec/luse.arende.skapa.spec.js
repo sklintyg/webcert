@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('Skapa ärende luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId;
+    var meddelandeId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -42,6 +42,7 @@ describe('Skapa ärende luse intyg', function() {
             'revoked':false
         };
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData);
     });
 
@@ -79,7 +80,7 @@ describe('Skapa ärende luse intyg', function() {
                     var firstPart = id.substring(0,27);
                     var secondPart = id.substring(27);
                     expect(firstPart).toBe('unhandled-mark-as-notified-');
-                    arendeId = secondPart;
+                    meddelandeId = secondPart;
                 });
                 expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
             });
