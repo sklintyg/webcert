@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('answer arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId = 'luse-arende-arbtid';
+    var meddelandeId = 'luse-arende-arbtid';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -42,8 +42,9 @@ describe('answer arende on luse intyg', function() {
             'revoked': false
         };
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
+            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
                 'ARBTID', 'PENDING_INTERNAL_ACTION');
         });
         restTestdataHelper.createIntygFromTemplate('luseMax', intygId);
@@ -63,18 +64,18 @@ describe('answer arende on luse intyg', function() {
 
     describe('answer arende', function() {
         it('make sure pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId);
+            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('fill text', function() {
-            var arende = LuseIntygPage.getAnswerBox(arendeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
+            var arende = LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('push answer button and make sure answered arende is now in the handled list', function() {
-            LuseIntygPage.getAnswerButton(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(true, arendeId); // true = handled list
+            LuseIntygPage.getAnswerButton(meddelandeId).click().then(function() {
+                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = handled list
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });
