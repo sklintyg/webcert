@@ -1,0 +1,47 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">
+  <soapenv:Header>
+    <urn:LogicalAddress>?</urn:LogicalAddress>
+  </soapenv:Header>
+  <soapenv:Body>
+    <urn1:SendMessageToCare>
+      <urn1:meddelande-id>5</urn1:meddelande-id>
+      <!--Optional:-->
+      <urn1:referens-id>1</urn1:referens-id>
+      <urn1:skickatTidpunkt>2016-06-11T13:00:00</urn1:skickatTidpunkt>
+      <urn1:intygs-id>
+        <urn2:root></urn2:root>
+        <urn2:extension>cca10288-8d63-46a9-951b-aab7d34405ae</urn2:extension>
+      </urn1:intygs-id>
+      <urn1:patientPerson-id>
+        <urn2:root>1.2.752.129.2.1.3.1</urn2:root>
+        <urn2:extension>191212121212</urn2:extension>
+      </urn1:patientPerson-id>
+      <urn1:logiskAdressMottagare>enhetsid</urn1:logiskAdressMottagare>
+      <urn1:amne>
+        <urn2:code>KOMPLT</urn2:code>
+        <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>
+
+      </urn1:amne>
+
+      <urn1:meddelande>1</urn1:meddelande>
+
+
+      <urn1:skickatAv>
+        <urn1:part>
+          <urn2:code>FKASSA</urn2:code>
+          <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>
+          <!--Optional:-->
+          <urn2:displayName>FKASSA</urn2:displayName>
+        </urn1:part>
+
+        <!--You may enter ANY elements at this point-->
+      </urn1:skickatAv>
+
+      <urn1:komplettering>
+        <urn1:frage-id>6</urn1:frage-id>
+        <urn1:text>Vad menar egentligen här, tycker det är alltför oklart.</urn1:text>
+      </urn1:komplettering>
+
+    </urn1:SendMessageToCare>
+  </soapenv:Body>
+</soapenv:Envelope>
