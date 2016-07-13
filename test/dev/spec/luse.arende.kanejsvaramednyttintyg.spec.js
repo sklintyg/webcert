@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId = 'luse-arende-komplt';
+    var meddelandeId = 'luse-arende-komplt';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -43,8 +43,9 @@ describe('arende on luse intyg', function() {
         };
 
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
+            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
                 'KOMPLT', 'PENDING_INTERNAL_ACTION', [
                     {
                         'frageId': '1',
@@ -70,19 +71,19 @@ describe('arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId);
+            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('click svara med nytt intyg', function() {
-            LuseIntygPage.getKanEjSvaraCheck(arendeId).sendKeys(protractor.Key.SPACE);
-            expect(LuseIntygPage.getAnswerButton(arendeId).isDisplayed()).toBeTruthy();
+            LuseIntygPage.getKanEjSvaraCheck(meddelandeId).sendKeys(protractor.Key.SPACE);
+            expect(LuseIntygPage.getAnswerButton(meddelandeId).isDisplayed()).toBeTruthy();
         });
 
         it('push answer button and make sure answered arende is now in the handled list', function() {
-            LuseIntygPage.getAnswerBox(arendeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
-            LuseIntygPage.getAnswerButton(arendeId).sendKeys(protractor.Key.SPACE).then(function() {
-                var arende = LuseIntygPage.getArendeById(true, arendeId); // true = handled list
+            LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
+            LuseIntygPage.getAnswerButton(meddelandeId).sendKeys(protractor.Key.SPACE).then(function() {
+                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = handled list
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });
