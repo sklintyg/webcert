@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="sv" id="ng-app" ng-app="rhsIndexApp">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width">
+
+<base href="/">
+<title>Ärendesimulatorn</title>
+
+<link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css" />
+<link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css">
+<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css">
+
+</head>
+<style>
+  html, body {
+    height: 100%;
+    margin: 4px;
+    padding: 0px;
+  }
+
+</style>
+
+<body class="index-page" ng-controller="IndexController">
+
+  <div class="index-content-container">
+
+    <!-- header part -->
+    <div class="index-header-section">
+
+      <div class="row">
+        <div class="col-sm-6">
+          <h1>Välkommen till Ärendeverktyget</h1>
+          <p class="well">Välj först en vårdenhet och sedan det intyg du vill skapa ett ärende för.<br>  <br>
+
+            För att en vårdenhet skall gå att välja i drop-down menyn nedan så måste det finnas minst ett
+            signerat och skickat intyg på enheten. </p>
+          <label for="enhet">Välj vårdenhet</label>
+          <div>
+            <select id="enhet" ng-model="selectedEnhet" ng-change="loadIntyg()">
+              <option ng-repeat="doc in doctors" value="{{ doc.enhetsId}}">{{ doc.enhetsNamn }}</option>
+            </select>
+            <div ng-if="doctors.length == 0">Ingen enhet med något signerat och skickat intyg finns i din
+              Webcert-databas. Gå in i Webcert och signera/skicka först.
+            </div>
+          </div>
+          <br />
+          <label ng-if="data.length > 0" for="intygTable">Visar intyg på enhet {{ selectedEnhet }}</label>
+
+          <table id="intygTable" class="col-md-12 table table-striped table-qa" ng-if="data.length > 0">
+            <tr>
+              <th>Patient</th>
+              <th>IntygsId</th>
+              <th>Typ</th>
+              <th>Skapad av</th>
+              <td></td>
+            </tr>
+            <tr ng-repeat="d in data">
+              <td>{{ d.patientFornamn }} {{ d.patientEfternamn}}</td>
+              <td>{{ d.intygsId }}</td>
+              <td>{{ d.intygsTyp }}</td>
+              <td>{{ d.skapadAv.namn }}</td>
+              <td>
+                <button type="button" class="btn btn-success" ng-click="openForm(d)">Välj</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+
+        <div class="col-sm-6">
+          <h1 ng-if="q.intygsId != ''">Ärendeformulär</h1>
+          <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="q.intygsId != ''">
+            <div>* == Ej obligatoriskt</div>
+            <!-- metadata -->
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label">Meddelande-id</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.meddelandeId">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">IntygsId</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.intygsId">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Personnummer</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.patientPersonId">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Tidpunkt</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.skickatTidpunkt">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Rubrik*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.rubrik">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Påminnelse-id*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.paminnelseMeddelandeId">
+                </div>
+              </div>
+            </div>
+
+            <!-- SvarPa -->
+            <!-- metadata -->
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label">Svar på - meddelandeId*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.svarPa.meddelandeId">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Svar på - referensId*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.svarPa.referensId">
+                </div>
+              </div>
+            </div>
+
+            <!-- Frågetyp -->
+            <div class="form-group" id="filterFormVidarebefordrad">
+              <div class="row">
+                <label class="col-sm-3 control-label">Typ av fråga</label>
+                <div class="col-sm-9" ng-click="typeClicked()">
+                  <label class="radio-inline">
+                    <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="KOMPLT" ng-model="q.amne">
+                    Komplettering
+                  </label>
+                  <label class="radio-inline">
+                    <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="OVRIGT" ng-model="q.amne"
+                           checked="checked"> Vanlig fråga
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Texter -->
+            <div class="form-group" ng-if="q.amne == 'OVRIGT'">
+              <div class="row">
+                <label class="col-sm-3 control-label">Frågetext</label>
+                <div class="col-sm-9">
+                  <textarea ng-model="q.meddelande"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" ng-if="q.amne == 'KOMPLT'">
+              <div class="row">
+                <label class="col-sm-3 control-label">Kompletteringstext</label>
+                <div class="col-sm-9">
+                  <textarea ng-model="q.komplettering.text"></textarea>
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">FrågeID</label>
+                <div class="col-sm-9">
+                  <!-- <input type="text" class="form-control" ng-model="q.komplettering.frageId">   -->
+                  <select class="form-control" ng-model="q.komplettering.frageId">
+                    <option ng-repeat="question in questions" value="{{ question }}">{{ question }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Instans*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.komplettering.instans">
+                </div>
+              </div>
+            </div>
+
+            <!-- Avsändare -->
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label">Avsändare</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.skickatAv">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Referens-id*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.referensId">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-9">
+                <button type="button" class="btn btn-success" ng-click="sendQuestion(q)">Skapa fråga</button>
+               </div>
+            </div>
+          </div>
+          <div ng-if="resultat" class="form-group">
+            <label class="col-sm-12">Resultat
+              <div>{{resultat}}</div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.min.js"></script>
+  <script type="text/javascript" src="/web/webjars/angularjs/1.4.10/i18n/angular-locale_sv-se.js"></script>
+  <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/1.3.2/ui-bootstrap-tpls.min.js"></script>
+  <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+
+
+  <script type="text/javascript" src="/pubapp/simulator/index-app.main.js"></script>
+</body>
+</html>
