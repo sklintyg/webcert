@@ -73,8 +73,6 @@ describe('Skapa ärende luse intyg', function() {
     describe('send new arende', function() {
         it('open new arende panel', function() {
             LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
-                //console.log(1,element(by.repeater('arendeListItem in arendeList').row(0)));
-                //console.log(2,element.all(by.repeater('arendeListItem in arendeList').getText()));
                 var first = element.all(by.model('arendeListItem.arende.fraga.vidarebefordrad')).first();
                 first.getAttribute('id').then(function(id) {
                     var firstPart = id.substring(0,27);
