@@ -38,14 +38,21 @@
 
             För att en vårdenhet skall gå att välja i drop-down menyn nedan så måste det finnas minst ett
             signerat och skickat intyg på enheten. </p>
-          <label for="enhet">Välj vårdenhet</label>
-          <div>
-            <select id="enhet" ng-model="selectedEnhet" ng-change="loadIntyg()">
-              <option ng-repeat="doc in doctors" value="{{ doc.enhetsId}}">{{ doc.enhetsNamn }}</option>
-            </select>
-            <div ng-if="doctors.length == 0">Ingen enhet med något signerat och skickat intyg finns i din
-              Webcert-databas. Gå in i Webcert och signera/skicka först.
-            </div>
+          <label for="enhet">Välj vårdenhet</label><br/>
+          <div class="row">
+            <div class="col-sm-6">
+
+              <select class="form-control" id="enhet" ng-model="selectedEnhet" ng-change="loadIntyg()">
+                <option ng-repeat="doc in doctors" value="{{ doc.enhetsId}}">{{ doc.enhetsNamn }}</option>
+              </select>
+              <div ng-if="doctors.length == 0">Ingen enhet med något signerat och skickat intyg finns i din
+                Webcert-databas. Gå in i Webcert och signera/skicka först.
+              </div>
+              </div>
+              <div class="col-sm-6 text-right">
+                <button class="btn btn-danger" type="button" ng-click="deleteAllArenden()">Radera alla ärenden</button>
+                <div ng-if="raderingsResultat">{{ raderingsResultat }}</div>
+              </div>
           </div>
           <br />
           <label ng-if="data.length > 0" for="intygTable">Visar intyg på enhet {{ selectedEnhet }}</label>

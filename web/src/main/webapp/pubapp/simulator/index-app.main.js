@@ -59,6 +59,18 @@ angular.module('rhsIndexApp')
 
 
         $scope.q = DEFAULT_QUESTION;
+
+        $scope.deleteAllArenden = function() {
+            if (window.confirm('Är du verkligen helt säker på att du vill radera alla Ärenden ur databasen?')) {
+                $http({
+                    method: 'DELETE',
+                    url: '/testability/arendetest'
+                }).then(function successCallback(response) {
+                    $scope.raderingsResultat = response.data;
+                });
+            }
+        };
+
         $scope.loadIntyg = function() {
             $http({
                 method: 'GET',
