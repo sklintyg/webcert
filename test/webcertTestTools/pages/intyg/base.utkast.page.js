@@ -51,7 +51,6 @@ var BaseUtkast = JClass._extend({
     },
     whenSigneraButtonIsEnabled: function() {
     	return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
-        //return browser.wait(this.signeraButton.isEnabled());
     },
     signeraButtonClick: function() {
         this.signeraButton.click();
