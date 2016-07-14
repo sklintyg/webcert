@@ -71,7 +71,7 @@ angular.module('rhsIndexApp')
         $scope.loadDoctors = function() {
             $http({
                 method: 'GET',
-                url: '/testability/intyg/signingdoctors'
+                url: '/testability/intyg/signingunits'
             }).then(function successCallback(response) {
                 $scope.doctors = response.data;
             })
