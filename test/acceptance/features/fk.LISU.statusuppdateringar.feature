@@ -47,20 +47,20 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och jag svarar på frågan
     Så ska statusuppdatering "HANFRA" skickas till vårdsystemet. Totalt: "1"
 
-# @fråga-till-fk @notReady
-# Scenario: Statusuppdateringar vid fråga till FK
-#    När jag fyller i alla nödvändiga fält för intyget
-#    Och jag signerar intyget
-#    Och jag skickar intyget till Försäkringskassan
+@fråga-till-fk @notReady
+Scenario: Statusuppdateringar vid fråga till FK
+    När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag skickar intyget till Försäkringskassan
 
-#    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-#    Och jag går in på intygsutkastet via djupintegrationslänk
-#    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
-#    Så ska statusuppdatering "HAN8" skickas till vårdsystemet. Totalt: "1"
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+    Så ska statusuppdatering "NYFRTM" skickas till vårdsystemet. Totalt: "1"
 
-#    Och Försäkringskassan skickar ett svar
-#    Så ska statusuppdatering "HAN7" skickas till vårdsystemet. Totalt: "1"
+    Och Försäkringskassan skickar ett svar
+    Så ska statusuppdatering "NYSVFM" skickas till vårdsystemet. Totalt: "1"
 
 #    Och jag markerar svaret från Försäkringskassan som hanterat
 #    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"

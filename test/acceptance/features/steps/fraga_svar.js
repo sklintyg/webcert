@@ -22,6 +22,7 @@
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var lisuUtkastPage = pages.intyg.lisu.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
@@ -33,17 +34,38 @@ function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
 
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
-        fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.question.text.sendKeys('En ' + amne + '-fråga');
-        fkIntygPage.selectQuestionTopic(amne);
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        console.log('isSMIIntyg : ' + isSMIIntyg);
 
-        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+        if (isSMIIntyg) {
+            lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
+            lisuUtkastPage.arendeQuestion.text.sendKeys('En ' + amne + '-fråga');
+            lisuUtkastPage.selectQuestionTopic(amne);
 
-        fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-            intyg.fragaId = result.split('-')[1];
-            logger.debug('Frågans ID: ' + intyg.fragaId);
-            callback();
-        });
+            lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+
+            lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+                var element = result.split('-');
+                var splitIndex = element[0].length + element[1].length + 2;
+                var fragaId = result.substr(splitIndex, result.length);
+                intyg.fragaId = fragaId;
+                logger.debug('Frågans ID: ' + intyg.fragaId);
+            }).then(callback);
+
+        } else {
+            fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
+            fkIntygPage.question.text.sendKeys('En ' + amne + '-fråga');
+            fkIntygPage.selectQuestionTopic(amne);
+
+            fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+
+            fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
+                intyg.fragaId = result.split('-')[1];
+                logger.debug('Frågans ID: ' + intyg.fragaId);
+                callback();
+            });
+        }
+
     });
 
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {

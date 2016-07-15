@@ -127,8 +127,19 @@ var LisuUtkast = BaseSmiUtkast._extend({
             aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning')),
             labels: element(by.id('form_arbetslivsinriktadeAtgarder')).all(by.css('label.checkbox'))
         };
+        this.arendeQuestion = {
+            newArendeButton: element(by.id('askArendeBtn')),
+            text: element(by.id('arendeNewModelText')),
+            topic: element(by.id('new-question-topic')),
+            kontakt: element(by.cssContainingText('option', 'Kontakt')),
+            sendButton: element(by.id('sendArendeBtn'))
+        };
+        var panel = element(by.css('.arende-panel'));
+        this.arendePanel = panel;
     },
-
+    selectQuestionTopic: function(amne) {
+        this.arendeQuestion.topic.element(by.cssContainingText('option', amne)).click();
+    },
     get: function get(intygId) {
         get._super.call(this, 'lisu', intygId);
     },
