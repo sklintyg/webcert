@@ -32,6 +32,7 @@ function guid() {
         s4() + '-' + s4() + s4() + s4();
 }
 
+
 var DEFAULT_QUESTION = {
     intygsId: '',
     rubrik: 'Komplettering',
@@ -50,7 +51,8 @@ var DEFAULT_QUESTION = {
         instans: ''
     },
     meddelandeNr: 1,
-    patientPersonId: ''
+    patientPersonId: '',
+    sistaDatumForSvar: ''
 };
 
 angular.module('rhsIndexApp')
@@ -58,13 +60,14 @@ angular.module('rhsIndexApp')
         'use strict';
 
 
+        $scope.selectedEnhet = '';
         $scope.q = DEFAULT_QUESTION;
 
-        $scope.deleteAllArenden = function() {
-            if (window.confirm('Är du verkligen helt säker på att du vill radera alla Ärenden ur databasen?')) {
+        $scope.deleteAllArendenOnUnit = function() {
+            if ($scope.selectedEnhet != '' && window.confirm('Är du verkligen helt säker på att du vill radera alla ärenden på ' + $scope.selectedEnhet + ' ur databasen?')) {
                 $http({
                     method: 'DELETE',
-                    url: '/testability/arendetest'
+                    url: '/testability/arendetest/enhet/' + $scope.selectedEnhet
                 }).then(function successCallback(response) {
                     $scope.raderingsResultat = response.data;
                 });
@@ -80,12 +83,12 @@ angular.module('rhsIndexApp')
             })
         };
 
-        $scope.loadDoctors = function() {
+        $scope.loadUnits = function() {
             $http({
                 method: 'GET',
                 url: '/testability/intyg/signingunits'
             }).then(function successCallback(response) {
-                $scope.doctors = response.data;
+                $scope.units = response.data;
             })
         };
 
@@ -96,6 +99,14 @@ angular.module('rhsIndexApp')
             }).then(function successCallback(response) {
                 $scope.questions = response.data;
             });
+
+            $http({
+                method: 'GET',
+                url: '/testability/arendetest/intyg/' + intyg.intygsId
+            }).then(function successCallback(response) {
+                $scope.pendingActionQuestions = response.data;
+            });
+
 
             $scope.q.meddelandeId = guid();
             $scope.q.intygsId = intyg.intygsId;
@@ -133,6 +144,10 @@ angular.module('rhsIndexApp')
                                 <urn1:text>' + q.komplettering.text + '</urn1:text> \
                                 </urn1:komplettering>';
             }
+            var sistaDatumForSvar = '';
+            if (q.sistaDatumForSvar != '') {
+                sistaDatumForSvar = '<urn1:sistaDatumForSvar>' + q.sistaDatumForSvar + '</urn1:sistaDatumForSvar>';
+            }
 
             var msg =
                 '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2"> \
@@ -168,6 +183,7 @@ angular.module('rhsIndexApp')
                             </urn1:part> \
                         </urn1:skickatAv> \
                         ' + komplettering + ' \
+                        ' + sistaDatumForSvar + ' \
                     </urn1:SendMessageToCare> \
                 </soapenv:Body>  \
             </soapenv:Envelope>';
@@ -190,6 +206,6 @@ angular.module('rhsIndexApp')
             });
         };
 
-        $scope.loadDoctors();
+        $scope.loadUnits();
 
     }]);

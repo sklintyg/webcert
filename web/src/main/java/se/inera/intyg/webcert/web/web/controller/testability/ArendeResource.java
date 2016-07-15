@@ -27,6 +27,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,6 +41,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Api(value = "services arende", description = "REST API för testbarhet - Ärenden")
@@ -57,6 +59,18 @@ public class ArendeResource {
 
     @Autowired
     private ArendeRepository arendeRepository;
+
+    @GET
+    @Path("/intyg/{intygsId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
+        List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
+        return Response.ok(byIntygsId.stream()
+                .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
+                .map(a -> a.getMeddelandeId())
+                .collect(Collectors.toList()))
+        .build();
+    }
 
     @GET
     @Path("/{id}")
@@ -94,6 +108,24 @@ public class ArendeResource {
                     entityManager.remove(arende);
                 }
                 return Response.ok("Deleted " + arenden.size() + " arenden.").build();
+            }
+        });
+    }
+
+    @DELETE
+    @Path("/enhet/{enhetsId}")
+    @Produces("text/plain")
+    public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
+        return transactionTemplate.execute(new TransactionCallback<Response>() {
+            public Response doInTransaction(TransactionStatus status) {
+                @SuppressWarnings("unchecked")
+                List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f WHERE f.enhetId = :enhetId")
+                        .setParameter("enhetId", enhetsId)
+                        .getResultList();
+                for (Arende arende : arenden) {
+                    entityManager.remove(arende);
+                }
+                return Response.ok("Deleted " + arenden.size() + " arenden on unit " + enhetsId).build();
             }
         });
     }
