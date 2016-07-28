@@ -22,6 +22,7 @@ import static se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants.
 import static se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants.TILLAGGSFRAGOR_SVAR_JSON_ID;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,14 +36,11 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
 public class ArendeViewConverter {
@@ -83,29 +81,79 @@ public class ArendeViewConverter {
         return template.build();
     }
 
+    public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, List<Arende> paminnelser) {
+        ArendeView arendeViewQuestion = convert(fraga);
+        ArendeView arendeViewAnswer = null;
+        if (svar != null) {
+            arendeViewAnswer = convert(svar);
+        }
+        List<ArendeView> arendeViewPaminnelser = new ArrayList<>();
+        if (paminnelser != null) {
+            arendeViewPaminnelser = paminnelser.stream().map(a -> convert(a)).sorted(Comparator.comparing(ArendeView::getTimestamp).reversed())
+                    .collect(Collectors.toList());
+        }
+        return ArendeConversationView.create(arendeViewQuestion, arendeViewAnswer, fraga.getSenasteHandelse(), arendeViewPaminnelser);
+    }
+
+    public List<ArendeConversationView> buildArendeConversations(List<Arende> list) {
+        List<ArendeConversationView> arendeConversations = new ArrayList<>();
+        Map<String, List<Arende>> threads = new HashMap<>();
+        String meddelandeId = null;
+        for (Arende arende : list) { // divide into threads
+            meddelandeId = getMeddelandeId(arende);
+            if (threads.get(meddelandeId) == null) {
+                threads.put(meddelandeId, new ArrayList<>());
+            }
+            threads.get(meddelandeId).add(arende);
+        }
+
+        for (String meddelandeIdd : threads.keySet()) {
+            List<Arende> arendeConversationContent = threads.get(meddelandeIdd);
+
+            Optional<Arende> fraga = arendeConversationContent.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny();
+            // Since fraga is required to be nonNull by AutoValue_ArendeConversationView need to make sure this is
+            // enforced to avoid throwing an exception and showing nothing at all
+            if (!fraga.isPresent()) {
+                continue;
+            }
+            Optional<Arende> svar = arendeConversationContent.stream().filter(a -> getArendeType(a) == ArendeType.SVAR).findAny();
+            List<Arende> paminnelser = arendeConversationContent.stream().filter(a -> getArendeType(a) == ArendeType.PAMINNELSE)
+                    .collect(Collectors.toList());
+
+            arendeConversations.add(convertToArendeConversationView(fraga.get(), svar.orElse(null), paminnelser));
+        }
+        Collections.sort(arendeConversations, (a, b) -> {
+            boolean aIsEmpty = a.getPaminnelser().isEmpty();
+            boolean bIsEmpty = b.getPaminnelser().isEmpty();
+            if (aIsEmpty == bIsEmpty) {
+                return b.getSenasteHandelse().compareTo(a.getSenasteHandelse());
+            } else if (aIsEmpty) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
+        return arendeConversations;
+    }
+
+    private String getMeddelandeId(Arende arende) {
+        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
+        return (referenceId != null) ? referenceId : arende.getMeddelandeId();
+    }
+
     private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
         List<MedicinsktArendeView> medicinskaArendenViews = new ArrayList<>();
         for (MedicinsktArende arende : medicinskaArenden) {
-            try {
-                String jsonPropertyHandle = getJsonPropertyHandle(arende, intygsId, intygsTyp);
-                Integer position = getListPositionForInstanceId(arende);
-                MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
-                        .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
-                medicinskaArendenViews.add(view);
-
-            } catch (ModuleNotFoundException | ModuleException e) {
-                LOG.error("Module not found for certificate of type {}", intygsTyp);
-                Throwables.propagate(e);
-            }
+            String jsonPropertyHandle = getJsonPropertyHandle(arende, intygsId, intygsTyp);
+            Integer position = getListPositionForInstanceId(arende);
+            MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
+                    .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
+            medicinskaArendenViews.add(view);
         }
         return medicinskaArendenViews;
     }
 
-    private String getJsonPropertyHandle(MedicinsktArende arende, String intygsId, String intygsTyp)
-            throws ModuleNotFoundException, ModuleException {
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
-        IntygContentHolder content = intygService.fetchIntygData(intygsId, intygsTyp, false);
-        Utlatande utlatande = content.getUtlatande();
+    private String getJsonPropertyHandle(MedicinsktArende arende, String intygsId, String intygsTyp) {
         String frageId = arende.getFrageId();
 
         if (isTillaggsFraga(frageId)) {
@@ -113,7 +161,7 @@ public class ArendeViewConverter {
         }
         switch (frageId) {
         case GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1:
-            return calculateFrageIdHandleForGrundForMU(arende, intygsTyp, utlatande, moduleApi);
+            return calculateFrageIdHandleForGrundForMU(arende, intygsId, intygsTyp);
         default:
             return RespConstants.getJsonPropertyFromFrageId(frageId);
         }
@@ -121,16 +169,21 @@ public class ArendeViewConverter {
 
     private boolean isTillaggsFraga(String frageId) {
         try {
-            if (StringUtils.isNumeric(frageId) && Integer.parseInt(frageId) >= TILLAGGSFRAGA_START) {
-                return true;
-            }
-            return false;
+            return StringUtils.isNumeric(frageId) && Integer.parseInt(frageId) >= TILLAGGSFRAGA_START;
         } catch (NumberFormatException e) {
             return false;
         }
     }
 
-    private String calculateFrageIdHandleForGrundForMU(MedicinsktArende arende, String intygsTyp, Utlatande utlatande, ModuleApi moduleApi) {
+    private String calculateFrageIdHandleForGrundForMU(MedicinsktArende arende, String intygsId, String intygsTyp) {
+        ModuleApi moduleApi = null;
+        try {
+            moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("Module not found for certificate of type {}", intygsTyp);
+            Throwables.propagate(e);
+        }
+        Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
         Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande);
 
         List<String> filledPositions = arendeParameters.get(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1);
