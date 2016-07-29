@@ -353,27 +353,19 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper) {
-        Map<String, Long> resultsMap = new HashMap<>();
-
         if ((vardenheterIds == null) || vardenheterIds.isEmpty()) {
             LOG.warn("No ids for Vardenheter was supplied");
-            return resultsMap;
+            return new HashMap<>();
         }
 
         if ((intygsTyper == null) || intygsTyper.isEmpty()) {
             LOG.warn("No intygsTyper for querying Arenden was supplied");
-            return resultsMap;
+            return new HashMap<>();
         }
 
-        List<Object[]> results = arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
-
-        for (Object[] resArr : results) {
-            String id = (String) resArr[0];
-            Long nbr = (Long) resArr[1];
-            resultsMap.put(id, nbr);
-        }
-
-        return resultsMap;
+        return arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper)
+                .stream()
+                .collect(Collectors.toMap(a -> (String) a[0], a -> (Long) a[1]));
     }
 
     private void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {

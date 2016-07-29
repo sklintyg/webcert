@@ -30,13 +30,13 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
     /**
-     * Should return a list that contains an array with enhets id and the number of unhandled {@link Arende} entities for that enhet.
+     * Should return a list that contains an array with enhets id and the number of unhandled {@link Arende} questions for that enhet.
      *
      * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
      * @param intygsTyper Set of intygstyper that arendens related intyg must be of.
      * @return A list that contains an array with enhets id and the number of unhandled for that enhet.
      */
-    @Query("SELECT DISTINCT a.enhetId, count(a.enhetId) FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.intygTyp IN (:intygsTyper) GROUP BY a.enhetId")
+    @Query("SELECT DISTINCT a.enhetId, count(a.enhetId) FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper) GROUP BY a.enhetId")
     List<Object[]> countUnhandledGroupedByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**

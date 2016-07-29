@@ -19,6 +19,15 @@
 
 package se.inera.intyg.webcert.persistence.arende.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
@@ -29,23 +38,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
-import se.inera.intyg.webcert.persistence.model.Filter;
-import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.persistence.model.VantarPa;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import se.inera.intyg.webcert.persistence.arende.model.*;
+import se.inera.intyg.webcert.persistence.model.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -552,6 +547,50 @@ public class ArendeRepositoryTest {
         List<Arende> result = repo.findByPaminnelseMeddelandeId(fraga.getMeddelandeId());
         assertEquals(1, result.size());
         assertEquals(paminnelse.getMeddelandeId(), result.get(0).getMeddelandeId());
+    }
+
+    @Test
+    public void testCountUnhandledGroupedByEnhetIdsAndIntygstyper() {
+        // Question on enhet 1
+        repo.save(buildArende("signeratAv", "enhet1", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA", LocalDate.now(),
+                ArendeAmne.KONTKT));
+        // Answer on enhet 1
+        repo.save(buildArende("signeratAv", "enhet1", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", "svarPaMeddelandeId", "FKASSA",
+                LocalDate.now(), ArendeAmne.KONTKT));
+        // Closed question on enhet 1
+        repo.save(buildArende("signeratAv", "enhet1", Status.CLOSED, "paminnelseMeddelandeId", null, "FKASSA", LocalDate.now(), ArendeAmne.KONTKT));
+        // Reminder on enhet 1
+        repo.save(buildArende("signeratAv", "enhet1", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA", LocalDate.now(),
+                ArendeAmne.PAMINN));
+        // Question on enhet 1
+        repo.save(buildArende("signeratAv", "enhet1", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA", LocalDate.now(),
+                ArendeAmne.KONTKT));
+        // Question on enhet 2
+        repo.save(buildArende("signeratAv", "enhet2", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA", LocalDate.now(),
+                ArendeAmne.KONTKT));
+        // Question on enhet 3
+        repo.save(buildArende("signeratAv", "enhet3", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA", LocalDate.now(),
+                ArendeAmne.KONTKT));
+        // Question with type 2
+        Arende arendeType2 = buildArende("signeratAv", "enhet1", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA",
+                LocalDate.now(), ArendeAmne.KONTKT);
+        arendeType2.setIntygTyp("INTYG_TYP_2");
+        repo.save(arendeType2);
+        // Question with type 3
+        Arende arendeType3 = buildArende("signeratAv", "enhet1", Status.PENDING_INTERNAL_ACTION, "paminnelseMeddelandeId", null, "FKASSA",
+                LocalDate.now(), ArendeAmne.KONTKT);
+        arendeType2.setIntygTyp("INTYG_TYP_3");
+        repo.save(arendeType3);
+
+        List<String> enhetsIds = Arrays.asList("enhet1", "enhet2");
+        Set<String> intygsTyper = new HashSet<>(Arrays.asList("INTYG_TYP", "INTYG_TYP_2"));
+        List<Object[]> res = repo.countUnhandledGroupedByEnhetIdsAndIntygstyper(enhetsIds, intygsTyper);
+        assertNotNull(res);
+        assertEquals(2, res.size());
+        assertEquals("enhet1", (String) res.get(0)[0]);
+        assertEquals(new Long(3), (Long) res.get(0)[1]);
+        assertEquals("enhet2", (String) res.get(1)[0]);
+        assertEquals(new Long(1), (Long) res.get(1)[1]);
     }
 
     private Arende buildArende() {
