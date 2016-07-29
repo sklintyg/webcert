@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
@@ -44,7 +45,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
     private static final long DEFAULT_TIMEOUT = 60000L;
-    private static final String FK_7263_INTYGSTYP = "fk7263";
+    private static final String FK_7263_INTYGSTYP = Fk7263EntryPoint.MODULE_ID;
 
     @Value("${receiveNotificationForAggregationRequestEndpointUri}")
     private String notificationForAggregationQueue;
