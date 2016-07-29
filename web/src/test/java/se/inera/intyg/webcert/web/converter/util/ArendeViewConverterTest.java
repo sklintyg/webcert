@@ -2,14 +2,19 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDateTime;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -27,9 +32,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
 import se.inera.intyg.intygstyper.lisu.model.internal.LisuUtlatande;
-import se.inera.intyg.intygstyper.lisu.rest.LisuModuleApi;
 import se.inera.intyg.intygstyper.luse.model.internal.LuseUtlatande;
-import se.inera.intyg.intygstyper.luse.rest.LuseModuleApi;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -55,23 +58,30 @@ public class ArendeViewConverterTest {
     @Mock
     private IntygServiceImpl intygService;
 
-    private Status status;
-    private se.inera.intyg.webcert.persistence.model.Status webcertStatus = se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION;;
+    @Mock
+    private ModuleApi moduleApi;
 
+    @SuppressWarnings("unchecked")
+    @Before
+    public void setup() throws Exception {
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
+        map.put("2", Arrays.asList(RespConstants.KANNEDOM_SVAR_JSON_ID_2));
+        map.put("4", Arrays.asList("", "", RespConstants.UNDERLAG_SVAR_JSON_ID_4));
+        when(moduleApi.getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class))).thenReturn(map);
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeForLuse() throws ModuleNotFoundException {
-        Arende arende = buildArende("luse");
-
-        LuseModuleApi moduleApi = new LuseModuleApi();
-        LocalDateTime timeStamp = LocalDateTime.now().minusDays(2);
-        String skapadAvNamn = "Test Testsson";
-        LuseUtlatande utlatande = buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                 SKAPADAV_PERSON_ID,
-                timeStamp);
-        ArendeView result = setupMocks(arende, moduleApi, timeStamp, utlatande);
+                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
 
-        assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_ANHORIGS_BESKRIVNING_SVAR_JSON_ID_1,
-                result.getKompletteringar().get(0).getJsonPropertyHandle());
+        ArendeView result = converter.convert(buildArende("luse"));
+
+        assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
         assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2,
                 result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
@@ -82,6 +92,7 @@ public class ArendeViewConverterTest {
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
+        verify(moduleApi).getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class));
     }
 
     @Test
@@ -92,17 +103,14 @@ public class ArendeViewConverterTest {
         objectMapper.writeValue(jsonWriter, arende);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeForLisu() throws ModuleNotFoundException {
-        Arende arende = buildArende("lisu");
-
-        LisuModuleApi moduleApi = new LisuModuleApi();
-        LocalDateTime timeStamp = LocalDateTime.now().minusDays(2);
-        String skapadAvNamn = "Test Testsson";
-        LisuUtlatande utlatande = buildLisuUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, skapadAvNamn,
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisuUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                 SKAPADAV_PERSON_ID,
-                timeStamp);
-        ArendeView result = setupMocks(arende, moduleApi, timeStamp, utlatande);
+                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+
+        ArendeView result = converter.convert(buildArende("lisu"));
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
                 result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -116,6 +124,19 @@ public class ArendeViewConverterTest {
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
+        verify(moduleApi).getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testConvertToArendeWithoutKomplettering() throws ModuleNotFoundException {
+        ArendeView result = converter.convert(buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
+
+        assertTrue(CollectionUtils.isEmpty(result.getKompletteringar()));
+        assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
+        assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
+        assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
+        verify(moduleApi, never()).getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class));
     }
 
     @Test
@@ -177,17 +198,6 @@ public class ArendeViewConverterTest {
         assertEquals(january, result.get(3).getSenasteHandelse());
     }
 
-    private ArendeView setupMocks(Arende arende, ModuleApi moduleApi, LocalDateTime timeStamp, Utlatande utlatande)
-            throws ModuleNotFoundException {
-        status = new Status(CertificateState.RECEIVED, intygsId, timeStamp);
-        IntygContentHolder content = new IntygContentHolder("", utlatande, Arrays.asList(status), false, null);
-
-        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(content);
-
-        return converter.convert(arende);
-    }
-
     private LisuUtlatande buildLisuUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
             String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
 
@@ -240,7 +250,7 @@ public class ArendeViewConverterTest {
         Arende arende = new Arende();
         arende.setAmne(ArendeAmne.OVRIGT);
         arende.setIntygsId(intygsId);
-        arende.setStatus(webcertStatus);
+        arende.setStatus(se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION);
         arende.setMeddelandeId("meddelandeId");
         arende.setPatientPersonId("191212121212");
         arende.setTimestamp(LocalDateTime.now());
@@ -265,7 +275,7 @@ public class ArendeViewConverterTest {
         Arende arende = new Arende();
         arende.setAmne(ArendeAmne.OVRIGT);
         arende.setIntygsId(intygsId);
-        arende.setStatus(webcertStatus);
+        arende.setStatus(se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION);
         arende.setMeddelandeId(meddelandeId);
         arende.setPatientPersonId("191212121212");
         arende.setTimestamp(timestamp);

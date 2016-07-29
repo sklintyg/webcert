@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1;
-import static se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants.TILLAGGSFRAGOR_SVAR_JSON_ID;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +33,6 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.*;
@@ -45,7 +41,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 @Component
 public class ArendeViewConverter {
     private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
-    private static final int TILLAGGSFRAGA_START = 9000;
 
     @Autowired
     private IntygModuleRegistryImpl moduleRegistry;
@@ -54,8 +49,6 @@ public class ArendeViewConverter {
     private IntygServiceImpl intygService;
 
     public ArendeView convert(Arende arende) {
-        List<MedicinsktArendeView> kompletteringar = convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
-                arende.getIntygTyp());
         ArendeView.Builder template = ArendeView.builder();
         template.setAmne(arende.getAmne());
         template.setArendeType(getArendeType(arende));
@@ -64,7 +57,6 @@ public class ArendeViewConverter {
         template.setFrageStallare(arende.getSkickatAv());
         template.setInternReferens(arende.getMeddelandeId());
         template.setIntygId(arende.getIntygsId());
-        template.setKompletteringar(kompletteringar);
         template.setMeddelande(arende.getMeddelande());
         template.setMeddelandeRubrik(arende.getRubrik());
         template.setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId());
@@ -77,6 +69,8 @@ public class ArendeViewConverter {
         template.setVidarebefordrad(arende.getVidarebefordrad());
         template.setVardaktorNamn(arende.getVardaktorName());
         template.setVardgivarnamn(arende.getVardgivareName());
+        template.setKompletteringar(convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
+                arende.getIntygTyp()));
 
         return template.build();
     }
@@ -143,39 +137,10 @@ public class ArendeViewConverter {
 
     private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
         List<MedicinsktArendeView> medicinskaArendenViews = new ArrayList<>();
-        for (MedicinsktArende arende : medicinskaArenden) {
-            String jsonPropertyHandle = getJsonPropertyHandle(arende, intygsId, intygsTyp);
-            Integer position = getListPositionForInstanceId(arende);
-            MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
-                    .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
-            medicinskaArendenViews.add(view);
+        if (CollectionUtils.isEmpty(medicinskaArenden)) {
+            return medicinskaArendenViews;
         }
-        return medicinskaArendenViews;
-    }
-
-    private String getJsonPropertyHandle(MedicinsktArende arende, String intygsId, String intygsTyp) {
-        String frageId = arende.getFrageId();
-
-        if (isTillaggsFraga(frageId)) {
-            return TILLAGGSFRAGOR_SVAR_JSON_ID;
-        }
-        switch (frageId) {
-        case GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1:
-            return calculateFrageIdHandleForGrundForMU(arende, intygsId, intygsTyp);
-        default:
-            return RespConstants.getJsonPropertyFromFrageId(frageId);
-        }
-    }
-
-    private boolean isTillaggsFraga(String frageId) {
-        try {
-            return StringUtils.isNumeric(frageId) && Integer.parseInt(frageId) >= TILLAGGSFRAGA_START;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private String calculateFrageIdHandleForGrundForMU(MedicinsktArende arende, String intygsId, String intygsTyp) {
+        List<String> frageIds = medicinskaArenden.stream().map(MedicinsktArende::getFrageId).distinct().collect(Collectors.toList());
         ModuleApi moduleApi = null;
         try {
             moduleApi = moduleRegistry.getModuleApi(intygsTyp);
@@ -184,22 +149,28 @@ public class ArendeViewConverter {
             Throwables.propagate(e);
         }
         Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
-        Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande);
+        Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande, frageIds);
+        for (MedicinsktArende arende : medicinskaArenden) {
+            Integer position = getListPositionForInstanceId(arende);
+            String jsonPropertyHandle = getJsonPropertyHandle(arende, position, arendeParameters);
+            MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
+                    .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
+            medicinskaArendenViews.add(view);
+        }
+        return medicinskaArendenViews;
+    }
 
-        List<String> filledPositions = arendeParameters.get(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1);
+    private String getJsonPropertyHandle(MedicinsktArende arende, Integer position, Map<String, List<String>> arendeParameters) {
+        List<String> filledPositions = arendeParameters.get(arende.getFrageId());
         if (filledPositions != null) {
             try {
-                return filledPositions.get(getListPositionForInstanceId(arende));
-            } catch (ClassCastException e) {
-                LOG.error("List does not contain string json properties as expected.");
-                Throwables.propagate(e);
-                return null;
+                return filledPositions.get(position);
             } catch (IndexOutOfBoundsException e) {
                 LOG.error("The instance number in MedicinsktArende must be an integer > 0.");
                 return null;
             }
         }
-        throw new IllegalArgumentException("The supplied Arende information for conversion to json parameters for Fraga1 must be a list of Strings.");
+        throw new IllegalArgumentException("The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId() + " must be a list of Strings.");
     }
 
     private int getListPositionForInstanceId(MedicinsktArende arende) {
