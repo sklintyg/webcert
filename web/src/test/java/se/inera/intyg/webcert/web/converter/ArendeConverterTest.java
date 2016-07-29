@@ -202,7 +202,7 @@ public class ArendeConverterTest {
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
         when(hsaEmployeeService.getEmployee(signeratAv, null)).thenReturn(createHsaResponse(givenName, surname));
 
-        Arende res = ArendeConverter.createArendeQuestionFromUtkast(amne, rubrik, meddelande, utkast, now, vardaktorName, hsaEmployeeService);
+        Arende res = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, now, vardaktorName, hsaEmployeeService);
 
         assertNotNull(res);
         assertEquals(amne, res.getAmne());
@@ -265,7 +265,7 @@ public class ArendeConverterTest {
         arende.setReferensId(referensId);
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
 
-        Arende res = ArendeConverter.createArendeAnswerFromQuestion(nyttMeddelande, arende, now, vardaktorName);
+        Arende res = ArendeConverter.createAnswerFromArende(nyttMeddelande, arende, now, vardaktorName);
 
         assertNotNull(res);
         assertEquals(amne, res.getAmne());

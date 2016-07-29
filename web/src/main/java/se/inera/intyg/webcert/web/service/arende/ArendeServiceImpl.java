@@ -123,10 +123,9 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateArende(arende.getIntygsId(), utkast);
 
-        LocalDateTime now = LocalDateTime.now();
-        ArendeConverter.decorateArendeFromUtkast(arende, utkast, now, hsaEmployeeService);
+        ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(), hsaEmployeeService);
 
-        updateRelated(arende, now);
+        updateRelated(arende);
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
 
@@ -154,12 +153,10 @@ public class ArendeServiceImpl implements ArendeService {
 
         verifyEnhetsAuth(utkast.getEnhetsId(), false);
 
-        Arende arende = ArendeConverter.createArendeQuestionFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(),
+        Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(),
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
-        Arende saved = processOutgoingMessage(arende);
-
-        sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.QUESTION_SENT_TO_FK);
 
         return arendeViewConverter.convertToArendeConversationView(saved, null, new ArrayList<>());
     }
@@ -196,12 +193,10 @@ public class ArendeServiceImpl implements ArendeService {
                     + svarPaMeddelandeId + " and amne (" + svarPaMeddelande.getAmne()
                     + ") can only be answered by user that is Lakare");
         }
-        Arende arende = ArendeConverter.createArendeAnswerFromQuestion(meddelande, svarPaMeddelande, LocalDateTime.now(),
+        Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(),
                 webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende);
-
-        sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.ANSWER_SENT_TO_FK);
 
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved,
                 arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId));
@@ -275,24 +270,13 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public List<Arende> listArendeForUnits() throws WebCertServiceException {
-        WebCertUser user = webcertUserService.getUser();
-        List<String> unitIds = user.getIdsOfSelectedVardenhet();
-
-        return arendeRepository.findByEnhet(unitIds);
-    }
-
-    @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
         List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
 
         List<String> hsaEnhetIds = webcertUserService.getUser().getIdsOfSelectedVardenhet();
 
-        List<ArendeConversationView> arendeConversations = arendeViewConverter
-                .buildArendeConversations(arendeList.stream().filter(a -> hsaEnhetIds.contains(a.getEnhetId()))
-                        .collect(Collectors.toList()));
-
-        return arendeConversations;
+        return arendeViewConverter
+                .buildArendeConversations(arendeList.stream().filter(a -> hsaEnhetIds.contains(a.getEnhetId())).collect(Collectors.toList()));
     }
 
     @Override
@@ -392,7 +376,7 @@ public class ArendeServiceImpl implements ArendeService {
         return resultsMap;
     }
 
-    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+    private void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
         if (!webcertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for enhet " + enhetsId);
@@ -469,11 +453,11 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
-    private Arende processOutgoingMessage(Arende arende) throws WebCertServiceException {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) throws WebCertServiceException {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getRubrik());
 
-        updateRelated(arende, arende.getSenasteHandelse());
+        updateRelated(arende);
 
         SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
                 sendMessageToFKLogicalAddress);
@@ -485,22 +469,24 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
         }
 
+        sendNotification(saved, notificationEvent);
+
         return saved;
     }
 
-    private void updateRelated(Arende arende, LocalDateTime dateTime) {
+    private void updateRelated(Arende arende) {
         Arende orig;
         if (arende.getSvarPaId() != null) {
             orig = arendeRepository.findOneByMeddelandeId(arende.getSvarPaId());
             if (orig != null) {
-                orig.setSenasteHandelse(dateTime);
+                orig.setSenasteHandelse(arende.getSenasteHandelse());
                 orig.setStatus(arende.getStatus());
                 arendeRepository.save(orig);
             }
         } else if (arende.getPaminnelseMeddelandeId() != null) {
             orig = arendeRepository.findOneByMeddelandeId(arende.getPaminnelseMeddelandeId());
             if (orig != null) {
-                orig.setSenasteHandelse(dateTime);
+                orig.setSenasteHandelse(arende.getSenasteHandelse());
                 arendeRepository.save(orig);
             }
         }

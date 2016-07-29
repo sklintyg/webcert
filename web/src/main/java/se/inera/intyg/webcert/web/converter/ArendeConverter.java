@@ -80,7 +80,7 @@ public final class ArendeConverter {
         arende.setVardgivareName(utkast.getVardgivarNamn());
     }
 
-    public static Arende createArendeQuestionFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
+    public static Arende createArendeFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
             String vardaktorNamn, HsaEmployeeService hsaEmployeeService) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
@@ -95,11 +95,11 @@ public final class ArendeConverter {
         arende.setRubrik(rubrik);
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
         arende.setSigneratAvName(getSignedByName(utkast, hsaEmployeeService));
-        decorateNewArende(arende, now, vardaktorNamn);
+        decorateOutgoingArende(arende, now, vardaktorNamn);
         return arende;
     }
 
-    public static Arende createArendeAnswerFromQuestion(String meddelande, Arende svarPaMeddelande, LocalDateTime now, String vardaktorNamn) {
+    public static Arende createAnswerFromArende(String meddelande, Arende svarPaMeddelande, LocalDateTime now, String vardaktorNamn) {
         Arende arende = new Arende();
         arende.setStatus(Status.CLOSED);
         arende.setSvarPaId(svarPaMeddelande.getMeddelandeId());
@@ -115,11 +115,11 @@ public final class ArendeConverter {
         arende.setRubrik(svarPaMeddelande.getRubrik());
         arende.setSigneratAv(svarPaMeddelande.getSigneratAv());
         arende.setSigneratAvName(svarPaMeddelande.getSigneratAvName());
-        decorateNewArende(arende, now, vardaktorNamn);
+        decorateOutgoingArende(arende, now, vardaktorNamn);
         return arende;
     }
 
-    private static void decorateNewArende(Arende arende, LocalDateTime now, String vardaktorNamn) {
+    private static void decorateOutgoingArende(Arende arende, LocalDateTime now, String vardaktorNamn) {
         arende.setMeddelandeId(UUID.randomUUID().toString());
         arende.setSkickatAv(FrageStallare.WEBCERT.getKod());
         arende.setVidarebefordrad(Boolean.FALSE);
