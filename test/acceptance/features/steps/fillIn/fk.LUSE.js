@@ -29,7 +29,7 @@ module.exports = {
 
         browser.ignoreSynchronization = true;
 
-        // //Baserat på
+        //Baserat på
         promiseArr.push(luseUtkastPage.angeBaseratPa(intyg.baseratPa)
             .then(function(value) {
                 logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));

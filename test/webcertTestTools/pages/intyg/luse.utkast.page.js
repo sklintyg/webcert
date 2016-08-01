@@ -67,13 +67,16 @@ var LuseUtkast = BaseSmiUtkast._extend({
             },
             anhorigBeskrivning: {
                 checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')),
-                datum: element(by.id('formly_1_date_anhorigsBeskrivningAvPatienten_3')).element(by.css('input[type=text]'))
+                datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
             },
             annat: {
                 beskrivning: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_5')),
                 checkbox: element(by.id('formly_1_date_annatGrundForMU_4')),
                 datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
             },
+            kannedomOmPatient: {
+                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input'))
+            }
         };
     },
     angeFunktionsnedsattning: function(nedsattning) {

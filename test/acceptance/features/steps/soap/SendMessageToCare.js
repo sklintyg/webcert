@@ -21,7 +21,7 @@
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
 var helpers = require('../helpers');
-var subjects = helpers.subjects;
+var helpers = helpers;
 
 function addDays(date, days) {
     date.setDate(date.getDate() + days);
@@ -29,7 +29,7 @@ function addDays(date, days) {
 }
 
 module.exports.SendMessageToCare = function(user, person, intyg, message, amneCode) {
-    var amneDisplayName = subjects.getSubjectFromCode(amneCode);
+    var amneDisplayName = helpers.getSubjectFromCode(amneCode);
     var messageID = testdataHelper.generateTestGuid();
     var skickatTidpunkt = new Date();
     var sistaDatumForSvar = addDays(skickatTidpunkt, 5);

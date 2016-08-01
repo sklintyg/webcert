@@ -22,7 +22,7 @@
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
-var subjects = require('./helpers').subjects;
+var helpers = require('./helpers');
 
 // var helpers = require('./helpers');
 
@@ -65,10 +65,10 @@ module.exports = function() {
     //     });
     // });
 
-    this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(type, callback) {
+    this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
-        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + type + ' ' + global.intyg.guidcheck, subjects[type]);
+        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, helpers.subjectCodes[amne]);
         console.log(body);
         var path = '/send-message-to-care/v1.0?wsdl';
         var url = process.env.INTYGTJANST_URL + path;

@@ -68,7 +68,7 @@ function selectTable(handelsekod) {
             logger.error('ERROR: More than one "händelse" found.');
             return;
         }
-        console.log('Database: webcert_requests.requests');
+        // console.log('Database: webcert_requests.requests');
         return 'webcert_requests.requests';
     } else {
         console.log('Database: webcert_requests.statusupdates_2');
@@ -83,10 +83,10 @@ function selectExtension(handelsekod) {
             logger.error('ERROR: More than one "händelse" found. Cannot select determine extension');
             return;
         }
-        console.log('Extension: utlatandeExtension');
+        // console.log('Extension: utlatandeExtension');
         return 'utlatandeExtension';
     } else {
-        console.log('Extension: intygsExtension');
+        // console.log('Extension: intygsExtension');
         return 'intygsExtension';
     }
 }
