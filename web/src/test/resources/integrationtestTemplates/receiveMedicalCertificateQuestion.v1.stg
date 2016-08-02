@@ -36,7 +36,7 @@ xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
 
             <urn:lakarutlatande>
                <urn1:lakarutlatande-id>$data.intygsId$</urn1:lakarutlatande-id>
-               <urn1:signeringsTidpunkt>2016-04-09T21:00:00.000</urn1:signeringsTidpunkt>
+               <urn1:signeringsTidpunkt>$data.signeringsTidpunkt$</urn1:signeringsTidpunkt>
                <urn1:patient>
                   <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212"/>
                   <urn2:fullstandigtNamn>Test Testsson</urn2:fullstandigtNamn>

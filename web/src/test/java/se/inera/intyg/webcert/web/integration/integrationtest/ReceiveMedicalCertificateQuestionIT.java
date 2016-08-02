@@ -19,22 +19,24 @@
 
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+
+import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
+
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -45,6 +47,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     private static final String RECEIVE_QUESTION_V1_0 = "services/receive-question/v1.0";
 
     private static final String INTYGS_ID = "6a7f4d81-34f7-4a1f-a655-df58dfabb211";
+    private static final String SIGNERINGS_TIDPUNKT = "2014-12-09T11:00:00.000";
 
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -72,12 +75,16 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     }
 
     private String createRequestBody(String amne, String intygsId, String fkReferens) {
-        requestTemplate.add("data", new QuestionData(amne, intygsId, fkReferens));
+        return createRequestBody(amne, intygsId, fkReferens, SIGNERINGS_TIDPUNKT);
+    }
+
+    private String createRequestBody(String amne, String intygsId, String fkReferens, String signeringsTidpunkt) {
+        requestTemplate.add("data", new QuestionData(amne, intygsId, fkReferens, signeringsTidpunkt));
         return requestTemplate.render();
     }
 
     @Test
-    public void testReceiveQuestion() throws IOException {
+    public void testReceiveQuestionSuccess() throws IOException {
 
         given().body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
                 .when()
@@ -101,6 +108,26 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
 
     }
 
+    /**
+     * Send a request intentionally breaking the request schema (in this case, omitting the mandatory
+     * lakarutlatade.signeringsTidpunkt). Since we have SchemaValidation enabled, this should be detected and given an
+     * appropriately wrapped validation error response)
+     */
+    @Test
+    public void testRequestSchemaValidationError() {
+        given().body(createRequestBody("Ovrigt", INTYGS_ID, "fk-" + System.currentTimeMillis(), ""))
+                .when()
+                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+    }
+
+    /**
+     * Send a request with an error that our programmatic validation will detect, and verify that the correct response code is returned.
+     */
     @Test
     public void testCreateQuestionForUnknownAmneFailsWithValidationError() {
 
@@ -115,7 +142,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     }
 
     /**
-     * Check that even when sending invalid request, Soap faults should get transformed to a valid error response
+     * Check that even when sending a totally nonsense invalid request, Soap faults should get transformed to a valid application error response
      */
     @Test
     public void testCreateQuestionWithInvalidXMLFailsWithApplicationError() {
@@ -135,11 +162,13 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
         public final String amne;
         public final String intygsId;
         public final String fkReferens;
+        public final String signeringsTidpunkt;
 
-        public QuestionData(String amne, String intygsId, String fkReferens) {
+        public QuestionData(String amne, String intygsId, String fkReferens, String signeringsTidpunkt) {
             this.amne = amne;
             this.intygsId = intygsId;
             this.fkReferens = fkReferens;
+            this.signeringsTidpunkt = signeringsTidpunkt;
         }
     }
 }
