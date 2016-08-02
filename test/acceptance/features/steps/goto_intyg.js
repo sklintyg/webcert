@@ -53,6 +53,7 @@ module.exports = function() {
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
         timeout: 700 * 1000
     }, function(intygstyp, status, callback) {
+        intyg.typ = intygstyp;
         getIntygElementRow(intygstyp, status, function(el) {
             gotoIntyg(intygstyp, status, el, function(err) {
                 browser.getCurrentUrl().then(function(text) {

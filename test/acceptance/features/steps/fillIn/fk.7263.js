@@ -24,7 +24,6 @@ var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = {
     fillIn: function(intyg) {
         browser.ignoreSynchronization = true;
-        logger.debug('eh');
         var promisesArr = [];
         //Ange smittskydd
         promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function() {

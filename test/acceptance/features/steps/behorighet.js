@@ -42,23 +42,31 @@ module.exports = function() {
             basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
         }, function(reason) {
             callback('FEL : ' + reason);
-        }).then(callback);
+        });
     });
 
-    this.Given(/^är kopieraknappen inte tillgänglig$/, function(callback) {
-        expect(basePage.copyBtn.isPresent()).to.become(false).then(function() {
+    this.Given(/^ska det finnas en knapp för att förnya intyget$/, function() {
+        return expect(fkIntygPage.fornyaBtn.isPresent()).to.become(true).then(function() {
+            logger.info('OK - Förnya knapp hittad');
+        }, function(reason) {
+            throw ('FEL : ' + reason);
+        });
+    });
+
+    this.Given(/^är kopieraknappen inte tillgänglig$/, function() {
+        return expect(basePage.copyBtn.isPresent()).to.become(false).then(function() {
             logger.info('OK - Kopiera knappen syns inte');
         }, function(reason) {
-            callback('FEL : ' + reason);
-        }).then(callback);
+            throw ('FEL : ' + reason);
+        });
     });
 
-    this.Given(/^synns Vidarebefodra knappen$/, function(callback) {
-        expect(basePage.copyBtn.isPresent()).to.become(true).then(function() {
+    this.Given(/^synns Vidarebefodra knappen$/, function() {
+        return expect(basePage.copyBtn.isPresent()).to.become(true).then(function() {
             logger.info('OK - Vidarebeforda knappen hittad');
         }, function(reason) {
-            callback('FEL : ' + reason);
-        }).then(callback);
+            throw ('FEL : ' + reason);
+        });
     });
 
     this.Given(/^väljer att visa sökfilter/, function(callback) {
