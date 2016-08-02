@@ -35,7 +35,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
     var sistaDatumForSvar = addDays(skickatTidpunkt, 5);
 
     var paminnelseMeddelandeId;
-    if (global.previousGuid) {
+    if (global.previousGuid && amneCode === 'PAMINN') {
         paminnelseMeddelandeId = '<paminnelseMeddelande-id>' + global.previousGuid + '</paminnelseMeddelande-id>';
     }
 
@@ -88,7 +88,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
         '<types:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</types:codeSystem>' +
         '<types:displayName>Försäkringskassan</types:displayName>' +
         '</part>' +
-        '<kontaktInfo>MAX antal kategorier. Automatiskt test </kontaktInfo>' +
+        '<kontaktInfo>Kontaktinfo</kontaktInfo>' +
         '</skickatAv>' +
         ((kompletteringar.length > 0) ? kompletteringar.join('\n') : '') +
         '<sistaDatumForSvar>' + testdataHelper.dateFormat(sistaDatumForSvar) + '</sistaDatumForSvar>' +
