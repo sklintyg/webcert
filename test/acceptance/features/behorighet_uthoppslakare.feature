@@ -65,7 +65,8 @@ Scenario: Ska få varning vid svar med nytt intyg
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska inte kunna komplettera med nytt intyg från webcert
    Och jag ska se en varningstext för svara med nytt intyg
-
+   
+@komplettering
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på en patient
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"

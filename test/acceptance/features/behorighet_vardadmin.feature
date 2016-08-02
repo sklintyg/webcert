@@ -29,6 +29,7 @@ Scenario: Kan inte signera Transportstyrelsens läkarintyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
+@diabetes
 Scenario: Kan inte signera Transportstyrelsens läkarintyg, diabetes
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
 	Och jag fyller i alla nödvändiga fält för intyget

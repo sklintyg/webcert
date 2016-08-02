@@ -153,6 +153,7 @@ var TsDiabetesUtkast = BaseUtkast._extend({
         //console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
         var promisesArr = [];
         var hypoglykemierEl = this.hypoglykemier;
+
         // a)
         if (hypoglykemierObj.a) {
             if (hypoglykemierObj.a === 'Ja') {
@@ -191,13 +192,16 @@ var TsDiabetesUtkast = BaseUtkast._extend({
         }
 
         // e)
-        if (hypoglykemierObj.e === 'Ja') {
-            promisesArr.push(hypoglykemierEl.e.yes.sendKeys(protractor.Key.SPACE).then(function() {
-                // e) antal episoder
-                return hypoglykemierEl.e.antalEpisoder.sendKeys(hypoglykemierObj.eAntalEpisoder);
-            }));
-        } else {
-            promisesArr.push(hypoglykemierEl.e.no.sendKeys(protractor.Key.SPACE));
+        if (hypoglykemierObj.e) {
+            if (hypoglykemierObj.e === 'Ja') {
+                console.log('e');
+                promisesArr.push(hypoglykemierEl.e.yes.sendKeys(protractor.Key.SPACE).then(function() {
+                    // e) antal episoder
+                    return hypoglykemierEl.e.antalEpisoder.sendKeys(hypoglykemierObj.eAntalEpisoder);
+                }));
+            } else {
+                promisesArr.push(hypoglykemierEl.e.no.sendKeys(protractor.Key.SPACE));
+            }
         }
 
         // f)

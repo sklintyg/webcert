@@ -84,8 +84,14 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^ska jag se kompletteringsfrågan på utkast\-sidan$/, function(callback) {
-        var fragaText = global.ursprungligtIntyg.guidcheck;
+    this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ, callback) {
+        var fragaText;
+
+        if (typ === 'intygs') {
+            fragaText = global.intyg.guidcheck;
+        } else {
+            fragaText = global.ursprungligtIntyg.guidcheck;
+        }
 
         console.log('Letar efter fråga som innehåller text: ' + fragaText);
         expect(fkUtkastPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
@@ -96,18 +102,18 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska jag se kompletteringsfrågan på intygs\-sidan$/, function(callback) {
+    // this.Given(/^ska jag se kompletteringsfrågan på intygs\-sidan$/, function(callback) {
 
-        var fragaText = global.intyg.guidcheck;
+    //     var fragaText = global.intyg.guidcheck;
 
-        console.log('Letar efter fråga som innehåller text: ' + fragaText);
-        expect(fkIntygPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
-            logger.info('OK - hittade fråga med text: ' + fragaText);
-            callback();
-        }, function(reason) {
-            callback('FEL : ' + reason);
-        });
-    });
+    //     console.log('Letar efter fråga som innehåller text: ' + fragaText);
+    //     expect(fkIntygPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
+    //         logger.info('OK - hittade fråga med text: ' + fragaText);
+    //         callback();
+    //     }, function(reason) {
+    //         callback('FEL : ' + reason);
+    //     });
+    // });
 
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function(callback) {
         var answerWithIntygBtnId = 'answerWithIntygBtn-' + global.intyg.messages[0].id;
@@ -122,7 +128,7 @@ module.exports = function() {
         to.eventually.be.ok.and.notify(callback);
     });
 
-    this.Given(/^jag ska kunna svara med textmeddelande/, function(callback) {
+    this.Given(/^jag ska kunna svara med textmeddelande/, function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
@@ -135,16 +141,15 @@ module.exports = function() {
                     });
             });
 
-
-        svaraPaKomplettering
+        return svaraPaKomplettering
             .then(function() {
                 logger.info('Kontrollerar att fråga är märkt som hanterad..');
                 expect(kompletteringsFraga.element(by.css('.qa-block-handled')).getText()).to.eventually.contain(textSvar)
                     .then(function(value) {
                         logger.info('OK - textsvar = ' + value);
                     }, function(reason) {
-                        callback('FEL - textsvar: ' + reason);
-                    }).then(callback);
+                        throw ('FEL - textsvar: ' + reason);
+                    });
 
             });
     });
