@@ -28,6 +28,12 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,29 +43,22 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
-import java.util.HashSet;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveAnswerResponderImplTest {
@@ -71,17 +70,20 @@ public class ReceiveAnswerResponderImplTest {
 
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
 
+    @Mock
+    private MailNotificationService mockMailNotificationService;
 
-    @Mock private MailNotificationService mockMailNotificationService;
+    @Mock
+    private FragaSvarService mockFragaSvarService;
 
-    @Mock private FragaSvarService mockFragaSvarService;
+    @Mock
+    private NotificationService mockNotificationService;
 
-    @Mock private NotificationService mockNotificationService;
+    @Mock
+    private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
 
-    @Mock private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
-
-    @InjectMocks private ReceiveAnswerResponderImpl receiveAnswerResponder;
-
+    @InjectMocks
+    private ReceiveAnswerResponderImpl receiveAnswerResponder;
 
     @Before
     public void integreradeEnheterExpectations() {
@@ -90,16 +92,51 @@ public class ReceiveAnswerResponderImplTest {
     }
 
     @Test
-    public void testReceiveAnswer() {
+    public void testReceiveAnswerToIntegratedUnit() {
 
-        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now());
+        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(), INTEGRERAD_ENHET,
+                Status.PENDING_INTERNAL_ACTION);
+        when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
+
+        ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
+        ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
+
+        // should place notification on queue
+        verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
+
+        assertNotNull(response);
+        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    }
+
+    @Test
+    public void testReceiveClosedAnswerToIntegratedUnit() {
+
+        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(), INTEGRERAD_ENHET,
+                Status.CLOSED);
+        when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
+
+        ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
+        ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
+
+        // should place (handled) notification on queue
+        verify(mockNotificationService).sendNotificationForAnswerHandled(any(FragaSvar.class));
+
+        assertNotNull(response);
+        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    }
+
+    @Test
+    public void testReceiveAnswerToNonIntegratedUnit() {
+
+        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(), EJ_INTEGRERAD_ENHET,
+                Status.PENDING_INTERNAL_ACTION);
         when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
 
         ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk.xml");
         ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
 
-        // should place notification on queue
-        verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
+        // should mail notification
+        verify(mockMailNotificationService).sendMailForIncomingAnswer(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
@@ -118,16 +155,17 @@ public class ReceiveAnswerResponderImplTest {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             AnswerFromFkType answer = unmarshaller
                     .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                            AnswerFromFkType.class).getValue();
+                            AnswerFromFkType.class)
+                    .getValue();
             return answer;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private FragaSvar buildFraga(Long id, String frageText, Amne amne, LocalDateTime fragaSkickadDatum) {
+    private FragaSvar buildFraga(Long id, String frageText, Amne amne, LocalDateTime fragaSkickadDatum, String vardpersonEnhetsId, Status status) {
         FragaSvar f = new FragaSvar();
-        f.setStatus(Status.PENDING_INTERNAL_ACTION);
+        f.setStatus(status);
         f.setAmne(amne);
         f.setExternReferens("<fk-extern-referens>");
         f.setInternReferens(id);
@@ -141,7 +179,7 @@ public class ReceiveAnswerResponderImplTest {
         f.setIntygsReferens(intygsReferens);
         f.setKompletteringar(new HashSet<Komplettering>());
         f.setVardperson(new Vardperson());
-        f.getVardperson().setEnhetsId(INTEGRERAD_ENHET);
+        f.getVardperson().setEnhetsId(vardpersonEnhetsId);
         f.getVardperson().setEnhetsnamn("WebCert-Integration Enhet 1");
         return f;
     }

@@ -47,7 +47,7 @@
       <!--Optional: -->
       <urn2:forskrivarkod>12345678</urn2:forskrivarkod>
       <urn2:enhet>
-        <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A03" />
+        <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A02" />
         <urn2:enhetsnamn>WebCert-Integration Enhet 1</urn2:enhetsnamn>
         <!--Optional: -->
         <urn2:vardgivare>
