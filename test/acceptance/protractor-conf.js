@@ -38,7 +38,7 @@ exports.config = {
     ],
     capabilities: {
         // shardTestFiles: true,
-        // maxInstances: 3,
+        // maxInstances: 15,
         browserName: 'firefox',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',

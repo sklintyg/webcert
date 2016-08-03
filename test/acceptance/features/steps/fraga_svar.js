@@ -129,16 +129,24 @@ module.exports = function() {
     });
 
     this.Given(/^jag ska kunna svara med textmeddelande/, function() {
+        browser.ignoreSynchronization = false;
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
         var svaraPaKomplettering = kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar)
-                    .then(function() {
-                        return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+                return browser.sleep(2000);
+            })
+            .then(function() {
+                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar);
 
-                    });
+            })
+            .then(function() {
+                return browser.sleep(1000);
+            })
+            .then(function() {
+                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+
             });
 
         return svaraPaKomplettering
