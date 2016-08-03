@@ -72,6 +72,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_PATIENT_POSTNUMMER = "postnummer";
     public static final String PARAM_PATIENT_POSTORT = "postort";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
+    private static final String PARAM_REFERENCE = "ref";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -104,8 +105,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling) {
-        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress, postnummer, postort, coherentJournaling);
+            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+            @QueryParam(PARAM_REFERENCE) String reference) {
+        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
+                postnummer, postort, coherentJournaling, reference);
     }
     // CHECKSTYLE:OFF ParameterNumber
 
@@ -130,7 +133,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling) {
+            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+            @QueryParam(PARAM_REFERENCE) String reference) {
 
         super.validateRedirectToIntyg(intygId);
 
@@ -161,6 +165,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
             if (StringUtils.isBlank(postort)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'postort'");
             }
+        }
+
+        if (!StringUtils.isBlank(reference)) {
+            getWebCertUserService().getUser().setReference(reference);
         }
 
         PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);

@@ -123,10 +123,14 @@ public class RouteIntegrationTest {
         LocalDateTime second = LocalDateTime.now().minusSeconds(10);
         LocalDateTime third = LocalDateTime.now().minusSeconds(5);
 
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", second, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", third, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT,
+                "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", second, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", third, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -138,9 +142,9 @@ public class RouteIntegrationTest {
             if (numberOfReceivedMessages == 2) {
                 List<NotificationStubEntry> notificationMessages = certificateStatusUpdateForCareResponderV2.getNotificationMessages();
                 for (NotificationStubEntry nse : notificationMessages) {
-                     if (nse.handelseTyp.equals(HandelsekodEnum.ANDRAT.value())) {
-                         assertEquals(third, nse.handelseTid);
-                     }
+                    if (nse.handelseTyp.equals(HandelsekodEnum.ANDRAT.value())) {
+                        assertEquals(third, nse.handelseTid);
+                    }
                 }
             }
             return (numberOfReceivedMessages == 2);
@@ -150,10 +154,14 @@ public class RouteIntegrationTest {
     @Test
     public void ensureAggregatorFiltersOutAndratMessagesWhenSigned() throws Exception {
 
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SIGNERAT, "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT,
+                "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT,
+                "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT,
+                "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SIGNERAT,
+                "luae_fs", SchemaVersion.VERSION_2);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -177,9 +185,12 @@ public class RouteIntegrationTest {
     @Test
     public void ensureRouting() throws Exception {
         // 2 messages
-        NotificationMessage luaefs1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage luaefs2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage luaefs3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage luaefs1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage luaefs2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage luaefs3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
 
         // 3 messages
         NotificationMessage fk1 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_SKAPAT);
@@ -187,8 +198,10 @@ public class RouteIntegrationTest {
         NotificationMessage fk3 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_SIGNERAT);
 
         // 2 messages
-        NotificationMessage luaefs4 = createNotificationMessage("intyg3", LocalDateTime.now(), HandelseType.INTYG_MAKULERAT, "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage luaefs5 = createNotificationMessage("intyg4", LocalDateTime.now(), HandelseType.INTYG_SKICKAT_FK, "luae_fs", SchemaVersion.VERSION_2);
+        NotificationMessage luaefs4 = createNotificationMessage("intyg3", LocalDateTime.now(), HandelseType.INTYG_MAKULERAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage luaefs5 = createNotificationMessage("intyg4", LocalDateTime.now(), HandelseType.INTYG_SKICKAT_FK, "luae_fs",
+                SchemaVersion.VERSION_2);
 
         sendMessage(luaefs1);
         sendMessage(fk1);
@@ -205,7 +218,6 @@ public class RouteIntegrationTest {
             return (numberOfReceivedMessagesV1 == 3 && numberOfReceivedMessagesV2 == 4);
         });
     }
-
 
     @Test
     public void ensureStubReceivedAllMessages() throws Exception {
@@ -250,9 +262,10 @@ public class RouteIntegrationTest {
         return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, "fk7263", SchemaVersion.VERSION_1);
     }
 
-    private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelseType handelseType, String intygsTyp, SchemaVersion schemaVersion) {
-        return new NotificationMessage(intygsId, intygsTyp, handelseTid,
-                handelseType, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0), schemaVersion);
+    private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelseType handelseType, String intygsTyp,
+            SchemaVersion schemaVersion) {
+        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0),
+                schemaVersion, "ref");
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
@@ -303,7 +316,8 @@ public class RouteIntegrationTest {
         // DatePeriodType and PartialDateType must be allowed
         intyg.getSvar().add(InternalConverterUtil.aSvar("")
                 .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, new Partial(DateTimeFieldType.year(), 1999))).build());
+                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, new Partial(DateTimeFieldType.year(), 1999)))
+                .build());
         return intyg;
     }
 }

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -32,9 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -52,6 +51,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -86,11 +86,14 @@ public class CopyUtkastServiceImplTest {
     @Mock
     private PUService mockPUService;
 
-    @Mock
+    @Mock(name = "createCopyUtkastBuilder")
     private CreateCopyUtkastBuilder mockUtkastBuilder;
 
-    @Mock
+    @Mock(name = "copyCompletionUtkastBuilder")
     private CopyCompletionUtkastBuilder copyCompletionUtkastBuilder;
+
+    @Mock(name = "createRenewalUtkastBuilder")
+    private CreateRenewalCopyUtkastBuilder createRenewalCopyUtkastBuilder;
 
     @Mock
     private NotificationService mockNotificationService;
@@ -147,22 +150,24 @@ public class CopyUtkastServiceImplTest {
 
     @Before
     public void expectSaveOfUtkast() {
-        when(mockUtkastRepository.save(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
-            @Override
-            public Utkast answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Utkast) args[0];
-            }
+        when(mockUtkastRepository.save(any(Utkast.class))).thenAnswer(invocation -> {
+            return (Utkast) invocation.getArguments()[0];
         });
     }
 
     @Test
     public void testCreateCopy() throws Exception {
 
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setReference(reference);
+        when(userService.getUser()).thenReturn(user);
+
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class))).thenReturn(resp);
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class))).thenReturn(resp);
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -173,10 +178,11 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verify(mockPUService).getPerson(PATIENT_SSN);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class));
+        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
-
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
@@ -185,6 +191,11 @@ public class CopyUtkastServiceImplTest {
 
     @Test
     public void testCreateCompletion() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setReference(reference);
+        when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
@@ -205,17 +216,54 @@ public class CopyUtkastServiceImplTest {
         verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
+    }
 
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+    @Test
+    public void testCreateRenewal() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setReference(reference);
+        when(userService.getUser()).thenReturn(user);
+
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class))).thenReturn(resp);
+
+        CreateRenewalCopyRequest copyReq = buildRenewalRequest();
+
+        CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
+
+        assertNotNull(renewalResponse);
+        assertEquals(INTYG_COPY_ID, renewalResponse.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, renewalResponse.getNewDraftIntygType());
+        assertEquals(INTYG_ID, renewalResponse.getOriginalIntygId());
+
+        verify(mockPUService).getPerson(PATIENT_SSN);
+        verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class));
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
     }
 
     @Test
     public void testCreateCopyWhenIntegrated() throws Exception {
 
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setReference(reference);
+        when(userService.getUser()).thenReturn(user);
+
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class))).thenReturn(resp);
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class))).thenReturn(resp);
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setDjupintegrerad(true);
@@ -227,11 +275,12 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verifyZeroInteractions(mockPUService);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class));
+        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class), anyString());
-
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
@@ -240,11 +289,16 @@ public class CopyUtkastServiceImplTest {
 
     @Test
     public void testCreateCopyWhenIntegratedAndWithUpdatedSSN() throws Exception {
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setReference(reference);
+        when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class))).thenReturn(resp);
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class))).thenReturn(resp);
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
@@ -257,11 +311,12 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verifyZeroInteractions(mockPUService);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class), any(boolean.class));
+        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class), anyString());
-
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
@@ -306,6 +361,10 @@ public class CopyUtkastServiceImplTest {
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
         return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);
+    }
+
+    private CreateRenewalCopyRequest buildRenewalRequest() {
+        return new CreateRenewalCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson);
     }
 
     // testCreateNewDraftCopyPUtjanstFailed()

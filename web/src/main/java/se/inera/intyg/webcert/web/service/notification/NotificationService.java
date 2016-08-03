@@ -33,7 +33,7 @@ public interface NotificationService {
     /**
      * Utkast created (HAN1).
      */
-    void sendNotificationForDraftCreated(Utkast utkast);
+    void sendNotificationForDraftCreated(Utkast utkast, String reference);
 
     /**
      * Utkast signed (HAN2).

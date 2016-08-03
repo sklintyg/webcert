@@ -46,7 +46,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
      * persistence.utkast.model.Utkast, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
      */
     @Override
-    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, SchemaVersion version) {
+    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, SchemaVersion version, String reference) {
 
         String intygsId = utkast.getIntygsId();
         String intygsTyp = utkast.getIntygsTyp();
@@ -63,7 +63,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
         String utkastJson = utkast.getModel();
 
-        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, version);
+        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, version, reference);
     }
 
 }

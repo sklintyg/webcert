@@ -54,8 +54,9 @@ public class NotificationMessageFactoryTest {
     public void testCreateNotificationMessageForUtkast() {
 
         Utkast utkast = createUtkast(INTYGS_ID);
+        final String reference = "ref";
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelseType.INTYGSUTKAST_SIGNERAT,
-                SchemaVersion.VERSION_1);
+                SchemaVersion.VERSION_1, reference);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -67,6 +68,7 @@ public class NotificationMessageFactoryTest {
         assertEquals("{model}", msg.getUtkast());
         assertNotNull(msg.getFragaSvar());
         assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
+        assertEquals(reference, msg.getReference());
     }
 
     private Utkast createUtkast(String intygId) {

@@ -96,8 +96,8 @@ public class NotificationServiceImpl implements NotificationService {
      * .persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForDraftCreated(Utkast utkast) {
-        createAndSendNotification(utkast, INTYGSUTKAST_SKAPAT);
+    public void sendNotificationForDraftCreated(Utkast utkast, String reference) {
+        createAndSendNotification(utkast, INTYGSUTKAST_SKAPAT, reference);
     }
 
     /*
@@ -332,6 +332,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelseType handelse) {
+        createAndSendNotification(utkast, handelse, null);
+    }
+
+    protected void createAndSendNotification(Utkast utkast, HandelseType handelse, String reference) {
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
         if (!version.isPresent()) {
@@ -339,7 +343,7 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get());
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(), reference);
         send(notificationMessage, utkast.getEnhetsId());
     }
 

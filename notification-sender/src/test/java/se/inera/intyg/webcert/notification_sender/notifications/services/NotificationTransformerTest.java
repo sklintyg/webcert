@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -29,7 +29,8 @@ import org.apache.camel.impl.DefaultMessage;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -67,8 +68,8 @@ public class NotificationTransformerTest {
     @Test
     public void testSend() throws Exception {
         // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1);
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -94,8 +95,8 @@ public class NotificationTransformerTest {
     @Test
     public void testSendBackwardsCompatibility() throws Exception {
         // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null);
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -120,8 +121,8 @@ public class NotificationTransformerTest {
 
     @Test
     public void testSchemaVersion2Transformation() throws Exception {
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_2, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -161,8 +162,8 @@ public class NotificationTransformerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1);
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
         transformer.process(message);

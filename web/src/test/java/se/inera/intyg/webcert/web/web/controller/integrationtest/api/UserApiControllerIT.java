@@ -76,6 +76,20 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 .body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 
+    @Test
+    public void testGetAnvandareWithReference() {
+
+        final String reference = "reference";
+
+        FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
+                "IFV1239877878-1042").lakare(true).reference(reference).build();
+        RestAssured.sessionId = getAuthSession(user);
+
+        given().expect().statusCode(200).when().get("api/anvandare").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("reference", equalTo(reference));
+    }
+
     /**
      * Verify that trying to change vardEnhet to an invalid one gives an error response.
      */

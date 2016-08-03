@@ -552,7 +552,7 @@ public class UtkastServiceImpl implements UtkastService {
             notificationService.sendNotificationForDraftChanged(utkast);
             break;
         case CREATED:
-            notificationService.sendNotificationForDraftCreated(utkast);
+            notificationService.sendNotificationForDraftCreated(utkast, null);
             break;
         case DELETED:
             notificationService.sendNotificationForDraftDeleted(utkast);
