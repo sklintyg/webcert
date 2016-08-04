@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global MODULE_CONFIG, wcMessages, console */
+/* global wcMessages, console */
 
 (function() {
     'use strict';
@@ -43,8 +43,24 @@
 
     $.ajaxSetup({ cache: false });
 
-    // before we do anything.. we need to get the user
+    // before we do anything.. we need to get the user and moduleConfig
     var user;
+    var moduleConfig;
+
+    var app = angular.module('webcert',
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap']);
+
+    app.value('networkConfig', {
+        defaultTimeout: 30000 // test: 1000
+    });
+
+    function getModuleConfig() {
+        return $.get('/api/config').then(function(data) {
+            moduleConfig = data;
+            app.constant('moduleConfig', moduleConfig);
+            return data;
+        });
+    }
 
     function getUser() {
         var restPath = '/api/anvandare';
@@ -64,14 +80,6 @@
             return data;
         });
     }
-
-
-    var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap']);
-
-    app.value('networkConfig', {
-        defaultTimeout: 30000 // test: 1000
-    });
 
     app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider',
         function($httpProvider, http403ResponseInterceptorProvider, $logProvider) {
@@ -218,93 +226,96 @@
         }]);
 
 
-    // Get a list of all modules to find all files to load.
-    getUser().then(function(data) {
-        user = data;
-        $.get('/api/modules/map').then(function(modules) {
+    // We need to have the moduleConfig available before loading modules
+    getModuleConfig().then(function(data) {
+        // Get a list of all modules to find all files to load.
+        getUser().then(function(data) {
+            user = data;
+            $.get('/api/modules/map').then(function(modules) {
 
 
-            var modulesIds = [];
-            var modulePromises = [];
-
-            if (user.jsMinified) {
-                modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js?' +
-                    MODULE_CONFIG.BUILD_NUMBER));
-                // All dependencies in module-deps.json are included in module.min.js
-                // All dependencies in app-deps.json are included in app.min.js
-
-            } else {
-                modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.js'));
-                modulePromises.push($.get('/web/webjars/common/webcert/module-deps.json'));
-                modulePromises.push($.get('/app/app-deps.json'));
-
-                // Prevent jQuery from appending cache buster to the url to make it easier to debug.
-                $.ajaxSetup({
-                    cache: true
-                });
-            }
-
-            angular.forEach(modules, function(module) {
-                modulesIds.push(module.id);
-                loadCssFromUrl(module.cssPath + '?' + MODULE_CONFIG.BUILD_NUMBER);
+                var modulesIds = [];
+                var modulePromises = [];
 
                 if (user.jsMinified) {
+                    modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js?' +
+                                moduleConfig.BUILD_NUMBER));
+                    // All dependencies in module-deps.json are included in module.min.js
+                    // All dependencies in app-deps.json are included in app.min.js
 
-                    if (window.console) {
-                        console.log('use mini is true! loading compressed modules');
-                    }
-
-                    modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + MODULE_CONFIG.BUILD_NUMBER));
-                    // All dependencies for the modules are included in module.min.js
                 } else {
-                    modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
-                    modulePromises.push($.get(module.dependencyDefinitionPath));
-                }
-            });
+                    modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.js'));
+                    modulePromises.push($.get('/web/webjars/common/webcert/module-deps.json'));
+                    modulePromises.push($.get('/app/app-deps.json'));
 
-            // Wait for all modules and module dependency definitions to load.
-            $.when.apply(this, modulePromises).then(function() {
-                var dependencyPromises = [];
-
-                // Only needed for development since all dependencies are included in other files.
-                if (!user.jsMinified) {
-                    if (window.console) {
-                        console.log('use mini is false! loading modules');
-                    }
-                    angular.forEach(arguments, function(data) {
-                        if (data !== undefined && data[0] instanceof Array) {
-                            angular.forEach(data[0], function(depdendency) {
-                                dependencyPromises.push(loadScriptFromUrl(depdendency));
-                            });
-                        }
+                    // Prevent jQuery from appending cache buster to the url to make it easier to debug.
+                    $.ajaxSetup({
+                        cache: true
                     });
                 }
 
-                // Wait for all dependencies to load (for production dependencies are empty which is resolved immediately)
-                $.when.apply(this, dependencyPromises).then(function() {
-                    angular.element(document).ready(function() {
+                angular.forEach(modules, function(module) {
+                    modulesIds.push(module.id);
+                    loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
 
-                        var allModules = [app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0));
+                    if (user.jsMinified) {
 
-                        // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
-                        if (user.jsLoggning) {
-                            addExceptionHandler();
+                        if (window.console) {
+                            console.log('use mini is true! loading compressed modules');
                         }
 
-                        // Everything is loaded, bootstrap the application with all dependencies.
-                        document.documentElement.setAttribute('ng-app', 'webcert');
-                        angular.bootstrap(document, allModules);
+                        modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + moduleConfig.BUILD_NUMBER));
+                        // All dependencies for the modules are included in module.min.js
+                    } else {
+                        modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
+                        modulePromises.push($.get(module.dependencyDefinitionPath));
+                    }
+                });
 
+                // Wait for all modules and module dependency definitions to load.
+                $.when.apply(this, modulePromises).then(function() {
+                    var dependencyPromises = [];
+
+                    // Only needed for development since all dependencies are included in other files.
+                    if (!user.jsMinified) {
+                        if (window.console) {
+                            console.log('use mini is false! loading modules');
+                        }
+                        angular.forEach(arguments, function(data) {
+                            if (data !== undefined && data[0] instanceof Array) {
+                                angular.forEach(data[0], function(depdendency) {
+                                    dependencyPromises.push(loadScriptFromUrl(depdendency));
+                                });
+                            }
+                        });
+                    }
+
+                    // Wait for all dependencies to load (for production dependencies are empty which is resolved immediately)
+                    $.when.apply(this, dependencyPromises).then(function() {
+                        angular.element(document).ready(function() {
+
+                            var allModules = [app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0));
+
+                            // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
+                            if (user.jsLoggning) {
+                                addExceptionHandler();
+                            }
+
+                            // Everything is loaded, bootstrap the application with all dependencies.
+                            document.documentElement.setAttribute('ng-app', 'webcert');
+                            angular.bootstrap(document, allModules);
+
+                        });
+                    }).fail(function(error) {
+                        if (window.console) {
+                            console.log(error);
+                        }
                     });
                 }).fail(function(error) {
                     if (window.console) {
                         console.log(error);
                     }
                 });
-            }).fail(function(error) {
-                if (window.console) {
-                    console.log(error);
-                }
             });
         });
     });

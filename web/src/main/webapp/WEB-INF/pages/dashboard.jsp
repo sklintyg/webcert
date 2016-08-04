@@ -44,15 +44,6 @@
 <link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css?<spring:message code="buildNumber" />"
       media="print">
 
-<script type="text/javascript">
-  // Global JS config/constants for this app, to be used by scripts
-  var MODULE_CONFIG = {
-    BUILD_NUMBER: '<spring:message code="buildNumber" />',
-    PP_HOST: '<spring:eval expression="@webcertProperties.getProperty(\'privatepractitioner.portal.registration.url\')" />',
-    DASHBOARD_URL: '<spring:eval expression="@webcertProperties.getProperty(\'certificate.view.url.base\')" />'
-  }
-</script>
-
 </head>
 <body>
 
