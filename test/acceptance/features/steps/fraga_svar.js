@@ -358,7 +358,7 @@ module.exports = function() {
                         global.user.enhetId,
                         'WebCert Enhet 1',
                         'Enhetsnamn',
-                        intyg.fragaId
+                        global.meddelanden[0].id
                     );
                     console.log(body);
                     client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {

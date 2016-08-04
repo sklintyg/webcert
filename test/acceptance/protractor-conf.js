@@ -69,10 +69,6 @@ exports.config = {
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
 
-        global.person = {};
-        global.intyg = {};
-        global.meddelanden = []; //{typ:'', id:''}
-        global.user = {};
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
 

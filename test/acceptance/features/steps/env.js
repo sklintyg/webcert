@@ -25,6 +25,12 @@ module.exports = function() {
 
     this.Before(function(scenario) {
         global.scenario = scenario;
+
+        //Återställ globala variabler
+        global.person = {};
+        global.intyg = {};
+        global.meddelanden = []; //{typ:'', id:''}
+        global.user = {};
     });
 
     //After scenario
