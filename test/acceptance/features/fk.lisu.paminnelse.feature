@@ -15,4 +15,4 @@ Scenario: Påminnelse
    Och Försäkringskassan ställer en "Komplettering" fråga om intyget
    Och Försäkringskassan ställer en "Paminnelse" fråga om intyget
    Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "2"
-   Och kan jag se påminnelse under hanterade frågor
+   Och ska jag se påminnelsen på intygssidan

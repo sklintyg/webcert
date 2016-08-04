@@ -47,7 +47,7 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och jag svarar på frågan
     Så ska statusuppdatering "HANFRA" skickas till vårdsystemet. Totalt: "1"
 
-@fråga-till-fk @notReady
+@fråga-till-fk
 Scenario: Statusuppdateringar vid fråga till FK
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

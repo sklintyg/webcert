@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals wcTestTools*/
+/*globals wcTestTools, JSON*/
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
 var helpers = require('../helpers');
-var helpers = helpers;
 
 function addDays(date, days) {
     date.setDate(date.getDate() + days);
@@ -32,21 +31,39 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
     var amneDisplayName = helpers.getSubjectFromCode(amneCode);
     var messageID = testdataHelper.generateTestGuid();
     var skickatTidpunkt = new Date();
-    var sistaDatumForSvar = addDays(skickatTidpunkt, 5);
 
-    var paminnelseMeddelandeId;
-    if (global.previousGuid && amneCode === 'PAMINN') {
-        paminnelseMeddelandeId = '<paminnelseMeddelande-id>' + global.previousGuid + '</paminnelseMeddelande-id>';
+
+
+    var svarPa = '';
+    var sistaDatumForSvar = '<sistaDatumForSvar>' + testdataHelper.dateFormat(addDays(skickatTidpunkt, 5)) + '</sistaDatumForSvar>';
+
+    if (amneCode) {
+        global.meddelanden.push({
+            id: messageID,
+            typ: 'Fråga',
+            amne: amneCode
+        });
+    } else {
+        // Om ämne inte skickas med till funktionen så behandlar vi det som 
+        // ett svarsmeddelande och kopierar ämne från tidigare
+        amneCode = global.meddelanden[0].amne;
+        svarPa = '<svarPa>' + '<core:meddelande-id>' + global.meddelanden[0].id + '</core:meddelande-id>' + '</svarPa>';
+        sistaDatumForSvar = '';
     }
 
-    var kompletteringar = [];
-    if (amneCode === 'KOMPLT') {
-        global.previousGuid = messageID;
+    console.log('global.meddelanden: ' + JSON.stringify(global.meddelanden));
 
+    var kompletteringar = '';
+    var paminnelseMeddelandeId = '';
+    if (global.meddelanden[0].id && amneCode === 'PAMINN') {
+        paminnelseMeddelandeId = '<paminnelseMeddelande-id>' + global.meddelanden[0].id + '</paminnelseMeddelande-id>';
+    } else if (amneCode === 'KOMPLT') {
+
+        kompletteringar = [];
         for (var k = 1; k <= 26; k++) {
             if (k === 24) {
-                continue;
-            } // Frage-id 24 finns inte
+                continue; // Frage-id 24 finns inte
+            }
             kompletteringar.push(
                 '<komplettering>' +
                 '<frage-id>' + k + '</frage-id>' +
@@ -54,9 +71,8 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
                 '</komplettering>'
             );
         }
+        kompletteringar = kompletteringar.join('\n');
     }
-
-    console.log('global.previousGuid: ' + global.previousGuid);
 
     return '<SendMessageToCare' +
         ' xmlns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1"' +
@@ -81,7 +97,8 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
         '</amne>' +
         '<rubrik>' + amneCode + '</rubrik>' +
         '<meddelande>' + message + '</meddelande>' +
-        ((paminnelseMeddelandeId) ? paminnelseMeddelandeId : '') +
+        paminnelseMeddelandeId +
+        svarPa +
         '<skickatAv>' +
         '<part>' +
         '<types:code>FKASSA</types:code>' +
@@ -90,7 +107,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
         '</part>' +
         '<kontaktInfo>Kontaktinfo</kontaktInfo>' +
         '</skickatAv>' +
-        ((kompletteringar.length > 0) ? kompletteringar.join('\n') : '') +
-        '<sistaDatumForSvar>' + testdataHelper.dateFormat(sistaDatumForSvar) + '</sistaDatumForSvar>' +
+        kompletteringar +
+        sistaDatumForSvar +
         '</SendMessageToCare>';
 };
