@@ -34,7 +34,7 @@ module.exports = function() {
     });
 
     //After scenario
-    this.After(function(scenario) {
+    this.After(function(scenario, callback) {
 
         console.log('Rensar local-storage');
         browser.executeScript('window.sessionStorage.clear();');
@@ -51,11 +51,19 @@ module.exports = function() {
 
         if (scenario.isFailed()) {
             logger.info('scenario failed');
-            return browser.takeScreenshot().then(function(png) {
-                var decodedImage = new Buffer(png, 'base64');
-                return scenario.attach(decodedImage, 'image/png');
+            browser.takeScreenshot().then(function(png) {
+                // var decodedImage = new Buffer(png, 'base64');
+                // return scenario.attach(decodedImage, 'image/png');
+
+                var decodedImage = new Buffer(png, 'base64').toString('binary');
+                scenario.attach(decodedImage, 'image/png', function(err) {
+                    callback(err);
+                });
+
             });
 
+        } else {
+            callback();
         }
         // else {
 

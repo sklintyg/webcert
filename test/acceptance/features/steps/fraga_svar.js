@@ -216,15 +216,28 @@ module.exports = function() {
         fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });
 
-    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function(callback) {
-        browser.refresh()
-            .then(function() {
-                return helpers.fetchMessageIds(intyg.typ);
-            })
-            .then(function() {
-                return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
-            })
-            .then(callback);
+    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function() {
+
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            var messageId;
+            console.log(global.meddelanden);
+            for (var k = 0; k < global.meddelanden.length; k++) {
+                if (global.meddelanden[k].typ === 'Fråga') {
+                    messageId = global.meddelanden[k].id;
+                }
+            }
+            return element(by.id('handleCheck-' + messageId)).sendKeys(protractor.Key.SPACE);
+        } else {
+            return browser.refresh()
+                .then(function() {
+                    return helpers.fetchMessageIds(intyg.typ);
+                })
+                .then(function() {
+                    return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+                });
+        }
+
 
 
     });

@@ -49,6 +49,13 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
         amneCode = global.meddelanden[0].amne;
         svarPa = '<svarPa>' + '<core:meddelande-id>' + global.meddelanden[0].id + '</core:meddelande-id>' + '</svarPa>';
         sistaDatumForSvar = '';
+
+        global.meddelanden.push({
+            id: messageID,
+            typ: 'Svar',
+            amne: amneCode
+        });
+
     }
 
     console.log('global.meddelanden: ' + JSON.stringify(global.meddelanden));
