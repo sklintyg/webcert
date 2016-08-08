@@ -22,3 +22,5 @@ web/node_modules/
 web/src/main/webapp/js/coverage/
 web/src/test/js/coverage/
 web/src/test/coverage/
+build
+.gradle
