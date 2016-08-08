@@ -27,18 +27,57 @@ var statusuppdateringarRows;
 
 var handelseRegex = /(HAN\d{1,2})/g;
 
+
+function selectTable(handelsekod) {
+    var res = handelsekod.match(handelseRegex);
+    if (res) {
+        if (res.length > 1) {
+            logger.error('ERROR: More than one "händelse" found.');
+            return;
+        }
+        // console.log('Database: webcert_requests.requests');
+        return 'webcert_requests.requests';
+    } else {
+        console.log('Database: webcert_requests.statusupdates_2');
+        return 'webcert_requests.statusupdates_2';
+    }
+}
+
+function selectExtension(handelsekod) {
+    var res = handelsekod.match(handelseRegex);
+    if (res) {
+        if (res.length > 1) {
+            throw ('ERROR: More than one "händelse" found. Cannot select determine extension');
+        }
+        return 'utlatandeExtension';
+    } else {
+        return 'intygsExtension';
+    }
+}
+
+function selectHandelseTidName(handelsekod) {
+    var res = handelsekod.match(handelseRegex);
+    if (res) {
+        return 'handelsetidpunkt';
+    } else {
+        return 'handelseTid';
+    }
+}
+
+
 function getNotificationEntries(intygsId, handelsekod, numEvents) {
     // Select table and extension based on if 'händelse' contains the pattern HAN{1-2digit} or NOT
     var table = selectTable(handelsekod);
     var extensionType = selectExtension(handelsekod);
+    var handelseTidName = selectHandelseTidName(handelsekod);
 
     var databaseTable = table;
     var query =
-        'SELECT intygsExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, handelseTid' +
+        'SELECT ' + extensionType + ', handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName +
         ' FROM ' + databaseTable +
         ' WHERE ' + databaseTable + '.handelseKod = "' + handelsekod + '"' +
         ' AND ' + databaseTable + '.' + extensionType + ' = "' + intygsId + '"' +
-        ' ORDER BY handelseTid DESC;';
+        ' ORDER BY ' + handelseTidName + ' DESC;';
 
     console.log('query: ' + query);
 
@@ -82,36 +121,6 @@ function waitForCount(intygsId, handelsekod, numEvents, cb) {
         cb(err);
 
     });
-}
-
-function selectTable(handelsekod) {
-    var res = handelsekod.match(handelseRegex);
-    if (res) {
-        if (res.length > 1) {
-            logger.error('ERROR: More than one "händelse" found.');
-            return;
-        }
-        // console.log('Database: webcert_requests.requests');
-        return 'webcert_requests.requests';
-    } else {
-        console.log('Database: webcert_requests.statusupdates_2');
-        return 'webcert_requests.statusupdates_2';
-    }
-}
-
-function selectExtension(handelsekod) {
-    var res = handelsekod.match(handelseRegex);
-    if (res) {
-        if (res.length > 1) {
-            logger.error('ERROR: More than one "händelse" found. Cannot select determine extension');
-            return;
-        }
-        // console.log('Extension: utlatandeExtension');
-        return 'utlatandeExtension';
-    } else {
-        // console.log('Extension: intygsExtension');
-        return 'intygsExtension';
-    }
 }
 
 module.exports = function() {
