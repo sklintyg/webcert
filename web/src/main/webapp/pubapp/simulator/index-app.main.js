@@ -130,7 +130,7 @@ angular.module('rhsIndexApp')
             }
             var paminnelseMeddelandeId = '';
             if (q.paminnelseMeddelandeId != '') {
-                paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + q.pamminelseMeddelandeId + '</urn1:paminnelseMeddelande-id>';
+                paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + q.paminnelseMeddelandeId + '</urn1:paminnelseMeddelande-id>';
             }
             var rubrik = '';
             if (q.rubrik != '') {
