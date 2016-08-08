@@ -37,6 +37,9 @@ import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.intygstyper.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.intygstyper.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -62,7 +65,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
 
 @Service
@@ -71,8 +73,8 @@ public class ArendeServiceImpl implements ArendeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
-    private static final List<String> BLACKLISTED = Arrays.asList(CertificateTypes.FK7263.toString(), CertificateTypes.TSBAS.toString(),
-            CertificateTypes.TSDIABETES.toString());
+    private static final List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
+            TsDiabetesEntryPoint.MODULE_ID);
 
     private static final List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
             ArendeAmne.ARBTID,

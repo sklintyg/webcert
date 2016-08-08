@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
@@ -35,7 +36,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @Component
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
@@ -61,7 +61,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     public FragorOchSvar createFragorOchSvar(String intygsId, String intygstyp) {
         FragorOchSvar fs = null;
 
-        if (CertificateTypes.FK7263.name().equalsIgnoreCase(intygstyp)) {
+        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
             fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
         } else {
             fs = performArendeCount(arendeRepository.findByIntygsId(intygsId));

@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.integration.builder;
 
+import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
+
 import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
@@ -31,8 +33,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 public final class SendMessageToRecipientTypeBuilder {
-
-    private static final String AMNE_CODE_SYSTEM = "ffa59d8f-8d7e-46ae-ac9e-31804e8e8499";
 
     private SendMessageToRecipientTypeBuilder() {
     }
@@ -60,7 +60,7 @@ public final class SendMessageToRecipientTypeBuilder {
     private static Amneskod buildAmne(Arende arende) {
         Amneskod amneskod = new Amneskod();
         amneskod.setCode(arende.getAmne().name());
-        amneskod.setCodeSystem(AMNE_CODE_SYSTEM);
+        amneskod.setCodeSystem(KV_AMNE_CODE_SYSTEM);
         amneskod.setDisplayName(arende.getAmne().getDescription());
         return amneskod;
     }

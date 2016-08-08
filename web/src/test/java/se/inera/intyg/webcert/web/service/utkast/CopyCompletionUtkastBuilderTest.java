@@ -60,7 +60,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyCompletionUtkastBuilderTest {
@@ -216,7 +215,7 @@ public class CopyCompletionUtkastBuilderTest {
 
     @Test
     public void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
-        final String intygsTyp = CertificateTypes.LUSE.toString();
+        final String intygsTyp = "luse";
         final String meddelandeId = "meddelandeId";
         final String referensId = UUID.randomUUID().toString();
         Arende arende = new Arende();
@@ -246,7 +245,7 @@ public class CopyCompletionUtkastBuilderTest {
 
     @Test
     public void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
-        final String intygsTyp = CertificateTypes.LISU.toString();
+        final String intygsTyp = "lisu";
         final String meddelandeId = "meddelandeId";
         final String referensId = UUID.randomUUID().toString();
         Arende arende = new Arende();

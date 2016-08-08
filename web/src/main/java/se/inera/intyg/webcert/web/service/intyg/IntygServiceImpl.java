@@ -46,6 +46,11 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.intygstyper.lisu.support.LisuEntryPoint;
+import se.inera.intyg.intygstyper.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.intygstyper.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -73,7 +78,6 @@ import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
 
 /**
@@ -84,8 +88,8 @@ public class IntygServiceImpl implements IntygService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
-    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(CertificateTypes.LISU.toString(), CertificateTypes.LUSE.toString(),
-            CertificateTypes.LUAE_NA.toString(), CertificateTypes.LUAE_FS.toString());
+    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(LisuEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID);
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
@@ -306,7 +310,7 @@ public class IntygServiceImpl implements IntygService {
         }
 
         // Of course we have to handle FK7263 as a special case.
-        if (intyg.getTyp().equals(CertificateTypes.FK7263.toString())) {
+        if (intyg.getTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
             LOG.info("Set fragaSvar komplettering as handled for {}", intyg.getId());
             fragaSvarService.closeQuestionAsHandled(Long.parseLong(relation.getMeddelandeId()));
         } else if (FK_NEXT_GENERATION.contains(intyg.getTyp().toLowerCase())) {

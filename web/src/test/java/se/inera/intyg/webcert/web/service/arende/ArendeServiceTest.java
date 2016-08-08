@@ -49,7 +49,6 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.*;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -344,7 +343,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void createQuestionInvalidCertificateTypeTest() {
         Utkast utkast = new Utkast();
         utkast.setSignatur(new Signatur());
-        utkast.setIntygsTyp(CertificateTypes.FK7263.toString());
+        utkast.setIntygsTyp("fk7263");
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         try {
             service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");

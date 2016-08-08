@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.webcert.web.web.controller.util.CertificateTypes.FK7263;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 /**
@@ -54,7 +53,7 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
 
     private static final String[] GRANTED_ROLES = new String[] {AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE };
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
-    private static final String DEFAULT_TYPE = FK7263.toString();
+    private static final String DEFAULT_TYPE = Fk7263EntryPoint.MODULE_ID;
 
     private String urlFragmentTemplate;
 

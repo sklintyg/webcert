@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.common.client.converter;
 
+import static se.inera.intyg.common.support.Constants.KV_PART_CODE_SYSTEM;
+
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.PartKod;
@@ -31,8 +33,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Part;
 
 public final class SendCertificateToRecipientTypeConverter {
-
-    private static final String MOTTAGARE_CODE_SYSTEM = "769bb12b-bd9f-4203-a5cd-fd14f2eb3b80";
 
     private SendCertificateToRecipientTypeConverter() {
     }
@@ -58,7 +58,7 @@ public final class SendCertificateToRecipientTypeConverter {
         PartKod partKod = PartKod.fromValue(recipient);
         Part part = new Part();
         part.setCode(partKod.name());
-        part.setCodeSystem(MOTTAGARE_CODE_SYSTEM);
+        part.setCodeSystem(KV_PART_CODE_SYSTEM);
         part.setDisplayName(partKod.getDisplayName());
         return part;
     }

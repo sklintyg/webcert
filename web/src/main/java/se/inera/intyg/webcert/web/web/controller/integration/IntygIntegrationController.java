@@ -23,17 +23,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,13 +35,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParameter;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -146,10 +138,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         if (typ == null) {
-            typ = utkast != null ? utkast.getIntygsTyp() : CertificateTypes.FK7263.toString();
+            typ = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
         }
 
-        if (!typ.equals(CertificateTypes.FK7263.toString())) {
+        if (!typ.equals(Fk7263EntryPoint.MODULE_ID)) {
             if (StringUtils.isBlank(fornamn)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'fornamn'");
             }

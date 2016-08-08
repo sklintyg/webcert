@@ -19,29 +19,21 @@
 
 package se.inera.intyg.webcert.web.converter;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.ImmutableSet;
+
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.FkKontaktType;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringType;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -139,7 +131,7 @@ public class FragaSvarConverter {
     private IntygsReferens convertToIntygsReferens(LakarutlatandeEnkelType source) {
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(source.getLakarutlatandeId());
-        intygsReferens.setIntygsTyp("fk7263");
+        intygsReferens.setIntygsTyp(Fk7263EntryPoint.MODULE_ID);
 
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
