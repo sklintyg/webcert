@@ -94,7 +94,6 @@ public class IntygResource {
     @Autowired
     private IntygModuleFacade moduleFacade;
 
-
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -104,7 +103,7 @@ public class IntygResource {
      * used in production code.
      *
      * @param intygsTyp
-     *      SIT-intyg: luae_fs, luae_na, luse, lisu
+     *            SIT-intyg: luae_fs, luae_na, luse, lisu
      * @return
      */
     @GET
@@ -145,14 +144,10 @@ public class IntygResource {
     @Path("/signingunits")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSigningUnits() {
-        return Response.ok(utkastRepository.findAll()
+        return Response.ok(utkastRepository.findAllUnitsWithSentCertificate()
                 .stream()
-                .filter(utkast -> utkast.getSignatur() != null)
-                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
-                .map(utkast -> new SigningUnit(utkast.getEnhetsId(), utkast.getEnhetsNamn()))
-                .distinct()
-                .collect(Collectors.toList())
-        ).build();
+                .map(arr -> new SigningUnit((String) arr[0], (String) arr[1]))
+                .collect(Collectors.toList())).build();
     }
 
     /**
@@ -167,10 +162,8 @@ public class IntygResource {
     public Response getAllSignedAndSentIntygOnUnit(@PathParam("enhetsId") String enhetsId) {
         List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.SIGNED));
         return Response.ok(all.stream()
-                .filter(utkast -> utkast.getSignatur() != null)
                 .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
-                .collect(Collectors.toList())
-        ).build();
+                .collect(Collectors.toList())).build();
     }
 
     @DELETE
@@ -203,9 +196,9 @@ public class IntygResource {
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraftsByEnhet(@PathParam("enhetsId") String enhetsId) {
-        List<String> enhetsIds = new ArrayList<String>();
+        List<String> enhetsIds = new ArrayList<>();
         enhetsIds.add(enhetsId);
-        List<UtkastStatus> statuses = new ArrayList<UtkastStatus>();
+        List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
         statuses.add(UtkastStatus.DRAFT_COMPLETE);
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);
@@ -251,8 +244,8 @@ public class IntygResource {
         utkast.setStatus(intygContents.getUtkastStatus());
         utkast.setVidarebefordrad(false);
         if (utkast.getStatus() == UtkastStatus.SIGNED) {
-            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model, "ruffel",
-                    "fusk");
+            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model,
+                    "ruffel", "fusk");
             utkast.setSignatur(signatur);
         }
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
@@ -406,7 +399,7 @@ public class IntygResource {
         }
 
         void setContents(JsonNode contents) {
-             this.contents = contents;
+            this.contents = contents;
         }
 
         boolean isRevoked() {
