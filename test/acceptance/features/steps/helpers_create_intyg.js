@@ -29,7 +29,7 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var rUtil = wcTestTools.restUtil;
 var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
 
-function createIntygWithRest(intygOptions, cb) {
+function createIntygWithRest(intygOptions) {
     var userObj = {
         fornamn: user.fornamn,
         efternamn: user.efternamn,
@@ -39,23 +39,22 @@ function createIntygWithRest(intygOptions, cb) {
         forskrivarKod: user.forskrivarKod
     };
 
-    rUtil.login(userObj).then(function(data) {
+    return rUtil.login(userObj).then(function(data) {
         logger.debug('Login OK');
         return Promise.resolve('SUCCESS');
     }, function(error) {
-        cb(error);
+        throw (error);
     }).then(function() {
         rUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
             logger.info('Skapat intyg via REST-api');
-            cb();
         }, function(error) {
-            cb(error);
+            throw (error);
         });
     });
 }
 
 
-function createTsIntyg(typ, status, cb) {
+function createTsIntyg(typ, status) {
     var standardUser = global.user;
 
     var userObj = {
@@ -65,20 +64,14 @@ function createTsIntyg(typ, status, cb) {
         enhetId: standardUser.enhetId,
         lakare: true
     };
-    loginHelpers.logInAsUserRole(userObj, 'Läkare')
-        .and.notify(function() {
+    return loginHelpers.logInAsUserRole(userObj, 'Läkare')
+        .then(function() {
             sokSkrivIntygPage.selectPersonnummer(person.id);
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
             sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
             global.intyg = require('./helpers').generateIntygByType(typ);
-            require('./fillIn').fillIn(intyg, function() {
-                fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
-                if (status === 'Mottaget') {
-                    fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
-                    fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE);
-                    fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
-                }
-
+            return require('./fillIn').fillIn(intyg).then(function() {
+                var promiseArr = [];
                 var userObj = {
                     fornamn: standardUser.fornamn,
                     efternamn: standardUser.efternamn,
@@ -88,24 +81,31 @@ function createTsIntyg(typ, status, cb) {
                     origin: standardUser.origin
                 };
 
-                loginHelpers.logInAsUserRole(userObj, standardUser.roleName).and.notify(cb);
+                promiseArr.push(fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE));
+                if (status === 'Mottaget') {
+                    promiseArr.push(fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE));
+                    promiseArr.push(fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE));
+                    promiseArr.push(fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
+                }
+                promiseArr.push(loginHelpers.logInAsUserRole(userObj, standardUser.roleName));
+                return Promise.all(promiseArr);
             });
         });
 }
 
 module.exports = {
-    createIntygWithStatus: function(typ, status, cb) {
+    createIntygWithStatus: function(typ, status) {
         //TODO, Hantera ts-intyg
 
         intyg.id = testdataHelper.generateTestGuid();
         logger.debug('intyg.id = ' + intyg.id);
 
         if (typ.indexOf('Transportstyrelsen') > -1) {
-            createTsIntyg(typ, status, cb);
+            return createTsIntyg(typ, status);
 
         } else if (typ === 'Läkarintyg FK 7263') {
 
-            createIntygWithRest({
+            return createIntygWithRest({
                 personnr: person.id,
                 patientNamn: 'Test Testsson',
                 //issuerId : '',
@@ -120,10 +120,10 @@ module.exports = {
                 intygId: intyg.id,
                 sent: (status === 'Mottaget' || status === 'Makulerat'),
                 revoked: (status === 'Makulerat')
-            }, cb);
+            });
         } else if (typ === 'Läkarutlåtande för sjukersättning') {
 
-            createIntygWithRest({
+            return createIntygWithRest({
                 personnr: person.id,
                 patientNamn: 'Test Testsson',
                 issuer: user.hsaId,
@@ -136,10 +136,10 @@ module.exports = {
                 intygId: intyg.id,
                 sent: (status === 'Mottaget' || status === 'Makulerat'),
                 revoked: (status === 'Makulerat')
-            }, cb);
+            });
 
         } else {
-            cb('TODO: Hantera fall då det inte redan finns något intyg att använda');
+            throw ('TODO: Hantera fall då det inte redan finns något intyg att använda');
         }
     }
 };

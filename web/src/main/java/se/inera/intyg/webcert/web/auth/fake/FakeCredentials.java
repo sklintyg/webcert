@@ -39,6 +39,7 @@ public class FakeCredentials implements Serializable {
     private String befattningsKod;
     private String forskrivarKod;
     private String origin = WebCertUserOriginType.NORMAL.name();
+    private String reference;
 
     public FakeCredentials() {
     }
@@ -51,10 +52,8 @@ public class FakeCredentials implements Serializable {
         this.befattningsKod = builder.befattningsKod;
         this.forskrivarKod = builder.forskrivarKod;
         this.origin = builder.origin;
+        this.reference = builder.reference;
     }
-
-    // ~ Getter and setters
-    // ~====================================================================================
 
     public String getBefattningsKod() {
         return befattningsKod;
@@ -124,8 +123,13 @@ public class FakeCredentials implements Serializable {
         this.origin = origin;
     }
 
-    // ~ Public methods
-    // ~====================================================================================
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
     @Override
     public String toString() {
@@ -134,12 +138,9 @@ public class FakeCredentials implements Serializable {
                 + ", fornamn='" + fornamn + '\''
                 + ", efternamn='" + efternamn + '\''
                 + ", lakare=" + lakare
+                + ", reference=" + getReference()
                 + '}';
     }
-
-
-    // ~ Builder class
-    // ~====================================================================================
 
     public static class FakeCredentialsBuilder {
         private String hsaId;
@@ -149,6 +150,7 @@ public class FakeCredentials implements Serializable {
         private String befattningsKod;
         private String forskrivarKod;
         private String origin;
+        private String reference;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
@@ -185,6 +187,11 @@ public class FakeCredentials implements Serializable {
             return this;
         }
 
+        public FakeCredentialsBuilder reference(String reference) {
+            this.reference = reference;
+            return this;
+        }
+
         public FakeCredentialsBuilder origin(String origin) {
             this.origin = origin;
             return this;
@@ -193,6 +200,7 @@ public class FakeCredentials implements Serializable {
         public FakeCredentials build() {
             return new FakeCredentials(this);
         }
+
     }
 
 }

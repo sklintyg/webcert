@@ -19,16 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.user.dto;
 
-import se.inera.intyg.common.security.common.model.IntygUser;
-import se.inera.intyg.common.security.common.model.UserDetails;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import se.inera.intyg.common.security.common.model.IntygUser;
 
 /**
  * @author andreaskaltenbach
  */
-public class WebCertUser extends IntygUser implements UserDetails {
+public class WebCertUser extends IntygUser {
 
     private static final long serialVersionUID = -2624303818412468774L;
 

@@ -284,7 +284,10 @@ var FkUtkast = BaseUtkast._extend({
         } else if (prognos.val === 'Går inte att bedöma') {
             return this.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE).then(function() {
                 if (prognos.fortydligande) {
-                    return prognosFortydligande.sendKeys(prognos.fortydligande);
+                    return browser.sleep(1500) // Vänta på animering
+                        .then(function() {
+                            return prognosFortydligande.sendKeys(prognos.fortydligande);
+                        });
                 } else {
                     return Promise.resolve('Inget förtydligande');
                 }

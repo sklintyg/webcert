@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('Skapa ärende luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId;
+    var meddelandeId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -42,6 +42,7 @@ describe('Skapa ärende luse intyg', function() {
             'revoked':false
         };
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData);
     });
 
@@ -72,14 +73,12 @@ describe('Skapa ärende luse intyg', function() {
     describe('send new arende', function() {
         it('open new arende panel', function() {
             LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
-                //console.log(1,element(by.repeater('arendeListItem in arendeList').row(0)));
-                //console.log(2,element.all(by.repeater('arendeListItem in arendeList').getText()));
                 var first = element.all(by.model('arendeListItem.arende.fraga.vidarebefordrad')).first();
                 first.getAttribute('id').then(function(id) {
                     var firstPart = id.substring(0,27);
                     var secondPart = id.substring(27);
                     expect(firstPart).toBe('unhandled-mark-as-notified-');
-                    arendeId = secondPart;
+                    meddelandeId = secondPart;
                 });
                 expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
             });

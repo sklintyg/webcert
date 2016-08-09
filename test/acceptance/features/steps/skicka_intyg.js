@@ -18,14 +18,14 @@
  */
 
 /* globals pages */
-/* globals browser, intyg, logger, protractor */
+/* globals browser, intyg, logger, protractor, Promise */
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 
 module.exports = function() {
 
-    this.Given(/^jag skickar intyget till Transportstyrelsen/, function(callback) {
+    this.Given(/^jag skickar intyget till Transportstyrelsen/, function() {
 
         //Fånga intygets id
         browser.getCurrentUrl().then(function(text) {
@@ -33,26 +33,27 @@ module.exports = function() {
             logger.info('Intygsid: ' + intyg.id);
         });
 
-        fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
-        callback();
+        Promise.all([
+            fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE),
+            fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE),
+            fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE)
+        ]);
     });
 
-    this.Given(/^jag skickar intyget till Försäkringskassan$/, function(callback) {
+    this.Given(/^jag skickar intyget till Försäkringskassan$/, function() {
 
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
             intyg.id = intyg.id.split('?')[0];
         });
 
-        fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
-            fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE).then(function() {
-                fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE).then(callback);
+        return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
+            return fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE).then(function() {
+                return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
             });
         });
 
-        callback();
+        // callback();
     });
 
 };

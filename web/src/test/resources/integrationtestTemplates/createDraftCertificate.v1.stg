@@ -18,7 +18,7 @@ xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificat
                <urn1:mellannamn>Tolv</urn1:mellannamn>
             </urn1:patient>
             <urn1:skapadAv>
-               <urn1:personal-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1B02"/>
+               <urn1:personal-id root="1.2.752.129.2.1.4.1" extension="$data.lakareHsaId$"/>
                <urn1:fullstandigtNamn>Journa La System</urn1:fullstandigtNamn>
                <urn1:enhet>
                   <urn1:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A03"/>

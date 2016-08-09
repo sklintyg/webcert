@@ -19,11 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface NotificationMessageFactory {
 
-    NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, SchemaVersion version);
+    NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version, String reference);
 
 }

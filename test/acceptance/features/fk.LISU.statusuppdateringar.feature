@@ -17,6 +17,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
 
    När jag skickar intyget till Försäkringskassan
    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+   Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
 @makulera
 Scenario: Statusuppdateringar då intyg makuleras
@@ -26,44 +27,53 @@ Scenario: Statusuppdateringar då intyg makuleras
 
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
 @radera
 Scenario: Statusuppdateringar då intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
-#@fråga-från-fk @notReady
-#Scenario: Statusuppdateringar vid fråga från FK
-    #När jag fyller i alla nödvändiga fält för intyget
-    #Och jag signerar intyget
-    #Och jag skickar intyget till Försäkringskassan
-    #Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+@fråga-från-fk
+Scenario: Statusuppdateringar vid fråga från FK
+    När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag skickar intyget till Försäkringskassan
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
-    #När Försäkringskassan skickar ett "Kontakt" meddelande på intyget
-    #Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
+    När Försäkringskassan skickar ett "Kontakt" meddelande på intyget
+    Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 1, hanterade frågor 0,antal svar 0, hanterade svar 0
 
-    # När jag går in på intygsutkastet via djupintegrationslänk
-    # Och jag svarar på frågan
-    # Så ska statusuppdatering "HANFRA" skickas till vårdsystemet. Totalt: "1"
+    När jag går in på intygsutkastet via djupintegrationslänk
+    Och jag svarar på frågan
+    Så ska statusuppdatering "HANFRA" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 1, hanterade frågor 1,antal svar 0, hanterade svar 0
 
-# @fråga-till-fk @notReady
-# Scenario: Statusuppdateringar vid fråga till FK
-#    När jag fyller i alla nödvändiga fält för intyget
-#    Och jag signerar intyget
-#    Och jag skickar intyget till Försäkringskassan
+@fråga-till-fk
+Scenario: Statusuppdateringar vid fråga till FK
+    När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag skickar intyget till Försäkringskassan
 
-#    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
-#    Och jag går in på intygsutkastet via djupintegrationslänk
-#    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
-#    Så ska statusuppdatering "HAN8" skickas till vårdsystemet. Totalt: "1"
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+    Så ska statusuppdatering "NYFRTM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
-#    Och Försäkringskassan skickar ett svar
-#    Så ska statusuppdatering "HAN7" skickas till vårdsystemet. Totalt: "1"
+    Och Försäkringskassan skickar ett svar
+    Så ska statusuppdatering "NYSVFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-#    Och jag markerar svaret från Försäkringskassan som hanterat
-#    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
+    Och jag markerar svaret från Försäkringskassan som hanterat
+    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
 # @komplettering @notReady
 # Scenario: Statusuppdateringar vid komplettering med nytt intyg

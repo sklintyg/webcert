@@ -23,8 +23,22 @@
 module.exports = function() {
     this.setDefaultTimeout(200 * 1000);
 
+    this.Before(function(scenario) {
+        global.scenario = scenario;
+
+        //Återställ globala variabler
+        global.person = {};
+        global.intyg = {};
+        global.meddelanden = []; //{typ:'', id:''}
+        global.user = {};
+    });
+
     //After scenario
     this.After(function(scenario, callback) {
+
+        console.log('Rensar local-storage');
+        browser.executeScript('window.sessionStorage.clear();');
+        browser.executeScript('window.localStorage.clear();');
 
         //Ska intyg rensas bort efter scenario?
         var rensaBortIntyg = true;
@@ -38,39 +52,33 @@ module.exports = function() {
         if (scenario.isFailed()) {
             logger.info('scenario failed');
             browser.takeScreenshot().then(function(png) {
-                //var base64Image = new Buffer(png, 'binary').toString('base64');
+                // var decodedImage = new Buffer(png, 'base64');
+                // return scenario.attach(decodedImage, 'image/png');
+
                 var decodedImage = new Buffer(png, 'base64').toString('binary');
                 scenario.attach(decodedImage, 'image/png', function(err) {
                     callback(err);
                 });
+
             });
 
         } else {
-
-            if (process.env.DATABASE_PASSWORD && rensaBortIntyg) {
-                callback();
-                /*
-                Bortkommenterad pga att vi behöver några intyg att arbeta med.
-                Vi kan aktivera denna funktion sen när vi löst problemet med att skapa 
-                nya intyg då de behövs
-                */
-                // require('./dbActions').removeCert(global.intyg.id, callback);
-            } else {
-                logger.info('Behåller skapat testintyg');
-                callback();
-            }
+            callback();
         }
-    });
+        // else {
 
-    this.Before(function(scenario, callback) {
-        global.scenario = scenario;
-        callback();
-    });
+        //     if (process.env.DATABASE_PASSWORD && rensaBortIntyg) {
 
-    this.After(function(scenario) {
-        console.log('Rensar local-storage');
-        browser.executeScript('window.sessionStorage.clear();');
-        browser.executeScript('window.localStorage.clear();');
+        //         // Bortkommenterad pga att vi behöver några intyg att arbeta med.
+        //         // Vi kan aktivera denna funktion sen när vi löst problemet med att skapa 
+        //         // nya intyg då de behövs
+
+        //         // require('./dbActions').removeCert(global.intyg.id, callback);
+        //     } else {
+        //         logger.info('Behåller skapat testintyg');
+        //     }
+        // }
+
     });
 
     logger.on('logging', function(transport, level, msg, meta) {

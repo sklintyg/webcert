@@ -58,11 +58,11 @@ var LuseUtkast = BaseSmiUtkast._extend({
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_1')),
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_4')),
+                checkbox: element(by.id('formly_1_date_journaluppgifter_2')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             anhorigBeskrivning: {
@@ -70,13 +70,12 @@ var LuseUtkast = BaseSmiUtkast._extend({
                 datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
             },
             annat: {
-                beskrivning: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_7')),
-                checkbox: element(by.id('formly_1_date_annatGrundForMU_6')),
+                beskrivning: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_5')),
+                checkbox: element(by.id('formly_1_date_annatGrundForMU_4')),
                 datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
             },
             kannedomOmPatient: {
-                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]')),
-                checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
+                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input'))
             }
         };
     },

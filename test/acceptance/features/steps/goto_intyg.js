@@ -29,10 +29,7 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
     //Om det inte finns några intyg att använda
     if (!intygRadElement) {
         logger.info('Hittade inget intyg, skapar ett nytt..');
-        createIntygWithStatus(intygstyp, status, function(err) {
-            if (err) {
-                cb(err);
-            }
+        createIntygWithStatus(intygstyp, status).then(function() {
             //Uppdatera sidan och gå in på patienten igen
             browser.refresh();
             browser.get('/web/dashboard#/create/choose-patient/index');
@@ -54,8 +51,9 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 module.exports = function() {
 
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
-        timeout: 500 * 1000
+        timeout: 700 * 1000
     }, function(intygstyp, status, callback) {
+        intyg.typ = intygstyp;
         getIntygElementRow(intygstyp, status, function(el) {
             gotoIntyg(intygstyp, status, el, function(err) {
                 browser.getCurrentUrl().then(function(text) {

@@ -22,14 +22,14 @@
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
 module.exports = {
-    fillIn: function(intyg, callback) {
+    fillIn: function(intyg) {
         logger.info('intyg.typ:' + intyg.typ);
         var promiseArr = [];
         console.log(intyg);
 
         browser.ignoreSynchronization = true;
 
-        // //Baserat på
+        //Baserat på
         promiseArr.push(luseUtkastPage.angeBaseratPa(intyg.baseratPa)
             .then(function(value) {
                 logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
@@ -131,11 +131,10 @@ module.exports = {
             })
         );
 
-        Promise.all(promiseArr).then(function(value) {
+        return Promise.all(promiseArr).then(function(value) {
             browser.ignoreSynchronization = false;
-            callback();
         }, function(reason) {
-            callback(reason);
+            throw (reason);
         });
     }
 };

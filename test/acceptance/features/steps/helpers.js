@@ -96,6 +96,22 @@ module.exports = {
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
+    },
+    subjectCodes: {
+        'Komplettering': 'KOMPLT',
+        'Paminnelse': 'PAMINN',
+        'Arbetstidsförläggning': 'ARBTID',
+        'Avstämningsmöte': 'AVSTMN',
+        'Kontakt': 'KONTKT',
+        'Övrigt': 'OVRIGT'
+    },
+    getSubjectFromCode: function(value) {
+        for (var key in this.subjectCodes) {
+            if (this.subjectCodes[key] === value) {
+                return key.toString();
+            }
+        }
+        return null;
     }
 
 };

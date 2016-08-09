@@ -84,8 +84,8 @@ module.exports = function() {
         // expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
     });
 
-    this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function(callback) {
-        checkValues.forIntyg(intyg, callback);
+    this.Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
+        return checkValues.forIntyg(intyg);
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {

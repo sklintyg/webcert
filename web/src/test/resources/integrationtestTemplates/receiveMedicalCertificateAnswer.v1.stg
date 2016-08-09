@@ -44,7 +44,7 @@ xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
             </urn:adressVard>
             <urn:lakarutlatande>
                <urn1:lakarutlatande-id>010789db-a69d-47d2-83e1-971cc8345143</urn1:lakarutlatande-id>
-               <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
+               <urn1:signeringsTidpunkt>$data.signeringsTidpunkt$</urn1:signeringsTidpunkt>
                <urn1:patient>
                   <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19520614-2597"/>
                   <urn2:fullstandigtNamn>Per Peter Svensson Pärsson</urn2:fullstandigtNamn>

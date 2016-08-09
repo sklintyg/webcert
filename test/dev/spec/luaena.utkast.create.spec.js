@@ -33,9 +33,7 @@ describe('Create and Sign luae_na utkast', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
         specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga');
-
-        // speeds up utkast filling by not waiting for angular events, promises etc.
-        browser.ignoreSynchronization = true;
+        browser.ignoreSynchronization = false;
     });
 
     describe('Skapa luae_na', function(){
@@ -43,6 +41,8 @@ describe('Create and Sign luae_na utkast', function() {
         describe('Fyll i intyget', function() {
 
             it('Spara undan intygsId från URL', function() {
+                UtkastPage.disableAutosave();
+
                 browser.getCurrentUrl().then(function(url) {
                     utkastId = url.split('/').pop();
                 });
@@ -74,10 +74,11 @@ describe('Create and Sign luae_na utkast', function() {
                 UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
             });
             it('angeMedicinskaForutsattningar', function() {
+                UtkastPage.enableAutosave();
                 UtkastPage.angeMedicinskaForutsattningar(data.medicinskaForutsattningar);
             });
             it('angeOvrigaUpplysningar', function() {
-                 UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
+                UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
             });
             it('angeKontaktMedFK', function() {
                 UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
@@ -85,18 +86,21 @@ describe('Create and Sign luae_na utkast', function() {
         });
 
         it('Signera intyget', function() {
-
-            // reset
-            browser.ignoreSynchronization = false;
-
             UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                UtkastPage.signeraButtonClick();
-                expect(IntygPage.isAt()).toBeTruthy();
+                browser.sleep(1000).then(function() {
+                    UtkastPage.signeraButtonClick();
+
+                    browser.sleep(1000).then(function() {
+                        expect(IntygPage.isAt()).toBeTruthy();
+                    });
+                });
             });
         });
 
         it('Verifiera intyg', function() {
-            IntygPage.verify(data);
+            IntygPage.whenCertificateLoaded().then(function() {
+                IntygPage.verify(data);
+            });
         });
     });
 

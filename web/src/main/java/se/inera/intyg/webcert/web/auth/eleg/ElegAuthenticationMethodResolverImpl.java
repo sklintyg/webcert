@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
-import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+import se.inera.intyg.common.security.common.model.AuthenticationMethod;
 
 
 /**

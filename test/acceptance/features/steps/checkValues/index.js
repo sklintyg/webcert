@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-'use strict';
+
 
 var fk7263CheckValues = require('./fk.7263.js').checkValues;
 var fkLUSECheckValues = require('./fk.LUSE.js').checkValues;
@@ -37,23 +37,24 @@ module.exports = {
         bas: tsBasCheckValues,
         diabetes: tsDiabetesCheckValues
     },
-    forIntyg: function(intyg, cb) {
+    forIntyg: function(intyg) {
+        'use strict';
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            tsCommonCheckValues(intyg, function(err) {
-                tsDiabetesCheckValues(intyg, cb);
+            return tsCommonCheckValues(intyg).then(function() {
+                return tsDiabetesCheckValues(intyg);
             });
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-            tsCommonCheckValues(intyg, function(err) {
-                tsBasCheckValues(intyg, cb);
+            return tsCommonCheckValues(intyg).then(function() {
+                return tsBasCheckValues(intyg);
             });
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            fk7263CheckValues(intyg, cb);
+            return fk7263CheckValues(intyg);
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-            fkLUSECheckValues(intyg, cb);
+            return fkLUSECheckValues(intyg);
         } else if (intyg.typ === 'Läkarintyg för sjukpenning utökat') {
-            fkLISUCheckValues(intyg, cb);
+            return fkLISUCheckValues(intyg);
         } else {
-            cb('Saknar värdecheckar för intygstyp: ' + intyg.typ);
+            throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }
     }
 };

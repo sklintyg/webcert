@@ -24,12 +24,18 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Predicate;
+import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
+import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
@@ -38,6 +44,17 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateType;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
+
+    private static final long DEFAULT_TIMEOUT = 60000L;
+
+    @Value("${receiveNotificationForAggregationRequestEndpointUri}")
+    private String notificationForAggregationQueue;
+
+    @Value("${receiveNotificationRequestEndpointUri}")
+    private String notificationQueue;
+
+    @Value("${notificationSender.batchTimeout}")
+    private Long batchAggregationTimeout = DEFAULT_TIMEOUT;
 
     /*
      * The second half of this route, sendNotificationToWS, is supposed to be used with redelivery. The
@@ -54,13 +71,41 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
         JaxbDataFormat jaxbMessageDataFormatV2 = initializeJaxbMessageDataFormatV2();
 
+        // Start for aggregation route. All notifications enter this route. Draft saved and signed for non fk7263
+        // goes into an aggregation state where we once per minute perform filtering so only the newest ANDRAD per intygsId
+        // OR a SIGNERAD are forwarded to the 'receiveNotificationRequestEndpoint' queue. The others are discarded.
+        // Do note that the above only applies to non-fk7263 ANDRAD and SIGNERAD, all others will be forwarded directly.
+
+        from(notificationForAggregationQueue).routeId("aggregateNotification")
+                .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
+                .transacted()
+                .log(LoggingLevel.INFO, LOG, simple("ENTER - route: aggregateNotification: Header: ${header[handelse]}").getText())
+                .removeHeader(Constants.JMSX_GROUP_ID)
+                .removeHeader(Constants.JMSX_GROUP_SEQ)
+        .choice()
+                .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
+                    .to(notificationQueue)
+                .when(directRoutingPredicate())
+                    .to(notificationQueue)
+                .otherwise()
+                    .aggregate(new GroupedExchangeAggregationStrategy())
+                    .constant(true)
+                    .completionInterval(batchAggregationTimeout)
+                    .forceCompletionOnStop()
+                    .to("bean:notificationAggregator")
+                    .split(body())
+                    .to(notificationQueue).end()
+                .end();
+
+        // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters 'receiveNotificationRequestEndpoint'
+        // should have normal resend semantics etc.
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
                 .choice()
-                    .when(header(RouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
+                    .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
                         .marshal(jaxbMessageDataFormatV2)
                     .otherwise()
                         .marshal("jaxbMessageDataFormat")
@@ -73,7 +118,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .choice()
-                    .when(header(RouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
+                    .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
                         .unmarshal(jaxbMessageDataFormatV2)
                         .to("bean:notificationWSClientV2")
                     .otherwise()
@@ -92,6 +137,18 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .otherwise()
                 .log(LoggingLevel.WARN, LOG, simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}").getText())
                 .stop();
+    }
+
+    /*
+     * Returns true if the handelse header is NOT of type ANDRAT and not SIGNAT.
+     * I.e. all except those two types shall be directly routed to the 'receiveNotificationRequestEndpoint' aka
+     * notificationQueue without any aggregation or filtering.
+     */
+    private Predicate directRoutingPredicate() {
+        return PredicateBuilder
+                .and(
+                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
+                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
     }
 
     private JaxbDataFormat initializeJaxbMessageDataFormatV2() throws JAXBException {

@@ -28,7 +28,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatean
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-import se.inera.intyg.common.schemas.Constants;
+import se.inera.intyg.common.support.Constants;
 
 import java.util.ArrayList;
 import java.util.List;

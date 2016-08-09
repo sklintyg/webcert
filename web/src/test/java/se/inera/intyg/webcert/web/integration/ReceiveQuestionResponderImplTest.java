@@ -26,23 +26,34 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashSet;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -52,9 +63,13 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveQuestionResponderImplTest {
 
+    private static final Long QUESTION_ID = 1234L;
+
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
     private static final String EJ_INTEGRERAD_ENHET = "SE4815162344-1A03";
+
+    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
 
     @Mock
     private MailNotificationService mockMailNotificationService;
@@ -80,22 +95,10 @@ public class ReceiveQuestionResponderImplTest {
         when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(EJ_INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.FALSE);
     }
 
-    @Before
-    public void processIncomingExpectation() {
-        // return the fragasvar supplied
-        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenAnswer(new Answer<FragaSvar>() {
-            @Override
-            public FragaSvar answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                FragaSvar fragaSvar = (FragaSvar) args[0];
-                fragaSvar.setInternReferens(1L);
-                return fragaSvar;
-            }
-        });
-    }
-
     @Test
-    public void testReceiveWithIntegratedUnit() {
+    public void testReceiveQuestionForIntegratedUnit() {
+        FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
+        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
         ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
@@ -108,7 +111,24 @@ public class ReceiveQuestionResponderImplTest {
     }
 
     @Test
+    public void testReceiveHandledQuestionForIntegratedUnit() {
+        FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.CLOSED);
+        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
+
+        ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
+        ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
+
+        // should place notification on queue
+        verify(mockNotificationService).sendNotificationForQuestionHandled(any(FragaSvar.class));
+
+        assertNotNull(response);
+        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    }
+
+    @Test
     public void testReceive() {
+        FragaSvar fraga = buildFraga(EJ_INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
+        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
         ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk.xml");
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
@@ -144,6 +164,28 @@ public class ReceiveQuestionResponderImplTest {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private FragaSvar buildFraga(String vardpersonEnhetsId, Status status) {
+        FragaSvar f = new FragaSvar();
+        f.setStatus(status);
+        f.setAmne(Amne.OVRIGT);
+        f.setExternReferens("<fk-extern-referens>");
+        f.setInternReferens(QUESTION_ID);
+        f.setFrageSkickadDatum(LocalDateTime.now());
+        f.setSvarSigneringsDatum(LocalDateTime.now());
+        f.setSvarsText("Ett svar");
+
+        IntygsReferens intygsReferens = new IntygsReferens();
+        intygsReferens.setIntygsId("<intygsId>");
+        intygsReferens.setIntygsTyp("fk7263");
+        intygsReferens.setPatientId(PATIENT_ID);
+        f.setIntygsReferens(intygsReferens);
+        f.setKompletteringar(new HashSet<Komplettering>());
+        f.setVardperson(new Vardperson());
+        f.getVardperson().setEnhetsId(vardpersonEnhetsId);
+        f.getVardperson().setEnhetsnamn("WebCert-Integration Enhet 1");
+        return f;
     }
 
 }

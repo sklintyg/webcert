@@ -50,6 +50,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ModuleApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.UtkastApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.ConfigApiController" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />

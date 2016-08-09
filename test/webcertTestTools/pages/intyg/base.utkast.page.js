@@ -24,7 +24,7 @@
 'use strict';
 
 var JClass = require('jclass');
-
+var EC = protractor.ExpectedConditions;
 var BaseUtkast = JClass._extend({
 
     init: function() {
@@ -50,7 +50,7 @@ var BaseUtkast = JClass._extend({
         return this.signeraButton.isEnabled();
     },
     whenSigneraButtonIsEnabled: function() {
-        return browser.wait(this.signeraButton.isEnabled());
+    	return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
     },
     signeraButtonClick: function() {
         this.signeraButton.click();

@@ -19,18 +19,20 @@
 
 package se.inera.intyg.webcert.notification_sender.mocks.v2;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
 
 
 public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
@@ -113,4 +115,11 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         store = new CopyOnWriteArrayList<>();
     }
 
+    public List<NotificationStubEntry> getNotificationMessages() {
+        List<NotificationStubEntry> returnList = new ArrayList<>();
+        for (CertificateStatusUpdateForCareType request : store) {
+            returnList.add(new NotificationStubEntry(request.getIntyg().getIntygsId().getExtension(), request.getHandelse().getHandelsekod().getCode(), request.getHandelse().getTidpunkt()));
+        }
+        return returnList;
+    }
 }

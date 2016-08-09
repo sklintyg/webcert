@@ -28,12 +28,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+
 import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.security.exception.HsaServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;

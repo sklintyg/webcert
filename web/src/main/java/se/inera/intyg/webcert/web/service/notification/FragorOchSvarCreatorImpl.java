@@ -19,29 +19,29 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.util.List;
+import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 @Component
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
-    private static final String FRAGESTALLARE_FK = "FK";
-    private static final String FRAGESTALLARE_WEBCERT = "WC";
+    private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();
+    private static final String FRAGESTALLARE_WEBCERT = FrageStallare.WEBCERT.getKod();
 
     private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
 
@@ -50,6 +50,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
     @Autowired
     private ArendeRepository arendeRepository;
+
     /*
      * (non-Javadoc)
      *
@@ -57,12 +58,12 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
      * createFragorOchSvar(java.lang.String)
      */
     @Override
-    public FragorOchSvar createFragorOchSvar(String intygsId, SchemaVersion version) {
+    public FragorOchSvar createFragorOchSvar(String intygsId, String intygstyp) {
         FragorOchSvar fs = null;
 
-        if (version.equals(SchemaVersion.VERSION_1)) {
+        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
             fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
-        } else if (version.equals(SchemaVersion.VERSION_2)) {
+        } else {
             fs = performArendeCount(arendeRepository.findByIntygsId(intygsId));
         }
 
@@ -71,32 +72,42 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         return fs;
     }
 
-    @VisibleForTesting
-    FragorOchSvar performArendeCount(List<Arende> arenden) {
-      int antalSvar = 0;
-      int antalHanteradeSvar = 0;
-      int antalFragor = 0;
-      int antalHanteradeFragor = 0;
+    private FragorOchSvar performArendeCount(List<Arende> arenden) {
+        int antalSvar = 0;
+        int antalHanteradeSvar = 0;
+        int antalFragor = 0;
+        int antalHanteradeFragor = 0;
+        Set<String> isAnswered = new HashSet<>();
 
-      for (Arende arende : arenden) {
-          if (arende.getSkickatAv().equalsIgnoreCase(FRAGESTALLARE_WEBCERT)) {
-              if (!Strings.isNullOrEmpty(arende.getMeddelande())) {
-                  antalSvar++;
-                  if (arende.getStatus().equals(Status.CLOSED)) {
-                      antalHanteradeSvar++;
-                  }
-              }
-          } else if (arende.getSkickatAv().equalsIgnoreCase(FRAGESTALLARE_FK)) {
-              antalFragor++;
-              if (arende.getStatus().equals(Status.CLOSED)) {
-                  antalHanteradeFragor++;
-              }
-          }
-      }
-      return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+        for (Arende arende : arenden) {
+            if (StringUtils.isNotBlank(arende.getSvarPaId())) {
+                isAnswered.add(arende.getSvarPaId());
+            }
+        }
+
+        for (Arende arende : arenden) {
+            if (ArendeAmne.PAMINN == arende.getAmne() || StringUtils.isNotBlank(arende.getSvarPaId())) {
+                // skip answers and reminders
+                continue;
+            }
+            if (FRAGESTALLARE_WEBCERT.equalsIgnoreCase(arende.getSkickatAv())) {
+                if (isAnswered.contains(arende.getMeddelandeId())) {
+                    antalSvar++;
+                    if (Status.CLOSED.equals(arende.getStatus())) {
+                        antalHanteradeSvar++;
+                    }
+                }
+            } else if (FRAGESTALLARE_FK.equalsIgnoreCase(arende.getSkickatAv())) {
+                antalFragor++;
+                if (Status.CLOSED.equals(arende.getStatus())) {
+                    antalHanteradeFragor++;
+                }
+            }
+        }
+        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
     }
 
-    public FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
+    private FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
 
         int antalFragor = 0;
         int antalSvar = 0;

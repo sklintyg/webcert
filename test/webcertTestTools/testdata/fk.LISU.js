@@ -19,33 +19,110 @@
 
 'use strict';
 
-var testdataHelper = require('./../helpers/testdataHelper.js');
+var testdataHelper = require('../helpers/helpers.js').testdata;
 var shuffle = testdataHelper.shuffle;
 var fkValues = require('./testvalues.js').fk;
+var today = testdataHelper.dateFormat(new Date());
+
+function getRandomSysselsattning() {
+    return shuffle([{
+        typ: 'Nuvarande arbete',
+        yrkesAktiviteter: testdataHelper.randomTextString()
+    }, {
+        typ: 'Arbetssökande'
+    }, {
+        typ: 'Föräldraledighet för vård av barn'
+    }, {
+        typ: 'Studier'
+    }, {
+        typ: 'Deltar i arbetmarknadspolitiskt program',
+        programAktiviteter: testdataHelper.randomTextString()
+    }])[0];
+}
+
+function getRandomSannolikhetAtergang() {
+    return shuffle([{
+        bedomning: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning'
+    }, {
+        bedomning: 'Patienten kan sannolikt inte återgå i nuvarande sysselsättning'
+    }, {
+        bedomning: 'Prognos för återgång i nuvarande sysselsättning är oklar'
+    }, {
+        bedomning: 'Patienten kommer med stor sannolikhet att återgå helt i nuvarande sysselsättning efter x antal dagar',
+        antalDagar: shuffle([30, 60, 90, 180])[0]
+    }])[0];
+}
+
+function getRandomArbetstidsforlaggning(arbetsformaga) {
+    if (arbetsformaga.nedsattMed25 || arbetsformaga.nedsattMed50 || arbetsformaga.nedsattMed75) {
+        return shuffle([{
+            val: 'Ja',
+            beskrivning: testdataHelper.randomTextString()
+        }, {
+            val: 'Nej'
+        }])[0];
+    }
+    return null;
+}
+
+function getRandomAtgarder() {
+    var atgarder = [
+        'Arbetsträning',
+        'Arbetsanspassning',
+        'Söka nytt arbete',
+        'Besök på arbetsplatsen',
+        'Ergonomisk bedömning',
+        'Hjälpmedel',
+        'Konflikthantering',
+        'Kontakt med företagshälsovård',
+        'Omfördelning av arbetsuppgifter',
+        'Övrigt'
+    ];
+    var randomLength = Math.floor(Math.random() * atgarder.length) + 1;
+
+    // 33% chans för inte aktuellt
+    return shuffle([{
+        atgarder: ['Inte aktuellt'],
+        varforInteBeskrivning: testdataHelper.randomTextString()
+    }, {
+        atgarder: shuffle(atgarder).slice(0, randomLength),
+        varforBeskrivning: testdataHelper.randomTextString()
+    }, {
+        atgarder: shuffle(atgarder).slice(0, randomLength),
+        varforBeskrivning: testdataHelper.randomTextString()
+    }])[0];
+}
 
 module.exports = {
     getRandom: function(intygsID) {
+        var arbetsformaga = fkValues.getRandomArbetsformaga();
         return {
             id: intygsID,
             typ: 'Läkarintyg för sjukpenning utökat',
 
             nuvarandeArbeteBeskrivning: testdataHelper.randomTextString(),
+            baseratPa: {
+                undersokning: today,
+                journaluppgifter: today,
+                telefonkontakt: today,
+                annat: today,
+                annatBeskrivning: testdataHelper.randomTextString()
+            },
 
+            sysselsattning: getRandomSysselsattning(),
             diagnos: {
                 kod: shuffle(fkValues.ICD10)[0],
                 bakgrund: testdataHelper.randomTextString()
             },
             funktionsnedsattning: testdataHelper.randomTextString(),
             aktivitetsbegransning: testdataHelper.randomTextString(),
-
-            sjukskrivning: {
-                fran: testdataHelper.dateFormat(new Date()),
-                till: testdataHelper.dateFormat(new Date(new Date().setYear(new Date().getFullYear() + 1))),
-                forsakringsmedicinsktBeslutsstodBeskrivning: testdataHelper.randomTextString(),
-                formagaTrotsBegransningBeskrivning: testdataHelper.randomTextString()
-            },
-
-            arbetslivsinriktadeAtgarderEjAktuelltBeskrivning: testdataHelper.randomTextString()
+            arbetsformaga: arbetsformaga,
+            arbetstidsforlaggning: getRandomArbetstidsforlaggning(arbetsformaga),
+            arbetsformagaFMB: testdataHelper.randomTextString(),
+            resorTillArbete: shuffle([true, false])[0],
+            goraTrotsSjukdom: testdataHelper.randomTextString(),
+            sannolikhetAtergangTillArbete: getRandomSannolikhetAtergang(),
+            atgarder: getRandomAtgarder()
         };
     }
 };

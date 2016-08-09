@@ -19,33 +19,61 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.*;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.annotations.Api;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.model.common.internal.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -65,6 +93,85 @@ public class IntygResource {
 
     @Autowired
     private IntygModuleFacade moduleFacade;
+
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    /**
+     * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and tries
+     * to assemble a list of "frageId"'s. It used for the Arendeverktyg testing tool and is _not_ meant to be
+     * used in production code.
+     *
+     * @param intygsTyp
+     *      SIT-intyg: luae_fs, luae_na, luse, lisu
+     * @return
+     */
+    @GET
+    @Path("/questions/{intygsTyp}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllFragorFromConstants(@PathParam("intygsTyp") String intygsTyp) {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            // Load schematron file from classpath.
+            Resource resource = resourceLoader.getResource("classpath:" + intygsTyp + ".sch");
+            Document document = builder.parse(resource.getInputStream());
+
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String expression = "/schema/pattern";
+            NodeList nodes = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
+
+            List<String> qList = new ArrayList<>();
+            for (int a = 0; a < nodes.getLength(); a++) {
+                Node item = nodes.item(a);
+                String idAttr = item.getAttributes().getNamedItem("id").getNodeValue();
+                if (idAttr.startsWith("q") && !idAttr.contains("-") && !idAttr.contains(".")) {
+                    String frageId = idAttr.substring(1);
+                    qList.add(frageId);
+                }
+            }
+            return Response.ok(qList).build();
+        } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException e) {
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+
+    /**
+     * Returns a List of {@link SigningUnit} of vardenheter having at least one signed and sent intyg.
+     *
+     * @return
+     */
+    @GET
+    @Path("/signingunits")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSigningUnits() {
+        return Response.ok(utkastRepository.findAll()
+                .stream()
+                .filter(utkast -> utkast.getSignatur() != null)
+                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
+                .map(utkast -> new SigningUnit(utkast.getEnhetsId(), utkast.getEnhetsNamn()))
+                .distinct()
+                .collect(Collectors.toList())
+        ).build();
+    }
+
+    /**
+     * Returns all signed and sent Intyg (based on the Utkast table) for the specified enhetsId.
+     *
+     * @param enhetsId
+     * @return
+     */
+    @GET
+    @Path("/{enhetsId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllSignedAndSentIntygOnUnit(@PathParam("enhetsId") String enhetsId) {
+        List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.SIGNED));
+        return Response.ok(all.stream()
+                .filter(utkast -> utkast.getSignatur() != null)
+                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
+                .collect(Collectors.toList())
+        ).build();
+    }
 
     @DELETE
     @Path("/")

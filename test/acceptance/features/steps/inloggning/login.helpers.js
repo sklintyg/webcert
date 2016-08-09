@@ -34,12 +34,14 @@ module.exports = {
         browser.ignoreSynchronization = true;
         pages.welcome.get();
         browser.sleep(2000);
-        pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
+        var login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
 
         browser.ignoreSynchronization = false;
         browser.sleep(3000);
         // webcertBasePage.header.getText()
-        return expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
+        return login.then(function() {
+            return expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
+        });
     }
 
 };

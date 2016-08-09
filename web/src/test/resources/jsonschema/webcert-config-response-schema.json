@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "BUILD_NUMBER": {
+      "type": "string"
+    },
+    "PP_HOST": {
+      "type": "string"
+    },
+    "DASHBOARD_URL": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "BUILD_NUMBER",
+    "PP_HOST",
+    "DASHBOARD_URL"
+  ]
+}

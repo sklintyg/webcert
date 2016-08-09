@@ -23,10 +23,10 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
-import se.inera.intyg.webcert.notificationstub.NotificationStore;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.FragorOchSvar;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
@@ -36,7 +36,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
     @Autowired
-    private NotificationStore notificationStore;
+    private NotificationStoreV2 notificationStoreV2;
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
@@ -70,6 +70,8 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
                 + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
                 + "{}"
                 + "*********************************************************************************", logicalAddress, intygsId, handelseKod, sb.toString());
+
+        notificationStoreV2.put(intygsId, request);
 
         CertificateStatusUpdateForCareResponseType response = new CertificateStatusUpdateForCareResponseType();
         response.setResult(ResultTypeUtil.okResult());

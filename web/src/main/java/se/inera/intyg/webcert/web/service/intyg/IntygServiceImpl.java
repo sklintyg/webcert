@@ -19,12 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -32,6 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
@@ -44,6 +46,11 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.intygstyper.lisu.support.LisuEntryPoint;
+import se.inera.intyg.intygstyper.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.intygstyper.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -71,15 +78,7 @@ import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-import se.inera.intyg.webcert.web.web.controller.util.CertificateTypes;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
 
 /**
  * @author andreaskaltenbach
@@ -89,8 +88,8 @@ public class IntygServiceImpl implements IntygService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
-    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(CertificateTypes.LISU.toString(), CertificateTypes.LUSE.toString(),
-            CertificateTypes.LUAE_NA.toString(), CertificateTypes.LUAE_FS.toString());
+    private static final List<String> FK_NEXT_GENERATION = Arrays.asList(LisuEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID);
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
@@ -311,7 +310,7 @@ public class IntygServiceImpl implements IntygService {
         }
 
         // Of course we have to handle FK7263 as a special case.
-        if (intyg.getTyp().equals(CertificateTypes.FK7263.toString())) {
+        if (intyg.getTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
             LOG.info("Set fragaSvar komplettering as handled for {}", intyg.getId());
             fragaSvarService.closeQuestionAsHandled(Long.parseLong(relation.getMeddelandeId()));
         } else if (FK_NEXT_GENERATION.contains(intyg.getTyp().toLowerCase())) {
@@ -426,7 +425,7 @@ public class IntygServiceImpl implements IntygService {
                     certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
                     relations ? relationService.getRelations(intygId)
-                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), RelationItem.INTYG)) : null);
+                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name())) : null);
 
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
@@ -435,7 +434,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolder(utkast);
+            return buildIntygContentHolder(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findOne(intygId);
@@ -444,7 +443,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolder(utkast);
+            return buildIntygContentHolder(utkast, relations);
         }
     }
 
@@ -455,13 +454,15 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? buildIntygContentHolder(utkast) : getIntygData(intygId, intygTyp, false);
+        return (utkast != null) ? buildIntygContentHolder(utkast, false) : getIntygData(intygId, intygTyp, false);
     }
 
-    private IntygContentHolder buildIntygContentHolder(Utkast utkast) {
+    private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null, null);
+        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
+                relations ? relationService.getRelations(utkast.getIntygsId())
+                        .orElse(RelationItem.createBaseCase(utkast)) : null);
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {

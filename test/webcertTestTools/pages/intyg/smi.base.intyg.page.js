@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by */
+/*globals element,by,browser */
 'use strict';
 
 var BaseIntyg = require('./base.intyg.page.js');
@@ -31,6 +31,7 @@ var BaseSmiIntygPage = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
 
+        this.certficate = element(by.id('certificate'));
         this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
 
         this.diagnoseCode = element(by.id('diagnoseCode'));
@@ -109,6 +110,10 @@ var BaseSmiIntygPage = BaseIntyg._extend({
             }
         };
 
+    },
+
+    whenCertificateLoaded: function() {
+        return browser.wait(this.certficate.isDisplayed());
     }
 
 });

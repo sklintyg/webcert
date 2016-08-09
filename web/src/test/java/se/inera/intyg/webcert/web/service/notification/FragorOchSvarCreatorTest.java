@@ -21,95 +21,133 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
+import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
+@RunWith(MockitoJUnitRunner.class)
 public class FragorOchSvarCreatorTest {
 
-    private static final String FRAGESTALLARE_FK = "FK";
-    private static final String FRAGESTALLARE_WEBCERT = "WC";
+    private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();
+    private static final String FRAGESTALLARE_WEBCERT = FrageStallare.WEBCERT.getKod();
+    private static final String INTYG_ID = "intygsId";
+    private static final String INTYGSTYP_FK7263 = "fk7263";
+    private static final String INTYGSTYP_LUSE = "luse";
 
-    private FragorOchSvarCreatorImpl fsCreator = new FragorOchSvarCreatorImpl();
+    @InjectMocks
+    private FragorOchSvarCreatorImpl fsCreator;
+
+    @Mock
+    private FragaSvarRepository fragaSvarRepository;
+
+    @Mock
+    private ArendeRepository arendeRepository;
 
     @Test
     public void testPerformCountHan8() {
-
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
         assertEquals(0, fos.getAntalSvar());
         assertEquals(0, fos.getAntalHanteradeSvar());
+        verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testPerformCountHan7() {
-
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
         assertEquals(1, fos.getAntalSvar());
         assertEquals(0, fos.getAntalHanteradeSvar());
+        verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testPerformCountHan10() {
-
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
         assertEquals(1, fos.getAntalSvar());
         assertEquals(1, fos.getAntalHanteradeSvar());
+        verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testPerformCountHan6() {
-
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
         assertEquals(0, fos.getAntalSvar());
         assertEquals(0, fos.getAntalHanteradeSvar());
+        verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testPerformCountHan9Answered() {
-
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
         assertEquals(1, fos.getAntalHanteradeFragor());
         assertEquals(0, fos.getAntalSvar());
         assertEquals(0, fos.getAntalHanteradeSvar());
+        verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testPerformCountHan9NotAnswered() {
-
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
         assertEquals(1, fos.getAntalHanteradeFragor());
         assertEquals(0, fos.getAntalSvar());
         assertEquals(0, fos.getAntalHanteradeSvar());
+        verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
@@ -117,8 +155,9 @@ public class FragorOchSvarCreatorTest {
 
         // 1. Skickar fråga från WC till FK
         // Förväntad statusuppdatering: HAN8 0,0,0,0
-        List<FragaSvarStatus> fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION));
-        FragorOchSvar fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION)));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
@@ -127,8 +166,9 @@ public class FragorOchSvarCreatorTest {
 
         // 2. FK svarar på frågan
         // Förväntad statusuppdatering: HAN7 0,0,1,0
-        fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.ANSWERED));
-        fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.ANSWERED)));
+        fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
@@ -137,8 +177,9 @@ public class FragorOchSvarCreatorTest {
 
         // 3. Markerar svaret som hanterat
         // Förväntad statusuppdatering: HAN10 0,0,1,1
-        fsStatuses = Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED));
-        fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED)));
+        fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
@@ -147,9 +188,10 @@ public class FragorOchSvarCreatorTest {
 
         // 4. FK skickar fråga till WC
         // Förväntad statusuppdatering: HAN6 1,0,1,1
-        fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
-                new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION));
-        fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
+                        new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
+        fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
         assertEquals(0, fos.getAntalHanteradeFragor());
@@ -158,9 +200,10 @@ public class FragorOchSvarCreatorTest {
 
         // 5. WC svarar på frågan från FK
         // Förväntad statusuppdatering: HAN9 1,1,1,1
-        fsStatuses = Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
-                new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar kom in", Status.CLOSED));
-        fos = fsCreator.performCount(fsStatuses);
+        when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
+                .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
+                        new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar kom in", Status.CLOSED)));
+        fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
         assertEquals(1, fos.getAntalHanteradeFragor());
@@ -171,95 +214,142 @@ public class FragorOchSvarCreatorTest {
 
     @Test
     public void testCountArendeOhanteradFraga() {
-        List<Arende> arenden = Arrays
-                .asList(buildArendeFkFragaOpen());
-        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays
+                .asList(buildArendeFkFragaOpen()));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(fos);
         assertEquals("Antal frågor", 1, fos.getAntalFragor());
         assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
         assertEquals("Antal svar", 0, fos.getAntalSvar());
         assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
+    }
+
+    @Test
+    public void testCountArendeOhanteradWithPaminnelseFraga() {
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays
+                .asList(buildArendeFkFragaOpen(), buildArendeFkFragaPaminnelseOpen()));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_LUSE);
+        assertNotNull(fos);
+        assertEquals("Antal frågor", 1, fos.getAntalFragor());
+        assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
+        assertEquals("Antal svar", 0, fos.getAntalSvar());
+        assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testCountArendeHanteradFraga() {
-        List<Arende> arenden = Arrays
-                .asList(buildArendeFkFragaClosed());
-        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays
+                .asList(buildArendeFkFragaClosed()));
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(fos);
         assertEquals("Antal frågor", 1, fos.getAntalFragor());
         assertEquals("Antal hanterade frågor", 1, fos.getAntalHanteradeFragor());
         assertEquals("Antal svar", 0, fos.getAntalSvar());
         assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testCountArendeOhanteratSvar() {
-        List<Arende> arenden = Arrays
-                .asList(buildArendeWcSvarOpen());
-        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(buildArendeAnswerFromFKOpen());
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(fos);
         assertEquals("Antal frågor", 0, fos.getAntalFragor());
         assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
         assertEquals("Antal svar", 1, fos.getAntalSvar());
         assertEquals("Antal hanterade svar", 0, fos.getAntalHanteradeSvar());
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testCountArendeHanteratSvar() {
-        List<Arende> arenden = Arrays
-                .asList(buildArendeWcSvarClosed());
-        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(buildArendeAnswerFromFKClosed());
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(fos);
         assertEquals("Antal frågor", 0, fos.getAntalFragor());
         assertEquals("Antal hanterade frågor", 0, fos.getAntalHanteradeFragor());
         assertEquals("Antal svar", 1, fos.getAntalSvar());
         assertEquals("Antal hanterade svar", 1, fos.getAntalHanteradeSvar());
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
     @Test
     public void testCountArendeAll() {
-        List<Arende> arenden = Arrays
-                .asList(buildArendeWcSvarClosed(), buildArendeWcSvarOpen(), buildArendeFkFragaOpen(), buildArendeFkFragaClosed());
+        List<Arende> allArenden = new ArrayList<>();
+        allArenden.addAll(Arrays.asList(buildArendeFkFragaOpen(), buildArendeFkFragaClosed()));
+        allArenden.addAll(buildArendeAnswerFromFKClosed());
+        allArenden.addAll(buildArendeAnswerFromFKOpen());
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(allArenden);
 
-        FragorOchSvar fos = fsCreator.performArendeCount(arenden);
+        FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(fos);
         assertEquals("Antal frågor", 2, fos.getAntalFragor());
         assertEquals("Antal hanterade frågor", 1, fos.getAntalHanteradeFragor());
         assertEquals("Antal svar", 2, fos.getAntalSvar());
         assertEquals("Antal hanterade svar", 1, fos.getAntalHanteradeSvar());
-
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verifyNoMoreInteractions(fragaSvarRepository);
+        verifyNoMoreInteractions(arendeRepository);
     }
 
-    private Arende buildArendeWcSvarClosed() {
-        Arende wcSvarClosed = new Arende();
-        wcSvarClosed.setSkickatAv("WC");
-        wcSvarClosed.setMeddelande("MEDDELANDE");
-        wcSvarClosed.setStatus(Status.CLOSED);
-        return wcSvarClosed;
+    private List<Arende> buildArendeAnswerFromFKClosed() {
+        final String svarPaId = UUID.randomUUID().toString();
+        Arende arende = new Arende();
+        arende.setSkickatAv(FRAGESTALLARE_WEBCERT);
+        arende.setStatus(Status.CLOSED);
+        arende.setMeddelandeId(svarPaId);
+        Arende answer = new Arende();
+        answer.setSkickatAv(FRAGESTALLARE_FK);
+        answer.setStatus(Status.ANSWERED);
+        answer.setSvarPaId(svarPaId);
+        return Arrays.asList(arende, answer);
     }
 
-    private Arende buildArendeWcSvarOpen() {
-        Arende wcSvarOpen = new Arende();
-        wcSvarOpen.setSkickatAv("WC");
-        wcSvarOpen.setMeddelande("MEDDELANDE");
-        wcSvarOpen.setStatus(Status.PENDING_INTERNAL_ACTION);
-        return wcSvarOpen;
+    private List<Arende> buildArendeAnswerFromFKOpen() {
+        final String svarPaId = UUID.randomUUID().toString();
+        Arende arende = new Arende();
+        arende.setSkickatAv(FRAGESTALLARE_WEBCERT);
+        arende.setStatus(Status.ANSWERED);
+        arende.setMeddelandeId(svarPaId);
+        Arende answer = new Arende();
+        answer.setSkickatAv(FRAGESTALLARE_FK);
+        answer.setStatus(Status.ANSWERED);
+        answer.setSvarPaId(svarPaId);
+        return Arrays.asList(arende, answer);
     }
 
     private Arende buildArendeFkFragaClosed() {
-        Arende fkSvarClosed = new Arende();
-        fkSvarClosed.setSkickatAv("FK");
-        fkSvarClosed.setMeddelande("MEDDELANDE");
-        fkSvarClosed.setStatus(Status.CLOSED);
-        return fkSvarClosed;
+        Arende arende = new Arende();
+        arende.setSkickatAv(FRAGESTALLARE_FK);
+        arende.setStatus(Status.CLOSED);
+        return arende;
     }
 
     private Arende buildArendeFkFragaOpen() {
-        Arende fkSvarOpen = new Arende();
-        fkSvarOpen.setSkickatAv("FK");
-        fkSvarOpen.setMeddelande("MEDDELANDE");
-        fkSvarOpen.setStatus(Status.PENDING_INTERNAL_ACTION);
-        return fkSvarOpen;
+        Arende arende = new Arende();
+        arende.setSkickatAv(FRAGESTALLARE_FK);
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        return arende;
+    }
+
+    private Arende buildArendeFkFragaPaminnelseOpen() {
+        Arende arende = new Arende();
+        arende.setSkickatAv(FRAGESTALLARE_FK);
+        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+        arende.setAmne(ArendeAmne.PAMINN);
+        arende.setPaminnelseMeddelandeId("paminnelseMeddelandeId");
+        return arende;
     }
 }

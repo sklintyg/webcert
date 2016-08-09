@@ -33,6 +33,17 @@
     <param-value>webcert.logback.file</param-value>
   </context-param>
 
+  <context-param>
+    <param-name>org.eclipse.jetty.servlet.Default.useFileMappedBuffer</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>org.mortbay.jetty.servlet.Default.useFileMappedBuffer</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+
   <!-- Listener for external logback configuration file -->
   <listener>
     <listener-class>se.inera.intyg.common.util.logging.LogbackConfiguratorContextListener</listener-class>
@@ -50,6 +61,17 @@
   <listener>
      <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
  </listener>
+
+  <!-- disabled memory mapped buffers to prevent file locking on windows -->
+  <servlet>
+    <servlet-name>Default</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>useFileMappedBuffer</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
 
   <!-- Spring Web -->
   <servlet>
@@ -277,6 +299,12 @@
 
   <resource-ref>
     <res-ref-name>jms/Queue</res-ref-name>
+    <res-type>javax.jms.Queue</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <resource-ref>
+    <res-ref-name>jms/NotificationQueueForAggregation</res-ref-name>
     <res-type>javax.jms.Queue</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>

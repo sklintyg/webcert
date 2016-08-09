@@ -19,22 +19,17 @@
 
 package se.inera.intyg.webcert.web.converter.util;
 
+import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
+import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
+
 import org.joda.time.LocalDateTime;
 
-import se.inera.intyg.common.support.validate.PersonnummerValidator;
-import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import iso.v21090.dt.v1.II;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 
 /**
  * Created by pehr on 10/2/13.
@@ -43,10 +38,6 @@ public final class ConvertToFKTypes {
 
     private ConvertToFKTypes() {
     }
-
-    private static final String VARDGIVARE_ROOT = "1.2.752.129.2.1.4.1";
-    private static final String ARBETSPLATSKOD_ROOT = "1.2.752.29.4.71";
-    private static final String HSAID_ROOT = "1.2.752.129.2.1.4.1";
 
     public static II toII(String root, String ext) {
         if ((root == null) || (ext == null)) {
@@ -100,9 +91,9 @@ public final class ConvertToFKTypes {
         PatientType pt = new PatientType();
         pt.setFullstandigtNamn(ir.getPatientNamn());
 
-        String root = PersonnummerValidator.PERSONNUMMER_ROOT;
+        String root = PERSON_ID_OID;
         if (ir.getPatientId().isSamordningsNummer()) {
-            root = SamordningsnummerValidator.SAMORDNINGSNUMMER_ROOT;
+            root = SAMORDNING_ID_OID;
         }
 
         pt.setPersonId(toII(root, ir.getPatientId().getPersonnummer()));
@@ -123,7 +114,7 @@ public final class ConvertToFKTypes {
         HosPersonalType hos = new HosPersonalType();
         hos.setForskrivarkod(vp.getForskrivarKod());
         hos.setFullstandigtNamn(vp.getNamn());
-        hos.setPersonalId(toII(HSAID_ROOT, vp.getHsaId()));
+        hos.setPersonalId(toII(HSA_ID_OID, vp.getHsaId()));
 
         hos.setEnhet(toEnhetType(vp));
 
@@ -138,7 +129,7 @@ public final class ConvertToFKTypes {
         }
         EnhetType et = new EnhetType();
         if (vp.getEnhetsId() != null) {
-            et.setEnhetsId(toII(HSAID_ROOT, vp.getEnhetsId()));
+            et.setEnhetsId(toII(HSA_ID_OID, vp.getEnhetsId()));
         }
 
         et.setEnhetsnamn(vp.getEnhetsnamn());
@@ -149,7 +140,7 @@ public final class ConvertToFKTypes {
         et.setTelefonnummer(vp.getTelefonnummer());
 
         if (vp.getArbetsplatsKod() != null) {
-            et.setArbetsplatskod(toII(ARBETSPLATSKOD_ROOT, vp.getArbetsplatsKod()));
+            et.setArbetsplatskod(toII(ARBETSPLATS_KOD_OID, vp.getArbetsplatsKod()));
         }
 
         VardgivareType vgt = new VardgivareType();
@@ -158,7 +149,7 @@ public final class ConvertToFKTypes {
         }
 
         if (vp.getVardgivarId() != null) {
-            vgt.setVardgivareId(toII(VARDGIVARE_ROOT, vp.getVardgivarId()));
+            vgt.setVardgivareId(toII(HSA_ID_OID, vp.getVardgivarId()));
         }
 
         et.setVardgivare(vgt);

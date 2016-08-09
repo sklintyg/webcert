@@ -38,7 +38,7 @@ exports.config = {
     ],
     capabilities: {
         // shardTestFiles: true,
-        // maxInstances: 2,
+        // maxInstances: 15,
         browserName: 'firefox',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
@@ -69,10 +69,6 @@ exports.config = {
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
 
-        global.person = {};
-        global.intyg = {};
-        // global.intygsid = {};
-        global.user = {};
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
 

@@ -2,12 +2,11 @@
     "name": "e2e-test",
     "version": "0.1.0",
     "dependencies": {
-        "webcert-testtools": "latest"
-    },
-    "devDependencies": {
+        "webcert-testtools": "latest",
+        "soap": "^0.16.0",
         "chai": "^3.5.0",
         "chai-as-promised": "^5.2.0",
-        "cucumber": "^0.10.0",
+        "cucumber": "~1.1.0",
         "grunt": "^0.4.0",
         "grunt-cli": "^1.2.0",
         "grunt-contrib-jshint": "^1.0.0",

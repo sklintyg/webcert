@@ -20,9 +20,12 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import org.apache.commons.lang.StringUtils;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class CreateUtkastRequest {
+
+    private static final int NAME_MAX_LENGTH = 255;
 
     private String intygType;
 
@@ -55,6 +58,10 @@ public class CreateUtkastRequest {
         }
 
         if (StringUtils.isBlank(patientFornamn) || StringUtils.isBlank(patientEfternamn)) {
+            return false;
+        }
+
+        if (patientFornamn.length() > NAME_MAX_LENGTH || patientEfternamn.length() > NAME_MAX_LENGTH) {
             return false;
         }
 

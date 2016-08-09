@@ -56,11 +56,13 @@ var TsDiabetesUtkast = BaseUtkast._extend({
             },
             d: {
                 yes: element(by.id('hypody')),
-                no: element(by.id('hypodn'))
+                no: element(by.id('hypodn')),
+                antalEpisoder: element(by.id('allvarligForekomstBeskrivning'))
             },
             e: {
                 yes: element(by.id('hypoey')),
-                no: element(by.id('hypoen'))
+                no: element(by.id('hypoen')),
+                antalEpisoder: element(by.id('allvarligForekomstTrafikBeskrivning'))
             },
             f: {
                 yes: element(by.id('hypofy')),
@@ -68,7 +70,8 @@ var TsDiabetesUtkast = BaseUtkast._extend({
             },
             g: {
                 yes: element(by.id('hypogy')),
-                no: element(by.id('hypogn'))
+                no: element(by.id('hypogn')),
+                datum: element(by.id('allvarligForekomstVakenTidObservationstid'))
             }
         };
 
@@ -149,35 +152,76 @@ var TsDiabetesUtkast = BaseUtkast._extend({
 
         //console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
         var promisesArr = [];
+        var hypoglykemierEl = this.hypoglykemier;
+
         // a)
-        if (hypoglykemierObj.a === 'Ja') {
-            promisesArr.push(this.hypoglykemier.a.yes.sendKeys(protractor.Key.SPACE));
-        } else {
-            promisesArr.push(this.hypoglykemier.a.no.sendKeys(protractor.Key.SPACE));
+        if (hypoglykemierObj.a) {
+            if (hypoglykemierObj.a === 'Ja') {
+                promisesArr.push(hypoglykemierEl.a.yes.sendKeys(protractor.Key.SPACE));
+            } else {
+                promisesArr.push(hypoglykemierEl.a.no.sendKeys(protractor.Key.SPACE));
+            }
         }
 
         // b)
-        if (hypoglykemierObj.b === 'Ja') {
-            promisesArr.push(this.hypoglykemier.b.yes.sendKeys(protractor.Key.SPACE));
-        } else {
-            promisesArr.push(this.hypoglykemier.b.no.sendKeys(protractor.Key.SPACE));
+        if (hypoglykemierObj.b) {
+            if (hypoglykemierObj.b === 'Ja') {
+                promisesArr.push(hypoglykemierEl.b.yes.sendKeys(protractor.Key.SPACE));
+            } else {
+                promisesArr.push(hypoglykemierEl.b.no.sendKeys(protractor.Key.SPACE));
+            }
+        }
+        // c)
+        if (hypoglykemierObj.c) {
+            if (hypoglykemierObj.c === 'Ja') {
+                promisesArr.push(hypoglykemierEl.c.yes.sendKeys(protractor.Key.SPACE));
+            } else {
+                promisesArr.push(hypoglykemierEl.c.no.sendKeys(protractor.Key.SPACE));
+            }
+        }
+        // d)
+        if (hypoglykemierObj.d) {
+            if (hypoglykemierObj.d === 'Ja') {
+                promisesArr.push(hypoglykemierEl.d.yes.sendKeys(protractor.Key.SPACE).then(function() {
+                    // d) antal episoder
+                    return hypoglykemierEl.d.antalEpisoder.sendKeys(hypoglykemierObj.dAntalEpisoder);
+                }));
+            } else {
+                promisesArr.push(hypoglykemierEl.d.no.sendKeys(protractor.Key.SPACE));
+            }
+        }
+
+        // e)
+        if (hypoglykemierObj.e) {
+            if (hypoglykemierObj.e === 'Ja') {
+                console.log('e');
+                promisesArr.push(hypoglykemierEl.e.yes.sendKeys(protractor.Key.SPACE).then(function() {
+                    // e) antal episoder
+                    return hypoglykemierEl.e.antalEpisoder.sendKeys(hypoglykemierObj.eAntalEpisoder);
+                }));
+            } else {
+                promisesArr.push(hypoglykemierEl.e.no.sendKeys(protractor.Key.SPACE));
+            }
         }
 
         // f)
         if (hypoglykemierObj.f) {
             if (hypoglykemierObj.f === 'Ja') {
-                promisesArr.push(this.hypoglykemier.f.yes.sendKeys(protractor.Key.SPACE));
+                promisesArr.push(hypoglykemierEl.f.yes.sendKeys(protractor.Key.SPACE));
             } else {
-                promisesArr.push(this.hypoglykemier.f.no.sendKeys(protractor.Key.SPACE));
+                promisesArr.push(hypoglykemierEl.f.no.sendKeys(protractor.Key.SPACE));
             }
         }
 
         // g)
         if (hypoglykemierObj.g) {
             if (hypoglykemierObj.g === 'Ja') {
-                promisesArr.push(this.hypoglykemier.g.yes.sendKeys(protractor.Key.SPACE));
+                promisesArr.push(hypoglykemierEl.g.yes.sendKeys(protractor.Key.SPACE).then(function() {
+                    // Datum
+                    return hypoglykemierEl.g.datum.sendKeys(hypoglykemierObj.gDatum);
+                }));
             } else {
-                promisesArr.push(this.hypoglykemier.g.no.sendKeys(protractor.Key.SPACE));
+                promisesArr.push(hypoglykemierEl.g.no.sendKeys(protractor.Key.SPACE));
             }
         }
 

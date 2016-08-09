@@ -61,6 +61,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     private static final String PATIENT_PERSONNR = "19520614-2597";
     private static final String SVAR_MEDDELANDE_TEXT = "Här är ett svar från FK";
     private static final String HOS_PERSONAL_ID = "SE4815162344-1B01";
+    private static final String SIGNERINGS_TIDPUNKT = "2014-12-09T11:00:00.000";
 
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -86,7 +87,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     @Test
     public void testReceiveAnswer() throws IOException {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
-        given().body(createRequestBody(internalReferens, HOS_PERSONAL_ID, SVAR_MEDDELANDE_TEXT))
+        given().body(createRequestBody(internalReferens, HOS_PERSONAL_ID, SVAR_MEDDELANDE_TEXT, SIGNERINGS_TIDPUNKT))
                 .when()
                 .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
@@ -100,7 +101,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
         given().filter(
                 responseBodyExtractorFilter)
-                .body(createRequestBody(internalReferens, HOS_PERSONAL_ID, "Här är ett svar från FK"))
+                .body(createRequestBody(internalReferens, HOS_PERSONAL_ID, "Här är ett svar från FK", SIGNERINGS_TIDPUNKT))
                 .when()
                 .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
@@ -109,10 +110,14 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
 
     }
 
+    /**
+     * Send a request intentionally breaking the request schema (in this case, omitting the mandatory
+     * lakarutlatade.signeringsTidpunkt). Since we have SchemaValidation enabled, this should be detected and given an
+     * appropriately wrapped validation error response)
+     */
     @Test
-    public void testCreateAnswerForEmptyMeddelandeTextFailsWithValidationError() {
-        final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
-        given().body(createRequestBody(internalReferens, "", ""))
+    public void testRequestSchemaValidationError() {
+        given().body(createRequestBody(1, HOS_PERSONAL_ID, "Här är ett svar från FK", ""))
                 .when()
                 .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
                 .then()
@@ -123,7 +128,24 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     }
 
     /**
-     * Check that even when sending invalid request, Soap faults should get transformed to a valid error response
+     * Send an request that will fail programmatic validation. It should respond with correct error code.
+     */
+    @Test
+    public void testEmptyHosPersonalIdFailsWithValidationError() {
+        final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
+        given().body(createRequestBody(internalReferens, "", "", SIGNERINGS_TIDPUNKT))
+                .when()
+                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+    }
+
+    /**
+     * Trigger a soapfault by sending a totally nonsense request - Soap faults should get transformed to a valid
+     * (application) error response
      */
     @Test
     public void testCreateAnswerWithInvalidXMLFailsWithApplicationError() {
@@ -138,8 +160,8 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
                 .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 
-    private String createRequestBody(int internalReferens, String hosPersonalId, String meddelandeText) {
-        requestTemplate.add("data", new AnswerData(internalReferens, hosPersonalId, meddelandeText));
+    private String createRequestBody(int internalReferens, String hosPersonalId, String meddelandeText, String signeringsTidpunkt) {
+        requestTemplate.add("data", new AnswerData(internalReferens, hosPersonalId, meddelandeText, signeringsTidpunkt));
         return requestTemplate.render();
     }
 
@@ -181,11 +203,13 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         public final int internalReferens;
         public final String hosPersonalId;
         public final String meddelandeText;
+        public final String signeringsTidpunkt;
 
-        public AnswerData(int internalReferens, String hosPersonalId, String meddelandeText) {
+        public AnswerData(int internalReferens, String hosPersonalId, String meddelandeText, String signeringsTidpunkt) {
             this.internalReferens = internalReferens;
             this.hosPersonalId = hosPersonalId;
             this.meddelandeText = meddelandeText;
+            this.signeringsTidpunkt = signeringsTidpunkt;
 
         }
     }

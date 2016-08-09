@@ -29,7 +29,7 @@
           <div class="form-group">
             <label for="fornamn" class="control-label">Förnamn</label>
             <input id="fornamn" class="form-control" name="fornamn" type="text" ng-model="fornamn" required
-                   wc-visited />
+                   wc-visited maxlength="255" />
             <div ng-show="nameForm.fornamn.$invalid && (nameForm.fornamn.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett förnamn</span>
             </div>
@@ -37,7 +37,7 @@
           <div class="form-group">
             <label for="efternamn" class="control-label">Efternamn</label>
             <input id="efternamn" class="form-control" name="efternamn" type="text" ng-model="efternamn" required
-                   wc-visited />
+                   wc-visited maxlength="255" />
             <div ng-show="nameForm.efternamn.$invalid && (nameForm.efternamn.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett efternamn</span>
             </div>

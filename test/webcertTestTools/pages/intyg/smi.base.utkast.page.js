@@ -48,11 +48,15 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 return element.all(by.css('#intygRelations tr'));
             },
             row: function(index) {
-                var rowTds = element.all(by.css('#intygRelations tr:nth-child('+index+') td'));
+                var rowTds = element.all(by.css('#intygRelations tr:nth-child(' + index + ') td'));
                 return {
                     visa: {
-                        getText: function() { return rowTds.get(0).getText(); },
-                        click: function() { rowTds.get(0).element(by.css('button')).sendKeys(protractor.Key.SPACE); }
+                        getText: function() {
+                            return rowTds.get(0).getText();
+                        },
+                        click: function() {
+                            rowTds.get(0).element(by.css('button')).sendKeys(protractor.Key.SPACE);
+                        }
                     },
                     relation: rowTds.get(1),
                     status: rowTds.get(2),

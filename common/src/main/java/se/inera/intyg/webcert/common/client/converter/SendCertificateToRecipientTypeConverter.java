@@ -19,22 +19,20 @@
 
 package se.inera.intyg.webcert.common.client.converter;
 
+import static se.inera.intyg.common.support.Constants.KV_PART_CODE_SYSTEM;
+
 import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType.SkickatAv;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Part;
-import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 public final class SendCertificateToRecipientTypeConverter {
-
-    private static final String MOTTAGARE_CODE_SYSTEM = "769bb12b-bd9f-4203-a5cd-fd14f2eb3b80";
 
     private SendCertificateToRecipientTypeConverter() {
     }
@@ -60,45 +58,14 @@ public final class SendCertificateToRecipientTypeConverter {
         PartKod partKod = PartKod.fromValue(recipient);
         Part part = new Part();
         part.setCode(partKod.name());
-        part.setCodeSystem(MOTTAGARE_CODE_SYSTEM);
+        part.setCodeSystem(KV_PART_CODE_SYSTEM);
         part.setDisplayName(partKod.getDisplayName());
         return part;
     }
 
     private static SkickatAv buildSkickatAv(HoSPersonal hosPersonal) {
         SkickatAv skickatAv = new SkickatAv();
-        skickatAv.setHosPersonal(buildHosPersonal(hosPersonal));
+        skickatAv.setHosPersonal(InternalConverterUtil.getSkapadAv(hosPersonal));
         return skickatAv;
     }
-
-    private static HosPersonal buildHosPersonal(HoSPersonal source) {
-        HosPersonal hosPersonal = new HosPersonal();
-        hosPersonal.setPersonalId(InternalConverterUtil.getHsaId(source.getPersonId()));
-        hosPersonal.setFullstandigtNamn(source.getFullstandigtNamn());
-        hosPersonal.setForskrivarkod(source.getForskrivarKod());
-        hosPersonal.setEnhet(buildEnhet(source.getVardenhet()));
-        return hosPersonal;
-    }
-
-    private static Enhet buildEnhet(Vardenhet sourceVardenhet) {
-        Enhet vardenhet = new Enhet();
-        vardenhet.setEnhetsId(InternalConverterUtil.getHsaId(sourceVardenhet.getEnhetsid()));
-        vardenhet.setEnhetsnamn(sourceVardenhet.getEnhetsnamn());
-        vardenhet.setPostnummer(sourceVardenhet.getPostnummer());
-        vardenhet.setPostadress(sourceVardenhet.getPostadress());
-        vardenhet.setPostort(sourceVardenhet.getPostort());
-        vardenhet.setTelefonnummer(sourceVardenhet.getTelefonnummer());
-        vardenhet.setEpost(sourceVardenhet.getEpost());
-        vardenhet.setVardgivare(buildVardgivare(sourceVardenhet.getVardgivare()));
-        vardenhet.setArbetsplatskod(InternalConverterUtil.getArbetsplatsKod(sourceVardenhet.getArbetsplatsKod()));
-        return vardenhet;
-    }
-
-    private static Vardgivare buildVardgivare(se.inera.intyg.common.support.model.common.internal.Vardgivare sourceVardgivare) {
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivareId(InternalConverterUtil.getHsaId(sourceVardgivare.getVardgivarid()));
-        vardgivare.setVardgivarnamn(sourceVardgivare.getVardgivarnamn());
-        return vardgivare;
-    }
-
 }

@@ -57,13 +57,13 @@
     <bean id="org.h2.tools.Server" class="org.h2.tools.Server"
       factory-method="createTcpServer" init-method="start"
       destroy-method="stop" lazy-init="false">
-      <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,9094" />
+      <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,${h2.tcp.port}" />
     </bean>
 
     <bean id="h2WebServer" class="org.h2.tools.Server"
       factory-method="createWebServer" init-method="start"
       destroy-method="stop">
-      <constructor-arg value="-web,-webAllowOthers,-webPort,9090" />
+      <constructor-arg value="-web,-webAllowOthers,-webPort,${h2.web.port}" />
     </bean>
   </beans>
 

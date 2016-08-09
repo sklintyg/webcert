@@ -18,37 +18,29 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1;
-import static se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants.TILLAGGSFRAGOR_SVAR_JSON_ID;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Throwables;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Throwables;
+
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
+import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class ArendeViewConverter {
     private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
-    private static final int TILLAGGSFRAGA_START = 9000;
 
     @Autowired
     private IntygModuleRegistryImpl moduleRegistry;
@@ -57,8 +49,6 @@ public class ArendeViewConverter {
     private IntygServiceImpl intygService;
 
     public ArendeView convert(Arende arende) {
-        List<MedicinsktArendeView> kompletteringar = convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
-                arende.getIntygTyp());
         ArendeView.Builder template = ArendeView.builder();
         template.setAmne(arende.getAmne());
         template.setArendeType(getArendeType(arende));
@@ -67,7 +57,6 @@ public class ArendeViewConverter {
         template.setFrageStallare(arende.getSkickatAv());
         template.setInternReferens(arende.getMeddelandeId());
         template.setIntygId(arende.getIntygsId());
-        template.setKompletteringar(kompletteringar);
         template.setMeddelande(arende.getMeddelande());
         template.setMeddelandeRubrik(arende.getRubrik());
         template.setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId());
@@ -80,74 +69,108 @@ public class ArendeViewConverter {
         template.setVidarebefordrad(arende.getVidarebefordrad());
         template.setVardaktorNamn(arende.getVardaktorName());
         template.setVardgivarnamn(arende.getVardgivareName());
+        template.setKompletteringar(convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
+                arende.getIntygTyp()));
 
         return template.build();
     }
 
+    public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, List<Arende> paminnelser) {
+        ArendeView arendeViewQuestion = convert(fraga);
+        ArendeView arendeViewAnswer = null;
+        if (svar != null) {
+            arendeViewAnswer = convert(svar);
+        }
+        List<ArendeView> arendeViewPaminnelser = new ArrayList<>();
+        if (paminnelser != null) {
+            arendeViewPaminnelser = paminnelser.stream().map(a -> convert(a)).sorted(Comparator.comparing(ArendeView::getTimestamp).reversed())
+                    .collect(Collectors.toList());
+        }
+        return ArendeConversationView.create(arendeViewQuestion, arendeViewAnswer, fraga.getSenasteHandelse(), arendeViewPaminnelser);
+    }
+
+    public List<ArendeConversationView> buildArendeConversations(List<Arende> list) {
+        List<ArendeConversationView> arendeConversations = new ArrayList<>();
+        Map<String, List<Arende>> threads = new HashMap<>();
+        String meddelandeId = null;
+        for (Arende arende : list) { // divide into threads
+            meddelandeId = getMeddelandeId(arende);
+            if (threads.get(meddelandeId) == null) {
+                threads.put(meddelandeId, new ArrayList<>());
+            }
+            threads.get(meddelandeId).add(arende);
+        }
+
+        for (String meddelandeIdd : threads.keySet()) {
+            List<Arende> arendeConversationContent = threads.get(meddelandeIdd);
+
+            Optional<Arende> fraga = arendeConversationContent.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny();
+            // Since fraga is required to be nonNull by AutoValue_ArendeConversationView need to make sure this is
+            // enforced to avoid throwing an exception and showing nothing at all
+            if (!fraga.isPresent()) {
+                continue;
+            }
+            Optional<Arende> svar = arendeConversationContent.stream().filter(a -> getArendeType(a) == ArendeType.SVAR).findAny();
+            List<Arende> paminnelser = arendeConversationContent.stream().filter(a -> getArendeType(a) == ArendeType.PAMINNELSE)
+                    .collect(Collectors.toList());
+
+            arendeConversations.add(convertToArendeConversationView(fraga.get(), svar.orElse(null), paminnelser));
+        }
+        Collections.sort(arendeConversations, (a, b) -> {
+            boolean aIsEmpty = a.getPaminnelser().isEmpty();
+            boolean bIsEmpty = b.getPaminnelser().isEmpty();
+            if (aIsEmpty == bIsEmpty) {
+                return b.getSenasteHandelse().compareTo(a.getSenasteHandelse());
+            } else if (aIsEmpty) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
+        return arendeConversations;
+    }
+
+    private String getMeddelandeId(Arende arende) {
+        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
+        return (referenceId != null) ? referenceId : arende.getMeddelandeId();
+    }
+
     private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
         List<MedicinsktArendeView> medicinskaArendenViews = new ArrayList<>();
+        if (CollectionUtils.isEmpty(medicinskaArenden)) {
+            return medicinskaArendenViews;
+        }
+        List<String> frageIds = medicinskaArenden.stream().map(MedicinsktArende::getFrageId).distinct().collect(Collectors.toList());
+        ModuleApi moduleApi = null;
+        try {
+            moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("Module not found for certificate of type {}", intygsTyp);
+            Throwables.propagate(e);
+        }
+        Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
+        Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande, frageIds);
         for (MedicinsktArende arende : medicinskaArenden) {
-            try {
-                String jsonPropertyHandle = getJsonPropertyHandle(arende, intygsId, intygsTyp);
-                Integer position = getListPositionForInstanceId(arende);
-                MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
-                        .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
-                medicinskaArendenViews.add(view);
-
-            } catch (ModuleNotFoundException | ModuleException e) {
-                LOG.error("Module not found for certificate of type {}", intygsTyp);
-                Throwables.propagate(e);
-            }
+            Integer position = getListPositionForInstanceId(arende);
+            String jsonPropertyHandle = getJsonPropertyHandle(arende, position, arendeParameters);
+            MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
+                    .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
+            medicinskaArendenViews.add(view);
         }
         return medicinskaArendenViews;
     }
 
-    private String getJsonPropertyHandle(MedicinsktArende arende, String intygsId, String intygsTyp)
-            throws ModuleNotFoundException, ModuleException {
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
-        IntygContentHolder content = intygService.fetchIntygData(intygsId, intygsTyp, false);
-        Utlatande utlatande = content.getUtlatande();
-        String frageId = arende.getFrageId();
-
-        if (isTillaggsFraga(frageId)) {
-            return TILLAGGSFRAGOR_SVAR_JSON_ID;
-        }
-        switch (frageId) {
-        case GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1:
-            return calculateFrageIdHandleForGrundForMU(arende, intygsTyp, utlatande, moduleApi);
-        default:
-            return RespConstants.getJsonPropertyFromFrageId(frageId);
-        }
-    }
-
-    private boolean isTillaggsFraga(String frageId) {
-        try {
-            if (StringUtils.isNumeric(frageId) && Integer.parseInt(frageId) >= TILLAGGSFRAGA_START) {
-                return true;
-            }
-            return false;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private String calculateFrageIdHandleForGrundForMU(MedicinsktArende arende, String intygsTyp, Utlatande utlatande, ModuleApi moduleApi) {
-        Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande);
-
-        List<String> filledPositions = arendeParameters.get(GRUNDFORMEDICINSKTUNDERLAG_SVAR_ID_1);
+    private String getJsonPropertyHandle(MedicinsktArende arende, Integer position, Map<String, List<String>> arendeParameters) {
+        List<String> filledPositions = arendeParameters.get(arende.getFrageId());
         if (filledPositions != null) {
             try {
-                return filledPositions.get(getListPositionForInstanceId(arende));
-            } catch (ClassCastException e) {
-                LOG.error("List does not contain string json properties as expected.");
-                Throwables.propagate(e);
-                return null;
+                return filledPositions.get(position);
             } catch (IndexOutOfBoundsException e) {
                 LOG.error("The instance number in MedicinsktArende must be an integer > 0.");
                 return null;
             }
         }
-        throw new IllegalArgumentException("The supplied Arende information for conversion to json parameters for Fraga1 must be a list of Strings.");
+        throw new IllegalArgumentException("The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId() + " must be a list of Strings.");
     }
 
     private int getListPositionForInstanceId(MedicinsktArende arende) {
@@ -157,7 +180,7 @@ public class ArendeViewConverter {
     }
 
     private static ArendeType getArendeType(Arende arende) {
-        if (arende.getPaminnelseMeddelandeId() != null) {
+        if (ArendeAmne.PAMINN == arende.getAmne()) {
             return ArendeType.PAMINNELSE;
         } else if (arende.getSvarPaId() != null) {
             return ArendeType.SVAR;

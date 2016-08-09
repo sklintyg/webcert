@@ -22,11 +22,11 @@
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var lisuUtkastPage = pages.intyg.lisu.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
-var helpers = require('./helpers');
 
 function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
     return expect(element(by.cssContainingText('.qa-block-handled', kontrollnr)).isPresent()).to.eventually.be.ok;
@@ -34,17 +34,54 @@ function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
 
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
-        fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.question.text.sendKeys('En ' + amne + '-fråga');
-        fkIntygPage.selectQuestionTopic(amne);
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        console.log('isSMIIntyg : ' + isSMIIntyg);
 
-        fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+        var fragaText = 'En ' + amne + '-fråga';
 
-        fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-            intyg.fragaId = result.split('-')[1];
-            logger.debug('Frågans ID: ' + intyg.fragaId);
-            callback();
-        });
+        if (isSMIIntyg) {
+
+            lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
+            lisuUtkastPage.arendeQuestion.text.sendKeys(fragaText);
+            lisuUtkastPage.selectQuestionTopic(amne);
+
+            lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+
+            lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+                var element = result.split('-');
+                var splitIndex = element[0].length + element[1].length + 2;
+                var fragaId = result.substr(splitIndex, result.length);
+
+                global.meddelanden.push({
+                    typ: 'Fråga',
+                    amne: helpers.subjectCodes[amne],
+                    id: fragaId,
+                    text: fragaText
+                });
+
+                logger.debug('Frågans ID: ' + fragaId);
+            }).then(callback);
+
+        } else {
+            fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
+            fkIntygPage.question.text.sendKeys(fragaText);
+            fkIntygPage.selectQuestionTopic(amne);
+
+            fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+
+            fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
+                var fragaId = result.split('-')[1];
+                global.meddelanden.push({
+                    typ: 'Fråga',
+                    amne: amne,
+                    id: fragaId,
+                    text: fragaText
+                });
+                logger.debug('Frågans ID: ' + fragaId);
+                callback();
+            });
+        }
+
     });
 
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
@@ -63,8 +100,14 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^ska jag se kompletteringsfrågan på utkast\-sidan$/, function(callback) {
-        var fragaText = global.ursprungligtIntyg.guidcheck;
+    this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ, callback) {
+        var fragaText;
+
+        if (typ === 'intygs') {
+            fragaText = global.intyg.guidcheck;
+        } else {
+            fragaText = global.ursprungligtIntyg.guidcheck;
+        }
 
         console.log('Letar efter fråga som innehåller text: ' + fragaText);
         expect(fkUtkastPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
@@ -75,18 +118,18 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska jag se kompletteringsfrågan på intygs\-sidan$/, function(callback) {
+    // this.Given(/^ska jag se kompletteringsfrågan på intygs\-sidan$/, function(callback) {
 
-        var fragaText = global.intyg.guidcheck;
+    //     var fragaText = global.intyg.guidcheck;
 
-        console.log('Letar efter fråga som innehåller text: ' + fragaText);
-        expect(fkIntygPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
-            logger.info('OK - hittade fråga med text: ' + fragaText);
-            callback();
-        }, function(reason) {
-            callback('FEL : ' + reason);
-        });
-    });
+    //     console.log('Letar efter fråga som innehåller text: ' + fragaText);
+    //     expect(fkIntygPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
+    //         logger.info('OK - hittade fråga med text: ' + fragaText);
+    //         callback();
+    //     }, function(reason) {
+    //         callback('FEL : ' + reason);
+    //     });
+    // });
 
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function(callback) {
         var answerWithIntygBtnId = 'answerWithIntygBtn-' + global.intyg.messages[0].id;
@@ -101,29 +144,36 @@ module.exports = function() {
         to.eventually.be.ok.and.notify(callback);
     });
 
-    this.Given(/^jag ska kunna svara med textmeddelande/, function(callback) {
+    this.Given(/^jag ska kunna svara med textmeddelande/, function() {
+        browser.ignoreSynchronization = false;
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
         var svaraPaKomplettering = kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar)
-                    .then(function() {
-                        return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+                return browser.sleep(2000);
+            })
+            .then(function() {
+                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar);
 
-                    });
+            })
+            .then(function() {
+                return browser.sleep(1000);
+            })
+            .then(function() {
+                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+
             });
 
-
-        svaraPaKomplettering
+        return svaraPaKomplettering
             .then(function() {
                 logger.info('Kontrollerar att fråga är märkt som hanterad..');
                 expect(kompletteringsFraga.element(by.css('.qa-block-handled')).getText()).to.eventually.contain(textSvar)
                     .then(function(value) {
                         logger.info('OK - textsvar = ' + value);
                     }, function(reason) {
-                        callback('FEL - textsvar: ' + reason);
-                    }).then(callback);
+                        throw ('FEL - textsvar: ' + reason);
+                    });
 
             });
     });
@@ -143,78 +193,195 @@ module.exports = function() {
         return kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck);
     });
 
+    this.Given(/^ska jag se påminnelsen på intygssidan$/, function() {
+        var fragaText = global.intyg.guidcheck;
+        var panel = element(by.cssContainingText('.arende-panel', fragaText));
+        return browser.refresh()
+            .then(function() {
+                console.log('Letar efter påminnelse som innehåller text: ' + fragaText);
+                return expect(panel.isPresent()).to.eventually.become(true);
+
+            })
+            .then(function() {
+                // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions 
+                // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); // 
+                return panel.getText().then(function(text) {
+                    expect(text).to.contain('Ämne: Påminnelse');
+                });
+
+            });
+    });
+
     this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
         fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });
 
-    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function(callback) {
-        browser.refresh()
-            .then(function() {
-                return helpers.fetchMessageIds(intyg.typ);
-            })
-            .then(function() {
-                return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
-            })
-            .then(callback);
+    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function() {
+
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            var messageId;
+            console.log(global.meddelanden);
+            for (var k = 0; k < global.meddelanden.length; k++) {
+                if (global.meddelanden[k].typ === 'Fråga') {
+                    messageId = global.meddelanden[k].id;
+                }
+            }
+            return element(by.id('handleCheck-' + messageId)).sendKeys(protractor.Key.SPACE);
+        } else {
+            return browser.refresh()
+                .then(function() {
+                    return helpers.fetchMessageIds(intyg.typ);
+                })
+                .then(function() {
+                    return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+                });
+        }
+
 
 
     });
 
     this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-        url = url.replace('https', 'http');
-
-        // global.person.id = '19121212-1212';
-
-        //Kontrollnr for tester. Anvand i bade fraga och svar
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
-        var body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-            global.person.id,
-            global.user,
-            'Enhetsnamn',
-            global.intyg.id,
-            amne,
-            'nytt meddelande: ' + global.intyg.guidcheck);
-        soap.createClient(url, function(err, client) {
-            if (err) {
-                callback(err);
-            }
+        var url;
+        var body;
 
-            client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                // logger.debug(body);
-                // logger.debug(result);
-                callback(err);
+        var isSMIIntyg;
+        if (intyg && intyg.typ) {
+            isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        }
+
+        if (isSMIIntyg) {
+            var amneCode = helpers.subjectCodes[amne];
+
+            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
+            console.log(body);
+            var path = '/send-message-to-care/v1.0?wsdl';
+            url = process.env.INTYGTJANST_URL + path;
+            // var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
+            url = url.replace('https', 'http');
+
+            soap.createClient(url, function(err, client) {
+                logger.info(url);
+                if (err) {
+                    callback(err);
+                } else {
+                    client.SendMessageToCare(body, function(err, result, resBody) {
+                        console.log(resBody);
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var resultcode = result.result.resultCode;
+                            logger.info('ResultCode: ' + resultcode);
+                            console.log(result);
+                            if (resultcode !== 'OK') {
+                                logger.info(result);
+                                callback('ResultCode: ' + resultcode + '\n' + resBody);
+                            } else {
+                                logger.info('ResultCode: ' + resultcode);
+                                console.log(JSON.stringify(result));
+                                callback();
+                            }
+
+                        }
+                    });
+                }
             });
-        });
+        } else {
+            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+            url = url.replace('https', 'http');
+
+            body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
+                global.person.id,
+                global.user,
+                'Enhetsnamn',
+                global.intyg.id,
+                amne,
+                'nytt meddelande: ' + global.intyg.guidcheck);
+            soap.createClient(url, function(err, client) {
+                if (err) {
+                    callback(err);
+                }
+
+                client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                    // logger.debug(body);
+                    // logger.debug(result);
+                    callback(err);
+                });
+            });
+        }
     });
 
     this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
 
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
-        url = url.replace('https', 'http');
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var url = '';
+        var body = '';
 
-        soap.createClient(url, function(err, client) {
+        if (isSMIIntyg) {
 
-            if (err) {
-                callback(err);
-            } else {
-                var body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
-                    global.person.id,
-                    global.user.hsaId,
-                    global.user.fornamn + '' + global.user.efternamn,
-                    global.user.enhetId,
-                    'WebCert Enhet 1',
-                    'Enhetsnamn',
-                    intyg.fragaId
-                );
-                console.log(body);
-                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+            global.intyg.guidcheck = testdataHelper.generateTestGuid();
+
+            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ' + global.intyg.guidcheck, false);
+            console.log(body);
+            var path = '/send-message-to-care/v1.0?wsdl';
+            url = process.env.INTYGTJANST_URL + path;
+            url = url.replace('https', 'http');
+
+            soap.createClient(url, function(err, client) {
+                logger.info(url);
+                if (err) {
                     callback(err);
-                });
-            }
+                } else {
+                    client.SendMessageToCare(body, function(err, result, resBody) {
+                        console.log(resBody);
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var resultcode = result.result.resultCode;
+                            logger.info('ResultCode: ' + resultcode);
+                            // console.log(result);
+                            if (resultcode !== 'OK') {
+                                logger.info(result);
+                                callback('ResultCode: ' + resultcode + '\n' + resBody);
+                            } else {
+                                logger.info('ResultCode: ' + resultcode);
+                                callback();
+                            }
 
-        });
+                        }
+                    });
+                }
+            });
+
+
+        } else {
+            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
+            url = url.replace('https', 'http');
+            soap.createClient(url, function(err, client) {
+                if (err) {
+                    callback(err);
+                } else {
+                    body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
+                        global.person.id,
+                        global.user.hsaId,
+                        global.user.fornamn + '' + global.user.efternamn,
+                        global.user.enhetId,
+                        'WebCert Enhet 1',
+                        'Enhetsnamn',
+                        global.meddelanden[0].id
+                    );
+                    console.log(body);
+                    client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+                        callback(err);
+                    });
+                }
+
+            });
+
+        }
     });
 
     this.Given(/^ska frågan vara hanterad$/, function(callback) {

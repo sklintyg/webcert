@@ -588,6 +588,9 @@
     "totaltAntalVardenheter": {
       "type": "integer"
     },
+    "reference": {
+      "type": "string"
+    },
     "valdVardenhet": {
       "additionalProperties": false,
       "properties": {

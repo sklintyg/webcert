@@ -19,13 +19,12 @@
 
 package se.inera.intyg.webcert.fkstub.validation;
 
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
 import java.util.List;
 
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.*;
 
 /**
  * @author andreaskaltenbach
@@ -34,9 +33,6 @@ public class VardAdresseringsTypeValidator {
 
     private final VardAdresseringsType vardAdress;
     private final List<String> validationErrors;
-
-    private static final String HOS_PERSONAL_OID = "1.2.752.129.2.1.4.1";
-    private static final String ENHET_OID = "1.2.752.129.2.1.4.1";
 
     public VardAdresseringsTypeValidator(VardAdresseringsType vardAdress, List<String> validationErrors) {
         this.vardAdress = vardAdress;
@@ -62,8 +58,8 @@ public class VardAdresseringsTypeValidator {
 
         // Check lakar id o.i.d.
         if (hosPersonal.getPersonalId().getRoot() == null
-                || !hosPersonal.getPersonalId().getRoot().equals(HOS_PERSONAL_OID)) {
-            validationErrors.add("Wrong o.i.d. for personalId! Should be " + HOS_PERSONAL_OID);
+                || !hosPersonal.getPersonalId().getRoot().equals(HSA_ID_OID)) {
+            validationErrors.add("Wrong o.i.d. for personalId! Should be " + HSA_ID_OID);
         }
 
         // Check lakarnamn - mandatory
@@ -88,8 +84,8 @@ public class VardAdresseringsTypeValidator {
 
         // Check enhets o.i.d
         if (enhet.getEnhetsId() == null || enhet.getEnhetsId().getRoot() == null
-                || !enhet.getEnhetsId().getRoot().equals(ENHET_OID)) {
-            validationErrors.add("Wrong o.i.d. for enhetsId! Should be " + ENHET_OID);
+                || !enhet.getEnhetsId().getRoot().equals(HSA_ID_OID)) {
+            validationErrors.add("Wrong o.i.d. for enhetsId! Should be " + HSA_ID_OID);
         }
 
         // Check enhetsnamn - mandatory
@@ -113,8 +109,8 @@ public class VardAdresseringsTypeValidator {
         }
         // Check vardgivare o.i.d.
         if (vardgivare.getVardgivareId() == null || vardgivare.getVardgivareId().getRoot() == null
-                || !vardgivare.getVardgivareId().getRoot().equals(HOS_PERSONAL_OID)) {
-            validationErrors.add("Wrong o.i.d. for vardgivareId! Should be " + HOS_PERSONAL_OID);
+                || !vardgivare.getVardgivareId().getRoot().equals(HSA_ID_OID)) {
+            validationErrors.add("Wrong o.i.d. for vardgivareId! Should be " + HSA_ID_OID);
         }
 
         // Check vardgivarename - mandatory

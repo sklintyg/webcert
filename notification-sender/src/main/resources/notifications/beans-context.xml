@@ -24,6 +24,8 @@
 
   <bean id="notificationTransformer" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer"/>
 
+  <bean id="notificationAggregator" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator"/>
+
   <bean id="notificationWSClient" class="se.inera.intyg.webcert.notification_sender.notifications.services.v1.NotificationWSClient"></bean>
 
   <bean id="notificationWSClientV2" class="se.inera.intyg.webcert.notification_sender.notifications.services.v2.NotificationWSClient"></bean>

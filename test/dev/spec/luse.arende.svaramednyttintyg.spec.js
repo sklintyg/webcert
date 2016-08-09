@@ -32,7 +32,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId = 'luse-arende-komplt';
+    var meddelandeId = 'luse-arende-komplt';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -45,7 +45,7 @@ describe('arende on luse intyg', function() {
 
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
+            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
                 'KOMPLT', 'PENDING_INTERNAL_ACTION', [
                     {
                         'frageId': '1',
@@ -69,12 +69,12 @@ describe('arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId);
+            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('click svara med nytt intyg', function() {
-            LuseIntygPage.getSvaraMedNyttIntygButton(arendeId).click();
+            LuseIntygPage.getSvaraMedNyttIntygButton(meddelandeId).click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
     });
@@ -90,7 +90,7 @@ describe('arende on luse intyg', function() {
             expect(LuseUtkastPage.relatedIntygList.rows().count()).toBe(3);
             expect(LuseUtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
             expect(LuseUtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Komplettering');
-            expect(LuseUtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast');
+            expect(LuseUtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast, kan signeras');
             expect(LuseUtkastPage.relatedIntygList.row(3).relation.getText()).toBe('');
             expect(LuseUtkastPage.relatedIntygList.row(3).status.getText()).toBe('Signerat');
         });

@@ -41,6 +41,20 @@ function arrayContains(array, compareArray) {
     return found.length > 0;
 }
 
+function isHogreKorkortstyper(typer) {
+    return (
+        typer.indexOf('C1') > -1 ||
+        typer.indexOf('C1E') > -1 ||
+        typer.indexOf('C') > -1 ||
+        typer.indexOf('CE') > -1 ||
+        typer.indexOf('D1') > -1 ||
+        typer.indexOf('D1E') > -1 ||
+        typer.indexOf('D') > -1 ||
+        typer.indexOf('Taxi') > -1 ||
+        typer.indexOf('DE') > -1
+    );
+}
+
 var tsValues = {
     korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
     identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
@@ -120,25 +134,32 @@ var tsValues = {
     },
     getRandomHypoglykemier: function(korkortstyper) {
         var hypoObj = {
-            a: 'Nej',
-            b: 'Nej'
+            a: shuffle(['Ja', 'Nej'])[0],
+            b: shuffle(['Ja', 'Nej'])[0]
         };
 
         //För vissa körkortstyper krävs det svar på f och g
-        if (
-            korkortstyper.indexOf('C1') > -1 ||
-            korkortstyper.indexOf('C1E') > -1 ||
-            korkortstyper.indexOf('C') > -1 ||
-            korkortstyper.indexOf('CE') > -1 ||
-            korkortstyper.indexOf('D1') > -1 ||
-            korkortstyper.indexOf('D1E') > -1 ||
-            korkortstyper.indexOf('D') > -1 ||
-            korkortstyper.indexOf('Taxi') > -1 ||
-            korkortstyper.indexOf('DE') > -1
-        ) {
+        if (isHogreKorkortstyper(korkortstyper)) {
             hypoObj.f = shuffle(['Ja', 'Nej'])[0];
-            hypoObj.g = 'Nej';
+            hypoObj.g = shuffle(['Ja', 'Nej'])[0];
         }
+
+        if (hypoObj.g === 'Ja') {
+            hypoObj.gDatum = '2016-07-04';
+        }
+
+        if (hypoObj.b === 'Ja') {
+            hypoObj.c = shuffle(['Ja', 'Nej'])[0];
+            hypoObj.d = shuffle(['Ja', 'Nej'])[0];
+            hypoObj.e = shuffle(['Ja', 'Nej'])[0];
+            if (hypoObj.d === 'Ja') {
+                hypoObj.dAntalEpisoder = testdataHelper.randomTextString();
+            }
+            if (hypoObj.e === 'Ja') {
+                hypoObj.eAntalEpisoder = testdataHelper.randomTextString();
+            }
+        }
+
         return hypoObj;
     },
     getRandomBehandling: function() {

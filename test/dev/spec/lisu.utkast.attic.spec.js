@@ -135,7 +135,7 @@ describe('Lisu attic tests', function() {
     describe('sjukskrivningar', function() {
         it('should still be valid if sjukskrivningsperiod > 75', function() {
             // Split into 2 it blocks to speed up clearing of these fields with ignoreSynchronization
-            browser.ignoreSynchronization = true;
+            browser.ignoreSynchronization = false;
             LisuUtkastPage.sjukskrivning[75].fran.clear();
             LisuUtkastPage.sjukskrivning[75].till.clear();
             LisuUtkastPage.sjukskrivning[50].fran.clear();
@@ -179,7 +179,7 @@ describe('Lisu attic tests', function() {
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.beskrivning.getAttribute('value')).toBe('Nattetid är bäst');
             expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
-
+        
         describe('prognos', function() {
             it('should still be valid if prognos is changed', function() {
                 LisuUtkastPage.sjukskrivning.prognos.typ[1].sendKeys(protractor.Key.SPACE);
@@ -204,42 +204,44 @@ describe('Lisu attic tests', function() {
                 expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
             });
         });
+        
+        describe('åtgärder', function() {
+            it('should still be valid if åtgärd is changed to "Inte aktuellt"', function() {
+                LisuUtkastPage.atgarder.typ[8].sendKeys(protractor.Key.SPACE);
+                LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
+                LisuUtkastPage.atgarder.ejAktuelltBeskrivning.sendKeys('Inte längre aktuellt');
+                LisuUtkastPage.showMissingInfoButtonClick(true);
+
+                expect(LisuUtkastPage.atgarder.typ[8].isEnabled()).toBe(false);
+                expect(LisuUtkastPage.atgarder.aktuelltBeskrivning.isPresent()).toBeFalsy();
+                expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+            });
+
+            it('should restore arbetslivsinriktadeAtgarderAktuelltBeskrivning if åtgärd "Arbetsträning" is selected', function() {
+                LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
+                LisuUtkastPage.atgarder.typ[2].sendKeys(protractor.Key.SPACE);
+                LisuUtkastPage.showMissingInfoButtonClick(true);
+
+                expect(LisuUtkastPage.atgarder.typ[1].isEnabled()).toBe(false);
+                expect(LisuUtkastPage.atgarder.aktuelltBeskrivning.getAttribute('value')).toBe('Det är alltid bra');
+                expect(LisuUtkastPage.atgarder.ejAktuelltBeskrivning.isPresent()).toBeFalsy();
+                expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+            });
+
+            it('should restore arbetslivsinriktadeAtgarderAktuelltBeskrivning if åtgärd "Inte längre aktuellt" is selected again', function() {
+                LisuUtkastPage.atgarder.typ[2].sendKeys(protractor.Key.SPACE);
+                LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
+                LisuUtkastPage.showMissingInfoButtonClick(true);
+
+                expect(LisuUtkastPage.atgarder.typ[2].isEnabled()).toBe(false);
+                expect(LisuUtkastPage.atgarder.aktuelltBeskrivning.isPresent()).toBeFalsy();
+                expect(LisuUtkastPage.atgarder.ejAktuelltBeskrivning.getAttribute('value')).toBe('Inte längre aktuellt');
+                expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+            });
+        });
     });
 
-    describe('åtgärder', function() {
-        it('should still be valid if åtgärd is changed to "Inte aktuellt"', function() {
-            LisuUtkastPage.atgarder.typ[8].sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning.sendKeys('Inte längre aktuellt');
-            LisuUtkastPage.showMissingInfoButtonClick(true);
-
-            expect(LisuUtkastPage.atgarder.typ[8].isEnabled()).toBe(false);
-            expect(LisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderAktuelltBeskrivning.isPresent()).toBeFalsy();
-            expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
-        });
-
-        it('should restore arbetslivsinriktadeAtgarderAktuelltBeskrivning if åtgärd "Arbetsträning" is selected', function() {
-            LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.atgarder.typ[2].sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
-
-            expect(LisuUtkastPage.atgarder.typ[1].isEnabled()).toBe(false);
-            expect(LisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderAktuelltBeskrivning.getAttribute('value')).toBe('Det är alltid bra');
-            expect(LisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning.isPresent()).toBeFalsy();
-            expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
-        });
-
-        it('should restore arbetslivsinriktadeAtgarderAktuelltBeskrivning if åtgärd "Inte längre aktuellt" is selected again', function() {
-            LisuUtkastPage.atgarder.typ[2].sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
-
-            expect(LisuUtkastPage.atgarder.typ[2].isEnabled()).toBe(false);
-            expect(LisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderAktuelltBeskrivning.isPresent()).toBeFalsy();
-            expect(LisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning.getAttribute('value')).toBe('Inte längre aktuellt');
-            expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
-        });
-    });
+    
 
     describe('kontaktMedFk', function() {
         it('should still be valid if kontaktMedFk is set to no', function() {

@@ -63,6 +63,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         addAbsentAttributesFromFakeCredentials(token, details);
         selectVardenhetFromFakeCredentials(token, details);
         applyUserOrigin(token, details);
+        applyReference(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
                 new ArrayList<>());
         result.setDetails(details);
@@ -70,15 +71,24 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         return result;
     }
 
+    private void applyReference(FakeAuthenticationToken token, Object details) {
+        if (details instanceof IntygUser) {
+            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getReference() != null) {
+                ((IntygUser) details).setReference(((FakeCredentials) token.getCredentials()).getReference());
+            }
+        }
+    }
+
     private void applyUserOrigin(FakeAuthenticationToken token, Object details) {
         if (details instanceof IntygUser) {
             if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
                 String origin = ((FakeCredentials) token.getCredentials()).getOrigin();
                 try {
-                    WebCertUserOriginType.valueOf(origin);       // Type check.
+                    WebCertUserOriginType.valueOf(origin); // Type check.
                     ((IntygUser) details).setOrigin(origin);
                 } catch (IllegalArgumentException e) {
-                    throw new AuthoritiesException("Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
+                    throw new AuthoritiesException(
+                            "Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
                 }
             }
         }
@@ -88,7 +98,8 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             if (user.getNamn() == null || user.getNamn().isEmpty()) {
-                user.setNamn(((FakeCredentials) token.getCredentials()).getFornamn() + " " +  ((FakeCredentials) token.getCredentials()).getEfternamn());
+                user.setNamn(
+                        ((FakeCredentials) token.getCredentials()).getFornamn() + " " + ((FakeCredentials) token.getCredentials()).getEfternamn());
             }
         }
     }
@@ -125,7 +136,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         for (Vardgivare vg : intygUser.getVardgivare()) {
             for (Vardenhet ve : vg.getVardenheter()) {
                 if (ve.getId().equals(enhetId)) {
-                    intygUser.setValdVardenhet(ve);    // TODO Måste troligen borra oss ner på mottagningsnivå också!
+                    intygUser.setValdVardenhet(ve); // TODO Måste troligen borra oss ner på mottagningsnivå också!
                     return;
                 } else if (ve.getMottagningar() != null) {
                     for (Mottagning m : ve.getMottagningar()) {

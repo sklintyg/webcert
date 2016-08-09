@@ -19,23 +19,30 @@
 
 package se.inera.intyg.webcert.notificationstub;
 
-import java.util.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.notificationstub.v2.NotificationStoreV2;
+import se.inera.intyg.webcert.notificationstub.v2.stat.NotificationStubEntry;
+import se.inera.intyg.webcert.notificationstub.v2.stat.StatTransformerUtil;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import javax.ws.rs.core.Response;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 
 public class NotificationStubRestApi {
 
     @Autowired
     private NotificationStore notificationStore;
+
+    @Autowired
+    private NotificationStoreV2 notificationStoreV2;
 
     @GET
     @Path("/notifieringar")
@@ -44,9 +51,35 @@ public class NotificationStubRestApi {
         return notificationStore.getNotifications();
     }
 
+    @GET
+    @Path("/notifieringar/v2")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType> notifieringarV2() {
+        return notificationStoreV2.getNotifications();
+    }
+
+    @GET
+    @Path("/notifieringar/v2/stats")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response notifieringarV2Stats() {
+        Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType> notifs = notificationStoreV2.getNotifications();
+        Map<String, List<NotificationStubEntry>> stringListMap = new StatTransformerUtil().toStat(notifs);
+        StringBuilder buf = new StringBuilder();
+        for (Map.Entry<String, List<NotificationStubEntry>> entry : stringListMap.entrySet()) {
+            buf.append("---- ").append(entry.getKey()).append(" ----\n");
+            entry.getValue().stream()
+                    .sorted((a, b) -> a.getHandelseTid().compareTo(b.getHandelseTid()))
+                    .forEach(ie -> buf.append(ie.getHandelseTid().toString("HH:mm:ss")).append("\t").append(ie.getHandelseKod()).append("\n"));
+            buf.append("-----------------------------------------------\n\n");
+        }
+        return Response.ok(buf.toString()).build();
+    }
+
+
     @POST
     @Path("/clear")
     public void clear() {
+        notificationStoreV2.clear();
         notificationStore.clear();
     }
 }

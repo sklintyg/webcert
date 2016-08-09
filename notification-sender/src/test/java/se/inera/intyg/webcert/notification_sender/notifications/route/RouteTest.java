@@ -24,17 +24,24 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.impl.DefaultMessage;
 import org.apache.camel.test.spring.*;
 import org.joda.time.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -44,6 +51,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateTypeFormatEnum;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
@@ -51,14 +59,16 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
-@MockEndpointsAndSkip("bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:notificationAggregator||bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
 
     @Autowired
     CamelContext camelContext;
 
     @Mock
-    private ModuleApi moduleApi;
+    private ModuleApi moduleApi; // this is a mock from unit-test-notification-sender-config.xml
 
     @Autowired
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
@@ -66,8 +76,11 @@ public class RouteTest {
     @Autowired
     private Fk7263InternalToNotification mockInternalToNotification; // this is a mock from unit-test-notification-sender-config.xml
 
-    @Produce(uri = "direct:receiveNotificationRequestEndpoint")
+    @Produce(uri = "direct:receiveNotificationForAggregationRequestEndpoint")
     private ProducerTemplate producerTemplate;
+
+    @EndpointInject(uri = "mock:bean:notificationAggregator")
+    private MockEndpoint notificationAggregator;
 
     @EndpointInject(uri = "mock:bean:notificationWSClient")
     private MockEndpoint notificationWSClient;
@@ -80,6 +93,8 @@ public class RouteTest {
 
     @EndpointInject(uri = "mock:direct:temporaryErrorHandlerEndpoint")
     private MockEndpoint temporaryErrorHandlerEndpoint;
+
+    private static int currentId = 1000;
 
     @Before
     public void setup() throws Exception {
@@ -94,6 +109,103 @@ public class RouteTest {
     }
 
     @Test
+    public void testRoutesDirectlyToNotificationQueueForFK7263Andrat() throws ModuleException, InterruptedException {
+        // Given
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        notificationWSClient.expectedMessageCount(1);
+        notificationWSClientV2.expectedMessageCount(0);
+        notificationAggregator.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"fk7263");
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(notificationAggregator);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testRoutesToAggregatorForLuaeFsAndrat() throws InterruptedException, ModuleException {
+        // This is just a hack in order to not fail subsequent tests due to camel unit tests leaking context between
+        // tests. This one just makes sure the notficationAggregator doesn't cause the subsequent "split(body())"
+        // to throw some exception caught by later tests.
+
+        notificationAggregator.whenAnyExchangeReceived(exchange -> {
+            Message msg = new DefaultMessage();
+            exchange.setOut(msg);
+        });
+
+        // Given
+        notificationWSClient.expectedMessageCount(0);
+        notificationAggregator.expectedMessageCount(1);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationAggregator);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testRoutesDirectlyToNotificationQueueForLuaeFsSkapad() throws InterruptedException, ModuleException {
+        // Given
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        notificationWSClientV2.expectedMessageCount(1);
+        notificationAggregator.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SKAPAT.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
+
+        // Then
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(notificationAggregator);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testRoutesDirectlyToNotificationQueueForLuaeFsSkickad() throws InterruptedException {
+        // Given
+        notificationWSClient.expectedMessageCount(1);
+        notificationAggregator.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SKICKA.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationAggregator);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
     public void testNormalRoute() throws InterruptedException {
         // Given
         notificationWSClient.expectedMessageCount(1);
@@ -102,7 +214,10 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(null));
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"fk7263");
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -120,7 +235,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -139,7 +254,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -179,7 +294,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -188,25 +303,7 @@ public class RouteTest {
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
-    @Test
-    public void testRuntimeException() throws Exception {
-        // Given
-        when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any())).thenThrow(new RuntimeException("Testing runtime exception"));
 
-        notificationWSClient.expectedMessageCount(0);
-        notificationWSClientV2.expectedMessageCount(0);
-        permanentErrorHandlerEndpoint.expectedMessageCount(1);
-        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
-
-        // When
-        producerTemplate.sendBody(createNotificationMessage(null));
-
-        // Then
-        assertIsSatisfied(notificationWSClient);
-        assertIsSatisfied(notificationWSClientV2);
-        assertIsSatisfied(permanentErrorHandlerEndpoint);
-        assertIsSatisfied(temporaryErrorHandlerEndpoint);
-    }
 
     @Test
     public void testRuntimeExceptionNotificationVersion2() throws Exception {
@@ -219,7 +316,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -241,7 +338,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -264,7 +361,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -309,7 +406,27 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_2, "fk7263"));
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+    }
+
+    @Test
+    public void testZRuntimeException() throws Exception {
+        // Given
+        when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any())).thenThrow(new RuntimeException("Testing runtime exception"));
+
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(1);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+
+        // When
+        producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -319,14 +436,18 @@ public class RouteTest {
     }
 
     private String createNotificationMessage(SchemaVersion version) {
+        return createNotificationMessage(version, "fk7263");
+    }
+
+    private String createNotificationMessage(SchemaVersion version, String intygsTyp) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",");
+        sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
         if (version != null) {
             sb.append("\"version\":\"");
             sb.append(version.name());
             sb.append("\",");
         }
-        sb.append("\"utkast\":{\"id\":\"1234\",\"typ\":\"fk7263\" },\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
+        sb.append("\"utkast\":{\"id\":\"" + currentId + "\",\"typ\":\"" + intygsTyp + "\" },\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
         return sb.toString();
     }
 

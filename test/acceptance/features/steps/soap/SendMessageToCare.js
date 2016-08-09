@@ -16,36 +16,70 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals wcTestTools*/
+/*globals wcTestTools, JSON*/
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
+var helpers = require('../helpers');
 
 function addDays(date, days) {
     date.setDate(date.getDate() + days);
     return date;
 }
 
-module.exports.SendMessageToCare = function(user, person, intyg, message) {
-    var amneCode = 'KOMPLT';
-    var amneDisplayName = 'Komplettering';
+module.exports.SendMessageToCare = function(user, person, intyg, message, amneCode) {
+    var amneDisplayName = helpers.getSubjectFromCode(amneCode);
     var messageID = testdataHelper.generateTestGuid();
     var skickatTidpunkt = new Date();
-    var sistaDatumForSvar = addDays(skickatTidpunkt, 5);
 
-    var kompletteringar = [];
-    for (var k = 1; k <= 26; k++) {
-        if (k === 24) {
-            continue;
-        } // Frage-id 24 finns inte
-        kompletteringar.push(
-            '<komplettering>' +
-            '<frage-id>' + k + '</frage-id>' +
-            '<text>Kompletterning #' + k + '</text>' +
-            '</komplettering>'
-        );
+
+
+    var svarPa = '';
+    var sistaDatumForSvar = '<sistaDatumForSvar>' + testdataHelper.dateFormat(addDays(skickatTidpunkt, 5)) + '</sistaDatumForSvar>';
+
+    if (amneCode) {
+        global.meddelanden.push({
+            id: messageID,
+            typ: 'Fråga',
+            amne: amneCode
+        });
+    } else {
+        // Om ämne inte skickas med till funktionen så behandlar vi det som 
+        // ett svarsmeddelande och kopierar ämne från tidigare
+        amneCode = global.meddelanden[0].amne;
+        svarPa = '<svarPa>' + '<core:meddelande-id>' + global.meddelanden[0].id + '</core:meddelande-id>' + '</svarPa>';
+        sistaDatumForSvar = '';
+
+        global.meddelanden.push({
+            id: messageID,
+            typ: 'Svar',
+            amne: amneCode
+        });
+
     }
 
+    console.log('global.meddelanden: ' + JSON.stringify(global.meddelanden));
+
+    var kompletteringar = '';
+    var paminnelseMeddelandeId = '';
+    if (global.meddelanden[0].id && amneCode === 'PAMINN') {
+        paminnelseMeddelandeId = '<paminnelseMeddelande-id>' + global.meddelanden[0].id + '</paminnelseMeddelande-id>';
+    } else if (amneCode === 'KOMPLT') {
+
+        kompletteringar = [];
+        for (var k = 1; k <= 26; k++) {
+            if (k === 24) {
+                continue; // Frage-id 24 finns inte
+            }
+            kompletteringar.push(
+                '<komplettering>' +
+                '<frage-id>' + k + '</frage-id>' +
+                '<text>Kompletterning #' + k + '</text>' +
+                '</komplettering>'
+            );
+        }
+        kompletteringar = kompletteringar.join('\n');
+    }
 
     return '<SendMessageToCare' +
         ' xmlns="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1"' +
@@ -68,17 +102,19 @@ module.exports.SendMessageToCare = function(user, person, intyg, message) {
         '<types:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</types:codeSystem>' +
         '<types:displayName>' + amneDisplayName + '</types:displayName>' +
         '</amne>' +
-        '<rubrik>KOMPLT</rubrik>' +
+        '<rubrik>' + amneCode + '</rubrik>' +
         '<meddelande>' + message + '</meddelande>' +
+        paminnelseMeddelandeId +
+        svarPa +
         '<skickatAv>' +
         '<part>' +
         '<types:code>FKASSA</types:code>' +
         '<types:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</types:codeSystem>' +
         '<types:displayName>Försäkringskassan</types:displayName>' +
         '</part>' +
-        '<kontaktInfo>MAX antal kategorier. Automatiskt test </kontaktInfo>' +
+        '<kontaktInfo>Kontaktinfo</kontaktInfo>' +
         '</skickatAv>' +
-        kompletteringar.join('\n') +
-        '<sistaDatumForSvar>' + testdataHelper.dateFormat(sistaDatumForSvar) + '</sistaDatumForSvar>' +
+        kompletteringar +
+        sistaDatumForSvar +
         '</SendMessageToCare>';
 };

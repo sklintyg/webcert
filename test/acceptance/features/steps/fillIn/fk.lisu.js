@@ -17,51 +17,100 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor, logger */
+/* globals pages, browser, protractor, logger, Promise */
 
 'use strict';
 var lisuUtkastPage = pages.intyg.lisu.utkast;
 
 module.exports = {
-    fillIn: function(intyg, cb) {
+    fillIn: function(intyg) {
         logger.info('intyg.typ:' + intyg.typ);
         browser.ignoreSynchronization = true;
+        var promiseArr = [];
 
         //Baserat på
-        lisuUtkastPage.baseratPa.minUndersokningAvPatienten.checkbox.sendKeys(protractor.Key.SPACE);
-        lisuUtkastPage.baseratPa.journaluppgifter.checkbox.sendKeys(protractor.Key.SPACE);
+        promiseArr.push(lisuUtkastPage.angeBaserasPa(intyg.baseratPa).then(function() {
+            logger.info('OK - angeBaserasPa');
+        }, function(reason) {
+            throw ('FEL, angeBaserasPa,' + reason);
+        }));
 
         // Sysselsättning
-        lisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE);
-        lisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning);
+        promiseArr.push(lisuUtkastPage.angeSysselsattning(intyg.sysselsattning).then(function() {
+            logger.info('OK - angeSysselsattning');
+        }, function(reason) {
+            throw ('FEL, angeSysselsattning,' + reason);
+        }));
 
         // Diagnos
-        lisuUtkastPage.diagnoseCode.sendKeys(intyg.diagnos.kod);
-        lisuUtkastPage.diagnoseCode.sendKeys(protractor.Key.TAB);
+        promiseArr.push(lisuUtkastPage.angeDiagnos(intyg.diagnos).then(function() {
+            logger.info('OK - angeDiagnos');
+        }, function(reason) {
+            throw ('FEL, angeDiagnos,' + reason);
+        }));
 
         // Konsekvenser för patient
-        lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.funktionsnedsattning);
-        lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning);
+        promiseArr.push(lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.funktionsnedsattning).then(function() {
+            logger.info('OK - konsekvenser funktionsnedsattning');
+        }, function(reason) {
+            throw ('FEL, konsekvenser funktionsnedsattning, ' + reason);
+        }));
+        promiseArr.push(lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(function() {
+            logger.info('OK - konsekvenser aktivitetsbegransning');
+        }, function(reason) {
+            throw ('FEL, konsekvenser aktivitetsbegransning,' + reason);
+        }));
 
-        // Bedömin
-        lisuUtkastPage.sjukskrivning[100].fran.sendKeys(intyg.sjukskrivning.fran);
-        lisuUtkastPage.sjukskrivning[100].till.sendKeys(intyg.sjukskrivning.till);
-        lisuUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning.sendKeys(intyg.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning);
-        lisuUtkastPage.sjukskrivning.arbetsresor.ja.sendKeys(protractor.Key.SPACE);
-        lisuUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.sjukskrivning.formagaTrotsBegransningBeskrivning);
-        lisuUtkastPage.sjukskrivning.prognos.typ[1].sendKeys(protractor.Key.SPACE);
+        // Bedöming Arbetsförmåga
+        promiseArr.push(lisuUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+            logger.info('OK - angeArbetsformaga');
+        }, function(reason) {
+            throw ('FEL, angeArbetsformaga,' + reason);
+        }));
+
+        //Arbetstidsförläggning
+        promiseArr.push(lisuUtkastPage.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
+            logger.info('OK - angeArbetstidsforlaggning');
+        }, function(reason) {
+            throw ('FEL, angeArbetstidsforlaggning,' + reason);
+        }));
+
+
+        //Trots FMB
+        promiseArr.push(lisuUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning.sendKeys(intyg.arbetsformagaFMB).then(function() {
+            logger.info('OK - ange FMB');
+        }, function(reason) {
+            throw ('FEL, ange FMB,' + reason);
+        }));
+
+        //Resor till arbete
+        promiseArr.push(lisuUtkastPage.angeResorTillArbete(intyg.resorTillArbete).then(function() {
+            logger.info('OK - angeResorTillArbete');
+        }, function(reason) {
+            throw ('FEL, angeResorTillArbete,' + reason);
+        }));
+
+        //Förmåga trots begränsning
+        promiseArr.push(lisuUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.goraTrotsSjukdom).then(function() {
+            logger.info('OK - formagaTrotsBegransningBeskrivning');
+        }, function(reason) {
+            throw ('FEL, formagaTrotsBegransningBeskrivning,' + reason);
+        }));
+
+        //Prognos
+        promiseArr.push(lisuUtkastPage.sjukskrivning.prognos.typ['1'].sendKeys(protractor.Key.SPACE).then(function() {
+            logger.info('OK - prognos');
+        }, function(reason) {
+            throw ('FEL, prognos,' + reason);
+        }));
 
         // Åtgärd
-        lisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
-        browser.ignoreSynchronization = false; // Cannot ignore synchronization in this step
-        lisuUtkastPage.atgarder.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning.sendKeys(intyg.arbetslivsinriktadeAtgarderEjAktuelltBeskrivning);
-        browser.ignoreSynchronization = true;
-
-
-
+        promiseArr.push(lisuUtkastPage.angeAtgarder(intyg.atgarder).then(function() {
+            logger.info('OK - angeAtgarder');
+        }, function(reason) {
+            throw ('FEL, angeAtgarder,' + reason);
+        }));
         browser.ignoreSynchronization = false;
-
-        // browser.driver.wait(protractor.until.elementIsVisible(luseUtkastPage.signeraButton));
-        cb();
+        return Promise.all(promiseArr);
     }
 };

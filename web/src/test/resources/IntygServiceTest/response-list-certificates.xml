@@ -100,6 +100,7 @@
             <ns3:tidpunkt>2013-08-05T14:30:03</ns3:tidpunkt>
          </ns3:status>
          <ns3:svar id="32">
+            <ns3:instans>1</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>1</code>
@@ -115,6 +116,7 @@
             </ns3:delsvar>
          </ns3:svar>
          <ns3:svar id="32">
+            <ns3:instans>2</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>2</code>
@@ -130,6 +132,7 @@
             </ns3:delsvar>
          </ns3:svar>
          <ns3:svar id="32">
+            <ns3:instans>3</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>3</code>
@@ -145,6 +148,7 @@
             </ns3:delsvar>
          </ns3:svar>
          <ns3:svar id="32">
+            <ns3:instans>4</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>4</code>
@@ -241,6 +245,7 @@
             <ns3:tidpunkt>2015-12-23T14:30:03</ns3:tidpunkt>
          </ns3:status>
          <ns3:svar id="32">
+            <ns3:instans>1</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>1</code>
@@ -256,6 +261,7 @@
             </ns3:delsvar>
          </ns3:svar>
          <ns3:svar id="32">
+            <ns3:instans>2</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>2</code>
@@ -271,6 +277,7 @@
             </ns3:delsvar>
          </ns3:svar>
          <ns3:svar id="32">
+            <ns3:instans>3</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>3</code>
@@ -286,6 +293,7 @@
             </ns3:delsvar>
          </ns3:svar>
          <ns3:svar id="32">
+            <ns3:instans>4</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
                   <code>4</code>

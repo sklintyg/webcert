@@ -18,24 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
+import se.inera.intyg.webcert.persistence.model.Status;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Api(value = "services arende", description = "REST API för testbarhet - Ärenden")
@@ -53,6 +59,18 @@ public class ArendeResource {
 
     @Autowired
     private ArendeRepository arendeRepository;
+
+    @GET
+    @Path("/intyg/{intygsId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
+        List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
+        return Response.ok(byIntygsId.stream()
+                .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
+                .map(a -> a.getMeddelandeId())
+                .collect(Collectors.toList()))
+        .build();
+    }
 
     @GET
     @Path("/{id}")
@@ -80,7 +98,7 @@ public class ArendeResource {
 
     @DELETE
     @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces("text/plain")
     public Response deleteAllQuestions() {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
             public Response doInTransaction(TransactionStatus status) {
@@ -89,7 +107,25 @@ public class ArendeResource {
                 for (Arende arende : arenden) {
                     entityManager.remove(arende);
                 }
-                return Response.ok().build();
+                return Response.ok("Deleted " + arenden.size() + " arenden.").build();
+            }
+        });
+    }
+
+    @DELETE
+    @Path("/enhet/{enhetsId}")
+    @Produces("text/plain")
+    public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
+        return transactionTemplate.execute(new TransactionCallback<Response>() {
+            public Response doInTransaction(TransactionStatus status) {
+                @SuppressWarnings("unchecked")
+                List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f WHERE f.enhetId = :enhetId")
+                        .setParameter("enhetId", enhetsId)
+                        .getResultList();
+                for (Arende arende : arenden) {
+                    entityManager.remove(arende);
+                }
+                return Response.ok("Deleted " + arenden.size() + " arenden on unit " + enhetsId).build();
             }
         });
     }

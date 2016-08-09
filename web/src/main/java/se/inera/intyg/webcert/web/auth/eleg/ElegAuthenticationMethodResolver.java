@@ -20,10 +20,11 @@
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import org.springframework.security.saml.SAMLCredential;
-import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
+
+import se.inera.intyg.common.security.common.model.AuthenticationMethod;
 
 /**
- * Resolves {@link se.inera.intyg.common.integration.hsa.model.AuthenticationMethod} used for a e-leg authentication.
+ * Resolves {@link se.inera.intyg.common.security.common.model.AuthenticationMethod} used for a e-leg authentication.
  *
  * E.g. NetID, BankID or Mobilt BankID.
  *

@@ -15,7 +15,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    Och jag skickar intyget till Försäkringskassan
    Så ska intygets status vara "Intyget är signerat"
 
-   När Försäkringskassan skickar ett Kompletterings-meddelande på intyget
+   När Försäkringskassan skickar ett "Komplettering" meddelande på intyget
    Och jag går in på intyget
    Och jag väljer att svara med ett nytt intyg
    Så ska jag se kompletteringsfrågan på utkast-sidan
