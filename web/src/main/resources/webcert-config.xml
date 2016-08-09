@@ -45,7 +45,7 @@
   <import resource="classpath:/certificate-sender-config.xml" />
 
   <context:annotation-config />
-  
+
   <context:component-scan base-package="se.inera.intyg.webcert.web">
     <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
   </context:component-scan>
@@ -87,11 +87,12 @@
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.common.security.authorities.AuthoritiesHelper" />
   </beans>
-  
+
   <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
     <bean id="FragaSvarBootstrapBean" class="se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean" />
     <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean" />
+    <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean" />
   </beans>
 
   <beans profile="!dev">
@@ -131,7 +132,7 @@
     </bean>
 
     <bean id="avtalService" class="se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalServiceImpl"/>
-    
+
     <bean id="copyCompletionUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CopyCompletionUtkastBuilder"/>
     <bean id="createCopyUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateCopyUtkastBuilder"/>
     <bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
