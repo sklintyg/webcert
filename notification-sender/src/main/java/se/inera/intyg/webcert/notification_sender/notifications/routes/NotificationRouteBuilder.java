@@ -19,6 +19,10 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
@@ -28,7 +32,8 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.common.Constants;
@@ -37,15 +42,10 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateType;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
     private static final long DEFAULT_TIMEOUT = 60000L;
-    private static final String FK_7263_INTYGSTYP = Fk7263EntryPoint.MODULE_ID;
 
     @Value("${receiveNotificationForAggregationRequestEndpointUri}")
     private String notificationForAggregationQueue;
@@ -83,7 +83,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .removeHeader(Constants.JMSX_GROUP_ID)
                 .removeHeader(Constants.JMSX_GROUP_SEQ)
         .choice()
-                .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(FK_7263_INTYGSTYP))
+                .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
                     .to(notificationQueue)
                 .when(directRoutingPredicate())
                     .to(notificationQueue)
@@ -140,15 +140,15 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     }
 
     /*
-     * Returns true if the HandelseType header is NOT of type INTYGSUTKAST_ANDRAT and not INTYGSUTKAST_SIGNERAT.
+     * Returns true if the handelse header is NOT of type ANDRAT and not SIGNAT.
      * I.e. all except those two types shall be directly routed to the 'receiveNotificationRequestEndpoint' aka
      * notificationQueue without any aggregation or filtering.
      */
     private Predicate directRoutingPredicate() {
         return PredicateBuilder
                 .and(
-                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelseType.INTYGSUTKAST_ANDRAT.value()),
-                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelseType.INTYGSUTKAST_SIGNERAT.value()));
+                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
+                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
     }
 
     private JaxbDataFormat initializeJaxbMessageDataFormatV2() throws JAXBException {

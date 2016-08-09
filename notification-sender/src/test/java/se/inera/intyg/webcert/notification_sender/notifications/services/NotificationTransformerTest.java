@@ -33,11 +33,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
@@ -68,7 +70,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSend() throws Exception {
         // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
@@ -80,14 +82,14 @@ public class NotificationTransformerTest {
 
         // Then
         assertEquals(INTYGS_ID, ((CertificateStatusUpdateForCareType) message.getBody()).getUtlatande().getUtlatandeId().getExtension());
-        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
+        assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
         assertEquals(SchemaVersion.VERSION_1.name(), message.getHeader(NotificationRouteHeaders.VERSION));
 
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
+        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_1.name()));
         verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
     }
@@ -95,7 +97,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSendBackwardsCompatibility() throws Exception {
         // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
@@ -107,21 +109,21 @@ public class NotificationTransformerTest {
 
         // Then
         assertEquals(INTYGS_ID, ((CertificateStatusUpdateForCareType) message.getBody()).getUtlatande().getUtlatandeId().getExtension());
-        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
+        assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
         assertEquals(SchemaVersion.VERSION_1.name(), message.getHeader(NotificationRouteHeaders.VERSION));
 
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
+        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_1.name()));
         verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
     }
 
     @Test
     public void testSchemaVersion2Transformation() throws Exception {
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_2, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
@@ -146,14 +148,14 @@ public class NotificationTransformerTest {
         assertEquals(INTYGS_ID,
                 ((se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType) message
                         .getBody()).getIntyg().getIntygsId().getExtension());
-        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
+        assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
         assertEquals(SchemaVersion.VERSION_2.name(), message.getHeader(NotificationRouteHeaders.VERSION));
 
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelseType.INTYGSUTKAST_SKAPAT.value()));
+        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_2.name()));
         verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE));
         verify(moduleApi, times(1)).getUtlatandeFromJson(any());
@@ -162,7 +164,7 @@ public class NotificationTransformerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelseType.INTYGSUTKAST_SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);

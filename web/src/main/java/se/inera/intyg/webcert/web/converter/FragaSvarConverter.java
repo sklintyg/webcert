@@ -34,6 +34,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 /**
  * @author andreaskaltenbach
@@ -41,14 +42,12 @@ import se.inera.intyg.webcert.persistence.model.Status;
 @Component
 public class FragaSvarConverter {
 
-    private static final String FK_FRAGASTALLARE = "FK";
-
     private static final int FK_MEDDELANDE_RUBRIK_LANGD = 255;
 
     public FragaSvar convert(QuestionFromFkType source) {
 
         FragaSvar fragaSvar = new FragaSvar();
-        fragaSvar.setFrageStallare(FK_FRAGASTALLARE);
+        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
         fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
         fragaSvar.setExternReferens(source.getFkReferensId());
         fragaSvar.setAmne(Amne.valueOf(source.getAmne().value().toUpperCase()));

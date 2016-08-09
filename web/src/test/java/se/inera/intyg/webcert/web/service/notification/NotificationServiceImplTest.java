@@ -44,6 +44,7 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
@@ -97,13 +98,13 @@ public class NotificationServiceImplTest {
 
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_1));
 
-        NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
-        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
+        NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.ANDRAT, INTYG_JSON);
+        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
                 eq(SchemaVersion.VERSION_1), eq(null))).thenReturn(notMsg);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
-        notificationService.createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_ANDRAT);
+        notificationService.createAndSendNotification(utkast, HandelsekodEnum.ANDRAT);
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
@@ -122,11 +123,11 @@ public class NotificationServiceImplTest {
         // assert that things are still there
         assertNotNull(captNotMsg);
         assertEquals(INTYG_ID, captNotMsg.getIntygsId());
-        assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, captNotMsg.getHandelse());
+        assertEquals(HandelsekodEnum.ANDRAT, captNotMsg.getHandelse());
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
         assertEquals(SchemaVersion.VERSION_1, captNotMsg.getVersion());
         assertNull(captNotMsg.getReference());
-        verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
+        verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
                 eq(SchemaVersion.VERSION_1), eq(null));
     }
 
@@ -138,14 +139,14 @@ public class NotificationServiceImplTest {
 
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_1));
 
-        NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
+        NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.ANDRAT, INTYG_JSON);
         notMsg.setReference(ref);
-        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
+        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
                 eq(SchemaVersion.VERSION_1), eq(ref))).thenReturn(notMsg);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
-        notificationService.createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_ANDRAT, ref);
+        notificationService.createAndSendNotification(utkast, HandelsekodEnum.ANDRAT, ref);
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
@@ -164,11 +165,11 @@ public class NotificationServiceImplTest {
         // assert that things are still there
         assertNotNull(captNotMsg);
         assertEquals(INTYG_ID, captNotMsg.getIntygsId());
-        assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, captNotMsg.getHandelse());
+        assertEquals(HandelsekodEnum.ANDRAT, captNotMsg.getHandelse());
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
         assertEquals(SchemaVersion.VERSION_1, captNotMsg.getVersion());
         assertEquals(ref, captNotMsg.getReference());
-        verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT),
+        verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
                 eq(SchemaVersion.VERSION_1), eq(ref));
     }
 
@@ -177,17 +178,17 @@ public class NotificationServiceImplTest {
         final String ref = "reference";
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
 
-        NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_SKAPAT, INTYG_JSON);
+        NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.SKAPAT, INTYG_JSON);
         notMsg.setReference(ref);
-        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_SKAPAT),
+        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
                 eq(SchemaVersion.VERSION_2), eq(ref))).thenReturn(notMsg);
 
         notificationService.sendNotificationForDraftCreated(createUtkast(), ref);
-        verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_SKAPAT),
+        verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
                 eq(SchemaVersion.VERSION_2), eq(ref));
     }
 
-    private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
+    private NotificationMessage createNotificationMessage(HandelsekodEnum handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);
         NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs,

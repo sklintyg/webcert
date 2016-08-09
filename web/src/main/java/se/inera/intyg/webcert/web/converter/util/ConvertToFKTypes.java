@@ -21,14 +21,14 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
+import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
 import org.joda.time.LocalDateTime;
 
 import iso.v21090.dt.v1.II;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.*;
-import se.inera.intyg.common.support.validate.PersonnummerValidator;
-import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 
 /**
@@ -91,9 +91,9 @@ public final class ConvertToFKTypes {
         PatientType pt = new PatientType();
         pt.setFullstandigtNamn(ir.getPatientNamn());
 
-        String root = PersonnummerValidator.PERSONNUMMER_ROOT;
+        String root = PERSON_ID_OID;
         if (ir.getPatientId().isSamordningsNummer()) {
-            root = SamordningsnummerValidator.SAMORDNINGSNUMMER_ROOT;
+            root = SAMORDNING_ID_OID;
         }
 
         pt.setPersonId(toII(root, ir.getPatientId().getPersonnummer()));

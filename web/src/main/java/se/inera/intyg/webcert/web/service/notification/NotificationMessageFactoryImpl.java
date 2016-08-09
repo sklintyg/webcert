@@ -26,15 +26,16 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
 
-    private static final List<HandelseType> USES_FRAGOR_OCH_SVAR = Arrays.asList(HandelseType.FRAGA_FRAN_FK,
-            HandelseType.SVAR_FRAN_FK, HandelseType.FRAGA_TILL_FK, HandelseType.FRAGA_FRAN_FK_HANTERAD,
-            HandelseType.SVAR_FRAN_FK_HANTERAD, HandelseType.INTYG_MAKULERAT);
+    private static final List<HandelsekodEnum> USES_FRAGOR_OCH_SVAR = Arrays.asList(HandelsekodEnum.NYFRFM,
+            HandelsekodEnum.NYSVFM, HandelsekodEnum.NYFRTM, HandelsekodEnum.HANFRA,
+            HandelsekodEnum.HANSVA, HandelsekodEnum.MAKULE);
 
     @Autowired
     private FragorOchSvarCreator fragorOchSvarCreator;
@@ -43,10 +44,10 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
      * (non-Javadoc)
      *
      * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
-     * persistence.utkast.model.Utkast, se.inera.intyg.common.support.modules.support.api.notification.HandelseType)
+     * persistence.utkast.model.Utkast, se.inera.intyg.common.support.common.enumerations.HandelsekodEnum)
      */
     @Override
-    public NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse, SchemaVersion version, String reference) {
+    public NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version, String reference) {
 
         String intygsId = utkast.getIntygsId();
         String intygsTyp = utkast.getIntygsTyp();

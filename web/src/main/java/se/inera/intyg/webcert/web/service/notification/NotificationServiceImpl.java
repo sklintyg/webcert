@@ -19,8 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.*;
+
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+import javax.jms.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +33,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.common.Constants;
@@ -40,16 +49,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import java.util.Optional;
-
-import static se.inera.intyg.common.support.modules.support.api.notification.HandelseType.*;
-import static se.inera.intyg.common.support.modules.support.api.notification.HandelseType.INTYGSUTKAST_ANDRAT;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -97,7 +96,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendNotificationForDraftCreated(Utkast utkast, String reference) {
-        createAndSendNotification(utkast, INTYGSUTKAST_SKAPAT, reference);
+        createAndSendNotification(utkast, SKAPAT, reference);
     }
 
     /*
@@ -110,7 +109,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendNotificationForDraftSigned(Utkast utkast) {
-        createAndSendNotification(utkast, INTYGSUTKAST_SIGNERAT);
+        createAndSendNotification(utkast, SIGNAT);
     }
 
     /*
@@ -123,7 +122,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendNotificationForDraftChanged(Utkast utkast) {
-        createAndSendNotification(utkast, INTYGSUTKAST_ANDRAT);
+        createAndSendNotification(utkast, ANDRAT);
     }
 
     /*
@@ -136,7 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendNotificationForDraftDeleted(Utkast utkast) {
-        createAndSendNotification(utkast, INTYGSUTKAST_RADERAT);
+        createAndSendNotification(utkast, RADERA);
     }
 
     /*
@@ -151,7 +150,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForIntygSent(String intygsId) {
         Optional<Utkast> utkast = getUtkast(intygsId);
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), INTYG_SKICKAT_FK);
+            createAndSendNotification(utkast.get(), SKICKA);
         }
     }
 
@@ -167,7 +166,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForIntygRevoked(String intygsId) {
         Optional<Utkast> utkast = getUtkast(intygsId);
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), INTYG_MAKULERAT);
+            createAndSendNotification(utkast.get(), MAKULE);
         }
     }
 
@@ -183,7 +182,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), FRAGA_FRAN_FK);
+            createAndSendNotification(utkast.get(), NYFRFM);
         }
     }
 
@@ -199,7 +198,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionHandled(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), FRAGA_FRAN_FK_HANTERAD);
+            createAndSendNotification(utkast.get(), HANFRA);
         }
     }
 
@@ -215,7 +214,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionSent(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), FRAGA_TILL_FK);
+            createAndSendNotification(utkast.get(), NYFRTM);
         }
     }
 
@@ -231,7 +230,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), SVAR_FRAN_FK);
+            createAndSendNotification(utkast.get(), NYSVFM);
         }
     }
 
@@ -247,7 +246,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForAnswerHandled(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), SVAR_FRAN_FK_HANTERAD);
+            createAndSendNotification(utkast.get(), HANSVA);
         }
     }
 
@@ -263,7 +262,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionReceived(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), FRAGA_FRAN_FK);
+            createAndSendNotification(utkast.get(), NYFRFM);
         }
     }
 
@@ -279,7 +278,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionHandled(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), FRAGA_FRAN_FK_HANTERAD);
+            createAndSendNotification(utkast.get(), HANFRA);
         }
     }
 
@@ -295,7 +294,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionSent(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), FRAGA_TILL_FK);
+            createAndSendNotification(utkast.get(), NYFRTM);
         }
     }
 
@@ -311,7 +310,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForAnswerRecieved(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), SVAR_FRAN_FK);
+            createAndSendNotification(utkast.get(), NYSVFM);
         }
     }
 
@@ -327,15 +326,15 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForAnswerHandled(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), SVAR_FRAN_FK_HANTERAD);
+            createAndSendNotification(utkast.get(), HANSVA);
         }
     }
 
-    protected void createAndSendNotification(Utkast utkast, HandelseType handelse) {
+    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
         createAndSendNotification(utkast, handelse, null);
     }
 
-    protected void createAndSendNotification(Utkast utkast, HandelseType handelse, String reference) {
+    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference) {
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
         if (!version.isPresent()) {
@@ -382,9 +381,9 @@ public class NotificationServiceImpl implements NotificationService {
         private final String value;
         private final String intygsId;
         private final String intygsTyp;
-        private final HandelseType handelseTyp;
+        private final HandelsekodEnum handelseTyp;
 
-        private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, HandelseType handelseTyp) {
+        private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, HandelsekodEnum handelseTyp) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
@@ -412,8 +411,8 @@ public class NotificationServiceImpl implements NotificationService {
             textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
             textMessage.setStringProperty(Constants.JMSX_GROUP_ID, this.intygsId);
             switch (this.handelseTyp) {
-                case INTYGSUTKAST_ANDRAT:
-                case INTYGSUTKAST_SIGNERAT:
+                case ANDRAT:
+                case SIGNAT:
                     break;
                 default:
                     textMessage.setIntProperty(Constants.JMSX_GROUP_SEQ, -1);

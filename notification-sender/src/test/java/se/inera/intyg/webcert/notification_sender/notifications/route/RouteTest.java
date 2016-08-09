@@ -27,40 +27,26 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Message;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultMessage;
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.apache.camel.test.spring.CamelTestContextBootstrapper;
-import org.apache.camel.test.spring.MockEndpointsAndSkip;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.LocalDate;
-import org.joda.time.Partial;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.apache.camel.test.spring.*;
+import org.joda.time.*;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
@@ -68,10 +54,7 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateTypeFormatEnum;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v2.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Vardgivare;
+import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
@@ -138,7 +121,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP ,"fk7263");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelseType.INTYGSUTKAST_ANDRAT.value());
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
@@ -169,7 +152,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelseType.INTYGSUTKAST_ANDRAT.value());
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
 
         // Then
@@ -191,7 +174,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelseType.INTYGSUTKAST_SKAPAT.value());
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SKAPAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
 
         // Then
@@ -212,7 +195,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelseType.INTYG_SKICKAT_FK.value());
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SKICKA.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
@@ -233,7 +216,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP ,"fk7263");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelseType.INTYGSUTKAST_ANDRAT.value());
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
@@ -458,7 +441,7 @@ public class RouteTest {
 
     private String createNotificationMessage(SchemaVersion version, String intygsTyp) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",");
+        sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
         if (version != null) {
             sb.append("\"version\":\"");
             sb.append(version.name());

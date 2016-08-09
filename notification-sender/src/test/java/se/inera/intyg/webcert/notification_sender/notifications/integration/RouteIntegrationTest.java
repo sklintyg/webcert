@@ -34,10 +34,7 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Partial;
+import org.joda.time.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +53,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
@@ -67,13 +63,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateTypeFormatEnum;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v2.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Vardgivare;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
@@ -123,13 +114,13 @@ public class RouteIntegrationTest {
         LocalDateTime second = LocalDateTime.now().minusSeconds(10);
         LocalDateTime third = LocalDateTime.now().minusSeconds(5);
 
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT,
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelsekodEnum.ANDRAT, "luae_fs",
                 SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", second, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", second, HandelsekodEnum.ANDRAT, "luae_fs",
                 SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", third, HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", third, HandelsekodEnum.ANDRAT, "luae_fs",
                 SchemaVersion.VERSION_2);
 
         sendMessage(notificationMessage1);
@@ -154,13 +145,13 @@ public class RouteIntegrationTest {
     @Test
     public void ensureAggregatorFiltersOutAndratMessagesWhenSigned() throws Exception {
 
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT,
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT,
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT,
                 "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT,
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT,
                 "luae_fs", SchemaVersion.VERSION_2);
-        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SIGNERAT,
+        NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SIGNAT,
                 "luae_fs", SchemaVersion.VERSION_2);
 
         sendMessage(notificationMessage1);
@@ -185,22 +176,22 @@ public class RouteIntegrationTest {
     @Test
     public void ensureRouting() throws Exception {
         // 2 messages
-        NotificationMessage luaefs1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_SKAPAT, "luae_fs",
+        NotificationMessage luaefs1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SKAPAT, "luae_fs",
                 SchemaVersion.VERSION_2);
-        NotificationMessage luaefs2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+        NotificationMessage luaefs2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT, "luae_fs",
                 SchemaVersion.VERSION_2);
-        NotificationMessage luaefs3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelseType.INTYGSUTKAST_ANDRAT, "luae_fs",
+        NotificationMessage luaefs3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT, "luae_fs",
                 SchemaVersion.VERSION_2);
 
         // 3 messages
-        NotificationMessage fk1 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_SKAPAT);
-        NotificationMessage fk2 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_ANDRAT);
-        NotificationMessage fk3 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_SIGNERAT);
+        NotificationMessage fk1 = createNotificationMessage("intyg2", HandelsekodEnum.SKAPAT);
+        NotificationMessage fk2 = createNotificationMessage("intyg2", HandelsekodEnum.ANDRAT);
+        NotificationMessage fk3 = createNotificationMessage("intyg2", HandelsekodEnum.SIGNAT);
 
         // 2 messages
-        NotificationMessage luaefs4 = createNotificationMessage("intyg3", LocalDateTime.now(), HandelseType.INTYG_MAKULERAT, "luae_fs",
+        NotificationMessage luaefs4 = createNotificationMessage("intyg3", LocalDateTime.now(), HandelsekodEnum.MAKULE, "luae_fs",
                 SchemaVersion.VERSION_2);
-        NotificationMessage luaefs5 = createNotificationMessage("intyg4", LocalDateTime.now(), HandelseType.INTYG_SKICKAT_FK, "luae_fs",
+        NotificationMessage luaefs5 = createNotificationMessage("intyg4", LocalDateTime.now(), HandelsekodEnum.SKICKA, "luae_fs",
                 SchemaVersion.VERSION_2);
 
         sendMessage(luaefs1);
@@ -221,9 +212,9 @@ public class RouteIntegrationTest {
 
     @Test
     public void ensureStubReceivedAllMessages() throws Exception {
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", HandelseType.INTYGSUTKAST_SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", HandelseType.INTYGSUTKAST_ANDRAT);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", HandelseType.INTYGSUTKAST_SIGNERAT);
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", HandelsekodEnum.SKAPAT);
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", HandelsekodEnum.ANDRAT);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", HandelsekodEnum.SIGNAT);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -239,8 +230,8 @@ public class RouteIntegrationTest {
     public void ensureMessagesAreResentAndDoNotBlockEachOther() throws Exception {
         final String intygsId1 = FALLERAT_MEDDELANDE + "2";
         final String intygsId2 = "korrekt-meddelande-1";
-        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelseType.INTYGSUTKAST_SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelseType.INTYGSUTKAST_ANDRAT);
+        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelsekodEnum.SKAPAT);
+        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelsekodEnum.ANDRAT);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -258,11 +249,11 @@ public class RouteIntegrationTest {
         });
     }
 
-    private NotificationMessage createNotificationMessage(String intygsId1, HandelseType handelseType) {
+    private NotificationMessage createNotificationMessage(String intygsId1, HandelsekodEnum handelseType) {
         return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, "fk7263", SchemaVersion.VERSION_1);
     }
 
-    private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelseType handelseType, String intygsTyp,
+    private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType, String intygsTyp,
             SchemaVersion schemaVersion) {
         return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0),
                 schemaVersion, "ref");

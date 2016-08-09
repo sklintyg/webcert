@@ -18,24 +18,23 @@
  */
 package se.inera.intyg.webcert.notification_sender.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.*;
+
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander on 2016-07-04.
@@ -47,24 +46,24 @@ public class NotificationMessageDiscardFilterTest {
 
     @Test
     public void testReturnsSignedWhenBothSignedAndSavedExists() throws IOException {
-        List<Message> processed = testee.process(buildMsgList(HandelseType.INTYGSUTKAST_SIGNERAT, HandelseType.INTYGSUTKAST_ANDRAT));
+        List<Message> processed = testee.process(buildMsgList(HandelsekodEnum.SIGNAT, HandelsekodEnum.ANDRAT));
         assertEquals(1, processed.size());
         NotificationMessage notificationMessage = om.readValue( (String) processed.get(0).getBody(), NotificationMessage.class);
-        assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT, notificationMessage.getHandelse());
+        assertEquals(HandelsekodEnum.SIGNAT, notificationMessage.getHandelse());
     }
 
     @Test
     public void testReturnsSignedWhenBothSignedAndSavedExistsAndratBeforeSignerat() throws IOException {
-        List<Message> processed = testee.process(buildMsgList(HandelseType.INTYGSUTKAST_ANDRAT, HandelseType.INTYGSUTKAST_SIGNERAT));
+        List<Message> processed = testee.process(buildMsgList(HandelsekodEnum.ANDRAT, HandelsekodEnum.SIGNAT));
         assertEquals(1, processed.size());
         NotificationMessage notificationMessage = om.readValue( (String) processed.get(0).getBody(), NotificationMessage.class);
 
-        assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT, notificationMessage.getHandelse());
+        assertEquals(HandelsekodEnum.SIGNAT, notificationMessage.getHandelse());
     }
 
     @Test
     public void testFiltersOutAndratButRetainsOthers() throws JsonProcessingException {
-        List<Message> processed = testee.process(buildMsgList(HandelseType.INTYGSUTKAST_SKAPAT, HandelseType.INTYGSUTKAST_SIGNERAT, HandelseType.INTYGSUTKAST_ANDRAT, HandelseType.INTYGSUTKAST_ANDRAT, HandelseType.INTYGSUTKAST_RADERAT));
+        List<Message> processed = testee.process(buildMsgList(HandelsekodEnum.SKAPAT, HandelsekodEnum.SIGNAT, HandelsekodEnum.ANDRAT, HandelsekodEnum.ANDRAT, HandelsekodEnum.RADERA));
         assertEquals(3, processed.size());
     }
 
@@ -72,9 +71,9 @@ public class NotificationMessageDiscardFilterTest {
     public void testReturnsLatestSaved() throws IOException {
         String intygsId = UUID.randomUUID().toString();
         LocalDateTime first = LocalDateTime.now().minusSeconds(5);
-        NotificationMessage nm2 = buildNotificationMessage(intygsId, HandelseType.INTYGSUTKAST_ANDRAT, LocalDateTime.now().minusSeconds(10));
-        NotificationMessage nm1 = buildNotificationMessage(intygsId, HandelseType.INTYGSUTKAST_ANDRAT, first);
-        NotificationMessage nm3 = buildNotificationMessage(intygsId, HandelseType.INTYGSUTKAST_ANDRAT, LocalDateTime.now().minusSeconds(15));
+        NotificationMessage nm2 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, LocalDateTime.now().minusSeconds(10));
+        NotificationMessage nm1 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, first);
+        NotificationMessage nm3 = buildNotificationMessage(intygsId, HandelsekodEnum.ANDRAT, LocalDateTime.now().minusSeconds(15));
 
         List<Message> processed = testee.process(Arrays.asList(to(nm2), to(nm1), to(nm3)));
         assertEquals(1, processed.size());
@@ -88,10 +87,10 @@ public class NotificationMessageDiscardFilterTest {
         return df;
     }
 
-    private List<Message> buildMsgList(HandelseType...typer) throws JsonProcessingException {
+    private List<Message> buildMsgList(HandelsekodEnum...typer) throws JsonProcessingException {
         List<Message> msgList = new ArrayList<>();
         String intygsId = UUID.randomUUID().toString();
-        for (HandelseType ht : typer) {
+        for (HandelsekodEnum ht : typer) {
             DefaultMessage df = new DefaultMessage();
             df.setBody(om.writeValueAsString(buildNotificationMessage(intygsId, ht)));
             msgList.add(df);
@@ -99,7 +98,7 @@ public class NotificationMessageDiscardFilterTest {
         return msgList;
     }
 
-    private NotificationMessage buildNotificationMessage(String intygsId, HandelseType ht, LocalDateTime tid) {
+    private NotificationMessage buildNotificationMessage(String intygsId, HandelsekodEnum ht, LocalDateTime tid) {
         NotificationMessage nf = new NotificationMessage();
         nf.setIntygsId(intygsId);
         nf.setHandelse(ht);
@@ -107,7 +106,7 @@ public class NotificationMessageDiscardFilterTest {
         return nf;
     }
 
-    private NotificationMessage buildNotificationMessage(String intygsId, HandelseType ht) {
+    private NotificationMessage buildNotificationMessage(String intygsId, HandelsekodEnum ht) {
          return buildNotificationMessage(intygsId, ht, LocalDateTime.now());
     }
 

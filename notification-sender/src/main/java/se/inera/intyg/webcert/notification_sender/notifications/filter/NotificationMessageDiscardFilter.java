@@ -18,20 +18,17 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.camel.Message;
-import se.inera.intyg.common.support.modules.support.api.notification.HandelseType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by eriklupander on 2016-07-04.
@@ -53,11 +50,11 @@ public class NotificationMessageDiscardFilter {
             }
 
             switch (msg.getHandelse()) {
-                case INTYGSUTKAST_SIGNERAT:
+                case SIGNAT:
                     handleSigneratNotification(latestMessage, camelMsg, msg);
                     break;
 
-                case INTYGSUTKAST_ANDRAT:
+                case ANDRAT:
                     handleAndratNotification(latestMessage, camelMsg, msg);
                     break;
 
@@ -77,14 +74,14 @@ public class NotificationMessageDiscardFilter {
 
         // If SIGNERAT entry exists, do nothing
         if (existingMessagesForIntygsId.stream()
-                .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelseType.INTYGSUTKAST_SIGNERAT)
+                .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.SIGNAT)
             .count() > 0) {
             return;
         }
 
         // Extract the existing msg of ANDRAT type if it exists (Can never be more than one)
         Message andratMsg = existingMessagesForIntygsId.stream()
-                .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelseType.INTYGSUTKAST_ANDRAT)
+                .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT)
                 .findFirst().orElse(null);
 
         // No existing of type, add.
@@ -106,7 +103,7 @@ public class NotificationMessageDiscardFilter {
         Iterator<Message> i =  latestMessage.get(msg.getIntygsId()).iterator();
         while (i.hasNext()) {
             Message existingMsg = i.next();
-            if (getNotificationFromBody(existingMsg).getHandelse() == HandelseType.INTYGSUTKAST_ANDRAT) {
+            if (getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT) {
                 i.remove();
             }
         }

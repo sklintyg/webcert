@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.fkstub.validation;
 
 import static java.util.Arrays.asList;
+import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
+import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -27,16 +29,16 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.intyg.common.util.logging.LogMarkers;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-
 import com.google.common.base.Joiner;
+
+import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
+import se.inera.intyg.common.util.logging.LogMarkers;
 
 public final class PatientValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(PatientValidator.class);
 
-    private static final List<String> PATIENT_ID_OIDS = asList("1.2.752.129.2.1.3.1", "1.2.752.129.2.1.3.3");
+    private static final List<String> PATIENT_ID_OIDS = asList(PERSON_ID_OID, SAMORDNING_ID_OID);
 
     private static final String PERSON_NUMBER_REGEX = "[0-9]{8}[-+]?[0-9]{4}";
     private static final String PERSON_NUMBER_WITHOUT_DASH_REGEX = "[0-9]{12}";

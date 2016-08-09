@@ -28,8 +28,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
@@ -55,12 +57,12 @@ public class NotificationMessageFactoryTest {
 
         Utkast utkast = createUtkast(INTYGS_ID);
         final String reference = "ref";
-        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelseType.INTYGSUTKAST_SIGNERAT,
+        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.SIGNAT,
                 SchemaVersion.VERSION_1, reference);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
-        assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT, msg.getHandelse());
+        assertEquals(HandelsekodEnum.SIGNAT, msg.getHandelse());
         assertNotNull(msg.getHandelseTid());
         assertEquals(INTYGS_ID, msg.getIntygsId());
         assertEquals("fk7263", msg.getIntygsTyp());

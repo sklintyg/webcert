@@ -25,6 +25,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.security.authorities.AuthoritiesException;
 import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
@@ -145,7 +146,7 @@ public class UtkastModuleApiControllerTest {
     private SaveAndValidateDraftResponse buildSaveAndValidateDraftResponse() {
         DraftValidation validation = new DraftValidation();
         validation.setMessages(new ArrayList<DraftValidationMessage>());
-        validation.setStatus(DraftValidationStatus.VALID);
+        validation.setStatus(ValidationStatus.VALID);
         SaveAndValidateDraftResponse response = new SaveAndValidateDraftResponse(UTKAST_VERSION, validation);
         return response;
     }
