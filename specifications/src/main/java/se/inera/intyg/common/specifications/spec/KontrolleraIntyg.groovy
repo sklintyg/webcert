@@ -23,7 +23,7 @@ import static groovyx.net.http.ContentType.JSON
 import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 /**
- * Läs upp ett intyg via intygsId, för att verifiera vårdEnhet, vårdGivare och wireTap-status.
+ * Läs upp ett intyg via intygsId, för att verifiera vårdEnhet och vårdGivare.
  *
  */
 public class KontrolleraIntyg extends RestClientFixture {
@@ -50,9 +50,5 @@ public class KontrolleraIntyg extends RestClientFixture {
 
     public String vårdGivare() {
         certificate.careGiverId
-    }
-
-    public boolean wiretappat() {
-        certificate.wireTapped
     }
 }
