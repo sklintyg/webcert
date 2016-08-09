@@ -1,0 +1,51 @@
+<div id="{{dialogId}}" class="modal-header">
+  <button type="button" class="close" ng-click="button2click()">×</button>
+  <h3 ng-focus="model.focus" tabindex="-1">
+    <span message key="{{titleId}}"></span>
+  </h3>
+</div>
+<div class="modal-body">
+  <div style="padding-bottom: 10px; min-height: 100px; max-height: 400px; overflow-y: scroll">
+    testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea
+    testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea
+    testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea
+    testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea
+    testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea
+    testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea testsetestaefeafaefaefeafeaea
+    testsetestaefeafaefaefeafeaea
+
+  </div>
+  <div>
+    <div class="row">
+      <div class="col-md-6">
+        <div style="border: 1px solid black; position: relative; height: 250px;">
+          <div style="padding: 10px">
+            <h3>Jag behöver lägga till ny medicinsk information</h3>
+            <p>Om kompletteringen innebär att ny medicinsk information behöver tillföras ska informationen ges i ett
+              nytt
+              intyg. Fyll i den nya informationen i den kopia som skapas av det befintliga intyget.</p>
+          </div>
+          <div style="text-align: center; position: absolute; bottom: 0; width: 100%; padding-bottom: 10px;">
+            <button type="button" id="{{button1id}}" class="btn btn-success" ng-click="button1click()">
+              Svara med nytt intyg
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="border: 1px solid black; position: relative; height: 250px;">
+          <div style="padding: 10px">
+            <h3>Jag behöver förtydliga befintlig medicinsk information</h3>
+            <p>Om kompletteringen innebär ett förtydligande av befintlig medicinsk information kan du svara med ett
+              meddelande.</p>
+          </div>
+          <div style="text-align: center; position: absolute; bottom: 0; width: 100%; padding-bottom: 10px;">
+            <button type="button" id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+              Svara med meddelande
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
