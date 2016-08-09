@@ -32,8 +32,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
 
+import se.inera.intyg.common.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
-import se.inera.intyg.common.integration.hsa.model.AuthenticationMethod;
 
 /**
  * Created by eriklupander on 2015-08-26.
