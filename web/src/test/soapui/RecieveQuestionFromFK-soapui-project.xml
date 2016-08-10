@@ -16,9 +16,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<con:soapui-project activeEnvironment="Default" name="RecieveQuestionFromFK" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ReceiveQuestionResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.webcert.inera.se/}ReceiveQuestionResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9088/services/receive-question/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9088/services/receive-question/v1.0?wsdl"><con:part><con:url>http://localhost:9088/services/receive-question/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveQuestionResponderImplService" targetNamespace="http://integration.webcert.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.webcert.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
+  --><con:soapui-project activeEnvironment="Default" name="RecieveQuestionFromFK" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" id="2cf1199a-4ee6-48b4-abe3-25d833bbd5c3" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ReceiveQuestionResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.webcert.inera.se/}ReceiveQuestionResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9088/services/receive-question/v1.0?wsdl" id="2cb5e373-3c31-4770-b2ba-63c20b1f31f6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9088/services/receive-question/v1.0?wsdl"><con:part><con:url>http://localhost:9088/services/receive-question/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveQuestionResponderImplService" targetNamespace="http://integration.webcert.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.webcert.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
   <wsdl:import location="http://localhost:9088/services/receive-question/v1.0?wsdl=ReceiveMedicalCertificateQuestionResponderInterface.wsdl" namespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20"></wsdl:import>
   <wsdl:binding name="ReceiveQuestionResponderImplServiceSoapBinding" type="ns1:ReceiveMedicalCertificateQuestionResponderInterface">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
@@ -492,21 +490,21 @@
       <wsdl:output message="ns1:ReceiveMedicalCertificateQuestionResponse" name="ReceiveMedicalCertificateQuestionResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" name="ReceiveMedicalCertificateQuestion" bindingOperationName="ReceiveMedicalCertificateQuestion" type="Request-Response" outputName="ReceiveMedicalCertificateQuestionResponse" inputName="ReceiveMedicalCertificateQuestion" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" name="ReceiveMedicalCertificateQuestion" bindingOperationName="ReceiveMedicalCertificateQuestion" type="Request-Response" outputName="ReceiveMedicalCertificateQuestionResponse" inputName="ReceiveMedicalCertificateQuestion" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="afc2fd29-293f-4b94-b9f3-873fcbc0657c"><con:settings/><con:call name="Request 1" id="843274e4-44c7-4c85-a9f5-cbe8942ff329"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
    <soapenv:Header>
       <add:To>FK12323234</add:To>
    </soapenv:Header>
    <soapenv:Body>
       <urn:ReceiveMedicalCertificateQuestion>
          <urn:Question>
-            <urn:fkReferens-id>123456</urn:fkReferens-id>
-            <urn:amne>Ovrigt</urn:amne>
+            <urn:fkReferens-id>4</urn:fkReferens-id>
+            <urn:amne>Komplettering_av_lakarintyg</urn:amne>
             <urn:fraga>
                <urn1:meddelandeText>Detta är en fråga från FK</urn1:meddelandeText>
                <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
                <!--You may enter ANY elements at this point-->
             </urn:fraga>
-            <urn:avsantTidpunkt>2014-12-07T21:00:00.000</urn:avsantTidpunkt>
+             <urn:avsantTidpunkt>2014-12-07T21:00:00.000</urn:avsantTidpunkt>
             <!--Zero or more repetitions:-->
             <urn:fkKontaktInfo>
                <urn1:kontakt>Blahonga</urn1:kontakt>
@@ -527,8 +525,18 @@
                </urn1:hosPersonal>
                <!--You may enter ANY elements at this point-->
             </urn:adressVard>
-            <urn:lakarutlatande>
-               <urn1:lakarutlatande-id>865a5a4f-8dc8-476a-a4fb-1cc148909939</urn1:lakarutlatande-id>
+	         <urn:fkKomplettering>
+	           <urn1:falt>2</urn1:falt>
+	           <urn1:text>Balahajflakj</urn1:text>
+	          <!--You may enter ANY elements at this point-->
+	       </urn:fkKomplettering>
+ 	         <urn:fkKomplettering>
+	           <urn1:falt>3</urn1:falt>
+	           <urn1:text>aefklklae jkölfaejköl jafejk aföle faeölfea aelköfae fjaeöl falflalae flöae fjaeö lkfaaekfl</urn1:text>
+	          <!--You may enter ANY elements at this point-->
+	       </urn:fkKomplettering>
+          <urn:lakarutlatande>
+               <urn1:lakarutlatande-id>16a6954c-36e8-47e0-9d05-43755e8fe99a</urn1:lakarutlatande-id>
                <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
                <urn1:patient>
                   <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19520614-2597"/>
@@ -537,7 +545,7 @@
                <!--You may enter ANY elements at this point-->
             </urn:lakarutlatande>
             <!--You may enter ANY elements at this point-->
-         </urn:Question>
+        </urn:Question>
          <!--You may enter ANY elements at this point-->
       </urn:ReceiveMedicalCertificateQuestion>
    </soapenv:Body>
