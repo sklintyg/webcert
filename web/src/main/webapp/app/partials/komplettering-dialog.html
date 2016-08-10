@@ -29,7 +29,7 @@
       <div class="col-md-6">
         <div class="dialog-choice-box">
           <div class="dialog-choice-box__text-section">
-            <h3>Jag behöver förtydliga befintlig medicinsk information</h3>
+            <h3>Jag behöver förtydliga befintlig medicinsk information <span wc-help-mark field-help-text="fk7263.fragasvar.komplettering.help"></span></h3>
             <p>Om kompletteringen innebär ett förtydligande av befintlig medicinsk information kan du svara med ett
               meddelande.</p>
           </div>
@@ -43,8 +43,8 @@
     </div>
     <!-- error message occuring when interacting with server for komplettering-->
     <div id="komplettering-dialog-error-{{model.qa.internReferens}}" ng-show="model.qa.activeDialogErrorMessageKey"
-         class="alert alert-danger">
-      <span message key="fk7263.error.{{model.qa.activeDialogErrorMessageKey}}"></span>
+         class="alert alert-danger alert-bottom">
+      <span message key="{{model.qa.activeDialogErrorMessageKey}}"></span>
     </div>
   </div>
 </div>
