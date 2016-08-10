@@ -29,6 +29,7 @@ var pageHelpers = require('../../../pageHelper.util.js');
 var TsDiabetesUtkast = BaseTsUtkast._extend({
     init: function init() {
         init._super.call(this);
+        this.intygType = 'ts-diabetes';
         this.at = element(by.id('edit-ts-diabetes'));
 
         this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
@@ -89,9 +90,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             yes: element(by.id('bedomningy')),
             no: element(by.id('bedomningn'))
         };
-    },
-    get: function get(intygId) {
-        get._super.call(this, 'ts-diabetes', intygId);
     },
     fillInKorkortstyper: function(typer) {
 

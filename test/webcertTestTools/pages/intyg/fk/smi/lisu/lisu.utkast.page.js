@@ -41,7 +41,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             annat: {
-                beskrivning: element(by.id('formly_1_single-text_annatGrundForMUBeskrivning_7')),
+                beskrivning: element(by.id('annatGrundForMUBeskrivning')),
                 checkbox: element(by.id('formly_1_date_annatGrundForMU_6')),
                 datum: element(by.id('form_annatGrundForMU')).element(by.css('input[type=text]'))
             }
