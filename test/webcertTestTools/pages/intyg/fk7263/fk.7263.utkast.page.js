@@ -23,7 +23,7 @@
 /*globals element,by,browser, protractor, Promise */
 'use strict';
 
-var BaseUtkast = require('./base.utkast.page.js');
+var BaseUtkast = require('../base.utkast.page.js');
 
 var FkUtkast = BaseUtkast._extend({
     init: function init() {

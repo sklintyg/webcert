@@ -24,8 +24,8 @@
 'use strict';
 
 // NOTE: This file is loaded before helpers in protractor.conf.js onPrepare. Therefore helpers are not available in file scope.
-var BaseTsUtkast = require('./ts.base.utkast.page.js');
-//var pageHelpers = require('./../pageHelper.util.js');
+var BaseTsUtkast = require('../ts.base.utkast.page.js');
+//var pageHelpers = require('../../../pageHelper.util.js');
 
 var TsBasUtkast = BaseTsUtkast._extend({
     init: function init() {

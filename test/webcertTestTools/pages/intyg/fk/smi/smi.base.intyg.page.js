@@ -23,11 +23,11 @@
 /*globals element,by,browser */
 'use strict';
 
-var BaseIntyg = require('./base.intyg.page.js');
+var FkBaseIntyg = require('../fk.base.intyg.page.js');
 
 //TODO: Det är möjligt att vissa element här endast finns för LUSE, de bör flyttas bort.
 
-var BaseSmiIntygPage = BaseIntyg._extend({
+var BaseSmiIntygPage = FkBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
 

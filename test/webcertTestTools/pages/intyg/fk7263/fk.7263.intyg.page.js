@@ -25,7 +25,7 @@
 
 'use strict';
 
-var BaseIntyg = require('./base.intyg.page.js');
+var BaseIntyg = require('../base.intyg.page.js');
 
 var Fk7263Intyg = BaseIntyg._extend({
     init: function init() {

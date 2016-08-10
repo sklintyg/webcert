@@ -21,7 +21,7 @@
 
 'use strict';
 
-var FkBaseIntygPage = require('./fk.base.intyg.page.js');
+var FkBaseIntygPage = require('../fk.base.intyg.page.js');
 
 var LuaefsIntyg = FkBaseIntygPage._extend({
     init: function init() {

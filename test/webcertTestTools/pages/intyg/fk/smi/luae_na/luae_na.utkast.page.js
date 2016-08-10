@@ -20,12 +20,13 @@
 /*globals element,by, Promise*/
 'use strict';
 
-var BaseSmiUtkast = require('./smi.base.utkast.page.js');
+var BaseSmiUtkast = require('../smi.base.utkast.page.js');
 
-var LuseUtkast = BaseSmiUtkast._extend({
+var LuaeNaUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
 
+        this.underlagFinnsYes = element(by.id('underlagFinnsYes'));
         this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.diagnosgrund = element(by.id('diagnosgrund'));
@@ -49,7 +50,8 @@ var LuseUtkast = BaseSmiUtkast._extend({
         };
         this.medicinskaForutsattningar = {
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
-            trotsBegransningar: element(by.id('formagaTrotsBegransning'))
+            trotsBegransningar: element(by.id('formagaTrotsBegransning')),
+            forslagTillAtgard: element(by.id('forslagTillAtgard'))
         };
         this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
         // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
@@ -58,11 +60,11 @@ var LuseUtkast = BaseSmiUtkast._extend({
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_1')),
+                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_2')),
+                checkbox: element(by.id('formly_1_date_journaluppgifter_4')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             anhorigBeskrivning: {
@@ -75,7 +77,8 @@ var LuseUtkast = BaseSmiUtkast._extend({
                 datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
             },
             kannedomOmPatient: {
-                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input'))
+                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]')),
+                checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
             }
         };
     },
@@ -105,16 +108,17 @@ var LuseUtkast = BaseSmiUtkast._extend({
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
             this.medicinskaForutsattningar.utecklasOverTid.sendKeys(forutsattningar.utecklasOverTid),
-            this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar)
+            this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar),
+            this.medicinskaForutsattningar.forslagTillAtgard.sendKeys(forutsattningar.forslagTillAtgard)
         ]);
     },
 
     get: function get(intygId) {
-        get._super.call(this, 'luse', intygId);
+        get._super.call(this, 'luae_na', intygId);
     },
     isAt: function isAt() {
         return isAt._super.call(this);
     }
 });
 
-module.exports = new LuseUtkast();
+module.exports = new LuaeNaUtkast();

@@ -25,7 +25,7 @@
  * Only things relevant to ALL such types should end up here.
  */
 
-var BaseUtkast = require('./base.utkast.page.js');
+var BaseUtkast = require('../base.utkast.page.js');
 
 var FkBaseUtkast = BaseUtkast._extend({
     init: function init() {

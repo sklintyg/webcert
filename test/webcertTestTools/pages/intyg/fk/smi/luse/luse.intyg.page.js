@@ -21,7 +21,7 @@
 
 'use strict';
 
-var BaseSmiIntygPage = require('./smi.base.intyg.page.js');
+var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
 
 var LuseIntyg = BaseSmiIntygPage._extend({
     init: function init() {

@@ -21,8 +21,8 @@
 
 'use strict';
 
-var BaseSmiIntygPage = require('./smi.base.intyg.page.js');
-var testdataHelper = require('./../../helpers/testdataHelper.js');
+var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
+var testdataHelper = require('../../../../../helpers/testdataHelper.js');
 
 var LuaeNaIntyg = BaseSmiIntygPage._extend({
     init: function init() {

@@ -23,8 +23,8 @@
 /*globals element,by, protractor, Promise*/
 'use strict';
 
-var pageHelpers = require('./../pageHelper.util.js');
-var BaseUtkast = require('./base.utkast.page.js');
+var pageHelpers = require('../../pageHelper.util.js');
+var BaseUtkast = require('../base.utkast.page.js');
 
 var BaseTsUtkast = BaseUtkast._extend({
     init: function init() {

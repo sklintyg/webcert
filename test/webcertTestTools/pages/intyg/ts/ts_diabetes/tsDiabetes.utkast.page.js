@@ -23,10 +23,10 @@
 /*globals element,by, protractor, Promise*/
 'use strict';
 
-var BaseUtkast = require('./base.utkast.page.js');
-var pageHelpers = require('./../pageHelper.util.js');
+var BaseTsUtkast = require('../ts.base.utkast.page.js');
+var pageHelpers = require('../../../pageHelper.util.js');
 
-var TsDiabetesUtkast = BaseUtkast._extend({
+var TsDiabetesUtkast = BaseTsUtkast._extend({
     init: function init() {
         init._super.call(this);
         this.at = element(by.id('edit-ts-diabetes'));

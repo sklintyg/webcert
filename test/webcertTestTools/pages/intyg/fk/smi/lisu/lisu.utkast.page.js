@@ -20,8 +20,8 @@
 /*globals element,by,Promise,protractor,browser*/
 'use strict';
 
-var BaseSmiUtkast = require('./smi.base.utkast.page.js');
-var pageHelpers = require('./../pageHelper.util.js');
+var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
 
 var LisuUtkast = BaseSmiUtkast._extend({
     init: function init() {

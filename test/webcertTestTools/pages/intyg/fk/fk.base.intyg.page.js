@@ -25,7 +25,7 @@
  * Only things relevant to ALL such types should end up here.
  */
 
-var BaseIntyg = require('./base.intyg.page.js');
+var BaseIntyg = require('../base.intyg.page.js');
 
 var FkBaseIntyg = BaseIntyg._extend({
     init: function init() {

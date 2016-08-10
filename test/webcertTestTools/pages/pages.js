@@ -38,8 +38,8 @@ module.exports = {
     'intyg': {
         fk: {
             '7263': {
-                utkast: require(intygPath + 'fk.7263.utkast.page.js'),
-                intyg: require(intygPath + 'fk.7263.intyg.page.js')
+                utkast: require(intygPath + 'fk7263/fk.7263.utkast.page.js'),
+                intyg: require(intygPath + 'fk7263/fk.7263.intyg.page.js')
             }
         },
         base: {
@@ -47,29 +47,29 @@ module.exports = {
             utkast: new BaseUtkastPage()
         },
         luse: {
-            utkast: require(intygPath + 'luse.utkast.page.js'),
-            intyg: require(intygPath + 'luse.intyg.page.js')
+            utkast: require(intygPath + 'fk/smi/luse/luse.utkast.page.js'),
+            intyg: require(intygPath + 'fk/smi/luse/luse.intyg.page.js')
         },
         lisu: {
-            utkast: require(intygPath + 'lisu.utkast.page.js')
+            utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
                 //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         luaeFS: {
-            utkast: require(intygPath + 'luae_fs.utkast.page.js'),
-            intyg: require(intygPath + 'luae_fs.intyg.page.js')
+            utkast: require(intygPath + 'fk/luae_fs/luae_fs.utkast.page.js'),
+            intyg: require(intygPath + 'fk/luae_fs/luae_fs.intyg.page.js')
         },
         luae_na: {
-            utkast: require(intygPath + 'luae_na.utkast.page.js'),
-            intyg: require(intygPath + 'luae_na.intyg.page.js')
+            utkast: require(intygPath + 'fk/smi/luae_na/luae_na.utkast.page.js'),
+            intyg: require(intygPath + 'fk/smi/luae_na/luae_na.intyg.page.js')
         },
         ts: {
             diabetes: {
-                utkast: require(intygPath + 'tsDiabetes.utkast.page.js'),
-                intyg: require(intygPath + 'tsDiabetes.intyg.page.js')
+                utkast: require(intygPath + 'ts/ts_diabetes/tsDiabetes.utkast.page.js'),
+                intyg: require(intygPath + 'ts/ts_diabetes/tsDiabetes.intyg.page.js')
             },
             bas: {
-                utkast: require(intygPath + 'tsBas.utkast.page.js'),
-                intyg: require(intygPath + 'tsBas.intyg.page.js')
+                utkast: require(intygPath + 'ts/ts_bas/tsBas.utkast.page.js'),
+                intyg: require(intygPath + 'ts/ts_bas/tsBas.intyg.page.js')
             }
         }
     },

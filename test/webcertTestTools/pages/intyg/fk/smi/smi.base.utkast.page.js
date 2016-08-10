@@ -20,7 +20,7 @@
 /*globals element, by, Promise, protractor, browser */
 'use strict';
 
-var FkBaseUtkast = require('./fk.base.utkast.page.js');
+var FkBaseUtkast = require('../fk.base.utkast.page.js');
 
 function sendKeysWithBackspaceFix(el, text) {
     return el.sendKeys(text)

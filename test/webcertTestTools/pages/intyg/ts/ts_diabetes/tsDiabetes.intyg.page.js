@@ -22,7 +22,7 @@
  */
 'use strict';
 
-var BaseIntyg = require('./base.intyg.page.js');
+var BaseIntyg = require('../../base.intyg.page.js');
 
 var TsDiabetesIntyg = BaseIntyg._extend({
     init: function init() {
