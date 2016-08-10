@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
+   <soapenv:Header>
+      <add:To>FK12323234</add:To>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:ReceiveMedicalCertificateQuestion>
+         <urn:Question>
+            <urn:fkReferens-id>4</urn:fkReferens-id>
+            <urn:amne>Komplettering_av_lakarintyg</urn:amne>
+            <urn:fraga>
+               <urn1:meddelandeText>Detta är en fråga från FK</urn1:meddelandeText>
+               <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
+               <!--You may enter ANY elements at this point-->
+            </urn:fraga>
+             <urn:avsantTidpunkt>2014-12-07T21:00:00.000</urn:avsantTidpunkt>
+            <!--Zero or more repetitions:-->
+            <urn:fkKontaktInfo>
+               <urn1:kontakt>Blahonga</urn1:kontakt>
+               <!--You may enter ANY elements at this point-->
+            </urn:fkKontaktInfo>
+            <urn:adressVard>
+               <urn1:hosPersonal>
+                  <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1B01"/>
+                  <urn2:fullstandigtNamn>Ivar Integration</urn2:fullstandigtNamn>
+                  <urn2:enhet>
+                     <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A02"/>
+                     <urn2:enhetsnamn>WebCert-Integration Enhet 1</urn2:enhetsnamn>
+                     <urn2:vardgivare>
+                        <urn2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A01"/>
+                        <urn2:vardgivarnamn>WebCert-Integration Vårdgivare 1</urn2:vardgivarnamn>
+                     </urn2:vardgivare>
+                  </urn2:enhet>
+               </urn1:hosPersonal>
+               <!--You may enter ANY elements at this point-->
+            </urn:adressVard>
+	         <urn:fkKomplettering>
+	           <urn1:falt>2</urn1:falt>
+	           <urn1:text>Balahajflakj</urn1:text>
+	          <!--You may enter ANY elements at this point-->
+	       </urn:fkKomplettering>
+ 	         <urn:fkKomplettering>
+	           <urn1:falt>3</urn1:falt>
+	           <urn1:text>aefklklae jkölfaejköl jafejk aföle faeölfea aelköfae fjaeöl falflalae flöae fjaeö lkfaaekfl</urn1:text>
+	          <!--You may enter ANY elements at this point-->
+	       </urn:fkKomplettering>
+          <urn:lakarutlatande>
+               <urn1:lakarutlatande-id>16a6954c-36e8-47e0-9d05-43755e8fe99a</urn1:lakarutlatande-id>
+               <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
+               <urn1:patient>
+                  <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19520614-2597"/>
+                  <urn2:fullstandigtNamn>Per Peter Svensson Pärsson</urn2:fullstandigtNamn>	
+               </urn1:patient>
+               <!--You may enter ANY elements at this point-->
+            </urn:lakarutlatande>
+            <!--You may enter ANY elements at this point-->
+        </urn:Question>
+         <!--You may enter ANY elements at this point-->
+      </urn:ReceiveMedicalCertificateQuestion>
+   </soapenv:Body>
+</soapenv:Envelope>
