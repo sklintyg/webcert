@@ -61,6 +61,8 @@ describe('Luse attic tests', function() {
         LuseUtkastPage.showMissingInfoButtonClick();
 
         expect(LuseUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+
+        LuseUtkastPage.disableAutosave();
     });
 
     describe('annat', function() {
@@ -133,6 +135,7 @@ describe('Luse attic tests', function() {
         });
 
         it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
+            LuseUtkastPage.enableAutosave();
             LuseUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
             LuseUtkastPage.showMissingInfoButtonClick(true);
 

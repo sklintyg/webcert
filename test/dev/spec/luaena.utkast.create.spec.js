@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals beforeAll,describe,it,browser */
+/*globals afterAll,beforeAll,describe,it,browser */
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
@@ -30,10 +30,8 @@ describe('Create and Sign luae_na utkast', function() {
     var utkastId = null, data = null;
 
     beforeAll(function() {
-        browser.ignoreSynchronization = false;
         specHelper.login();
         specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga');
-        browser.ignoreSynchronization = false;
     });
 
     describe('Skapa luae_na', function(){
@@ -57,11 +55,9 @@ describe('Create and Sign luae_na utkast', function() {
                 UtkastPage.angeAndraMedicinskaUtredningar(data.andraMedicinskaUtredningar);
             });
             it('angeDiagnos', function() {
-                browser.ignoreSynchronization = false;
                 UtkastPage.angeDiagnos(data.diagnos);
             });
             it('angeSjukdomsforlopp', function() {
-                browser.ignoreSynchronization = true;
                 UtkastPage.angeSjukdomsforlopp(data.sjukdomsForlopp);
             });
             it('angeFunktionsnedsattning', function() {

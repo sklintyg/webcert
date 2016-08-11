@@ -61,6 +61,8 @@ describe('Lisu attic tests', function() {
         LisuUtkastPage.showMissingInfoButtonClick();
 
         expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+
+        LisuUtkastPage.disableAutosave();
     });
 
     describe('annat', function() {
@@ -134,18 +136,12 @@ describe('Lisu attic tests', function() {
 
     describe('sjukskrivningar', function() {
         it('should still be valid if sjukskrivningsperiod > 75', function() {
-            // Split into 2 it blocks to speed up clearing of these fields with ignoreSynchronization
-            browser.ignoreSynchronization = false;
             LisuUtkastPage.sjukskrivning[75].fran.clear();
             LisuUtkastPage.sjukskrivning[75].till.clear();
             LisuUtkastPage.sjukskrivning[50].fran.clear();
             LisuUtkastPage.sjukskrivning[50].till.clear();
             LisuUtkastPage.sjukskrivning[25].fran.clear();
             LisuUtkastPage.sjukskrivning[25].till.clear();
-        });
-
-        it('should still be valid if sjukskrivningsperiod > 75', function() {
-            browser.ignoreSynchronization = false;
             LisuUtkastPage.showMissingInfoButtonClick(true);
 
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.nej.isPresent()).toBeFalsy();
@@ -253,6 +249,7 @@ describe('Lisu attic tests', function() {
         });
 
         it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
+            LisuUtkastPage.enableAutosave();
             LisuUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
             LisuUtkastPage.showMissingInfoButtonClick(true);
 
