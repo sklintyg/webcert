@@ -139,6 +139,20 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         }
     }
 
+    void valjFornyaTidigareIntyg(String intygId) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            // also need to wait for the dialog shim to hide
+            page.waitForModalBackdropToHide();
+            page.fornyaKnapp(intygId).click()
+            waitFor {
+                doneLoading()
+            }
+        }
+    }
+
     void valjVisaInteIgenIDialogen() {
         Browser.drive {
             page.kopieraDialogVisaInteIgen.click()
@@ -151,6 +165,15 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
     void valjKopieraIDialogen() {
         Browser.drive {
             page.kopieraDialogKopieraKnapp.click()
+            waitFor {
+                doneLoading()
+            }
+        }
+    }
+
+    void valjFornyaIDialogen() {
+        Browser.drive {
+            page.fornyaDialogFornyaKnapp.click()
             waitFor {
                 doneLoading()
             }
@@ -290,6 +313,17 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
                 at SokSkrivValjIntygTypPage
             }
             result = page.kopieraKnapp(intygId)?.isDisplayed()
+        }
+        result
+    }
+
+    boolean fornyaKnappVisasForIntyg(String intygId) {
+        def result
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            result = page.fornyaKnapp(intygId)?.isDisplayed()
         }
         result
     }
@@ -562,6 +596,10 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
 
     void ateraktiveraKopieraDialogen() {
         Browser.deleteCookie("wc.dontShowCopyDialog");
+    }
+
+    void ateraktiveraFornyaDialogen() {
+        Browser.deleteCookie("wc.dontShowFornyaDialog");
     }
 
     def kopiaintygsid() {

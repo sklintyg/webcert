@@ -31,6 +31,8 @@ class SokSkrivValjIntygTypPage extends AbstractLoggedInPage {
         kopieraKnapp { intygId -> $("#copyBtn-${intygId}") }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        fornyaKnapp { intygId -> $("#fornyaBtn-${intygId}") }
+        fornyaDialogFornyaKnapp { $("#button1fornya-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
         felmeddelandeRuta { $("#current-list-noResults-error")}
         sekretessmarkering { $("#sekretessmarkering") }
