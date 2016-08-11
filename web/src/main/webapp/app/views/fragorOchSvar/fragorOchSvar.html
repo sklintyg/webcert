@@ -143,16 +143,12 @@
                   <tr>
                     <th></th>
                     <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
-                    <th wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
-                      Vidarebefordrad
-                    </th>
-                    <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.">Åtgärd</th>
-                    <th title="Vem som initierade frågan.">Avsändare</th>
-                    <th title="Berörd patients personnummer.">Patient</th>
-                    <th title="Läkare som har signerat intyget.">Signerat av</th>
-                    <th title="Datum för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.">
-                      Skickat/mottaget
-                    </th>
+                    <th wc-table-head label-key="th.label.qa-forwarded" help-key="th.help.qa-forwarded" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"></th>
+                    <th wc-table-head label-key="th.label.qa-action" help-key="th.help.qa-action"></th>
+                    <th wc-table-head label-key="th.label.qa-sender" help-key="th.help.qa-sender"></th>
+                    <th wc-table-head label-key="th.label.qa-patient" help-key="th.help.qa-patient"></th>
+                    <th wc-table-head label-key="th.label.qa-signed-by" help-key="th.help.qa-signed-by"></th>
+                    <th wc-table-head label-key="th.label.qa-sent-recv-date" help-key="th.help.qa-sent-recv-date"></th>
                   </tr>
                   <tr ng-repeat="qa in widgetState.currentList">
                     <td>

@@ -134,22 +134,12 @@
                   <tr>
                     <th></th>
                     <th wc-authority="VIDAREBEFORDRA_UTKAST"></th>
-                    <th wc-authority="VIDAREBEFORDRA_UTKAST" class="center"
-                        title="Här markerar du om utkastet är vidarebefordrat till den som ska signera det.">
-                      Vidarebefordrad
-                    </th>
-                    <th title="Typ av intyg.">Typ av intyg</th>
-                    <th title="Visar utkastets status.
--	Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas
--	Utkast kan signeras = utkastet är sparat och kan signeras
--	Signerat = intyget är signerat
--	Skickat = intyget är signerat och skickat till mottagaren
--	Mottaget = intyget är signerat och mottaget av mottagarens system
--	Makulerat = intyget är makulerat">Status
-                    </th>
-                    <th title="Datum då utkastet senast sparades.">Sparat datum</th>
-                    <th title="Personnummer för patient som utkastet gäller.">Patient</th>
-                    <th title="Person som senast sparade utkastet.">Sparat av</th>
+                    <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" wc-authority="VIDAREBEFORDRA_UTKAST" class="center"></th>
+                    <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type"></th>
+                    <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status"></th>
+                    <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date"></th>
+                    <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"></th>
+                    <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"></th>
                   </tr>
                   <tr ng-repeat="cert in widgetState.currentList">
                     <td>
