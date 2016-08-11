@@ -344,7 +344,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Notify stakeholders when a draft has been changed/updated
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            if (moduleApi.isModelChanged(persistedJson, draftAsJson)) {
+            if (moduleApi.shouldNotify(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
                 sendNotification(utkast, Event.CHANGED);
             }
