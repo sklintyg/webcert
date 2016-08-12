@@ -88,6 +88,15 @@ public class HealthCheckApiController extends AbstractApiController {
     }
 
     @GET
+    @Path("/privatlakarportal")
+    @Produces(MediaType.APPLICATION_XML)
+    public Response checkPrivatlakarportal() {
+        HealthStatus status = healthCheck.checkPrivatlakarportal();
+        String xmlResponse = buildXMLResponse(status);
+        return Response.ok(xmlResponse).build();
+    }
+
+    @GET
     @Path("/uptime")
     @Produces(MediaType.APPLICATION_XML)
     public Response checkUptime() {

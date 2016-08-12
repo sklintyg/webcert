@@ -61,6 +61,10 @@
       serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
       address="${intygstjanst.pingforconfiguration.endpoint.url}" />
 
+    <jaxws:client id="pingPrivatlakarportalForConfigurationClient"
+      serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
+      address="${privatepractitioner.pingforconfiguration.endpoint.url}" />
+
     <jaxws:client id="grpServicePortTypeClient"
         serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
         address="${cgi.funktionstjanster.grp.url}" />

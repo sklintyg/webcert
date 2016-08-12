@@ -41,6 +41,8 @@
 
 		<c:set var="intygstjanstStatus"
 			value="${healthcheck.checkIntygstjanst()}" />
+		<c:set var="privatlakarportalStatus"
+			value="${healthcheck.checkPrivatlakarportal()}" />
 		<c:set var="signatureQueueStatus"
 			value="${healthcheck.checkSignatureQueue()}" />
 		<c:set var="uptime" value="${healthcheck.checkUptimeAsString()}" />
@@ -74,6 +76,11 @@
 						<td>Koppling till Intygstjänst</td>
 						<td id="intygstjanstMeasurement">${intygstjanstStatus.measurement}ms</td>
 						<td id="intygstjanstStatus" class="${intygstjanstStatus.ok ? "text-success" : "text-danger"}">${intygstjanstStatus.ok ? "OK" : "FAIL"}</td>
+					</tr>
+					<tr>
+						<td>Koppling till Privatläkarportal</td>
+						<td id="privatlakarportalMeasurement">${privatlakarportalStatus.measurement}ms</td>
+						<td id="privatlakarportalStatus" class="${privatlakarportalStatus.ok ? "text-success" : "text-danger"}">${privatlakarportalStatus.ok ? "OK" : "FAIL"}</td>
 					</tr>
 					<tr>
 						<td>Antal signerade intyg som ska skickas till Intygstjänst</td>
