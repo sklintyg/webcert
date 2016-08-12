@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.authorities.AuthoritiesException;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
@@ -41,6 +42,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParameter;
 
 /**
@@ -65,6 +67,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_PATIENT_POSTORT = "postort";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
+    private static final String PARAM_ENHET = "enhet";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -98,9 +101,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference) {
+            @QueryParam(PARAM_REFERENCE) String reference,
+            @QueryParam(PARAM_ENHET) String enhet) {
         return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
-                postnummer, postort, coherentJournaling, reference);
+                postnummer, postort, coherentJournaling, reference, enhet);
     }
     // CHECKSTYLE:OFF ParameterNumber
 
@@ -126,9 +130,20 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference) {
+            @QueryParam(PARAM_REFERENCE) String reference,
+            @QueryParam(PARAM_ENHET) String enhet) {
 
         super.validateRedirectToIntyg(intygId);
+
+        if (StringUtils.isBlank(enhet)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'enhet'");
+        }
+        WebCertUser user = getWebCertUserService().getUser();
+        if (getWebCertUserService().isAuthorizedForUnit(enhet, false)) {
+            user.changeValdVardenhet(enhet);
+        } else {
+            throw new AuthoritiesException("Authorization Validation failed because user is not authorized for enhet " + enhet);
+        }
 
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -160,7 +175,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         if (!StringUtils.isBlank(reference)) {
-            getWebCertUserService().getUser().setReference(reference);
+            user.setReference(reference);
         }
 
         PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
