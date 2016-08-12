@@ -161,7 +161,7 @@ var wcMessages = {
         'th.label.qa-signed-by': 'Signerat av',
         'th.help.qa-signed-by': 'Läkare som har signerat intyget.',
         'th.label.qa-sent-recv-date': 'Skickat/mottaget',
-        'th.help.qa-sent-recv-date': 'Datum för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.',
+        'th.help.qa-sent-recv-date': 'Datum för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.'
 
     },
     'en': {
