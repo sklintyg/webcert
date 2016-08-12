@@ -21,14 +21,15 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
-    [ '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.UtkastProxy', 'common.User', 'common.UtkastNotifyService', 'common.DateUtilsService',
-        function($cookies, $filter, $location, $log, $scope, $timeout, $window, dialogService, UtkastProxy,
-            User, utkastNotifyService, dateUtilsService) {
+    [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
+        function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
             'use strict';
 
             // Constant settings
             var PAGE_SIZE = 10;
+
+            var lastFilter = UtkastFilterModel.build();
+            lastFilter.pageSize = PAGE_SIZE;
 
             // Exposed page state variables
             $scope.widgetState = {
@@ -40,73 +41,23 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 doneLoading: true,
                 runningQuery: false,
                 fetchingMoreInProgress: false,
-                loadingSavedByList: false,
 
                 // Error state
                 activeErrorMessageKey: null,
-                invalidFromDate : false,
-                invalidToDate : false,
 
                 // Search states
                 queryFormCollapsed: true,
                 filteredYet: false,
-                savedByList: [],
 
                 // List data
+                startFrom: 0,
                 totalCount: 0,
                 currentList: undefined
             };
 
-            // Default API filter states
-            var defaultSavedByChoice = {
-                name: 'Visa alla',
-                hsaId: undefined
-            };
-
-            // Default query instance sent to search filter API
-            var defaultFilterQuery = {
-                enhetsId: User.getValdVardenhet().id,
-                startFrom: 0,
-                pageSize: PAGE_SIZE,
-                filter: {
-                    notified: undefined, // 3-state, undefined, true, false
-                    complete: undefined, // 3-state, undefined, true, false
-                    savedFrom: undefined,
-                    savedTo: undefined,
-                    savedBy: defaultSavedByChoice.hsaId // selected doctor hasId
-                }
-            };
-
-            // Default view filter form widget states
-            var defaultFilterFormData = {
-                notified: 'default',
-                complete: 'default',
-                lastFilterQuery: defaultFilterQuery
-            };
-
-            function resetFilterState() {
-                $scope.filterForm = angular.copy(defaultFilterFormData);
-                $scope.widgetState.filteredYet = false;
-            }
-
-            function loadFilterForm() {
-
-                resetFilterState();
-                loadSavedByList();
-
-                // Use saved choice if cookie has saved a filter
-                var storedFilter = $cookies.getObject('unsignedCertFilter');
-                if (storedFilter && storedFilter.filter.savedBy) {
-                    $scope.filterForm.lastFilterQuery.filter.savedBy =
-                        selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
-                }
-            }
-
             /**
              *  Load initial data
              */
-            resetFilterState(); // Initializes $scope.filterForm from defaultFilterFormData
-            loadFilterForm();
             $scope.widgetState.doneLoading = false;
 
             UtkastProxy.getUtkastList(function(data) {
@@ -123,97 +74,19 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             });
 
             /**
-             * Private functions
-             */
-
-            function selectSavedByHsaId(hsaId) {
-                for (var count = 0; count < $scope.widgetState.savedByList.length; count++) {
-                    if ($scope.widgetState.savedByList[count].hsaId === hsaId) {
-                        return $scope.widgetState.savedByList[count];
-                    }
-                }
-                return $scope.widgetState.savedByList[0];
-            }
-
-            function loadSavedByList() {
-
-                $scope.widgetState.loadingSavedByList = true;
-
-                UtkastProxy.getUtkastSavedByList(function(list) {
-                    $scope.widgetState.loadingSavedByList = false;
-                    $scope.widgetState.savedByList = list;
-                    if (list && (list.length > 0)) {
-                        $scope.widgetState.savedByList.unshift(defaultSavedByChoice);
-                    }
-                }, function() {
-                    $scope.widgetState.loadingSavedByList = false;
-                    $scope.widgetState.savedByList = [];
-                    $scope.widgetState.savedByList.push({
-                        hsaId: undefined,
-                        name: '<Kunde inte hämta lista>'
-                    });
-                });
-            }
-
-            function convertFormFilterToPayload(query) {
-                var filterQuery = angular.copy(query);
-                var converted = filterQuery.filter;
-                converted.enhetsId = filterQuery.enhetsId;
-                converted.startFrom = filterQuery.startFrom;
-                converted.pageSize = filterQuery.pageSize;
-                converted.notified =
-                        $scope.filterForm.notified !== 'default' ? $scope.filterForm.notified : undefined;
-                converted.complete =
-                        $scope.filterForm.complete !== 'default' ? $scope.filterForm.complete : undefined;
-                converted.savedFrom = $filter('date')(converted.savedFrom, 'yyyy-MM-dd');
-                if (converted.savedTo) {
-                    // Date is used as datetime on backend
-                    var to = moment(converted.savedTo);
-                    to.add(1, 'd');
-                    converted.savedTo = to.format('YYYY-MM-DD');
-                }
-                return converted;
-            }
-
-            function isToBeforeFrom(to, from) {
-                if (to === null || to === undefined || to === '') {
-                    return false;
-                }
-                if (from === null || from === undefined || from === '') {
-                    return false;
-                }
-
-                var mto = moment(to);
-                var mfrom = moment(from);
-
-                if(!mto.isValid() || !mfrom.isValid()) {
-                    return false;
-                }
-
-                return moment(to).isBefore(from);
-            }
-
-            /**
              * Exposed scope functions
              **/
-            $scope.filterDrafts = function() {
-                $log.debug('filterDrafts');
+            $scope.filterDrafts = function(filter) {
+                $log.debug('filterDrafts',filter);
 
+                lastFilter = angular.copy(filter);
+                filter.pageSize = PAGE_SIZE;
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.filteredYet = true;
-                $scope.filterForm.lastFilterQuery.startFrom = 0;
-                var filterQuery = $scope.filterForm.lastFilterQuery;
-                $cookies.putObject('enhetsId', filterQuery.enhetsId);
-                $cookies.putObject('unsignedCertFilter', $scope.filterForm.lastFilterQuery);
-                filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
+                $scope.widgetState.startFrom = 0;
 
-                $scope.widgetState.invalidFromDate = $scope.filterFormElement['filter-changedate-from'].$error.date;
-                $scope.widgetState.invalidToDate = $scope.filterFormElement['filter-changedate-to'].$error.date;
-
-                var to = $scope.filterForm.lastFilterQuery.filter.savedTo;
-                var from = $scope.filterForm.lastFilterQuery.filter.savedFrom;
-                $scope.widgetState.invalidToBeforeFromDate = isToBeforeFrom(to, from);
-
+                var filterQuery = filter.convertToPayload();
+                filterQuery.startFrom = $scope.widgetState.startFrom;
                 $scope.widgetState.runningQuery = true;
                 UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
                     $scope.widgetState.runningQuery = false;
@@ -226,17 +99,16 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 });
             };
 
-            $scope.resetFilter = function() {
-                $cookies.remove('unsignedCertFilter');
-                resetFilterState();
-                $scope.filterDrafts();
+            $scope.showFetchMore = function() {
+                return $scope.widgetState.startFrom + PAGE_SIZE < $scope.widgetState.totalCount;
             };
 
             $scope.fetchMore = function() {
                 $log.debug('fetchMore');
                 $scope.widgetState.activeErrorMessageKey = null;
-                $scope.filterForm.lastFilterQuery.startFrom += PAGE_SIZE;
-                var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
+                $scope.widgetState.startFrom += PAGE_SIZE;
+                var filterQuery = lastFilter.convertToPayload();
+                filterQuery.startFrom = $scope.widgetState.startFrom;
                 $scope.widgetState.fetchingMoreInProgress = true;
 
                 UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
@@ -251,22 +123,4 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 });
             };
 
-            $scope.openIntyg = function(cert) {
-                $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
-            };
-
-            // Handle forwarding
-            $scope.openMailDialog = function(utkast) {
-                utkast.updateState = {
-                    vidarebefordraInProgress: false
-                };
-                utkastNotifyService.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
-            };
-
-            $scope.onNotifyChange = function(utkast) {
-                utkast.updateState = {
-                    vidarebefordraInProgress: false
-                };
-                utkastNotifyService.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
-            };
         }]);

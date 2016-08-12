@@ -53,7 +53,8 @@ module.exports = function(config) {
                 'karma-jasmine',
                 'karma-junit-reporter',
                 'karma-phantomjs-launcher',
-                'karma-mocha-reporter'
+                'karma-mocha-reporter',
+                'karma-ng-html2js-preprocessor'
             ];
             if (runCoverage) {
                 plugins.push('karma-coverage');
@@ -64,6 +65,7 @@ module.exports = function(config) {
         reporters: [ 'dots', 'junit', 'coverage' ],
 
         preprocessors: {
+            'src/main/webapp/app/**/*.html': ['ng-html2js'],
             'src/main/webapp/app/**/*.js': ['coverage']
         },
 

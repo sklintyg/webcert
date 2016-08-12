@@ -91,7 +91,7 @@
             $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
             // Enable debug logging
-            $logProvider.debugEnabled(false);
+            $logProvider.debugEnabled(true);
         }]);
 
     // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes

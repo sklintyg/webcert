@@ -27,8 +27,6 @@ public class QueryIntygParameter {
 
     private Integer pageSize;
 
-    private String enhetsId;
-
     private String savedBy;
 
     private Boolean notified;
@@ -53,14 +51,6 @@ public class QueryIntygParameter {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
-    }
-
-    public String getEnhetsId() {
-        return enhetsId;
-    }
-
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
     }
 
     public String getSavedBy() {

@@ -1,6 +1,6 @@
 <div class="container-fluid" wc-authority feature="hanteraIntygsutkast">
   <div class="row" id="unsigned">
-    <div class="col-md-12 webcert-col webcert-col-single" ng-form="filterFormElement">
+    <div class="col-md-12 webcert-col webcert-col-single">
       <h1>
         <span message key="dashboard.unsigned.title"></span>
       </h1>
@@ -18,87 +18,7 @@
                     ng-switch="widgetState.queryFormCollapsed">
               <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
             </button>
-            <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
-                 class="qa-filter-panel form-horizontal">
-
-              <div wc-authority="VIDAREBEFORDRA_UTKAST" class="form-group" id="filterFormVidarebefordrad">
-                <label class="col-sm-2 control-label">Utkast som är</label>
-                <div class="col-sm-10">
-                  <label class="radio-inline">
-                    <input id="notifiedAll" name="notified" type="radio" ng-model="filterForm.notified"
-                           value="default"> Alla utkast
-                  </label>
-                  <label class="radio-inline">
-                    <input id="notified" name="notified" type="radio" value="true" ng-model="filterForm.notified">
-                    Vidarebefordrade
-                  </label>
-                  <label class="radio-inline">
-                    <input id="notifiedNot" name="notified" type="radio" value="false"
-                           ng-model="filterForm.notified"> Ej vidarebefordrade
-                  </label>
-                </div>
-              </div>
-
-              <!-- Visa endast -->
-              <div class="form-group">
-                <label class="col-sm-2 control-label">Visa endast</label>
-                <div class="col-sm-10">
-                  <label class="radio-inline">
-                    <input id="completeAll" name="complete" type="radio" ng-model="filterForm.complete" value="default">
-                    Båda
-                  </label>
-                  <label class="radio-inline">
-                    <input id="completeNo" name="complete" type="radio" value="false" ng-model="filterForm.complete">
-                    Utkast, uppgifter saknas</label>
-                  <label class="radio-inline">
-                    <input id="completeYes" name="complete" type="radio" value="true" ng-model="filterForm.complete">
-                    Utkast, kan signeras</label>
-                </div>
-              </div>
-
-              <!-- sparat datum -->
-              <div class="form-group">
-                <label class="col-sm-2 control-label">Sparat datum</label>
-                <div class="col-sm-10 form-inline">
-                  Från
-                  <span dom-id="filter-changedate-from" target-model="filterForm.lastFilterQuery.filter.savedFrom"
-                        wc-date-picker-field add-date-parser="strict"></span>
-                  till
-                  <span dom-id="filter-changedate-to" target-model="filterForm.lastFilterQuery.filter.savedTo"
-                        wc-date-picker-field add-date-parser="strict"></span>
-                </div>
-              </div>
-
-              <div class="form-group" ng-show="widgetState.invalidFromDate || widgetState.invalidToDate || widgetState.invalidToBeforeFromDate">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-10">
-                  <div class=" alert alert-danger">
-                    <ul>
-                      <li ng-show="widgetState.invalidFromDate"><span message key="validation.invalidfromdate"></span></li>
-                      <li ng-show="widgetState.invalidToDate"><span message key="validation.invalidtodate"></span></li>
-                      <li ng-show="widgetState.invalidToBeforeFromDate"><span message key="validation.invalidtobeforefromdate"></span></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div wc-authority="FILTRERA_PA_LAKARE" class="form-group" id="filterFormSparatAv">
-                <label class="col-sm-2 control-label">Sparat av</label>
-                <div class="col-sm-10">
-                  <select id="uc-savedBy" class="form-control" ng-model="filterForm.lastFilterQuery.filter.savedBy"
-                          ng-options="s.hsaId as s.name for s in widgetState.savedByList"
-                          ng-disabled="widgetState.loadingSavedByList"></select>
-                </div>
-              </div>
-
-              <!-- buttons -->
-              <div class="form-group" style="margin-top:10px;">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button type="button" id="uc-filter-btn" class="btn btn-default" ng-click="filterDrafts()">Sök</button>
-                  <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter</button>
-                </div>
-              </div>
-            </div>
+            <wc-utkast-filter on-search="filterDrafts(filter)"></wc-utkast-filter>
           </div>
 
           <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"
@@ -130,57 +50,16 @@
 
               <!-- unsigned cert table -->
               <div class="row" ng-show="widgetState.currentList.length>0" id="unsignedCertTable">
-                <table class="col-md-12 table table-striped table-qa">
-                  <tr>
-                    <th></th>
-                    <th wc-authority="VIDAREBEFORDRA_UTKAST"></th>
-                    <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" wc-authority="VIDAREBEFORDRA_UTKAST" class="center"></th>
-                    <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type"></th>
-                    <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status"></th>
-                    <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date"></th>
-                    <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"></th>
-                    <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"></th>
-                  </tr>
-                  <tr ng-repeat="cert in widgetState.currentList">
-                    <td>
-                      <button type="button" class="btn btn-info" title="Visar intyget" ng-click="openIntyg(cert)"
-                              id="showBtn-{{cert.intygId}}"> Visa
-                      </button>
-                    </td>
-                    <td wc-authority="VIDAREBEFORDRA_UTKAST">
-                      <button type="button"
-                              class="btn btn-default vidarebefordra-btn"
-                              ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
-                              title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
-                              ng-click="openMailDialog(cert)">
-                        <img ng-if="!cert.vidarebefordrad" src="/img/mail.png">
-                        <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
-                      </button>
-                    </td>
-                    <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
-                      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="cert.updateState.vidarebefordraInProgress" ng-model="cert.vidarebefordrad"
-                             ng-change="onNotifyChange(cert)" />
-                      <span ng-if="cert.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
-                    </td>
-                    <td class="unbreakable"><span message
-                                                  key="certificatetypes.{{cert.intygType}}.typename"></span>
-                    </td>
-                    <td><span message key="cert.status.{{cert.status}}"></span></td>
-                    <td class="unbreakable">{{cert.lastUpdatedSigned | date:'shortDate'}}</td>
-                    <td class="unbreakable">{{cert.patientId}}</td>
-                    <td class="table-qa-last">{{cert.updatedSignedBy}}</td>
-                </table>
+                <wc-utkast-list utkast-list="widgetState.currentList"></wc-utkast-list>
               </div>
               <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
-                träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
+                träff 1 - {{widgetState.currentList.length}} av
                 {{widgetState.totalCount}}
               </div>
-              <div
-                  ng-show="((filterForm.lastFilterQuery.startFrom + filterForm.lastFilterQuery.pageSize) < widgetState.totalCount)">
+              <div ng-show="showFetchMore()">
                 <button type="button" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                         ng-disabled="widgetState.fetchingMoreInProgress">
-                  <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
-                  fler träffar
+                  <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
                 </button>
               </div>
 
