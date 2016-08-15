@@ -116,7 +116,7 @@ public class UtkastBootstrapBean {
         }
         String meddelandeId = createArende(utlatande, komplettering, null, fragestallare, amne);
         if (paminnelse) {
-            createArende(utlatande, false, meddelandeId, fragestallare, amne);
+            createArende(utlatande, false, meddelandeId, fragestallare, ArendeAmne.PAMINN);
         }
     }
 
