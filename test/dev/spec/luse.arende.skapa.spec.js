@@ -28,7 +28,7 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Skapa ärende luse intyg', function() {
+xdescribe('Skapa ärende luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var meddelandeId;

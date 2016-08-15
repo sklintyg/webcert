@@ -29,7 +29,7 @@ var LisuUtkastPage = wcTestTools.pages.intyg.lisu.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('lisu.utkast.attic', function() {
+xdescribe('lisu.utkast.attic', function() {
 
     var intygsId;
 

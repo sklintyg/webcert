@@ -26,7 +26,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Djupintegration on luse intyg', function() {
+xdescribe('Djupintegration on luse intyg', function() {
 
     var intygId = 'luse-integration-copy-1';
 

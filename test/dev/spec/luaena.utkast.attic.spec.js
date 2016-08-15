@@ -29,7 +29,7 @@ var UtkastPage = wcTestTools.pages.intyg.luae_na.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('luae_na attic tests', function() {
+xdescribe('luae_na attic tests', function() {
 
     var intygsId;
 

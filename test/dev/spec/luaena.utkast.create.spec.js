@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luae_na.utkast;
 var IntygPage = wcTestTools.pages.intyg.luae_na.intyg;
 
-describe('Create and Sign luae_na utkast', function() {
+xdescribe('Create and Sign luae_na utkast', function() {
 
     var utkastId = null, data = null;
 
