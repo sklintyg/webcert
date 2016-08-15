@@ -19,27 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Role;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType;
-
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -48,6 +27,28 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+
+import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
+import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -60,13 +61,9 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntyg() throws Exception {
-        SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
-        response.setResult(ResultTypeUtil.okResult());
-
         WebCertUser webCertUser = createUser();
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
@@ -80,6 +77,32 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     }
 
     @Test
+    public void testSendIntygCompletion() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
+
+        WebCertUser webCertUser = createUser();
+
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(completionUtlatande);
+
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
+        assertEquals(IntygServiceResult.OK, res);
+
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
+
+        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository).save(any(Utkast.class));
+        verify(arendeService).closeArendeAsHandled(completionMeddelandeId, completionUtlatande.getTyp());
+    }
+
+    @Test
     public void testSendIntygReturnsInfo() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.infoResult("Info text"));
@@ -87,17 +110,13 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         WebCertUser webCertUser = createUser();
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
         assertEquals(IntygServiceResult.OK, res);
 
-        // verify(omsandningRepository).save(any(Omsandning.class));
-        // verify(omsandningRepository).delete(any(Omsandning.class));
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
-        // verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
@@ -111,54 +130,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         return utkast;
     }
 
-    // TODO send fail is now handled by certificate-sender, create test there instead.
-    // @Test
-    // public void testSendIntygFailingWithError() throws Exception {
-    //
-    // SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
-    // response.setResult(ResultTypeUtil.errorResult(ErrorIdType.APPLICATION_ERROR, "Error text"));
-    //
-    // when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-    // .thenReturn(response);
-    //
-    // // Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID, INTYG_TYP_FK);
-    // // omsandning.setConfiguration(CONFIG_AS_JSON);
-    //
-    // IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
-    // assertEquals(IntygServiceResult.RESCHEDULED, res);
-    //
-    // // verify(omsandningRepository, times(2)).save(any(Omsandning.class));
-    // verify(intygRepository, times(0)).save(any(Utkast.class));
-    // }
-
-    // TODO send fail is now handled by certificate-sender, create test there instead.
-    // @Test
-    // public void testSendIntygSendServiceFailingWithRuntimeException() throws Exception {
-    //
-    // when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-    // .thenThrow(new RuntimeException("A runtime exception"));
-    //
-    // Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID, INTYG_TYP_FK);
-    // omsandning.setConfiguration(CONFIG_AS_JSON);
-    //
-    // try {
-    // intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
-    // Assert.fail("WebCertServiceException expected");
-    // } catch (WebCertServiceException e) {
-    // // Expected
-    // }
-    //
-    // verify(omsandningRepository, times(2)).save(any(Omsandning.class));
-    // verify(intygRepository, times(0)).save(any(Utkast.class));
-    // }
-
     @Test
     public void testSendIntygPDLLogServiceFailingWithRuntimeException() throws Exception {
-
-        SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
-        response.setResult(ResultTypeUtil.okResult());
-        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-                .thenReturn(response);
 
         doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class));
 

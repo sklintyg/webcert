@@ -45,7 +45,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -109,9 +108,6 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
-
-    @Mock
-    private FragaSvarService fragaSvarService;
 
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();

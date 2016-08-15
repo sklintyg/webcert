@@ -34,28 +34,22 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
-import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManager;
-import se.inera.intyg.webcert.web.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -64,15 +58,6 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected static final String INTYG_ID = "intyg-1";
 
     protected static final String INTYG_TYP_FK = "fk7263";
-
-    @Mock
-    protected RegisterCertificateResponderInterface intygSender;
-
-    @Mock
-    protected SendCertificateToRecipientResponderInterface sendService;
-
-    @Mock
-    protected RevokeMedicalCertificateResponderInterface revokeService;
 
     @Mock
     protected IntygModuleFacade moduleFacade;
@@ -90,26 +75,19 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected NotificationService notificationService;
 
     @Mock
+    protected ArendeService arendeService;
+
+    @Mock
+    protected UtkastIntygDecorator utkastIntygDecorator;
+
+    @Mock
     protected MonitoringLogService monitoringService;
 
     @Mock
     protected CertificateSenderService certificateSenderService;
 
-    @Mock
-    protected ObjectMapper objectMapper;
-
-    // Here we use the real config manager
     @Spy
-    protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
-
-    @Mock
-    IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    ModuleApi moduleApi;
-
-    @InjectMocks
-    protected SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
+    protected ObjectMapper objectMapper = new CustomObjectMapper();
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
@@ -121,7 +99,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     @Before
     public void setupMocks() throws Exception {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
-        utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        utlatande = objectMapper.readValue(json, Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);

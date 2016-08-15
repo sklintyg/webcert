@@ -104,7 +104,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     public Response closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
         LOGGER.debug("Close arende {} as handled", meddelandeId);
         abortIfHanteraFragorNotActive(intygsTyp);
-        ArendeConversationView response = arendeService.closeArendeAsHandled(meddelandeId);
+        ArendeConversationView response = arendeService.closeArendeAsHandled(meddelandeId, intygsTyp);
         return Response.ok(response).build();
     }
 

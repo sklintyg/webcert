@@ -19,16 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
+import java.util.*;
+
 import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -45,7 +44,6 @@ public interface FragaSvarService {
      * Returns all the question/answer pairs that exist for the given certificate.
      */
     List<FragaSvar> getFragaSvar(String intygId);
-
 
     /**
      * Create an answer for an existing  question.
@@ -75,9 +73,8 @@ public interface FragaSvarService {
      * Close all questions related to a certificate.
      *
      * @param intygsId the certificates unique identifier
-     * @return an array with FragaSvar-objects that has been closed.
      */
-    FragaSvar[] closeAllNonClosedQuestions(String intygsId);
+    void closeAllNonClosedQuestions(String intygsId);
 
     /**
      * A FragaSvar is set as unhandled.

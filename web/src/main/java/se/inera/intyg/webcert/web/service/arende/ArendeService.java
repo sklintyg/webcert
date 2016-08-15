@@ -56,7 +56,14 @@ public interface ArendeService {
     /**
      * Close Arende and set status 'CLOSED'.
      */
-    ArendeConversationView closeArendeAsHandled(String meddelandeId);
+    ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp);
+
+    /**
+     * Close all messages related to a certificate.
+     *
+     * @param intygsId the certificates unique identifier
+     */
+    void closeAllNonClosed(String intygsId);
 
     Arende getArende(String meddelandeId);
 

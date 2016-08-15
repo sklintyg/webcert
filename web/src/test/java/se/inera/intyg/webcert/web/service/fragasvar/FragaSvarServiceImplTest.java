@@ -896,6 +896,30 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fail("Processing should have thrown an exception");
     }
 
+    @Test
+    public void testCloseAllNonClosedQuestions() {
+        FragaSvar fragaSvarFromWc = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvarFromWc.setFrageStallare(FrageStallare.WEBCERT.getKod());
+        fragaSvarFromWc.setStatus(Status.ANSWERED);
+        FragaSvar fragaSvarFromFk = buildFragaSvar(2L, new LocalDateTime(), new LocalDateTime());
+        fragaSvarFromFk.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        FragaSvar fragaSvarAlreadyClosed = buildFragaSvar(2L, new LocalDateTime(), new LocalDateTime());
+        fragaSvarAlreadyClosed.setStatus(Status.CLOSED);
+        final String intygId = "intygId";
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId)).thenReturn(Arrays.asList(fragaSvarFromWc, fragaSvarFromFk, fragaSvarAlreadyClosed));
+        when(fragasvarRepositoryMock.save(any(FragaSvar.class))).thenAnswer(invocation -> (FragaSvar) invocation.getArguments()[0]);
+
+        service.closeAllNonClosedQuestions(intygId);
+
+        verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId(intygId);
+        verify(notificationServiceMock).sendNotificationForQuestionHandled(any(FragaSvar.class));
+        verify(notificationServiceMock).sendNotificationForAnswerHandled(any(FragaSvar.class));
+        ArgumentCaptor<FragaSvar> fragaSvarCaptor = ArgumentCaptor.forClass(FragaSvar.class);
+        verify(fragasvarRepositoryMock, times(2)).save(fragaSvarCaptor.capture());
+        assertEquals(Status.CLOSED, fragaSvarCaptor.getAllValues().get(0).getStatus());
+        assertEquals(Status.CLOSED, fragaSvarCaptor.getAllValues().get(1).getStatus());
+    }
+
     private WebCertUser createUser() {
 
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
