@@ -29,7 +29,7 @@ var LisuUtkastPage = wcTestTools.pages.intyg.lisu.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Lisu attic tests', function() {
+describe('lisu.utkast.attic', function() {
 
     var intygsId;
 
@@ -78,16 +78,18 @@ describe('Lisu attic tests', function() {
         });
 
         it ('should restore annatBeskrivning if annat is specified again', function() {
-            LisuUtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12').then(function(){
+                expect(LisuUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
+                expect(LisuUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag');
 
-            expect(LisuUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
-            expect(LisuUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag');
-            expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+                LisuUtkastPage.showMissingInfoButtonClick(true);
+                expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
+            });
+//console.log(browser.ignoreSynchronization);
         });
     });
 
-    describe('sysselsättning', function() {
+    xdescribe('sysselsättning', function() {
         it('should still be valid if changed to arbetssökande', function() {
             LisuUtkastPage.sysselsattning.typ.arbetssokande.sendKeys(protractor.Key.SPACE);
             LisuUtkastPage.showMissingInfoButtonClick(true);
@@ -134,7 +136,7 @@ describe('Lisu attic tests', function() {
         });
     });
 
-    describe('sjukskrivningar', function() {
+    xdescribe('sjukskrivningar', function() {
         it('should still be valid if sjukskrivningsperiod > 75', function() {
             LisuUtkastPage.sjukskrivning[75].fran.clear();
             LisuUtkastPage.sjukskrivning[75].till.clear();
@@ -239,7 +241,7 @@ describe('Lisu attic tests', function() {
 
     
 
-    describe('kontaktMedFk', function() {
+    xdescribe('kontaktMedFk', function() {
         it('should still be valid if kontaktMedFk is set to no', function() {
             LisuUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
             LisuUtkastPage.showMissingInfoButtonClick(true);

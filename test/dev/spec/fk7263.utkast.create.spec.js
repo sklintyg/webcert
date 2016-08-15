@@ -37,48 +37,47 @@ describe('Create and Sign FK utkast', function() {
         });
     });
 
-    describe('create fk', function(){
 
-        describe('interact with utkast', function() {
+    describe('interact with utkast', function() {
 
-            it('check that smittskydd is displayed', function() {
+        it('check that smittskydd is displayed', function() {
 
-                // Save id so it can be removed in cleanup stage.
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
-                });
-
-                UtkastPage.whenSmittskyddIsDisplayed().then(function() {
-                    expect(UtkastPage.getSmittskyddLabelText()).toContain('Avstängning enligt smittskyddslagen på grund av smitta');
-                });
-
+            // Save id so it can be removed in cleanup stage.
+            browser.getCurrentUrl().then(function(url) {
+                utkastId = url.split('/').pop();
             });
 
-            describe('fill in fk intyg', function() {
+            UtkastPage.whenSmittskyddIsDisplayed().then(function() {
+                expect(UtkastPage.getSmittskyddLabelText()).toContain(
+                    'Avstängning enligt smittskyddslagen på grund av smitta');
+            });
 
-                // speeds up utkast filling by not waiting for angular events, promises etc.
-                browser.ignoreSynchronization = true;
+        });
 
-                it('nedsatt form8b', function() {
-                    UtkastPage.smittskyddCheckboxClick();
-                    UtkastPage.nedsattMed25CheckboxClick();
-                });
+        describe('fill in fk intyg', function() {
 
-                it('resor form 6a', function() {
-                    UtkastPage.travelRadioButtonJaClick();
-                    var val = UtkastPage.getCheckedTravelRadioButtonValue();
-                    expect(val).toBe('JA');
-                });
+            // speeds up utkast filling by not waiting for angular events, promises etc.
+            browser.ignoreSynchronization = true;
 
-                it('can sign', function() {
+            it('nedsatt form8b', function() {
+                UtkastPage.smittskyddCheckboxClick();
+                UtkastPage.nedsattMed25CheckboxClick();
+            });
 
-                    // reset
-                    browser.ignoreSynchronization = false;
+            it('resor form 6a', function() {
+                UtkastPage.travelRadioButtonJaClick();
+                var val = UtkastPage.getCheckedTravelRadioButtonValue();
+                expect(val).toBe('JA');
+            });
 
-                    UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                        UtkastPage.signeraButtonClick();
-                        expect(IntygPage.isAt()).toBeTruthy();
-                    });
+            it('can sign', function() {
+
+                // reset
+                browser.ignoreSynchronization = false;
+
+                UtkastPage.whenSigneraButtonIsEnabled().then(function() {
+                    UtkastPage.signeraButtonClick();
+                    expect(IntygPage.isAt()).toBeTruthy();
                 });
             });
         });

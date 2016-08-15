@@ -93,7 +93,7 @@ describe('Create and Sign luae_na utkast', function() {
             });
         });
 
-        it('Verifiera intyg', function() {
+        xit('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded().then(function() {
                 IntygPage.verify(data);
             });

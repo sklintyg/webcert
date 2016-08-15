@@ -29,7 +29,9 @@ var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var EC = protractor.ExpectedConditions;
 
-describe('Validera att man med roll Tandläkare ej kan se Ärende tillhörande luae_fs intyg samt att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben', function() {
+// Validera att man med roll Tandläkare ej kan se Ärende tillhörande luae_fs intyg samt
+// att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben
+describe('fragasvar.intygstyp.filtrering', function() {
 
     var intygsId;
     var arendeId = 'luaefs-arende-arbtid';
@@ -37,6 +39,8 @@ describe('Validera att man med roll Tandläkare ej kan se Ärende tillhörande l
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
+        testdataHelper.deleteAllUtkast();
+        testdataHelper.deleteAllIntyg();
     });
 
     describe('Visa signerat luae_fs intyg', function() {
