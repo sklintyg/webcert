@@ -92,6 +92,9 @@
     <!-- In dev mode we bootstrap data -->
     <bean id="FragaSvarBootstrapBean" class="se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean" />
     <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean" />
+  </beans>
+
+  <beans profile="dev,wc-init-data,test,demo">
     <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean" />
   </beans>
 
