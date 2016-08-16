@@ -21,7 +21,7 @@ Detta ska gå utan problem
 !3 Visa utkastet via integrationslänken
 Detta ska gå utan problem
 | skript | !-IntegrationMedJournalsystem-! |
-| säkerställ att | utkast visas via integration | webcert-fitnesse-behorighet-1 | utan behorighetsfel |
+| säkerställ att | utkast visas via integration med | webcert-fitnesse-behorighet-1 | enhet | IFV1239877878-1045 | utan behorighetsfel |
 
 !3 Logga in med uppdrag på en annan vårdenhet och vårdgivare
 
@@ -41,7 +41,7 @@ Nu ska utkastet ej vara tillgängligt och ett felmeddelande visas
 !3 Visa utkastet via integrationslänken
 Nu ska utkastet ej vara tillgängligt och ett felmeddelande visas
 | skript | !-IntegrationMedJournalsystem-! |
-| säkerställ att | utkast visas via integration | webcert-fitnesse-behorighet-1 | med behorighetsfel |
+| säkerställ att | utkast visas via integration med | webcert-fitnesse-behorighet-1 | enhet | IFV1239877878-1042 | behorighetsfel |
 
 !3 Ta bort utkastet
 

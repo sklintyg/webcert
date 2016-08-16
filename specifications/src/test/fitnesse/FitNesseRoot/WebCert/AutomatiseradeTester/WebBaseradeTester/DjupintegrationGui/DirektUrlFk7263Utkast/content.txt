@@ -15,7 +15,7 @@
 !3 Visa utkastet via integrationslänken
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration | $intygId |
+| visa utkast via integration med | $intygId | enhet | IFV1239877878-1045 |
 | säkerställ att inte | verifiera tillbakaknapp synlig |
 
 !3 Ta bort utkastet

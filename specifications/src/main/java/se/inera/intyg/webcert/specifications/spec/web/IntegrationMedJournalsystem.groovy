@@ -26,18 +26,18 @@ import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandl
 
 class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
 
-    def visaIntygViaIntegration(String intygId) {
+    def visaIntygViaIntegrationMedEnhet(String intygId, String enhet) {
         Browser.drive {
-            go "/visa/intyg/" + intygId + "?alternatePatientSSn="
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + "&enhet=" + enhet
             waitFor {
                 at VisaFk7263Page
             }
         }
     }
 
-    def visaIntygViaIntegrationMedPersonnummer(String intygId, String personnummer) {
+    def visaIntygViaIntegrationMedPersonnummerEnhet(String intygId, String personnummer, String enhet) {
         Browser.drive {
-            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer + "&enhet=" + enhet
             waitFor {
                 at VisaFk7263Page
             }
@@ -64,28 +64,28 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
         result
     }
 
-    def visaUtkastViaIntegrationMedPersonnummer(String intygId, String personnummer) {
+    def visaUtkastViaIntegrationMedPersonnummerEnhet(String intygId, String personnummer, String enhet) {
         Browser.drive {
-            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer + "&enhet=" + enhet
             waitFor {
                 at EditeraFk7263Page
             }
         }
     }
 
-    def visaUtkastViaIntegrationMedPersonnummerSignerandeLakare(String intygId, String personnummer, String signerandeLakare) {
+    def visaUtkastViaIntegrationMedPersonnummerSignerandeLakareEnhet(String intygId, String personnummer, String signerandeLakare, String enhet) {
         Browser.drive {
-            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer + "&responsibleHospName=" + signerandeLakare
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer + "&responsibleHospName=" + signerandeLakare + "&enhet=" + enhet
             waitFor {
                 at EditeraFk7263Page
             }
         }
     }
 
-    boolean utkastVisasViaIntegrationMedBehorighetsfel(String intygId) {
+    boolean utkastVisasViaIntegrationMedEnhetBehorighetsfel(String intygId, String enhet) {
         def result
         Browser.drive {
-            go "/visa/intyg/" + intygId
+            go "/visa/intyg/" + intygId + "?enhet=" + enhet
             waitFor {
                 at EditeraFk7263Page
                 result = page.errorPanel.isDisplayed()
@@ -95,10 +95,10 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
         result
     }
 
-    boolean utkastVisasViaIntegrationUtanBehorighetsfel(String intygId) {
+    boolean utkastVisasViaIntegrationMedEnhetUtanBehorighetsfel(String intygId, String enhet) {
         def result
         Browser.drive {
-            go "/visa/intyg/" + intygId
+            go "/visa/intyg/" + intygId + "?enhet=" + enhet
             waitFor {
                 at EditeraFk7263Page
             }
@@ -108,11 +108,11 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
     }
 
     boolean nyttPersonnummerMeddelandeVisas() {
-		def result
+        def result
         Browser.drive {
             result = page.nyttPersonnummer.isDisplayed()
         }
-		return result
+        return result
     }
 
     boolean signerandeLakareMeddelandeVisas(expected) {
@@ -137,31 +137,31 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
     }
 
     String patientensNamn() {
-		String namnOchPersonnummer
+        String namnOchPersonnummer
         Browser.drive {
-			waitFor{
-				page.namnOchPersonnummer.isDisplayed()
-			}
-			namnOchPersonnummer = page.namnOchPersonnummer.text()
+            waitFor{
+                page.namnOchPersonnummer.isDisplayed()
+            }
+            namnOchPersonnummer = page.namnOchPersonnummer.text()
         }
-		
+
        def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
-	   return namn
+       return namn
     }
-	
-	String patientensPersonnummer() {
-		String namnOchPersonnummer
-		Browser.drive {
-			waitFor{
-				page.namnOchPersonnummer.isDisplayed()
-			}
-			namnOchPersonnummer = page.namnOchPersonnummer.text()
-		}
-		
-	   def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
-	   return personnummer
-	}
-	
+
+    String patientensPersonnummer() {
+        String namnOchPersonnummer
+        Browser.drive {
+            waitFor{
+                page.namnOchPersonnummer.isDisplayed()
+            }
+            namnOchPersonnummer = page.namnOchPersonnummer.text()
+        }
+
+        def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
+        return personnummer
+    }
+
     void kopieraIntyg() {
         Browser.drive {
             page.copy()
@@ -199,9 +199,9 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
         result
     }
 
-    void visaUtkastViaIntegration(String intygId) {
+    void visaUtkastViaIntegrationMedEnhet(String intygId, String enhet) {
         Browser.drive {
-            go "/visa/intyg/" + intygId
+            go "/visa/intyg/" + intygId + "?enhet=" + enhet
             waitFor {
                 at EditeraFk7263Page
             }
@@ -353,16 +353,16 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
         result
     }
 
-	boolean textNyttPersonnummerVisas() {
-		def result
-		Browser.drive {
+    boolean textNyttPersonnummerVisas() {
+        def result
+        Browser.drive {
             waitFor {
                 at VisaFk7263Page
             }
-			result = page.kopieraDialogMsgNyttPersonId?.isDisplayed()
-		}
-		result
-	}
+            result = page.kopieraDialogMsgNyttPersonId?.isDisplayed()
+        }
+        result
+    }
 
     boolean kopieraDialogenVisas() {
         def result
