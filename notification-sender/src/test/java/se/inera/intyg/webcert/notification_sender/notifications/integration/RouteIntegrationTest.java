@@ -143,6 +143,34 @@ public class RouteIntegrationTest {
     }
 
     @Test
+    public void ensureWiretapWorks() throws Exception {
+        LocalDateTime first = LocalDateTime.now().minusSeconds(15);
+        LocalDateTime second = LocalDateTime.now().minusSeconds(10);
+        LocalDateTime third = LocalDateTime.now().minusSeconds(5);
+
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelsekodEnum.ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", second, HandelsekodEnum.SIGNAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+
+        sendMessage(notificationMessage2);
+        sendMessage(notificationMessage3);
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
+            int numberOfReceivedMessages = certificateStatusUpdateForCareResponderV2.getNumberOfReceivedMessages();
+            if (numberOfReceivedMessages == 1) {
+                List<NotificationStubEntry> notificationMessages = certificateStatusUpdateForCareResponderV2.getNotificationMessages();
+                for (NotificationStubEntry nse : notificationMessages) {
+                    if (nse.handelseTyp.equals(HandelsekodEnum.SIGNAT.value())) {
+                        assertEquals(second, nse.handelseTid);
+                    }
+                }
+            }
+            return (numberOfReceivedMessages == 1);
+        });
+    }
+
+    @Test
     public void ensureAggregatorFiltersOutAndratMessagesWhenSigned() throws Exception {
 
         NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SKAPAT,

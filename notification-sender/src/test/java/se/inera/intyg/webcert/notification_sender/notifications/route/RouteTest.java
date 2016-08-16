@@ -59,7 +59,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
-@MockEndpointsAndSkip("bean:notificationAggregator||bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:notificationAggregator|direct:signatWireTap|bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
@@ -81,6 +81,9 @@ public class RouteTest {
 
     @EndpointInject(uri = "mock:bean:notificationAggregator")
     private MockEndpoint notificationAggregator;
+
+    @EndpointInject(uri = "mock:direct:signatWireTap")
+    private MockEndpoint signatWireTap;
 
     @EndpointInject(uri = "mock:bean:notificationWSClient")
     private MockEndpoint notificationWSClient;
@@ -109,6 +112,37 @@ public class RouteTest {
     }
 
     @Test
+    public void testWiretappingOfSignedMessages() throws ModuleException, InterruptedException {
+        notificationAggregator.whenAnyExchangeReceived(exchange -> {
+            Message msg = new DefaultMessage();
+            exchange.setOut(msg);
+        });
+
+        // Given
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
+        notificationAggregator.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(1);
+
+        // When
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SIGNAT.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(notificationAggregator);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
+    }
+
+    @Test
     public void testRoutesDirectlyToNotificationQueueForFK7263Andrat() throws ModuleException, InterruptedException {
         // Given
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
@@ -117,6 +151,7 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
@@ -130,6 +165,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -148,6 +184,7 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(1);
 
         // When
         Map<String, Object> headers = new HashMap<>();
@@ -160,6 +197,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -170,6 +208,7 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
@@ -182,6 +221,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -191,6 +231,7 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
@@ -203,6 +244,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -212,6 +254,7 @@ public class RouteTest {
         notificationWSClientV2.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
@@ -224,6 +267,7 @@ public class RouteTest {
         assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test

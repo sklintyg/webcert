@@ -18,17 +18,20 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.filter;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.camel.Message;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.apache.camel.Message;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by eriklupander on 2016-07-04.
@@ -66,7 +69,10 @@ public class NotificationMessageDiscardFilter {
         }
 
         // Flatten out the hashmap values and return as list.
-        return latestMessage.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        return latestMessage.values().stream()
+                .flatMap(Collection::stream)
+                .filter(msg -> getNotificationFromBody(msg).getHandelse() != HandelsekodEnum.SIGNAT)     // Makes sure no SIGNAT may leave this filter.
+                .collect(Collectors.toList());
     }
 
     private void handleAndratNotification(Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
@@ -96,7 +102,7 @@ public class NotificationMessageDiscardFilter {
 
     private void handleSigneratNotification(Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
 
-        // Add it
+        // Add it, we need to have it in the list temporarily in case there are subsequent ANDRAT.
         latestMessage.get(msg.getIntygsId()).add(camelMsg);
 
         // Remove any "ANDRAT" messages

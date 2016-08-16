@@ -18,23 +18,24 @@
  */
 package se.inera.intyg.webcert.notification_sender.filter;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.util.*;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander on 2016-07-04.
@@ -45,26 +46,21 @@ public class NotificationMessageDiscardFilterTest {
     private NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
 
     @Test
-    public void testReturnsSignedWhenBothSignedAndSavedExists() throws IOException {
+    public void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {
         List<Message> processed = testee.process(buildMsgList(HandelsekodEnum.SIGNAT, HandelsekodEnum.ANDRAT));
-        assertEquals(1, processed.size());
-        NotificationMessage notificationMessage = om.readValue( (String) processed.get(0).getBody(), NotificationMessage.class);
-        assertEquals(HandelsekodEnum.SIGNAT, notificationMessage.getHandelse());
+        assertEquals(0, processed.size());
     }
 
     @Test
-    public void testReturnsSignedWhenBothSignedAndSavedExistsAndratBeforeSignerat() throws IOException {
+    public void testReturnsNothingWhenBothSignedAndSavedExistsAndratBeforeSignerat() throws IOException {
         List<Message> processed = testee.process(buildMsgList(HandelsekodEnum.ANDRAT, HandelsekodEnum.SIGNAT));
-        assertEquals(1, processed.size());
-        NotificationMessage notificationMessage = om.readValue( (String) processed.get(0).getBody(), NotificationMessage.class);
-
-        assertEquals(HandelsekodEnum.SIGNAT, notificationMessage.getHandelse());
+        assertEquals(0, processed.size());
     }
 
     @Test
-    public void testFiltersOutAndratButRetainsOthers() throws JsonProcessingException {
+    public void testFiltersOutAndratAndSignatButRetainsOthers() throws JsonProcessingException {
         List<Message> processed = testee.process(buildMsgList(HandelsekodEnum.SKAPAT, HandelsekodEnum.SIGNAT, HandelsekodEnum.ANDRAT, HandelsekodEnum.ANDRAT, HandelsekodEnum.RADERA));
-        assertEquals(3, processed.size());
+        assertEquals(2, processed.size());
     }
 
     @Test

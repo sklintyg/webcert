@@ -57,19 +57,19 @@
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
         <Arg>vm://localhost?broker.persistent=false</Arg>
-        <!--  <Arg>tcp://localhost:61616</Arg>    -->
-    </New>
-  </Arg>
-</New>
-<New id="AsyncConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
-  <Arg>
-    <Ref refid="webAppContext"/>
-  </Arg>
-  <Arg>jms/AsyncConnectionFactory</Arg>
-  <Arg>
-    <New class="org.apache.activemq.ActiveMQConnectionFactory">
-      <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
-      <!--   <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=3&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=6000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=4000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg> -->
+        <!--   <Arg>tcp://localhost:61616</Arg>           -->
+      </New>
+    </Arg>
+  </New>
+  <New id="AsyncConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="webAppContext"/>
+    </Arg>
+    <Arg>jms/AsyncConnectionFactory</Arg>
+    <Arg>
+      <New class="org.apache.activemq.ActiveMQConnectionFactory">
+        <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
+        <!--      <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=3&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=6000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=4000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg> -->
       </New>
     </Arg>
   </New>
@@ -80,7 +80,7 @@
     <Arg>jms/Queue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>logging.queue</Arg>
+        <Arg>dev.logging.queue</Arg>
       </New>
     </Arg>
   </New>
@@ -91,7 +91,7 @@
     <Arg>jms/NotificationQueueForAggregation</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>NOTIFICATIONSENDERFORAGGREGATION.QUEUE</Arg>
+        <Arg>dev.webcert.aggregated.notification.queue</Arg>
       </New>
     </Arg>
   </New>
@@ -102,7 +102,7 @@
     <Arg>jms/NotificationQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>NOTIFICATIONSENDER.QUEUE</Arg>
+        <Arg>dev.webcert.notification.queue</Arg>
       </New>
     </Arg>
   </New>
@@ -113,7 +113,7 @@
     <Arg>jms/NotificationWSQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>webcert.notification.ws.queue</Arg>
+        <Arg>dev.webcert.notification.ws.queue</Arg>
       </New>
     </Arg>
   </New>
@@ -124,7 +124,7 @@
     <Arg>jms/CertificateSenderQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>webcert.certificate.queue</Arg>
+        <Arg>dev.webcert.certificate.queue</Arg>
       </New>
     </Arg>
   </New>
