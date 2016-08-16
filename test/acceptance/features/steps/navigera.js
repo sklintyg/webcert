@@ -47,7 +47,8 @@ module.exports = function() {
                 url += 'efternamn=testsson&';
                 url += 'postadress=Langgatan%2012&';
                 url += 'postnummer=990%2090&';
-                url += 'postort=Simrishamn';
+                url += 'postort=Simrishamn&';
+                url += 'enhet=' + global.user.enhetId;
 
             } else {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
