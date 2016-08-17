@@ -215,6 +215,7 @@
         <webcert.baseUrl>https://webcert.inera.nordicmedtest.se/</webcert.baseUrl>
         <logsender.baseUrl>https://webcert.inera.nordicmedtest.se/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se/inera-certificate/</certificate.baseUrl>
+        <geb.env>firefoxRemote</geb.env>
       </properties>
     </profile>
     <profile>
