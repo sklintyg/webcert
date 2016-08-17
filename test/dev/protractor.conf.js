@@ -55,8 +55,8 @@ exports.config = {
         version: '11',*/
 
         // Any other browser
-        browserName: 'phantomjs', // possible values: phantomjs, firefox, chrome
-        'phantomjs.binary.path': require('phantomjs').path,
+        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
+        //'phantomjs.binary.path': require('phantomjs').path, // uncomment for phantomjs to work
 
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances
