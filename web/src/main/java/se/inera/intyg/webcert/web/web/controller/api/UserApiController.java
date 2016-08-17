@@ -166,4 +166,13 @@ public class UserApiController extends AbstractApiController {
          Avtal avtal = avtalService.getLatestAvtal();
         return Response.ok(avtal).build();
     }
+
+    @GET
+    @Path("/ping")
+    public Response clientPing() {
+        // Any active user session will be extended just by accessing an endpoint.
+        LOG.debug("wc-client pinged server");
+        return Response.ok().build();
+    }
+
 }

@@ -19,17 +19,18 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+import org.junit.Test;
+
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-import org.junit.Test;
 
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Created by marced on 17/11/15.
@@ -126,4 +127,11 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-response-schema.json"));
     }
 
+    @Test
+    public void testPing() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        given().contentType(ContentType.JSON).expect().statusCode(200).when().get("api/anvandare/ping");
+    }
 }
