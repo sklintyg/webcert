@@ -1,6 +1,10 @@
  /*globals Handlebars*/
 
+
  'use strict';
+
+ var accResults;
+ /*AddResultHere*/
 
  Handlebars.registerHelper('if_eq', function(a, b, opts) {
      if (a === b) { // Or === depending on your needs
@@ -77,34 +81,22 @@
 
  }
 
- // $.ajax({
- //     dataType: 'jsonp',
- //     url: 'acc_results.json?callback=?',
- //     contentType: 'application/json',
- //     mimeType: 'application/json'
- // })
- //     .always(function(msg) {
- //         console.log(msg);
- //     });
 
 
- // $.ajax({
- //     url: "acc_results.json?callback=aaa",
- //     type: 'GET',
- //     dataType: 'JSONP',
- //     success: function(data) {
- //         alert(data);
- //     }
- // });
+ window.onload = function() {
+     if (accResults) {
+         drawResults(accResults);
+     } else {
+         $.getJSON("acc_results.json?callback=?")
+             .done(function(result) {
+                 console.log("success");
+                 console.log(result);
+                 drawResults(result);
 
- $.getJSON("acc_results.json?callback=?")
-     .done(function(result) {
-         console.log("success");
-         console.log(result);
-         drawResults(result);
-
-     })
-     .fail(function(result) {
-         console.log("error");
-         drawResults(JSON.parse(result.responseText));
-     });
+             })
+             .fail(function(result) {
+                 console.log("error");
+                 drawResults(JSON.parse(result.responseText));
+             });
+     }
+ };
