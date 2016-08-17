@@ -38,11 +38,11 @@
   <properties>
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.5.3]</common.version.range>
+    <common.version.range>(,2.5.4]</common.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.5.3]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.5.4]</intygstyper.version.range>
 
     <!-- Schemas -->
     <rivta-clinicalprocess.version>2.0.RC5.0</rivta-clinicalprocess.version>
