@@ -28,7 +28,7 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('answer arende on luse intyg', function() {
+describe('answer arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var meddelandeId = 'luse-arende-arbtid';

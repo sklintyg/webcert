@@ -29,7 +29,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('arende on luse intyg', function() {
+describe('arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var meddelandeId = 'luse-arende-komplt';

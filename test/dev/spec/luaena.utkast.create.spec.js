@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luae_na.utkast;
 var IntygPage = wcTestTools.pages.intyg.luae_na.intyg;
 
-xdescribe('Create and Sign luae_na utkast', function() {
+describe('Create and Sign luae_na utkast', function() {
 
     var utkastId = null, data = null;
 
@@ -93,7 +93,7 @@ xdescribe('Create and Sign luae_na utkast', function() {
             });
         });
 
-        xit('Verifiera intyg', function() {
+        it('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded().then(function() {
                 IntygPage.verify(data);
             });

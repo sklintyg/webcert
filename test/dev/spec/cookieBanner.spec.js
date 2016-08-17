@@ -25,7 +25,7 @@ var WelcomePage = wcTestTools.pages.welcome;
 var basepage = wcTestTools.pages.webcertBase;
 var EC = protractor.ExpectedConditions;
 
-xdescribe('Logga in och godkänn kakor', function() {
+describe('Logga in och godkänn kakor', function() {
 
     it('Öppna och logga in utan att disabla cookiebanner', function() {
         WelcomePage.get();

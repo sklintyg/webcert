@@ -89,7 +89,7 @@ xdescribe('lisu.utkast.attic', function() {
         });
     });
 
-    xdescribe('sysselsättning', function() {
+    describe('sysselsättning', function() {
         it('should still be valid if changed to arbetssökande', function() {
             LisuUtkastPage.sysselsattning.typ.arbetssokande.sendKeys(protractor.Key.SPACE);
             LisuUtkastPage.showMissingInfoButtonClick(true);
@@ -136,7 +136,7 @@ xdescribe('lisu.utkast.attic', function() {
         });
     });
 
-    xdescribe('sjukskrivningar', function() {
+    describe('sjukskrivningar', function() {
         it('should still be valid if sjukskrivningsperiod > 75', function() {
             LisuUtkastPage.sjukskrivning[75].fran.clear();
             LisuUtkastPage.sjukskrivning[75].till.clear();
@@ -241,7 +241,7 @@ xdescribe('lisu.utkast.attic', function() {
 
     
 
-    xdescribe('kontaktMedFk', function() {
+    describe('kontaktMedFk', function() {
         it('should still be valid if kontaktMedFk is set to no', function() {
             LisuUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
             LisuUtkastPage.showMissingInfoButtonClick(true);

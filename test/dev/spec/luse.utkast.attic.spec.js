@@ -29,7 +29,7 @@ var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('Luse attic tests', function() {
+describe('Luse attic tests', function() {
 
     var intygsId;
 
