@@ -26,7 +26,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('Djupintegration on luse intyg', function() {
+describe('Djupintegration on luse intyg', function() {
 
     var intygId = 'luse-integration-copy-1';
 
@@ -59,7 +59,8 @@ xdescribe('Djupintegration on luse intyg', function() {
             efternamn:'Nytt efternamn',
             postadress:'Ny postadress',
             postnummer:'Nytt postnummer',
-            postort:'Ny postort'
+            postort:'Ny postort',
+            enhet:'TSTNMT2321000156-1039'
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
     });
