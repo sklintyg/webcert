@@ -102,30 +102,6 @@ describe('UnsignedCertCtrlSpec', function() {
 
     describe('ejSigneradeUtkast controller filter', function() {
 
-/*        it('should update error message if loading fails', function() {
-
-            // first run a filter to save a cookie
-            $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
-            $scope.filterDrafts({});
-            $httpBackend.flush();
-
-            // then update filter filter savedBy info
-            var filter = $cookies.getObject('unsignedCertFilter');
-            filter.savedBy = {
-                name: 'Visa alla',
-                hsaId: 'hsaIdFromHell'
-            };
-            $cookies.putObject('unsignedCertFilter', filter);
-
-            // finally make sure successful call runs through savedBy functions
-            $httpBackend.expectGET('/api/utkast/lakare/').respond(200, {});
-            $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
-            $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
-            $httpBackend.flush();
-            $timeout.flush();
-            expect($scope.widgetState.currentList.length).toBe(1);
-        });
-*/
         it('should update error message if loading fails', function() {
             $httpBackend.expectGET('/api/utkast/').respond(500);
             $controller('webcert.UnsignedCertCtrl', { $scope: $scope });

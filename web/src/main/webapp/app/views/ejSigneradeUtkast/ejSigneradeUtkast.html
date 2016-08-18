@@ -18,7 +18,7 @@
                     ng-switch="widgetState.queryFormCollapsed">
               <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
             </button>
-            <wc-utkast-filter on-search="filterDrafts(filter)"></wc-utkast-filter>
+            <wc-utkast-filter on-search="filterDrafts(filter)" ng-show="!widgetState.queryFormCollapsed"></wc-utkast-filter>
           </div>
 
           <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"

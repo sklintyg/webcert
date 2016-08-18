@@ -81,6 +81,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
                 lastFilter = angular.copy(filter);
                 filter.pageSize = PAGE_SIZE;
+                $scope.widgetState.queryFormCollapsed = false;
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.filteredYet = true;
                 $scope.widgetState.startFrom = 0;
