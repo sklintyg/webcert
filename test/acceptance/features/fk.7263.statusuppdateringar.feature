@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @fk7263
+@statusuppdateringar @fk7263 @waitingForFix @INTYG-2711
 Egenskap: Statusuppdateringar för FK7263
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.

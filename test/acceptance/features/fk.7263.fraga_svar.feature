@@ -1,6 +1,6 @@
 # language: sv
-@meddelanden @fk7263
-Egenskap: Försäkringskassan kan skicka frågor på sjukintyg
+@meddelanden @fk7263 @waitingForFix @INTYG-2711
+Egenskap: Försäkringskassan kan skicka frågor på sjukintyg Fk7263
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare
