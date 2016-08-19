@@ -62,7 +62,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             if (!isEmployer) {
                 pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT);
             } else {
-                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, null);
+                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT);
             }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
