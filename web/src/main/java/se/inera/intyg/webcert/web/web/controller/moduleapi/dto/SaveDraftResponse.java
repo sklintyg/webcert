@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,20 +29,20 @@ public class SaveDraftResponse {
 
     private long version;
 
-    private DraftValidationStatus status;
+    private UtkastStatus status;
 
     private List<SaveDraftValidationMessage> messages = new ArrayList<>();
 
-    public SaveDraftResponse(long version, DraftValidationStatus status) {
+    public SaveDraftResponse(long version, UtkastStatus status) {
         this.version = version;
         this.status = status;
     }
 
-    public DraftValidationStatus getStatus() {
+    public UtkastStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DraftValidationStatus status) {
+    public void setStatus(UtkastStatus status) {
         this.status = status;
     }
 
