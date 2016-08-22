@@ -64,7 +64,7 @@ angular.module('rhsIndexApp')
         $scope.q = DEFAULT_QUESTION;
 
         $scope.deleteAllArendenOnUnit = function() {
-            if ($scope.selectedEnhet != '' && window.confirm('Är du verkligen helt säker på att du vill radera alla ärenden på ' + $scope.selectedEnhet + ' ur databasen?')) {
+            if ($scope.selectedEnhet !== '' && window.confirm('Är du verkligen helt säker på att du vill radera alla ärenden på ' + $scope.selectedEnhet + ' ur databasen?')) {
                 $http({
                     method: 'DELETE',
                     url: '/testability/arendetest/enhet/' + $scope.selectedEnhet
@@ -81,7 +81,7 @@ angular.module('rhsIndexApp')
             }).then(function successCallback(response) {
                 $scope.resultat = '';
                 $scope.data = response.data;
-            })
+            });
         };
 
         $scope.loadUnits = function() {
@@ -90,7 +90,7 @@ angular.module('rhsIndexApp')
                 url: '/testability/intyg/signingunits'
             }).then(function successCallback(response) {
                 $scope.units = response.data;
-            })
+            });
         };
 
         $scope.openForm = function(intyg) {
@@ -118,7 +118,7 @@ angular.module('rhsIndexApp')
         };
 
         $scope.typeClicked = function() {
-            if ($scope.q.amne == 'KOMPLT') {
+            if ($scope.q.amne === 'KOMPLT') {
                 $scope.q.rubrik = 'Komplettering';
             } else {
                 $scope.q.rubrik = 'Fråga';
@@ -128,27 +128,27 @@ angular.module('rhsIndexApp')
         $scope.sendQuestion = function(q) {
 
             var svarPa = '';
-            if (q.svarPa.meddelandeId != '') {
+            if (q.svarPa.meddelandeId !== '') {
                 svarPa = '<urn1:svarPa><urn3:meddelande-id>' + q.svarPa.meddelandeId + '</urn3:meddelande-id><urn3:referens-id>' + q.svarPa.referensId + '</urn3:referens-id></urn1:svarPa>';
             }
             var paminnelseMeddelandeId = '';
-            if (q.paminnelseMeddelandeId != '') {
+            if (q.paminnelseMeddelandeId !== '') {
                 paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + q.paminnelseMeddelandeId + '</urn1:paminnelseMeddelande-id>';
             }
             var rubrik = '';
-            if (q.rubrik != '') {
+            if (q.rubrik !== '') {
                 rubrik = '<urn1:rubrik>' + q.rubrik + '</urn1:rubrik>';
             }
             var meddelande = '<urn1:meddelande>' + q.meddelande + '</urn1:meddelande>';
             var komplettering = '';
-            if (q.amne == 'KOMPLT') {
+            if (q.amne === 'KOMPLT') {
                 komplettering = '<urn1:komplettering> \
                                 <urn1:frage-id>' + q.komplettering.frageId + '</urn1:frage-id> \
                                 <urn1:text>' + q.komplettering.text + '</urn1:text> \
                                 </urn1:komplettering>';
             }
             var sistaDatumForSvar = '';
-            if (q.sistaDatumForSvar != '') {
+            if (q.sistaDatumForSvar !== '') {
                 sistaDatumForSvar = '<urn1:sistaDatumForSvar>' + q.sistaDatumForSvar + '</urn1:sistaDatumForSvar>';
             }
 
@@ -197,13 +197,13 @@ angular.module('rhsIndexApp')
                 data: msg
             }).then(function successCallback(response) {
 
-                if (response.status == 200) {
+                if (response.status === 200) {
                     var startIdx = response.data.indexOf('result>');
                     var endIdx = response.data.substring(startIdx+7, response.data.length).indexOf('result>');
                     $scope.resultat = response.data.substring(startIdx+7, startIdx+7 + endIdx-2);
                     $scope.q.meddelandeId = guid();
                 } else {
-                    $scope.resultat = "Servern svarade med HTTP " + response.status + " " + response.statusText + ". Det betyder att någonting gick fel.";
+                    $scope.resultat = '"Servern svarade med HTTP ' + response.status + ' ' + response.statusText + '. Det betyder att någonting gick fel.';
                 }
 
             });

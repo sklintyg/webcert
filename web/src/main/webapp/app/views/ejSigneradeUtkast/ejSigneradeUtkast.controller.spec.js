@@ -22,7 +22,6 @@ describe('UnsignedCertCtrlSpec', function() {
 
     var $controller;
     var $scope;
-    var $location;
     var $timeout;
     var $httpBackend;
     var controller;
@@ -56,8 +55,8 @@ describe('UnsignedCertCtrlSpec', function() {
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
-        inject(['$rootScope', '$location', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel',
-            function($rootScope, _$location_, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_) {
+        inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel',
+            function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_) {
                 $scope = $rootScope.$new();
                 $scope.filterFormElement = {
                     'filter-changedate-from': { $error: {}},
@@ -68,7 +67,6 @@ describe('UnsignedCertCtrlSpec', function() {
                     inlineErrorMessageKey: null
                 };
 
-                $location = _$location_;
                 $httpBackend = _$httpBackend_;
                 $controller = _$controller_;
                 $timeout = _$timeout_;
@@ -77,7 +75,7 @@ describe('UnsignedCertCtrlSpec', function() {
                 emptyFilter = _utkastFilterModel_.build();
 
                 $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
-                controller = $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
+                $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
                 $httpBackend.flush();
                 $timeout.flush();
             }]);

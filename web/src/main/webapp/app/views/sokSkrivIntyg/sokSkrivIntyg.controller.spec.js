@@ -30,7 +30,7 @@ describe('ChoosePatientCtrl', function() {
     beforeEach(function(){
 
         module('webcert', function($provide) {
-            var personIdValidator = {};// jasmine.createSpyObj('common.PersonIdValidatorService', ['validateSamordningsnummer']);
+            var personIdValidator = {};
 
             personIdValidator.validateSamordningsnummer = function(number) {
                 if (number === '195401875760') {
@@ -55,7 +55,7 @@ describe('ChoosePatientCtrl', function() {
             $scope = $rootScope.$new();
             $location = _$location_;
             $controller = _$controller_;
-            controller = $controller('webcert.ChoosePatientCtrl', { $scope: $scope });
+            $controller('webcert.ChoosePatientCtrl', { $scope: $scope });
         });
     });
 

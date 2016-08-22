@@ -22,10 +22,8 @@ describe('wcUtkastFilterSpec', function() {
     'use strict';
 
     var $scope;
-    var $state;
     var $httpBackend;
     var $cookies;
-    var mockResponse;
     var mockFactory;
     var element;
     var utkastFilterModel;
@@ -34,7 +32,7 @@ describe('wcUtkastFilterSpec', function() {
     beforeEach(angular.mock.module('htmlTemplates'));
     beforeEach(function() {
         module('webcertTest');
-        module('webcert', ['$provide', '$stateProvider', function($provide, _$stateProvider_) {
+        module('webcert', ['$provide', '$stateProvider', function($provide) {
 
             var webcertTest = angular.injector(['webcertTest', 'ng']);
             mockFactory = webcertTest.get('mockFactory');
@@ -50,12 +48,10 @@ describe('wcUtkastFilterSpec', function() {
             $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
         }]);
 
-        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', '$state', 'mockResponse', 'webcert.UtkastFilterModel',
-            function($rootScope, $compile, _$cookies_, _$httpBackend_, _$state_, _mockResponse_, _utkastFilterModel_) {
+        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', 'webcert.UtkastFilterModel',
+            function($rootScope, $compile, _$cookies_, _$httpBackend_, _utkastFilterModel_) {
                 $cookies = _$cookies_;
-                $state = _$state_;
                 $httpBackend = _$httpBackend_;
-                mockResponse = _mockResponse_;
                 utkastFilterModel = _utkastFilterModel_;
                 emptyFilter = _utkastFilterModel_.build();
 
@@ -66,7 +62,6 @@ describe('wcUtkastFilterSpec', function() {
                 );
                 $scope = $rootScope.$new();
                 $scope.testFilter = function(filter) {
-                    console.log(filter);
                 };
                 element = $compile(tpl)($scope);
             }
@@ -75,7 +70,6 @@ describe('wcUtkastFilterSpec', function() {
 
     function setupHttp(status) {
         $httpBackend.expectGET('/api/utkast/lakare/').respond(status, []);
-        $httpBackend.expectGET('/web/webjars/common/webcert/gui/headers/wcHeader.partial.html').respond(200, {});
         $scope.$digest();
         $httpBackend.flush();
     }

@@ -23,11 +23,9 @@ describe('ViewCertCtrl', function() {
     var UtkastProxy;
     var $state;
     var $stateParams;
-    var $httpBackend;
     var dialogService;
     var fragaSvarCommonService;
     var $scope;
-    var $qaCtrlScope;
     var $q;
     var $rootScope;
     var $location;
@@ -106,14 +104,12 @@ describe('ViewCertCtrl', function() {
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$httpBackend', '$location', '$window', 'common.featureService', 'common.UserModel',
-        function( _$controller_, _$rootScope_,_$q_,_$httpBackend_, _$location_, _$window_, featureService, _userModel_) {
+    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$location', '$window', 'common.featureService', 'common.UserModel',
+        function( _$controller_, _$rootScope_,_$q_, _$location_, _$window_, featureService, _userModel_) {
 
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
-            $qaCtrlScope = $rootScope.$new();
             $q = _$q_;
-            $httpBackend = _$httpBackend_;
             $location = _$location_;
             $window = _$window_;
             mockDeferreds = new MockDeferreds($q);
@@ -127,7 +123,7 @@ describe('ViewCertCtrl', function() {
             userModel.roles = {LAKARE: 'Läkare'};
             userModel.isLakare = function(){return true;};
             userModel.isUthopp = function(){return false;};
-            $state.current.data = 'fk7263'
+            $state.current.data = 'fk7263';
 
             $controller = _$controller_;
             $controller('webcert.ViewCertCtrl',
@@ -191,7 +187,7 @@ describe('ViewCertCtrl', function() {
             spyOn($q, 'defer').and.returnValue(def);
 
             // kick off the window change event
-            //$rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
+            $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
 
             var areThereUnhandledMessages = false;
             mockDeferreds.getLast().resolve(areThereUnhandledMessages);
