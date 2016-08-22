@@ -44,6 +44,12 @@ var LuaefsUtkast = FkBaseUtkast._extend({
                 NEJ: element(by.id('underlagFinnsNo'))
             },
             underlagRow: function(index) {
+                return {
+                    underlag: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                };
+                /*
                 index = index + 1; //skip header-row
                 var row = element.all(by.css('tr.underlagRow')).get(index);
                 var rowTds = row.all(by.css('td'));
@@ -52,18 +58,19 @@ var LuaefsUtkast = FkBaseUtkast._extend({
                     datum: rowTds.get(1).element(by.css('input')),
                     information: rowTds.get(2).element(by.css('input'))
                 };
-
+*/
             },
-            laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
+            laggTillUnderlagKnapp: element(by.id('laggTillUnderlag'))
 
         };
 
         this.diagnos = {
-            laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
+            laggTillDiagnosKnapp: element(by.id('laggTillDiagnos')),
             diagnosRow: function(index) {
-                var row = element.all(by.css('.diagnosRow')).get(index);
+                //var row = element.all(by.css('.diagnosRow')).get(index);
                 return {
-                    kod: row.element(by.css('#diagnoseCode'))
+                    //kod: row.element(by.css('#diagnoseCode'))
+                    kod: element(by.id('diagnoseCode-' + index))
                 };
 
             }
@@ -170,12 +177,11 @@ var LuaefsUtkast = FkBaseUtkast._extend({
     },
 
     clickCreateUnderlag: function() {
-        var addBtn = element(by.id('form_underlag')).element(by.css('button[ng-click="createUnderlag()"]'));
-        addBtn.sendKeys(protractor.Key.SPACE);
+        this.andraMedicinskaUtredningar.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE);
     },
 
     clickRemoveUnderlag: function(index) {
-        element.all(by.css('button[ng-click="removeUnderlag($index)"]')).then(function(items) {
+        element(by.id('underlag-' + index + '-remove')).then(function(items) {
             items[index].sendKeys(protractor.Key.SPACE);
         });
     },
