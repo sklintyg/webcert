@@ -451,8 +451,8 @@
 
     </bean>
 
-    <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg -->
-    <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
+    <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg class="org.springframework.security.saml.SAMLAuthenticationProvider"-->
+    <bean id="samlAuthenticationProvider" class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationProvider">
       <property name="userDetails" ref="unifiedUserDetailsService"/>
       <property name="forcePrincipalAsString" value="false"/>
     </bean>

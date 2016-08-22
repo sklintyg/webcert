@@ -42,6 +42,7 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
@@ -64,7 +65,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         selectVardenhetFromFakeCredentials(token, details);
         applyUserOrigin(token, details);
         applyReference(token, details);
-        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
+        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(new Date(System.currentTimeMillis() + 60000), details, credential,
                 new ArrayList<>());
         result.setDetails(details);
 
