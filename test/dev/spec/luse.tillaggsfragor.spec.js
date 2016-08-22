@@ -107,7 +107,7 @@ describe('Luse tillaggsfragor variants', function() {
             proxy.onLoad.whenGET(new RegExp('/api/utkast/questions/luse/.*')).respond(textResponse);
             proxy.onLoad.whenPOST(/.*/).passThrough();
             proxy.onLoad.whenGET(/.*/).passThrough();
-            proxy.onLoad.whenPUT(new RegExp('/moduleapi/utkast/luse/.*')).respond({'version':2,'status':'COMPLETE','messages':[]});
+            proxy.onLoad.whenPUT(new RegExp('/moduleapi/utkast/luse/.*')).respond({'version':2,'status':'DRAFT_COMPLETE','messages':[]});
             LuseUtkastPage.get(intygsId);
 
             // En extrafråga har tagits bort, en annan ska ha tillkommit

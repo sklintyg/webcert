@@ -79,6 +79,16 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 NEJ: element(by.id('underlagFinnsNo'))
             },
             underlagRow: function(index) {
+                return {
+                    underlag: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                };
+            },
+            laggTillUnderlagKnapp: element(by.id('laggTillUnderlag'))
+
+            /*
+            underlagRow: function(index) {
                 index = index + 1; //skip header-row
                 var row = element.all(by.css('tr.underlagRow')).get(index);
                 var rowTds = row.all(by.css('td'));
@@ -92,7 +102,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 };
             },
             laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
-
+*/
         };
 
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
