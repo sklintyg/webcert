@@ -79,6 +79,7 @@ angular.module('rhsIndexApp')
                 method: 'GET',
                 url: '/testability/intyg/' + $scope.selectedEnhet
             }).then(function successCallback(response) {
+                $scope.resultat = '';
                 $scope.data = response.data;
             })
         };
@@ -107,11 +108,13 @@ angular.module('rhsIndexApp')
                 $scope.pendingActionQuestions = response.data;
             });
 
-
             $scope.q.meddelandeId = guid();
             $scope.q.intygsId = intyg.intygsId;
             $scope.q.patientPersonId = intyg.patientPersonnummer.replace('-', '');
             $scope.q.enhetsId = intyg.enhetsId;
+            $scope.q.svarPa = {};
+
+            $scope.resultat = '';
         };
 
         $scope.typeClicked = function() {
