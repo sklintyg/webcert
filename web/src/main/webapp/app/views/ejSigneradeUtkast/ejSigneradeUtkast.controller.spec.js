@@ -24,7 +24,6 @@ describe('UnsignedCertCtrlSpec', function() {
     var $scope;
     var $timeout;
     var $httpBackend;
-    var controller;
     var mockResponse;
     var mockFactory;
     var utkastNotifyService;

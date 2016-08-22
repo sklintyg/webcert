@@ -24,7 +24,6 @@ describe('ChoosePatientCtrl', function() {
     var PatientProxy;
     var $scope;
     var $location;
-    var controller;
     var basePerson;
 
     beforeEach(function(){

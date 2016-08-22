@@ -39,7 +39,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
     <sonar.javascript.lcov.reportPath>target/karma_coverage/lcov.info</sonar.javascript.lcov.reportPath>
-    <sonar.exclusions>**/templates.js,**/vendor/*,**/app.min.js,**/swagger-ui/*</sonar.exclusions>
+    <sonar.exclusions>**/templates.js,**/vendor/**,**/app.min.js,**/swagger-ui/**</sonar.exclusions>
     <skip.integration.tests>true</skip.integration.tests>
   </properties>
 

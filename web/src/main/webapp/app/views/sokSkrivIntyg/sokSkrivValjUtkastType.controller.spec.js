@@ -81,7 +81,6 @@ describe('ChooseCertTypeCtrl', function() {
     });
 
     describe('förnya intyg', function () {
-        var controller;
         var cert;
 
         beforeEach(function() {
@@ -111,7 +110,6 @@ describe('ChooseCertTypeCtrl', function() {
 
     describe('openIntyg', function() {
 
-        var controller;
         var cert;
 
         beforeEach(function() {

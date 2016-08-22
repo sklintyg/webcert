@@ -26,7 +26,6 @@ describe('UnhandledQACtrlSpec', function() {
     var $location;
     var $httpBackend;
     var $timeout;
-    var controller;
     var ArendeProxy;
     var ArendeVidarebefordraHelper;
 
