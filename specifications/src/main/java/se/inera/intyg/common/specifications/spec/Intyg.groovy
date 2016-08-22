@@ -25,7 +25,7 @@ import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.common.specifications.spec.util.WsClientFixture
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType

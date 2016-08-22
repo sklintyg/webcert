@@ -20,7 +20,7 @@
 package se.inera.intyg.common.specifications.spec
 
 import iso.v21090.dt.v1.II
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import se.inera.intyg.common.specifications.spec.util.WsClientFixture
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType
