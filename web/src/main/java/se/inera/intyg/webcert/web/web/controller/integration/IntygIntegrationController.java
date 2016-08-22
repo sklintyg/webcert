@@ -135,14 +135,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         super.validateRedirectToIntyg(intygId);
 
-        if (StringUtils.isBlank(enhet)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'enhet'");
-        }
         WebCertUser user = getWebCertUserService().getUser();
-        if (getWebCertUserService().isAuthorizedForUnit(enhet, false)) {
-            user.changeValdVardenhet(enhet);
-        } else {
-            throw new AuthoritiesException("Authorization Validation failed because user is not authorized for enhet " + enhet);
+        if (!StringUtils.isBlank(enhet)) {
+            if (getWebCertUserService().isAuthorizedForUnit(enhet, false)) {
+                user.changeValdVardenhet(enhet);
+            } else {
+                throw new AuthoritiesException("Authorization Validation failed because user is not authorized for enhet " + enhet);
+            }
         }
 
         Boolean isUtkast = false;
