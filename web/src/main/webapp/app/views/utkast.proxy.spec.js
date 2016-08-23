@@ -25,12 +25,7 @@ describe('UtkastProxy', function() {
     var featureService;
     var authorityService;
     var dialogService;
-    var $cookies;
-    var $location;
-    var $timeout;
-    var $q;
     var statService;
-    var UserModel;
 
     var createDraftRequestPayload = {
         'intygType':'fk7263','patientPersonnummer':'19121212-1212','patientFornamn':'Test',
@@ -66,10 +61,6 @@ describe('UtkastProxy', function() {
             }
         };
 
-        UserModel = {
-            hasIntygsTyp: jasmine.createSpy('hasIntygsTyp')
-        };
-
 
         $provide.value('common.featureService', featureService);
         $provide.value('common.authorityService', authorityService);
@@ -85,27 +76,17 @@ describe('UtkastProxy', function() {
             getActiveFeatures: function() {
             },
             hasIntygsTyp: function() {return true;} });
-        //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
 
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', '$cookies',
-        '$q', '$location',
-        '$timeout', 'common.messageService', 'common.UserModel',
-        function(_UtkastProxy_, _$httpBackend_, _$cookies_,
-            _$q_,
-            _$location_, _$timeout_, _messageService_, _UserModel_) {
+    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', 'common.messageService',
+        function(_UtkastProxy_, _$httpBackend_, _messageService_) {
             UtkastProxy = _UtkastProxy_;
             $httpBackend = _$httpBackend_;
-            $cookies = _$cookies_;
-            $location = _$location_;
-            $timeout = _$timeout_;
-            $q = _$q_;
             _messageService_.getProperty = function() {
                 return 'Välj typ av intyg';
             };
-            UserModel =  _UserModel_;
         }]));
 
     describe('#createUtkast', function() {

@@ -44,26 +44,22 @@ var LuaefsUtkast = FkBaseUtkast._extend({
                 NEJ: element(by.id('underlagFinnsNo'))
             },
             underlagRow: function(index) {
-                index = index + 1; //skip header-row
-                var row = element.all(by.css('tr.underlagRow')).get(index);
-                var rowTds = row.all(by.css('td'));
                 return {
-                    underlag: row.element(by.css('[name="andraUnderlag"]')),
-                    datum: rowTds.get(1).element(by.css('input')),
-                    information: rowTds.get(2).element(by.css('input'))
+                    underlag: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    information: element(by.id('underlag-' + index + '-hamtasFran'))
                 };
-
             },
-            laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
-
+            laggTillUnderlagKnapp: element(by.id('laggTillUnderlag'))
         };
 
         this.diagnos = {
-            laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
+            laggTillDiagnosKnapp: element(by.id('laggTillDiagnos')),
             diagnosRow: function(index) {
-                var row = element.all(by.css('.diagnosRow')).get(index);
+                //var row = element.all(by.css('.diagnosRow')).get(index);
                 return {
-                    kod: row.element(by.css('#diagnoseCode'))
+                    //kod: row.element(by.css('#diagnoseCode'))
+                    kod: element(by.id('diagnoseCode-' + index))
                 };
 
             }
@@ -130,11 +126,7 @@ var LuaefsUtkast = FkBaseUtkast._extend({
     },
 
     taBortDiagnos: function(index) {
-        var promiseArr = [];
-        var button = element.all(by.css('.deleteDiagnos')).get(index);
-        promiseArr.push(button.click());
-
-        Promise.all(promiseArr);
+        return element(by.id('diagnos-' + index + '-remove')).click();
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
@@ -170,14 +162,11 @@ var LuaefsUtkast = FkBaseUtkast._extend({
     },
 
     clickCreateUnderlag: function() {
-        var addBtn = element(by.id('form_underlag')).element(by.css('button[ng-click="createUnderlag()"]'));
-        addBtn.sendKeys(protractor.Key.SPACE);
+        return this.andraMedicinskaUtredningar.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE);
     },
 
     clickRemoveUnderlag: function(index) {
-        element.all(by.css('button[ng-click="removeUnderlag($index)"]')).then(function(items) {
-            items[index].sendKeys(protractor.Key.SPACE);
-        });
+        return element(by.id('underlag-' + index + '-remove')).sendKeys(protractor.Key.SPACE);
     },
 
     angeUnderlagFinns: function(underlag) {

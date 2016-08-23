@@ -388,7 +388,7 @@
 
 
 
-    var wc_app = angular.module('webcert',
+    angular.module('webcert',
         ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap']);
 
     var app = angular.module('showcase',
@@ -457,7 +457,6 @@
 
             $httpBackend.whenGET(/^\/moduleapi\/*/).respond(200);
             $httpBackend.whenPOST(/^\/moduleapi\/*/).respond(200);
-           // $httpBackend.whenPUT(/^\/moduleapi\/*/).respond(200);
 
             //Ev. templates skall få hämtas på riktigt
             $httpBackend.whenGET(/^.+\.html/).passThrough();

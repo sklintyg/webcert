@@ -19,21 +19,22 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 /**
- * Testbarhetsresurs för att till och börja med radera identifierade integrerade vårdenheter.
+ * Testbarhetsresurs för att till och börja med radera och lista identifierade integrerade vårdenheter.
  */
 @Service
 @Api(value = "testability integreradevardenheter", description = "REST API för testbarhet - Integrerade vårdenheter")
@@ -59,6 +60,16 @@ public class IntegreradEnhetResource {
 
         integreradeEnheterRegistry.deleteIntegreradEnhet(hsaId);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/")
+    @Produces("application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")
+    })
+    public Response getIntegreradeVardenheter() {
+        return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
     }
 
     private boolean isNullOrEmpty(@PathParam("hsaId") String hsaId) {

@@ -32,6 +32,19 @@ function guid() {
         s4() + '-' + s4() + s4() + s4();
 }
 
+function isDefined(value) {
+    return value !== null && typeof value !== 'undefined';
+}
+function isEmpty(value) {
+    return value === null || typeof value === 'undefined' || value === '';
+}
+function returnJoinedArrayOrNull(value) {
+    return value !== null && value !== undefined ? value.join(', ') : null;
+}
+function valueOrNull(value) {
+    return value !== null && value !== undefined ? value : null;
+}
+
 
 var DEFAULT_QUESTION = {
     intygsId: '',
@@ -64,7 +77,7 @@ angular.module('rhsIndexApp')
         $scope.q = DEFAULT_QUESTION;
 
         $scope.deleteAllArendenOnUnit = function() {
-            if ($scope.selectedEnhet != '' && window.confirm('Är du verkligen helt säker på att du vill radera alla ärenden på ' + $scope.selectedEnhet + ' ur databasen?')) {
+            if ($scope.selectedEnhet !== '' && window.confirm('Är du verkligen helt säker på att du vill radera alla ärenden på ' + $scope.selectedEnhet + ' ur databasen?')) {
                 $http({
                     method: 'DELETE',
                     url: '/testability/arendetest/enhet/' + $scope.selectedEnhet
@@ -79,8 +92,9 @@ angular.module('rhsIndexApp')
                 method: 'GET',
                 url: '/testability/intyg/' + $scope.selectedEnhet
             }).then(function successCallback(response) {
+                $scope.resultat = '';
                 $scope.data = response.data;
-            })
+            });
         };
 
         $scope.loadUnits = function() {
@@ -89,7 +103,7 @@ angular.module('rhsIndexApp')
                 url: '/testability/intyg/signingunits'
             }).then(function successCallback(response) {
                 $scope.units = response.data;
-            })
+            });
         };
 
         $scope.openForm = function(intyg) {
@@ -107,15 +121,17 @@ angular.module('rhsIndexApp')
                 $scope.pendingActionQuestions = response.data;
             });
 
-
             $scope.q.meddelandeId = guid();
             $scope.q.intygsId = intyg.intygsId;
             $scope.q.patientPersonId = intyg.patientPersonnummer.replace('-', '');
             $scope.q.enhetsId = intyg.enhetsId;
+            $scope.q.svarPa = {};
+
+            $scope.resultat = '';
         };
 
         $scope.typeClicked = function() {
-            if ($scope.q.amne == 'KOMPLT') {
+            if ($scope.q.amne === 'KOMPLT') {
                 $scope.q.rubrik = 'Komplettering';
             } else {
                 $scope.q.rubrik = 'Fråga';
@@ -124,28 +140,37 @@ angular.module('rhsIndexApp')
 
         $scope.sendQuestion = function(q) {
 
+            var referensId = '';
+            if (!isEmpty(q.referensId)) {
+                referensId = '<urn1:referens-id>' + q.referensId + '</urn1:referens-id>';
+            }
+
             var svarPa = '';
-            if (q.svarPa.meddelandeId != '') {
-                svarPa = '<urn1:svarPa><urn3:meddelande-id>' + q.svarPa.meddelandeId + '</urn3:meddelande-id><urn3:referens-id>' + q.svarPa.referensId + '</urn3:referens-id></urn1:svarPa>';
+            if (!isEmpty(q.svarPa.meddelandeId)) {
+                var svarPaReferensId = '';
+                if (!isEmpty(q.svarPa.referensId)) {
+                    svarPaReferensId = '<urn3:referens-id>' + q.svarPa.referensId + '</urn3:referens-id>';
+                }
+                svarPa = '<urn1:svarPa><urn3:meddelande-id>' + q.svarPa.meddelandeId + '</urn3:meddelande-id>' + svarPaReferensId + '</urn1:svarPa>';
             }
             var paminnelseMeddelandeId = '';
-            if (q.paminnelseMeddelandeId != '') {
+            if (!isEmpty(q.paminnelseMeddelandeId)) {
                 paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + q.paminnelseMeddelandeId + '</urn1:paminnelseMeddelande-id>';
             }
             var rubrik = '';
-            if (q.rubrik != '') {
+            if (!isEmpty(q.rubrik)) {
                 rubrik = '<urn1:rubrik>' + q.rubrik + '</urn1:rubrik>';
             }
             var meddelande = '<urn1:meddelande>' + q.meddelande + '</urn1:meddelande>';
             var komplettering = '';
-            if (q.amne == 'KOMPLT') {
+            if (q.amne === 'KOMPLT') {
                 komplettering = '<urn1:komplettering> \
                                 <urn1:frage-id>' + q.komplettering.frageId + '</urn1:frage-id> \
                                 <urn1:text>' + q.komplettering.text + '</urn1:text> \
                                 </urn1:komplettering>';
             }
             var sistaDatumForSvar = '';
-            if (q.sistaDatumForSvar != '') {
+            if (!isEmpty(q.sistaDatumForSvar)) {
                 sistaDatumForSvar = '<urn1:sistaDatumForSvar>' + q.sistaDatumForSvar + '</urn1:sistaDatumForSvar>';
             }
 
@@ -157,7 +182,7 @@ angular.module('rhsIndexApp')
                     <soapenv:Body> \
                      <urn1:SendMessageToCare> \
                         <urn1:meddelande-id>' + q.meddelandeId + '</urn1:meddelande-id> \
-                        <urn1:referens-id>' + q.referensId + '</urn1:referens-id>      \
+                        ' + referensId + '      \
                         <urn1:skickatTidpunkt>' + q.skickatTidpunkt + '</urn1:skickatTidpunkt>   \
                         <urn1:intygs-id>   \
                             <urn2:root></urn2:root>  \
@@ -194,13 +219,13 @@ angular.module('rhsIndexApp')
                 data: msg
             }).then(function successCallback(response) {
 
-                if (response.status == 200) {
+                if (response.status === 200) {
                     var startIdx = response.data.indexOf('result>');
                     var endIdx = response.data.substring(startIdx+7, response.data.length).indexOf('result>');
                     $scope.resultat = response.data.substring(startIdx+7, startIdx+7 + endIdx-2);
                     $scope.q.meddelandeId = guid();
                 } else {
-                    $scope.resultat = "Servern svarade med HTTP " + response.status + " " + response.statusText + ". Det betyder att någonting gick fel.";
+                    $scope.resultat = '"Servern svarade med HTTP ' + response.status + ' ' + response.statusText + '. Det betyder att någonting gick fel.';
                 }
 
             });

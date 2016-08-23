@@ -23,7 +23,6 @@ describe('wcUtkastListSpec', function() {
     var $scope;
     var $state;
     var mockResponse;
-    var mockFactory;
     var utkastNotifyService;
     var element;
 
@@ -32,9 +31,6 @@ describe('wcUtkastListSpec', function() {
         module('htmlTemplates');
         module('webcertTest');
         module('webcert', ['$provide', '$stateProvider', function($provide, _$stateProvider_) {
-
-            var webcertTest = angular.injector(['webcertTest', 'ng']);
-            mockFactory = webcertTest.get('mockFactory');
 
             var statService = jasmine.createSpyObj('common.statService', ['refreshStat']);
             $provide.value('common.statService', statService);

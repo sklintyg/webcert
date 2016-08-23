@@ -47,7 +47,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel',
                 converted.savedTo = to.format('YYYY-MM-DD');
             }
             return converted;
-        }
+        };
 
 
         UtkastFilterModel.build = function() {

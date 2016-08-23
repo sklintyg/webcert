@@ -28,9 +28,11 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
             $scope.widgetState = angular.copy(widgetState);
 
+            // Clear errormeesage when user starts typing a new personnummer
             $scope.$watch('personnummer', function personnummerWatch () {
-                if (!$scope.widgetState.errorid) { return; }
-                $scope.widgetState = angular.copy(widgetState);
+                if ($scope.widgetState.errorid) {
+                    $scope.widgetState = angular.copy(widgetState);
+                }
             });
 
             $scope.focusPnr = true; // focus pnr input

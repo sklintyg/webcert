@@ -81,11 +81,10 @@ describe('ChooseCertTypeCtrl', function() {
     });
 
     describe('förnya intyg', function () {
-        var controller;
         var cert;
 
         beforeEach(function() {
-            controller = $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
+            $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
             cert = {
                 intygType: 'fk7263',
                 intygId: 'abc123'
@@ -111,11 +110,10 @@ describe('ChooseCertTypeCtrl', function() {
 
     describe('openIntyg', function() {
 
-        var controller;
         var cert;
 
         beforeEach(function() {
-            controller = $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
+            $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
             cert = {
                 source: 'WC',
                 intygType: 'fk7263',
