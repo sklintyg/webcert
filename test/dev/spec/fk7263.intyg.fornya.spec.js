@@ -30,16 +30,21 @@ var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var SokSkrivIntyg = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastTyp = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
+var restUtil = wcTestTools.restUtil;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-describe('Generate fk intyg', function() {
+fdescribe('Generate fk intyg', function() {
 
-    var intygId = testdataHelper.generateTestGuid();
-    var intyg;
+    var intygId;
+    //var intyg;
 
     describe('prepare test with intyg', function() {
         it('should generate fk max intyg', function() {
             browser.ignoreSynchronization = false;
-            restTestdataHelper.createIntygFromTemplate('fkMax', intygId).then(function(response) {
+
+            var intyg = intygFromJsonFactory.defaultFK7263();
+            intygId = intyg.id;
+            restUtil.createIntyg(intyg).then(function(response) {
                 intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();
             }, function(error) {

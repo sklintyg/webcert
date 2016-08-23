@@ -27,10 +27,12 @@ var specHelper = wcTestTools.helpers.spec;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
+var restUtil = wcTestTools.restUtil;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-describe('answer arende on luse intyg', function() {
+fdescribe('answer arende on luse intyg', function() {
 
-    var intygId = 'luse-arende-intyg-1';
+    var intygId;
     var meddelandeId = 'luse-arende-arbtid';
 
     beforeAll(function() {
@@ -41,13 +43,17 @@ describe('answer arende on luse intyg', function() {
             'utkastStatus': 'SIGNED',
             'revoked': false
         };
+
+        var intyg = intygFromJsonFactory.defaultLuse();
+        intygId = intyg.id;
+        restUtil.createIntyg(intyg);
+
         restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
             restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
                 'ARBTID', 'PENDING_INTERNAL_ACTION');
         });
-        restTestdataHelper.createIntygFromTemplate('luseMax', intygId);
+
     });
 
     afterAll(function() {

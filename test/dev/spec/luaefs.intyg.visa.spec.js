@@ -29,7 +29,7 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 
 // used for some assertions of non-transformed values.
-var luaefsTemplate = require('webcert-testtools/testdata/luae_fs-minimal.json');
+var luaefsTemplate = require('webcert-testtools/testdata/intyg.luae_fs.minimal.json');
 
 describe('Validera visning av Intyg', function() {
 
