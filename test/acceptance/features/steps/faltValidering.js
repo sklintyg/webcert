@@ -16,25 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*globals pages*/
 
 'use strict';
-
+var luseUtkastPage = pages.intyg.luse.utkast;
 module.exports = function() {
 
-    this.Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod, callback) {
-        element(by.id('diagnoseCode')).sendKeys(dKod)
-            .then(callback());
+    this.Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
+        return luseUtkastPage.diagnoseCode.sendKeys(dKod);
     });
 
-    this.Given(/^ska valideringsfelet "([^"]*)"$/, function(arg1, callback) {
-        // Write code here that turns the phrase above into concrete actions
+    this.Given(/^ska valideringsfelet "([^"]*)"$/, function(arg1) {
         var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         });
-        alertTexts.then(function(result) {
-            expect(result.join()).to.have.string(arg1);
+        return alertTexts.then(function(result) {
+            return expect(result.join('\n')).to.have.string(arg1);
 
         });
-        callback();
+
     });
 };
