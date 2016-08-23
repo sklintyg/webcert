@@ -64,10 +64,8 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag skriver ut intyget$/, function(callback) {
-        fkIntygPage.skrivUtFullstandigtIntyg().then(function() {
-            callback();
-        });
+    this.Given(/^jag skriver ut intyget$/, function() {
+        return fkIntygPage.skrivUtFullstandigtIntyg();
     });
 
 };

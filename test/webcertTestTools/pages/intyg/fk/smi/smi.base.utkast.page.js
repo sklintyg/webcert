@@ -65,7 +65,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             }
         };
 
-        this.diagnoseCode = element(by.id('diagnoseCode'));
+        this.diagnoseCode = element(by.id('diagnoseCode-0'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
         this.planeradBehandling = element(by.id('planeradBehandling'));
