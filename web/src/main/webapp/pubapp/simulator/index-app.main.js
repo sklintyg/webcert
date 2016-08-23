@@ -32,6 +32,19 @@ function guid() {
         s4() + '-' + s4() + s4() + s4();
 }
 
+function isDefined(value) {
+    return value !== null && typeof value !== 'undefined';
+}
+function isEmpty(value) {
+    return value === null || typeof value === 'undefined' || value === '';
+}
+function returnJoinedArrayOrNull(value) {
+    return value !== null && value !== undefined ? value.join(', ') : null;
+}
+function valueOrNull(value) {
+    return value !== null && value !== undefined ? value : null;
+}
+
 
 var DEFAULT_QUESTION = {
     intygsId: '',
@@ -127,16 +140,25 @@ angular.module('rhsIndexApp')
 
         $scope.sendQuestion = function(q) {
 
+            var referensId = '';
+            if (!isEmpty(q.referensId)) {
+                referensId = '<urn1:referens-id>' + q.referensId + '</urn1:referens-id>';
+            }
+
             var svarPa = '';
-            if (q.svarPa.meddelandeId !== '') {
-                svarPa = '<urn1:svarPa><urn3:meddelande-id>' + q.svarPa.meddelandeId + '</urn3:meddelande-id><urn3:referens-id>' + q.svarPa.referensId + '</urn3:referens-id></urn1:svarPa>';
+            if (!isEmpty(q.svarPa.meddelandeId)) {
+                var svarPaReferensId = '';
+                if (!isEmpty(q.svarPa.referensId)) {
+                    svarPaReferensId = '<urn3:referens-id>' + q.svarPa.referensId + '</urn3:referens-id>';
+                }
+                svarPa = '<urn1:svarPa><urn3:meddelande-id>' + q.svarPa.meddelandeId + '</urn3:meddelande-id>' + svarPaReferensId + '</urn1:svarPa>';
             }
             var paminnelseMeddelandeId = '';
-            if (q.paminnelseMeddelandeId !== '') {
+            if (!isEmpty(q.paminnelseMeddelandeId)) {
                 paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + q.paminnelseMeddelandeId + '</urn1:paminnelseMeddelande-id>';
             }
             var rubrik = '';
-            if (q.rubrik !== '') {
+            if (!isEmpty(q.rubrik)) {
                 rubrik = '<urn1:rubrik>' + q.rubrik + '</urn1:rubrik>';
             }
             var meddelande = '<urn1:meddelande>' + q.meddelande + '</urn1:meddelande>';
@@ -148,7 +170,7 @@ angular.module('rhsIndexApp')
                                 </urn1:komplettering>';
             }
             var sistaDatumForSvar = '';
-            if (q.sistaDatumForSvar !== '') {
+            if (!isEmpty(q.sistaDatumForSvar)) {
                 sistaDatumForSvar = '<urn1:sistaDatumForSvar>' + q.sistaDatumForSvar + '</urn1:sistaDatumForSvar>';
             }
 
@@ -160,7 +182,7 @@ angular.module('rhsIndexApp')
                     <soapenv:Body> \
                      <urn1:SendMessageToCare> \
                         <urn1:meddelande-id>' + q.meddelandeId + '</urn1:meddelande-id> \
-                        <urn1:referens-id>' + q.referensId + '</urn1:referens-id>      \
+                        ' + referensId + '      \
                         <urn1:skickatTidpunkt>' + q.skickatTidpunkt + '</urn1:skickatTidpunkt>   \
                         <urn1:intygs-id>   \
                             <urn2:root></urn2:root>  \
