@@ -107,11 +107,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.diagnos = {
-            laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
+            laggTillDiagnosKnapp: element(by.id('laggTillDiagnos')),
             diagnosRow: function(index) {
-                var row = element.all(by.css('.diagnosRow')).get(index);
                 return {
-                    kod: row.element(by.css('#diagnoseCode'))
+                    kod: element(by.id('diagnoseCode-' + index))
                 };
 
             },
