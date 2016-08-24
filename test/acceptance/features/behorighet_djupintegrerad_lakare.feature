@@ -26,7 +26,6 @@ Scenario: Besvara kompletteringsfråga
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
-@waitingForFix @INTYG-2652
 Scenario: Svara med nytt intyg
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @fk7263 @waitingForFix @INTYG-2711
+@statusuppdateringar @fk7263
 Egenskap: Statusuppdateringar för FK7263
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
@@ -74,7 +74,7 @@ Scenario: Statusuppdateringar vid fråga till FK
    Och jag markerar svaret från Försäkringskassan som hanterat
    Så ska statusuppdatering "HAN10" skickas till vårdsystemet. Totalt: "1"
    
-@komplettering @waitingForFix @INTYG-2652
+@komplettering
 Scenario: Statusuppdateringar vid komplettering med nytt intyg
 
    När jag fyller i alla nödvändiga fält för intyget
