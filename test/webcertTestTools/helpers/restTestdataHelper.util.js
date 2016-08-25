@@ -76,7 +76,7 @@ module.exports = {
 
     // Ärenden
     createArende: createArende,
-    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering) {
+    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering, svarPa) {
     	var arende = arendeFromJsonFactory.get({
     	    intygType:intygType,
             intygId:intygId,
@@ -86,6 +86,10 @@ module.exports = {
             status:status,
             kompletteringar:komplettering
     	});
+
+        if(svarPa){
+            arende.svarPa = svarPa;
+        }
         
     	console.log('arende to be created: '+JSON.stringify(arende));
     	createArende(arende).then(function(response) {

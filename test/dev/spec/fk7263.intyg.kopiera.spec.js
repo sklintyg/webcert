@@ -31,7 +31,7 @@ var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-fdescribe('Generate fk intyg', function() {
+describe('Generate fk intyg', function() {
 
     var intygId;
 

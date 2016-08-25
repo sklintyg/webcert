@@ -28,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.ArendeAffectedResponse;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -98,7 +99,7 @@ public class ArendeResource {
 
     @DELETE
     @Path("/")
-    @Produces("text/plain")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestions() {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
             public Response doInTransaction(TransactionStatus status) {
@@ -107,14 +108,17 @@ public class ArendeResource {
                 for (Arende arende : arenden) {
                     entityManager.remove(arende);
                 }
-                return Response.ok("Deleted " + arenden.size() + " arenden.").build();
+
+                ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
+
+                return Response.ok(affected).build();
             }
         });
     }
 
     @DELETE
     @Path("/enhet/{enhetsId}")
-    @Produces("text/plain")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
             public Response doInTransaction(TransactionStatus status) {
@@ -125,7 +129,9 @@ public class ArendeResource {
                 for (Arende arende : arenden) {
                     entityManager.remove(arende);
                 }
-                return Response.ok("Deleted " + arenden.size() + " arenden on unit " + enhetsId).build();
+
+                ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
+                return Response.ok(affected).build();
             }
         });
     }

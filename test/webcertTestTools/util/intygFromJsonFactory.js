@@ -9,6 +9,7 @@
 var templateJsonObjFK7263 = require('webcert-testtools/testdata/intyg.fk7263.json');
 var templateJsonObjLuaefs = require('webcert-testtools/testdata/intyg.luae_fs.minimal.json');
 var templateJsonObjLuaena = require('webcert-testtools/testdata/intyg.luae_na.json');
+var templateJsonObjLuse = require('webcert-testtools/testdata/intyg.luse.json');
 
 // These are pushed to webcert using restDataHelper.createWebcertIntyg
 var templateJsonObjWCLuse = require('webcert-testtools/testdata/webcertIntyg.luse.json');
@@ -29,6 +30,36 @@ module.exports = {
             careGiverId: templateJsonObjFK7263.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
             civicRegistrationNumber: templateJsonObjFK7263.grundData.patient.personId,
             signedDate: templateJsonObjFK7263.grundData.signeringsdatum,
+            validFromDate: null,
+            validToDate: null,
+            additionalInfo: '',
+            deleted: false,
+            deletedByCareGiver: false,
+            certificateStates: [
+                {
+                    target: 'HV',
+                    state: 'RECEIVED',
+                    timestamp: '2016-04-28T14:00:00.000'
+                }
+            ],
+            revoked: false
+        };
+    },
+    defaultLuse: function() {
+
+        templateJsonObjLuse.id = guid();
+
+        return {
+            id: templateJsonObjLuse.id,
+            document: JSON.stringify(templateJsonObjLuse),
+            originalCertificate: '',
+            type: templateJsonObjLuse.typ,
+            signingDoctorName: templateJsonObjLuse.grundData.skapadAv.fullstandigtNamn,
+            careUnitId: templateJsonObjLuse.grundData.skapadAv.vardenhet.enhetsid,
+            careUnitName: templateJsonObjLuse.grundData.skapadAv.vardenhet.enhetsnamn,
+            careGiverId: templateJsonObjLuse.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
+            civicRegistrationNumber: templateJsonObjLuse.grundData.patient.personId,
+            signedDate: templateJsonObjLuse.grundData.signeringsdatum,
             validFromDate: null,
             validToDate: null,
             additionalInfo: '',
