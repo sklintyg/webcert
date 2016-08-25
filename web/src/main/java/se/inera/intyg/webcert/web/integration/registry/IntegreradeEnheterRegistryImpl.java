@@ -19,23 +19,25 @@
 
 package se.inera.intyg.webcert.web.integration.registry;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistry {
@@ -148,6 +150,14 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         } else {
             return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_2) : Optional.of(SchemaVersion.VERSION_1);
         }
+    }
+
+    @Override
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    public List<IntegreradEnhetEntryWithSchemaVersion> getIntegreradeVardenheter() {
+        List<IntegreradEnhetEntryWithSchemaVersion> hsaIds = new ArrayList<>();
+        integreradEnhetRepository.findAll().forEach(ive -> hsaIds.add(new IntegreradEnhetEntryWithSchemaVersion(ive)));
+        return hsaIds;
     }
 
     private IntegreradEnhet getIntegreradEnhet(String enhetsHsaId) {

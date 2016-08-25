@@ -25,7 +25,6 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
-
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 

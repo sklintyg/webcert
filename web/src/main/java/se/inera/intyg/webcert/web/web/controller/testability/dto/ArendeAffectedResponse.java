@@ -17,9 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
+package se.inera.intyg.webcert.web.web.controller.testability.dto;
 
-public enum DraftValidationStatus {
-    COMPLETE,
-    INCOMPLETE
+/**
+ * Created by bennysce on 2016-08-25.
+ */
+public class ArendeAffectedResponse {
+
+    private int arendenAffected;
+
+    public ArendeAffectedResponse(int arendenAffected) {
+        this.arendenAffected = arendenAffected;
+    }
+
+    public int getArendenAffected() {
+        return arendenAffected;
+    }
+
+    public void setArendenAffected(int arendenAffected) {
+        this.arendenAffected = arendenAffected;
+    }
+
 }

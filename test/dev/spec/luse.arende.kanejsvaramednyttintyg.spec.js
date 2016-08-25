@@ -27,37 +27,46 @@ var specHelper = wcTestTools.helpers.spec;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
+var restUtil = wcTestTools.restUtil;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
 describe('arende on luse intyg', function() {
 
-    var intygId = 'luse-arende-intyg-1';
+    var intygId;
     var meddelandeId = 'luse-arende-komplt';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
+
+        var intyg = intygFromJsonFactory.defaultLuse();
+        intygId = intyg.id;
+        restUtil.createIntyg(intyg);
         var testData = {
             'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
             'utkastStatus': 'SIGNED',
             'revoked': false
         };
 
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteAllArenden();
-        restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                    {
-                        'frageId': '1',
-                        'instans': 1,
-                        'text': 'Fixa.'
-                    }
-                ]);
+        restTestdataHelper.deleteAllArenden().then(function() {
+            restTestdataHelper.createWebcertIntyg(testData).then(function() {
+                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                    'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                        {
+                            'frageId': '1',
+                            'instans': 1,
+                            'text': 'Fixa.'
+                        }
+                    ],
+                    'test'
+                );
+
+            });
         });
-        restTestdataHelper.createIntygFromTemplate('luseMax', intygId);
     });
 
     afterAll(function() {
+        restTestdataHelper.deleteArende(meddelandeId);
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteIntyg(intygId);
     });

@@ -65,7 +65,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             }
         };
 
-        this.diagnoseCode = element(by.id('diagnoseCode'));
+        this.diagnoseCode = element(by.id('diagnoseCode-0'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
         this.planeradBehandling = element(by.id('planeradBehandling'));
@@ -78,6 +78,16 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 JA: element(by.id('underlagFinnsYes')),
                 NEJ: element(by.id('underlagFinnsNo'))
             },
+            underlagRow: function(index) {
+                return {
+                    underlag: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                };
+            },
+            laggTillUnderlagKnapp: element(by.id('laggTillUnderlag'))
+
+            /*
             underlagRow: function(index) {
                 index = index + 1; //skip header-row
                 var row = element.all(by.css('tr.underlagRow')).get(index);
@@ -92,16 +102,15 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 };
             },
             laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
-
+*/
         };
 
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.diagnos = {
-            laggTillDiagnosKnapp: element(by.cssContainingText('a', 'Lägg till övriga diagnoser')),
+            laggTillDiagnosKnapp: element(by.id('laggTillDiagnos')),
             diagnosRow: function(index) {
-                var row = element.all(by.css('.diagnosRow')).get(index);
                 return {
-                    kod: row.element(by.css('#diagnoseCode'))
+                    kod: element(by.id('diagnoseCode-' + index))
                 };
 
             },

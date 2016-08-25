@@ -2,7 +2,7 @@
 angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     'use strict';
 
- var templateRoot = '/pubapp/showcase/'
+    var templateRoot = '/pubapp/showcase/';
     $stateProvider.
 
     state('showcase', {

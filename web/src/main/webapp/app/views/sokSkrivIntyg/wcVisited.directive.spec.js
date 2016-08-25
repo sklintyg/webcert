@@ -25,7 +25,6 @@ describe('wcVisited', function() {
     var element;
 
     beforeEach(angular.mock.module('webcert', ['$provide', function($provide) {
-        //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
     }]));
 
     // Create a form to test the directive on.

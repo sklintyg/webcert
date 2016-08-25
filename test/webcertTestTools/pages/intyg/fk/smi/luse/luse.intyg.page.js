@@ -38,9 +38,6 @@ var LuseIntyg = BaseSmiIntygPage._extend({
                 };
             }
         };
-
-        // this.diagnoseCode = element(by.id('diagnoseCode'));
-        // this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
     },
 
     get: function get(intygId) {

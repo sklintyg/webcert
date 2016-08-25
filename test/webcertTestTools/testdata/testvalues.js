@@ -27,5 +27,14 @@ module.exports = {
         '19000717-9815',
         //'19520128-2232', -  utan bindestreck i PU
         '19000128-9818'
-    ]
+    ],
+    patienterMedSamordningsnummer: [{
+        nummer: '200810632398',
+        namn: '',
+        efternamn: ''
+    }, {
+        nummer: '196403602391',
+        namn: '',
+        efternamn: ''
+    }]
 };

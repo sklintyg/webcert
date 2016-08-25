@@ -146,7 +146,6 @@ public class RouteIntegrationTest {
     public void ensureWiretapWorks() throws Exception {
         LocalDateTime first = LocalDateTime.now().minusSeconds(15);
         LocalDateTime second = LocalDateTime.now().minusSeconds(10);
-        LocalDateTime third = LocalDateTime.now().minusSeconds(5);
 
         NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelsekodEnum.ANDRAT, "luae_fs",
                 SchemaVersion.VERSION_2);

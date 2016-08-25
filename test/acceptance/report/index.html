@@ -44,6 +44,10 @@
       <div class='panel-body'>
       <!--   <br> -->
         <!-- <h4><b>{{keyword}}</b> {{name}}</h4> -->
+        {{#each tags}}
+          <span class="text-primary">{{name}}</span>
+        {{/each}}
+        <br>
         {{#each steps}}
         <span class='{{keyword}}'>
           <span class="text-{{statusAsBoostrap}}"><b class={{keyword}}>{{keyword}}</b>{{name}}</span><br>

@@ -81,41 +81,41 @@
         <div class="col-sm-6">
           <h1 ng-if="q.intygsId != ''">Ärendeformulär</h1>
           <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="q.intygsId != ''">
-            <div>* == Ej obligatoriskt</div>
+            <div>* == Obligatoriskt</div>
             <!-- metadata -->
             <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Meddelande-id</label>
+                <label class="col-sm-3 control-label">Meddelande-id*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.meddelandeId">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">IntygsId</label>
+                <label class="col-sm-3 control-label">IntygsId*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.intygsId">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Personnummer</label>
+                <label class="col-sm-3 control-label">Personnummer*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.patientPersonId">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Tidpunkt</label>
+                <label class="col-sm-3 control-label">Tidpunkt*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.skickatTidpunkt">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Rubrik*</label>
+                <label class="col-sm-3 control-label">Rubrik</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.rubrik">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Påminnelse-id*</label>
+                <label class="col-sm-3 control-label">Påminnelse-id</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.paminnelseMeddelandeId">
                   <span ng-if="q.amne == 'PAMINN'">Glöm inte fylla i ett påminnelse-id!</span>
@@ -127,7 +127,7 @@
             <!-- metadata -->
             <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Svar på - meddelandeId*</label>
+                <label class="col-sm-3 control-label">Svar på - meddelandeId</label>
                 <div class="col-sm-9">
                   <select class="form-control" ng-model="q.svarPa.meddelandeId">
                       <option value=""></option>
@@ -137,7 +137,7 @@
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Svar på - referensId*</label>
+                <label class="col-sm-3 control-label">Svar på - referensId</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.svarPa.referensId">
                 </div>
@@ -147,7 +147,7 @@
             <!-- Frågetyp -->
             <div class="form-group" id="filterFormVidarebefordrad">
               <div class="row">
-                <label class="col-sm-3 control-label">Typ av fråga</label>
+                <label class="col-sm-3 control-label">Typ av fråga*</label>
                 <div class="col-sm-9" ng-click="typeClicked()">
                   <label class="radio-inline">
                     <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="KOMPLT" ng-model="q.amne">
@@ -180,7 +180,7 @@
             <!-- Texter ARBTID, AVSTMN, KONTKT, OVRIGT, PAMINN -->
             <div class="form-group" ng-if="q.amne != 'KOMPLT'">
               <div class="row">
-                <label class="col-sm-3 control-label">Frågetext</label>
+                <label class="col-sm-3 control-label">Frågetext*</label>
                 <div class="col-sm-9">
                   <textarea ng-model="q.meddelande"></textarea>
                 </div>
@@ -189,13 +189,13 @@
 
             <div class="form-group" ng-if="q.amne == 'KOMPLT'">
               <div class="row">
-                <label class="col-sm-3 control-label">Kompletteringstext</label>
+                <label class="col-sm-3 control-label">Kompletteringstext*</label>
                 <div class="col-sm-9">
                   <textarea ng-model="q.komplettering.text"></textarea>
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">FrågeID</label>
+                <label class="col-sm-3 control-label">FrågeID*</label>
                 <div class="col-sm-9">
                   <!-- <input type="text" class="form-control" ng-model="q.komplettering.frageId">   -->
                   <select class="form-control" ng-model="q.komplettering.frageId">
@@ -204,7 +204,7 @@
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Instans*</label>
+                <label class="col-sm-3 control-label">Instans</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.komplettering.instans">
                 </div>
@@ -214,14 +214,14 @@
             <!-- Avsändare -->
             <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Avsändare</label>
+                <label class="col-sm-3 control-label">Avsändare*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.skickatAv">
                   FKASSA, HSVARD, INVANA, TRANSP
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Referens-id*</label>
+                <label class="col-sm-3 control-label">Referens-id</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.referensId">
                 </div>
