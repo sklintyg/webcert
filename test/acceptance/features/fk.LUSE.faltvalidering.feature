@@ -9,4 +9,4 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 Scenario: Validera felaktig diagnoskod i LUSE
 	När jag fyller i "000" som diagnoskod
-	Så ska valideringsfelet "är ej giltig"
+	Så ska valideringsfelet "är ej giltig" visas
