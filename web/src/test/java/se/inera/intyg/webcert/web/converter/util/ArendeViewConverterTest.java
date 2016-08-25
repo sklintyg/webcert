@@ -10,10 +10,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -167,9 +167,9 @@ public class ArendeViewConverterTest {
 
     @Test
     public void buildArendeConversationsTest() {
-        final LocalDateTime january = new LocalDateTime("2013-01-12T11:22:11");
-        final LocalDateTime february = new LocalDateTime("2013-02-12T11:22:11");
-        final LocalDateTime decemberYear9999 = new LocalDateTime("9999-12-11T10:22:00");
+        final LocalDateTime january = LocalDateTime.parse("2013-01-12T11:22:11");
+        final LocalDateTime february = LocalDateTime.parse("2013-02-12T11:22:11");
+        final LocalDateTime decemberYear9999 = LocalDateTime.parse("9999-12-11T10:22:00");
         List<Arende> arendeList = new ArrayList<>();
 
         arendeList.add(buildArende(UUID.randomUUID().toString(), decemberYear9999, february));

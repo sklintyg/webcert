@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class QueryFragaSvarParameter {
 

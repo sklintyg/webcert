@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
@@ -55,7 +57,7 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         certificate.setId(parameters.getIntyg().getIntygsId());
         certificate.setType(parameters.getIntyg().getIntygsTyp());
         certificate.setCivicRegistrationNumber(new Personnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
-        certificate.setSignedDate(LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel()));
+        certificate.setSignedDate(LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         certificate.setSigningDoctorName(parameters.getIntyg().getGrundData().getSkapadAv().getFullstandigtNamn());

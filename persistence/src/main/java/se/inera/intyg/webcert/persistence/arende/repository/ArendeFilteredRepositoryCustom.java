@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
+import java.util.List;
+
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.model.Filter;
-
-import java.util.List;
 
 /**
  * Created by eriklupander on 2016-06-08.

@@ -34,7 +34,7 @@ import java.util.Optional;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -190,7 +190,7 @@ public class NotificationServiceImplTest {
 
     private NotificationMessage createNotificationMessage(HandelsekodEnum handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
-        LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);
+        LocalDateTime time = LocalDateTime.of(2001, 12, 31, 12, 34, 56, 789);
         NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs,
                 SchemaVersion.VERSION_1, null);
         return notMsg;

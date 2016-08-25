@@ -352,14 +352,32 @@
     <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>opensaml</artifactId>
+      <exclusions>
+       <exclusion>
+         <artifactId>joda-time</artifactId>
+         <groupId>joda-time</groupId>
+       </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>openws</artifactId>
+      <exclusions>
+       <exclusion>
+         <artifactId>joda-time</artifactId>
+         <groupId>joda-time</groupId>
+       </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>xmltooling</artifactId>
+      <exclusions>
+       <exclusion>
+         <artifactId>joda-time</artifactId>
+         <groupId>joda-time</groupId>
+       </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Lucene -->

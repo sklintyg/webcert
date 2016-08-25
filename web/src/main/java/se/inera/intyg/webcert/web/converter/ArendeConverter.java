@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.support.common.enumerations.PartKod;

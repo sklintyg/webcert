@@ -19,11 +19,13 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 @Embeddable
@@ -54,7 +56,7 @@ public class IntygsReferens {
     private String patientNamn;
 
     @Column(name = "SIGNERINGS_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime signeringsDatum;
 
     /*

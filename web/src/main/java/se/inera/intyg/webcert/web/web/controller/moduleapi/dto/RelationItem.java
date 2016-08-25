@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

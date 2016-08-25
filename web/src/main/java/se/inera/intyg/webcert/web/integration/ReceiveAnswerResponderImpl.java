@@ -19,9 +19,11 @@
 
 package se.inera.intyg.webcert.web.integration;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +32,16 @@ import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.*;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import java.util.List;
 
 
 /**

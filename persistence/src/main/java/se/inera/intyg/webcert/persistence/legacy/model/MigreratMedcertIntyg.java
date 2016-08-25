@@ -19,14 +19,12 @@
 
 package se.inera.intyg.webcert.persistence.legacy.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import java.time.LocalDateTime;
+
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 /**
@@ -58,15 +56,15 @@ public class MigreratMedcertIntyg {
     private String patientPersonnummer;
 
     @Column(name = "SKAPAD_DATUM", nullable = false)
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skapad;
 
     @Column(name = "SKICKAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickad;
 
     @Column(name = "MIGRERAD_DATUM", nullable = false)
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime migrerad;
 
     @Column(name = "MIGRERAD_FRAN", nullable = false)

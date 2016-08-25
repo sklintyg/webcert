@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 

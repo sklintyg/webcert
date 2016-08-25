@@ -1,19 +1,13 @@
 package se.inera.intyg.webcert.logsender.helper;
 
-import org.joda.time.LocalDateTime;
-
-import se.inera.intyg.common.logmessages.ActivityPurpose;
-import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.Enhet;
-import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.logmessages.PdlLogMessage;
-import se.inera.intyg.common.logmessages.PdlResource;
-import se.inera.intyg.common.logmessages.ResourceType;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.logmessages.*;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 /**
  * Utility for creating test data for unit- and integration tests.

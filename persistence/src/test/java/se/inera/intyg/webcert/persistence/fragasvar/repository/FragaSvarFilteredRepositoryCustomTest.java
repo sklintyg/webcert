@@ -19,28 +19,23 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import org.joda.time.LocalDateTime;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
+
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
-import se.inera.intyg.webcert.persistence.model.Filter;
-import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.persistence.model.VantarPa;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import se.inera.intyg.webcert.persistence.model.*;
 
 /**
  * Test for filtering FragaSvar.

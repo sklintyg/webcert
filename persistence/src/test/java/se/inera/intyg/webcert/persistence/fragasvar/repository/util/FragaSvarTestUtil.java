@@ -19,18 +19,13 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.repository.util;
 
-import org.joda.time.LocalDateTime;
-
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.intyg.webcert.persistence.model.Status;
-
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.model.Status;
 
 public final class FragaSvarTestUtil {
 
@@ -40,9 +35,9 @@ public final class FragaSvarTestUtil {
     public static final String FRAGA_TEXT = "To be, or not to be: that is the question:";
     public static final String SVAR_TEXT = "This are not the droids you are looking for";
 
-    private static final LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2012-03-01T12:00:00");
-    private static final LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2014-10-21T11:11:11");
-    private static final LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2014-10-21T12:00:00");
+    private static final LocalDateTime FRAGE_SENT_DATE = LocalDateTime.parse("2012-03-01T12:00:00");
+    private static final LocalDateTime SVAR_SIGN_DATE = LocalDateTime.parse("2014-10-21T11:11:11");
+    private static final LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2014-10-21T12:00:00");
 
     private static final IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk7263", new Personnummer("19121212-1212"),
             "Sven Persson", FRAGE_SENT_DATE);
@@ -50,17 +45,18 @@ public final class FragaSvarTestUtil {
     public static String ENHET_1_ID = "ENHET_TEST_1_ID";
     public static String ENHET_2_ID = "ENHET_TEST_2_ID";
 
-    public static FragaSvar buildFraga(long fragaSvarId, String enhetsId, Status status, Amne amne, String fragestallare, String hsaId,  String fragaSkickad, boolean vidarebefordrad) {
+    public static FragaSvar buildFraga(long fragaSvarId, String enhetsId, Status status, Amne amne, String fragestallare, String hsaId,
+            String fragaSkickad, boolean vidarebefordrad) {
         return buildFraga(fragaSvarId, enhetsId, status, amne, fragestallare, hsaId, LocalDateTime.parse(fragaSkickad), vidarebefordrad);
     }
 
-
-    public static FragaSvar buildFraga(long fragaSvarId, String enhetsId, Status status, Amne amne, String fragestallare, String hsaId, LocalDateTime fragaSkickad, boolean vidarebefordrad) {
+    public static FragaSvar buildFraga(long fragaSvarId, String enhetsId, Status status, Amne amne, String fragestallare, String hsaId,
+            LocalDateTime fragaSkickad, boolean vidarebefordrad) {
 
         FragaSvar f = new FragaSvar();
         f.setInternReferens(fragaSvarId);
 
-        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
 
         if (fragestallare.equalsIgnoreCase("FK")) {
             f.setExternReferens("externReferens-" + fragaSvarId);
@@ -91,6 +87,7 @@ public final class FragaSvarTestUtil {
 
     /**
      * Builds a FragaSvara, a question with reply, from the supplied params.
+     *
      * @param enhetsId
      * @param status
      * @param fragestallare
@@ -100,7 +97,8 @@ public final class FragaSvarTestUtil {
      * @param vidarebefordrad
      * @return
      */
-    public static FragaSvar buildFragaWithSvar(String enhetsId, Status status, Amne amne, String fragestallare, String hsaId, String fragaSkickad, String svarSkickad, boolean vidarebefordrad) {
+    public static FragaSvar buildFragaWithSvar(String enhetsId, Status status, Amne amne, String fragestallare, String hsaId, String fragaSkickad,
+            String svarSkickad, boolean vidarebefordrad) {
 
         FragaSvar f = buildFraga(1L, enhetsId, status, amne, fragestallare, hsaId, fragaSkickad, vidarebefordrad);
 

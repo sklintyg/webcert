@@ -19,10 +19,9 @@
 
 package se.inera.intyg.webcert.integration.pp.util;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.joda.time.LocalDateTime;
 
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.*;
 import se.riv.infrastructure.directory.privatepractitioner.v1.*;
@@ -119,7 +118,7 @@ public class ObjectCreator {
         enhetType.setPostadress("Privatgatan 1");
         enhetType.setPostnummer("12345");
         enhetType.setPostort("Privatstan");
-        enhetType.setStartdatum(new LocalDateTime(2014, 05, 15, 7, 0));
+        enhetType.setStartdatum(LocalDateTime.of(2014, 05, 15, 7, 0));
         enhetType.setSlutdatum(null);
         enhetType.setVardgivare(buildVardgivare());
         enhetType.setVerksamhetstyp(buildVerksamhetstyp());

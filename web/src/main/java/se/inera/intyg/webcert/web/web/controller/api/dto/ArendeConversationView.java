@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-import org.joda.time.LocalDateTime;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;

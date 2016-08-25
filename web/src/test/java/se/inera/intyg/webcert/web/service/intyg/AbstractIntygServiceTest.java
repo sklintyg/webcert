@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 
 import org.apache.cxf.helpers.FileUtils;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Before;
 import org.mockito.*;
 import org.springframework.core.io.ClassPathResource;

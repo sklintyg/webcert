@@ -37,6 +37,7 @@
     class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="dataSource" />
     <property name="persistenceUnitName" value="jpa.webcert" />
+    <property name="packagesToScan" value="se.inera,org.springframework.data.jpa.convert.threeten"/>
     <property name="jpaVendorAdapter">
       <bean
         class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">

@@ -19,7 +19,19 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import org.joda.time.LocalDateTime;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +39,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -63,10 +59,10 @@ public class FragaSvarRepositoryTest {
 
     private static final String INTYGS_ID = "abc123";
 
-    private LocalDateTime FRAGA_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
-    private LocalDateTime FRAGA_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
-    private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
-    private LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-04-01T12:00:00");
+    private LocalDateTime FRAGA_SIGN_DATE = LocalDateTime.parse("2013-03-01T11:11:11");
+    private LocalDateTime FRAGA_SENT_DATE = LocalDateTime.parse("2013-03-01T12:00:00");
+    private LocalDateTime SVAR_SIGN_DATE = LocalDateTime.parse("2013-04-01T11:11:11");
+    private LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2013-04-01T12:00:00");
 
     private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk7263", new Personnummer("19121212-1212"),
             "Sven Persson", FRAGA_SENT_DATE);
@@ -211,7 +207,7 @@ public class FragaSvarRepositoryTest {
 
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, boolean answered) {
         FragaSvar f = new FragaSvar();
-        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
         f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
@@ -234,7 +230,7 @@ public class FragaSvarRepositoryTest {
 
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String hsaid, String hsaNamn) {
         FragaSvar f = new FragaSvar();
-        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
         f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
@@ -255,7 +251,7 @@ public class FragaSvarRepositoryTest {
 
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String frageStallare) {
         FragaSvar f = new FragaSvar();
-        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
         f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
@@ -270,7 +266,7 @@ public class FragaSvarRepositoryTest {
 
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String frageStallare, boolean answered) {
         FragaSvar f = new FragaSvar();
-        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
         f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);

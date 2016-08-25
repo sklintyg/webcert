@@ -19,8 +19,9 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.time.LocalDateTime;
+
 import org.apache.cxf.annotations.SchemaValidation;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.support.model.CertificateState;

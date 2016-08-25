@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Test;
 
 import se.inera.intyg.common.support.model.CertificateState;

@@ -22,7 +22,11 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,15 +35,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -54,18 +52,30 @@ public class UtkastFilteredRepositoryTest {
 
     @Before
     public void setup() {
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.SIGNED, "2014-03-01"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-01"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-01"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.SIGNED, "2014-03-02"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-02"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-02"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.SIGNED, "2014-03-03"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-03"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-03"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN, UtkastStatus.SIGNED, "2014-03-04"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-04"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-04"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+                UtkastStatus.SIGNED, "2014-03-01"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+                UtkastStatus.DRAFT_COMPLETE, "2014-03-01"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+                UtkastStatus.DRAFT_INCOMPLETE, "2014-03-01"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+                UtkastStatus.SIGNED, "2014-03-02"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+                UtkastStatus.DRAFT_COMPLETE, "2014-03-02"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN,
+                UtkastStatus.DRAFT_INCOMPLETE, "2014-03-02"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+                UtkastStatus.SIGNED, "2014-03-03"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+                UtkastStatus.DRAFT_COMPLETE, "2014-03-03"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+                UtkastStatus.DRAFT_INCOMPLETE, "2014-03-03"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN,
+                UtkastStatus.SIGNED, "2014-03-04"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+                UtkastStatus.DRAFT_COMPLETE, "2014-03-04"));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+                UtkastStatus.DRAFT_INCOMPLETE, "2014-03-04"));
     }
 
     @Test
@@ -93,7 +103,7 @@ public class UtkastFilteredRepositoryTest {
     public void testFindWithChangedFrom() {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
-        filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
+        filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
 
         List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
@@ -104,7 +114,7 @@ public class UtkastFilteredRepositoryTest {
     public void testFindWithChangedTo() {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_2_ID);
-        filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
+        filter.setSavedTo(LocalDate.parse("2014-03-03").atStartOfDay());
 
         List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
@@ -115,8 +125,8 @@ public class UtkastFilteredRepositoryTest {
     public void testFindWithChangedFromAndChangedTo() {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
-        filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
-        filter.setSavedTo(LocalDateTime.parse("2014-03-04"));
+        filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
+        filter.setSavedTo(LocalDate.parse("2014-03-04").atStartOfDay());
 
         List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
 
@@ -151,8 +161,8 @@ public class UtkastFilteredRepositoryTest {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
-        filter.setSavedFrom(LocalDateTime.parse("2014-03-02"));
-        filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
+        filter.setSavedFrom(LocalDate.parse("2014-03-02").atStartOfDay());
+        filter.setSavedTo(LocalDate.parse("2014-03-03").atStartOfDay());
         filter.setStatusList(Arrays.asList(UtkastStatus.SIGNED));
 
         List<Utkast> res = utkastRepository.filterIntyg(filter, authorizedIntygstyper);
@@ -204,7 +214,7 @@ public class UtkastFilteredRepositoryTest {
     public void testCountWithChangedFrom() {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
-        filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
+        filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
 
         int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
@@ -215,7 +225,7 @@ public class UtkastFilteredRepositoryTest {
     public void testCountWithChangedTo() {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_2_ID);
-        filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
+        filter.setSavedTo(LocalDate.parse("2014-03-03").atStartOfDay());
 
         int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
@@ -226,8 +236,8 @@ public class UtkastFilteredRepositoryTest {
     public void testCountWithChangedFromAndChangedTo() {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
-        filter.setSavedFrom(LocalDateTime.parse("2014-03-03"));
-        filter.setSavedTo(LocalDateTime.parse("2014-03-04"));
+        filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
+        filter.setSavedTo(LocalDate.parse("2014-03-04").atStartOfDay());
 
         int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);
 
@@ -262,8 +272,8 @@ public class UtkastFilteredRepositoryTest {
 
         UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
         filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
-        filter.setSavedFrom(LocalDateTime.parse("2014-03-02"));
-        filter.setSavedTo(LocalDateTime.parse("2014-03-03"));
+        filter.setSavedFrom(LocalDate.parse("2014-03-02").atStartOfDay());
+        filter.setSavedTo(LocalDate.parse("2014-03-03").atStartOfDay());
         filter.setStatusList(Arrays.asList(UtkastStatus.SIGNED));
 
         int res = utkastRepository.countFilterIntyg(filter, authorizedIntygstyper);

@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.signatur.dto;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 public class SignaturTicket {
 
@@ -27,14 +27,18 @@ public class SignaturTicket {
      * NetID/Siths uses BEARBETAR, SIGNERAD and OKAND. BEARBETAR from start to the signing either succeeds (SIGNERAD)
      * or fails (OKAND)
      *
-     * BankID / Mobil BankID uses BEARBETAR from start until BankID application (mobile or not) has established connection
+     * BankID / Mobil BankID uses BEARBETAR from start until BankID application (mobile or not) has established
+     * connection
      * to the BankID server. Then the state is changed to VANTA_SIGN. If no connection between application and bank id
      * server were established in 6 GRP collect requests (according to spec, 18 seconds), the NO_CLIENT state is set.
      * SIGNERAD / OKAND is used similar to NetID after this.
-     *
      */
     public enum Status {
-        BEARBETAR, VANTA_SIGN, SIGNERAD, NO_CLIENT, OKAND
+        BEARBETAR,
+        VANTA_SIGN,
+        SIGNERAD,
+        NO_CLIENT,
+        OKAND
     }
 
     private final String id;
@@ -45,7 +49,8 @@ public class SignaturTicket {
     private final LocalDateTime timestamp;
     private final LocalDateTime signeringstid;
 
-    public SignaturTicket(String id, Status status, String intygsId, long version, LocalDateTime signeringstid, String hash, LocalDateTime timestamp) {
+    public SignaturTicket(String id, Status status, String intygsId, long version, LocalDateTime signeringstid, String hash,
+            LocalDateTime timestamp) {
         this.id = id;
         this.status = status;
         this.intygsId = intygsId;
@@ -84,7 +89,7 @@ public class SignaturTicket {
     }
 
     public SignaturTicket withStatus(Status status) {
-        return new SignaturTicket(id, status, intygsId, version, signeringstid, hash, new LocalDateTime());
+        return new SignaturTicket(id, status, intygsId, version, signeringstid, hash, LocalDateTime.now());
     }
 
     @Override

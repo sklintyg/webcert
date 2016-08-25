@@ -19,9 +19,9 @@
 
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
-
-import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -72,7 +72,7 @@ public final class UtkastTestUtil {
 
     public static Utkast buildUtkast(String enhetsId, String hoSPersonId, String hoSPersonNamn, UtkastStatus status,
             String sparadStr) {
-        LocalDateTime sparad = LocalDateTime.parse(sparadStr);
+        LocalDateTime sparad = LocalDate.parse(sparadStr).atStartOfDay();
         return buildUtkast(enhetsId, status, INTYGSTYP_FK7263, hoSPersonId, hoSPersonNamn, PERSON_NUMMER,
                 PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, sparad);
     }

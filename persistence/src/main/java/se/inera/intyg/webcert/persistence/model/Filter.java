@@ -19,20 +19,16 @@
 
 package se.inera.intyg.webcert.persistence.model;
 
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * Created by pehr on 10/21/13.
  */
 public class Filter {
 
-    private List<String> enhetsIds = new ArrayList<String>();
+    private List<String> enhetsIds = new ArrayList<>();
 
     private boolean questionFromFK;
     private boolean questionFromWC;

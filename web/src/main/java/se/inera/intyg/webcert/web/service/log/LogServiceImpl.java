@@ -19,42 +19,29 @@
 
 package se.inera.intyg.webcert.web.service.log;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
+
+import javax.annotation.PostConstruct;
+import javax.jms.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.common.logmessages.ActivityPurpose;
-import se.inera.intyg.common.logmessages.Enhet;
-import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.logmessages.PdlLogMessage;
-import se.inera.intyg.common.logmessages.PdlResource;
-import se.inera.intyg.common.logmessages.ResourceType;
+import se.inera.intyg.common.logmessages.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygReadMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygSendMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
-import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
+import se.inera.intyg.webcert.common.service.log.template.*;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.

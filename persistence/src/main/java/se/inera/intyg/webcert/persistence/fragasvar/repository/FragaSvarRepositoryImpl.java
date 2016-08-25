@@ -19,22 +19,19 @@
 
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.*;
+import javax.persistence.criteria.*;
+
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
+
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.List;
 
 /**
  * Created by pehr on 10/21/13.
@@ -105,11 +102,11 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         }
 
         if (filter.getChangedFrom() != null) {
-            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDate>get("senasteHandelse"), filter.getChangedFrom()));
+            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDateTime>get("senasteHandelse"), filter.getChangedFrom()));
         }
 
         if (filter.getChangedTo() != null) {
-            pred = builder.and(pred, builder.lessThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo()));
+            pred = builder.and(pred, builder.lessThan(root.<LocalDateTime>get("senasteHandelse"), filter.getChangedTo()));
         }
 
         if (filter.getReplyLatest() != null) {

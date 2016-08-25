@@ -19,13 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

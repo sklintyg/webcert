@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNull;
 import static se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket.Status.BEARBETAR;
 import static se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket.Status.SIGNERAD;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Test;
 
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
@@ -36,8 +36,8 @@ public class SignaturTicketTrackerTest {
     @Test
     public void prune() {
         for (int i = 1; i < 100; i++) {
-            tracker.trackTicket(new SignaturTicket("old-" + i, BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", new LocalDateTime().minusMinutes(6)));
-            tracker.trackTicket(new SignaturTicket(String.valueOf(i), BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", new LocalDateTime()));
+            tracker.trackTicket(new SignaturTicket("old-" + i, BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", LocalDateTime.now().minusMinutes(6)));
+            tracker.trackTicket(new SignaturTicket(String.valueOf(i), BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", LocalDateTime.now()));
         }
         SignaturTicket tracked = tracker.getTicket("1");
         assertEquals(BEARBETAR, tracked.getStatus());
@@ -46,7 +46,7 @@ public class SignaturTicketTrackerTest {
 
     @Test
     public void updateStatus() {
-        tracker.trackTicket(new SignaturTicket("id", BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", new LocalDateTime()));
+        tracker.trackTicket(new SignaturTicket("id", BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", LocalDateTime.now()));
         tracker.updateStatus("id", SIGNERAD);
         SignaturTicket tracked = tracker.getTicket("id");
         assertEquals(SIGNERAD, tracked.getStatus());

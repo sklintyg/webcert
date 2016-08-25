@@ -19,13 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +147,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
-        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setSvarSkickadDatum(LocalDateTime.now());
         fragaSvar.setStatus(Status.ANSWERED);
 
         monitoringService.logAnswerReceived(fragaSvar.getExternReferens(),
@@ -241,7 +241,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") can only be answered by user that is Lakare");
         }
 
-        LocalDateTime now = new LocalDateTime();
+        LocalDateTime now = LocalDateTime.now();
 
         // Ok, lets save the answer
         fragaSvar.setVardAktorHsaId(user.getHsaId());
@@ -331,7 +331,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());
         fraga.setAmne(amne);
         fraga.setFrageText(frageText);
-        LocalDateTime now = new LocalDateTime();
+        LocalDateTime now = LocalDateTime.now();
         fraga.setFrageSkickadDatum(now);
         fraga.setFrageSigneringsDatum(now);
 
