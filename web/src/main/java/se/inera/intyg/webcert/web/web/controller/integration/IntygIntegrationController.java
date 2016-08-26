@@ -137,9 +137,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         WebCertUser user = getWebCertUserService().getUser();
         if (!StringUtils.isBlank(enhet)) {
-            if (getWebCertUserService().isAuthorizedForUnit(enhet, false)) {
-                user.changeValdVardenhet(enhet);
-            } else {
+            if (!user.changeValdVardenhet(enhet)) {
                 throw new AuthoritiesException("Authorization Validation failed because user is not authorized for enhet " + enhet);
             }
         }
