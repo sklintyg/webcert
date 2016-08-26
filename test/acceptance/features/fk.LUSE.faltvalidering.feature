@@ -1,5 +1,6 @@
 # language: sv
-@faltvalidering @luse @notReady # Funktion har ändrats. TF behöver uppdateras
+@faltvalidering @luse @notReady
+# Funktion har ändrats. TF behöver uppdateras
 Egenskap: Fältvalidering LUSE
 
 Bakgrund: Jag befinner mig på webcerts förstasida
