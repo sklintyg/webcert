@@ -104,7 +104,6 @@
       }
     };
 
-    /* TODO JUST A TEMPORARY FIX, DELETE WHEN HAVING PROPER APPROVE BUTTON!!! */
     function approve() {
       xmlhttp=new XMLHttpRequest();
       xmlhttp.open("PUT","/api/anvandare/godkannavtal",false);

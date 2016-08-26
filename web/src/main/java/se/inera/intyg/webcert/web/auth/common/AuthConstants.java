@@ -25,7 +25,6 @@ package se.inera.intyg.webcert.web.auth.common;
  * Created by eriklupander on 2015-10-13.
  */
 public final class AuthConstants {
-
     private AuthConstants() {
     }
 

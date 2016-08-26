@@ -32,8 +32,6 @@ public class SignaturTicket {
      * server were established in 6 GRP collect requests (according to spec, 18 seconds), the NO_CLIENT state is set.
      * SIGNERAD / OKAND is used similar to NetID after this.
      *
-     * TODO We should align these states across all signing mechanisms. The GUI layer now needs to have different code paths
-     * TODO for handling these state changes.
      */
     public enum Status {
         BEARBETAR, VANTA_SIGN, SIGNERAD, NO_CLIENT, OKAND

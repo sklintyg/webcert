@@ -185,7 +185,7 @@
 
     <bean id="localDateTimeHandler" class="se.inera.intyg.webcert.web.web.handlers.LocalDateTimeHandler" />
 
-    <!-- Thread pool for BankID GRP collect tasks. TODO tweak properties -->
+    <!-- Thread pool for BankID GRP collect tasks. -->
     <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
       <property name="corePoolSize" value="5" />
       <property name="maxPoolSize" value="10" />

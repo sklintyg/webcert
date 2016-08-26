@@ -66,7 +66,7 @@ var wcMessages = {
         'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
         'label.qacheckhanterad.tillbaka' : 'Tillbaka',
 
-        //certificate types (TODO: maybe use the module entrypoint map label/description properties instead as we do with detailedModuleDescription?)
+        //certificate types
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
         'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',

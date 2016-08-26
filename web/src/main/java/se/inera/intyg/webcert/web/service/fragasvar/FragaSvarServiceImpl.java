@@ -145,8 +145,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
-        // TODO - validation: does answer fit to question?
-
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
