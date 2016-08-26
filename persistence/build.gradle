@@ -8,8 +8,8 @@ jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 dependencies {
   compile project(':webcert-common')
 
-  compile 'se.inera.intyg.intygstyper:luse:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:lisu:0-SNAPSHOT'
+  compile "se.inera.intyg.intygstyper:luse:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:lisu:${typerVersion}"
 
   compile 'ch.qos.logback:logback-classic:1.0.11'
   compile 'org.slf4j:jcl-over-slf4j:1.7.5'

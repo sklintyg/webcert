@@ -3,13 +3,15 @@ description = 'Webcert (FitNesse)'
 dependencies {
   compile project(':mail-stub')
 
-  compile 'se.inera.intyg.common:log-messages:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:hsa-integration:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:common-specifications:0-SNAPSHOT'
   compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
   compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
   compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
   compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.1'
+
+  compile "se.inera.intyg.common:log-messages:${commonVersion}"
+  compile "se.inera.intyg.common:hsa-integration:${commonVersion}"
+  compile "se.inera.intyg.common:common-specifications:${commonVersion}"
+
   compile 'javax.jms:jms-api:1.1-rev-1'
   compile 'org.apache.activemq:activemq-client:5.13.0'
   compile 'org.codehaus.groovy:groovy-all:2.4.3'

@@ -71,7 +71,7 @@ subprojects {
   }
 }
 
-project(':webcert-web') {
+project(':webcert-common') {
   afterEvaluate { project ->
     project.configurations.find{ it.name == 'compile' }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
       if (it.moduleGroup == 'se.inera.intyg.common') {

@@ -3,10 +3,12 @@ description = 'Webcert (PP-integration)'
 dependencies {
   compile project(':webcert-common')
 
-  compile 'se.inera.intyg.common:integration-util:0-SNAPSHOT'
+  compile 'se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:1.0.1'
+
+  compile "se.inera.intyg.common:integration-util:${commonVersion}"
+
   compile 'org.slf4j:slf4j-api:1.7.5'
   compile 'org.slf4j:jcl-over-slf4j:1.7.5'
-  compile 'se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:1.0.1'
   compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.3'
   compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.3'
   compile 'org.apache.cxf:cxf-rt-transports-http:3.1.3'

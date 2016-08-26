@@ -3,14 +3,22 @@ description = 'Webcert (Notification Sender)'
 dependencies {
   compile project(':webcert-common')
 
-  compile 'se.inera.intyg.common:common-schemas:0-SNAPSHOT'
   compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
+
+  compile "se.inera.intyg.common:common-schemas:${commonVersion}"
+  compile "se.inera.intyg.common:logging-util:${commonVersion}"
+  compile "se.inera.intyg.common:integration-util:${commonVersion}"
+
+  compile (group: "se.inera.intyg.intygstyper", name:"fk7263", version: "${typerVersion}") {
+    exclude(module: 'insuranceprocess-healthreporting-schemas')
+    exclude(module: 'fk-vardgivare-sjukvard-schemas')
+    exclude(module: 'ServiceContracts_itintegration_monitoring')
+  }
+
   compile 'org.springframework:spring-context:4.2.2.RELEASE'
   compile 'org.springframework:spring-web:4.2.2.RELEASE'
   compile 'org.apache.camel:camel-spring:2.16.0'
   compile 'org.springframework:spring-jms:4.2.2.RELEASE'
-  compile 'se.inera.intyg.common:logging-util:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:integration-util:0-SNAPSHOT'
   compile 'ch.qos.logback:logback-classic:1.0.11'
   compile 'org.slf4j:slf4j-api:1.7.5'
   compile 'org.apache.camel:camel-core:2.16.0'
@@ -19,11 +27,6 @@ dependencies {
   compile 'org.apache.activemq:activemq-camel:5.13.0'
   compile 'org.apache.camel:camel-jackson:2.16.0'
   compile 'org.apache.camel:camel-jaxb:2.16.0'
-  compile (group: 'se.inera.intyg.intygstyper', name:'fk7263', version: '0-SNAPSHOT') {
-    exclude(module: 'insuranceprocess-healthreporting-schemas')
-    exclude(module: 'fk-vardgivare-sjukvard-schemas')
-    exclude(module: 'ServiceContracts_itintegration_monitoring')
-  }
 
   testCompile 'com.jayway.awaitility:awaitility:1.4.0'
   testCompile 'org.kubek2k:springockito:1.0.8'

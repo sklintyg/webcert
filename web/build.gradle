@@ -154,21 +154,28 @@ dependencies {
   compile project(':mail-stub')
   compile project(':notification-sender')
 
-  compile 'se.inera.intyg.common:common-support:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:common-web:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:logging-util:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:hsa-integration:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:common-services:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:loggtjanst-stub:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:log-messages:0-SNAPSHOT'
-  compile 'se.inera.intyg.common:security-siths:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:ts-bas:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:ts-diabetes:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:fk-parent:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:luse:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:lisu:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:luae_na:0-SNAPSHOT'
-  compile 'se.inera.intyg.intygstyper:luae_fs:0-SNAPSHOT'
+  compile "se.inera.intyg.common:common-support:${commonVersion}"
+  compile "se.inera.intyg.common:common-web:${commonVersion}"
+  compile "se.inera.intyg.common:logging-util:${commonVersion}"
+  compile "se.inera.intyg.common:hsa-integration:${commonVersion}"
+  compile "se.inera.intyg.common:common-services:${commonVersion}"
+  compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
+  compile "se.inera.intyg.common:log-messages:${commonVersion}"
+  compile "se.inera.intyg.common:security-siths:${commonVersion}"
+
+  compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:ts-diabetes:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:luse:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:lisu:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:luae_na:${typerVersion}"
+  compile "se.inera.intyg.intygstyper:luae_fs:${typerVersion}"
+  compile (group: "se.inera.intyg.intygstyper", name:"fk7263", version: "${typerVersion}") {
+    exclude(module: "insuranceprocess-healthreporting-schemas")
+    exclude(module: "fk-vardgivare-sjukvard-schemas")
+    exclude(module: "ServiceContracts_itintegration_monitoring")
+  }
+
   compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
   compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
   compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
@@ -205,11 +212,6 @@ dependencies {
   compile 'org.springframework:spring-tx:4.2.2.RELEASE'
   compile 'org.apache.lucene:lucene-core:4.10.2'
   compile 'org.apache.lucene:lucene-analyzers-common:4.10.2'
-  compile (group: 'se.inera.intyg.intygstyper', name:'fk7263', version: '0-SNAPSHOT') {
-    exclude(module: 'insuranceprocess-healthreporting-schemas')
-    exclude(module: 'fk-vardgivare-sjukvard-schemas')
-    exclude(module: 'ServiceContracts_itintegration_monitoring')
-  }
   compile(group: 'xalan', name: 'xalan', version:'2.7.1') {
     exclude(module: 'xml-apis')
   }
