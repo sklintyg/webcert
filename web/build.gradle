@@ -117,17 +117,6 @@ gretty {
   //   reloadOnLibChange = false
 }
 
-// TODO: buildNumber must be taken from environment
-task createVersionPropertyFile(dependsOn: processResources) << {
-  def propertyFile = "${buildDir}/resources/main/version.properties"
-  ant.touch(file: propertyFile, mkdirs: "true")
-  ant.propertyfile(file: propertyFile) {
-    entry(key: 'project.version', default: rootProject.version)
-    entry(key: 'buildTime', default: new Date())
-    entry(key: 'buildNumber', default: '6a25a6bf58687fd2a9250e413ae8050cfe534c3f')
-  }
-}
-
 war.dependsOn createVersionPropertyFile
 
 // TODO: This is required to make the Schematron implementation pick up Saxon instead of Xalan.
