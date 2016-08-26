@@ -71,5 +71,5 @@ Scenario: Statusuppdateringar vid fråga till FK
 Scenario: Statusuppdateringar vid ändring av utkast
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
-    När jag ändrar i fältet
+    När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"

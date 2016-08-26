@@ -46,75 +46,75 @@ module.exports = function() {
             .then(callback());
     });
 
-    this.Given(/^jag ändrar i fältet$/, function(callback) {
+
+    this.Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field, callback) {
+        console.log('Fältet som ändras är: ' + field);
+
+        if (field === 'sjukskrivningsperiod') {
+            browser.ignoreSynchronization = true;
+            fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
+                fkUtkastPage.nedsatt.med25.tom.sendKeys('2017-01-02').then(function() {
+                    browser.ignoreSynchronization = false;
+                    callback();
+                });
+            });
+        } else if (field === 'arbetsförmåga') {
+            fkUtkastPage.nedsatt.med25.checkbox.sendKeys(protractor.Key.SPACE).then(callback);
+        } else if (field === 'diagnoskod') {
+            var diagnosKod = td.values.fk.getRandomDiagnoskod();
+            fkUtkastPage.diagnosKod.sendKeys(diagnosKod).then(callback);
+        } else {
+            callback(null, 'pending');
+        }
+
+
+    });
+
+    this.Given(/^jag ändrar i slumpat fält$/, function(callback) {
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         var field;
-        if (isSMIIntyg) {
-            var whichSMIIntyg = helpers.whichSMIIntyg(intyg.typ);
+        var whichSMIIntyg = helpers.whichSMIIntyg(intyg.typ);
 
-            if (whichSMIIntyg === 'LUSE') {
-                field = helpers.randomPageField(isSMIIntyg, whichSMIIntyg);
-                console.log('Fältet som ändras är: ' + field);
+        if (whichSMIIntyg === 'LUSE') {
+            field = helpers.randomPageField(isSMIIntyg, whichSMIIntyg);
+            console.log('Fältet som ändras är: ' + field);
 
-                if (field === 'aktivitetsbegransning') {
-                    intyg.aktivitetsbegransning = helpers.randomTextString();
-                    luseUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
-                } else if (field === 'sjukdomsforlopp') {
-                    intyg.sjukdomsforlopp = helpers.randomTextString();
-                    luseUtkastPage.sjukdomsforlopp.sendKeys(intyg.sjukdomsforlopp).then(callback);
-                } else if (field === 'funktionsnedsattning') {
-                    intyg.funktionsnedsattning = {};
-                    intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
-                    console.log(intyg);
-                    luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell).then(callback);
-                } else {
-                    callback(null, 'pending');
-                }
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsbegransning = helpers.randomTextString();
+                luseUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            } else if (field === 'sjukdomsforlopp') {
+                intyg.sjukdomsforlopp = helpers.randomTextString();
+                luseUtkastPage.sjukdomsforlopp.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsnedsattning = {};
+                intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
+                console.log(intyg);
+                luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell).then(callback);
+            } else {
+                callback(null, 'pending');
+            }
 
-            } else if (whichSMIIntyg === 'LISU') {
-                field = helpers.randomPageField(isSMIIntyg, whichSMIIntyg);
-                console.log('Fältet som ändras är: ' + field);
+        } else if (whichSMIIntyg === 'LISU') {
+            field = helpers.randomPageField(isSMIIntyg, whichSMIIntyg);
+            console.log('Fältet som ändras är: ' + field);
 
-                if (field === 'aktivitetsbegransning') {
-                    intyg.aktivitetsbegransning = helpers.randomTextString();
-                    lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
-                } else if (field === 'funktionsnedsattning') {
-                    intyg.funktionsnedsattning = helpers.randomTextString();
-                    lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
-                } else if (field === 'sysselsattning') {
-                    lisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
-                    intyg.nuvarandeArbeteBeskrivning = helpers.randomTextString();
-                    lisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
-                } else {
-                    callback(null, 'pending');
-                }
-
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsbegransning = helpers.randomTextString();
+                lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsnedsattning = helpers.randomTextString();
+                lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            } else if (field === 'sysselsattning') {
+                lisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
+                intyg.nuvarandeArbeteBeskrivning = helpers.randomTextString();
+                lisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
             } else {
                 callback(null, 'pending');
             }
 
         } else {
-            field = helpers.randomPageField(isSMIIntyg);
-            console.log('Fältet som ändras är: ' + field);
-
-            if (field === 'sjukskrivningsperiod') {
-                browser.ignoreSynchronization = true;
-                fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
-                    fkUtkastPage.nedsatt.med25.tom.sendKeys('2017-01-02').then(function() {
-                        browser.ignoreSynchronization = false;
-                        callback();
-                    });
-                });
-            } else if (field === 'arbetsförmåga') {
-                fkUtkastPage.nedsatt.med25.checkbox.sendKeys(protractor.Key.SPACE).then(callback);
-            } else if (field === 'diagnoskod') {
-                var diagnosKod = td.values.fk.getRandomDiagnoskod();
-                fkUtkastPage.diagnosKod.sendKeys(diagnosKod).then(callback);
-            } else {
-                callback(null, 'pending');
-            }
-
+            callback(null, 'pending');
         }
 
     });
