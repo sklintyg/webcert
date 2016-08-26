@@ -10,11 +10,12 @@ dependencies {
 
   compile 'se.inera.intyg.intygstyper:luse:0-SNAPSHOT'
   compile 'se.inera.intyg.intygstyper:lisu:0-SNAPSHOT'
+
   compile 'ch.qos.logback:logback-classic:1.0.11'
   compile 'org.slf4j:jcl-over-slf4j:1.7.5'
   compile 'org.slf4j:log4j-over-slf4j:1.7.5'
-  compile 'org.hibernate:hibernate-entitymanager:4.2.0.Final'
-  compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+  compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
+  compile 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
   compile 'org.springframework:spring-tx:4.2.2.RELEASE'
   compile 'org.springframework:spring-orm:4.2.2.RELEASE'
   compile 'org.liquibase:liquibase-core:3.3.1'

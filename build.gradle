@@ -1,8 +1,19 @@
+plugins {
+  id 'org.ajoberstar.grgit' version '1.5.1'
+}
+
+ext.nexusUsername = System.properties['nexusUsername']
+ext.nexusPassword = System.properties['nexusPassword']
+
 allprojects  {
   apply plugin: 'maven'
 
+  def baseVersion = '0.0.'
+
   group = 'se.inera.intyg.webcert'
-  version = '0-SNAPSHOT'
+  version = System.env.BUILD_NUMBER != null ? baseVersion + System.env.BUILD_NUMBER : '0-SNAPSHOT'
+  rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : baseVersion + '+'
+  rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : baseVersion + '+'
 }
 
 subprojects {
@@ -21,4 +32,71 @@ subprojects {
     maven { url "http://repo.maven.apache.org/maven2" }
   }
 
+  task createVersionPropertyFile(dependsOn: processResources) << {
+    def propertyFile = "${buildDir}/resources/main/version.properties"
+    ant.touch(file: propertyFile, mkdirs: "true")
+    ant.propertyfile(file: propertyFile) {
+      entry(key: 'project.version', default: rootProject.version)
+      entry(key: 'buildTime', default: new Date())
+      entry(key: 'gitCommit', default: "${grgit.head().id}")
+      entry(key: 'gitBranch', default: "${grgit.branch.getCurrent().getName()}")
+      entry(key: 'commonVersion', default: "${resolvedCommonVersion}")
+    }
+  }
+
+  jar.dependsOn(createVersionPropertyFile)
+
+}
+
+subprojects {
+  uploadArchives {
+    repositories.mavenDeployer {
+      pom.whenConfigured {pom ->
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
+      }
+      repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+        authentication(userName: nexusUsername, password: nexusPassword)
+      }
+    }
+  }
+
+  install {
+    repositories.mavenInstaller {
+      pom.whenConfigured {pom ->
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
+      }
+    }
+  }
+}
+
+project(':webcert-web') {
+  afterEvaluate { project ->
+    project.configurations.find{ it.name == 'compile' }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
+      if (it.moduleGroup == 'se.inera.intyg.common') {
+        rootProject.ext.resolvedCommonVersion = it.moduleVersion
+        return true
+      }
+      return false
+    }
+    project.configurations.find{ it.name == 'compile' }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
+      if (it.moduleGroup == 'se.inera.intyg.intygstyper') {
+        rootProject.ext.resolvedTyperVersion = it.moduleVersion
+        return true
+      }
+      return false
+    }
+  }
+}
+
+task tagRelease {
+  description = 'Tags the current head with the projects version.'
+  doLast {
+    grgit.tag.add {
+      name = version
+      message = "Release of ${version}"
+    }
+    //grgit.push(tags: true)
+  }
 }
