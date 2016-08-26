@@ -353,5 +353,5 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['karma:ci']);
     grunt.registerTask('test:watch', ['karma:watch']);
     // frontend only dev ===============================================================================================
-    grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
+    grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'generateModuleDeps', 'watch' ]);
 };
