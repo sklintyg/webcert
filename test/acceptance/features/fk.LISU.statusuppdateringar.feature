@@ -75,6 +75,13 @@ Scenario: Statusuppdateringar vid fråga till FK
     Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
+@statusuppdatering-andrat
+Scenario: Statusuppdateringar vid fråga till FK
+    Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
+
+    När jag ändrar i fältet
+    Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
+
 # @komplettering @notReady
 # Scenario: Statusuppdateringar vid komplettering med nytt intyg
     # När jag fyller i alla nödvändiga fält för intyget

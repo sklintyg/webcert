@@ -93,6 +93,22 @@ module.exports = {
             cb(filteredElements[0]);
         });
     },
+    whichSMIIntyg: function(intygsType) {
+        var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
+        return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISU ? this.getSMIAbbrev(this.smiIntyg.LISU) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
+    },
+    getSMIAbbrev: function(value) {
+        for (var key in this.smiIntyg) {
+            if (this.smiIntyg[key] === value) {
+                return key.toString();
+            }
+        }
+        return null;
+    },
+    smiIntyg: {
+        'LISU': 'Läkarintyg för sjukpenning utökat',
+        'LUSE': 'Läkarutlåtande för sjukersättning'
+    },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
@@ -112,6 +128,32 @@ module.exports = {
             }
         }
         return null;
+    },
+    randomTextString: function() {
+        var text = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖabcdefghijklmnopqrstuvwxyzåäö0123456789';
+
+        for (var i = 0; i < 16; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    },
+    randomPageField: function(isSMIIntyg, whichSMIIntyg) {
+        var index = Math.floor(Math.random() * 3);
+        if (isSMIIntyg) {
+            if (whichSMIIntyg === 'LISU') {
+                return this.pageField[whichSMIIntyg][index];
+            } else if (whichSMIIntyg === 'LUSE') {
+                return this.pageField[whichSMIIntyg][index];
+            }
+        } else {
+            return this.pageField.FK7263[index];
+        }
+    },
+    pageField: {
+        'LISU': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
+        'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
+        'FK7263': ['diagnoskod', 'arbetsförmåga', 'sjukskrivningsperiod']
     }
 
 };
