@@ -1,5 +1,5 @@
 # language: sv
-@faltvalidering @fk7263
+@faltvalidering @fk7263 @notReady
 Egenskap: Fältvalidering fk7263
 
 Bakgrund: Jag befinner mig på webcerts förstasida
