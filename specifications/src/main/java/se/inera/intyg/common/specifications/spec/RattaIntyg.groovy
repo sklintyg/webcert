@@ -76,7 +76,7 @@ class RattaIntyg extends WsClientFixture {
         RevokeType revokeType = new RevokeType();
         revokeRequestType.setRevoke(revokeType)
         revokeType.vardReferensId = 1
-        revokeType.avsantTidpunkt = new LocalDateTime("2013-05-01T11:00:00")
+        revokeType.avsantTidpunkt = LocalDateTime.parse("2013-05-01T11:00:00")
         revokeType.meddelande = meddelande
         revokeType.adressVard = new VardAdresseringsType()
         revokeType.adressVard.hosPersonal = new HosPersonalType()
@@ -102,7 +102,7 @@ class RattaIntyg extends WsClientFixture {
 
         revokeType.lakarutlatande = new LakarutlatandeEnkelType()
         revokeType.lakarutlatande.lakarutlatandeId = intyg
-        revokeType.lakarutlatande.signeringsTidpunkt = new LocalDateTime("2013-05-01T11:00:00")
+        revokeType.lakarutlatande.signeringsTidpunkt = LocalDateTime.parse("2013-05-01T11:00:00")
         revokeType.lakarutlatande.patient = new PatientType()
         revokeType.lakarutlatande.patient.fullstandigtNamn = "Test Testsson"
         revokeType.lakarutlatande.patient.personId = new II()
