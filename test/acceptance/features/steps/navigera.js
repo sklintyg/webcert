@@ -30,7 +30,12 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på utkastet$/, function() {
-        return browser.get('/web/dashboard#/fk7263/edit/' + intyg.id);
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            return browser.get('/web/dashboard#/luse/edit/' + intyg.id);
+        } else {
+            return browser.get('/web/dashboard#/fk7263/edit/' + intyg.id);
+        }
     });
 
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {

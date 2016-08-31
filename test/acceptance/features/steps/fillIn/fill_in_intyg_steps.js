@@ -41,9 +41,15 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^jag ändrar diagnoskod$/, function(callback) {
-        fkUtkastPage.angeDiagnosKod(td.values.fk.getRandomDiagnoskod())
-            .then(callback());
+    this.Given(/^jag ändrar diagnoskod$/, function() {
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var kod = td.values.fk.getRandomDiagnoskod();
+        if (isSMIIntyg) {
+            return luseUtkastPage.diagnoseCode.sendKeys(kod);
+        } else {
+            return fkUtkastPage.angeDiagnosKod(kod);
+        }
+
     });
 
 
