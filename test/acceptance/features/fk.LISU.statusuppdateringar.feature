@@ -75,6 +75,10 @@ Scenario: Statusuppdateringar vid fråga till FK
     Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
+    Och jag markerar svaret från Försäkringskassan som INTE hanterat
+    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "2"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+
 @ANDRAT
 Scenario: Statusuppdateringar vid ändring av utkast
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"

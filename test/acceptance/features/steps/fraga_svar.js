@@ -203,8 +203,8 @@ module.exports = function() {
 
             })
             .then(function() {
-                // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions 
-                // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); // 
+                // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions
+                // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); //
                 return panel.getText().then(function(text) {
                     expect(text).to.contain('Ämne: Påminnelse');
                 });
@@ -216,7 +216,7 @@ module.exports = function() {
         fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });
 
-    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function() {
+    this.Given(/^jag markerar svaret från Försäkringskassan (?:.*) hanterat$/, function() {
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
