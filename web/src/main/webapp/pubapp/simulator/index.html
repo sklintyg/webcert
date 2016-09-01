@@ -63,13 +63,14 @@
               <th>IntygsId</th>
               <th>Typ</th>
               <th>Skapad av</th>
-              <td> </td>
+              <th>Signerades</th>
             </tr>
             <tr ng-repeat="d in data">
               <td>{{ d.patientFornamn }} {{ d.patientEfternamn}} - {{ d.patientPersonnummer}}</td>
               <td>{{ d.intygsId }}</td>
               <td>{{ d.intygsTyp }}</td>
               <td>{{ d.skapadAv.namn }}</td>
+              <td>{{ d.signatur.signeringsDatum | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
               <td>
                 <button type="button" class="btn btn-success" ng-click="openForm(d)">Välj</button>
               </td>

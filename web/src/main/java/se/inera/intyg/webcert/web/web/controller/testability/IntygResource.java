@@ -142,7 +142,8 @@ public class IntygResource {
     public Response getAllSignedAndSentIntygOnUnit(@PathParam("enhetsId") String enhetsId) {
         List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.SIGNED));
         return Response.ok(all.stream()
-                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
+                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null && utkast.getSignatur() != null)
+                .sorted((u1, u2) -> u2.getSignatur().getSigneringsDatum().compareTo(u1.getSignatur().getSigneringsDatum()))
                 .collect(Collectors.toList())).build();
     }
 
