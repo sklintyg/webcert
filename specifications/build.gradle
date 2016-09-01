@@ -3,10 +3,11 @@ description = 'Intyg Common (FitNesse fixturer)'
 dependencies {
   compile project(':integration-util')
 
-  compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
-  compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
-  compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
-  compile 'se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:1.0.1'
+  compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessVersion}"
+  compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessVersion}"
+  compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringVersion}"
+  compile "se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:${intygInsuranceprocessVersion}"
+
   compile 'org.apache.activemq:activemq-client:5.13.0'
   compile 'javax.jms:jms-api:1.1-rev-1'
   compile 'org.codehaus.groovy:groovy-all:2.4.3'
