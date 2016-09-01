@@ -128,14 +128,6 @@ configurations {
 }
 
 buildscript {
-  repositories {
-    jcenter()
-    maven {
-      url 'https://plugins.gradle.org/m2/'
-    }
-
-  }
-
   dependencies {
     classpath 'org.akhikhl.gretty:gretty:+'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.12'

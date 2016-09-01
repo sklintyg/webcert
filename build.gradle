@@ -46,6 +46,15 @@ subprojects {
   }
 
   jar.dependsOn(createVersionPropertyFile)
+
+  buildscript {
+    repositories {
+      mavenLocal()
+      maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
+      jcenter()
+    }
+  }
+
 }
 
 subprojects {

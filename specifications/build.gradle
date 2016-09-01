@@ -1,5 +1,29 @@
 description = 'Webcert (FitNesse)'
 
+buildscript {
+  dependencies {
+    classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0-SNAPSHOT'
+  }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'inera-fitnesse'
+
+fitnesse {
+    port = 9126
+    root = "FitNesseRoot"
+    workingDir = "src/test/fitnesse"
+    // extraProperties = [
+    //     baseUrl: baseUrl,
+    //     seleniumDriver: seleniumDriver
+    // ]
+    wikiStartPage = "WebCert.AutomatiseradeTester"
+
+    if (project.hasProperty('fileOutput')) {
+        outputFormat = "xml&includehtml"
+    }
+}
+
 dependencies {
   compile project(':mail-stub')
 
@@ -26,4 +50,7 @@ dependencies {
   compile 'org.seleniumhq.selenium:selenium-htmlunit-driver:2.48.2'
   compile 'com.h2database:h2:1.3.174'
   compile 'com.jayway.awaitility:awaitility:1.4.0'
+
+  fitnesse "org.fitnesse:fitnesse:20150814"
+  fitnesse "se.inera.intyg.common:common-specifications:$commonVersion"
 }
