@@ -25,7 +25,8 @@ import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.common.specifications.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
+import java.time.LocalDate
 import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.common.specifications.spec.util.WsClientFixture
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType
@@ -169,7 +170,7 @@ public class Intyg extends RestClientFixture {
             if (enhetsId) request.intyg.grundData.skapadAv.vardenhet.enhetsId.extension = enhetsId
             if (enhet) request.intyg.grundData.skapadAv.vardenhet.enhetsnamn = enhet
             if (vårdgivarId) request.intyg.grundData.skapadAv.vardenhet.vardgivare.vardgivarid.extension = vårdgivarId
-            request.intyg.grundData.signeringsTidstampel = utfärdat
+            request.intyg.grundData.signeringsTidstampel = utfärdat + "T12:00:00.000"
         } else if (typ == "ts-diabetes") {
             JAXBContext jaxbContext = JAXBContext.newInstance(RegisterTSDiabetesType.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -184,21 +185,16 @@ public class Intyg extends RestClientFixture {
             if (enhetsId) request.intyg.grundData.skapadAv.vardenhet.enhetsId.extension = enhetsId
             if (enhet) request.intyg.grundData.skapadAv.vardenhet.enhetsnamn = enhet
             if (vårdgivarId) request.intyg.grundData.skapadAv.vardenhet.vardgivare.vardgivarid.extension = vårdgivarId
-            request.intyg.grundData.signeringsTidstampel = utfärdat
+            request.intyg.grundData.signeringsTidstampel = utfärdat + "T12:00:00.000"
         } else {
             try {
                 JAXBContext jaxbContext = JAXBContext.newInstance(RegisterMedicalCertificateType.class);
                 Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                 request = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("${typ}_${mall}_template.xml").getInputStream()), RegisterMedicalCertificateType.class).getValue()
-                // slurping the FK7263 template
-                //certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("${typ}_${mall}_template.xml").getInputStream()))
             } catch (Exception e) {
                 JAXBContext jaxbContext = JAXBContext.newInstance(RegisterMedicalCertificateType.class);
                 Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                 request = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("generic_template.xml").getInputStream()), RegisterMedicalCertificateType.class).getValue()
-                // if template for specific type cannot be loaded, use generic template
-                //certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("generic_template.xml").getInputStream()))
-                //certificate.typ = typ
             }
             request.lakarutlatande.lakarutlatandeId = id
             request.lakarutlatande.patient.personId.extension = personnr
@@ -209,7 +205,7 @@ public class Intyg extends RestClientFixture {
             if (enhetsId) request.lakarutlatande.skapadAvHosPersonal.enhet.enhetsId.extension = enhetsId
             if (enhet) request.lakarutlatande.skapadAvHosPersonal.enhet.enhetsnamn = enhet
             if (vårdgivarId) request.lakarutlatande.skapadAvHosPersonal.enhet.vardgivare.vardgivareId.extension = vårdgivarId
-            request.lakarutlatande.signeringsdatum = LocalDateTime.parse(utfärdat)
+            request.lakarutlatande.signeringsdatum = LocalDate.parse(utfärdat).atStartOfDay()
         }
 
         StringWriter writer = new StringWriter()
