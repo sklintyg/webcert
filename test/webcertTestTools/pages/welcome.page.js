@@ -32,11 +32,15 @@ module.exports = {
         return browser.get('welcome.jsp');
     },
 
-    disableCookieConsentBanner: function() {
+    disableCookieConsentBanner: function(secondBrowser) {
         //Having this flag in localStorage will suppress the cookieBanner.(This is what will be set
         //when a user gives consent). We pre-set this before logging in to avoid having to click on that button
         //for every test.
-        return browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","1");');
+        if (!secondBrowser) {
+            return browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","1");');
+        } else {
+            return secondBrowser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","1");');
+        }
     },
     enableCookieConsentBanner: function() {
         browser.executeScript('window.localStorage.setItem("wc-cookie-consent-given","0");');
@@ -59,12 +63,23 @@ module.exports = {
         element(by.cssContainingText('option', name)).click();
         loginButton.click();
     },
-    loginByJSON: function(userJson, giveCookieConsent) {
+    loginByJSON: function(userJson, giveCookieConsent, secondBrowser) {
         if (giveCookieConsent) {
             this.disableCookieConsentBanner();
         }
-        return jsonDisplay.clear().sendKeys(userJson).then(function() {
-            return loginButton.click();
-        });
+
+        if (!secondBrowser) {
+            return jsonDisplay.clear().sendKeys(userJson).then(function() {
+                return loginButton.click();
+            });
+        } else {
+            var jsonDisplay2 = secondBrowser.findElement(by.id('userJsonDisplay'));
+            var loginButton2 = secondBrowser.findElement(by.id('loginBtn'));
+            jsonDisplay2.clear();
+            return jsonDisplay2.sendKeys(userJson).then(function() {
+                return loginButton2.click();
+            });
+        }
+
     }
 };

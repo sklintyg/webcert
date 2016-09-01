@@ -154,6 +154,30 @@ module.exports = {
         'LISU': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'FK7263': ['diagnoskod', 'arbetsförmåga', 'sjukskrivningsperiod']
+    },
+    getUserObj: function(userKey) {
+        return this.userObj[userKey];
+    },
+    userObj: {
+        UserKey: {
+            EN: 'EN',
+            ÅS: 'ÅS'
+        },
+        Role: {
+            DOCTOR: 'Läkare'
+        },
+        EN: {
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: 'TSTNMT2321000156-105F'
+        },
+        ÅS: {
+            fornamn: 'Åsa Svensson',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-100L',
+            enhetId: 'TSTNMT2321000156-1003'
+        }
     }
 
 };

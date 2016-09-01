@@ -29,6 +29,9 @@ var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var checkValues = require('../checkValues');
 var testdataHelpers = wcTestTools.helpers.testdata;
 var testpatienter = wcTestTools.testdata.values.patienter;
+// var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
+var parallell = require('./parallellt_util.js');
+var helpers = require('../helpers.js');
 
 // webcertBase.flikarsokSkrivIntyg
 
@@ -44,6 +47,13 @@ function gotoPatient(pnr) {
     //Patientuppgifter visas
     var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
     return expect(patientUppgifter.getText()).to.eventually.contain(pnr);
+}
+
+var forkedBrowser;
+
+function setForkedBrowser(forkedBrowser2) {
+    console.log('Store forked browser for next step');
+    forkedBrowser = forkedBrowser2;
 }
 
 module.exports = function() {
@@ -77,6 +87,43 @@ module.exports = function() {
             });
         });
 
+    });
+
+    this.Given(/^sedan öppnar intyget i två webbläsarinstanserska$/, function(callback) {
+        var intygtyp = helpers.isSMIIntyg(intyg.typ);
+        if (intygtyp) {
+            var whichSMIIntyg = helpers.whichSMIIntyg(intyg.typ);
+
+            // User
+            var userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
+            var inteAccepteratKakor = true;
+
+            // Browser & URL
+            var forkedBrowser = browser.forkNewDriverInstance(true);
+            var intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + whichSMIIntyg.toLowerCase() + '/edit/' + intyg.id;
+
+            parallell.login({
+                userObj: userObj,
+                role: helpers.userObj.Role.DOCTOR,
+                cookies: inteAccepteratKakor
+            }, intygEditUrl, forkedBrowser).then(function() {
+                setForkedBrowser(forkedBrowser);
+                callback();
+            });
+        } else {
+            throw new Error('FK7263 is not implemented.');
+        }
+
+    });
+
+    this.Given(/^ska ett felmeddelande visas$/, function(callback) {
+        parallell.changeFields(forkedBrowser).then(function() {
+            console.log('saveErrorMessage found');
+            return parallell.refreshBroswer(forkedBrowser);
+        }).then(function() {
+            // Known issue - https://github.com/angular/protractor/issues/2203
+            parallell.closeBrowser(forkedBrowser).then(callback);
+        });
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
