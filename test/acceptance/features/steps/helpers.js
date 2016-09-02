@@ -97,7 +97,7 @@ module.exports = {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISU ? this.getSMIAbbrev(this.smiIntyg.LISU) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
     },
-    getSMIAbbrev: function(value) {
+    getAbbrev: function(value) {
         for (var key in this.smiIntyg) {
             if (this.smiIntyg[key] === value) {
                 return key.toString();
@@ -107,7 +107,8 @@ module.exports = {
     },
     smiIntyg: {
         'LISU': 'Läkarintyg för sjukpenning utökat',
-        'LUSE': 'Läkarutlåtande för sjukersättning'
+        'LUSE': 'Läkarutlåtande för sjukersättning',
+        'FK7263': 'Läkarintyg FK 7263'
     },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;

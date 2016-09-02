@@ -80,10 +80,10 @@ module.exports = function() {
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         var field;
-        var whichSMIIntyg = helpers.whichSMIIntyg(intyg.typ);
+        var intygShortcode = helpers.getAbbrev(intyg.typ);
 
-        if (whichSMIIntyg === 'LUSE') {
-            field = helpers.randomPageField(isSMIIntyg, whichSMIIntyg);
+        if (intygShortcode === 'LUSE') {
+            field = helpers.randomPageField(isSMIIntyg, intygShortcode);
             console.log('Fältet som ändras är: ' + field);
 
             if (field === 'aktivitetsbegransning') {
@@ -101,8 +101,8 @@ module.exports = function() {
                 callback(null, 'pending');
             }
 
-        } else if (whichSMIIntyg === 'LISU') {
-            field = helpers.randomPageField(isSMIIntyg, whichSMIIntyg);
+        } else if (intygShortcode === 'LISU') {
+            field = helpers.randomPageField(isSMIIntyg, intygShortcode);
             console.log('Fältet som ändras är: ' + field);
 
             if (field === 'aktivitetsbegransning') {

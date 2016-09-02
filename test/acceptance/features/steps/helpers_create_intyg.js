@@ -27,7 +27,7 @@ var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var rUtil = wcTestTools.restUtil;
-var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
+var intygGenerator = wcTestTools.intygGenerator;
 
 function createIntygWithRest(intygOptions) {
     var userObj = {
@@ -133,6 +133,23 @@ module.exports = {
                 enhetId: user.enhetId,
                 vardgivarId: 'TSTNMT2321000156-1002',
                 intygType: 'luse',
+                intygId: intyg.id,
+                sent: (status === 'Mottaget' || status === 'Makulerat'),
+                revoked: (status === 'Makulerat')
+            });
+
+        } else if (typ === 'Läkarintyg för sjukpenning utökat') {
+
+            return createIntygWithRest({
+                personnr: person.id,
+                patientNamn: 'Test Testsson',
+                issuer: user.hsaId,
+                issued: '2016-04-01',
+                validFrom: '2016-04-01',
+                validTo: '2016-04-11',
+                enhetId: user.enhetId,
+                vardgivarId: 'TSTNMT2321000156-1002',
+                intygType: 'lisu',
                 intygId: intyg.id,
                 sent: (status === 'Mottaget' || status === 'Makulerat'),
                 revoked: (status === 'Makulerat')

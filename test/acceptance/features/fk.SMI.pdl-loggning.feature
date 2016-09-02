@@ -1,8 +1,7 @@
 # language: sv
 
-@pdl @luse
-Egenskap: PDL-loggning för FK7263
-#Saknas: TF för läsning av intyg på annan VE
+@pdl @smi
+Egenskap: PDL-loggning för SMI-intyg
 
 Bakgrund: Jag är inloggad
 	Givet att jag är inloggad som läkare
@@ -10,8 +9,8 @@ Bakgrund: Jag är inloggad
 
 # Första ändring per ändringssession ska loggas
 @skapa @skriva
-Scenario: Skapa intyg
-	När jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg
+Scenariomall: Skapa <intygKod> intyg 
+	När jag går in på att skapa ett <intyg> intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
 	Och jag går tillbaka
 	Och jag går in på utkastet
@@ -19,6 +18,20 @@ Scenario: Skapa intyg
 	Och jag ändrar diagnoskod
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
+
+@öppna @notReady
+Scenariomall: Öppna <intygKod>-intyg
+	När jag går in på ett <intyg> med status "Signerat"
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
+
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
 # @öppna
 # Scenario: Öppna intyg

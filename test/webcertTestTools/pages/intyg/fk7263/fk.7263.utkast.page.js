@@ -169,7 +169,18 @@ var FkUtkast = BaseUtkast._extend({
         this.minUndersokning.sendKeys(protractor.Key.SPACE);
     },
     angeDiagnosKod: function(kod) {
-        return this.diagnosKod.sendKeys(kod);
+
+        var diagnosKodEl = this.diagnosKod;
+
+        function sendEnterToElement(el) {
+            return function() {
+                el.sendKeys(protractor.Key.ENTER);
+            };
+        }
+        return diagnosKodEl.sendKeys(kod).then(function() {
+            return browser.sleep(2000);
+        }).then(sendEnterToElement(diagnosKodEl));
+
     },
     angeFunktionsnedsattning: function(txt) {
         if (!txt) {
@@ -224,9 +235,11 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeDiagnoser: function(diagnos) {
         var promisesArr = [];
-        if (diagnos.diagnoser) {
+
+        if (diagnos.diagnoser && diagnos.diagnoser[0].ICD10) {
             promisesArr.push(this.angeDiagnosKod(diagnos.diagnoser[0].ICD10));
         }
+
         if (diagnos.fortydligande) {
             promisesArr.push(this.diagnos.fortydligande.sendKeys(diagnos.fortydligande));
         }

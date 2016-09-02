@@ -26,14 +26,13 @@ var miCheckValues = require('./checkValues/minaintyg');
 
 module.exports = function() {
 
-    this.Given(/^ska intyget finnas i Mina intyg$/, function(callback) {
+    this.Given(/^ska intyget finnas i Mina intyg$/, function() {
         var intygElement = element(by.id('certificate-' + intyg.id));
-        expect(intygElement.isPresent()).to.eventually.equal(true).then(function(value) {
-                logger.info('OK - Intyget visas i mina intyg = ' + value);
-            }, function(reason) {
-                callback('FEL, Intyget visas inte i mina intyg,' + reason);
-            })
-            .then(callback);
+        return expect(intygElement.isPresent()).to.eventually.equal(true).then(function(value) {
+            logger.info('OK - Intyget visas i mina intyg = ' + value);
+        }, function(reason) {
+            throw ('FEL, Intyget visas inte i mina intyg,' + reason);
+        });
     });
 
     this.Given(/^jag går till Mina intyg för patienten$/, function(callback) {
