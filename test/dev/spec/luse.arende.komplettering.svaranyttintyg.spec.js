@@ -73,8 +73,13 @@ describe('arende on luse intyg', function() {
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
-        it('click svara med nytt intyg', function() {
-            LuseIntygPage.getSvaraMedNyttIntygButton(meddelandeId).click();
+        it('click svara pa komplettering', function() {
+            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+        });
+
+        it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
+            LuseIntygPage.kompletteraMedNyttIntygButton.click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
     });

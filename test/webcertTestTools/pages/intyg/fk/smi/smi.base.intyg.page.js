@@ -109,6 +109,9 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
                 return element(by.id('tillaggsfraga-900' + index));
             }
         };
+        this.kompletteringsAtgardDialog = element(by.id('komplettering-modal-dialog'));
+        this.kompletteraMedNyttIntygButton = element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
+        this.kompletteraMedMeddelandeButton = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
 
     },
 
