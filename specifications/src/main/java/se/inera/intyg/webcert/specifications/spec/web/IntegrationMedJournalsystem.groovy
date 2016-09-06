@@ -378,12 +378,4 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
         result
     }
 
-    boolean forlangningSjukskrivningVisas() {
-        def result
-        Browser.drive {
-            result =  page.kopieraDialogMsgForlangningSjukskrivning?.isDisplayed();
-        }
-        result
-    }
-
 }

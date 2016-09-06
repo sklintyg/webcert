@@ -38,8 +38,6 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
         skickaKnapp(required: false) { $("#sendBtn") }
-        
-        kopieraDialogMsgForlangningSjukskrivning(required:false) { $("#msgForlangningSjukskrivning") }
 
         tillbakaBtn(required: false) { $("#tillbakaButton") }
 
