@@ -616,7 +616,7 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
 
             waitFor {
                 // TODO use better page abstraction
-                result = $("#prevCertTable table tr td span[key=\"certificatetypes\\.$intygsTyp\\.typename\"]").size() == 0
+                result = $("#prevIntygTable table tr td span[key=\"certificatetypes\\.$intygsTyp\\.typename\"]").size() == 0
             }
         }
         return result

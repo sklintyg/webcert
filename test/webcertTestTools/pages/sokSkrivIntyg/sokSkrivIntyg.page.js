@@ -41,7 +41,7 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         this.intygLista = element(by.id('intygLista'));
     },
     get: function() {
-        browser.get('web/dashboard#/create/choose-cert-type/index');
+        browser.get('web/dashboard#/create/choose-intyg-type/index');
     },
     setPersonnummer: function(pn) {
         return this.personnummer.sendKeys(pn);

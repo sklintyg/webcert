@@ -37,7 +37,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 createErrorMessageKey: null,
                 inlineErrorMessageKey: null,
                 currentList: undefined,
-                unsigned: 'certlist-empty' // unsigned, unsigned-mixed,
+                unsigned: 'intyglist-empty' // unsigned, unsigned-mixed,
             };
 
             $scope.filterForm = {
@@ -55,7 +55,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.certificateTypeText = '';
 
             // Format: { id: 'default', label: '' }
-            $scope.certTypes = [];
+            $scope.intygTypes = [];
 
 
             /**
@@ -70,19 +70,19 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     return;
                 }
 
-                // Load cert types user can choose from
+                // Load intyg types user can choose from
                 UtkastProxy.getUtkastTypes(function(types) {
-                    $scope.certTypes = types;
+                    $scope.intygTypes = types;
                     if (PatientModel.intygType) {
                         $scope.intygType = PatientModel.intygType;
                     }
                 });
 
-                // Load certs for person with specified pnr
+                // Load intyg for person with specified pnr
                 IntygProxy.getIntygForPatient($scope.personnummer, function(data) {
                     $scope.viewState.doneLoading = false;
-                    $scope.viewState.certListUnhandled = data;
-                    $scope.updateCertList();
+                    $scope.viewState.intygListUnhandled = data;
+                    $scope.updateIntygList();
                     hasUnsigned($scope.viewState.currentList);
                     $window.doneLoading = true;
                 }, function(errorData, errorCode) {
@@ -103,7 +103,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     return;
                 }
                 if (list.length === 0) {
-                    $scope.viewState.unsigned = 'certlist-empty';
+                    $scope.viewState.unsigned = 'intyglist-empty';
                     return;
                 }
                 var unsigned = true;
@@ -127,16 +127,16 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              */
 
             $scope.$watch('filterForm.intygFilter', function() {
-                $scope.updateCertList();
+                $scope.updateIntygList();
             });
 
             /**
              * Exposed to scope
              */
 
-            $scope.updateCertList = function() {
+            $scope.updateIntygList = function() {
                 $scope.viewState.currentList =
-                    $filter('TidigareIntygFilter')($scope.viewState.certListUnhandled, $scope.filterForm.intygFilter);
+                    $filter('TidigareIntygFilter')($scope.viewState.intygListUnhandled, $scope.filterForm.intygFilter);
             };
 
             $scope.changePatient = function() {
@@ -145,11 +145,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             //Use loaded module metadata to look up detailed description for a intygsType
             $scope.getDetailedDescription = function(intygsType) {
-                var certTypes = $scope.certTypes.filter(function(certType) {
-                    return (certType.id === intygsType);
+                var intygTypes = $scope.intygTypes.filter(function(intygType) {
+                    return (intygType.id === intygsType);
                 });
-                if (certTypes && certTypes.length>0) {
-                    return certTypes[0].detailedDescription;
+                if (intygTypes && intygTypes.length>0) {
+                    return intygTypes[0].detailedDescription;
                 }
             };
 
@@ -175,25 +175,25 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 });
             };
 
-            $scope.openIntyg = function(cert) {
-                if (cert.status === 'DRAFT_INCOMPLETE' || cert.status === 'DRAFT_COMPLETE') {
-                    $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
+            $scope.openIntyg = function(intyg) {
+                if (intyg.status === 'DRAFT_INCOMPLETE' || intyg.status === 'DRAFT_COMPLETE') {
+                    $location.path('/' + intyg.intygType + '/edit/' + intyg.intygId);
                 } else {
-                    $location.path('/intyg/' + cert.intygType + '/' + cert.intygId);
+                    $location.path('/intyg/' + intyg.intygType + '/' + intyg.intygId);
                 }
             };
 
-            $scope.copyIntyg = function(cert) {
+            $scope.copyIntyg = function(intyg) {
                 $scope.viewState.createErrorMessageKey = null;
 
-                // We don't have the required info about issuing unit in the supplied 'cert' object, always set to true.
+                // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
                 CommonIntygService.copy($scope.viewState,
                     IntygCopyRequestModel.build({
-                        intygId: cert.intygId,
-                        intygType: cert.intygType,
+                        intygId: intyg.intygId,
+                        intygType: intyg.intygType,
                         patientPersonnummer: $scope.personnummer,
                         nyttPatientPersonnummer: $stateParams.patientId
                     }),
@@ -201,17 +201,17 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 );
             };
 
-            $scope.fornyaIntyg = function(cert) {
+            $scope.fornyaIntyg = function(intyg) {
                 $scope.viewState.createErrorMessageKey = null;
 
-                // We don't have the required info about issuing unit in the supplied 'cert' object, always set to true.
+                // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
                 CommonIntygService.fornya($scope.viewState,
                     IntygFornyaRequestModel.build({
-                        intygId: cert.intygId,
-                        intygType: cert.intygType,
+                        intygId: intyg.intygId,
+                        intygType: intyg.intygType,
                         patientPersonnummer: $scope.personnummer,
                         nyttPatientPersonnummer: $stateParams.patientId
                     }),

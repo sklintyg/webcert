@@ -16,13 +16,13 @@
             <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
           </div>
 
-          <!-- New cert -->
+          <!-- New intyg -->
           <div class="webcert-col-section qa-table-section">
             <div class="form-group">
               <label for="intygType" class="control-label">Skriv nytt intyg</label>
               <div ng-show="!sekretessmarkering">
                 <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType"
-                        data-ng-options="type.id as type.label for type in certTypes" wc-focus-me="focusFirstInput"></select>
+                        data-ng-options="type.id as type.label for type in intygTypes" wc-focus-me="focusFirstInput"></select>
 
               </div>
             </div>
@@ -81,10 +81,10 @@
            show-content="!viewState.doneLoading">
         <div class="webcert-col-section qa-table-section" id="intygLista">
 
-          <!-- No certs for person -->
+          <!-- No intyg for person -->
           <div id="current-list-noResults-unit"
                ng-show="!viewState.activeErrorMessageKey && viewState.currentList.length < 1" class="alert alert-info">
-            <span message key="info.nocertsfound"></span>
+            <span message key="info.nointygfound"></span>
           </div>
 
           <!-- error message -->
@@ -95,49 +95,49 @@
             <span message key="{{viewState.inlineErrorMessageKey}}"></span>
           </div>
 
-          <!-- Previous certs table -->
-          <div class="row" ng-show="viewState.currentList.length>0" id="prevCertTable">
+          <!-- Previous intyg table -->
+          <div class="row" ng-show="viewState.currentList.length>0" id="prevIntygTable">
             <table class="col-md-12 table table-striped table-qa">
               <tr>
                 <th></th>
                 <th></th>
-                <th wc-table-head label-key="th.label.cert-type" help-key="th.help.cert-type"></th>
+                <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
                 <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
                 <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
                 <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by"></th>
               </tr>
-              <tr ng-repeat="cert in viewState.currentList">
+              <tr ng-repeat="intyg in viewState.currentList">
                 <td>
-                  <button type="button" class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)"
-                          id="showBtn-{{cert.intygId}}">Visa
+                  <button type="button" class="btn btn-info" title="Visa intyget" ng-click="openIntyg(intyg)"
+                          id="showBtn-{{intyg.intygId}}">Visa
                   </button>
                 </td>
-                <td ng-switch on="cert.intygType">
+                <td ng-switch on="intyg.intygType">
                   <button
                       type="button"
                       ng-switch-when="fk7263"
-                      ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
+                      ng-show="!sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
                       class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
-                      intygstyp="{{cert.intygType}}"
+                      intygstyp="{{intyg.intygType}}"
                       title="{{fornyaTitleText}}"
-                      ng-click="fornyaIntyg(cert)" id="fornyaBtn-{{cert.intygId}}">
+                      ng-click="fornyaIntyg(intyg)" id="fornyaBtn-{{intyg.intygId}}">
                     Förnya
                   </button>
                   <button
                       type="button"
                       ng-switch-default
-                      ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
+                      ng-show="!sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
                       class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
-                      intygstyp="{{cert.intygType}}"
+                      intygstyp="{{intyg.intygType}}"
                       title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
-                      ng-click="copyIntyg(cert)" id="copyBtn-{{cert.intygId}}">
+                      ng-click="copyIntyg(intyg)" id="copyBtn-{{intyg.intygId}}">
                     Kopiera
                   </button>
                 </td>
-                <td><span message key="certificatetypes.{{cert.intygType}}.typename"></span></td>
-                <td class="unbreakable"><span message key="cert.status.{{cert.status}}"></span></td>
-                <td class="unbreakable">{{cert.lastUpdatedSigned | date:'shortDate'}}</td>
-                <td class="unbreakable table-qa-last">{{cert.updatedSignedBy}}</td>
+                <td><span message key="intygtypes.{{intyg.intygType}}.typename"></span></td>
+                <td class="unbreakable"><span message key="intyg.status.{{intyg.status}}"></span></td>
+                <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'shortDate'}}</td>
+                <td class="unbreakable table-qa-last">{{intyg.updatedSignedBy}}</td>
               </tr>
             </table>
 

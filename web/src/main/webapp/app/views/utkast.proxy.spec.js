@@ -133,7 +133,7 @@ describe('UtkastProxy', function() {
 
     describe('#getUtkastTypes', function() {
 
-        it('should call onSuccess callback with list of cert types from the server', function() {
+        it('should call onSuccess callback with list of intyg types from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
 

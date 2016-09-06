@@ -9,33 +9,33 @@
     <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"></th>
     <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"></th>
   </tr>
-  <tr ng-repeat="cert in utkastList">
+  <tr ng-repeat="intyg in utkastList">
     <td>
-      <button type="button" class="btn btn-info" title="Visar intyget" ng-click="openIntyg(cert)"
-              id="showBtn-{{cert.intygId}}"> Visa
+      <button type="button" class="btn btn-info" title="Visar intyget" ng-click="openIntyg(intyg)"
+              id="showBtn-{{intyg.intygId}}"> Visa
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST">
       <button type="button"
               class="btn btn-default vidarebefordra-btn"
-              ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
+              ng-class="{'btn-info': !intyg.vidarebefordrad, 'btn-default btn-secondary' : intyg.vidarebefordrad}"
               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
-              ng-click="openMailDialog(cert)">
-        <img ng-if="!cert.vidarebefordrad" src="/img/mail.png">
-        <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
+              ng-click="openMailDialog(intyg)">
+        <img ng-if="!intyg.vidarebefordrad" src="/img/mail.png">
+        <img ng-if="intyg.vidarebefordrad" src="/img/mail_dark.png">
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
-      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="cert.updateState.vidarebefordraInProgress" ng-model="cert.vidarebefordrad"
-             ng-change="onNotifyChange(cert)" />
-      <span ng-if="cert.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
+             ng-change="onNotifyChange(intyg)" />
+      <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
     </td>
     <td class="unbreakable"><span message
-                                  key="certificatetypes.{{cert.intygType}}.typename"></span>
+                                  key="intygtypes.{{intyg.intygType}}.typename"></span>
     </td>
-    <td><span message key="cert.status.{{cert.status}}"></span></td>
-    <td class="unbreakable">{{cert.lastUpdatedSigned | date:'shortDate'}}</td>
-    <td class="unbreakable">{{cert.patientId}}</td>
-    <td class="table-qa-last">{{cert.updatedSignedBy}}</td>
+    <td><span message key="intyg.status.{{intyg.status}}"></span></td>
+    <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'shortDate'}}</td>
+    <td class="unbreakable">{{intyg.patientId}}</td>
+    <td class="table-qa-last">{{intyg.updatedSignedBy}}</td>
   </tr>
 </table>

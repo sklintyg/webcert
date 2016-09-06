@@ -56,7 +56,7 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
                         $scope.widgetState.errorid = 'error.pu.noname';
                         return;
                     }
-                    $location.path('/create/choose-cert-type/index');
+                    $location.path('/create/choose-intyg-type/index');
                 };
 
                 var onNotFound = function() {

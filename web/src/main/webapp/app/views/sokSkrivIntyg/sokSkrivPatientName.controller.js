@@ -42,7 +42,7 @@ angular.module('webcert').controller('webcert.EditPatientNameCtrl',
                 PatientModel.fornamn = $scope.fornamn;
                 PatientModel.mellannamn = null;
                 PatientModel.efternamn = $scope.efternamn;
-                $location.path('/create/choose-cert-type/index');
+                $location.path('/create/choose-intyg-type/index');
             };
 
             $scope.changePatient = function() {

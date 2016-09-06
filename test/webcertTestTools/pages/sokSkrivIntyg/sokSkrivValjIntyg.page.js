@@ -28,7 +28,7 @@ var intygTypeSelector = element(by.id('intygType'));
 module.exports = {
 
     get: function() {
-        browser.get('web/dashboard#/create/choose-cert-type/index');
+        browser.get('web/dashboard#/create/choose-intyg-type/index');
     },
     isAt: function() {
         return intygTypeSelector.isDisplayed();

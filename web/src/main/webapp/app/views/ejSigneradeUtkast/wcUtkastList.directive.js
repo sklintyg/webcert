@@ -31,9 +31,9 @@ angular.module('webcert').directive('wcUtkastList',
                 templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList.directive.html',
                 controller: function($scope) {
 
-                    $scope.openIntyg = function(cert) {
-                        $state.go(cert.intygType + '-edit', {
-                            certificateId: cert.intygId
+                    $scope.openIntyg = function(intyg) {
+                        $state.go(intyg.intygType + '-edit', {
+                            certificateId: intyg.intygId
                         });
                     };
 

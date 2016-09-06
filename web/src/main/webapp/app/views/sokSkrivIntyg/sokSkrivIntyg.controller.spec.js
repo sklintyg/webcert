@@ -81,7 +81,7 @@ describe('ChoosePatientCtrl', function() {
             spyOn($location, 'path').and.callThrough();
         });
 
-        it('should redirect to choose-cert-type without errors on a correct personnummer accepted by the PU-tjanst', function() {
+        it('should redirect to choose-intyg-type without errors on a correct personnummer accepted by the PU-tjanst', function() {
 
             spyOn(PatientProxy, 'getPatient').and.callFake(successResult);
 
@@ -89,12 +89,12 @@ describe('ChoosePatientCtrl', function() {
             $scope.lookupPatient();
 
             expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/create/choose-cert-type/index');
+            expect($location.path).toHaveBeenCalledWith('/create/choose-intyg-type/index');
             expect($scope.widgetState.waiting).toBe(false);
             expect($scope.widgetState.errorid).toBe(undefined);
         });
 
-        it('should redirect to choose-cert-type without errors on a correct samordningsnummer accepted by the PU-tjanst', function() {
+        it('should redirect to choose-intyg-type without errors on a correct samordningsnummer accepted by the PU-tjanst', function() {
 
             spyOn(PatientProxy, 'getPatient').and.callFake(successResult);
 
@@ -102,7 +102,7 @@ describe('ChoosePatientCtrl', function() {
             $scope.lookupPatient();
 
             expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/create/choose-cert-type/index');
+            expect($location.path).toHaveBeenCalledWith('/create/choose-intyg-type/index');
             expect($scope.widgetState.waiting).toBe(false);
             expect($scope.widgetState.errorid).toBe(undefined);
         });

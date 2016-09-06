@@ -21,17 +21,17 @@ angular.module('webcert').filter('TidigareIntygFilter',
     function() {
         'use strict';
 
-        return function(certs, intygToInclude) {
+        return function(intygList, intygToInclude) {
             var result = [];
 
             if (intygToInclude === 'all') {
-                return certs;
+                return intygList;
             }
 
-            angular.forEach(certs, function(cert) {
-                if ((intygToInclude === 'current' && cert.status !== 'CANCELLED') ||
-                    (intygToInclude === 'revoked' && cert.status === 'CANCELLED')) {
-                    result.push(cert);
+            angular.forEach(intygList, function(intyg) {
+                if ((intygToInclude === 'current' && intyg.status !== 'CANCELLED') ||
+                    (intygToInclude === 'revoked' && intyg.status === 'CANCELLED')) {
+                    result.push(intyg);
                 }
             });
             return result;

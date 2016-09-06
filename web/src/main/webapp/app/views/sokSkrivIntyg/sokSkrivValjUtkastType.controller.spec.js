@@ -81,18 +81,18 @@ describe('ChooseCertTypeCtrl', function() {
     });
 
     describe('förnya intyg', function () {
-        var cert;
+        var intyg;
 
         beforeEach(function() {
             $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
-            cert = {
+            intyg = {
                 intygType: 'fk7263',
                 intygId: 'abc123'
             };
         });
 
         it('should förnya intyg', function () {
-            $scope.fornyaIntyg(cert);
+            $scope.fornyaIntyg(intyg);
             expect(IntygFornyaRequestModelSpy.build).toHaveBeenCalledWith({
                 intygType: 'fk7263',
                 intygId: 'abc123',
@@ -110,11 +110,11 @@ describe('ChooseCertTypeCtrl', function() {
 
     describe('openIntyg', function() {
 
-        var cert;
+        var intyg;
 
         beforeEach(function() {
             $controller('webcert.ChooseCertTypeCtrl', { $scope: $scope });
-            cert = {
+            intyg = {
                 source: 'WC',
                 intygType: 'fk7263',
                 intygId: 'abc123'
@@ -122,21 +122,21 @@ describe('ChooseCertTypeCtrl', function() {
         });
 
         it('should set utkast path', function() {
-            cert.status = 'DRAFT_COMPLETE';
-            $scope.openIntyg(cert);
-            expect($location.path()).toBe('/' + cert.intygType + '/edit/' + cert.intygId);
+            intyg.status = 'DRAFT_COMPLETE';
+            $scope.openIntyg(intyg);
+            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId);
         });
 
         it('should set utkast path', function() {
-            cert.status = 'DRAFT_INCOMPLETE';
-            $scope.openIntyg(cert);
-            expect($location.path()).toBe('/' + cert.intygType + '/edit/' + cert.intygId);
+            intyg.status = 'DRAFT_INCOMPLETE';
+            $scope.openIntyg(intyg);
+            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId);
         });
 
         it('should set signed path', function() {
-            cert.status = 'RECEIVED';
-            $scope.openIntyg(cert);
-            expect($location.path()).toBe('/intyg/' + cert.intygType + '/' + cert.intygId);
+            intyg.status = 'RECEIVED';
+            $scope.openIntyg(intyg);
+            expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygId);
         });
     });
 });
