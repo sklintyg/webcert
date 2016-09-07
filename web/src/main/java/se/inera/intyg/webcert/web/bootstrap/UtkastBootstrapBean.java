@@ -19,13 +19,13 @@
 package se.inera.intyg.webcert.web.bootstrap;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,7 +180,7 @@ public class UtkastBootstrapBean {
         fs.setFrageText("Detta är frågan");
         fs.setIntygsReferens(
                 new IntygsReferens(utlatande.getId(), utlatande.getTyp(), utlatande.getGrundData().getPatient().getPersonId(),
-                        utlatande.getGrundData().getPatient().getFullstandigtNamn(), LocalDateTime.now()));
+                        utlatande.getGrundData().getPatient().getFullstandigtNamn(), utlatande.getGrundData().getSigneringsdatum()));
         if (komplettering) {
             fs.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
             Komplettering kompl1 = new Komplettering();
@@ -223,12 +223,12 @@ public class UtkastBootstrapBean {
         utkast.setSenastSparadAv(vardRef);
         utkast.setSkapadAv(vardRef);
 
-        utkast.setSignatur(new Signatur(LocalDateTime.now(), json.getGrundData().getSkapadAv().getPersonId(), json.getId(), "intygData",
+        utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(), json.getId(), "intygData",
                 "intygHash", "signatur"));
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSenastSparadDatum(LocalDateTime.now());
+        utkast.setSenastSparadDatum(json.getGrundData().getSigneringsdatum());
         utkast.setSkickadTillMottagare("FK");
-        utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+        utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
         utkast.setVardgivarId(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         utkast.setVardgivarNamn(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
         utkast.setVersion(1);
