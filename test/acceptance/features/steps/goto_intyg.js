@@ -31,14 +31,16 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         logger.info('Hittade inget intyg, skapar ett nytt..');
         createIntygWithStatus(intygstyp, status).then(function() {
             //Uppdatera sidan och gå in på patienten igen
-            browser.refresh();
-            browser.get('/web/dashboard#/create/choose-patient/index');
+            browser.refresh().then(function() {
+                browser.get('/web/dashboard#/create/choose-patient/index').then(function() {
+                    sokSkrivIntygPage.selectPersonnummer(person.id).then(function() {
+                        getIntygElementRow(intygstyp, status, function(el) {
+                            el.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
+                            cb();
+                        });
+                    });
+                });
 
-            sokSkrivIntygPage.selectPersonnummer(person.id);
-
-            getIntygElementRow(intygstyp, status, function(el) {
-                el.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
-                cb();
             });
         });
     }

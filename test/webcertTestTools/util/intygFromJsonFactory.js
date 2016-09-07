@@ -10,6 +10,7 @@ var templateJsonObjFK7263 = require('webcert-testtools/testdata/intyg.fk7263.jso
 var templateJsonObjLuaefs = require('webcert-testtools/testdata/intyg.luae_fs.minimal.json');
 var templateJsonObjLuaena = require('webcert-testtools/testdata/intyg.luae_na.json');
 var templateJsonObjLuse = require('webcert-testtools/testdata/intyg.luse.json');
+var templateJsonObjLisu = require('webcert-testtools/testdata/intyg.lisu.json');
 
 // These are pushed to webcert using restDataHelper.createWebcertIntyg
 var templateJsonObjWCLuse = require('webcert-testtools/testdata/webcertIntyg.luse.json');
@@ -35,13 +36,11 @@ module.exports = {
             additionalInfo: '',
             deleted: false,
             deletedByCareGiver: false,
-            certificateStates: [
-                {
-                    target: 'HV',
-                    state: 'RECEIVED',
-                    timestamp: '2016-04-28T14:00:00.000'
-                }
-            ],
+            certificateStates: [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }],
             revoked: false
         };
     },
@@ -65,13 +64,39 @@ module.exports = {
             additionalInfo: '',
             deleted: false,
             deletedByCareGiver: false,
-            certificateStates: [
-                {
-                    target: 'HV',
-                    state: 'RECEIVED',
-                    timestamp: '2016-04-28T14:00:00.000'
-                }
-            ],
+            certificateStates: [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }],
+            revoked: false
+        };
+    },
+    defaultLisu: function() {
+
+        templateJsonObjLisu.id = guid();
+
+        return {
+            id: templateJsonObjLisu.id,
+            document: JSON.stringify(templateJsonObjLisu),
+            originalCertificate: '',
+            type: templateJsonObjLisu.typ,
+            signingDoctorName: templateJsonObjLisu.grundData.skapadAv.fullstandigtNamn,
+            careUnitId: templateJsonObjLisu.grundData.skapadAv.vardenhet.enhetsid,
+            careUnitName: templateJsonObjLisu.grundData.skapadAv.vardenhet.enhetsnamn,
+            careGiverId: templateJsonObjLisu.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
+            civicRegistrationNumber: templateJsonObjLisu.grundData.patient.personId,
+            signedDate: templateJsonObjLisu.grundData.signeringsdatum,
+            validFromDate: null,
+            validToDate: null,
+            additionalInfo: '',
+            deleted: false,
+            deletedByCareGiver: false,
+            certificateStates: [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }],
             revoked: false
         };
     },
@@ -95,13 +120,11 @@ module.exports = {
             additionalInfo: '',
             deleted: false,
             deletedByCareGiver: false,
-            certificateStates: [
-                {
-                    target: 'HV',
-                    state: 'RECEIVED',
-                    timestamp: '2016-04-28T14:00:00.000'
-                }
-            ],
+            certificateStates: [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }],
             revoked: false
         };
     },
@@ -122,13 +145,11 @@ module.exports = {
             additionalInfo: '',
             deleted: false,
             deletedByCareGiver: false,
-            certificateStates: [
-                {
-                    target: 'HV',
-                    state: 'RECEIVED',
-                    timestamp: '2016-04-28T14:00:00.000'
-                }
-            ],
+            certificateStates: [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }],
             revoked: false
         };
     },

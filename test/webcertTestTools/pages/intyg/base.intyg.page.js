@@ -51,6 +51,11 @@ var BaseIntyg = JClass._extend({
             button: element(by.id('fornyaBtn')),
             dialogConfirmButton: element(by.id('button1fornya-dialog'))
         };
+        this.komplettera = {
+            dialog: {
+                svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog'))
+            }
+        };
         this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
 
@@ -111,7 +116,7 @@ var BaseIntyg = JClass._extend({
     },
     sendNewArende: function(arendeText, arendeAmne) {
         var self = this;
-        return this.newArendeBtn.click().then(function(){
+        return this.newArendeBtn.click().then(function() {
             return self.arendeText.sendKeys(arendeText).then(function() {
                 return self.arendeValjAmne(arendeAmne).then(function() {
                     return self.arendeSend.click();
@@ -123,7 +128,7 @@ var BaseIntyg = JClass._extend({
         return this.arendeAmne.all(by.css('option[label="' + val + '"]')).click();
     },
     hasState: function(states, state) {
-        for(var a = 0; a < states.length; a++) {
+        for (var a = 0; a < states.length; a++) {
             if (states[a].state === state) {
                 return true;
             }
@@ -132,7 +137,7 @@ var BaseIntyg = JClass._extend({
     },
     getArendeById: function(handled, id) {
         var subgroup = 'unhandled';
-        if(handled){
+        if (handled) {
             subgroup = 'handled';
         }
         return element(by.id('arende-' + subgroup + '-' + id));
