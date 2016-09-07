@@ -93,10 +93,10 @@ module.exports = {
             cb(filteredElements[0]);
         });
     },
-    whichSMIIntyg: function(intygsType) {
-        var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
-        return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISU ? this.getSMIAbbrev(this.smiIntyg.LISU) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
-    },
+    // whichSMIIntyg: function(intygsType) {
+    //     var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
+    //     return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISU ? this.getSMIAbbrev(this.smiIntyg.LISU) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
+    // },
     getAbbrev: function(value) {
         for (var key in this.smiIntyg) {
             if (this.smiIntyg[key] === value) {
@@ -139,13 +139,13 @@ module.exports = {
         }
         return text;
     },
-    randomPageField: function(isSMIIntyg, whichSMIIntyg) {
+    randomPageField: function(isSMIIntyg, intygAbbrev) {
         var index = Math.floor(Math.random() * 3);
         if (isSMIIntyg) {
-            if (whichSMIIntyg === 'LISU') {
-                return this.pageField[whichSMIIntyg][index];
-            } else if (whichSMIIntyg === 'LUSE') {
-                return this.pageField[whichSMIIntyg][index];
+            if (intygAbbrev === 'LISU') {
+                return this.pageField[intygAbbrev][index];
+            } else if (intygAbbrev === 'LUSE') {
+                return this.pageField[intygAbbrev][index];
             }
         } else {
             return this.pageField.FK7263[index];

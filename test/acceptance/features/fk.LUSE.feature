@@ -41,5 +41,5 @@ Scenario: Makulera ett skickat intyg
 @samtidaanvandare
 Scenario: Samtida användare ska generera felmeddelande
 	När jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg
-	Och sedan öppnar intyget i två webbläsarinstanserska
+	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas

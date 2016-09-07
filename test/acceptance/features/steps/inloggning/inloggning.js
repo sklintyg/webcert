@@ -89,10 +89,10 @@ module.exports = function() {
 
     });
 
-    this.Given(/^sedan öppnar intyget i två webbläsarinstanserska$/, function(callback) {
-        var intygtyp = helpers.isSMIIntyg(intyg.typ);
-        if (intygtyp) {
-            var whichSMIIntyg = helpers.whichSMIIntyg(intyg.typ);
+    this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            var intygtyp = helpers.getAbbrev(intyg.typ);
 
             // User
             var userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
@@ -100,7 +100,7 @@ module.exports = function() {
 
             // Browser & URL
             var forkedBrowser = browser.forkNewDriverInstance(true);
-            var intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + whichSMIIntyg.toLowerCase() + '/edit/' + intyg.id;
+            var intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
 
             parallell.login({
                 userObj: userObj,
@@ -111,7 +111,7 @@ module.exports = function() {
                 callback();
             });
         } else {
-            throw new Error('FK7263 is not implemented.');
+            throw new Error(intyg.typ + ' is not implemented.');
         }
 
     });
