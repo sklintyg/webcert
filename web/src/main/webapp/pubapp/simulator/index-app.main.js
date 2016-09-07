@@ -51,18 +51,20 @@ var DEFAULT_QUESTION = {
     rubrik: 'Komplettering',
     skickatTidpunkt: '2016-07-13T17:23:00',
     skickatAv: 'FKASSA',
-    amne: 'KOMPLT',
+    amne: 'ARBTID',
     meddelande: '',
     paminnelseMeddelandeId: '',
     svarPa: {
         meddelandeId: '',
         referensId: ''
     },
-    komplettering: {
+    kompletteringar: [
+      {
         text: 'Detta är kompletteringstexten...',
         frageId: '1',
-        instans: ''
-    },
+        instans: undefined
+      }
+    ],
     meddelandeNr: 1,
     patientPersonId: '',
     sistaDatumForSvar: ''
@@ -85,6 +87,23 @@ angular.module('rhsIndexApp')
                     $scope.raderingsResultat = response.data;
                 });
             }
+        };
+
+        $scope.remove = function(index) {
+            if (index == 0) {
+                return;
+            }
+            $scope.q.kompletteringar.splice(index, 1);
+        };
+
+        $scope.add = function() {
+            var kompl = {
+                text: 'Detta är kompletteringstexten...',
+                frageId: '1',
+                instans: ''
+            };
+
+            $scope.q.kompletteringar.push(kompl);
         };
 
         $scope.loadIntyg = function() {
@@ -162,12 +181,21 @@ angular.module('rhsIndexApp')
                 rubrik = '<urn1:rubrik>' + q.rubrik + '</urn1:rubrik>';
             }
             var meddelande = '<urn1:meddelande>' + q.meddelande + '</urn1:meddelande>';
-            var komplettering = '';
+            var kompletteringsMarkup = '';
             if (q.amne === 'KOMPLT') {
-                komplettering = '<urn1:komplettering> \
-                                <urn1:frage-id>' + q.komplettering.frageId + '</urn1:frage-id> \
-                                <urn1:text>' + q.komplettering.text + '</urn1:text> \
+                for(var a = 0; a < q.kompletteringar.length; a++) {
+                    var kpl = q.kompletteringar[a];
+                    var instansMarkup = '';
+                    if (isDefined(kpl.instans) && kpl.instans > -1) {
+                        instansMarkup = '<urn1:instans>' + kpl.instans + '</urn1:instans>';
+                    }
+                    kompletteringsMarkup += '<urn1:komplettering> \
+                                    <urn1:frage-id>' + kpl.frageId + '</urn1:frage-id> \
+                                    ' + instansMarkup + ' \
+                                    <urn1:text>' + kpl.text + '</urn1:text> \
                                 </urn1:komplettering>';
+                }
+
             }
             var sistaDatumForSvar = '';
             if (!isEmpty(q.sistaDatumForSvar)) {
@@ -207,7 +235,7 @@ angular.module('rhsIndexApp')
                               <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>  \
                             </urn1:part> \
                         </urn1:skickatAv> \
-                        ' + komplettering + ' \
+                        ' + kompletteringsMarkup + ' \
                         ' + sistaDatumForSvar + ' \
                     </urn1:SendMessageToCare> \
                 </soapenv:Body>  \
