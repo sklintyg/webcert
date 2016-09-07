@@ -260,6 +260,9 @@ class PopuleraFk7263 extends ExceptionHandlingFixture {
                 }
             }
 
+            if (rekommendationKontaktAf != null || rekommendationKontaktForetagshalsovard != null || rekommendationOvrigt != null) {
+                AbstractPage.scrollIntoView(page.rekommendationer.kontaktAf.attr("id"));
+            }
             if (rekommendationKontaktAf != null) page.rekommendationer.kontaktAf = rekommendationKontaktAf
             if (rekommendationKontaktForetagshalsovard != null) page.rekommendationer.kontaktForetagshalsovard = rekommendationKontaktForetagshalsovard
             if (rekommendationOvrigt != null) page.rekommendationer.ovrigt = rekommendationOvrigt

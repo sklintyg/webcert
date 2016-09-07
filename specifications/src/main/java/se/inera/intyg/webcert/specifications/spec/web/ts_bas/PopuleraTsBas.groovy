@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.web.ts_bas
 
+import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.ts_bas.EditeraTsBasPage
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
@@ -105,12 +106,12 @@ class PopuleraTsBas extends ExceptionHandlingFixture {
 
             page.identitet.valjTyp(identifieringstyp)
 
-            if (synA != null) page.syn.fragaA = synA
+            if (synA != null) { AbstractPage.scrollIntoView(page.syn.fragaA.attr('id')); page.syn.fragaA = synA }
             if (synB != null) page.syn.fragaB = synB
             if (synC != null) page.syn.fragaC = synC
             if (synD != null) page.syn.fragaD = synD
             if (synE != null) page.syn.fragaE = synE
-            if (synHogerOgaUtanKorrektion != null) page.syn.hogerOgaUtanKorrektion = synHogerOgaUtanKorrektion
+            if (synHogerOgaUtanKorrektion != null) { AbstractPage.scrollIntoView(page.syn.hogerOgaMedKorrektion.attr('id')); page.syn.hogerOgaUtanKorrektion = synHogerOgaUtanKorrektion }
             if (synHogerOgaMedKorrektion != null) page.syn.hogerOgaMedKorrektion = synHogerOgaMedKorrektion
             if (synHogerOgaKontaktlins != null) page.syn.hogerOgaKontaktlins = synHogerOgaKontaktlins
             if (synVansterOgaUtanKorrektion != null) page.syn.vansterOgaUtanKorrektion = synVansterOgaUtanKorrektion
@@ -120,18 +121,30 @@ class PopuleraTsBas extends ExceptionHandlingFixture {
             if (synBinokulartMedKorrektion != null) page.syn.binokulartMedKorrektion = synBinokulartMedKorrektion
             if (glasOverskrider8Dioptrier != null) page.syn.dioptrier = glasOverskrider8Dioptrier
 
-            if (horselA != null) page.horselBalans.fragaA = horselA
+            if (horselA != null || horselB != null) {
+                AbstractPage.scrollIntoView(page.horselBalans.fragaA.attr('id'));
+            }
+            if (horselA != null) { AbstractPage.scrollIntoView(page.horselBalans.fragaA.attr('id')); page.horselBalans.fragaA = horselA }
             if (horselB != null) page.horselBalans.fragaB = horselB
 
+            if (funktionsnedsattningA != null || funktionsnedsattningBeskrivning != null || funktionsnedsattningB != null) {
+                AbstractPage.scrollIntoView(page.funktionsnedsattning.fragaA.attr('id'));
+            }
             if (funktionsnedsattningA != null) page.funktionsnedsattning.fragaA = funktionsnedsattningA
             if (funktionsnedsattningBeskrivning != null) page.funktionsnedsattning.beskrivning = funktionsnedsattningBeskrivning
             if (funktionsnedsattningB != null) page.funktionsnedsattning.fragaB = funktionsnedsattningB
 
+            if (hjartkarlA != null || hjartkarlB != null || hjartkarlC != null || hjartkarlBeskrivning != null) {
+                AbstractPage.scrollIntoView(page.hjartkarl.fragaA.attr('id'));
+            }
             if (hjartkarlA != null) page.hjartkarl.fragaA = hjartkarlA
             if (hjartkarlB != null) page.hjartkarl.fragaB = hjartkarlB
             if (hjartkarlC != null) page.hjartkarl.fragaC = hjartkarlC
             if (hjartkarlBeskrivning != null) page.hjartkarl.beskrivning = hjartkarlBeskrivning
 
+            if (diabetesA != null || diabetesBehandlingKost != null || diabetesBehandlingTabletter != null || diabetesBehandlingInsulin != null) {
+                AbstractPage.scrollIntoView(page.diabetes.fragaA.attr('id'));
+            }
             if (diabetesA != null) page.diabetes.fragaA = diabetesA
             page.diabetes.valjTyp(diabetestyp)
             if (diabetesBehandlingKost != null) page.diabetes.behandlingKost = diabetesBehandlingKost
@@ -140,23 +153,29 @@ class PopuleraTsBas extends ExceptionHandlingFixture {
 
             if (neurologiA != null) page.neurologi.fragaA = neurologiA
 
-            if (medvetandestorningA != null) page.medvetandestorning.fragaA = medvetandestorningA
+            if (medvetandestorningA != null) { AbstractPage.scrollIntoView(page.medvetandestorning.fragaA.attr('id')); page.medvetandestorning.fragaA = medvetandestorningA }
             if (medvetandestorningBeskrivning != null) page.medvetandestorning.beskrivning = medvetandestorningBeskrivning
 
-            if (njurarA != null) page.njurar.fragaA = njurarA
+            if (njurarA != null) { AbstractPage.scrollIntoView(page.njurar.fragaA.attr('id')); page.njurar.fragaA = njurarA }
 
-            if (kognitivtA != null) page.kognitivt.fragaA = kognitivtA
+            if (kognitivtA != null) { AbstractPage.scrollIntoView(page.kognitivt.fragaA.attr('id')); page.kognitivt.fragaA = kognitivtA }
 
-            if (somnvakenhetA != null) page.somnvakenhet.fragaA = somnvakenhetA
+            if (somnvakenhetA != null) { AbstractPage.scrollIntoView(page.somnvakenhet.fragaA.attr('id')); page.somnvakenhet.fragaA = somnvakenhetA }
 
+            if (narkotikalakemedelA != null || narkotikalakemedelB != null || narkotikalakemedelB2 != null || narkotikalakemedelC != null) {
+                AbstractPage.scrollIntoView(page.narkotikaLakemedel.fragaA.attr('id'));
+            }
             if (narkotikalakemedelA != null) page.narkotikaLakemedel.fragaA = narkotikalakemedelA
             if (narkotikalakemedelB != null) page.narkotikaLakemedel.fragaB = narkotikalakemedelB
             if (narkotikalakemedelB2 != null) page.narkotikaLakemedel.fragaB2 = narkotikalakemedelB2
             if (narkotikalakemedelC != null) page.narkotikaLakemedel.fragaC = narkotikalakemedelC
             if (narkotikalakemedelBeskrivning != null) page.narkotikaLakemedel.beskrivning = narkotikalakemedelBeskrivning
 
-            if (psykisktA != null) page.psykiskt.fragaA = psykisktA
+            if (psykisktA != null) { AbstractPage.scrollIntoView(page.psykiskt.fragaA.attr('id')); page.psykiskt.fragaA = psykisktA }
 
+            if (utvecklingsstorningA != null || utvecklingsstorningB) {
+                AbstractPage.scrollIntoView(page.utvecklingsstorning.fragaA.attr('id'));
+            }
             if (utvecklingsstorningA != null) page.utvecklingsstorning.fragaA = utvecklingsstorningA
             if (utvecklingsstorningB != null) page.utvecklingsstorning.fragaB = utvecklingsstorningB
 
@@ -165,7 +184,7 @@ class PopuleraTsBas extends ExceptionHandlingFixture {
             if (sjukhusvardVardinrattning != null) page.sjukhusvard.vardinrattning = sjukhusvardVardinrattning
             if (sjukhusvardAnledning != null) page.sjukhusvard.anledning = sjukhusvardAnledning
 
-            if (medicineringA != null) page.medicinering.fragaA = medicineringA
+            if (medicineringA != null) { AbstractPage.scrollIntoView(page.medicinering.fragaA.attr('id')); page.medicinering.fragaA = medicineringA }
             if (medicineringBeskrivning != null) page.medicinering.beskrivning = medicineringBeskrivning
 
             if (kommentar != null) page.kommentar = kommentar
