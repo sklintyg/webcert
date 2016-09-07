@@ -84,18 +84,19 @@ module.exports = function() {
 
     });
 
-    this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
+    this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         var fragaText = global.intyg.guidcheck;
 
         if (!intyg.messages || intyg.messages.length <= 0) {
-            callback('Inga frågor hittades');
+            throw ('Inga frågor hittades');
         } else {
-            var svaraBtn = fkIntygPage.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara med nytt intyg'));
-            svaraBtn.sendKeys(protractor.Key.SPACE)
+            var svaraBtn = fkIntygPage.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara'));
+            return svaraBtn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
                     global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
-                    callback();
+
+                    return fkIntygPage.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
                 });
         }
     });
