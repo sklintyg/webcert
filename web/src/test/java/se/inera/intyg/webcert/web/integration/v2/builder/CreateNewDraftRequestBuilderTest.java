@@ -24,10 +24,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -103,7 +103,7 @@ public class CreateNewDraftRequestBuilderTest {
     }
 
     @Test
-    public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityCodes() {
+    public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
         when(orgServiceMock.getVardenhet(anyString())).thenReturn(createHsaVardenhet());
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
 
@@ -140,8 +140,8 @@ public class CreateNewDraftRequestBuilderTest {
         befattning.setPaTitleCode(TITLE_CODE);
         befattning.setPaTitleName(TITLE_NAME);
         pit.getPaTitle().add(befattning);
-        pit.getSpecialityCode().add(INVARTES_MEDICIN);
-        pit.getSpecialityCode().add(ALLMAN_MEDICIN);
+        pit.getSpecialityName().add(INVARTES_MEDICIN);
+        pit.getSpecialityName().add(ALLMAN_MEDICIN);
         pitList.add(pit);
         return pitList;
     }
