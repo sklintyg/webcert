@@ -53,7 +53,8 @@ var BaseIntyg = JClass._extend({
         };
         this.komplettera = {
             dialog: {
-                svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog'))
+                svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog')),
+                svaraMedTextKnapp: element(by.id('button2answermessage-dialog'))
             }
         };
         this.copyBtn = element(by.css('.btn.btn-info'));

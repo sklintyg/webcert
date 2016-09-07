@@ -150,16 +150,19 @@ module.exports = function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
-        var svaraPaKomplettering = kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE)
+        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', ' Svara')).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return browser.sleep(2000);
+                return fkIntygPage.komplettera.dialog.svaraMedTextKnapp.sendKeys(protractor.Key.SPACE);
+            })
+            .then(function() {
+                return browser.sleep(2000); // Sleep pga animation
             })
             .then(function() {
                 return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar);
 
             })
             .then(function() {
-                return browser.sleep(1000);
+                return browser.sleep(1000); // Sleep pga animation
             })
             .then(function() {
                 return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
