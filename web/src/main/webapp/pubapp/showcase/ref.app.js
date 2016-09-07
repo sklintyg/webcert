@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global wcMessages, console */
+/* global console */
 
 (function() {
     'use strict';

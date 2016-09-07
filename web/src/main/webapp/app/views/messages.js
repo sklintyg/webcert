@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* jshint maxlen: false, unused: false */
-var wcMessages = {
+/* jshint maxlen: false */
+angular.module('webcert').constant('webcert.messages', {
     'sv': {
         'webcert.header': 'Webcert',
         'webcert.description': 'Välkommen till Webcert.',
@@ -167,4 +167,4 @@ var wcMessages = {
     'en': {
         'webcert.header': 'Webcert Application (en)'
     }
-};
+});

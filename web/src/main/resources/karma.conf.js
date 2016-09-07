@@ -62,7 +62,6 @@ module.exports = function(config) {
             WEBJAR_DIR + 'momentjs/moment.js',
 
             // Load these first
-            SRC_DIR + 'messages.js',
             TEST_DIR + 'app-test.js',
             TEST_DIR + 'utils/*.js',
 

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global wcMessages, console */
+/* global console */
 
 (function() {
     'use strict';
@@ -149,8 +149,8 @@
     });
 
     // Inject language resources
-    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig) {
+    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig', 'webcert.messages',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig, wcMessages) {
 
             // Configure formly to use default hide directive.
             // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
