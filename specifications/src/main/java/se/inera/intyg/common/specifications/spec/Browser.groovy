@@ -22,6 +22,7 @@ package se.inera.intyg.common.specifications.spec
 import geb.driver.CachingDriverFactory
 
 import org.openqa.selenium.Cookie
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import se.inera.intyg.common.specifications.page.AbstractPage
 
@@ -32,6 +33,7 @@ public class Browser {
     static void öppna() {
         if (browser) throw new IllegalStateException("Browser already initialized")
         browser = new geb.Browser()
+        browser.driver.manage().window().setSize(new Dimension(1280, 1024));
     }
 
     public void stäng() {
