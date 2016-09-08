@@ -157,6 +157,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         waitFor {
             doneLoading() && makuleraConfirmationOkButton
         }
+        AbstractPage.scrollIntoView(makuleraConfirmationOkButton.attr('id'));
         makuleraConfirmationOkButton.click()
         waitFor {
             !modalBackdrop.isDisplayed();

@@ -151,7 +151,7 @@ class PopuleraTsBas extends ExceptionHandlingFixture {
             if (diabetesBehandlingTabletter != null) page.diabetes.behandlingTabletter = diabetesBehandlingTabletter
             if (diabetesBehandlingInsulin != null) page.diabetes.behandlingInsulin = diabetesBehandlingInsulin
 
-            if (neurologiA != null) page.neurologi.fragaA = neurologiA
+            if (neurologiA != null) { AbstractPage.scrollIntoView(page.neurologi.fragaA.attr('id')); page.neurologi.fragaA = neurologiA }
 
             if (medvetandestorningA != null) { AbstractPage.scrollIntoView(page.medvetandestorning.fragaA.attr('id')); page.medvetandestorning.fragaA = medvetandestorningA }
             if (medvetandestorningBeskrivning != null) page.medvetandestorning.beskrivning = medvetandestorningBeskrivning
