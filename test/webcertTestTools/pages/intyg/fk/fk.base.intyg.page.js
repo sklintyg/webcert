@@ -42,6 +42,14 @@ var FkBaseIntyg = BaseIntyg._extend({
     //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
     getDynamicLabelText: function(textKey) {
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
+    },
+    getQAElementByText: function(containingText) {
+        var panel = element(by.cssContainingText('.arende-block', containingText));
+        return {
+            panel: panel,
+            text: panel.element(by.css('textarea')),
+            sendButton: panel.element(by.css('.btn-success'))
+        };
     }
 });
 

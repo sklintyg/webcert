@@ -1,5 +1,5 @@
 # language: sv
-@komplettera @luse @waitingForFix @INTYG-2642
+@komplettering @luse @waitingForFix @INTYG-2642
  # kompletteringsfråga saknas på utkast-sida
 Egenskap: Komplettering av LUSE-intyg
 

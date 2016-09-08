@@ -21,6 +21,7 @@
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var fkLusePage = pages.intyg.luse.intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var lisuUtkastPage = pages.intyg.lisu.utkast;
 var helpers = require('./helpers');
@@ -86,11 +87,17 @@ module.exports = function() {
 
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         var fragaText = global.intyg.guidcheck;
+        var page = fkIntygPage;
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            page = fkLusePage;
+        }
+
 
         if (!intyg.messages || intyg.messages.length <= 0) {
             throw ('Inga frågor hittades');
         } else {
-            var svaraBtn = fkIntygPage.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara'));
+            var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara'));
             return svaraBtn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
