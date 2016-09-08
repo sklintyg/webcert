@@ -122,7 +122,7 @@ public class FmbApiController extends AbstractApiController {
         }
     }
 
-    private String checkIcd10ForFmbInfo(String icd10, FmbType... fmbTypes) {
+    private String checkIcd10ForFmbInfo(String icd10) {
         String icd10WithFmbInfo = icd10;
         while (icd10WithFmbInfo.length() >= MIN_ICD10_POSITION) {
             FmbContent fmbContent = getFmbContent(icd10WithFmbInfo, FmbType.SYMPTOM_PROGNOS_BEHANDLING);
