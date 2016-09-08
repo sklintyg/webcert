@@ -111,7 +111,7 @@ var BaseIntyg = JClass._extend({
         return this.fornya.dialogConfirmButton;
     },
     skrivUtFullstandigtIntyg: function() {
-        return element(by.cssContainingText('button', 'Skriv ut')).sendKeys(protractor.Key.SPACE).then(function() {
+        return element(by.id('intyg-header-dropdown-select-pdf-type')).sendKeys(protractor.Key.SPACE).then(function() {
             return element(by.cssContainingText('a', 'Fullständigt intyg')).click();
         });
     },
