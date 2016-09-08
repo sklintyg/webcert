@@ -101,7 +101,7 @@ public class FmbApiController extends AbstractApiController {
     private FmbResponse getFmbResponse(String icd10) {
         final List<FmbForm> forms = new ArrayList<>(FmbFormName.values().length);
 
-        String icd10WithFmb = checkIcd10ForFmbInfo(icd10, FmbType.values());
+        String icd10WithFmb = checkIcd10ForFmbInfo(icd10);
 
         String icd10Description = getDiagnoseDescriptionForIcd10Code(icd10WithFmb);
 
