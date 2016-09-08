@@ -67,8 +67,25 @@ module.exports = function() {
         gotoPatient(personnummer).and.notify(callback);
     });
 
+    this.Given(/^jag går in på en patient med sekretessmarkering$/, function(callback) {
+        gotoPatient(testpatienter[3]).and.notify(callback);
+    });
+
     this.Given(/^jag går in på en patient$/, function(callback) {
         gotoPatient(testdataHelpers.shuffle(testpatienter)[0]).and.notify(callback);
+    });
+
+    this.Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text, callback) {
+        var alertWarnings = element.all(by.css('.alert-warning'));
+
+        alertWarnings.each(function(element) {
+            element.getText().then(function(warning) {
+                if (warning.indexOf(text) !== -1) {
+                    console.log('Warning containing text: "' + text + '" found.');
+                    expect(element.getText()).to.eventually.contain(text).and.notify(callback);
+                }
+            });
+        });
     });
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
