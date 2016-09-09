@@ -28,7 +28,8 @@ var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 // var webcertBase = pages.webcertBase;
 var checkValues = require('../checkValues');
 var testdataHelpers = wcTestTools.helpers.testdata;
-var testpatienter = wcTestTools.testdata.values.patienter;
+var testdata = wcTestTools.testdata;
+var testpatienter = testdata.values.patienter;
 // var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
 var parallell = require('./parallellt_util.js');
 var helpers = require('../helpers.js');
@@ -58,21 +59,17 @@ function setForkedBrowser(forkedBrowser2) {
 
 module.exports = function() {
 
-    // this.Then(/^vill jag vara inlogger.infoad$/, function(callback) {
-    //     expect(webcertBase.header.getText()).to.eventually.contain('logger.infoa ut').and.notify(callback);
-    //     // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('logger.infoa ut').and.notify(callback);
-    // });
-
-    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer, callback) {
-        gotoPatient(personnummer).and.notify(callback);
+    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) {
+        return gotoPatient(personnummer);
     });
 
-    this.Given(/^jag går in på en patient med sekretessmarkering$/, function(callback) {
-        gotoPatient(testpatienter[3]).and.notify(callback);
+    this.Given(/^jag går in på en patient med sekretessmarkering$/, function() {
+        var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
+        return gotoPatient(patient.nummer);
     });
 
-    this.Given(/^jag går in på en patient$/, function(callback) {
-        gotoPatient(testdataHelpers.shuffle(testpatienter)[0]).and.notify(callback);
+    this.Given(/^jag går in på en patient$/, function() {
+        return gotoPatient(testdataHelpers.shuffle(testpatienter)[0]);
     });
 
     this.Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text, callback) {
