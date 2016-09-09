@@ -6,6 +6,9 @@
     "icd10Code": {
       "type": "string"
     },
+    "icd10Description": {
+      "type": "string"
+    },
     "forms": {
       "type": "array",
       "minItems": 0,
