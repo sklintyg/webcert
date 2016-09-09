@@ -128,7 +128,7 @@ module.exports = function(grunt) {
         // Ange taggar som grunt.option istället for argument till task. Flexiblare när det gäller att
         // kombinera OCH och ELLER operatorer.
         // https://github.com/cucumber/cucumber/wiki/Tags
-        var tagsArray = ['~@notReady', '~@waitingForFix', '~@lisu'];
+        var tagsArray = ['~@notReady', '~@waitingForFix'];
         if (grunt.option('tags')) {
             tagsArray = grunt.option('tags').split(',');
             tagsArray.forEach(function(tag, index) {
