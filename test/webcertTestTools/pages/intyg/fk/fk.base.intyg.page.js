@@ -44,7 +44,7 @@ var FkBaseIntyg = BaseIntyg._extend({
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
     },
     getQAElementByText: function(containingText) {
-        var panel = element(by.cssContainingText('.arende-block', containingText));
+        var panel = element(by.cssContainingText('.arende-panel', containingText));
         return {
             panel: panel,
             text: panel.element(by.css('textarea')),

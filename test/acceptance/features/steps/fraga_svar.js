@@ -97,16 +97,17 @@ module.exports = function() {
         if (!intyg.messages || intyg.messages.length <= 0) {
             throw ('Inga frågor hittades');
         } else {
-            var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara'));
+            var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', 'Svara'));
             return svaraBtn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
                     global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
 
-                    return fkIntygPage.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
+                    return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
                 });
         }
     });
+
 
     this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ, callback) {
         var fragaText;
@@ -271,7 +272,6 @@ module.exports = function() {
             console.log(body);
             var path = '/send-message-to-care/v1.0?wsdl';
             url = process.env.INTYGTJANST_URL + path;
-            // var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
             url = url.replace('https', 'http');
 
             soap.createClient(url, function(err, client) {

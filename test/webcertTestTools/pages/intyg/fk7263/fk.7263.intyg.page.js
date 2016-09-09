@@ -143,7 +143,14 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
         this.forwardBtn = element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info'));
         this.intygStatus = element(by.id('intyg-vy-laddad'));
+        this.komplettera = {
+            dialog: {
+                svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog')),
+                svaraMedTextKnapp: element(by.id('button2answermessage-dialog'))
+            }
+        };
     },
+
     get: function get(intygId) {
         get._super.call(this, intygId);
     },
