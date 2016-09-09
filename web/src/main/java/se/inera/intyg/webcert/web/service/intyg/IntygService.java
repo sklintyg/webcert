@@ -19,15 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -87,4 +86,9 @@ public interface IntygService {
      */
     IntygServiceResult revokeIntyg(String intygId, String intygTyp, String revokeMessage);
 
+    /**
+     * Handle a signed completion, i.e., send the certificate to its recipient and close all pending completion QA /
+     * Arende as handled.
+     */
+    void handleSignedCompletion(Utkast utkast, String recipient);
 }

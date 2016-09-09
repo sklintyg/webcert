@@ -25,13 +25,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +37,6 @@ import java.util.stream.Stream;
 import javax.xml.soap.*;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -918,6 +915,51 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         verify(fragasvarRepositoryMock, times(2)).save(fragaSvarCaptor.capture());
         assertEquals(Status.CLOSED, fragaSvarCaptor.getAllValues().get(0).getStatus());
         assertEquals(Status.CLOSED, fragaSvarCaptor.getAllValues().get(1).getStatus());
+    }
+
+    @Test
+    public void testCloseCompletionsAsHandled() {
+        final String intygId = "intygId";
+        FragaSvar fragaSvar1 = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar1.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        fragaSvar1.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        FragaSvar fragaSvar2 = buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar2.setAmne(Amne.KONTAKT);
+        fragaSvar2.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        FragaSvar fragaSvar3 = buildFragaSvar(3L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar3.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        fragaSvar3.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        FragaSvar fragaSvar4 = buildFragaSvar(4L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar4.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        fragaSvar4.setStatus(Status.CLOSED); // already closed
+        fragaSvar4.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId)).thenReturn(Arrays.asList(fragaSvar1, fragaSvar2, fragaSvar3, fragaSvar4));
+        ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepositoryMock.save(fsCapture.capture())).thenAnswer(invocation -> (FragaSvar) invocation.getArguments()[0]);
+
+        service.closeCompletionsAsHandled(intygId);
+
+        verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId(intygId);
+        verify(fragasvarRepositoryMock, times(2)).save(any(FragaSvar.class));
+        assertEquals(fragaSvar1.getInternReferens(), fsCapture.getAllValues().get(0).getInternReferens());
+        assertEquals(Status.CLOSED, fsCapture.getAllValues().get(0).getStatus());
+        assertEquals(fragaSvar3.getInternReferens(), fsCapture.getAllValues().get(1).getInternReferens());
+        assertEquals(Status.CLOSED, fsCapture.getAllValues().get(1).getStatus());
+        verify(notificationServiceMock, times(2)).sendNotificationForQuestionHandled(any(FragaSvar.class));
+    }
+
+    @Test
+    public void testCloseCompletionsAsHandledNoMatches() {
+        final String intygId = "intygId";
+
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId)).thenReturn(new ArrayList<>());
+
+        service.closeCompletionsAsHandled(intygId);
+
+        verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId(intygId);
+        verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
+        verifyZeroInteractions(notificationServiceMock);
     }
 
     private WebCertUser createUser() {

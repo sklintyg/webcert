@@ -59,6 +59,11 @@ public interface ArendeService {
     ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp);
 
     /**
+     * Close all Kompletteringsbegäran for the given certificate.
+     */
+    void closeCompletionsAsHandled(String intygId, String intygTyp);
+
+    /**
      * Close all messages related to a certificate.
      *
      * @param intygsId the certificates unique identifier

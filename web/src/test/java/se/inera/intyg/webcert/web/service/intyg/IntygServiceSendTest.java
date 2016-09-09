@@ -99,7 +99,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
-        verify(arendeService).closeArendeAsHandled(completionMeddelandeId, completionUtlatande.getTyp());
     }
 
     @Test

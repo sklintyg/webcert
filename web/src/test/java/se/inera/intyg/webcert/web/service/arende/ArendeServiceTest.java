@@ -445,7 +445,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void answerUpdatesQuestionTest() throws CertificateSenderException {
         final String svarPaMeddelandeId = "svarPaMeddelandeId";
-        LocalDateTime now = LocalDateTime.now();
         Arende fraga = buildArende(svarPaMeddelandeId, null);
         fraga.setAmne(ArendeAmne.OVRIGT);
         fraga.setMeddelandeId(svarPaMeddelandeId);
@@ -981,6 +980,59 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(0).getStatus());
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(1).getStatus());
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
+    }
+
+    @Test
+    public void testCloseCompletionsAsHandled() {
+        final String intygId = "intygId";
+        Arende arende1 = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
+        arende1.setAmne(ArendeAmne.KOMPLT);
+        arende1.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        Arende arende2 = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
+        arende2.setAmne(ArendeAmne.KONTKT);
+        arende2.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        Arende arende3 = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
+        arende3.setAmne(ArendeAmne.KOMPLT);
+        arende3.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        Arende arende4 = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
+        arende4.setAmne(ArendeAmne.KOMPLT);
+        arende4.setStatus(Status.CLOSED); // already closed
+        arende4.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
+
+        when(repo.findByIntygsId(intygId)).thenReturn(Arrays.asList(arende1, arende2, arende3, arende4));
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+
+        service.closeCompletionsAsHandled(intygId, "luse");
+
+        verify(repo).findByIntygsId(intygId);
+        verify(repo, times(2)).save(arendeCaptor.capture());
+        assertEquals(arende1.getMeddelandeId(), arendeCaptor.getAllValues().get(0).getMeddelandeId());
+        assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(0).getStatus());
+        assertEquals(arende3.getMeddelandeId(), arendeCaptor.getAllValues().get(1).getMeddelandeId());
+        assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(1).getStatus());
+        verify(notificationService, times(2)).sendNotificationForQuestionHandled(any(Arende.class));
+    }
+
+    @Test
+    public void testCloseCompletionsAsHandledNoMatches() {
+        final String intygId = "intygId";
+
+        when(repo.findByIntygsId(intygId)).thenReturn(new ArrayList<>());
+
+        service.closeCompletionsAsHandled(intygId, "luse");
+
+        verify(repo).findByIntygsId(intygId);
+        verify(repo, never()).save(any(Arende.class));
+        verifyZeroInteractions(notificationService);
+    }
+
+    @Test
+    public void closeCompletionsAsHandledFk7263Test() {
+        final String intygId = "intygId";
+        service.closeCompletionsAsHandled(intygId, "fk7263");
+        verifyZeroInteractions(repo);
+        verifyZeroInteractions(notificationService);
+        verify(fragaSvarService).closeCompletionsAsHandled(intygId);
     }
 
     private Arende buildArende(String meddelandeId, String enhetId) {

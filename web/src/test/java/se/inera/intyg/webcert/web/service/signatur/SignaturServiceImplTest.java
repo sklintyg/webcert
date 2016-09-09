@@ -23,18 +23,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import javax.persistence.OptimisticLockException;
 
-import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,11 +48,13 @@ import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.*;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -220,6 +224,41 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
 
         verify(intygService).storeIntyg(completedUtkast);
+        verify(intygService, never()).handleSignedCompletion(eq(completedUtkast), anyString());
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
+        // Assert pdl log
+        verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
+
+        assertNotNull(signatureTicket);
+
+        assertNotNull(completedUtkast.getSignatur());
+        assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
+
+        // Assert ticket status has changed from BEARBETAR to SIGNERAD
+        status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
+    }
+
+    @Test
+    public void clientSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
+        completedUtkast.setRelationKod(RelationKod.KOMPLT);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
+
+        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+        when(moduleRegistry.getModuleEntryPoint(INTYG_TYPE)).thenReturn(new Fk7263EntryPoint());
+
+        // Do the call
+        SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
+
+        verify(intygService).storeIntyg(completedUtkast);
+        verify(moduleRegistry).getModuleEntryPoint(INTYG_TYPE);
+        verify(intygService).handleSignedCompletion(completedUtkast, "FK");
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
@@ -251,6 +290,41 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.clientGrpSignature(ticket.getId(), signature, user);
 
         verify(intygService).storeIntyg(completedUtkast);
+        verify(intygService, never()).handleSignedCompletion(eq(completedUtkast), anyString());
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
+        // Assert pdl log
+        verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
+
+        assertNotNull(signatureTicket);
+
+        assertNotNull(completedUtkast.getSignatur());
+        assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
+
+        // Assert ticket status has changed from BEARBETAR to SIGNERAD
+        status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
+    }
+
+    @Test
+    public void clientGrpSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
+        completedUtkast.setRelationKod(RelationKod.KOMPLT);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
+
+        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+        when(moduleRegistry.getModuleEntryPoint(INTYG_TYPE)).thenReturn(new Fk7263EntryPoint());
+
+        // Do the call
+        SignaturTicket signatureTicket = intygSignatureService.clientGrpSignature(ticket.getId(), signature, user);
+
+        verify(intygService).storeIntyg(completedUtkast);
+        verify(moduleRegistry).getModuleEntryPoint(INTYG_TYPE);
+        verify(intygService).handleSignedCompletion(completedUtkast, "FK");
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
@@ -275,6 +349,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
 
         verify(intygService).storeIntyg(completedUtkast);
+        verify(intygService, never()).handleSignedCompletion(eq(completedUtkast), anyString());
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class));
@@ -284,6 +359,29 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
     }
+
+    @Test
+    public void serverSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
+        completedUtkast.setRelationKod(RelationKod.KOMPLT);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+        when(moduleRegistry.getModuleEntryPoint(INTYG_TYPE)).thenReturn(new Fk7263EntryPoint());
+        // Do the call
+        SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
+
+        verify(intygService).storeIntyg(completedUtkast);
+        verify(moduleRegistry).getModuleEntryPoint(INTYG_TYPE);
+        verify(intygService).handleSignedCompletion(completedUtkast, "FK");
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
+        // Assert pdl log
+        verify(logService).logSignIntyg(any(LogRequest.class));
+
+        assertNotNull(signatureTicket);
+
+        assertNotNull(completedUtkast.getSignatur());
+        assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedDraft() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);

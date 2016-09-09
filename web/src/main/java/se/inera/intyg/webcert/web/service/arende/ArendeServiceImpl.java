@@ -347,6 +347,22 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
+    @Transactional
+    public void closeCompletionsAsHandled(String intygId, String intygTyp) {
+        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygTyp)) {
+            fragaSvarService.closeCompletionsAsHandled(intygId);
+        } else {
+            List<Arende> completionArenden = arendeRepository.findByIntygsId(intygId)
+                    .stream().filter(a -> ArendeAmne.KOMPLT == a.getAmne() && a.getSvarPaId() == null).collect(Collectors.toList());
+            for (Arende completion : completionArenden) {
+                if (Status.CLOSED != completion.getStatus()) {
+                    closeArendeAsHandled(completion);
+                }
+            }
+        }
+    }
+
+    @Override
     public void closeAllNonClosed(String intygsId) {
 
         List<Arende> list = arendeRepository.findByIntygsId(intygsId);

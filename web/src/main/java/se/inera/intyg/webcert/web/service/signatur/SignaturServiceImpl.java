@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.security.common.model.*;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -226,6 +227,8 @@ public class SignaturServiceImpl implements SignaturService {
         // request context and thus we need to supply the user instance manually.
         logService.logSignIntyg(logRequest, logService.getLogUser(user));
 
+        handleCompletion(utkast);
+
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
 
@@ -280,6 +283,8 @@ public class SignaturServiceImpl implements SignaturService {
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logSignIntyg(logRequest);
+
+        handleCompletion(utkast);
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -353,4 +358,19 @@ public class SignaturServiceImpl implements SignaturService {
         }
     }
 
+    /**
+     * Check if signed certificate is a completion, in that case, send to recipient and close pending completion QA /
+     * Arende as handled.
+     */
+    private void handleCompletion(Utkast utkast) {
+        if (RelationKod.KOMPLT != utkast.getRelationKod()) {
+            return;
+        }
+
+        try {
+            intygService.handleSignedCompletion(utkast, moduleRegistry.getModuleEntryPoint(utkast.getIntygsTyp()).getDefaultRecipient());
+        } catch (ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not send signed completion", e);
+        }
+    }
 }

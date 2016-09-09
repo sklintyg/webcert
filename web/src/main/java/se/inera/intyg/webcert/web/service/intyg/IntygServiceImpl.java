@@ -271,9 +271,6 @@ public class IntygServiceImpl implements IntygService {
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getUser());
 
-        // Check if Utlatande is a completion, in that case, close pending QA / Arende as handled.
-        handleCompletion(intyg);
-
         monitoringService.logIntygSent(intygsId, recipient);
 
         // send PDL log event
@@ -284,19 +281,6 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithSendDateAndRecipient(intygsId, recipient);
 
         return sendIntygToCertificateSender(sendConfig, intyg);
-    }
-
-    private void handleCompletion(Utlatande intyg) {
-        Relation relation = intyg.getGrundData().getRelation();
-        if (relation == null) {
-            return;
-        }
-        if (relation.getRelationKod() == null || !relation.getRelationKod().equals(RelationKod.KOMPLT)) {
-            return;
-        }
-
-        LOG.info("Set komplettering as handled for {}", intyg.getId());
-        arendeService.closeArendeAsHandled(relation.getMeddelandeId(), intyg.getTyp());
     }
 
     /*
@@ -324,6 +308,18 @@ public class IntygServiceImpl implements IntygService {
         } catch (CertificateSenderException | ModuleException | IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e.getMessage());
         }
+    }
+
+    @Override
+    public void handleSignedCompletion(Utkast utkast, String recipient) {
+        if (RelationKod.KOMPLT != utkast.getRelationKod()) {
+            return;
+        }
+
+        LOG.info("Send komplettering '{}' directly to recipient", utkast.getIntygsId());
+        sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), recipient, false);
+        LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
+        arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
     }
 
     public void setLogicalAddress(String logicalAddress) {

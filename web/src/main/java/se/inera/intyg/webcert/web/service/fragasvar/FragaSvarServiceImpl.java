@@ -394,6 +394,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return closeQuestionAsHandled(lookupFragaSvar(frageSvarId));
     }
 
+    @Override
+    public void closeCompletionsAsHandled(String intygId) {
+        List<FragaSvar> completionFragaSvar = fragaSvarRepository.findByIntygsReferensIntygsId(intygId).stream()
+                .filter(fs -> Amne.KOMPLETTERING_AV_LAKARINTYG == fs.getAmne()).collect(Collectors.toList());
+        for (FragaSvar completion : completionFragaSvar) {
+            if (Status.CLOSED != completion.getStatus()) {
+                closeQuestionAsHandled(completion);
+            }
+        }
+    }
+
     /**
      * Looks upp all questions related to a specific certificate and
      * sets a question's status to CLOSED if not already closed.
