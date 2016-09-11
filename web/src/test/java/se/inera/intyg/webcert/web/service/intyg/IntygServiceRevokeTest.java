@@ -27,39 +27,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
-import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
-import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,14 +53,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private static final String INTYG_TYPE = "fk7263";
 
     private static final String INTYG_ID = "123";
-    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
-
-    @Mock
-    private FragaSvarRepository fragaSvarRepository;
-    @Mock
-    private FragaSvarService fragaSvarService;
-    @Mock
-    private UtkastIntygDecorator utkastIntygDecorator;
 
     private Utkast signedUtkast;
     private Utkast revokedUtkast;
@@ -93,8 +68,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
         when(webCertUserService.getUser()).thenReturn(user);
-
-        setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
     @Override
@@ -104,70 +77,18 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     }
 
     @Test
-    public void testRevokeIntygWithNoOpenQuestions() throws Exception {
+    public void testRevokeIntyg() throws Exception {
 
-        ResultOfCall result = new ResultOfCall();
-        result.setResultCode(ResultCodeEnum.OK);
-
-        RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
-        response.setResult(result);
-
-        signedUtkast.setIntygsId(INTYG_ID);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
-                response);
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
-        when(fragaSvarRepository.findByIntygsReferensIntygsId(INTYG_ID)).thenReturn(new ArrayList<FragaSvar>());
-        when(fragaSvarService.closeAllNonClosedQuestions(INTYG_ID)).thenReturn(new FragaSvar[0]);
 
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
 
         // verify that services were called
-        verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
+        verify(arendeService).closeAllNonClosed(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
-        verify(intygRepository).save(any(Utkast.class));
-        verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));
-        verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
-
-        assertEquals(IntygServiceResult.OK, res);
-    }
-
-    @Test
-    public void testRevokeIntygWithOpenQuestions() throws Exception {
-
-        ResultOfCall result = new ResultOfCall();
-        result.setResultCode(ResultCodeEnum.OK);
-
-        RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
-        response.setResult(result);
-
-        FragaSvar fragaSvar1 = buildQuestion(12345L, "<text>", "FK", Status.PENDING_INTERNAL_ACTION, LocalDateTime.now());
-        FragaSvar fragaSvar2 = buildQuestion(12345L, "<text>", "WC", Status.PENDING_EXTERNAL_ACTION, LocalDateTime.now());
-        FragaSvar fragaSvar3 = buildQuestion(12345L, "<text>", "FK", Status.PENDING_INTERNAL_ACTION, LocalDateTime.now());
-
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
-                response);
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
-        when(fragaSvarRepository.findByIntygsReferensIntygsId(INTYG_ID)).thenReturn(new ArrayList<FragaSvar>());
-        when(fragaSvarService.closeAllNonClosedQuestions(INTYG_ID)).thenReturn(new FragaSvar[] { fragaSvar1, fragaSvar2, fragaSvar3 });
-
-        // Do the call
-        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
-
-        // verify that notification is called
-        verify(notificationService).sendNotificationForIntygRevoked(INTYG_ID);
-
-        // verify that questions is closed
-        verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
-
-        // verify that one message is sent for each question
-        verify(notificationService, times(1)).sendNotificationForAnswerHandled(fragaSvar2);
-        verify(notificationService, times(2)).sendNotificationForQuestionHandled(any(FragaSvar.class));
-
-        // Verify that revoke date was added to Utkast
         verify(intygRepository).save(any(Utkast.class));
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));
         verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
@@ -183,7 +104,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         try {
             intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
         } catch (Exception e) {
-            verifyZeroInteractions(revokeService);
+            verifyZeroInteractions(certificateSenderService);
             verify(intygRepository, times(0)).save(any(Utkast.class));
             throw e;
         }
@@ -207,29 +128,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         intyg.setSenastSparadAv(vardperson);
 
         return intyg;
-    }
-
-    private FragaSvar buildQuestion(Long id, String frageText, String frageStallare, Status status, LocalDateTime fragaSkickadDatum) {
-
-        IntygsReferens intygsReferens = new IntygsReferens();
-        intygsReferens.setIntygsId(INTYG_ID);
-        intygsReferens.setIntygsTyp("fk7263");
-        intygsReferens.setPatientId(PATIENT_ID);
-
-        FragaSvar f = new FragaSvar();
-        f.setFrageStallare(frageStallare);
-        f.setStatus(status);
-        f.setAmne(Amne.OVRIGT);
-        f.setExternReferens("<fk-extern-referens>");
-        f.setInternReferens(id);
-        f.setFrageSkickadDatum(fragaSkickadDatum);
-        f.setFrageText(frageText);
-
-        f.setIntygsReferens(intygsReferens);
-        f.setKompletteringar(new HashSet<Komplettering>());
-        f.setVardperson(new Vardperson());
-        f.getVardperson().setEnhetsId("<enhets-id>");
-        return f;
     }
 
     private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {

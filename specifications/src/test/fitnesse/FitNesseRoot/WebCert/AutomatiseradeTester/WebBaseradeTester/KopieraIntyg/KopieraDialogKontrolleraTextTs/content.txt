@@ -19,8 +19,7 @@ Detta test säkerstalla att texten är som i jira webcert-1447
 | skript | !-SokSkrivIntyg-! |
 | kontrollera att inte| kopiera knapp har text |=~/sjukskrivning/|
 
-!4 Testa att text förlängning av sjukskrivning inte visas.
+!4 Testa att kopiera dialogen visas.
 
 | skript | !-IntegrationMedJournalsystem-! |
 | säkerställ att | kopiera dialogen visas |
-| säkerställ att inte | forlangning sjukskrivning visas |

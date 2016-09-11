@@ -59,7 +59,8 @@ describe('Djupintegration on luse intyg', function() {
             efternamn:'Nytt efternamn',
             postadress:'Ny postadress',
             postnummer:'Nytt postnummer',
-            postort:'Ny postort'
+            postort:'Ny postort',
+            enhet:'TSTNMT2321000156-1039'
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
     });

@@ -21,7 +21,8 @@
 'use strict';
 
 module.exports = {
-    logInAsUserRole: function(userObj, roleName, skipCookieConsent) {
+    logInAsUserRole: function(userObj, roleName, skipCookieConsent, secondBrowser) {
+        logger.info((secondBrowser) ? 'Login in second browser >>' : '');
         if (skipCookieConsent) {
             logger.info('Lämnar inte samtycke för kakor');
         }
@@ -31,17 +32,32 @@ module.exports = {
         global.user = JSON.parse(JSON.stringify(userObj));
         global.user.roleName = roleName;
 
-        browser.ignoreSynchronization = true;
-        pages.welcome.get();
-        browser.sleep(2000);
-        var login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
+        var login;
+        if (!secondBrowser) {
 
-        browser.ignoreSynchronization = false;
-        browser.sleep(3000);
-        // webcertBasePage.header.getText()
+            browser.ignoreSynchronization = true;
+            pages.welcome.get();
+            browser.sleep(2000);
+            login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
+
+            browser.ignoreSynchronization = false;
+            browser.sleep(3000);
+
+        } else {
+            secondBrowser.ignoreSynchronization = true;
+            secondBrowser.get('welcome.jsp');
+            secondBrowser.sleep(2000);
+            login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
+
+            secondBrowser.ignoreSynchronization = false;
+            secondBrowser.sleep(3000);
+        }
+
         return login.then(function() {
-            return expect(element(by.id('wcHeader')).getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
+            logger.info((secondBrowser) ? 'Login second browser successful' : '');
+            var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
+            return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
         });
-    }
 
+    }
 };

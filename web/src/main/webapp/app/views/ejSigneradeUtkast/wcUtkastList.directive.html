@@ -1,0 +1,41 @@
+<table class="col-md-12 table table-striped table-qa">
+  <tr>
+    <th></th>
+    <th wc-authority="VIDAREBEFORDRA_UTKAST"></th>
+    <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" wc-authority="VIDAREBEFORDRA_UTKAST" class="center"></th>
+    <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type"></th>
+    <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status"></th>
+    <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date"></th>
+    <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"></th>
+    <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"></th>
+  </tr>
+  <tr ng-repeat="cert in utkastList">
+    <td>
+      <button type="button" class="btn btn-info" title="Visar intyget" ng-click="openIntyg(cert)"
+              id="showBtn-{{cert.intygId}}"> Visa
+      </button>
+    </td>
+    <td wc-authority="VIDAREBEFORDRA_UTKAST">
+      <button type="button"
+              class="btn btn-default vidarebefordra-btn"
+              ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
+              title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
+              ng-click="openMailDialog(cert)">
+        <img ng-if="!cert.vidarebefordrad" src="/img/mail.png">
+        <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
+      </button>
+    </td>
+    <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
+      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="cert.updateState.vidarebefordraInProgress" ng-model="cert.vidarebefordrad"
+             ng-change="onNotifyChange(cert)" />
+      <span ng-if="cert.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+    </td>
+    <td class="unbreakable"><span message
+                                  key="certificatetypes.{{cert.intygType}}.typename"></span>
+    </td>
+    <td><span message key="cert.status.{{cert.status}}"></span></td>
+    <td class="unbreakable">{{cert.lastUpdatedSigned | date:'shortDate'}}</td>
+    <td class="unbreakable">{{cert.patientId}}</td>
+    <td class="table-qa-last">{{cert.updatedSignedBy}}</td>
+  </tr>
+</table>

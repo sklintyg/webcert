@@ -60,6 +60,6 @@ angular.module('showcase').controller('showcase.UtkastCtrl',
                                 text:'Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med mykoplasma pneumoni. \n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller kol kan symtomen vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen. Om det är långa texter kan läggs det till en vertikal scrollbar.Själva rutan finns i 3 olika maxstorlekar för att inte hamna över ev andra fmbrutor som ligger nedanför.'
                             }
                 ]
-            }
+            };
         }]);
 

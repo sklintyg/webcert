@@ -23,13 +23,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.OptimisticLockException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +98,7 @@ public class SignaturServiceImpl implements SignaturService {
         if ((ticket != null) && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
-            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, 0, null, null, new LocalDateTime());
+            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, 0, null, null, LocalDateTime.now());
         }
     }
 
@@ -332,7 +332,7 @@ public class SignaturServiceImpl implements SignaturService {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
             SignaturTicket statusTicket = new SignaturTicket(id, SignaturTicket.Status.BEARBETAR, intygId, version, signeringstid, hash,
-                    new LocalDateTime());
+                    LocalDateTime.now());
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;
         } catch (IllegalStateException e) {

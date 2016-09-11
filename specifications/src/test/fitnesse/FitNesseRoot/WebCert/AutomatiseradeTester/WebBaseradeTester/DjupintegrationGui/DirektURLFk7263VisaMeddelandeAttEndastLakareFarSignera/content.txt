@@ -17,7 +17,7 @@ Testet kontroller att meddelandet om att endast läkare får signera utkast visa
 !3 Visa utkastet via integrationslänken
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} |
+| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | enhet | IFV1239877878-1045 |
 | säkerställ att | signeringKraverLakareMeddelandeVisas |
 
 !3 Ta bort utkastet

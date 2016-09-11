@@ -6,13 +6,7 @@
   -->
 
   <!-- Text innan val av elektroniskt formulär -->
-  <text id="FRM_1.RBK">Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av
-    arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange
-    uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att
-    ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt
-    program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger
-    till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är
-    ett underlag för beslut.
+  <text id="FRM_1.RBK">Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är ett underlag för beslut.
   </text>
   <!-- Text efter val av elektroniskt formulär -->
   <text id="FRM_2.RBK"/>

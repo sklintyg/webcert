@@ -19,15 +19,13 @@
 
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 public class QueryIntygParameter {
 
     private Integer startFrom;
 
     private Integer pageSize;
-
-    private String enhetsId;
 
     private String savedBy;
 
@@ -53,14 +51,6 @@ public class QueryIntygParameter {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
-    }
-
-    public String getEnhetsId() {
-        return enhetsId;
-    }
-
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
     }
 
     public String getSavedBy() {

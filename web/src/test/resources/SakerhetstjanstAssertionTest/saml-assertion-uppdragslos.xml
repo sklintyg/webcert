@@ -80,7 +80,7 @@
       <saml:Attribute FriendlyName="authnMethod" Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
         <saml:AttributeValue>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</saml:AttributeValue>
       </saml:Attribute>
-      <saml:Attribute FriendlyName="employeeHsaId" Name="urn:sambi:names:attribute:employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+      <saml:Attribute FriendlyName="employeeHsaId" Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
         <saml:AttributeValue>TST5565594230-106J</saml:AttributeValue>
       </saml:Attribute>
 

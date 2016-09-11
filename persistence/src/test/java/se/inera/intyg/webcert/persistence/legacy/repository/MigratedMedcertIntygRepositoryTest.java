@@ -23,7 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,8 @@ public class MigratedMedcertIntygRepositoryTest {
         intyg1.setMigreradFran("landtinget");
         intyg1.setPatientNamn("Test Testsson");
         intyg1.setPatientPersonnummer(new Personnummer("19121212-1212"));
-        intyg1.setSkapad(new LocalDateTime("2013-03-01T11:11:11"));
-        intyg1.setSkickad(new LocalDateTime("2013-03-01T12:34:56"));
+        intyg1.setSkapad(LocalDateTime.parse("2013-03-01T11:11:11"));
+        intyg1.setSkickad(LocalDateTime.parse("2013-03-01T12:34:56"));
         intyg1.setUrsprung("APPLICATION");
         intyg1.setIntygsData("VGhpcyBpcyBhIGxlZ2FjeSBjZXJ0aWZpY2F0ZQ==".getBytes());
 
@@ -66,7 +67,7 @@ public class MigratedMedcertIntygRepositoryTest {
         assertNotNull(intyg2);
         assertEquals("intyg1", intyg2.getIntygsId());
         assertEquals("Test Testsson", intyg2.getPatientNamn());
-        assertEquals(new LocalDateTime("2013-03-01T12:34:56"), intyg2.getSkickad());
+        assertEquals(LocalDateTime.parse("2013-03-01T12:34:56"), intyg2.getSkickad());
         assertTrue(intyg2.getIntygsData() != null);
     }
 }

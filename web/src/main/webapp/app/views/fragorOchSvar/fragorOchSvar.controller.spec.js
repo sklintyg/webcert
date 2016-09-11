@@ -26,8 +26,6 @@ describe('UnhandledQACtrlSpec', function() {
     var $location;
     var $httpBackend;
     var $timeout;
-    var controller;
-    var fragaSvarCommonService;
     var ArendeProxy;
     var ArendeVidarebefordraHelper;
 
@@ -161,9 +159,6 @@ describe('UnhandledQACtrlSpec', function() {
             $provide.value('common.dialogService', dialogService);
             $provide.value('webcert.ManageCertificate', {});
 
-            // terms state
-            //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
-
             var $window = {};
             $window.location = {};
             $window.document = window.document; // document is now needed for ngCookies
@@ -173,17 +168,14 @@ describe('UnhandledQACtrlSpec', function() {
         }]);
 
         inject(['$rootScope', '$location', '$timeout', '$httpBackend', '$controller', '$cookies',
-            'common.fragaSvarCommonService',
-            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookies_,
-                _fragaSvarCommonService_) {
+            function($rootScope, _$location_, _$timeout_, _$httpBackend_, _$controller_, _$cookies_) {
                 $scope = $rootScope.$new();
                 $location = _$location_;
                 $httpBackend = _$httpBackend_;
                 $timeout = _$timeout_;
                 $controller = _$controller_;
                 $cookies = _$cookies_;
-                fragaSvarCommonService = _fragaSvarCommonService_;
-                controller = $controller('webcert.UnhandledQACtrl', { $scope: $scope });
+                $controller('webcert.UnhandledQACtrl', { $scope: $scope });
             }]);
     });
 

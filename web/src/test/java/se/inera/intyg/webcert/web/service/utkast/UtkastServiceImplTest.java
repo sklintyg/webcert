@@ -227,7 +227,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
-        when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
+        when(mockModuleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
@@ -264,7 +264,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
-        when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
+        when(mockModuleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 

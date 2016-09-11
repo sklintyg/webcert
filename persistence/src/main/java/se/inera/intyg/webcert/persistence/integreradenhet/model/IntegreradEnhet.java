@@ -19,10 +19,11 @@
 
 package se.inera.intyg.webcert.persistence.integreradenhet.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
 
 /**
  * Entity for a Vardenhet that uses to integrate with Webcert using journaling systems.
@@ -47,11 +48,11 @@ public class IntegreradEnhet {
     private String vardgivarNamn;
 
     @Column(name = "SKAPAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skapadDatum;
 
     @Column(name = "SENASTE_KONTROLL_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime senasteKontrollDatum;
 
     @Column(name = "SCHEMA_VERSION_1")

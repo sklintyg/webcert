@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.web.integration;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -56,7 +56,7 @@ public class GetPrivatePractitionerTermsResponderImplTest {
         GetPrivatePractitionerTermsType request = new GetPrivatePractitionerTermsType();
         GetPrivatePractitionerTermsResponseType response = testee.getPrivatePractitionerTerms("", request);
         assertEquals(AVTAL_TEXT, response.getAvtal().getAvtalText());
-        assertEquals(AVTAL_DATE, response.getAvtal().getAvtalVersionDatum().toString());
+        assertEquals(LocalDateTime.parse(AVTAL_DATE), response.getAvtal().getAvtalVersionDatum());
         assertEquals(1, response.getAvtal().getAvtalVersion());
     }
 

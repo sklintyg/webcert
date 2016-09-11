@@ -23,8 +23,6 @@
 'use strict';
 
 var restUtil = require('./../util/rest.util.js');
-var intygTemplates = require('./../testdata/intygTemplates.js');
-var intygGenerator = require('./../util/intygGenerator.util.js');
 var arendeFromJsonFactory = require('./../util/arendeFromJsonFactory.js');
 
 function createArende(createJson) {
@@ -35,13 +33,6 @@ function createArende(createJson) {
 module.exports = {
 
     // Intyg services
-    createIntygFromTemplate: function(intygTemplateName, intygId) {
-        restUtil.login();
-        var template = intygTemplates[intygTemplateName];
-        template.intygId = intygId;
-        var intyg = intygGenerator.buildIntyg(template);
-        return restUtil.createIntyg(intyg);
-    },
     deleteAllIntyg: function() {
         restUtil.login();
         return restUtil.deleteAllIntyg();
@@ -85,8 +76,20 @@ module.exports = {
 
     // Ärenden
     createArende: createArende,
-    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering) {
-    	var arende = arendeFromJsonFactory.get({intygType:intygType, intygId:intygId, meddelandeId:meddelandeId, meddelande:'Hur är det med arbetstiden?', amne:amne, status:status, kompletteringar:komplettering});
+    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering, svarPa) {
+    	var arende = arendeFromJsonFactory.get({
+    	    intygType:intygType,
+            intygId:intygId,
+            meddelandeId:meddelandeId,
+            meddelande:'Hur är det med arbetstiden?',
+            amne:amne,
+            status:status,
+            kompletteringar:komplettering
+    	});
+
+        if(svarPa){
+            arende.svarPa = svarPa;
+        }
         
     	console.log('arende to be created: '+JSON.stringify(arende));
     	createArende(arende).then(function(response) {

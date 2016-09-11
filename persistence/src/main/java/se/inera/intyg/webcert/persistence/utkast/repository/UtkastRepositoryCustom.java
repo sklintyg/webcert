@@ -31,7 +31,16 @@ import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 @Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
+
     /**
+     * Should only be used for testability!
+     */
+    @Query("SELECT DISTINCT(u.enhetsId), u.enhetsNamn FROM Utkast u WHERE u.skickadTillMottagareDatum != null")
+    List<Object[]> findAllUnitsWithSentCertificate();
+
+    /**
+     * Should only be used for testability!
+     *
      * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the
      * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list. The result is NOT ordered.
      *

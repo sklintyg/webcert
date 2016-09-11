@@ -19,16 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.signatur;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 @Component
 public class SignaturTicketTracker {
@@ -53,7 +51,7 @@ public class SignaturTicketTracker {
     }
 
     private void prune() {
-        LocalDateTime cutoff = new LocalDateTime().minusSeconds(TICKET_TIMEOUT);
+        LocalDateTime cutoff = LocalDateTime.now().minusSeconds(TICKET_TIMEOUT);
         Iterator<Map.Entry<String, SignaturTicket>> iterator = ticketMap.entrySet().iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getValue().getTimestamp().isBefore(cutoff)) {

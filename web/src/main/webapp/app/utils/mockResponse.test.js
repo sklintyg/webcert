@@ -33,21 +33,5 @@ angular.module('webcertTest').value('mockResponse', {
         'signeringsDatum': '2015-01-27T16:01:10.000',
         'patientId': {
             'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}
-    },
-    utkastDefaultFilterFormData: {
-        notified: 'default',
-        complete: 'default',
-        lastFilterQuery: {
-            enhetsId: 'enhet1',
-                startFrom: 0,
-                pageSize: 10,
-                filter: {
-                notified: undefined, // 3-state, undefined, true, false
-                    complete: undefined, // 3-state, undefined, true, false
-                    savedFrom: undefined,
-                    savedTo: undefined,
-                    savedBy: undefined
-            }
-        }
     }
 });

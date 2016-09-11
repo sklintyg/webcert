@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.JAXBException;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.Test;
 
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;

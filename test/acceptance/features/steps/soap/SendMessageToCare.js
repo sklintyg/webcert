@@ -74,7 +74,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
             kompletteringar.push(
                 '<komplettering>' +
                 '<frage-id>' + k + '</frage-id>' +
-                '<text>Kompletterning #' + k + '</text>' +
+                '<text>Komplettering #' + k + '</text>' +
                 '</komplettering>'
             );
         }

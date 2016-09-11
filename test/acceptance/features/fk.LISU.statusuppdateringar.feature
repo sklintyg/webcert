@@ -75,22 +75,13 @@ Scenario: Statusuppdateringar vid fråga till FK
     Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
-# @komplettering @notReady
-# Scenario: Statusuppdateringar vid komplettering med nytt intyg
-    # När jag fyller i alla nödvändiga fält för intyget
-    # Och jag signerar intyget
-    # Och jag skickar intyget till Försäkringskassan
+    Och jag markerar svaret från Försäkringskassan som INTE hanterat
+    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "2"
+    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-    # Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget # Gammal
-    # Och Försäkringskassan skickar ett "komplettering_av_lakarintyg" meddelande på intyget # Ny
-    # Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
+@ANDRAT
+Scenario: Statusuppdateringar vid ändring av utkast
+    Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
-    # När jag går in på intygsutkastet via djupintegrationslänk
-    # Och jag väljer att svara med ett nytt intyg
-    # Så ska jag se kompletteringsfrågan på utkast-sidan
-
-    # När jag signerar intyget
-    # Och jag skickar intyget till Försäkringskassan
-    # Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
-    # Och ska intygets status vara "Intyget är signerat"
-    #Och ska 1 statusuppdatering "HANFRA" skickas för det ursprungliga intyget
+    När jag ändrar i slumpat fält
+    Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"

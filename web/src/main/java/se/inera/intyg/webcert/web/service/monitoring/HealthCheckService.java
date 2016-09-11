@@ -65,4 +65,8 @@ public interface HealthCheckService {
      */
     HealthStatus checkNbrOfUsers();
 
+    /**
+     * Check if the connection to Privatlakarportalen is up.
+     */
+   HealthStatus checkPrivatlakarportal();
 }

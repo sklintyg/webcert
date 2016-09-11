@@ -30,31 +30,40 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
-import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
-import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
+import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
+import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
+import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
 @Path("/fmb")
 @Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
 public class FmbApiController extends AbstractApiController {
+
+    private static final int MIN_ICD10_POSITION = 3;
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbApiController.class);
 
@@ -64,13 +73,16 @@ public class FmbApiController extends AbstractApiController {
     @Autowired
     private FmbRepository fmbRepository;
 
+    @Autowired
+    private DiagnosService diagnosService;
+
     @GET
     @Path("/{icd10}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get FMB data for ICD10 codes", httpMethod = "GET", notes = "Fetch the admin user details", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(code = OK, message = "Given FMB data for icd10 code found", response = FmbResponse.class),
-            @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code the data")
+            @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code")
     })
     public Response getFmbForIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
         if (icd10 == null || icd10.isEmpty()) {
@@ -82,16 +94,45 @@ public class FmbApiController extends AbstractApiController {
 
     /**
      * Create response structure, mapping fmb specific names to external generic naming to be used for many intygstypes.
+     *
      * @param icd10
      * @return
      */
     private FmbResponse getFmbResponse(String icd10) {
         final List<FmbForm> forms = new ArrayList<>(FmbFormName.values().length);
-        forms.add(getFmbForm(icd10, FmbFormName.DIAGNOS, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbType.GENERELL_INFO));
-        forms.add(getFmbForm(icd10, FmbFormName.FUNKTIONSNEDSATTNING, FmbType.FUNKTIONSNEDSATTNING));
-        forms.add(getFmbForm(icd10, FmbFormName.AKTIVITETSBEGRANSNING, FmbType.AKTIVITETSBEGRANSNING));
-        forms.add(getFmbForm(icd10, FmbFormName.ARBETSFORMAGA, FmbType.BESLUTSUNDERLAG_TEXTUELLT));
-        return new FmbResponse(icd10, Lists.newArrayList(Iterables.filter(forms, Predicates.notNull())));
+
+        String icd10WithFmb = checkIcd10ForFmbInfo(icd10);
+
+        String icd10Description = getDiagnoseDescriptionForIcd10Code(icd10WithFmb);
+
+        forms.add(getFmbForm(icd10WithFmb, FmbFormName.DIAGNOS, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbType.GENERELL_INFO));
+        forms.add(getFmbForm(icd10WithFmb, FmbFormName.FUNKTIONSNEDSATTNING, FmbType.FUNKTIONSNEDSATTNING));
+        forms.add(getFmbForm(icd10WithFmb, FmbFormName.AKTIVITETSBEGRANSNING, FmbType.AKTIVITETSBEGRANSNING));
+        forms.add(getFmbForm(icd10WithFmb, FmbFormName.ARBETSFORMAGA, FmbType.BESLUTSUNDERLAG_TEXTUELLT));
+        return new FmbResponse(icd10WithFmb, icd10Description, Lists.newArrayList(Iterables.filter(forms, Predicates.notNull())));
+    }
+
+    private String getDiagnoseDescriptionForIcd10Code(String icd10WithFmb) {
+        DiagnosResponse response = diagnosService.getDiagnosisByCode(icd10WithFmb, Diagnoskodverk.ICD_10_SE);
+        if (!response.getResultat().equals(DiagnosResponseType.OK)) {
+            LOG.info("Failed to get diagnose description for {} with result {}", icd10WithFmb, response.getResultat().name());
+            return null;
+        } else {
+            return response.getDiagnoser().get(0).getBeskrivning();
+        }
+    }
+
+    private String checkIcd10ForFmbInfo(String icd10) {
+        String icd10WithFmbInfo = icd10;
+        while (icd10WithFmbInfo.length() >= MIN_ICD10_POSITION) {
+            FmbContent fmbContent = getFmbContent(icd10WithFmbInfo, FmbType.SYMPTOM_PROGNOS_BEHANDLING);
+            if (fmbContent != null) {
+                return icd10WithFmbInfo;
+            }
+            // Make the icd10-code one position shorter, and thus more general.
+            icd10WithFmbInfo = StringUtils.chop(icd10WithFmbInfo);
+        }
+        return icd10;
     }
 
     private FmbForm getFmbForm(String icd10, FmbFormName name, FmbType... fmbTypes) {

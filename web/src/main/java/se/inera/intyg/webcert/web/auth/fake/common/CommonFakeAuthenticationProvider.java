@@ -136,7 +136,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         for (Vardgivare vg : intygUser.getVardgivare()) {
             for (Vardenhet ve : vg.getVardenheter()) {
                 if (ve.getId().equals(enhetId)) {
-                    intygUser.setValdVardenhet(ve); // TODO Måste troligen borra oss ner på mottagningsnivå också!
+                    intygUser.setValdVardenhet(ve);
                     return;
                 } else if (ve.getMottagningar() != null) {
                     for (Mottagning m : ve.getMottagningar()) {

@@ -24,6 +24,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +33,6 @@ import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultMessage;
 import org.apache.camel.test.spring.*;
-import org.joda.time.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -59,7 +60,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
-@MockEndpointsAndSkip("bean:notificationAggregator||bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:notificationAggregator|direct:signatWireTap|bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
@@ -81,6 +82,9 @@ public class RouteTest {
 
     @EndpointInject(uri = "mock:bean:notificationAggregator")
     private MockEndpoint notificationAggregator;
+
+    @EndpointInject(uri = "mock:direct:signatWireTap")
+    private MockEndpoint signatWireTap;
 
     @EndpointInject(uri = "mock:bean:notificationWSClient")
     private MockEndpoint notificationWSClient;
@@ -109,6 +113,37 @@ public class RouteTest {
     }
 
     @Test
+    public void testWiretappingOfSignedMessages() throws ModuleException, InterruptedException {
+        notificationAggregator.whenAnyExchangeReceived(exchange -> {
+            Message msg = new DefaultMessage();
+            exchange.setOut(msg);
+        });
+
+        // Given
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV2.expectedMessageCount(0);
+        notificationAggregator.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(1);
+
+        // When
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SIGNAT.value());
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
+
+        // Then
+        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV2);
+        assertIsSatisfied(notificationAggregator);
+        assertIsSatisfied(permanentErrorHandlerEndpoint);
+        assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
+    }
+
+    @Test
     public void testRoutesDirectlyToNotificationQueueForFK7263Andrat() throws ModuleException, InterruptedException {
         // Given
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
@@ -117,11 +152,12 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
-        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"fk7263");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
+        headers.put(NotificationRouteHeaders.INTYGS_TYP, "fk7263");
+        headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
@@ -130,6 +166,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -148,11 +185,12 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(1);
 
         // When
         Map<String, Object> headers = new HashMap<>();
-        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
+        headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
 
         // Then
@@ -160,6 +198,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -170,11 +209,12 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
-        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SKAPAT.value());
+        headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SKAPAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_2, "luae_fs"), headers);
 
         // Then
@@ -182,6 +222,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -191,11 +232,12 @@ public class RouteTest {
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
-        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"luae_fs");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.SKICKA.value());
+        headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SKICKA.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
@@ -203,6 +245,7 @@ public class RouteTest {
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -212,11 +255,12 @@ public class RouteTest {
         notificationWSClientV2.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
+        signatWireTap.expectedMessageCount(0);
 
         // When
         Map<String, Object> headers = new HashMap<>();
-        headers.put(NotificationRouteHeaders.INTYGS_TYP ,"fk7263");
-        headers.put(NotificationRouteHeaders.HANDELSE , HandelsekodEnum.ANDRAT.value());
+        headers.put(NotificationRouteHeaders.INTYGS_TYP, "fk7263");
+        headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
@@ -224,6 +268,7 @@ public class RouteTest {
         assertIsSatisfied(notificationWSClientV2);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
+        assertIsSatisfied(signatWireTap);
     }
 
     @Test
@@ -302,8 +347,6 @@ public class RouteTest {
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
-
-
 
     @Test
     public void testRuntimeExceptionNotificationVersion2() throws Exception {
@@ -441,13 +484,15 @@ public class RouteTest {
 
     private String createNotificationMessage(SchemaVersion version, String intygsTyp) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
+        sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp
+                + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
         if (version != null) {
             sb.append("\"version\":\"");
             sb.append(version.name());
             sb.append("\",");
         }
-        sb.append("\"utkast\":{\"id\":\"" + currentId + "\",\"typ\":\"" + intygsTyp + "\" },\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
+        sb.append("\"utkast\":{\"id\":\"" + currentId + "\",\"typ\":\"" + intygsTyp
+                + "\" },\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
         return sb.toString();
     }
 
@@ -462,7 +507,7 @@ public class RouteTest {
         // DatePeriodType and PartialDateType must be allowed
         intyg.getSvar().add(InternalConverterUtil.aSvar("")
                 .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, new Partial(DateTimeFieldType.year(), 1999))).build());
+                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999))).build());
         return intyg;
     }
 

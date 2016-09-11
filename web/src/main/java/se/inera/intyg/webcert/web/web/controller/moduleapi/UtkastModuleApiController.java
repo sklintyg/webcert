@@ -39,6 +39,7 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
@@ -49,7 +50,6 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftValidationStatus;
 
 /**
  * Controller for module interaction with drafts.
@@ -183,10 +183,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     private SaveDraftResponse buildSaveDraftResponse(long version, DraftValidation draftValidation) {
 
         if (draftValidation.isDraftValid()) {
-            return new SaveDraftResponse(version, DraftValidationStatus.COMPLETE);
+            return new SaveDraftResponse(version, UtkastStatus.DRAFT_COMPLETE);
         }
 
-        SaveDraftResponse responseEntity = new SaveDraftResponse(version, DraftValidationStatus.INCOMPLETE);
+        SaveDraftResponse responseEntity = new SaveDraftResponse(version, UtkastStatus.DRAFT_INCOMPLETE);
 
         List<DraftValidationMessage> validationMessages = draftValidation.getMessages();
 

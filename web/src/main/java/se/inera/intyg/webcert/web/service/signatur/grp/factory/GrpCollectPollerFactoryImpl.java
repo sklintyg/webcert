@@ -29,8 +29,7 @@ import se.inera.intyg.webcert.web.service.signatur.grp.GrpCollectPoller;
 /**
  * Created by eriklupander on 2015-08-25.
  *
- * TODO. I'm not fond of this approach of getting hold of prototype-scoped
- * spring beans in a singleton context. Look into method injection as well.
+ * Uses applicationContext in singleton bean to produce instances of the prototype-scoped GrpCollectPoller.
  */
 @Component
 public class GrpCollectPollerFactoryImpl implements GrpCollectPollerFactory, ApplicationContextAware {

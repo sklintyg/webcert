@@ -30,7 +30,10 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på utkastet$/, function() {
-        return browser.get('/web/dashboard#/fk7263/edit/' + intyg.id);
+        var intygShortcode = helpers.getAbbrev(intyg.typ).toLowerCase();
+        var link = '/web/dashboard#/' + intygShortcode + '/edit/' + intyg.id;
+        logger.info('Går till ' + link);
+        return browser.get(link);
     });
 
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {
@@ -47,7 +50,8 @@ module.exports = function() {
                 url += 'efternamn=testsson&';
                 url += 'postadress=Langgatan%2012&';
                 url += 'postnummer=990%2090&';
-                url += 'postort=Simrishamn';
+                url += 'postort=Simrishamn&';
+                url += 'enhet=' + global.user.enhetId;
 
             } else {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;

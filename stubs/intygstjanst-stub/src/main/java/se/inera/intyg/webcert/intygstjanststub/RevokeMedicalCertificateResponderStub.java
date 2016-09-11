@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.intygstjanststub;
 
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
 

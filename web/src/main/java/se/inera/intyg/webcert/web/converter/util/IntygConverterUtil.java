@@ -19,12 +19,12 @@
 
 package se.inera.intyg.webcert.web.converter.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
@@ -78,8 +78,7 @@ public final class IntygConverterUtil {
     }
 
     public static String buildVardReferensId(String intygId, LocalDateTime ts) {
-        String time = ts.toString(ISODateTimeFormat.basicDateTime());
-        return StringUtils.join(new Object[] { "SEND", intygId, time }, "-");
+        return StringUtils.join(new Object[] { "SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")) }, "-");
     }
 
     /**

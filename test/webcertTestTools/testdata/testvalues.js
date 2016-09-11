@@ -25,7 +25,22 @@ module.exports = {
     patienter: [
         '19000119-9801',
         '19000717-9815',
-        //'19520128-2232', -  utan bindestreck i PU
         '19000128-9818'
-    ]
+        // sekretessmarkerad (skyddad identitet)
+    ],
+    patienterMedSamordningsnummer: [{
+        nummer: '200810632398',
+        namn: '',
+        efternamn: ''
+    }, {
+        nummer: '196403602391',
+        namn: '',
+        efternamn: ''
+    }],
+
+    patienterMedSekretessmarkering: [{
+        nummer: '19420119-9124',
+        namn: '',
+        efternamn: ''
+    }]
 };

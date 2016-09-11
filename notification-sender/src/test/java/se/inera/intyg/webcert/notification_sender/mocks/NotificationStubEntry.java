@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.notification_sender.mocks;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 /**
  * Created by eriklupander on 2016-07-06.

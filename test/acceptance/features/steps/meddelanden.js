@@ -24,45 +24,7 @@ var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
 var helpers = require('./helpers');
 
-// var helpers = require('./helpers');
-
 module.exports = function() {
-    // this.Given(/^Försäkringskassan skickar ett Kompletterings\-meddelande på intyget$/, function(callback) {
-    //     global.intyg.guidcheck = testdataHelper.generateTestGuid();
-    //     var amneCode = helpers.getSubjectCode(helpers.sendMessageToCareSubjectCode.KOMPLT);
-    //     var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär komplettering' + global.intyg.guidcheck, amneCode);
-    //     console.log(body);
-    //     var path = '/send-message-to-care/v1.0?wsdl';
-    //     var url = process.env.INTYGTJANST_URL + path;
-    //     // var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
-    //     url = url.replace('https', 'http');
-
-    //     soap.createClient(url, function(err, client) {
-    //         logger.info(url);
-    //         if (err) {
-    //             callback(err);
-    //         } else {
-    //             client.SendMessageToCare(body, function(err, result, resBody) {
-    //                 console.log(resBody);
-    //                 if (err) {
-    //                     callback(err);
-    //                 } else {
-    //                     var resultcode = result.result.resultCode;
-    //                     logger.info('ResultCode: ' + resultcode);
-    //                     console.log(result);
-    //                     if (resultcode !== 'OK') {
-    //                         logger.info(result);
-    //                         callback('ResultCode: ' + resultcode + '\n' + resBody);
-    //                     } else {
-    //                         logger.info('ResultCode: ' + resultcode);
-    //                         console.log(JSON.stringify(result));
-    //                         callback();
-    //                     }
-
-    //                 }
-    //             });
-    //         }
-    //     });
     // });
 
     this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
@@ -72,7 +34,6 @@ module.exports = function() {
         console.log(body);
         var path = '/send-message-to-care/v1.0?wsdl';
         var url = process.env.INTYGTJANST_URL + path;
-        // var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
         url = url.replace('https', 'http');
 
         soap.createClient(url, function(err, client) {

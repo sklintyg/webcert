@@ -348,10 +348,10 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
+    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist', 'jshint']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma:ci']);
     grunt.registerTask('test:watch', ['karma:watch']);
     // frontend only dev ===============================================================================================
-    grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
+    grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'generateModuleDeps', 'watch' ]);
 };

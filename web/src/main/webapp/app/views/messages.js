@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* jshint maxlen: false, unused: false */
-var wcMessages = {
+/* jshint maxlen: false */
+angular.module('webcert').constant('webcert.messages', {
     'sv': {
         'webcert.header': 'Webcert',
         'webcert.description': 'Välkommen till Webcert.',
@@ -66,7 +66,7 @@ var wcMessages = {
         'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
         'label.qacheckhanterad.tillbaka' : 'Tillbaka',
 
-        //certificate types (TODO: maybe use the module entrypoint map label/description properties instead as we do with detailedModuleDescription?)
+        //certificate types
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
         'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
@@ -122,9 +122,49 @@ var wcMessages = {
         'error.pu.samordningsnummernotfound': 'Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt.<br>Observera att det inte går att ange reservnummer. Webcert hanterar enbart person- och samordningsnummer.',
         'error.pu.nopersonnummer': 'Det personnummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret. Försök igen senare.',
         'error.pu.noname': 'Namn för det nummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret. Försök igen senare.',
-        'error.pu.unknownerror': 'Kunde inte kontakta PU-tjänsten.'
+        'error.pu.unknownerror': 'Kunde inte kontakta PU-tjänsten.',
+
+        //Table headings
+        //Tidigare intyg tabell
+        'th.label.cert-type': 'Typ av intyg',
+        'th.help.cert-type': 'Typ av intyg',
+        'th.label.status': 'Status',
+        'th.help.status': 'Visar utkastets/intygets status.<ul> <li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är sparat och kan signeras.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är signerat och skickat till mottagaren.</li> <li>Mottaget = Intyget är signerat och mottaget av mottagarens system.</li><li>Makulerat = Intyget är makulerat.</li></ul>',
+        'th.label.saved-date': 'Sparat datum',
+        'th.help.saved-date': 'Datum då utkastet/intyget senast sparades.',
+        'th.label.saved-signed-by': 'Sparat/signerat av',
+        'th.help.saved-signed-by': 'Person som senast sparade utkastet/intyget alternativt person som signerade intyget.',
+
+        //Ej signerade utkast
+        'th.label.draft-forwarded': 'Vidarebefordrad',
+        'th.help.draft-forwarded': 'Här markerar du om utkastet är vidarebefordrat till den som ska signera det.',
+        'th.label.draft-type': 'Typ av intyg',
+        'th.help.draft-type': 'Typ av intyg',
+        'th.label.draft-status': 'Status',
+        'th.help.draft-status': 'Visar utkastets status.<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är sparat och kan signeras.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är signerat och skickat till mottagaren.</li> <li>Mottaget = Intyget är signerat och mottaget av mottagarens system.</li><li>Makulerat = Intyget är makulerat.</li></ul>',
+        'th.label.draft-saved-date': 'Sparat datum',
+        'th.help.draft-saved-date': 'Datum då utkastet senast sparades.',
+        'th.label.draft-patient': 'Patient',
+        'th.help.draft-patient': 'Personnummer för patient som utkastet gäller.',
+        'th.label.draft-saved-by': 'Sparat av',
+        'th.help.draft-saved-by': 'Person som senast sparade utkastet.',
+
+        //Fraga/Svar
+        'th.label.qa-forwarded': 'Vidarebefordrad',
+        'th.help.qa-forwarded': 'Markera om fråga-svar är vidarebefordrat till den som ska hantera det.',
+        'th.label.qa-action': 'Åtgärd',
+        'th.help.qa-action': 'Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.',
+        'th.label.qa-sender': 'Avsändare',
+        'th.help.qa-sender': 'Vem som initierade frågan.',
+        'th.label.qa-patient': 'Patient',
+        'th.help.qa-patient': 'Berörd patients personnummer.',
+        'th.label.qa-signed-by': 'Signerat av',
+        'th.help.qa-signed-by': 'Läkare som har signerat intyget.',
+        'th.label.qa-sent-recv-date': 'Skickat/mottaget',
+        'th.help.qa-sent-recv-date': 'Datum för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.'
+
     },
     'en': {
         'webcert.header': 'Webcert Application (en)'
     }
-};
+});

@@ -115,44 +115,41 @@ module.exports = function(grunt) {
     });
 
 
-    // Run: 'grunt acc:ip20:tags'
+    // Run: 'grunt acc:ip20'
     grunt.task.registerTask('acc', 'Task för att köra acceptanstest', function(environment) {
 
+        //Miljö
         if (!environment) {
             var defaultEnv = 'ip30';
             grunt.log.subhead('Ingen miljö vald, använder ' + defaultEnv + '-miljön..');
             environment = defaultEnv;
         }
-        // Ange taggar som grunt.option istället for argument till task. Flexiblare nar det galler att
+
+        // Ange taggar som grunt.option istället for argument till task. Flexiblare när det gäller att
         // kombinera OCH och ELLER operatorer.
         // https://github.com/cucumber/cucumber/wiki/Tags
-        if (grunt.option("tags")) {
-            var tagsArray = grunt.option("tags").split(',');
+        var tagsArray = ['~@notReady', '~@waitingForFix'];
+        if (grunt.option('tags')) {
+            tagsArray = grunt.option('tags').split(',');
             tagsArray.forEach(function(tag, index) {
-                tagsArray[index] = tagsArray[index].replace(" ", ",");
+                tagsArray[index] = tagsArray[index].replace(' ', ',');
             });
-            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
-        } else {
-            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady', '~@waitingForFix']);
         }
-        grunt.task.run(['jshint:acc', 'jsbeautifier:verify', 'env:' + environment, 'protractor_webdriver', 'protractor:acc']);
-    });
+        grunt.log.subhead('Taggar:' + tagsArray);
+        grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
 
-    grunt.task.registerTask('acc-no-jshint', 'Task för att köra acceptanstest', function(environment) {
 
-        if (!environment) {
-            var defaultEnv = 'ip30';
-            grunt.log.subhead('Ingen miljö vald, använder ' + defaultEnv + '-miljön..');
-            environment = defaultEnv;
+        //Tasks
+        var tasks = [];
+        if (!grunt.option('CI')) {
+            tasks = ['jshint:acc', 'jsbeautifier:verify'];
         }
-        // Ange taggar som grunt.option istället for argument till task. Flexiblare nar det galler att
-        // kombinera OCH och ELLER operatorer.
-        if (grunt.option("tags")) {
-            var tagsArray = grunt.option("tags").split(',');
-            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
-        } else {
-            grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', ['~@notReady', '~@waitingForFix']);
-        }
-        grunt.task.run(['env:' + environment, 'protractor_webdriver', 'protractor:acc']);
+
+        tasks.push('env:' + environment);
+        tasks.push('protractor_webdriver');
+        tasks.push('protractor:acc');
+
+        grunt.task.run(tasks);
+
     });
 };

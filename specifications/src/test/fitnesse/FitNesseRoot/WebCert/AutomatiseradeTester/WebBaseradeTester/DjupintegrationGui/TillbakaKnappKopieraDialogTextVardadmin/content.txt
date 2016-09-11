@@ -15,7 +15,7 @@ Verifiera att en vårdadministratör som använder en djupintegrationslänk hamn
 !4 Testa att nytt personnumer text visas i kopieradialogen.
 
 | skript | integration med journalsystem |
-| visa intyg via integration med | intyg-fit-vardadmin | personnummer | ${person1.personnummer} |
+| visa intyg via integration med | intyg-fit-vardadmin | personnummer | ${person1.personnummer} | enhet | IFV1239877878-1045 |
 | säkerställ att inte| verifiera tillbakaknapp synlig |
 | säkerställ att | kopiera dialogen visas |
 | säkerställ att | text nytt personnummer visas |

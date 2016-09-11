@@ -12,7 +12,7 @@ Testet beskriver fallet när en läkare går in på ett signerat FK7263 intyg vi
 | sok skriv intyg sidan visas |
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration | intyg-fit-1 |
+| visa intyg via integration med | intyg-fit-1 | enhet | IFV1239877878-1042 |
 | säkerställ att inte | verifiera tillbakaknapp synlig |
 | säkerställ att inte | vidarebefordra ej hanterad fraga synlig |
 

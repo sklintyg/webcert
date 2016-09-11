@@ -39,67 +39,76 @@ function checkSmitta(isSmittskydd) {
 
 function checkDiagnos(diagnos) {
     var field2 = intygPage.field2;
+    var promiseArr = [];
     if (diagnos) {
-        expect(field2.diagnoskod.getText()).to.eventually.equal(diagnos.diagnoser[0].ICD10).then(
-            function(value) {
-                logger.info('OK - Diagnoskod = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Diagnoskod,' + reason);
-            }
+
+        promiseArr.push(
+            expect(field2.diagnoskod.getText()).to.eventually.equal(diagnos.diagnoser[0].ICD10).then(
+                function(value) {
+                    logger.info('OK - Diagnoskod = ' + value);
+                    return Promise.resolve();
+                },
+                function(reason) {
+                    throw ('FEL, Diagnoskod,' + reason);
+                }
+            )
+        );
+        promiseArr.push(
+            field2.diagnosBeskrivning.getText().then(
+                function(value) {
+                    logger.info('OK - Diagnos förtydligande = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Diagnos förtydligande,' + reason);
+                }
+            )
         );
 
-        expect(field2.diagnosBeskrivning.getText()).to.eventually.equal(diagnos.fortydligande).then(
-            function(value) {
-                logger.info('OK - Diagnos förtydligande = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Diagnos förtydligande,' + reason);
-            }
-        );
     }
+    return Promise.all(promiseArr);
 }
 
 function checkBaserasPa(baserasPa) {
+    var promiseArr = [];
     if (baserasPa.minUndersokning) {
-        expect(intygPage.field4b.undersokningAvPatienten.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minUndersokning.datum)).then(
+        promiseArr.push(expect(intygPage.field4b.undersokningAvPatienten.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minUndersokning.datum)).then(
             function(value) {
                 logger.info('OK - Undersokning av patienten baseras på min Undersokning = ' + value);
             },
             function(reason) {
                 throw ('FEL, Undersokning av patienten baseras på min Undersokning, ' + reason);
             }
-        );
+        ));
     }
     if (baserasPa.minTelefonkontakt) {
-        expect(intygPage.field4b.telefonKontakt.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minTelefonkontakt.datum)).then(
+        promiseArr.push(expect(intygPage.field4b.telefonKontakt.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minTelefonkontakt.datum)).then(
             function(value) {
                 logger.info('OK - Undersokning av patienten baseras på min Telefonkontakt = ' + value);
             },
             function(reason) {
                 throw ('FEL, Undersokning av patienten baseras på min Telefonkontakt, ' + reason);
             }
-        );
+        ));
     }
     if (baserasPa.journaluppgifter) {
-        expect(intygPage.field4b.journaluppgifter.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.journaluppgifter.datum)).then(
+        promiseArr.push(expect(intygPage.field4b.journaluppgifter.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.journaluppgifter.datum)).then(
             function(value) {
                 logger.info('OK - Undersokning av patienten baseras på journaluppgifter = ' + value);
             },
             function(reason) {
                 throw ('FEL, Undersokning av patienten baseras på journaluppgifter, ' + reason);
             }
-        );
+        ));
     }
     if (baserasPa.annat) {
-        expect(intygPage.field4b.annat.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.annat.datum)).then(
+        promiseArr.push(expect(intygPage.field4b.annat.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.annat.datum)).then(
             function(value) {
                 logger.info('OK - Undersokning av patienten baseras på annat = ' + value);
             },
             function(reason) {
                 throw ('FEL, Undersokning av patienten baseras på annat, ' + reason);
             }
-        );
+        ));
         logger.debug('TODO: Fix check for undersökning annat text');
         // expect(intygPage.field4b.annanReferensBeskrivning.getText()).to.eventually.contain(baserasPa.annat.text).then(
         //   function (value) {
@@ -110,73 +119,87 @@ function checkBaserasPa(baserasPa) {
         //   }
         // );
     }
+    return Promise.all(promiseArr);
 }
 
 function checkArbetsformaga(arbetsformaga) {
+    var promiseArr = [];
     if (arbetsformaga.nedsattMed25) {
-        expect(intygPage.field8b.nedsat25.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed25.from)).then(
-            function(value) {
-                logger.info('OK - Nedsatt med 20% from = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Nedsatt med 20% from,' + reason);
-            });
-        expect(intygPage.field8b.nedsat25.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed25.tom)).then(
-            function(value) {
-                logger.info('OK - Nedsatt med 20% tom = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Nedsatt med 20% tom,' + reason);
-            });
+        promiseArr.push(
+            expect(intygPage.field8b.nedsat25.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed25.from)).then(
+                function(value) {
+                    logger.info('OK - Nedsatt med 20% from = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Nedsatt med 20% from,' + reason);
+                })
+        );
+        promiseArr.push(
+            expect(intygPage.field8b.nedsat25.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed25.tom)).then(
+                function(value) {
+                    logger.info('OK - Nedsatt med 20% tom = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Nedsatt med 20% tom,' + reason);
+                })
+        );
     }
     if (arbetsformaga.nedsattMed50) {
-        expect(intygPage.field8b.nedsat50.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed50.from)).then(
-            function(value) {
-                logger.info('OK - Nedsatt med 50% from = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Nedsatt med 50% from,' + reason);
-            });
-        expect(intygPage.field8b.nedsat50.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed50.tom)).then(
-            function(value) {
-                logger.info('OK - Nedsatt med 50% tom = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Nedsatt med 50% tom,' + reason);
-            });
+        promiseArr.push(
+            expect(intygPage.field8b.nedsat50.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed50.from)).then(
+                function(value) {
+                    logger.info('OK - Nedsatt med 50% from = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Nedsatt med 50% from,' + reason);
+                })
+        );
+
+        promiseArr.push(
+            expect(intygPage.field8b.nedsat50.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed50.tom)).then(
+                function(value) {
+                    logger.info('OK - Nedsatt med 50% tom = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Nedsatt med 50% tom,' + reason);
+                })
+        );
     }
     if (arbetsformaga.nedsattMed75) {
-        expect(intygPage.field8b.nedsat75.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed75.from)).then(
+        promiseArr.push(expect(intygPage.field8b.nedsat75.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed75.from)).then(
             function(value) {
                 logger.info('OK - Nedsatt med 75% from = ' + value);
             },
             function(reason) {
                 throw ('FEL, Nedsatt med 75% from,' + reason);
-            });
-        expect(intygPage.field8b.nedsat75.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed75.tom)).then(
+            }));
+        promiseArr.push(expect(intygPage.field8b.nedsat75.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed75.tom)).then(
             function(value) {
                 logger.info('OK - Nedsatt med 75% tom = ' + value);
             },
             function(reason) {
                 throw ('FEL, Nedsatt med 75% tom,' + reason);
-            });
+            }));
     }
     if (arbetsformaga.nedsattMed100) {
-        expect(intygPage.field8b.nedsat100.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed100.from)).then(
-            function(value) {
-                logger.info('OK - Nedsatt med 100% from = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Nedsatt med 100% from,' + reason);
-            });
-        expect(intygPage.field8b.nedsat100.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed100.tom)).then(
+        promiseArr.push(
+            expect(intygPage.field8b.nedsat100.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed100.from)).then(
+                function(value) {
+                    logger.info('OK - Nedsatt med 100% from = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Nedsatt med 100% from,' + reason);
+                })
+        );
+        promiseArr.push(expect(intygPage.field8b.nedsat100.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed100.tom)).then(
             function(value) {
                 logger.info('OK - Nedsatt med 100% tom = ' + value);
             },
             function(reason) {
                 throw ('FEL, Nedsatt med 100% tom,' + reason);
-            });
+            }));
     }
+    return Promise.all(promiseArr);
 }
 
 function checkOvrigtRekommendation(rek) {

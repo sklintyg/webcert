@@ -70,6 +70,11 @@ describe('Luse tillaggsfragor variants', function() {
             var version = url.split('?')[0].split('/')[5];
             var texts = $httpBackend.context.texts;
             if (version === '1.0') {
+                texts.texter = {
+                    'DFR_9001.1.RBK':'Vilken skostorlek har du?',
+                    'DFR_9001.1.HLP':'Ange din skostorlek.',
+                    'DFR_9003.1.RBK':'Det här är en ny extrafråga',
+                    'DFR_9003.1.HLP':'Hjälp för ny fråga.'};
                 texts.tillaggsfragor = [
                     {'id':'9001','text':'Vilken skostorlek har du?','help':'Ange din skostorlek.'},
                     {'id':'9003','text':'Det här är en ny extrafråga','help':'Hjälp för ny fråga'}];
@@ -102,7 +107,7 @@ describe('Luse tillaggsfragor variants', function() {
             proxy.onLoad.whenGET(new RegExp('/api/utkast/questions/luse/.*')).respond(textResponse);
             proxy.onLoad.whenPOST(/.*/).passThrough();
             proxy.onLoad.whenGET(/.*/).passThrough();
-            proxy.onLoad.whenPUT(new RegExp('/moduleapi/utkast/luse/.*')).respond({'version':2,'status':'COMPLETE','messages':[]});
+            proxy.onLoad.whenPUT(new RegExp('/moduleapi/utkast/luse/.*')).respond({'version':2,'status':'DRAFT_COMPLETE','messages':[]});
             LuseUtkastPage.get(intygsId);
 
             // En extrafråga har tagits bort, en annan ska ha tillkommit

@@ -26,16 +26,20 @@ import java.util.Collections;
 import java.util.List;
 
 @ApiModel(description = "An ICD10 code and its associated form data")
-public class FmbResponse {
+public final class FmbResponse {
 
     @ApiModelProperty(name = "ICD10 code", dataType = "String")
     private String icd10Code;
 
+    @ApiModelProperty(name = "ICD10 description", dataType = "String")
+    private String icd10Description;
+
     @ApiModelProperty(name = "forms")
     private List<FmbForm> forms;
 
-    public FmbResponse(String icd10Code, List<FmbForm> forms) {
+    public FmbResponse(String icd10Code, String icd10Description, List<FmbForm> forms) {
         this.icd10Code = icd10Code;
+        this.icd10Description = icd10Description;
         this.forms = Collections.unmodifiableList(forms);
     }
 
@@ -47,4 +51,7 @@ public class FmbResponse {
         return forms;
     }
 
+    public String getIcd10Description() {
+        return icd10Description;
+    }
 }

@@ -28,7 +28,11 @@ var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 // var webcertBase = pages.webcertBase;
 var checkValues = require('../checkValues');
 var testdataHelpers = wcTestTools.helpers.testdata;
-var testpatienter = wcTestTools.testdata.values.patienter;
+var testdata = wcTestTools.testdata;
+var testpatienter = testdata.values.patienter;
+// var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
+var parallell = require('./parallellt_util.js');
+var helpers = require('../helpers.js');
 
 // webcertBase.flikarsokSkrivIntyg
 
@@ -46,19 +50,39 @@ function gotoPatient(pnr) {
     return expect(patientUppgifter.getText()).to.eventually.contain(pnr);
 }
 
+var forkedBrowser;
+
+function setForkedBrowser(forkedBrowser2) {
+    console.log('Store forked browser for next step');
+    forkedBrowser = forkedBrowser2;
+}
+
 module.exports = function() {
 
-    // this.Then(/^vill jag vara inlogger.infoad$/, function(callback) {
-    //     expect(webcertBase.header.getText()).to.eventually.contain('logger.infoa ut').and.notify(callback);
-    //     // expect(element(by.id('wcHeader')).getText()).to.eventually.contain('logger.infoa ut').and.notify(callback);
-    // });
-
-    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer, callback) {
-        gotoPatient(personnummer).and.notify(callback);
+    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) {
+        return gotoPatient(personnummer);
     });
 
-    this.Given(/^jag går in på en patient$/, function(callback) {
-        gotoPatient(testdataHelpers.shuffle(testpatienter)[0]).and.notify(callback);
+    this.Given(/^jag går in på en patient med sekretessmarkering$/, function() {
+        var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
+        return gotoPatient(patient.nummer);
+    });
+
+    this.Given(/^jag går in på en patient$/, function() {
+        return gotoPatient(testdataHelpers.shuffle(testpatienter)[0]);
+    });
+
+    this.Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text, callback) {
+        var alertWarnings = element.all(by.css('.alert-warning'));
+
+        alertWarnings.each(function(element) {
+            element.getText().then(function(warning) {
+                if (warning.indexOf(text) !== -1) {
+                    console.log('Warning containing text: "' + text + '" found.');
+                    expect(element.getText()).to.eventually.contain(text).and.notify(callback);
+                }
+            });
+        });
     });
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
@@ -77,6 +101,43 @@ module.exports = function() {
             });
         });
 
+    });
+
+    this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            var intygtyp = helpers.getAbbrev(intyg.typ);
+
+            // User
+            var userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
+            var inteAccepteratKakor = true;
+
+            // Browser & URL
+            var forkedBrowser = browser.forkNewDriverInstance(true);
+            var intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+
+            parallell.login({
+                userObj: userObj,
+                role: helpers.userObj.Role.DOCTOR,
+                cookies: inteAccepteratKakor
+            }, intygEditUrl, forkedBrowser).then(function() {
+                setForkedBrowser(forkedBrowser);
+                callback();
+            });
+        } else {
+            throw new Error(intyg.typ + ' is not implemented.');
+        }
+
+    });
+
+    this.Given(/^ska ett felmeddelande visas$/, function(callback) {
+        parallell.changeFields(forkedBrowser).then(function() {
+            console.log('saveErrorMessage found');
+            return parallell.refreshBroswer(forkedBrowser);
+        }).then(function() {
+            // Known issue - https://github.com/angular/protractor/issues/2203
+            parallell.closeBrowser(forkedBrowser).then(callback);
+        });
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {

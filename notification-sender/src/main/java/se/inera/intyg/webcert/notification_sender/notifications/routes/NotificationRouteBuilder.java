@@ -19,10 +19,6 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
@@ -32,7 +28,6 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
@@ -41,6 +36,10 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateType;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -65,29 +64,25 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
      *
      * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
      */
-
     @Override
     public void configure() throws Exception {
-
         JaxbDataFormat jaxbMessageDataFormatV2 = initializeJaxbMessageDataFormatV2();
 
         // Start for aggregation route. All notifications enter this route. Draft saved and signed for non fk7263
         // goes into an aggregation state where we once per minute perform filtering so only the newest ANDRAD per intygsId
-        // OR a SIGNERAD are forwarded to the 'receiveNotificationRequestEndpoint' queue. The others are discarded.
-        // Do note that the above only applies to non-fk7263 ANDRAD and SIGNERAD, all others will be forwarded directly.
+        // forwarded to the 'receiveNotificationRequestEndpoint' queue. The others are discarded.
+        // Do note that the above only applies to non-fk7263 ANDRAD, all others will be forwarded directly.
 
         from(notificationForAggregationQueue).routeId("aggregateNotification")
                 .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
                 .transacted()
-                .log(LoggingLevel.INFO, LOG, simple("ENTER - route: aggregateNotification: Header: ${header[handelse]}").getText())
-                .removeHeader(Constants.JMSX_GROUP_ID)
-                .removeHeader(Constants.JMSX_GROUP_SEQ)
-        .choice()
+                .choice()
                 .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
                     .to(notificationQueue)
                 .when(directRoutingPredicate())
                     .to(notificationQueue)
                 .otherwise()
+                    .wireTap("direct:signatWireTap")
                     .aggregate(new GroupedExchangeAggregationStrategy())
                     .constant(true)
                     .completionInterval(batchAggregationTimeout)
@@ -95,10 +90,19 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                     .to("bean:notificationAggregator")
                     .split(body())
                     .to(notificationQueue).end()
+
+        .end();
+
+        // The wiretap is used to directly forward SIGNAT messages (see INTYG-2744) to the send queue while the original
+        // SIGNAT is passed on into the aggregation phase. The aggregation phase never emits any SIGNAT, only ANDRAT.
+        from("direct:signatWireTap")
+                .choice()
+                .when(header(NotificationRouteHeaders.HANDELSE).isEqualTo(HandelsekodEnum.SIGNAT.value()))
+                    .to(notificationQueue)
                 .end();
 
         // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters 'receiveNotificationRequestEndpoint'
-        // should have normal resend semantics etc.
+        // should have normal resend semantics etc. Reads from the notificationQueue.
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()

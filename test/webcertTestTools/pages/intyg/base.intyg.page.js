@@ -105,13 +105,13 @@ var BaseIntyg = JClass._extend({
         return this.fornya.dialogConfirmButton;
     },
     skrivUtFullstandigtIntyg: function() {
-        return element(by.cssContainingText('button', 'Skriv ut')).sendKeys(protractor.Key.SPACE).then(function() {
+        return element(by.id('intyg-header-dropdown-select-pdf-type')).sendKeys(protractor.Key.SPACE).then(function() {
             return element(by.cssContainingText('a', 'Fullständigt intyg')).click();
         });
     },
     sendNewArende: function(arendeText, arendeAmne) {
         var self = this;
-        return this.newArendeBtn.click().then(function(){
+        return this.newArendeBtn.click().then(function() {
             return self.arendeText.sendKeys(arendeText).then(function() {
                 return self.arendeValjAmne(arendeAmne).then(function() {
                     return self.arendeSend.click();
@@ -123,7 +123,7 @@ var BaseIntyg = JClass._extend({
         return this.arendeAmne.all(by.css('option[label="' + val + '"]')).click();
     },
     hasState: function(states, state) {
-        for(var a = 0; a < states.length; a++) {
+        for (var a = 0; a < states.length; a++) {
             if (states[a].state === state) {
                 return true;
             }
@@ -132,7 +132,7 @@ var BaseIntyg = JClass._extend({
     },
     getArendeById: function(handled, id) {
         var subgroup = 'unhandled';
-        if(handled){
+        if (handled) {
             subgroup = 'handled';
         }
         return element(by.id('arende-' + subgroup + '-' + id));
@@ -152,11 +152,8 @@ var BaseIntyg = JClass._extend({
     getOnlyLakareCanKompletteraSign: function(id) {
         return element(by.id('answerDisabledReasonPanel-' + id));
     },
-    getSvaraMedNyttIntygButton: function(id) {
-        return element(by.id('answerWithIntygBtn-' + id));
-    },
-    getKanEjSvaraCheck: function(id) {
-        return element(by.id('cant-komplettera-' + id));
+    getSvaraPaKompletteringButton: function(id) {
+        return element(by.id('answer-kompletteringsatgard-open-' + id));
     }
 });
 

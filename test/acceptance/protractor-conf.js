@@ -51,7 +51,7 @@ exports.config = {
         require: ['features/steps/**/*.js', 'features/support/**/*.js']
     },
     onPrepare: function() {
-
+        browser.manage().window().setSize(1600, 1000);
         //http://chaijs.com/
         global.chai = require('chai');
 

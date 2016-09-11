@@ -33,6 +33,20 @@ module.exports = function(config) {
         // frameworks to use
         frameworks: [ 'jasmine' ],
 
+        // generate js files from html templates to expose them during testing.
+        preprocessors: {
+            'src/main/webapp/app/**/*.html': ['ng-html2js']
+        },
+
+        ngHtml2JsPreprocessor: {
+            // If your build process changes the path to your templates,
+            // use stripPrefix and prependPrefix to adjust it.
+            stripPrefix: 'src/main/webapp',
+
+            // the name of the Angular module to create
+            moduleName: 'htmlTemplates'
+        },
+
         // list of files / patterns to load in the browser
         files: [
 
@@ -48,12 +62,12 @@ module.exports = function(config) {
             WEBJAR_DIR + 'momentjs/moment.js',
 
             // Load these first
-            SRC_DIR + 'messages.js',
             TEST_DIR + 'app-test.js',
             TEST_DIR + 'utils/*.js',
 
             { pattern: SRC_DIR + '**/app.test.js' },
             { pattern: SRC_DIR + '**/views/**/*.js' },
+            { pattern: SRC_DIR + '**/views/**/*.html' },
             { pattern: TEST_DIR + '**/views/**/*.spec.js' }
         ],
 

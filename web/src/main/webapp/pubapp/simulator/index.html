@@ -63,13 +63,14 @@
               <th>IntygsId</th>
               <th>Typ</th>
               <th>Skapad av</th>
-              <td> </td>
+              <th>Signerades</th>
             </tr>
             <tr ng-repeat="d in data">
               <td>{{ d.patientFornamn }} {{ d.patientEfternamn}} - {{ d.patientPersonnummer}}</td>
               <td>{{ d.intygsId }}</td>
               <td>{{ d.intygsTyp }}</td>
               <td>{{ d.skapadAv.namn }}</td>
+              <td>{{ d.signatur.signeringsDatum | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
               <td>
                 <button type="button" class="btn btn-success" ng-click="openForm(d)">Välj</button>
               </td>
@@ -81,41 +82,41 @@
         <div class="col-sm-6">
           <h1 ng-if="q.intygsId != ''">Ärendeformulär</h1>
           <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="q.intygsId != ''">
-            <div>* == Ej obligatoriskt</div>
+            <div>* == Obligatoriskt</div>
             <!-- metadata -->
             <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Meddelande-id</label>
+                <label class="col-sm-3 control-label">Meddelande-id*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.meddelandeId">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">IntygsId</label>
+                <label class="col-sm-3 control-label">IntygsId*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.intygsId">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Personnummer</label>
+                <label class="col-sm-3 control-label">Personnummer*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.patientPersonId">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Tidpunkt</label>
+                <label class="col-sm-3 control-label">Tidpunkt*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.skickatTidpunkt">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Rubrik*</label>
+                <label class="col-sm-3 control-label">Rubrik</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.rubrik">
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Påminnelse-id*</label>
+                <label class="col-sm-3 control-label">Påminnelse-id</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.paminnelseMeddelandeId">
                   <span ng-if="q.amne == 'PAMINN'">Glöm inte fylla i ett påminnelse-id!</span>
@@ -127,7 +128,7 @@
             <!-- metadata -->
             <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Svar på - meddelandeId*</label>
+                <label class="col-sm-3 control-label">Svar på - meddelandeId</label>
                 <div class="col-sm-9">
                   <select class="form-control" ng-model="q.svarPa.meddelandeId">
                       <option value=""></option>
@@ -137,7 +138,7 @@
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Svar på - referensId*</label>
+                <label class="col-sm-3 control-label">Svar på - referensId</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.svarPa.referensId">
                 </div>
@@ -147,81 +148,95 @@
             <!-- Frågetyp -->
             <div class="form-group" id="filterFormVidarebefordrad">
               <div class="row">
-                <label class="col-sm-3 control-label">Typ av fråga</label>
+                <label class="col-sm-3 control-label">Typ av fråga*</label>
                 <div class="col-sm-9" ng-click="typeClicked()">
-                  <label class="radio-inline">
-                    <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="KOMPLT" ng-model="q.amne">
-                    Komplettering
-                  </label>
+
                   <label class="radio-inline">
                     <input id="vidarebefordradARBTID" name="vidarebefordrad" type="radio" value="ARBTID" ng-model="q.amne"
-                           checked="checked"> Arbetstid
+                           > Arbetstid
                   </label>
                   <label class="radio-inline">
                     <input id="vidarebefordradAVSTMN" name="vidarebefordrad" type="radio" value="AVSTMN" ng-model="q.amne"
-                           checked="checked"> Avstämning
+                           > Avstämning
                   </label>
                   <label class="radio-inline">
                     <input id="vidarebefordradKONTKT" name="vidarebefordrad" type="radio" value="KONTKT" ng-model="q.amne"
-                           checked="checked"> Kontakt
+                           > Kontakt
                   </label>
                   <label class="radio-inline">
                     <input id="vidarebefordradOVRIGT" name="vidarebefordrad" type="radio" value="OVRIGT" ng-model="q.amne"
-                           checked="checked"> Övrigt
+                           > Övrigt
                   </label>
                   <label class="radio-inline">
                     <input id="vidarebefordradPAMINN" name="vidarebefordrad" type="radio" value="PAMINN" ng-model="q.amne"
-                           checked="checked"> Påminnelse
+                           > Påminnelse
+                  </label>
+                  <label class="radio-inline">
+                    <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="KOMPLT" ng-model="q.amne">
+                    Komplettering
                   </label>
                 </div>
               </div>
             </div>
 
-            <!-- Texter ARBTID, AVSTMN, KONTKT, OVRIGT, PAMINN -->
-            <div class="form-group" ng-if="q.amne != 'KOMPLT'">
+            <!-- Texter ARBTID, AVSTMN, KONTKT, OVRIGT, PAMINN  ng-if="q.amne != 'KOMPLT'"-->
+
+            <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Frågetext</label>
+                <label class="col-sm-3 control-label">Frågetext*</label>
                 <div class="col-sm-9">
                   <textarea ng-model="q.meddelande"></textarea>
                 </div>
               </div>
             </div>
 
-            <div class="form-group" ng-if="q.amne == 'KOMPLT'">
-              <div class="row">
-                <label class="col-sm-3 control-label">Kompletteringstext</label>
-                <div class="col-sm-9">
-                  <textarea ng-model="q.komplettering.text"></textarea>
+            <div ng-if="q.amne == 'KOMPLT'">
+              <div class="well well-sm" style="margin-bottom:4px;" ng-repeat="kpl in q.kompletteringar">
+                <div class="form-group">
+                  <div class="row" style="margin-left:0px;margin-right: 0px;">
+
+                    <label class="col-sm-3 control-label">Kompletteringstext*</label>
+                    <div class="col-sm-7">
+                      <textarea ng-model="kpl.text"></textarea>
+                    </div>
+                    <div class="col-sm-2 text-right">
+                      <a ng-if="$index > 0" ng-click="remove($index)">Ta bort</a>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <label class="col-sm-3 control-label">FrågeID</label>
-                <div class="col-sm-9">
-                  <!-- <input type="text" class="form-control" ng-model="q.komplettering.frageId">   -->
-                  <select class="form-control" ng-model="q.komplettering.frageId">
-                    <option ng-repeat="question in questions" value="{{ question }}">{{ question }}</option>
-                  </select>
-                </div>
-              </div>
-              <div class="row">
-                <label class="col-sm-3 control-label">Instans*</label>
-                <div class="col-sm-9">
-                  <input type="text" class="form-control" ng-model="q.komplettering.instans">
+                <div class="row">
+                  <label class="col-sm-3 control-label">FrågeID*</label>
+                  <div class="col-sm-2">
+                    <select class="form-control" ng-model="kpl.frageId">
+                      <option ng-repeat="question in questions" value="{{ question }}">{{ question }}</option>
+                    </select>
+                  </div>
+
+                  <label class="col-sm-2 control-label">Instans</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" ng-model="kpl.instans">
+                  </div>
                 </div>
               </div>
             </div>
+            <div ng-if="q.amne == 'KOMPLT'" class="row text-right" style="margin-left:0px;margin-right: 0px;">
+              <a ng-click="add()">Lägg till komplettering</a>
+            </div>
+
+
+
 
             <!-- Avsändare -->
             <div class="form-group">
               <div class="row">
-                <label class="col-sm-3 control-label">Avsändare</label>
+                <label class="col-sm-3 control-label">Avsändare*</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.skickatAv">
                   FKASSA, HSVARD, INVANA, TRANSP
                 </div>
               </div>
               <div class="row">
-                <label class="col-sm-3 control-label">Referens-id*</label>
+                <label class="col-sm-3 control-label">Referens-id</label>
                 <div class="col-sm-9">
                   <input type="text" class="form-control" ng-model="q.referensId">
                 </div>

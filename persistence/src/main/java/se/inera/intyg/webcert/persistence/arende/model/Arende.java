@@ -25,8 +25,8 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import se.inera.intyg.webcert.persistence.model.Status;
 
@@ -40,7 +40,7 @@ public class Arende {
     private Long id;
 
     @Column(name = "TIMESTAMP")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime timestamp;
 
     @Column(name = "MEDDELANDE_ID")
@@ -50,7 +50,7 @@ public class Arende {
     private String referensId;
 
     @Column(name = "SKICKAT_TIDPUNKT")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickatTidpunkt;
 
     @Column(name = "INTYGS_ID")
@@ -91,7 +91,7 @@ public class Arende {
     private List<MedicinsktArende> komplettering;
 
     @Column(name = "SISTA_DATUM_FOR_SVAR")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
 
     @Column(name = "INTYG_TYP")
@@ -114,7 +114,7 @@ public class Arende {
     private Status status;
 
     @Column(name = "SENASTE_HANDELSE")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime senasteHandelse;
 
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")

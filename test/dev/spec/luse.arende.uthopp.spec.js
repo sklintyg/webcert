@@ -77,8 +77,13 @@ describe('arende on luse intyg', function() {
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
-        it('sign displaying komplettering should be handled in calling system is shown', function() {
-            expect(LuseIntygPage.getKompletteringDisabledSign(meddelandeId).isDisplayed()).toBeTruthy();
+        it('click svara pa komplettering', function() {
+            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+        });
+
+        it('svara med nytt intyg should not be displayed', function() {
+            expect(LuseIntygPage.kompletteraMedNyttIntygButton.isPresent()).toBeFalsy();
         });
     });
 

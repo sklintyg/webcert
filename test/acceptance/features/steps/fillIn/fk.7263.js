@@ -46,6 +46,7 @@ module.exports = {
             throw ('FEL, angeFunktionsnedsattning,' + reason);
         }));
 
+        browser.ignoreSynchronization = false;
         //Ange diagnoser
         promisesArr.push(fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function() {
             logger.info('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
@@ -83,7 +84,6 @@ module.exports = {
             throw ('FEL, angeArbetsformagaFMB,' + reason);
         }));
 
-        browser.ignoreSynchronization = false;
         promisesArr.push(fkUtkastPage.angePrognos(intyg.prognos).then(function() {
             logger.info('OK - angePrognos :' + JSON.stringify(intyg.prognos));
         }, function(reason) {

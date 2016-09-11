@@ -19,61 +19,41 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.Api;
-import org.joda.time.LocalDateTime;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -94,7 +74,6 @@ public class IntygResource {
     @Autowired
     private IntygModuleFacade moduleFacade;
 
-
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -104,7 +83,7 @@ public class IntygResource {
      * used in production code.
      *
      * @param intygsTyp
-     *      SIT-intyg: luae_fs, luae_na, luse, lisu
+     *            SIT-intyg: luae_fs, luae_na, luse, lisu
      * @return
      */
     @GET
@@ -145,14 +124,10 @@ public class IntygResource {
     @Path("/signingunits")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSigningUnits() {
-        return Response.ok(utkastRepository.findAll()
+        return Response.ok(utkastRepository.findAllUnitsWithSentCertificate()
                 .stream()
-                .filter(utkast -> utkast.getSignatur() != null)
-                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
-                .map(utkast -> new SigningUnit(utkast.getEnhetsId(), utkast.getEnhetsNamn()))
-                .distinct()
-                .collect(Collectors.toList())
-        ).build();
+                .map(arr -> new SigningUnit((String) arr[0], (String) arr[1]))
+                .collect(Collectors.toList())).build();
     }
 
     /**
@@ -167,10 +142,9 @@ public class IntygResource {
     public Response getAllSignedAndSentIntygOnUnit(@PathParam("enhetsId") String enhetsId) {
         List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.SIGNED));
         return Response.ok(all.stream()
-                .filter(utkast -> utkast.getSignatur() != null)
-                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null)
-                .collect(Collectors.toList())
-        ).build();
+                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null && utkast.getSignatur() != null)
+                .sorted((u1, u2) -> u2.getSignatur().getSigneringsDatum().compareTo(u1.getSignatur().getSigneringsDatum()))
+                .collect(Collectors.toList())).build();
     }
 
     @DELETE
@@ -203,9 +177,9 @@ public class IntygResource {
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraftsByEnhet(@PathParam("enhetsId") String enhetsId) {
-        List<String> enhetsIds = new ArrayList<String>();
+        List<String> enhetsIds = new ArrayList<>();
         enhetsIds.add(enhetsId);
-        List<UtkastStatus> statuses = new ArrayList<UtkastStatus>();
+        List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
         statuses.add(UtkastStatus.DRAFT_COMPLETE);
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);
@@ -251,8 +225,8 @@ public class IntygResource {
         utkast.setStatus(intygContents.getUtkastStatus());
         utkast.setVidarebefordrad(false);
         if (utkast.getStatus() == UtkastStatus.SIGNED) {
-            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model, "ruffel",
-                    "fusk");
+            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model,
+                    "ruffel", "fusk");
             utkast.setSignatur(signatur);
         }
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
@@ -406,7 +380,7 @@ public class IntygResource {
         }
 
         void setContents(JsonNode contents) {
-             this.contents = contents;
+            this.contents = contents;
         }
 
         boolean isRevoked() {

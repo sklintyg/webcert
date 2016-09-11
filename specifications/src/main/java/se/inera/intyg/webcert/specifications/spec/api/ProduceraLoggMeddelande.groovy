@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.api
 
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import se.inera.intyg.common.logmessages.Enhet
 import se.inera.intyg.common.logmessages.Patient
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
@@ -36,7 +36,7 @@ class ProduceraLoggMeddelande extends RestClientFixture {
     def restClient = createRestClient(logSenderBaseUrl)
 
     def CustomObjectMapper objectMapper = new CustomObjectMapper()
-    
+
     def aktivitet
     def vardperson
     def personnummer
@@ -77,7 +77,7 @@ class ProduceraLoggMeddelande extends RestClientFixture {
         }
         m.systemId = systemId
         m.systemName = systemNamn
-        m.timestamp = new LocalDateTime()
+        m.timestamp = LocalDateTime.now()
         m.userId = vardperson
         m.userCareUnit = new Enhet(enhet, enhet, vardgivare, vardgivare)
         m.resourceOwner = new Enhet(enhet, enhet, vardgivare, vardgivare)

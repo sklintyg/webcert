@@ -59,22 +59,19 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
         queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("enhet", "IFV1239877878-1042");
 
         given().redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
                 .queryParams(queryParams)
-                .
-                expect()
+                .expect()
                 .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
-                .
-                when()
+                .when()
                 .get("/visa/intyg/{intygsId}")
-                .
-                then()
-                .header(HttpHeaders.LOCATION,
-                        endsWith("/fk7263/edit/" + utkastId + "?patientId=" + queryParams.get("alternatePatientSSn") + "&hospName="
-                                + queryParams.get("responsibleHospName")));
+                .then()
+                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "?patientId=" + queryParams.get("alternatePatientSSn")
+                        + "&hospName=" + queryParams.get("responsibleHospName")));
     }
 
     /**
@@ -90,11 +87,10 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().redirects().follow(false).and().pathParam("intygsId", intygsId).and().queryParam("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER)
-                .
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("/visa/intyg/{intygsId}").
-                then().header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "?patientId=" + DEFAULT_PATIENT_PERSONNUMMER));
+        given().redirects().follow(false).and().pathParam("intygsId", intygsId).and()
+                .queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "?patientId=" + DEFAULT_PATIENT_PERSONNUMMER));
     }
 
     /**
@@ -105,10 +101,9 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").
-                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
+        given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").then()
+                .header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
     }
 
     /**
@@ -136,19 +131,17 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("postadress", "patientpostadress");
         queryParams.put("postnummer", "patientpostnummer");
         queryParams.put("postort", "patientpostort");
+        queryParams.put("enhet", "IFV1239877878-1042");
 
         given().redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
                 .queryParams(queryParams)
-                .
-                expect()
+                .expect()
                 .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
-                .
-                when()
+                .when()
                 .get("/visa/intyg/{intygsId}")
-                .
-                then()
+                .then()
                 .header(HttpHeaders.LOCATION,
                         endsWith("/luse/edit/" + utkastId
                                 + "?patientId=" + queryParams.get("alternatePatientSSn")
@@ -158,9 +151,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                                 + "&efternamn=" + queryParams.get("efternamn")
                                 + "&postadress=" + queryParams.get("postadress")
                                 + "&postnummer=" + queryParams.get("postnummer")
-                                + "&postort=" + queryParams.get("postort")
-                        )
-                );
+                                + "&postort=" + queryParams.get("postort")));
     }
 
     /**
@@ -185,12 +176,11 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("postadress", "patientpostadress");
         queryParams.put("postnummer", "patientpostnummer");
         queryParams.put("postort", "patientpostort");
+        queryParams.put("enhet", "IFV1239877878-1042");
 
         given().redirects().follow(false).and().pathParam("intygsId", intygsId).and().queryParams(queryParams)
-                .
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("/visa/intyg/{intygsId}").
-                then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId
                         + "?patientId=" + queryParams.get("alternatePatientSSn")
                         + "&fornamn=" + queryParams.get("fornamn")
                         + "&mellannamn=" + queryParams.get("mellannamn")
@@ -212,9 +202,8 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().redirects().follow(false).and().pathParam("intygsId", utkastId).
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").
-                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
+        given().redirects().follow(false).and().pathParam("intygsId", utkastId).expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when()
+                .get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042").then()
+                .header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
     }
 }

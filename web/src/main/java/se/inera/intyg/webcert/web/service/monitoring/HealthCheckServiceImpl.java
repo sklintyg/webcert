@@ -60,7 +60,10 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private static final String CURR_TIME_SQL = "SELECT CURRENT_TIME()";
 
     @Value("${intygstjanst.logicaladdress}")
-    private String logicalAddress;
+    private String itLogicalAddress;
+
+    @Value("${privatepractitioner.logicaladdress}")
+    private String ppLogicalAddress;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -78,15 +81,11 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
 
     @Autowired
+    @Qualifier("pingPrivatlakarportalForConfigurationClient")
+    private PingForConfigurationResponderInterface privatlakarportalPingForConfiguration;
+
+    @Autowired
     private SessionRegistry sessionRegistry;
-
-    private PingForConfigurationType buildPingRequest(String logicalAddress) {
-        PingForConfigurationType param = new PingForConfigurationType();
-        param.setLogicalAddress(logicalAddress);
-        param.setServiceContractNamespace("urn:riv:itintegration:monitoring:PingForConfiguration:1:rivtabp21");
-        return param;
-    }
-
 
     @Override
     @Transactional
@@ -170,10 +169,33 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true);
     }
 
+    @Override
+    public HealthStatus checkPrivatlakarportal() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        boolean ok = pingPrivatlakarportal();
+        stopWatch.stop();
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
+        logStatus("pingPrivatlakarportal", status);
+        return status;
+    }
+
+    private boolean pingPrivatlakarportal() {
+        try {
+            PingForConfigurationType parameters = new PingForConfigurationType();
+            PingForConfigurationResponseType pingResponse = privatlakarportalPingForConfiguration.pingForConfiguration(ppLogicalAddress, parameters);
+            return (pingResponse != null);
+        } catch (Exception e) {
+            LOG.error("pingPrivatlakarportal failed with exception: " + e.getMessage());
+            return false;
+        }
+    }
+
+
     private boolean pingIntygstjanst() {
         try {
             PingForConfigurationType parameters = new PingForConfigurationType();
-            PingForConfigurationResponseType pingResponse = intygstjanstPingForConfiguration.pingForConfiguration(logicalAddress, parameters);
+            PingForConfigurationResponseType pingResponse = intygstjanstPingForConfiguration.pingForConfiguration(itLogicalAddress, parameters);
             return (pingResponse != null);
         } catch (Exception e) {
             LOG.error("pingIntygstjanst failed with exception: " + e.getMessage());

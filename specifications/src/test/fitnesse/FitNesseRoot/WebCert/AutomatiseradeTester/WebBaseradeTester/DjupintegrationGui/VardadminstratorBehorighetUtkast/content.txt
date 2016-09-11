@@ -18,7 +18,7 @@ Verifiera att en vårdadministratör som använder en djupintegrationslänk har 
 !3 Visa utkastet via integrationslänken
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration | $intygId |
+| visa utkast | $intygId | via integration med enhet | IFV1239877878-1045 |
 | säkerställ att inte | verifiera tillbakaknapp synlig |
 | säkerställ att inte | verifiera signera knapp synlig |
 | säkerställ att inte | verifiera vidarebefordra utkast synlig |

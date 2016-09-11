@@ -19,16 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.util.*;
+
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -46,9 +44,8 @@ public interface FragaSvarService {
      */
     List<FragaSvar> getFragaSvar(String intygId);
 
-
     /**
-     * Create an answer for an existing  question.
+     * Create an answer for an existing question.
      */
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
 
@@ -62,7 +59,6 @@ public interface FragaSvarService {
      */
     FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched);
 
-
     /**
      * A FragaSvar is set as handled.
      * Sets the status of a FragaSvar as "closed"
@@ -74,10 +70,10 @@ public interface FragaSvarService {
     /**
      * Close all questions related to a certificate.
      *
-     * @param intygsId the certificates unique identifier
-     * @return an array with FragaSvar-objects that has been closed.
+     * @param intygsId
+     *            the certificates unique identifier
      */
-    FragaSvar[] closeAllNonClosedQuestions(String intygsId);
+    void closeAllNonClosedQuestions(String intygsId);
 
     /**
      * A FragaSvar is set as unhandled.
@@ -92,12 +88,14 @@ public interface FragaSvarService {
     QueryFragaSvarResponse filterFragaSvar(Filter filter);
 
     /**
-     * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a FragaSvar is linked to) that matches the supplied id.
+     * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a FragaSvar is linked
+     * to) that matches the supplied id.
      */
     List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId);
 
     /**
-     * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care unit
+     * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care
+     * unit
      * as key and related to an intyg of one of the specified types.
      */
     Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper);

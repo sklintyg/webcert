@@ -38,8 +38,6 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
         skickaKnapp(required: false) { $("#sendBtn") }
-        
-        kopieraDialogMsgForlangningSjukskrivning(required:false) { $("#msgForlangningSjukskrivning") }
 
         tillbakaBtn(required: false) { $("#tillbakaButton") }
 
@@ -159,6 +157,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         waitFor {
             doneLoading() && makuleraConfirmationOkButton
         }
+        AbstractPage.scrollIntoView(makuleraConfirmationOkButton.attr('id'));
         makuleraConfirmationOkButton.click()
         waitFor {
             !modalBackdrop.isDisplayed();

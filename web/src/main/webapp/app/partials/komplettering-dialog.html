@@ -1,0 +1,50 @@
+<div id="{{dialogId}}" class="modal-header">
+  <button type="button" class="close" ng-click="$dismiss()">×</button>
+  <h3 ng-focus="model.focus" tabindex="-1">
+    <span message key="{{titleId}}"></span>
+  </h3>
+</div>
+<div class="modal-body">
+  <div class="dialog-scroller">
+    <div fragasvar-text-panel panel-id="dialogId" qa="model.qa"></div>
+  </div>
+  <div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="dialog-choice-box">
+          <div class="dialog-choice-box__text-section">
+            <h3>Jag behöver lägga till ny medicinsk information</h3>
+            <p ng-show="model.uthopp">Om kompletteringen innebär att ny medicinsk information behöver tillföras ska informationen ges i ett
+              nytt intyg. Kopiera/förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen.</p>
+            <p ng-show="!model.uthopp">Om kompletteringen innebär att ny medicinsk information behöver tillföras ska informationen ges i ett
+              nytt intyg. Fyll i den nya informationen i den kopia som skapas av det befintliga intyget.</p>
+          </div>
+          <div ng-show="!model.uthopp" class="dialog-choice-box__button-section">
+            <button type="button" id="{{button1id}}" class="btn btn-success" ng-click="button1click()">
+              <img src="/img/loader-small-green.gif" ng-show="model.qa.updateInProgress"> Svara med nytt intyg
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="dialog-choice-box">
+          <div class="dialog-choice-box__text-section">
+            <h3>Jag behöver förtydliga befintlig medicinsk information <span wc-help-mark field-help-text="fk7263.fragasvar.komplettering.help"></span></h3>
+            <p>Om kompletteringen innebär ett förtydligande av befintlig medicinsk information kan du svara med ett
+              meddelande.</p>
+          </div>
+          <div class="dialog-choice-box__button-section">
+            <button type="button" id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+              Svara med meddelande
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- error message occuring when interacting with server for komplettering-->
+    <div id="komplettering-dialog-error-{{model.qa.internReferens}}" ng-show="model.qa.activeDialogErrorMessageKey"
+         class="alert alert-danger alert-bottom">
+      <span message key="{{model.qa.activeDialogErrorMessageKey}}"></span>
+    </div>
+  </div>
+</div>

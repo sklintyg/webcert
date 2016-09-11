@@ -31,6 +31,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +71,7 @@ public class NotificationStubRestApi {
             buf.append("---- ").append(entry.getKey()).append(" ----\n");
             entry.getValue().stream()
                     .sorted((a, b) -> a.getHandelseTid().compareTo(b.getHandelseTid()))
-                    .forEach(ie -> buf.append(ie.getHandelseTid().toString("HH:mm:ss")).append("\t").append(ie.getHandelseKod()).append("\n"));
+                    .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t").append(ie.getHandelseKod()).append("\n"));
             buf.append("-----------------------------------------------\n\n");
         }
         return Response.ok(buf.toString()).build();

@@ -1,5 +1,5 @@
 # language: sv
-@faltValid
+@faltvalidering @fk7263 @notReady
 Egenskap: Fältvalidering fk7263
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -8,5 +8,5 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 
 Scenario: Validera felaktig diagnoskod i Fk7263
-	När jag fyller i "A0" som diagnoskod
-	Så ska valideringsfelet "är ej giltig"
+	När jag fyller i "000" som diagnoskod
+	Så ska valideringsfelet "är ej giltig" visas

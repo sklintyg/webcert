@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.web.ts_diabetes
 
+import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.intyg.common.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
@@ -92,18 +93,18 @@ class PopuleraTsDiabetes extends ExceptionHandlingFixture {
             if (diabetesBehandlingInsulinPeriod != null) page.allmant.behandlingInsulinPeriod = diabetesBehandlingInsulinPeriod
             if (diabetesBehandlingAnnan != null) page.allmant.behandlingAnnan = diabetesBehandlingAnnan
 
-            if (hypoglykemierA != null) page.hypoglykemier.fragaA = hypoglykemierA
+            if (hypoglykemierA != null) { AbstractPage.scrollIntoView(page.hypoglykemier.fragaA.attr('id')); page.hypoglykemier.fragaA = hypoglykemierA }
             if (hypoglykemierB != null) page.hypoglykemier.fragaB = hypoglykemierB
             if (hypoglykemierC != null) page.hypoglykemier.fragaC = hypoglykemierC
             if (hypoglykemierD != null) page.hypoglykemier.fragaD = hypoglykemierD
             if (hypoglykemierAllvarligForekomstEpisoder != null) page.hypoglykemier.allvarligForekomstEpisoder = hypoglykemierAllvarligForekomstEpisoder
             if (hypoglykemierE != null) page.hypoglykemier.fragaE = hypoglykemierE
             if (hypoglykemierAllvarligForekomstTrafikEpisoder != null) page.hypoglykemier.allvarligForekomstTrafikEpisoder = hypoglykemierAllvarligForekomstTrafikEpisoder
-            if (hypoglykemierF != null) page.hypoglykemier.fragaF = hypoglykemierF
-            if (hypoglykemierG != null) page.hypoglykemier.fragaG = hypoglykemierG
+            if (hypoglykemierF != null) { AbstractPage.scrollIntoView(page.hypoglykemier.fragaF.attr('id')); page.hypoglykemier.fragaF = hypoglykemierF }
+            if (hypoglykemierG != null) { AbstractPage.scrollIntoView(page.hypoglykemier.fragaG.attr('id')); page.hypoglykemier.fragaG = hypoglykemierG }
             if (hypoglykemierAllvarligForekomstVakenTid != null) page.hypoglykemier.allvarligForekomstVakenTid = hypoglykemierAllvarligForekomstVakenTid
 
-            if (synA != null) page.syn.fragaA = synA
+            if (synA != null) { AbstractPage.scrollIntoView(page.syn.fragaA.attr('id')); page.syn.fragaA = synA }
             if (synB != null) page.syn.fragaB = synB
             if (synHogerOgaUtanKorrektion != null) page.syn.hogerOgaUtanKorrektion = synHogerOgaUtanKorrektion
             if (synHogerOgaMedKorrektion != null) page.syn.hogerOgaMedKorrektion = synHogerOgaMedKorrektion

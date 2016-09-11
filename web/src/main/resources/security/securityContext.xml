@@ -344,7 +344,6 @@
                 <property name="signMetadata" value="true"/>
 
                 <!-- The signingKey and encryptionKey refers to the _aliases_ of the key in the keystore defined in the keyManager bean -->
-                <!-- TODO We may need different signing and encryption keys for CGI funktionstjanster than Säkerhetstjanst -->
                 <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
                 <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
                 <property name="requireArtifactResolveSigned" value="true"/>
@@ -373,11 +372,6 @@
               </bean>
             </constructor-arg>
 
-            <!--
-            TODO: If set to true, application startup fails with:
-            TODO: org.opensaml.saml2.metadata.provider.FilterException: Signature trust establishment failed for metadata entry
-            TODO: Need to look into certificates here. It may be a problem that only occurs vs test environments.
-               -->
             <property name="metadataTrustCheck" value="false"/>
           </bean>
           <!-- END IDENTITY PROVIDER BEAN FOR E-LEG -->
@@ -451,8 +445,8 @@
 
     </bean>
 
-    <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg -->
-    <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
+    <!-- SAML Authentication Provider responsible for validating of received SAML messages over SITHS or e-leg class="org.springframework.security.saml.SAMLAuthenticationProvider"-->
+    <bean id="samlAuthenticationProvider" class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationProvider">
       <property name="userDetails" ref="unifiedUserDetailsService"/>
       <property name="forcePrincipalAsString" value="false"/>
     </bean>

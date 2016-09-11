@@ -27,6 +27,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
+import java.time.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +35,6 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.joda.time.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -139,6 +139,33 @@ public class RouteIntegrationTest {
                 }
             }
             return (numberOfReceivedMessages == 2);
+        });
+    }
+
+    @Test
+    public void ensureWiretapWorks() throws Exception {
+        LocalDateTime first = LocalDateTime.now().minusSeconds(15);
+        LocalDateTime second = LocalDateTime.now().minusSeconds(10);
+
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", first, HandelsekodEnum.ANDRAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", second, HandelsekodEnum.SIGNAT, "luae_fs",
+                SchemaVersion.VERSION_2);
+
+        sendMessage(notificationMessage2);
+        sendMessage(notificationMessage3);
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
+            int numberOfReceivedMessages = certificateStatusUpdateForCareResponderV2.getNumberOfReceivedMessages();
+            if (numberOfReceivedMessages == 1) {
+                List<NotificationStubEntry> notificationMessages = certificateStatusUpdateForCareResponderV2.getNotificationMessages();
+                for (NotificationStubEntry nse : notificationMessages) {
+                    if (nse.handelseTyp.equals(HandelsekodEnum.SIGNAT.value())) {
+                        assertEquals(second, nse.handelseTid);
+                    }
+                }
+            }
+            return (numberOfReceivedMessages == 1);
         });
     }
 
@@ -307,7 +334,7 @@ public class RouteIntegrationTest {
         // DatePeriodType and PartialDateType must be allowed
         intyg.getSvar().add(InternalConverterUtil.aSvar("")
                 .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, new Partial(DateTimeFieldType.year(), 1999)))
+                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999)))
                 .build());
         return intyg;
     }

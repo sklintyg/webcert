@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.common.client.converter;
 
 import static se.inera.intyg.common.support.Constants.KV_PART_CODE_SYSTEM;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;

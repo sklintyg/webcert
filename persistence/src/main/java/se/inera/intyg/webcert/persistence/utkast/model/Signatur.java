@@ -19,16 +19,11 @@
 
 package se.inera.intyg.webcert.persistence.utkast.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import java.time.LocalDateTime;
+
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "SIGNATUR")
@@ -42,7 +37,7 @@ public class Signatur {
     private String intygsId;
 
     @Column(name = "SIGNERINGS_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime signeringsDatum;
 
     /**

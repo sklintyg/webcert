@@ -19,18 +19,21 @@
 
 package se.inera.intyg.webcert.web.service.certificatesender;
 
-import javax.annotation.PostConstruct;
-import javax.jms.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.common.Constants;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 
 /**
  * Created by eriklupander on 2015-05-20.
@@ -91,7 +94,6 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(this.body);
-            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE);
             message.setStringProperty(Constants.INTYGS_TYP, intygsTyp);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
@@ -118,7 +120,6 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(body);
-            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
@@ -145,7 +146,6 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(xmlBody);
-            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
@@ -169,7 +169,6 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(xmlBody);
-            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);

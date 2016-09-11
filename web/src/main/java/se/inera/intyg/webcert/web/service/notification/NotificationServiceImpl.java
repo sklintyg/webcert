@@ -19,13 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.*;
-
-import java.util.Optional;
-
-import javax.annotation.PostConstruct;
-import javax.jms.*;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +28,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
@@ -49,6 +39,25 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import java.util.Optional;
+
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANSVA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRTM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -392,16 +401,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         /**
          * Note that we add intygsTyp and handelseTyp as JMS headers to simplify subsequent routing.
-         *
-         * We also add a JMSX_GROUP_ID as a number of types has to be processed by the same consumer. If
-         * not of those types, we additionally send a {@link Constants#JMSX_GROUP_SEQ} instead that tells
-         * ActiveMQ to remove any existing grouping for the given JMSX_GROUP_ID.
-         *
-         * Essentially, we do this to mitigate long-term performance and stability problems in ActiveMQ where excessive
-         * amounts of stale Message Groups can cause stability problems. By sending the -1 as JMSXGroupSeq we tell
-         * ActiveMQ its OK to discard that message group.
-         *
-         * Furthermore - we actually remove those two headers in the aggregationRoute as they only are applicable there.
          */
         @Override
         public Message createMessage(Session session) throws JMSException {
@@ -409,14 +408,6 @@ public class NotificationServiceImpl implements NotificationService {
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, this.intygsId);
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, this.intygsTyp);
             textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
-            textMessage.setStringProperty(Constants.JMSX_GROUP_ID, this.intygsId);
-            switch (this.handelseTyp) {
-                case ANDRAT:
-                case SIGNAT:
-                    break;
-                default:
-                    textMessage.setIntProperty(Constants.JMSX_GROUP_SEQ, -1);
-            }
             return textMessage;
         }
     }

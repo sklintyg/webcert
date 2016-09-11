@@ -48,7 +48,7 @@
   <listener>
     <listener-class>se.inera.intyg.common.util.logging.LogbackConfiguratorContextListener</listener-class>
   </listener>
-  
+
   <!-- Start spring context -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -56,7 +56,7 @@
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
   </listener>
-  
+
   <!-- Event publisher for keeping track of when session ends and removing them from the sessionRegistry -->
   <listener>
      <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
@@ -134,7 +134,7 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  
+
   <!-- Webcert monitoring services -->
   <servlet>
     <servlet-name>monitoring</servlet-name>
@@ -283,7 +283,7 @@
     <res-type>javax.sql.DataSource</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>
-  
+
   <!-- JMS resources for PDL logging -->
   <resource-ref>
     <res-ref-name>jms/ConnectionFactory</res-ref-name>

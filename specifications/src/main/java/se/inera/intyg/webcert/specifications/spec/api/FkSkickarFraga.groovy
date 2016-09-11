@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.api
 
-import org.joda.time.LocalDateTime
+import java.time.LocalDateTime
 import org.springframework.core.io.ClassPathResource
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
@@ -106,10 +106,10 @@ class FkSkickarFraga extends WsClientFixture {
         question.fraga.meddelandeText = frageText
         if (falt) question.fkKomplettering[0].falt = falt
         if (komplettering) question.fkKomplettering[0].text = komplettering
-        if (!signeringsTidpunkt) signeringsTidpunkt = LocalDateTime.now().toString()
-        question.fraga.signeringsTidpunkt = LocalDateTime.parse(signeringsTidpunkt)
-        if (!avsantTidpunkt) avsantTidpunkt = LocalDateTime.now().toString()
-        question.avsantTidpunkt = LocalDateTime.parse(avsantTidpunkt)
+        if (!signeringsTidpunkt) signeringsTidpunkt = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        question.fraga.signeringsTidpunkt = LocalDateTime.parse(signeringsTidpunkt, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        if (!avsantTidpunkt) avsantTidpunkt = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        question.avsantTidpunkt = LocalDateTime.parse(avsantTidpunkt, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
         question.lakarutlatande.lakarutlatandeId = intygsId
         if (patientId) question.lakarutlatande.patient.personId.extension = patientId
         if (patientNamn) question.lakarutlatande.patient.fullstandigtNamn = patientNamn

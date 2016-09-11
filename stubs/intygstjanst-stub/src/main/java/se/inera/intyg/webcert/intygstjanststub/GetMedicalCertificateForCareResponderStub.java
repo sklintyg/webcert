@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.intygstjanststub;
 
 import java.io.StringReader;
+import java.time.format.DateTimeFormatter;
 
 import javax.xml.bind.JAXB;
 
@@ -70,7 +71,7 @@ public class GetMedicalCertificateForCareResponderStub implements
                 .replace("CAREUNIT_NAME", certificate.getCareUnitName())
                 .replace("CAREGIVER_ID", certificate.getCareGiverId())
                 .replace("DOCTOR_NAME", certificate.getSigningDoctorName())
-                .replace("SIGNED_DATE", certificate.getSignedDate().toString());
+                .replace("SIGNED_DATE", certificate.getSignedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         RegisterMedicalCertificateType jaxbObject = JAXB.unmarshal(new StringReader(content),
                 RegisterMedicalCertificateType.class);
         response.setLakarutlatande(jaxbObject.getLakarutlatande());

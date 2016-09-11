@@ -24,9 +24,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
-import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -70,7 +71,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSend() throws Exception {
         // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelsekodEnum.SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
@@ -97,7 +98,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSendBackwardsCompatibility() throws Exception {
         // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, new LocalDateTime(), HandelsekodEnum.SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
@@ -123,7 +124,7 @@ public class NotificationTransformerTest {
 
     @Test
     public void testSchemaVersion2Transformation() throws Exception {
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelsekodEnum.SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_2, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
@@ -164,7 +165,7 @@ public class NotificationTransformerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, new LocalDateTime(), HandelsekodEnum.SKAPAT,
+        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);

@@ -859,4 +859,12 @@
       <column name="HSA_ID"/>
     </createIndex>
   </changeSet>
+
+  <changeSet id="41" author="el">
+    <modifyDataType
+        columnName="TEXT"
+        newDataType="text"
+        tableName="MEDICINSKT_ARENDE"/>
+  </changeSet>
+
 </databaseChangeLog>

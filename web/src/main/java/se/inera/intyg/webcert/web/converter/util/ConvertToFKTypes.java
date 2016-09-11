@@ -24,7 +24,7 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
 import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import iso.v21090.dt.v1.II;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.*;

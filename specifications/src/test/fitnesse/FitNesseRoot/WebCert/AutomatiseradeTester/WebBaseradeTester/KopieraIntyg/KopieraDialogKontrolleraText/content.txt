@@ -19,10 +19,9 @@ Detta test säkerstaller att texten är som i jira webcert-1447
 | skript | !-SokSkrivIntyg-! |
 | kontrollera att | kopiera knapp har text | =~/Skapar en kopia av befintligt intyg/ |
 
-!4 Testa att nytt personnumer text inte visas i kopieradialogen, men att förlängning av sjukskrivning visas.
+!4 Testa att nytt personnumer text inte visas i kopieradialogen.
 
 | skript | !-IntegrationMedJournalsystem-! |
 | säkerställ att | kopiera dialogen visas |
 | säkerställ att inte | text nytt personnummer visas |
 | säkerställ att | text inte fran journalsystem visas |
-| säkerställ att | forlangning sjukskrivning visas |

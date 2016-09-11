@@ -19,13 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -334,18 +334,32 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     @Transactional
-    public ArendeConversationView closeArendeAsHandled(String meddelandeId) {
-        Arende arendeToClose = lookupArende(meddelandeId);
-        NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose, false);
-        arendeToClose.setStatus(Status.CLOSED);
-        Arende closedArende = arendeRepository.save(arendeToClose);
-
-        if (notificationEvent != null) {
-            sendNotification(closedArende, notificationEvent);
+    public ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp) {
+        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygTyp)) {
+            fragaSvarService.closeQuestionAsHandled(Long.parseLong(meddelandeId));
+            return null;
+        } else {
+            Arende closedArende = closeArendeAsHandled(lookupArende(meddelandeId));
+            return arendeViewConverter.convertToArendeConversationView(closedArende,
+                    arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
+                    arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
         }
-        return arendeViewConverter.convertToArendeConversationView(closedArende,
-                arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
-                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
+    }
+
+    @Override
+    public void closeAllNonClosed(String intygsId) {
+
+        List<Arende> list = arendeRepository.findByIntygsId(intygsId);
+
+        for (Arende arende : list) {
+            if (arende.getAmne() != ArendeAmne.PAMINN
+                    && arende.getSvarPaId() == null
+                    && arende.getStatus() != Status.CLOSED) {
+                closeArendeAsHandled(arende);
+            }
+        }
+
+        fragaSvarService.closeAllNonClosedQuestions(intygsId);
     }
 
     @Override
@@ -486,4 +500,14 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
+    private Arende closeArendeAsHandled(Arende arendeToClose) {
+        NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose, false);
+        arendeToClose.setStatus(Status.CLOSED);
+        Arende closedArende = arendeRepository.save(arendeToClose);
+
+        if (notificationEvent != null) {
+            sendNotification(closedArende, notificationEvent);
+        }
+        return closedArende;
+    }
 }

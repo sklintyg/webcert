@@ -15,7 +15,7 @@
 !3 Visa utkastet via integrationslänken
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | signerande lakare | Åsa+Andersson |
+| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | signerande lakare | Åsa+Andersson | enhet | IFV1239877878-1045 |
 | signerande lakare meddelande visas | Åsa Andersson |
 
 !3 Ta bort utkastet

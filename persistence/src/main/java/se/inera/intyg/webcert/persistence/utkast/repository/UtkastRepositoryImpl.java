@@ -19,23 +19,17 @@
 
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.time.LocalDateTime;
+import java.util.*;
+
+import javax.persistence.*;
+import javax.persistence.criteria.*;
+
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
@@ -97,11 +91,11 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
         }
 
         if (filter.getSavedFrom() != null) {
-            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedFrom()));
+            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedFrom()));
         }
 
         if (filter.getSavedTo() != null) {
-            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedTo()));
+            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedTo()));
         }
 
         if (authorizedIntygstyper == null) {

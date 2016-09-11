@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;

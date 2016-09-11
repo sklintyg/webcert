@@ -20,11 +20,11 @@
 package se.inera.intyg.webcert.persistence.utkast.model;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -90,7 +90,7 @@ public class Utkast {
     private VardpersonReferens senastSparadAv;
 
     @Column(name = "SENAST_SPARAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime senastSparadDatum;
 
     @Lob
@@ -109,11 +109,11 @@ public class Utkast {
     private String skickadTillMottagare;
 
     @Column(name = "SKICKAD_TILL_MOTTAGARE_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickadTillMottagareDatum;
 
     @Column(name = "ATERKALLAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime aterkalladDatum;
 
     @OneToOne(optional = true, cascade = CascadeType.ALL)
@@ -130,13 +130,13 @@ public class Utkast {
     @PrePersist
     void onPrePersist() {
         if (senastSparadDatum == null) {
-            senastSparadDatum = new LocalDateTime();
+            senastSparadDatum = LocalDateTime.now();
         }
     }
 
     @PreUpdate
     void onPreUpdate() {
-        senastSparadDatum = new LocalDateTime();
+        senastSparadDatum = LocalDateTime.now();
     }
 
     @Override

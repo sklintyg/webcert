@@ -32,7 +32,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 | uppdatera origin till | DJUPINTEGRATION |
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration med | $intygsid | personnummer | ${person2.personnummer} |
+| visa intyg via integration med | $intygsid | personnummer | ${person2.personnummer} | enhet | IFV1239877878-1042 |
 
 !3 Kopiera intyget
 

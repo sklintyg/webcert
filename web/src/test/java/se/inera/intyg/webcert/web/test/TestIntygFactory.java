@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.web.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;

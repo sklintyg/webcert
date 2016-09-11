@@ -20,18 +20,35 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
+import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
+import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
+import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
 public class FmbApiControllerTest {
@@ -45,9 +62,21 @@ public class FmbApiControllerTest {
     @Mock
     private FmbService fmbService;
 
+    @Mock
+    private DiagnosService diagnosService;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
+            .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
+    }
+
+    private List<Diagnos> makeDiagnoser() {
+        Diagnos diagnos = new Diagnos();
+        diagnos.setBeskrivning("Diagnosbeskrivning");
+        diagnos.setKod("Diagnoskod");
+        return Arrays.asList(diagnos);
     }
 
     @Test
@@ -86,7 +115,7 @@ public class FmbApiControllerTest {
         assertEquals(0, response.getForms().size());
     }
 
-  /*  @Test
+    @Test
     public void testGetFmbForIcd10HandlesAddsTextForOneRow() throws Exception {
         // Given
         ArrayList<Fmb> fmbs = new ArrayList<>();
@@ -192,6 +221,30 @@ public class FmbApiControllerTest {
                 assertNull(fmbContent.getList());
             }
         }
-    }*/
+    }
 
+    @Test
+    public void testGetFmbForIcd10TryFewerPositionsWhenNotFound() throws Exception {
+        // Given
+        ArrayList<Fmb> fmbs = new ArrayList<>();
+        String text = "testtext";
+        fmbs.add(new Fmb("M118", FmbType.FUNKTIONSNEDSATTNING, FmbCallType.FMB, text, "1"));
+        Mockito.when(fmbRepository.findByIcd10AndTyp(Mockito.eq("M118G"), any(FmbType.class))).thenReturn(null);
+        Mockito.when(fmbRepository.findByIcd10AndTyp(Mockito.eq("M118"), any(FmbType.class))).thenReturn(fmbs);
+
+        // When
+        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("M118G").getEntity();
+
+        // Then
+        assertEquals(FmbFormName.values().length, response.getForms().size());
+
+        List<FmbForm> forms = response.getForms();
+        for (FmbForm form : forms) {
+            List<FmbContent> content = form.getContent();
+            for (FmbContent fmbContent : content) {
+                assertEquals(text, fmbContent.getText());
+                assertNull(fmbContent.getList());
+            }
+        }
+    }
 }

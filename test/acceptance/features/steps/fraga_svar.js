@@ -21,6 +21,7 @@
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var fkLusePage = pages.intyg.luse.intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var lisuUtkastPage = pages.intyg.lisu.utkast;
 var helpers = require('./helpers');
@@ -84,21 +85,29 @@ module.exports = function() {
 
     });
 
-    this.Given(/^jag väljer att svara med ett nytt intyg$/, function(callback) {
+    this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         var fragaText = global.intyg.guidcheck;
+        var page = fkIntygPage;
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            page = fkLusePage;
+        }
+
 
         if (!intyg.messages || intyg.messages.length <= 0) {
-            callback('Inga frågor hittades');
+            throw ('Inga frågor hittades');
         } else {
-            var svaraBtn = fkIntygPage.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', ' Svara med nytt intyg'));
-            svaraBtn.sendKeys(protractor.Key.SPACE)
+            var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', 'Svara'));
+            return svaraBtn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
                     global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
-                    callback();
+
+                    return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
                 });
         }
     });
+
 
     this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ, callback) {
         var fragaText;
@@ -149,16 +158,19 @@ module.exports = function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
-        var svaraPaKomplettering = kompletteringsFraga.element(by.model('cannotKomplettera')).sendKeys(protractor.Key.SPACE)
+        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', ' Svara')).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return browser.sleep(2000);
+                return fkIntygPage.komplettera.dialog.svaraMedTextKnapp.sendKeys(protractor.Key.SPACE);
+            })
+            .then(function() {
+                return browser.sleep(2000); // Sleep pga animation
             })
             .then(function() {
                 return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar);
 
             })
             .then(function() {
-                return browser.sleep(1000);
+                return browser.sleep(1000); // Sleep pga animation
             })
             .then(function() {
                 return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
@@ -203,8 +215,8 @@ module.exports = function() {
 
             })
             .then(function() {
-                // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions 
-                // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); // 
+                // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions
+                // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); //
                 return panel.getText().then(function(text) {
                     expect(text).to.contain('Ämne: Påminnelse');
                 });
@@ -216,7 +228,7 @@ module.exports = function() {
         fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
     });
 
-    this.Given(/^jag markerar svaret från Försäkringskassan som hanterat$/, function() {
+    this.Given(/^jag markerar svaret från Försäkringskassan (?:.*) hanterat$/, function() {
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
@@ -260,7 +272,6 @@ module.exports = function() {
             console.log(body);
             var path = '/send-message-to-care/v1.0?wsdl';
             url = process.env.INTYGTJANST_URL + path;
-            // var url = 'https://webcert.ip30.nordicmedtest.sjunet.org/services/send-message-to-care/v1.0?wsdl'; //tillsv
             url = url.replace('https', 'http');
 
             soap.createClient(url, function(err, client) {

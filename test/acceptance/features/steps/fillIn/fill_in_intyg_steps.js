@@ -20,9 +20,14 @@
 /*global intyg,wcTestTools, protractor, browser */
 
 'use strict';
+
+/*jshint maxcomplexity:false */
 var fillIn = require('./').fillIn;
 var generateIntygByType = require('../helpers.js').generateIntygByType;
+var helpers = require('../helpers');
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
+var lisuUtkastPage = wcTestTools.pages.intyg.lisu.utkast;
 var td = wcTestTools.testdata;
 
 module.exports = function() {
@@ -36,12 +41,21 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^jag ändrar diagnoskod$/, function(callback) {
-        fkUtkastPage.angeDiagnosKod(td.values.fk.getRandomDiagnoskod())
-            .then(callback());
+    this.Given(/^jag ändrar diagnoskod$/, function() {
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var kod = td.values.fk.getRandomDiagnoskod();
+        if (isSMIIntyg) {
+            return luseUtkastPage.diagnoseCode.sendKeys(kod);
+        } else {
+            return fkUtkastPage.angeDiagnosKod(kod);
+        }
+
     });
 
-    this.Given(/^jag ändrar i fältet (sjukskrivningsperiod|arbetsförmåga|diagnoskod)*$/, function(field, callback) {
+
+    this.Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field, callback) {
+        console.log('Fältet som ändras är: ' + field);
+
         if (field === 'sjukskrivningsperiod') {
             browser.ignoreSynchronization = true;
             fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
@@ -58,6 +72,57 @@ module.exports = function() {
         } else {
             callback(null, 'pending');
         }
+
+
+    });
+
+    this.Given(/^jag ändrar i slumpat fält$/, function(callback) {
+
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var field;
+        var intygShortcode = helpers.getAbbrev(intyg.typ);
+
+        if (intygShortcode === 'LUSE') {
+            field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+            console.log('Fältet som ändras är: ' + field);
+
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsbegransning = helpers.randomTextString();
+                luseUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            } else if (field === 'sjukdomsforlopp') {
+                intyg.sjukdomsforlopp = helpers.randomTextString();
+                luseUtkastPage.sjukdomsforlopp.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsnedsattning = {};
+                intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
+                console.log(intyg);
+                luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell).then(callback);
+            } else {
+                callback(null, 'pending');
+            }
+
+        } else if (intygShortcode === 'LISU') {
+            field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+            console.log('Fältet som ändras är: ' + field);
+
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsbegransning = helpers.randomTextString();
+                lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsnedsattning = helpers.randomTextString();
+                lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            } else if (field === 'sysselsattning') {
+                lisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
+                intyg.nuvarandeArbeteBeskrivning = helpers.randomTextString();
+                lisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
+            } else {
+                callback(null, 'pending');
+            }
+
+        } else {
+            callback(null, 'pending');
+        }
+
     });
 
     this.Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function(callback) {

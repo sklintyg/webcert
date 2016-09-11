@@ -35,7 +35,9 @@ function post(options, baseUrl) {
         baseUrl = browser.baseUrl;
     }
     options.url = baseUrl + options.url;
-    console.log(options.method, options.url);
+    console.log('== NEW REQUEST - ', 'URL: ' + options.url);
+    console.log('HEADERS:' + JSON.stringify(options));
+    console.log('== END REQUEST ==');
     request(options, function(error, message) {
         if (error || message.statusCode >= 400) {
             console.log('Request error:', error);

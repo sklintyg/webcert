@@ -37,10 +37,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 createErrorMessageKey: null,
                 inlineErrorMessageKey: null,
                 currentList: undefined,
-                unsigned: 'certlist-empty', // unsigned, unsigned-mixed,
-                luseDescriptionLabel: 'DFR_3.1',
-                lisuDescriptionLabel: 'XYZ123',
-                luae_naDescriptionLabel: 'luae123'
+                unsigned: 'certlist-empty' // unsigned, unsigned-mixed,
             };
 
             $scope.filterForm = {
@@ -144,10 +141,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.changePatient = function() {
                 $location.path(changePatientUrl);
-            };
-
-            $scope.getDynamicText = function(key) {
-                return DynamicLabelService.getProperty(key);
             };
 
             //Use loaded module metadata to look up detailed description for a intygsType

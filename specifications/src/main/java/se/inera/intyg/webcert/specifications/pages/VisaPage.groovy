@@ -45,9 +45,6 @@ class VisaPage extends AbstractPage {
         kopieraKnappNoWait(required: false) { $("#copyBtn") }
         makuleraKnappNoWait { $("#makuleraBtn") }
 
-        kopieraDialogMsgForlangningSjukskrivning(required:false, wait: true) { $("#msgForlangningSjukskrivning") }
-        kopieraDialogMsgForlangningSjukskrivningNoWait(required:false) { $("#msgForlangningSjukskrivning") }
-
     }
 
     /**

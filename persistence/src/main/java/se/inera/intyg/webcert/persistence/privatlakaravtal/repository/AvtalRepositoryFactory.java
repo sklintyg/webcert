@@ -20,11 +20,11 @@
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

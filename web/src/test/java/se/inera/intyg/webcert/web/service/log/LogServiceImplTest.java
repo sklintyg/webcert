@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import javax.jms.Session;
 import java.util.Collections;
 
-import static org.joda.time.LocalDateTime.now;
+import static java.time.LocalDateTime.now;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

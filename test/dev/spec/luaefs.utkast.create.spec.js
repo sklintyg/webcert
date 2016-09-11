@@ -25,137 +25,136 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-describe('Create and Sign luae_fs utkast', function() {
+describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
+        specHelper.createUtkastForPatient('191212121212',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
     });
 
-    describe('Skapa luae_fs utkatst', function() {
+    describe('Fyll i luae_fs intyg', function() {
 
-        describe('Interagera med utkastet', function() {
+        it('Spara undan intygsId från URL', function() {
 
-            it('Spara undan intygsId från URL', function() {
-
-                // Save id so it can be removed in cleanup stage.
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
-                });
+            // Save id so it can be removed in cleanup stage.
+            browser.getCurrentUrl().then(function(url) {
+                utkastId = url.split('/').pop();
             });
+        });
 
-            describe('Fyll i luae_fs intyg', function() {
+        it('tomt utkast skall visa lista med fel efter klick på "Visa vad som saknas"', function() {
 
-                it('tomt utkast skall visa lista med fel efter klick på "Visa vad som saknas"', function() {
+            UtkastPage.disableAutosave();
 
-                    UtkastPage.disableAutosave();
+            UtkastPage.showMissingInfoButtonClick();
 
-                    UtkastPage.showMissingInfoButtonClick();
+            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
 
-                    expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
+        });
 
-                });
+        it('Grund - baserat på', function() {
 
-                it('Grund - baserat på', function() {
+            var promiseArr = [];
 
-                    var promiseArr = [];
+            promiseArr.push(UtkastPage.angeIntygetBaserasPa({
+                minUndersokningAvPatienten: {
+                    datum: '2016-04-22'
+                }
+            }));
 
-                    promiseArr.push(UtkastPage.angeIntygetBaserasPa({
-                        minUndersokningAvPatienten: {
-                            datum: '2016-04-22'
-                        }
-                    }));
+            promiseArr.push(UtkastPage.angeIntygetBaserasPa({
+                kannedomOmPatient: {
+                    datum: '2016-04-21'
+                }
+            }));
 
-                    promiseArr.push(UtkastPage.angeIntygetBaserasPa({
-                        kannedomOmPatient: {
-                            datum: '2016-04-21'
-                        }
-                    }));
+            promiseArr.push(UtkastPage.angeIntygetBaserasPa({
+                annat: {
+                    datum: '2016-04-23',
+                    beskrivning: 'Utlåtande från skolledningen'
+                }
+            }));
 
-                    promiseArr.push(UtkastPage.angeIntygetBaserasPa({
-                        annat: {
-                            datum: '2016-04-23',
-                            beskrivning: 'Utlåtande från skolledningen'
-                        }
-                    }));
+            Promise.all(promiseArr);
 
-                    Promise.all(promiseArr);
+            expect(UtkastPage.baseratPa.minUndersokningAvPatienten.datum.getAttribute('value')).toBe('2016-04-22');
+            expect(UtkastPage.baseratPa.kannedomOmPatient.datum.getAttribute('value')).toBe('2016-04-21');
+            expect(UtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-04-23');
+            expect(UtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe(
+                'Utlåtande från skolledningen');
+        });
 
-                    expect(UtkastPage.baseratPa.minUndersokningAvPatienten.datum.getAttribute('value')).toBe('2016-04-22');
-                    expect(UtkastPage.baseratPa.kannedomOmPatient.datum.getAttribute('value')).toBe('2016-04-21');
-                    expect(UtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-04-23');
-                    expect(UtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Utlåtande från skolledningen');
-                });
+        it('Andra medicinska utredningar eller underlag', function() {
+            var utredningar = [{
+                underlag: 'Neuropsykiatriskt utlåtande',
+                datum: '2016-04-16',
+                infoOmUtredningen: 'Hämtas hos posten'
+            }];
+            UtkastPage.angeAndraMedicinskaUtredningar(utredningar);
 
-                it('Andra medicinska utredningar eller underlag', function() {
-                    var utredningar = [{
-                        underlag: 'Neuropsykiatriskt utlåtande',
-                        datum: '2016-04-16',
-                        infoOmUtredningen: 'Hämtas hos posten'
-                    }];
-                    UtkastPage.angeAndraMedicinskaUtredningar(utredningar);
+            expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
+        });
 
-                    expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
-                });
+        it('Lägg till ytterligare ett annat underlag, ta bort igen.', function() {
+            UtkastPage.clickCreateUnderlag();
+            expect(UtkastPage.getNumberOfUnderlag()).toBe(2);
 
-                it('Lägg till ytterligare ett annat underlag, ta bort igen.', function() {
-                    UtkastPage.clickCreateUnderlag();
-                    expect(UtkastPage.getNumberOfUnderlag()).toBe(2);
+            UtkastPage.clickRemoveUnderlag(1);
+            expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
+        });
 
-                    UtkastPage.clickRemoveUnderlag(1);
-                    expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
-                });
+        it('Ange diagnoser', function() {
+            var diagnosObj = {
+                diagnoser: [{
+                    'kod': 'J21'
+                }, {
+                    'kod': 'J22'
+                }, {
+                    'kod': 'A21'
+                }]
+            };
+            UtkastPage.angeDiagnos(diagnosObj);
 
-                it('Ange diagnoser', function() {
-                    var diagnosObj = {
-                        diagnoser: [{
-                            'kod': 'J21'
-                        }, {
-                            'kod': 'J22'
-                        }, {
-                            'kod': 'A21'
-                        }]
-                    };
-                    UtkastPage.angeDiagnos(diagnosObj);
+            expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3);
 
-                    expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3);
+            UtkastPage.taBortDiagnos(1);
+            expect(UtkastPage.getNumberOfDiagnosRows()).toBe(2);
+        });
 
-                    UtkastPage.taBortDiagnos(1);
-                    expect(UtkastPage.getNumberOfDiagnosRows()).toBe(2);
-                });
+        it('Ange funktionsnedsättningar', function() {
+            UtkastPage.funktionsnedsattningDebut.sendKeys('Komplex tango på skoldansen, knäfraktur.');
+            UtkastPage.funktionsnedsattningPaverkan.sendKeys(
+                'Dansen funkar inte längre, svårt att fullfölja baletten.');
+        });
 
-                it('Ange funktionsnedsättningar', function() {
-                    UtkastPage.funktionsnedsattningDebut.sendKeys('Komplex tango på skoldansen, knäfraktur.');
-                    UtkastPage.funktionsnedsattningPaverkan.sendKeys('Dansen funkar inte längre, svårt att fullfölja baletten.');
-                });
+        it('Ange övrigt', function() {
+            UtkastPage.ovrigt.sendKeys('Behöver nog ett par år extra för att komma ikapp efter skadan.');
+        });
 
-                it('Ange övrigt', function() {
-                    UtkastPage.ovrigt.sendKeys('Behöver nog ett par år extra för att komma ikapp efter skadan.');
-                });
+        it('Ange kontakt önskas', function() {
+            var promiseArr = [];
+            promiseArr.push(UtkastPage.kontaktMedFkNo.click());
+            promiseArr.push(
+                UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.'));
 
-                it('Ange kontakt önskas', function() {
-                    var promiseArr = [];
-                    promiseArr.push(UtkastPage.kontaktMedFkNo.click());
-                    promiseArr.push(UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.'));
+            Promise.all(promiseArr);
+        });
 
-                    Promise.all(promiseArr);
-                });
+        it('Ange tilläggsfrågor', function() {
+            UtkastPage.tillaggsfragor0svar.sendKeys('Vad för slags fråga är det där?!?!?');
+            UtkastPage.enableAutosave();
+            UtkastPage.tillaggsfragor1svar.sendKeys(
+                'Likheten på en struts? Båda benen är lika långa, särskilt det vänstra.');
+        });
 
-                it('Ange tilläggsfrågor', function() {
-                    UtkastPage.tillaggsfragor0svar.sendKeys('Vad för slags fråga är det där?!?!?');
-                    UtkastPage.enableAutosave();
-                    UtkastPage.tillaggsfragor1svar.sendKeys('Likheten på en struts? Båda benen är lika långa, särskilt det vänstra.');
-                });
-
-                it('Signera intyget', function() {
-                    UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                        UtkastPage.signeraButtonClick();
-                        expect(IntygPage.isAt()).toBeTruthy();
-                    });
-                });
+        it('Signera intyget', function() {
+            UtkastPage.whenSigneraButtonIsEnabled().then(function() {
+                UtkastPage.signeraButtonClick();
+                expect(IntygPage.isAt()).toBeTruthy();
             });
         });
     });

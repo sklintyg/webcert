@@ -61,6 +61,8 @@ describe('luae_na attic tests', function() {
         UtkastPage.showMissingInfoButtonClick();
 
         expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
+
+        UtkastPage.disableAutosave();
     });
 
     describe('annat', function() {
@@ -133,6 +135,7 @@ describe('luae_na attic tests', function() {
         });
 
         it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
+            UtkastPage.enableAutosave();
             UtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
             UtkastPage.showMissingInfoButtonClick(true);
 

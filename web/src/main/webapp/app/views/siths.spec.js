@@ -51,6 +51,6 @@ describe('Siths.jsp', function() {
             var serial = getSerialFromSubject(subject);
             expect(serial).toBe('SE2321000065-TEST0019');
         });
-    });  
+    });
 
 });

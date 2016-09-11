@@ -19,9 +19,8 @@
 
 package se.inera.intyg.webcert.specifications.spec.web.fk7263
 
-import org.joda.time.LocalDate
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
 import se.inera.intyg.common.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
@@ -30,7 +29,7 @@ import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandl
 
 class PopuleraFk7263 extends ExceptionHandlingFixture {
 
-    public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
+    public static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     Boolean smittskydd
     Boolean undersokning
@@ -261,6 +260,9 @@ class PopuleraFk7263 extends ExceptionHandlingFixture {
                 }
             }
 
+            if (rekommendationKontaktAf != null || rekommendationKontaktForetagshalsovard != null || rekommendationOvrigt != null) {
+                AbstractPage.scrollIntoView(page.rekommendationer.kontaktAf.attr("id"));
+            }
             if (rekommendationKontaktAf != null) page.rekommendationer.kontaktAf = rekommendationKontaktAf
             if (rekommendationKontaktForetagshalsovard != null) page.rekommendationer.kontaktForetagshalsovard = rekommendationKontaktForetagshalsovard
             if (rekommendationOvrigt != null) page.rekommendationer.ovrigt = rekommendationOvrigt
@@ -284,6 +286,6 @@ class PopuleraFk7263 extends ExceptionHandlingFixture {
     }
 
     String toDate(int relativeFromToday) {
-        new LocalDate().plusDays(relativeFromToday).toString(fmt)
+        LocalDate.now().plusDays(relativeFromToday).format(fmt)
     }
 }

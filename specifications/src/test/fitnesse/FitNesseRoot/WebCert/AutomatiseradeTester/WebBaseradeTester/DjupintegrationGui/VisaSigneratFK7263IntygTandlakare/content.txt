@@ -9,12 +9,12 @@ Testet beskriver fallet när en tandläkare går in på ett signerat FK7263 inty
 !3 Lägg till fråga på intyget
 
 | Fraga Svar |
-| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
-| OVRIGT | FIT-QA-DENT-1 | FK | En fråga från försäkringskassan | intyg-fit-dentist-1 | tore-tandlakare | Tore Tandläkare | tandenheten-1 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+| amne   | externReferens | frageStallare | frageText                       | intygsId            | lakareId        | lakareNamn      | enhetsId      | fragaSkickad | status                  | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning   | internReferens?   |
+| OVRIGT | FIT-QA-DENT-1  | FK            | En fråga från försäkringskassan | intyg-fit-dentist-1 | tore-tandlakare | Tore Tandläkare | tandenheten-1 | 2013-01-01   | PENDING_INTERNAL_ACTION | false           |           | 2013-10-20        | Övrig från FK | $internReferens1= |
 
 | Fraga Svar |
-| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt | internReferens? |
-| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-dent-1| tore-tandlakare | Tore Tandläkare | tandenheten-1 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
+| amne   | externReferens | frageStallare | frageText | intygsId       | lakareId        | lakareNamn      | enhetsId      | fragaSkickad | status                  | vidarebefordrad | svarsText | svarSkickat | patientId     | beskrivning | meddelandeRubrik                                    | fkKontakt   | internReferens?   |
+| OVRIGT | FIT-QA-1000    | FK            | En fråga  |intyg-fit-dent-1| tore-tandlakare | Tore Tandläkare | tandenheten-1 | 2013-01-01   | PENDING_INTERNAL_ACTION | false           |           |             | Övrig från FK | FK Rubrik   | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
 
 !3 Logga in
 
@@ -34,7 +34,7 @@ Testet beskriver fallet när en tandläkare går in på ett signerat FK7263 inty
 !3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
 
 | skript | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration | intyg-fit-dent-1 |
+| visa intyg | intyg-fit-dent-1 | via integration med enhet | tandenheten-1 |
 | säkerställ att inte | verifiera tillbakaknapp synlig |
 | säkerställ att inte | vidarebefordra ej hanterad fraga synlig |
 

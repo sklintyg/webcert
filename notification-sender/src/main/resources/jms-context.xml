@@ -28,6 +28,14 @@
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
   </bean>
 
+  <!-- The aggregation route needs to supply the destination option consumer.exclusive=true directly when connecting to the broker. -->
+  <bean id="activemq"
+      class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="brokerURL" value="${amq.broker.url}"/>
+    <property name="userName" value="${amq.broker.username}"/>
+    <property name="password" value="${amq.broker.password}" />
+  </bean>
+
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
     <property name="errorHandlerLoggingLevel" value="OFF"/>
     <property name="errorHandlerLogStackTrace" value="false"/>

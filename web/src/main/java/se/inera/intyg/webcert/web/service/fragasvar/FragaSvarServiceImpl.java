@@ -19,8 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +33,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
@@ -43,17 +45,11 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
-import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
-import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
-import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
+import se.inera.intyg.webcert.web.converter.*;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -67,19 +63,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-
-import javax.xml.ws.soap.SOAPFaultException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -162,11 +145,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
-        // TODO - validation: does answer fit to question?
-
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
-        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setSvarSkickadDatum(LocalDateTime.now());
         fragaSvar.setStatus(Status.ANSWERED);
 
         monitoringService.logAnswerReceived(fragaSvar.getExternReferens(),
@@ -260,7 +241,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") can only be answered by user that is Lakare");
         }
 
-        LocalDateTime now = new LocalDateTime();
+        LocalDateTime now = LocalDateTime.now();
 
         // Ok, lets save the answer
         fragaSvar.setVardAktorHsaId(user.getHsaId());
@@ -350,7 +331,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());
         fraga.setAmne(amne);
         fraga.setFrageText(frageText);
-        LocalDateTime now = new LocalDateTime();
+        LocalDateTime now = LocalDateTime.now();
         fraga.setFrageSkickadDatum(now);
         fraga.setFrageSigneringsDatum(now);
 
@@ -410,16 +391,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public FragaSvar closeQuestionAsHandled(Long frageSvarId) {
-        FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
-        NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
-
-        FragaSvar closedFragaSvar = closeQuestionAsHandled(fragaSvar);
-
-        if (notificationEvent != null) {
-            sendNotification(closedFragaSvar, notificationEvent);
-        }
-
-        return closedFragaSvar;
+        return closeQuestionAsHandled(lookupFragaSvar(frageSvarId));
     }
 
     /**
@@ -428,28 +400,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
      *
      * @param intygsId
      *            the certificates unique identifier
-     * @return an array with FragaSvar objects whose status has been set to closed
      */
     @Override
-    public FragaSvar[] closeAllNonClosedQuestions(String intygsId) {
+    public void closeAllNonClosedQuestions(String intygsId) {
 
         List<FragaSvar> list = fragaSvarRepository.findByIntygsReferensIntygsId(intygsId);
-        ListIterator<FragaSvar> iterator = list.listIterator();
 
-        List<FragaSvar> al = new ArrayList<>();
-
-        while (iterator.hasNext()) {
-            FragaSvar fragaSvar = iterator.next();
+        for (FragaSvar fragaSvar : list) {
             if (fragaSvar.getStatus() != Status.CLOSED) {
-                al.add(closeQuestionAsHandled(fragaSvar));
+                closeQuestionAsHandled(fragaSvar);
             }
         }
-
-        if (al.isEmpty()) {
-            return new FragaSvar[0];
-        }
-
-        return al.toArray(new FragaSvar[al.size()]);
     }
 
     @Override
@@ -570,8 +531,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     /* --------------------- Private scope --------------------- */
     private FragaSvar closeQuestionAsHandled(FragaSvar fragaSvar) {
+        NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
+
         fragaSvar.setStatus(Status.CLOSED);
-        return fragaSvarRepository.save(fragaSvar);
+        FragaSvar closedFragaSvar = fragaSvarRepository.save(fragaSvar);
+
+        if (notificationEvent != null) {
+            sendNotification(closedFragaSvar, notificationEvent);
+        }
+        return closedFragaSvar;
     }
 
     private NotificationEvent determineNotificationEvent(FragaSvar fragaSvar) {

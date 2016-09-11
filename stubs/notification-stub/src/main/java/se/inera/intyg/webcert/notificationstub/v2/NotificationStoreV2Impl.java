@@ -19,19 +19,15 @@
 
 package se.inera.intyg.webcert.notificationstub.v2;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Ordering;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.*;
+
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 
 public class NotificationStoreV2Impl implements NotificationStoreV2 {
 

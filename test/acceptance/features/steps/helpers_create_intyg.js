@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,logger,pages,Promise,wcTestTools,user,person,protractor*/
+/*global intyg,logger,pages,Promise,wcTestTools,user,person,protractor, JSON*/
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
 var loginHelpers = require('./inloggning/login.helpers.js');
@@ -27,9 +27,11 @@ var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var rUtil = wcTestTools.restUtil;
-var intygGenerator = require('../../../webcertTestTools/util/intygGenerator.util.js');
+// var intygGenerator = wcTestTools.intygGenerator;
+var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-function createIntygWithRest(intygOptions) {
+function createIntygWithRest(intygObj) {
+
     var userObj = {
         fornamn: user.fornamn,
         efternamn: user.efternamn,
@@ -40,15 +42,16 @@ function createIntygWithRest(intygOptions) {
     };
 
     return rUtil.login(userObj).then(function(data) {
-        logger.debug('Login OK');
+        logger.info('Login OK');
         return Promise.resolve('SUCCESS');
     }, function(error) {
-        throw (error);
+        throw ('Login error: ' + error);
     }).then(function() {
-        rUtil.createIntyg(intygGenerator.buildIntyg(intygOptions)).then(function(response) {
+        rUtil.createIntyg(intygObj).then(function(response) {
             logger.info('Skapat intyg via REST-api');
+            console.log(JSON.parse(response.request.body));
         }, function(error) {
-            throw (error);
+            throw ('Error calling createIntyg' + error);
         });
     });
 }
@@ -93,50 +96,60 @@ function createTsIntyg(typ, status) {
         });
 }
 
+function isFKIntyg(typ) {
+    return ((typ.indexOf('Läkarintyg') > -1) || (typ.indexOf('Läkarutlåtande') > -1));
+}
+
 module.exports = {
     createIntygWithStatus: function(typ, status) {
         //TODO, Hantera ts-intyg
 
         intyg.id = testdataHelper.generateTestGuid();
+        // var signeringsDatum = '2015-04-28T14:00:00.000';
         logger.debug('intyg.id = ' + intyg.id);
 
         if (typ.indexOf('Transportstyrelsen') > -1) {
             return createTsIntyg(typ, status);
 
-        } else if (typ === 'Läkarintyg FK 7263') {
+        } else if (isFKIntyg(typ)) {
+            var intygObj;
 
-            return createIntygWithRest({
-                personnr: person.id,
-                patientNamn: 'Test Testsson',
-                //issuerId : '',
-                issuer: user.fornamn + ' ' + user.efternamn,
-                issued: '2015-04-01',
-                validFrom: '2015-04-01',
-                validTo: '2015-04-11',
-                enhetId: user.enhetId,
-                //enhet : '',
-                vardgivarId: 'TSTNMT2321000156-1002',
-                intygType: 'fk7263',
-                intygId: intyg.id,
-                sent: (status === 'Mottaget' || status === 'Makulerat'),
-                revoked: (status === 'Makulerat')
-            });
-        } else if (typ === 'Läkarutlåtande för sjukersättning') {
+            if (typ === 'Läkarintyg FK 7263') {
+                intygObj = intygFromJsonFactory.defaultFK7263();
 
-            return createIntygWithRest({
-                personnr: person.id,
-                patientNamn: 'Test Testsson',
-                issuer: user.hsaId,
-                issued: '2016-04-01',
-                validFrom: '2016-04-01',
-                validTo: '2016-04-11',
-                enhetId: user.enhetId,
-                vardgivarId: 'TSTNMT2321000156-1002',
-                intygType: 'luse',
-                intygId: intyg.id,
-                sent: (status === 'Mottaget' || status === 'Makulerat'),
-                revoked: (status === 'Makulerat')
-            });
+            } else if (typ === 'Läkarutlåtande för sjukersättning') {
+                intygObj = intygFromJsonFactory.defaultLuse();
+
+            } else if (typ === 'Läkarintyg för sjukpenning utökat') {
+                //intygObj = intygFromJsonFactory.defaultLisu();
+                throw ('TODO: Skapa LISU via REST');
+            }
+            var intygDoc = JSON.parse(intygObj.document);
+            intygDoc.grundData.patient.personId = person.id;
+            intygDoc.grundData.patient.personId = person.id;
+            intygDoc.grundData.skapadAv.vardenhet.enhetsid = user.enhetId;
+            intygDoc.grundData.skapadAv.personId = user.hsaId;
+
+            intygObj.signingDoctorName = user.fornamn + ' ' + user.efternamn;
+            intygObj.careUnitId = user.enhetId;
+            intygObj.civicRegistrationNumber = person.id;
+
+            intygObj.revoked = (status === 'Makulerat');
+
+            intygObj.certificateStates = [{
+                target: 'HV',
+                state: 'RECEIVED',
+                timestamp: '2016-04-28T14:00:00.000'
+            }];
+            if (status === 'Mottaget' || status === 'Makulerat') {
+                intygObj.certificateStates.push({
+                    state: 'SENT',
+                    target: 'FK',
+                    timestamp: '2016-08-05T14:31:03.227'
+                });
+            }
+            intygObj.document = JSON.stringify(intygDoc);
+            return createIntygWithRest(intygObj);
 
         } else {
             throw ('TODO: Hantera fall då det inte redan finns något intyg att använda');
