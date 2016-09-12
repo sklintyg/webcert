@@ -57,6 +57,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
+@nyttIntyg
 Scenario: Ska få varning vid svar med nytt intyg
    När jag går in på en patient
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
@@ -64,7 +65,7 @@ Scenario: Ska få varning vid svar med nytt intyg
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska inte kunna komplettera med nytt intyg från webcert
-   Och jag ska se en varningstext för svara med nytt intyg
+   Och ska kompletteringsdialogen innehålla texten "Kopiera/förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
    
 @komplettering
 Scenario: Ska kunna besvara komplettering med textmeddelande

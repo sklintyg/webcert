@@ -140,18 +140,20 @@ module.exports = function() {
     //     });
     // });
 
-    this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function(callback) {
-        var answerWithIntygBtnId = 'answerWithIntygBtn-' + global.intyg.messages[0].id;
-        expect(element(by.id(answerWithIntygBtnId)).isPresent()).to.eventually.not.be.ok.and.notify(callback);
+    this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
+        var answerWithIntygBtn = element(by.id('answerWithIntygBtn-' + global.intyg.messages[0].id));
+
+        return answerWithIntygBtn.sendKeys(protractor.Key.SPACE).then(function() {
+            return expect(element(by.cssContainingText('.btn', 'Svara med nytt intyg')).isDisplayed()).to.eventually.not.be.ok;
+        });
+
     });
 
-    this.Given(/^jag ska se en varningstext för svara med nytt intyg/, function(callback) {
-        var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
-
-        expect(kompletteringsFraga.element(by.cssContainingText('.alert-warning',
-            'Gå tillbaka till journalsystemet för att svara på kompletteringsbegäran med nytt intyg.')).isPresent()).
-        to.eventually.be.ok.and.notify(callback);
+    this.Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
+        return expect(fkIntygPage.komplettera.dialog.modal.getText()).to.eventually.contain(text);
     });
+
+
 
     this.Given(/^jag ska kunna svara med textmeddelande/, function() {
         browser.ignoreSynchronization = false;

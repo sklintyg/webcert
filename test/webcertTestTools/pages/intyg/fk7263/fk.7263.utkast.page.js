@@ -174,7 +174,7 @@ var FkUtkast = BaseUtkast._extend({
 
         function sendEnterToElement(el) {
             return function() {
-                el.sendKeys(protractor.Key.ENTER);
+                return el.sendKeys(protractor.Key.ENTER);
             };
         }
         return diagnosKodEl.sendKeys(kod).then(function() {

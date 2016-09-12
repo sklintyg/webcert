@@ -77,11 +77,14 @@ module.exports = function() {
 
         alertWarnings.each(function(element) {
             element.getText().then(function(warning) {
+                logger.info('Varning: ' + warning);
                 if (warning.indexOf(text) !== -1) {
                     console.log('Warning containing text: "' + text + '" found.');
                     expect(element.getText()).to.eventually.contain(text).and.notify(callback);
                 }
             });
+        }).then(function() {
+            throw 'Hittade ingen varning med text "' + text + '"';
         });
     });
 

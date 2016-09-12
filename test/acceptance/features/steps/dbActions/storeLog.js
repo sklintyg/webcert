@@ -103,7 +103,7 @@ function handleDisconnect() {
     connection.connect(function(err) {
         if (err) {
             logger.warn('Fel i anslutning till databasen:', err);
-            setTimeout(handleDisconnect, 2000);
+            //setTimeout(handleDisconnect, 2000);
         }
     });
     connection.on('error', function(err) {
