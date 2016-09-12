@@ -5,7 +5,7 @@
         "INTYGTJANST_URL": "http://localhost:8080/inera-certificate"
     },
     "sim2": {
-        "WEBCERT_URL": "https://webcert.sim2.nordicmedtest.se/",
+        "WEBCERT_URL": "https://webcert2.sim2.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://minaintyg.sim2.nordicmedtest.se/",
         "INTYGTJANST_URL": ""
     },
@@ -26,7 +26,7 @@
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate",
-        "DATABASE_NAME":"webcert_ip20",
+        "DATABASE_NAME": "webcert_ip20",
         "DATABASE_HOST": "10.1.0.66",
         "DATABASE_USER": "intyg_autotest"
     },
@@ -34,7 +34,7 @@
         "WEBCERT_URL": "https://webcert.ip30.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate",
-        "DATABASE_NAME":"webcert_ip30",
+        "DATABASE_NAME": "webcert_ip30",
         "DATABASE_HOST": "10.1.0.66",
         "DATABASE_USER": "intyg_autotest"
     },
@@ -42,7 +42,7 @@
         "WEBCERT_URL": "https://webcert.ip40.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://minaintyg.ip40.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate",
-        "DATABASE_NAME":"webcert_ip40",
+        "DATABASE_NAME": "webcert_ip40",
         "DATABASE_HOST": "10.1.0.66",
         "DATABASE_USER": "intyg_autotest"
     }
