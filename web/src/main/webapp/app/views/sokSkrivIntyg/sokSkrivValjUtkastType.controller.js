@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams', 'common.IntygService',
+    ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams',
+        'common.IntygCopyFornya',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'common.PatientModel', 'common.messageService',
-        function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygService,
+        function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygCopyFornya,
             IntygProxy, UtkastProxy, IntygFornyaRequestModel, IntygCopyRequestModel, PatientModel, messageService) {
             'use strict';
 
@@ -190,7 +191,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygService.copy($scope.viewState,
+                CommonIntygCopyFornya.copy($scope.viewState,
                     IntygCopyRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
@@ -208,7 +209,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygService.fornya($scope.viewState,
+                CommonIntygCopyFornya.fornya($scope.viewState,
                     IntygFornyaRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
@@ -220,5 +221,4 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             onPageLoad();
-        }])
-;
+        }]);

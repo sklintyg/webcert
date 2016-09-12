@@ -25,7 +25,7 @@ describe('ChooseCertTypeCtrl', function() {
     var IntygProxy;
     var $scope;
     var $location;
-    var CommonIntygServiceSpy;
+    var CommonIntygHelperSpy;
     var IntygFornyaRequestModelSpy;
     var IntygFornyaRequestInstanceMock;
     var PatientModelMock;
@@ -36,7 +36,7 @@ describe('ChooseCertTypeCtrl', function() {
 
         module('webcert', function($provide) {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
-            CommonIntygServiceSpy = jasmine.createSpyObj('common.IntygService', ['fornya']);
+            CommonIntygHelperSpy = jasmine.createSpyObj('common.IntygService', ['fornya']);
             IntygFornyaRequestModelSpy = jasmine.createSpyObj('common.IntygFornyaRequestModel', ['build']);
             CommonMessageServiceSpy = jasmine.createSpyObj('common.messageService', ['getProperty']);
             IntygFornyaRequestInstanceMock = {};
@@ -66,7 +66,7 @@ describe('ChooseCertTypeCtrl', function() {
 
             $provide.value('common.IntygCopyRequestModel', {});
             $provide.value('common.IntygFornyaRequestModel', IntygFornyaRequestModelSpy);
-            $provide.value('common.IntygService', CommonIntygServiceSpy);
+            $provide.value('common.IntygHelper', CommonIntygHelperSpy);
             $provide.value('common.PatientModel', PatientModelMock);
             $provide.value('common.PatientProxy', {});
             $provide.value('common.messageService', CommonMessageServiceSpy);
@@ -99,7 +99,7 @@ describe('ChooseCertTypeCtrl', function() {
                 patientPersonnummer: '19121212-1212',
                 nyttPatientPersonnummer: 'PAT-ID-TEST'
             });
-            expect(CommonIntygServiceSpy.fornya).toHaveBeenCalledWith(
+            expect(CommonIntygHelperSpy.fornya).toHaveBeenCalledWith(
                 $scope.viewState,
                 IntygFornyaRequestInstanceMock,
                 true
