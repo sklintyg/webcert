@@ -35,8 +35,13 @@
       $.getJSON(base, null, function(apis) {
         $('#input_baseUrl').empty();
         $.each(apis, function(key, value) {
-          var opt = '<option value="' + base + '/' + value.key + '">' + base + '/' + value.key + '</option>';
-          $('#input_baseUrl').append(opt);
+          for (var key in value) {
+            var opt = '<option value="' + base + '/' + key + '">' + base + '/' + key + '</option>';
+            $('#input_baseUrl').append(opt);
+            break;
+          }
+
+
         });
       });
 

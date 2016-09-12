@@ -259,6 +259,15 @@
     <url-pattern>/web/*</url-pattern>
   </filter-mapping>
 
+  <filter>
+    <filter-name>integrationEnhetFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>integrationEnhetFilter</filter-name>
+    <url-pattern>/visa/intyg/*</url-pattern>
+  </filter-mapping>
+
 
 
   <welcome-file-list>
