@@ -42,7 +42,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -166,6 +168,28 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         webcertUserService.deleteUserPreference("key1");
         verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
         verify(anvandarPreferenceRepository, times(0)).delete(any(AnvandarPreference.class));
+    }
+
+    @Test
+    public void testDeleteAllAnvandarPreferences() {
+        WebCertUser user = createWebCertUser(false);
+        applyUserToThreadLocalCtx(user);
+        when(anvandarPreferenceRepository.getAnvandarPreference(user.getHsaId())).thenReturn(buildMapOfAllUserPrefs());
+        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(new AnvandarPreference());
+        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key2")).thenReturn(new AnvandarPreference());
+
+        webcertUserService.deleteUserPreferences();
+
+        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key2");
+        verify(anvandarPreferenceRepository, times(2)).delete(any(AnvandarPreference.class));
+    }
+
+    private Map<String, String> buildMapOfAllUserPrefs() {
+        Map<String, String> prefs = new HashMap<>();
+        prefs.put("key1", "value1");
+        prefs.put("key2", "value2");
+        return prefs;
     }
 
     private void applyUserToThreadLocalCtx(final WebCertUser user) {
