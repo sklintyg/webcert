@@ -2,7 +2,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
         [ '$scope', '$window', 'common.UserModel', function($scope, $window, UserModel) {
             'use strict';
             // Construct base destination url
-            var baseDestUrl = getParameterByName("destination", $window.location.search) + '&enhet=';
+            var baseDestUrl = getParameterByName('destination', $window.location.search) + '&enhet=';
 
             //Expose scope model
             $scope.user = UserModel.user;
@@ -15,11 +15,10 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
 
             //Util function that parses destination argument from current url
             function getParameterByName(name, url) {
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"), results = regex.exec(url);
-                if (!results)
-                    return null;
-                if (!results[2])
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'), results = regex.exec(url);
+                if (!results || !results[2]){
                     return '';
-                return decodeURIComponent(results[2].replace(/\+/g, " "));
+                }
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
             }
         } ]);
