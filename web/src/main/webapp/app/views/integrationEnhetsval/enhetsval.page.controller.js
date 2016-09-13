@@ -10,7 +10,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
             //on unit selection, redirect widow to destination + &enhet=<selected enhetsid>
             $scope.onUnitSelected = function(enhet) {
                 console.log('Selected unit:' + enhet);
-                $window.location = baseDestUrl + enhet.id;
+                $window.location.replace(baseDestUrl + enhet.id);
             };
 
             //Util function that parses destination argument from current url
