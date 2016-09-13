@@ -93,11 +93,7 @@ class VisaTsBasPage extends AbstractViewCertPage {
         skickaKnapp.click()
         waitFor {
             doneLoading()
-            skickaDialogBodyTsBas.text().trim().equals("")
-            skickaDialogCheck.isDisplayed()
-        }
-        skickaDialogCheck.click()
-        waitFor {
+            skickaDialogBodyTsBas.text().trim().contains("Transportstyrelsen")
             skickaDialogSkickaKnapp.isEnabled()
         }
         skickaDialogSkickaKnapp.click()

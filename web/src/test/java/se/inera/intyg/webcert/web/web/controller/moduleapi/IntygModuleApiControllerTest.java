@@ -19,6 +19,42 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.common.security.authorities.AuthoritiesException;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.Privilege;
+import se.inera.intyg.common.security.common.model.RequestOrigin;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,37 +63,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ws.rs.core.Response;
-
-import java.time.LocalDateTime;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.intyg.common.security.authorities.AuthoritiesException;
-import se.inera.intyg.common.security.common.model.*;
-import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
-import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * @author andreaskaltenbach
@@ -183,14 +188,13 @@ public class IntygModuleApiControllerTest {
 
         setupUser("", intygType, WebcertFeature.SKICKA_INTYG);
 
-        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient), eq(consent))).thenReturn(IntygServiceResult.OK);
+        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient))).thenReturn(IntygServiceResult.OK);
 
         SendSignedIntygParameter param = new SendSignedIntygParameter();
-        param.setPatientConsent(consent);
         param.setRecipient(recipient);
         Response response = moduleApiController.sendSignedIntyg(intygType, CERTIFICATE_ID, param);
 
-        verify(intygService, times(1)).sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient), eq(consent));
+        verify(intygService, times(1)).sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient));
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(IntygServiceResult.OK, response.getEntity());
     }

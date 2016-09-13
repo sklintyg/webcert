@@ -1,23 +1,21 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-
+import org.junit.Test;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.servlet.http.HttpServletResponse;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -100,7 +98,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         SendSignedIntygParameter sendParam = new SendSignedIntygParameter();
         sendParam.setRecipient("FK");
-        sendParam.setPatientConsent(true);
         given().contentType(ContentType.JSON).body(sendParam).expect().statusCode(200)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));

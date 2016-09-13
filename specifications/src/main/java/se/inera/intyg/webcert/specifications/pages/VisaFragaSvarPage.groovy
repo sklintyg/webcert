@@ -74,7 +74,6 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogMakuleraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton(wait: true) { $("#confirmationOkButton") }
-        skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
         tillbakaButton(wait: true) { $("#tillbakaButton") }

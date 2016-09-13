@@ -23,8 +23,6 @@ public class SendSignedIntygParameter {
 
     private String recipient;
 
-    private boolean patientConsent;
-
     public SendSignedIntygParameter() {
 
     }
@@ -35,13 +33,5 @@ public class SendSignedIntygParameter {
 
     public void setRecipient(String recipient) {
         this.recipient = recipient;
-    }
-
-    public boolean isPatientConsent() {
-        return patientConsent;
-    }
-
-    public void setPatientConsent(boolean patientConsent) {
-        this.patientConsent = patientConsent;
     }
 }

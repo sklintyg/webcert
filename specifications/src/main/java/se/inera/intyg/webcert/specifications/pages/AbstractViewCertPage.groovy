@@ -35,7 +35,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         makuleraKnapp(required: false) { $("#makuleraBtn") }
         sekretessmarkering { $("#sekretessmarkering") }
 
-        skickaDialogCheck { $("#patientSamtycke") }
+        //skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
         skickaKnapp(required: false) { $("#sendBtn") }
 
@@ -174,10 +174,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         waitFor {
             doneLoading()
         }
-        skickaDialogCheck.click()
-        waitFor {
-            doneLoading()
-        }
+
         skickaDialogSkickaKnapp.click()
         waitFor {
             doneLoading()

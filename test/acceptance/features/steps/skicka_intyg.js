@@ -35,7 +35,6 @@ module.exports = function() {
 
         Promise.all([
             fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE),
-            fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE),
             fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE)
         ]);
     });
@@ -48,9 +47,7 @@ module.exports = function() {
         });
 
         return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
-            return fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE).then(function() {
                 return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
-            });
         });
 
         // callback();

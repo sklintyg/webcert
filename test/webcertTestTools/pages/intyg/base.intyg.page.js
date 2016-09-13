@@ -38,7 +38,6 @@ var BaseIntyg = JClass._extend({
         };
         this.skicka = {
             knapp: element(by.id('sendBtn')),
-            samtyckeCheckbox: element(by.id('patientSamtycke')),
             dialogKnapp: element(by.id('button1send-dialog')),
             statusSendInprogress: element(by.id('certificate-is-on-sendqueue-to-it-message-text')),
             statusSent: element(by.id('certificate-is-sent-to-recipient-message-text'))
@@ -90,9 +89,7 @@ var BaseIntyg = JClass._extend({
     send: function() {
         var self = this;
         return this.skicka.knapp.click().then(function() {
-            return self.skicka.samtyckeCheckbox.click().then(function() {
-                return self.skicka.dialogKnapp.click();
-            });
+            return self.skicka.dialogKnapp.click();
         });
     },
     copyBtn: function() {

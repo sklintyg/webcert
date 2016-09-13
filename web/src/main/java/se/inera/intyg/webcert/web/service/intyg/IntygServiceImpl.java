@@ -19,28 +19,22 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -60,7 +54,9 @@ import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -70,7 +66,16 @@ import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
+
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -264,12 +269,12 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean hasPatientConsent) {
+    public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient) {
 
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
         verifyEnhetsAuth(intyg, true);
 
-        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getUser());
+        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
 
@@ -317,7 +322,7 @@ public class IntygServiceImpl implements IntygService {
         }
 
         LOG.info("Send komplettering '{}' directly to recipient", utkast.getIntygsId());
-        sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), recipient, false);
+        sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), recipient);
         LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
         arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
     }
