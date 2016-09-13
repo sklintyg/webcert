@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +55,8 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        LOG.info("Intercepted djupintegrationslänk: " + request.getRequestURL().toString() + " (" + request.getQueryString() + ")");
+        String requestUrl = request.getRequestURL().toString() + "?" + request.getQueryString();
+        LOG.info("Intercepted djupintegrationslänk: " + requestUrl + " (" + request.getQueryString() + ")");
 
         HttpSession session = request.getSession(false);
 
@@ -65,11 +67,14 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
         Map<String, List<String>> queryMap = splitQuery(request.getQueryString());
         if (!queryMap.containsKey(ENHET)) {
             LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-            response.sendRedirect("/web/dashboard#/integrationenhet");
+            response.sendRedirect("/web/dashboard?destination=" + URLEncoder.encode(requestUrl, "UTF-8") + "#/integration-enhetsval");
         } else {
             List<String> enhet = queryMap.get(ENHET);
-            webCertUser.changeValdVardenhet(enhet.get(0));
-            filterChain.doFilter(request, response);
+            if (webCertUser.changeValdVardenhet(enhet.get(0))) {
+                filterChain.doFilter(request, response);
+            } else {
+                response.sendRedirect("/error.jsp?reason=login.medarbetaruppdrag");
+            }
         }
     }
 
