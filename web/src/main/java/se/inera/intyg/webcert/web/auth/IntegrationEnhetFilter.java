@@ -55,7 +55,7 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String requestUrl = request.getRequestURL().toString() + "?" + request.getQueryString();
+        String requestUrl = buildFullUrl(request);
         LOG.info("Intercepted djupintegrationslänk: " + requestUrl + " (" + request.getQueryString() + ")");
 
         HttpSession session = request.getSession(false);
@@ -63,6 +63,7 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
         if (session == null) {
             return;
         }
+
         WebCertUser webCertUser = (WebCertUser) ((SecurityContextImpl) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication().getPrincipal();
         Map<String, List<String>> queryMap = splitQuery(request.getQueryString());
         if (!queryMap.containsKey(ENHET)) {
@@ -76,6 +77,15 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
                 response.sendRedirect("/error.jsp?reason=login.medarbetaruppdrag");
             }
         }
+    }
+
+    private String buildFullUrl(HttpServletRequest request) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(request.getRequestURL().toString());
+        if (request.getQueryString() != null && request.getQueryString().trim().length() > 0) {
+            buf.append("?" + request.getQueryString());
+        }
+        return buf.toString();
     }
 
     private Map<String, List<String>> splitQuery(String query) {
