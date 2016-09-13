@@ -1,20 +1,7 @@
 description = 'Webcert (Intygstjänsten Stub)'
 
 dependencies {
-  compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
-  compile 'se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:1.0.1'
-  compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
-  compile 'se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:1.0.1'
-
-  compile "se.inera.intyg.common:common-support:${commonVersion}"
-  compile "se.inera.intyg.common:common-schemas:${commonVersion}"
-  compile "se.inera.intyg.common:integration-util:${commonVersion}"
-
   compile "se.inera.intyg.intygstyper:luse:${commonVersion}"
 
   compile 'commons-io:commons-io:2.4'
-  compile 'org.springframework:spring-context:4.2.2.RELEASE'
-  compile 'com.google.guava:guava:14.0.1'
-  compile 'org.slf4j:slf4j-api:1.7.5'
-  compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.3'
 }

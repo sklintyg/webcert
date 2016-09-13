@@ -3,26 +3,8 @@ description = 'Webcert (FMB-integration)'
 dependencies {
   compile project(':webcert-persistence')
 
-  compile 'org.slf4j:slf4j-api:1.7.5'
-  compile 'org.slf4j:jcl-over-slf4j:1.7.5'
   compile 'se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport:processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas:1.0.RC4.1'
-  compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.3'
-  compile 'org.apache.cxf:cxf-rt-transports-http:3.1.3'
-  compile 'org.springframework:spring-context:4.2.2.RELEASE'
-  compile 'org.springframework:spring-context-support:4.2.2.RELEASE'
-  compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
-  compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.4'
-  compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.4'
-  compile 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.9.5'
-  compile 'com.google.guava:guava:14.0.1'
-  compile 'com.google.code.findbugs:jsr305:2.0.1'
 
-  testCompile 'org.springframework:spring-test:4.2.2.RELEASE'
-  testCompile 'org.hamcrest:hamcrest-all:1.3'
-  testCompile(group: 'junit', name: 'junit', version:'4.12') {
-    exclude(module: 'hamcrest-core')
-  }
-  testCompile(group: 'org.mockito', name: 'mockito-core', version:'1.9.0') {
-    exclude(module: 'hamcrest-core')
-  }
+  testCompile "org.springframework:spring-test:${springVersion}"
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }

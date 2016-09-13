@@ -146,13 +146,9 @@ dependencies {
   compile project(':mail-stub')
   compile project(':notification-sender')
 
-  compile "se.inera.intyg.common:common-support:${commonVersion}"
-  compile "se.inera.intyg.common:common-web:${commonVersion}"
-  compile "se.inera.intyg.common:logging-util:${commonVersion}"
-  compile "se.inera.intyg.common:hsa-integration:${commonVersion}"
-  compile "se.inera.intyg.common:common-services:${commonVersion}"
-  compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
-  compile "se.inera.intyg.common:log-messages:${commonVersion}"
+  compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.2'
+  compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.2'
+
   compile "se.inera.intyg.common:security-siths:${commonVersion}"
 
   compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
@@ -168,70 +164,15 @@ dependencies {
     exclude(module: "ServiceContracts_itintegration_monitoring")
   }
 
-  compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
-  compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
-  compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
-  compile 'se.riv.ehr.logstore:ehr-logstore-schemas:1.2.1'
-  compile 'se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport:processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas:1.0.RC4.1'
-  compile 'se.riv.infrastructure.directory.employee:infrastructure-directory-employee-schemas:1.0.RC4.1'
-  compile 'se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:1.0.1'
-  compile 'se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:1.0.1'
-  compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.1'
-  compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.1'
-  compile 'ch.qos.logback:logback-classic:1.0.11'
-  compile 'org.slf4j:slf4j-api:1.7.5'
-  compile 'org.slf4j:jcl-over-slf4j:1.7.5'
-  compile 'org.slf4j:log4j-over-slf4j:1.7.5'
-  compile 'org.webjars:angularjs:1.4.10'
-  compile 'org.webjars:angular-ui-bootstrap:1.3.2'
-  compile 'org.webjars:angular-ui-router:0.2.15'
-  compile 'org.webjars:bootstrap:3.1.1'
-  compile 'org.aspectj:aspectjrt:1.7.1'
-  compile 'org.aspectj:aspectjweaver:1.7.1'
-  compile 'commons-collections:commons-collections:3.2.1'
-  compile 'commons-lang:commons-lang:2.6'
-  compile 'commons-io:commons-io:2.4'
-  compile 'org.eclipse.jetty:apache-jstl:9.3.6.v20151106'
-  compile 'org.apache.cxf:cxf-rt-transports-http:3.1.3'
-  compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
-  compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.4'
-  compile 'org.springframework:spring-aop:4.2.2.RELEASE'
   compile 'org.springframework:spring-web:4.2.2.RELEASE'
   compile 'org.springframework:spring-webmvc:4.2.2.RELEASE'
-  compile 'org.springframework:spring-context:4.2.2.RELEASE'
-  compile 'org.springframework:spring-context-support:4.2.2.RELEASE'
-  compile 'org.springframework:spring-jms:4.2.2.RELEASE'
-  compile 'org.springframework:spring-tx:4.2.2.RELEASE'
-  compile 'org.apache.lucene:lucene-core:4.10.2'
   compile 'org.apache.lucene:lucene-analyzers-common:4.10.2'
-  compile(group: 'xalan', name: 'xalan', version:'2.7.1') {
-    exclude(module: 'xml-apis')
-  }
-  compile(group: 'org.springframework.security', name: 'spring-security-config', version:'4.0.3.RELEASE') {
-    exclude(module: 'spring-core')
-    exclude(module: 'spring-aop')
-    exclude(module: 'spring-beans')
-  }
-  compile(group: 'org.springframework.security', name: 'spring-security-web', version:'4.0.3.RELEASE') {
-    exclude(module: 'spring-expression')
-    exclude(module: 'spring-aop')
-    exclude(module: 'spring-jdbc')
-    exclude(module: 'spring-core')
-    exclude(module: 'spring-beans')
-    exclude(module: 'spring-tx')
-  }
-  compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version:'4.0.3.RELEASE') {
-    exclude(module: 'spring-core')
-    exclude(module: 'spring-aop')
-    exclude(module: 'spring-beans')
-    exclude(module: 'spring-expression')
-    exclude(module: 'spring-jdbc')
-    exclude(module: 'spring-tx')
-  }
-  compile(group: 'org.springframework.security.extensions', name: 'spring-security-saml2-core', version:'1.0.1.RELEASE') {
-    exclude(module: 'opensaml')
-    exclude(module: 'xercesImpl')
-  }
+
+  compile 'org.springframework.security:spring-security-config:4.0.3.RELEASE'
+  compile 'org.springframework.security:spring-security-web:4.0.3.RELEASE'
+  compile 'org.springframework.security:spring-security-taglibs:4.0.3.RELEASE'
+  compile 'org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE'
+
   compile(group: 'org.opensaml', name: 'opensaml', version:'2.5.3') {
     exclude(module: 'openws')
   }
@@ -245,21 +186,16 @@ dependencies {
     exclude(module: 'jsr311-api')
   }
 
-  testCompile 'org.hamcrest:hamcrest-all:1.3'
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
   testCompile 'org.springframework:spring-test:4.2.2.RELEASE'
   testCompile 'javax.servlet:javax.servlet-api:3.1.0'
   testCompile 'org.kubek2k:springockito:1.0.8'
   testCompile 'xmlunit:xmlunit:1.4'
-  testCompile 'com.h2database:h2:1.3.174'
   testCompile 'com.jayway.restassured:rest-assured:2.8.0'
   testCompile 'com.jayway.restassured:json-schema-validator:2.8.0'
   testCompile 'org.antlr:ST4:4.0.8'
-  testCompile(group: 'org.mockito', name: 'mockito-core', version:'1.9.0') {
-    exclude(module: 'hamcrest-core')
-  }
-  testCompile(group: 'junit', name: 'junit', version:'4.12') {
-    exclude(module: 'hamcrest-core')
-  }
+
+  testRuntime 'com.h2database:h2:1.3.174'
 
   providedCompile 'javax.servlet:servlet-api:2.5'
   providedCompile 'com.google.auto.value:auto-value:1.1'

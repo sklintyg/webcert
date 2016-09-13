@@ -1,29 +1,13 @@
 description = 'Webcert (PU-integration)'
 
 dependencies {
-  compile "se.inera.intyg.common:common-support:${commonVersion}"
-  compile "se.inera.intyg.common:integration-util:${commonVersion}"
-
-  compile 'org.slf4j:slf4j-api:1.7.5'
-  compile 'org.slf4j:jcl-over-slf4j:1.7.5'
   compile 'se.riv.population.residentmaster:population-residentmaster-schemas:1.1.3.2'
-  compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.3'
-  compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.3'
-  compile 'org.apache.cxf:cxf-rt-transports-http:3.1.3'
-  compile 'org.springframework:spring-context:4.2.2.RELEASE'
-  compile 'org.springframework:spring-context-support:4.2.2.RELEASE'
-  compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
-  compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.4'
-  compile 'org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.9.5'
-  compile 'net.sf.ehcache:ehcache:2.10.0'
-  compile 'org.springframework:spring-test:4.2.2.RELEASE'
-  compile 'com.google.guava:guava:14.0.1'
 
-  testCompile 'org.hamcrest:hamcrest-all:1.3'
-  testCompile(group: 'junit', name: 'junit', version:'4.12') {
-    exclude(module: 'hamcrest-core')
-  }
-  testCompile(group: 'org.mockito', name: 'mockito-core', version:'1.9.0') {
-    exclude(module: 'hamcrest-core')
-  }
+  compile "se.inera.intyg.common:common-support:${commonVersion}"
+
+  runtime "org.springframework:spring-context-support:${springVersion}"
+  runtime "net.sf.ehcache:ehcache:2.10.0"
+
+  testCompile "org.springframework:spring-test:${springVersion}"
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }
