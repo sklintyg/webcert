@@ -74,7 +74,7 @@ task unzipBuildTools(type: Copy) {
   description 'Extracts common-build-tools'
   into "$buildDir/build-tools/"
   from {
-    configurations.compile.filter{file -> file.name.startsWith('common-build-tools') }.collect { zipTree(it) }
+    configurations.buildtools.collect { zipTree(it) }
   }
 }
 
@@ -136,6 +136,7 @@ configurations {
   runtime {
     exclude group: 'xalan', module: 'xalan'
   }
+  buildtools
 }
 
 buildscript {
@@ -147,6 +148,8 @@ buildscript {
 }
 
 dependencies {
+  buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
+
   compile project(':webcert-persistence')
   compile project(':pu-integration')
   compile project(':pp-integration')
@@ -160,7 +163,6 @@ dependencies {
   compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.2'
   compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.2'
 
-  compile "se.inera.intyg.common:common-build-tools:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:security-siths:${commonVersion}"
 
