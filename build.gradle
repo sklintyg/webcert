@@ -46,6 +46,7 @@ subprojects {
       entry(key: 'buildTime', default: new Date())
       entry(key: 'gitCommit', default: "${grgit.head().id}")
       entry(key: 'gitBranch', default: "${grgit.branch.getCurrent().getName()}")
+      entry(key: 'buildNumber', default: System.env.BUILD_NUMBER)
       entry(key: 'commonVersion', default: "${resolvedCommonVersion}")
       entry(key: 'typerVersion', default: "${resolvedTyperVersion}")
     }

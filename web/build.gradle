@@ -103,7 +103,10 @@ gretty {
     "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
     "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
     "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-    "-Dwebcert.useMinifiedJavaScript=false"
+    "-Dwebcert.useMinifiedJavaScript=false",
+    "-Dh2.tcp.port=9094",
+    "-Dh2.web.port=9090",
+    "-Djetty.port=9088"
   ]
 
   // TODO: bättre namn. Synka med gruntfilen.
@@ -149,6 +152,7 @@ dependencies {
   compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.2'
   compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.2'
 
+  compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:security-siths:${commonVersion}"
 
   compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
