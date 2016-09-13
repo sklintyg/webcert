@@ -26,7 +26,15 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
     var commonPath = '/web/webjars/common/webcert/';
 
     $stateProvider.
-
+        state('integrationenhetsval', {
+            url: '/integration-enhetsval',
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/integrationEnhetsval/enhetsval.page.html',
+                    controller: 'integration.EnhetsvalPageCtrl'
+                }
+            }
+        }).
         state('webcert', {
             views: {
                 'header': {
