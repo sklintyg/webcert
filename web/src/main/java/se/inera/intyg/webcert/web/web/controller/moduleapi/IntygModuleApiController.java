@@ -160,4 +160,30 @@ public class IntygModuleApiController extends AbstractApiController {
         return Response.ok(revokeResult).build();
     }
 
+    /**
+     * Issues a request to Intygstjanst to revoke the signed intyg and then copy it and return the id of the utkast.
+     *
+     * @param intygsId
+     *            The id of the intyg to revoke
+     * @param param
+     *            A JSON struct containing an optional message
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/aterkallaersatt")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response revokeReplaceSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+                                      RevokeSignedIntygParameter param) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .orThrow();
+        String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
+        IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
+
+        // copy goes here?
+
+        return Response.ok(revokeResult).build();
+    }
+
 }
