@@ -70,7 +70,15 @@ task jsTests(type: NodeTask, dependsOn: [npmInstall, moveJsFiles]) {
 
 test.dependsOn(jsTests)
 
-task jsInclude(type: NodeTask, dependsOn: [npmInstall]) {
+task unzipBuildTools(type: Copy) {
+  description 'Extracts common-build-tools'
+  into "$buildDir/build-tools/"
+  from {
+    configurations.compile.filter{file -> file.name.startsWith('common-build-tools') }.collect { zipTree(it) }
+  }
+}
+
+task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
     script = file('node_modules/grunt-cli/bin/grunt')
     args = ['default']
 }
@@ -152,6 +160,7 @@ dependencies {
   compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.2'
   compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.2'
 
+  compile "se.inera.intyg.common:common-build-tools:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:security-siths:${commonVersion}"
 
