@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.UserOriginType;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -42,12 +38,9 @@ import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
 
@@ -88,206 +81,12 @@ public class IntygApiController extends AbstractApiController {
     private UtkastService utkastService;
 
     @Autowired
-    private CopyUtkastService copyUtkastService;
-
-    @Autowired
     private MonitoringLogService monitoringLogService;
 
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
     public IntygApiController() {
-    }
-
-    /**
-     * Create a copy of a certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/kopiera")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
-
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
-                .orThrow();
-
-        LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
-                request.isCoherentJournaling());
-
-        if (!request.isValid()) {
-            LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
-        }
-
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
-        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
-
-        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}",
-                new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType() });
-
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-
-        return Response.ok().entity(response).build();
-    }
-
-    /**
-     * Create a copy that completes an existing certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId,
-            @PathParam("meddelandeId") String meddelandeId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
-                .orThrow();
-
-        LOG.debug("Attempting to create a completion of {} with id '{}'", intygsTyp, orgIntygsId);
-
-        if (!request.isValid()) {
-            LOG.error("Request to create completion of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
-        }
-
-        CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
-        CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
-
-        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", serviceResponse.getNewDraftIntygId(),
-                serviceResponse.getNewDraftIntygType(), orgIntygsId);
-
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-
-        return Response.ok().entity(response).build();
-    }
-
-    /**
-     * Create a copy that is a renewal of an existing certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/fornya")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
-                .orThrow();
-
-        LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
-
-        if (!request.isValid()) {
-            LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
-        }
-
-        CreateRenewalCopyRequest serviceRequest = createRenewalCopyRequest(orgIntygsId, intygsTyp, request);
-        CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);
-
-        LOG.debug("Created a new draft with id: '{}' and type: {}, renewing certificate with id '{}'.",
-                new Object[] { serviceResponse.getNewDraftIntygId(),
-                        serviceResponse.getNewDraftIntygType(), orgIntygsId });
-
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-
-        return Response.ok().entity(response).build();
-    }
-
-    private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(request);
-
-        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
-
-        if (request.containsNewPersonnummer()) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(request.getNyttPatientPersonnummer());
-        }
-
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
-        return req;
-    }
-
-    private CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
-            CopyIntygRequest copyRequest) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
-
-        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
-
-        if (copyRequest.containsNewPersonnummer()) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
-        }
-
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
-
-        return req;
-    }
-
-    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
-
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson,
-            copyRequest.isCoherentJournaling());
-
-        if (copyRequest.containsNewPersonnummer()) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
-        }
-
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
-
-        return req;
-    }
-
-    private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
-        Patient patient = new Patient();
-
-        patient.setPersonId(copyRequest.getPatientPersonnummer());
-
-        // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
-        if (!StringUtils.isBlank(copyRequest.getFornamn())
-                && !StringUtils.isBlank(copyRequest.getEfternamn())
-                && !StringUtils.isBlank(copyRequest.getPostadress())
-                && !StringUtils.isBlank(copyRequest.getPostnummer())
-                && !StringUtils.isBlank(copyRequest.getPostort())) {
-            patient.setFornamn(copyRequest.getFornamn());
-            patient.setEfternamn(copyRequest.getEfternamn());
-            patient.setMellannamn(copyRequest.getMellannamn());
-            patient.setPostadress(copyRequest.getPostadress());
-            patient.setPostnummer(copyRequest.getPostnummer());
-            patient.setPostort(copyRequest.getPostort());
-        }
-        return patient;
     }
 
     /**
