@@ -145,6 +145,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.intygStatus = element(by.id('intyg-vy-laddad'));
         this.komplettera = {
             dialog: {
+                modal: element(by.css('.modal-dialog')),
                 svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog')),
                 svaraMedTextKnapp: element(by.id('button2answermessage-dialog'))
             }

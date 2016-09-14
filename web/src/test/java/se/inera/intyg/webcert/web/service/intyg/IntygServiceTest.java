@@ -26,6 +26,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import javax.xml.bind.JAXBContext;
@@ -35,7 +36,6 @@ import javax.xml.ws.WebServiceException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
-import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,10 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -54,6 +57,8 @@ import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
@@ -62,6 +67,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -119,6 +125,18 @@ public class IntygServiceTest {
     @Mock
     AuthoritiesHelper authoritiesHelper;
 
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private CertificateSenderService certificateSenderService;
+
+    @Mock
+    private ArendeService arendeService;
+
+    @Spy
+    private ObjectMapper objectMapper = new CustomObjectMapper();
+
     @InjectMocks
     private IntygServiceImpl intygService;
 
@@ -130,7 +148,7 @@ public class IntygServiceTest {
         vardpersonReferens.setNamn(CREATED_BY_NAME);
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
-        Utlatande utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        Utlatande utlatande = objectMapper.readValue(json, Utlatande.class);
 
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<Status>());
@@ -169,7 +187,7 @@ public class IntygServiceTest {
     public void IntygServiceConverter() throws Exception {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
-        Utlatande utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        Utlatande utlatande = objectMapper.readValue(json, Utlatande.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
     }
 
@@ -325,7 +343,7 @@ public class IntygServiceTest {
 
     @Test
     public void testListIntygFiltersNoMatch() {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("luse");
 
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
@@ -528,6 +546,42 @@ public class IntygServiceTest {
             verifyZeroInteractions(logservice);
             throw e;
         }
+    }
+
+    @Test
+    public void testHandleSignedCompletion() throws Exception {
+        final String intygId = "intygId";
+        final String intygTyp = "intygTyp";
+        final String relationIntygId = "relationIntygId";
+        final String recipient = "recipient";
+        final Personnummer personnummer = new Personnummer("19121212-1212");
+
+        Utlatande utlatande = objectMapper.readValue(json, Utlatande.class);
+        utlatande.setId(intygId);
+        utlatande.setTyp(intygTyp);
+        utlatande.getGrundData().getPatient().setPersonId(personnummer);
+
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setIntygsTyp(intygTyp);
+        utkast.setRelationKod(RelationKod.KOMPLT);
+        utkast.setRelationIntygsId(relationIntygId);
+        utkast.setModel(json);
+
+        when(intygRepository.findOne(intygId)).thenReturn(utkast);
+        when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
+
+        intygService.handleSignedCompletion(utkast, recipient);
+
+        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
+        verify(mockMonitoringService).logIntygSent(intygId, recipient);
+        verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
+        verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
+        verify(notificationService).sendNotificationForIntygSent(intygId);
+        ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
+        verify(intygRepository).save(utkastCaptor.capture());
+        assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
+        assertEquals(recipient, utkastCaptor.getValue().getSkickadTillMottagare());
     }
 
     private IntygPdf buildPdfDocument() {

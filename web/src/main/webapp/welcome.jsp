@@ -449,7 +449,7 @@
     // Dev-läkare med bootstrappad data för intyg och ärenden på tolvan
     {
       "fornamn": "Arnold",
-      "efternamn": "Swarzenegger",
+      "efternamn": "Johansson",
       "hsaId": "TSTNMT2321000156-1079",
       "enhetId": "TSTNMT2321000156-1077",
       "lakare": true
@@ -522,7 +522,7 @@
           id: 40,
           hsaId: 'TSTNMT2321000156-1079_TSTNMT2321000156-1077',
           env: 'demo',
-          name: 'Arnold Schwarzenegger (Läkare / Vård och Behandling, HAR INTYG OCH ÄRENDEN)'
+          name: 'Arnold Johansson (Läkare / Vård och Behandling, HAR INTYG OCH ÄRENDEN)'
         },
         {
           id: 30,

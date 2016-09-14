@@ -33,17 +33,18 @@ Exempel:
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
   |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
-# @öppna
-# Scenario: Öppna intyg
-# 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-# 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 
-# @signera
-# Scenario: Signera intyg
-# 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
-# 	Och jag fyller i alla nödvändiga fält för intyget
-# 	Och jag signerar intyget
-# 	Så ska loggaktivitet "Signera" skickas till loggtjänsten
+@signera
+Scenariomall: Signera <intygtyp> intyg
+	När jag går in på att skapa ett <intyg> intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Så ska loggaktivitet "Signera" skickas till loggtjänsten
+
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
 # @skicka @utskrift
 # Scenario: Skicka intyg till mottagare

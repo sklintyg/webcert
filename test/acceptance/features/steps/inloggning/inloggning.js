@@ -72,16 +72,16 @@ module.exports = function() {
         return gotoPatient(testdataHelpers.shuffle(testpatienter)[0]);
     });
 
-    this.Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text, callback) {
+    this.Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
         var alertWarnings = element.all(by.css('.alert-warning'));
-
-        alertWarnings.each(function(element) {
-            element.getText().then(function(warning) {
-                if (warning.indexOf(text) !== -1) {
-                    console.log('Warning containing text: "' + text + '" found.');
-                    expect(element.getText()).to.eventually.contain(text).and.notify(callback);
-                }
+        var warnings = [];
+        return alertWarnings.each(function(element) {
+            return element.getText().then(function(warning) {
+                logger.info('Varning: ' + warning);
+                warnings.push(warning);
             });
+        }).then(function() {
+            return expect(warnings.join('\n')).to.contain(text);
         });
     });
 

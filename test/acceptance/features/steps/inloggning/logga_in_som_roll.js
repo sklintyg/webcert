@@ -20,7 +20,9 @@
 /* globals browser */
 
 'use strict';
-var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
+var loginHelper = require('./login.helpers.js');
+var logInAsUserRole = loginHelper.logInAsUserRole;
+var logInAsUser = loginHelper.logInAsUser;
 
 module.exports = function() {
 
@@ -111,6 +113,54 @@ module.exports = function() {
     this.Given(/^jag ska ha origin "([^"]*)"/, function(origin) {
         return expect(checkUserOrigin()).to.eventually.be.equal(origin);
     });
+    this.Given(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, function() {
+        var userObj = {
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
+            hsaId: 'TSTNMT2321000156-107V',
+            enhetId: 'TSTNMT2321000156-107Q'
+        };
+        return logInAsUser(userObj);
+    });
+    this.Given(/^jag loggar in med felaktig uppgift om befattning i HSAkatalogen$/, function() {
+        var userObj = {
+            fornamn: 'Susanne Gustafsson',
+            efternamn: 'Ericsson',
+            hsaId: 'TSTNMT2321000156-107W',
+            enhetId: 'TSTNMT2321000156-107P'
+        };
+        return logInAsUser(userObj);
+    });
+
+    this.Given(/^jag loggar in med felaktig uppgift om adress i HSAkatalogen$/, function() {
+        var userObj = {
+            fornamn: 'Karin',
+            efternamn: 'Persson',
+            hsaId: 'TSTNMT2321000156-107T',
+            enhetId: 'TSTNMT2321000156-107P'
+        };
+        return logInAsUser(userObj);
+    });
+    this.Given(/^ska jag vara inloggad som 'Läkare'$/, function() {
+        var wcHeader = element(by.id('wcHeader'));
+        return expect(wcHeader.getText()).to.eventually.contain('Läkare');
+    });
+    this.Given(/^jag loggar in som läkare med medarbetaruppdrag som administatör$/, function() {
+        var userObj = {
+            fornamn: 'Jenny',
+            efternamn: 'Larsson',
+            hsaId: 'TSTNMT2321000156-1084',
+            enhetId: 'TSTNMT2321000156-107P',
+            lakare: true,
+            origin: 'DJUPINTEGRATION'
+        };
+        console.log('Loggar in som admin....');
+        return logInAsUserRole(userObj, 'Läkare');
+
+    });
+
+
+
 };
 
 function checkUserRole() {

@@ -68,6 +68,11 @@ public interface FragaSvarService {
     FragaSvar closeQuestionAsHandled(Long frageSvarId);
 
     /**
+     * Close all Kompletteringsbegäran for the given certificate.
+     */
+    void closeCompletionsAsHandled(String intygId);
+
+    /**
      * Close all questions related to a certificate.
      *
      * @param intygsId
