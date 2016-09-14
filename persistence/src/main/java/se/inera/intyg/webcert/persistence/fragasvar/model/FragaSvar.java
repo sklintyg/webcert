@@ -37,7 +37,7 @@ public class FragaSvar {
      * The (system-wide) unique id for this entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long internReferens;
 
     @Column(name = "EXTERN_REFERENS")

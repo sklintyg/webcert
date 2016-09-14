@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.persistence.model.Status;
 public class Arende {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
 

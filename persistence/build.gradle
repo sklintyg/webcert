@@ -12,7 +12,7 @@ dependencies {
   compile "org.springframework:spring-orm:${springVersion}"
   compile "org.springframework.data:spring-data-jpa:1.9.0.RELEASE"
   compile "org.liquibase:liquibase-core:3.3.1"
-  compile "org.jadira.usertype:usertype.extended:5.0.0.GA"
+  compile "org.jadira.usertype:usertype.extended:4.0.0.GA"
   compile "commons-lang:commons-lang:2.6"
   compile "commons-io:commons-io:2.4"
 

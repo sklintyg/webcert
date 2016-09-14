@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
 public class GodkantAvtal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long internReferens;
 
     @Column(name = "AVTAL_VERSION")
