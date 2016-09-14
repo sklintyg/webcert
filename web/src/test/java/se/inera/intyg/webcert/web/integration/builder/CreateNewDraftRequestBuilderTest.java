@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -116,7 +115,7 @@ public class CreateNewDraftRequestBuilderTest {
         assertEquals("Adam Bertil Cesarsson Davidsson Eriksson", res.getPatient().getFullstandigtNamn());
     }
 
-    @Ignore
+    @Test
     public void testWithHsaBefattningAndSpecialityNames() {
 
         Vardenhet hsaVardenhet = createHsaVardenhet();
