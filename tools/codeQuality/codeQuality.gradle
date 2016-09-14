@@ -10,3 +10,4 @@ checkstyle {
 checkstyleMain.dependsOn unzipBuildTools
 
 checkstyleMain.source = "src/main/java"
+checkstyleTest.enabled = false

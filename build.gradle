@@ -94,6 +94,9 @@ subprojects {
   configurations {
     buildtools
   }
+  dependencies {
+    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
+  }
 
   task unzipBuildTools(type: Copy) {
     description 'Extracts common-build-tools'
