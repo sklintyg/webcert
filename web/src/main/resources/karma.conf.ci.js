@@ -62,21 +62,11 @@ module.exports = function(config) {
             return plugins;
         })(),
 
-        reporters: [ 'dots', 'junit', 'coverage' ],
-
         preprocessors: {
             'src/main/webapp/app/**/*.html': ['ng-html2js'],
             'src/main/webapp/app/**/*.js': ['coverage']
         },
 
-        coverageReporter: {
-            type : 'lcovonly',
-            dir : 'target/karma_coverage/',
-            subdir: '.'
-        },
-
-        junitReporter: {
-            outputFile: 'target/surefire-reports/TEST-karma-test-results.xml'
-        }
+        reporters: [ 'dots', 'coverage' ]
     });
 };

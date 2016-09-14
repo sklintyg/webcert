@@ -45,7 +45,9 @@ module.exports = function(grunt) {
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
-    var DEST_DIR = 'build/apps/app/';
+    var DEST_DIR = (grunt.option('outputDir') || 'build/webapp') +  '/app/';
+    var TEST_OUTPUT_DIR = (grunt.option('outputDir') || 'build/karma/');
+    var SKIP_COVERAGE = grunt.option('skip-coverage') || 'true';
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
@@ -152,7 +154,14 @@ module.exports = function(grunt) {
         karma: {
             ci: {
                 configFile: 'src/main/resources/karma.conf.ci.js',
-                reporters: ['mocha']
+                client: {
+                    args: ['--skip-coverage=' + SKIP_COVERAGE]
+                },
+                coverageReporter: {
+                    type : 'lcovonly',
+                    dir : TEST_OUTPUT_DIR,
+                    subdir: '.'
+                }
             },
             watch: {
                 configFile: 'src/main/resources/karma.conf.ci.js',
@@ -260,7 +269,7 @@ module.exports = function(grunt) {
         }), { webcert: {
             cwd: __dirname + '/src/main/webapp',
             src: ['app/views/**/**.html', 'app/partials/**/**.html'],
-            dest: __dirname + '/build/apps/app/templates.js',
+            dest: DEST_DIR + 'templates.js',
             options: {
                 module: 'webcert',
                 url: function(url) {

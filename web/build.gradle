@@ -5,6 +5,9 @@ apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.moowork.grunt'
 apply plugin: 'com.moowork.node'
 
+def webappOutputDir = 'build/apps/';
+def webappTestOutputDir = 'build/karma/';
+
 grunt {
   colors = true
 }
@@ -65,14 +68,14 @@ task moveJsFiles(type: Copy, dependsOn: unzipWebjars) {
 
 task jsTests(type: NodeTask, dependsOn: [npmInstall, moveJsFiles]) {
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test']
+    args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage='+(!project.hasProperty('runSonar'))]
 }
 
 test.dependsOn(jsTests)
 
 task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['default']
+  script = file('node_modules/grunt-cli/bin/grunt')
+  args = ['default', '--outputDir=' + webappOutputDir]
 }
 
 war.dependsOn(jsInclude)
@@ -96,6 +99,11 @@ gretty {
 
   contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
 
+  def useMinifiedJavaScript = false;
+  if (System.properties['webcert.useMinifiedJavaScript'] != null) {
+    useMinifiedJavaScript = System.properties['webcert.useMinifiedJavaScript'];
+  }
+
   jvmArgs = [
     "-Dcatalina.base=${buildDir}/catalina.base",
     "-Dspring.profiles.active=dev",
@@ -103,14 +111,13 @@ gretty {
     "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
     "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
     "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-    "-Dwebcert.useMinifiedJavaScript=false",
+    "-Dwebcert.useMinifiedJavaScript=" + useMinifiedJavaScript,
     "-Dh2.tcp.port=9094",
     "-Dh2.web.port=9090",
     "-Djetty.port=9088"
   ]
 
-  // TODO: bättre namn. Synka med gruntfilen.
-  extraResourceBase 'build/apps/'
+  extraResourceBase webappOutputDir
 
   // TODO: use?
   //   debugSuspend = false
