@@ -30,7 +30,7 @@ public class KontrolleraIntyg extends RestClientFixture {
 
     String intyg
     private def certificate
-    
+
     public void execute() {
         def restClient = createRestClient()
         def response = restClient.get(
@@ -39,7 +39,7 @@ public class KontrolleraIntyg extends RestClientFixture {
                 )
         certificate = response.data
     }
-    
+
     public String personNr() {
         certificate.civicRegistrationNumber
     }

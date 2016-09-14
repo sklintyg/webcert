@@ -47,9 +47,9 @@ class WsClientFixture {
 	private final static String LOGICAL_ADDRESS = "FKORG"
 
     String baseUrl = System.getProperty("certificate.baseUrl")
-    
+
     boolean nyaKontraktet = false
-    
+
 	private CustomObjectMapper jsonMapper = new CustomObjectMapper();
 	protected AttributedURIType logicalAddress = new AttributedURIType()
 
@@ -69,7 +69,7 @@ class WsClientFixture {
     }
 
     public void init() {}
-    
+
 	def asJson(def object) {
 		StringWriter sw = new StringWriter()
 		jsonMapper.writeValue(sw, object)

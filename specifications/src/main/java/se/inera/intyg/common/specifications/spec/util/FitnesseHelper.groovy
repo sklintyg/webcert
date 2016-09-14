@@ -43,7 +43,7 @@ class FitnesseHelper {
             // References a file within the "files" directory
             file = new File(FITNESSE_ROOT_DIR + platformFileName);
         } else if (platformFileName.startsWith(File.separator) ||
-                  (platformFileName.length() >= 2 && 
+                  (platformFileName.length() >= 2 &&
                    Character.isLetter(platformFileName.charAt(0)) &&
                    platformFileName.charAt(1) == ':')) {
             // Interpret as absolute file name

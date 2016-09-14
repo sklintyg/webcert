@@ -28,7 +28,7 @@ import se.inera.intyg.common.specifications.spec.util.FitnesseHelper
 class SQLFixture {
 
     private BasicDataSource dataSource
-    
+
     SQLFixture() {
         def props = new Properties()
         FitnesseHelper.getFile("dataSource.properties").withInputStream { stream ->
@@ -39,7 +39,7 @@ class SQLFixture {
                         username: config.dataSource.username, password: config.dataSource.password,
                         initialSize: 1, maxTotal: 1)
     }
-    
+
     protected def execute(String statement, def args) {
         def result
         def sql

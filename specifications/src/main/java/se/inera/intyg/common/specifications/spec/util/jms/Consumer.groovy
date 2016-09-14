@@ -31,15 +31,15 @@ class Consumer {
     Destination destination
     def message
     int timeout = 2000
-    
+
     Consumer(String queue) {
         destination = DestinationFixture.getDestination(queue)
     }
-    
+
     public void setTimeout(int timeout) {
         this.timeout = timeout
     }
-    
+
     public void clearQueue() {
         Connection conn = null;
         Session session = null;
@@ -50,7 +50,7 @@ class Consumer {
             conn.start()
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE)
             consumer = session.createConsumer(destination)
-            
+
             itemCount.times {
                 consumer.receive(timeout)
             }
@@ -58,7 +58,7 @@ class Consumer {
             JMSUtils.closeQuitely(conn, session, consumer)
         }
     }
-    
+
     public void receiveMessage() {
         Connection conn = null;
         Session session = null;
@@ -73,7 +73,7 @@ class Consumer {
             JMSUtils.closeQuitely(conn, session, consumer);
         }
     }
-    
+
     public String message() {
         return message.text
     }
@@ -93,11 +93,11 @@ class Consumer {
                 depth++;
                 messages.nextElement();
             }
-            
+
         } finally {
             JMSUtils.closeQuitely(conn, session, browser);
         }
         return depth;
     }
-    
+
 }

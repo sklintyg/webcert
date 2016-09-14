@@ -58,13 +58,13 @@ public class Intyg extends RestClientFixture {
 	private boolean skickat
 	private boolean rättat
     private boolean deletedByCareGiver
-	
+
 	String responseStatus;
-    
+
 	private String template
 
     def request
-	
+
 	public void setSkickat(String value) {
 		skickat = value?.equalsIgnoreCase("ja")
 	}
@@ -76,7 +76,7 @@ public class Intyg extends RestClientFixture {
     public void setBorttagetAvVården(String value) {
         deletedByCareGiver = value?.equalsIgnoreCase("ja")
     }
-	
+
 	public String respons() {
 		return responseStatus;
 	}
@@ -94,7 +94,7 @@ public class Intyg extends RestClientFixture {
 		rättat = false
         deletedByCareGiver = false
 	}
-	
+
     public void execute() {
         def restClient = createRestClient()
         if (!giltigtFrån) giltigtFrån = utfärdat
@@ -114,7 +114,7 @@ public class Intyg extends RestClientFixture {
                     body: certificateJson(),
                     requestContentType: JSON
                     )
-			
+
 			responseStatus = resp.status
             utfärdat = new Date().parse("yyyy-MM-dd", utfärdat).plus(1).format("yyyy-MM-dd")
         }

@@ -27,7 +27,7 @@ public class TsIntygFinnsIStub extends RestClientFixture {
     def responseData = null;
 
     private String url = System.getProperty("certificate.baseUrl")
-    
+
     def execute() {
         def restClient = createRestClient("${url}")
         def response = restClient.get(path: 'ts-certificate-stub/certificates')

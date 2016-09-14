@@ -28,7 +28,7 @@ import groovyx.net.http.RESTClient
 class RestClientFixture {
 
     String baseUrl = System.getProperty("certificate.baseUrl") + "resources/"
-    
+
     /**
      * Creates a RestClient which accepts all server certificates
      * @return

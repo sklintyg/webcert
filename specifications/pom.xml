@@ -116,7 +116,7 @@
           <artifactId>commons-collections</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-dbcp2</artifactId>

@@ -100,7 +100,7 @@
       <forekomst>true</forekomst>
     </aktivitet>
 
-    <!-- Vårdinsats för missbruk eller beroende av alkohol, narkotika eller 
+    <!-- Vårdinsats för missbruk eller beroende av alkohol, narkotika eller
       läkemedel (13.2) -->
     <aktivitet>
       <aktivitetskod code="AKT15"
@@ -391,7 +391,7 @@
       <forekomst>true</forekomst>
     </observation>
 
-    <!-- Regelbundet läkarordinerat bruk av läkemedel som kan innebära en 
+    <!-- Regelbundet läkarordinerat bruk av läkemedel som kan innebära en
       trafiksäkerhetsrisk (OBS15) -->
     <observation>
       <observationskod code="OBS15"

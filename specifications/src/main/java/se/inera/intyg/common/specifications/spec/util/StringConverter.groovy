@@ -26,7 +26,7 @@ public class StringConverter implements Converter<String> {
     private static final String NULL = "<null>";
     private static final String EMPTY = "<empty>";
     private static final String SPACE = "<space>";
-    
+
     @Override
     public String fromString(String inputString) {
         if (inputString == null || inputString.isEmpty() || EMPTY.equals(inputString)) {

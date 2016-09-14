@@ -30,7 +30,7 @@ import se.inera.intyg.common.specifications.spec.util.FitnesseHelper
 class Producer {
 
     Destination destination
-    
+
     Producer(String queue) {
         destination = DestinationFixture.getDestination(queue)
     }

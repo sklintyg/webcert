@@ -70,7 +70,7 @@
 
     <!-- AKTIVITETER -->
 
-    <!-- Vårdinsats för missbruk eller beroende av alkohol, narkotika eller 
+    <!-- Vårdinsats för missbruk eller beroende av alkohol, narkotika eller
       läkemedel (13.2) -->
     <p:aktivitet>
       <p:aktivitetskod code="AKT15"
