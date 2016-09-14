@@ -10,22 +10,29 @@ apply plugin: 'groovy'
 apply plugin: 'inera-fitnesse'
 
 fitnesse {
-    port = 9126
-    root = "FitNesseRoot"
-    workingDir = "src/test/fitnesse"
-    // extraProperties = [
-    //     baseUrl: baseUrl,
-    //     seleniumDriver: seleniumDriver
-    // ]
-    wikiStartPage = "WebCert.AutomatiseradeTester"
+  port = 9126
+  root = "FitNesseRoot"
+  workingDir = "src/test/fitnesse"
+  wikiStartPage = "WebCert.AutomatiseradeTester"
 
-    if (project.hasProperty('fileOutput')) {
-        outputFormat = "xml&includehtml"
-    }
+  if (project.hasProperty('fileOutput')) {
+    outputFormat = "xml&includehtml"
+  }
+
+  extraProperties = [
+    'geb.env': "chrome",
+    'webcert.web.baseUrl' : "http://localhost:9088/",
+    'webcert.baseUrl' : "http://localhost:9088/",
+    'logsender.baseUrl' : "http://localhost:9097/log-sender/",
+    'certificate.baseUrl' : "http://localhost:8080/inera-certificate/",
+    'fitnesse.working' : "src/test/fitnesse"
+  ]
+
 }
 
 dependencies {
   compile project(':mail-stub')
+  compile project(":webcert-web")
 
   compile 'se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:2.0.RC5.1'
   compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
@@ -52,5 +59,5 @@ dependencies {
   compile 'com.jayway.awaitility:awaitility:1.4.0'
 
   fitnesse "org.fitnesse:fitnesse:20150814"
-  fitnesse "se.inera.intyg.common:common-specifications:$commonVersion"
+  fitnesse "se.inera.intyg.common:common-specifications:${commonVersion}"
 }
