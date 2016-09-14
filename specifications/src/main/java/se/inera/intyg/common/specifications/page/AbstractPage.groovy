@@ -89,7 +89,7 @@ abstract class AbstractPage extends Page {
     }
 
     static void scrollIntoView(elementId, boolean waitUntilClickable = true) {
-        def jqScrollToVisible = "jQuery(\'#" + elementId + "\')[0].scrollIntoView();var current=jQuery('body').scrollTop(); jQuery('body').scrollTop(current-400);"
+        def jqScrollToVisible = "jQuery(\'#" + elementId + "\')[0].scrollIntoView();var current=jQuery(document).scrollTop(); jQuery(document).scrollTop(current-400);"
         Browser.drive {
             js.exec(jqScrollToVisible)
         }
