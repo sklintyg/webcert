@@ -70,14 +70,6 @@ task jsTests(type: NodeTask, dependsOn: [npmInstall, moveJsFiles]) {
 
 test.dependsOn(jsTests)
 
-task unzipBuildTools(type: Copy) {
-  description 'Extracts common-build-tools'
-  into "$buildDir/build-tools/"
-  from {
-    configurations.buildtools.collect { zipTree(it) }
-  }
-}
-
 task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
     script = file('node_modules/grunt-cli/bin/grunt')
     args = ['default']

@@ -10,7 +10,7 @@ ext {
   camelVersion = "2.16.0"
   hamcrestVersion = "1.3"
 }
-  
+
 allprojects  {
   apply plugin: 'maven'
 
@@ -58,7 +58,7 @@ subprojects {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.0'
   }
-  
+
   buildscript {
     repositories {
       mavenLocal()
@@ -90,6 +90,24 @@ subprojects {
       }
     }
   }
+
+  configurations {
+    buildtools
+  }
+
+  task unzipBuildTools(type: Copy) {
+    description 'Extracts common-build-tools'
+    into "$buildDir/build-tools/"
+    from {
+      configurations.buildtools.collect { zipTree(it) }
+    }
+  }
+
+  if (project.hasProperty('codeQuality')) {
+      apply from: rootProject.file("tools/codeQuality/codeQuality.gradle")
+  }
+
+
 }
 
 project(':webcert-common') {

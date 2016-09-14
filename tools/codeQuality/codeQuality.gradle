@@ -1,0 +1,12 @@
+def checkstyleFile = file("${buildDir}/build-tools/checkstyle/checkstyle.xml")
+
+apply plugin: 'checkstyle'
+
+checkstyle {
+  config = resources.text.fromFile(checkstyleFile)
+  ignoreFailures = false
+  showViolations = true
+}
+checkstyleMain.dependsOn unzipBuildTools
+
+checkstyleMain.source = "src/main/java"
