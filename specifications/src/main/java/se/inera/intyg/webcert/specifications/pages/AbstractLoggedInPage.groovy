@@ -37,7 +37,7 @@ class AbstractLoggedInPage extends AbstractPage {
         unhandledQa(required: false, to: UnhandledQAPage, toWait: true){$("#menu-unhandled-qa")}
         unsigned(required: false, to: UnsignedIntygPage, toWait: true){$("#menu-unsigned")}
         omWebcert(required: false, to: OmWebcertPage, toWait: true){$("#menu-about")}
-        
+
         // care unit dialog
         careUnitSelector(required: false) { $("div#wc-care-unit-clinic-selector")}
         activeUnit(required: false) {careUnit -> $("#select-active-unit-${careUnit}")}

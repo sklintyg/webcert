@@ -57,7 +57,7 @@ class FkSkickarFraga extends WsClientFixture {
     String arbetsplatsKod
     String vardgivare
     String vardgivarNamn
-    
+
     public FkSkickarFraga() {
         super()
     }
@@ -121,7 +121,7 @@ class FkSkickarFraga extends WsClientFixture {
         if (arbetsplatsKod) question.adressVard.hosPersonal.enhet.arbetsplatskod.extension = arbetsplatsKod
         if (vardgivare) question.adressVard.hosPersonal.enhet.vardgivare.vardgivareId.extension = vardgivare
         if (vardgivarNamn) question.adressVard.hosPersonal.enhet.vardgivare.vardgivarnamn = vardgivarNamn
-        
+
         def request = new ReceiveMedicalCertificateQuestionType();
         request.question = question
 

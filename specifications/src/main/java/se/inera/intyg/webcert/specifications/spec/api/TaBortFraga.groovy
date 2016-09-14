@@ -24,18 +24,18 @@ import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 class TaBortFraga extends RestClientFixture {
 
     private def restClient = createRestClient("${baseUrl}testability/")
-    
+
     String internReferens
     String externReferens
     String frageText
     String svarsText
-	def response;
-	
-	
-	public String respons(){
-		return response.status;
-	}
-    
+    def response;
+
+
+    public String respons(){
+        return response.status;
+    }
+
     // Allow use both as DecisionTable and Script fixture
     def execute() {
         if (internReferens) taBortFragaMedInternReferens(internReferens)
@@ -61,7 +61,6 @@ class TaBortFraga extends RestClientFixture {
     }
 
     def taBortFragorForEnhet(String enhetsId) {
-		System.out.println("tar bort alla frågor för enhet: "+ enhetsId + "..")
         response = restClient.delete(path: "questions/enhet/${enhetsId}")
     }
 

@@ -22,9 +22,9 @@ package se.inera.intyg.webcert.specifications.pages
 import se.inera.intyg.common.specifications.page.AbstractPage
 
 class AbstractViewCertPage extends AbstractLoggedInPage {
-    
+
     static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
-    
+
     static content = {
         intygSaknas { $('#cert-load-error') }
         intygLaddat { $('#intyg-vy-laddad') }
@@ -42,7 +42,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         tillbakaBtn(required: false) { $("#tillbakaButton") }
 
         visaVadSomSaknasLista(required: false) {$("#visa-vad-som-saknas-lista")}
-        
+
         // Kopiera
         kopieraDialogKopieraKnapp(to: AbstractEditCertPage, toWait: true) { $("#button1copy-dialog") }
         kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
@@ -73,17 +73,17 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         unhandledQAList { $("#unhandledQACol") }
         unhandledQAPanel(required: false) {internid -> $("#qaunhandled-${internid}")}
         unhandledQAPanelWithText(required: false) {text -> $("#unhandledQACol div", text: text)}
-        
+
         handledQAList { $("#handledQACol") }
         handledQAPanel(required: false) {internid -> $("#qahandled-${internid}")}
-        
+
         answerText {internid -> $("#answerText-${internid}")}
         sendAnswerBtn {internid -> $("#sendAnswerBtn-${internid}")}
         forwardBtn {internid -> $("#forwardBtn-${internid}")}
         markQuestionAsHandledBtn {internid -> $("#markAsHandledWcOriginBtn-${internid}")}
         markAnswerAsHandledBtn {internid -> $("#markAsHandledFkOriginBtn-${internid}")}
         markAsUnhandledBtn {internid -> $("#markAsUnhandledBtn-${internid}")}
-        
+
         frageStallarNamn {internid -> $("#fraga-vard-aktor-namn-${internid}")}
         besvarareNamn {internid -> $("#svar-vard-aktor-namn-${internid}")}
         fkMeddelandeRubrik {internid -> $("#fkMeddelandeRubrik-${internid}")}
@@ -92,7 +92,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         qaFragaSkickadDatum {internid -> $("#qa-skickaddatum-${internid}")}
         qaFragetext {internid -> $("#qa-fragetext-${internid}")}
         qaSvarstext {internid -> $("#answerText-${internid}")}
-    
+
         questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
         closeSentMessage(wait: true) { $("#question-is-sent-to-fk-message-text > button") }
 

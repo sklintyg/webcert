@@ -86,7 +86,7 @@ Kontrollera valideringsmeddelanden.
 | valideringPatientVisas? |
 | true |
 
-!3 Fyll i intyget avser, postnummer och identifieringstyp 
+!3 Fyll i intyget avser, postnummer och identifieringstyp
 
 | Populera Ts Bas |
 | intygetAvser | identifieringstyp | postnummer |
@@ -99,7 +99,7 @@ Kontrollera valideringsmeddelanden.
 
 | Validering Ts Bas |
 | valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
-| false| false | false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false | 
+| false| false | false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false |
 
 
 !3 Testa att validering för diabetesbehandling fungerar
@@ -114,8 +114,8 @@ Kontrollera valideringsmeddelanden.
 !3 Kontrollera valideringsmeddelande för diabetes.
 
 | Validering Ts Bas |
-| valideringDiabetesVisas? | 
-| false | 
+| valideringDiabetesVisas? |
+| false |
 
 !3 Testa att klicka ur behandling och verifiera att valideringsfel dyker upp
 
@@ -129,8 +129,8 @@ Kontrollera valideringsmeddelanden.
 !3 Kontrollera valideringsmeddelande för diabetes.
 
 | Validering Ts Bas |
-| valideringDiabetesVisas? | 
-| true | 
+| valideringDiabetesVisas? |
+| true |
 
 !3 Ta bort utkast
 

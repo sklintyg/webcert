@@ -1,5 +1,5 @@
 !3 Rensa eventuella gamla notifieringar
-| webcert rest utils | 
+| webcert rest utils |
 | reset? |
 | true |
 
@@ -10,11 +10,11 @@
 
 !3 Radera utkastet
 | radera utkast |
-| intygId   | intygTyp | version  | utkastRaderat? | 
+| intygId   | intygTyp | version  | utkastRaderat? |
 | $utkastId | fk7263   | $version | true           |
 
 !3 Verifiera att notifieringar mottogs av notifierings-stubben
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  | handelseSkapad? |
 | $utkastId  | HAN1 | true            |
 | $utkastId  | HAN4 | true            |

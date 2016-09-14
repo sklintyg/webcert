@@ -55,7 +55,7 @@ class VerifieraUtkastFk7263 extends ExceptionHandlingFixture {
         }
         result
     }
-    
+
     String getValueResult(module, field) {
         def result = ''
         if (module != null) {
@@ -105,7 +105,7 @@ class VerifieraUtkastFk7263 extends ExceptionHandlingFixture {
     String diagnos1() {
         getValueResult("diagnos", getCurrentMethodName())
     }
-    
+
     String diagnos1Text() {
         getValueResult("diagnos", getCurrentMethodName())
     }

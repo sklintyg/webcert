@@ -25,7 +25,7 @@ class SkickadeNotifieringar {
 
     def notifieringar
 
-    String id 
+    String id
     String kod
     int antal = 0
     def matching = new HashMap<String, Collection>()

@@ -65,7 +65,7 @@ class SkapaUtkast extends RestClientFixture {
 
     def restClient = createRestClient("${baseUrl}testability/")
 
-    def generator = { 
+    def generator = {
         String alphabet = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join(), int n ->
         new Random().with {(1..n).collect { alphabet[ nextInt( alphabet.length() ) ] }.join()}
     }
@@ -113,7 +113,7 @@ class SkapaUtkast extends RestClientFixture {
         resp = restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
 
         if (komplett) {
-            
+
            resp = restClient.put(path: "intyg/$intygId/komplett")
         }
 

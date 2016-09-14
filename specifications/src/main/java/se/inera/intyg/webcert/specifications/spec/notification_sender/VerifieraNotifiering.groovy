@@ -23,17 +23,17 @@ import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils
 
 class VerifieraNotifiering {
 
-    String id 
+    String id
     String kod
-	long timeOut = 4000;
-	private boolean handelseSkapad = false;
-	
+    long timeOut = 4000;
+    private boolean handelseSkapad = false;
+
 
     public void execute() {
         handelseSkapad = WebcertRestUtils.awaitNotification(id, kod, timeOut);
-    } 
+    }
 
-	public boolean handelseSkapad() {
-		return handelseSkapad;
-	}
+    public boolean handelseSkapad() {
+        return handelseSkapad;
+    }
 }

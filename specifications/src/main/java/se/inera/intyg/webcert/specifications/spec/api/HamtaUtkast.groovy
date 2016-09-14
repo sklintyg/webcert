@@ -28,7 +28,7 @@ public class HamtaUtkast extends RestClientFixture {
 
     String intygsId
     String intygsTyp
-    
+
     String hsaId = "SE4815162344-1B01"
     String enhetId = "SE4815162344-1A02"
 

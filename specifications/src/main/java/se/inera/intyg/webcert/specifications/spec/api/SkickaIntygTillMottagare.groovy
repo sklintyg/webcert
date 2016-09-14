@@ -27,12 +27,12 @@ public class SkickaIntygTillMottagare extends RestClientFixture {
 
     String intygsId
     String intygsTyp
-    
+
     String hsaId = "SE4815162344-1B01"
     String enhetId = "SE4815162344-1A02"
     String mottagare = "enMottagare"
     boolean samtycke = true
-        
+
     def execute() {
         def restClient = createRestClient(baseUrl)
         WebcertRestUtils.login(restClient, hsaId, enhetId)

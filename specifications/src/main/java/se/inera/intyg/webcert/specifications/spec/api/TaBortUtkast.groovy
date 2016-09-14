@@ -24,15 +24,15 @@ import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 class TaBortUtkast extends RestClientFixture {
 
     private def restClient = createRestClient("${baseUrl}testability/")
-    
+
     String utkastId
     String enhetsId
-	def response;
-	
-	public String respons(){
-		return response.status;
-	}
-    
+    def response;
+
+    public String respons(){
+        return response.status;
+    }
+
     // Allow use both as DecisionTable and Script fixture
     def execute() {
         if (utkastId) taBortUtkast(utkastId)
@@ -42,13 +42,13 @@ class TaBortUtkast extends RestClientFixture {
     def taBortAllaUtkast() {
         response = restClient.delete(path: "intyg/")
     }
-    
+
     def taBortUtkast(String utkastId) {
         response = restClient.delete(path: "intyg/${utkastId}")
     }
-    
+
     def taBortUtkastForEnhet(String enhetsId) {
         response = restClient.delete(path: "intyg/enhet/${enhetsId}")
     }
-    
+
 }

@@ -41,7 +41,7 @@ class ValideraSvar extends WsClientFixture {
     public ValideraSvar() {
         super()
     }
-    
+
     public ValideraSvar(String logiskAddress) {
         super(logiskAddress)
     }
@@ -54,7 +54,7 @@ class ValideraSvar extends WsClientFixture {
 
     String filnamn
     String vardReferens
-    
+
     ReceiveMedicalCertificateAnswerResponseType response
 
     public void execute() {
@@ -65,7 +65,7 @@ class ValideraSvar extends WsClientFixture {
                                                                         ReceiveMedicalCertificateAnswerType.class).getValue()
 
         if (vardReferens) request.answer.vardReferensId = vardReferens
-        
+
         response = receiveMedicalCertificateAnswerResponder.receiveMedicalCertificateAnswer(logicalAddress, request);
     }
 

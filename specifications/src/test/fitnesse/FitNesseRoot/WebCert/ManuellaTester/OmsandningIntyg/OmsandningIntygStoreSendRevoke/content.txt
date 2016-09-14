@@ -1,7 +1,7 @@
 !2 VIKTIGT
 !3 För att kunna köra omsändningstester behöver Webcert konfigureras enl. följande:
 !4 Webcert skall startas med konfigurationsfil 'webcert-dev-itstub.properties':
-    
+
     -Dwebcert.config.file=/Users/eriklupander/intyg/webcert/web/webcert-dev-itstub.properties
 
 !4 ActiveMQ-inställningar för omsändning behöver omkonfigureras. För körning i "utvecklingsmiljö" på Jetty, öppna jetty-web.xml och ändra AMQ-URL till följande under AsyncConnectionFactory:

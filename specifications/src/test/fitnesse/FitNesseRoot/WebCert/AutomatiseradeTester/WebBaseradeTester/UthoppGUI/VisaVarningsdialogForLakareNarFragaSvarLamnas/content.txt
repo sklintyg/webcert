@@ -1,4 +1,4 @@
-Testet kontroller att läkare som kommer in till Webcert via uthoppslänk får se en varningsdialog 
+Testet kontroller att läkare som kommer in till Webcert via uthoppslänk får se en varningsdialog
 när vederbörande väljer att lämna sidan 'Frågor och svar' och gå till 'Ej signerade utkast' eller 'Sök/skriv intyg'
 
 !3 Skapa ett nytt intygsutkast

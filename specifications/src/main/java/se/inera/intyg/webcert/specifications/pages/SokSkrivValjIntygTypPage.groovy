@@ -63,7 +63,7 @@ class SokSkrivValjIntygTypPage extends AbstractLoggedInPage {
     def valjIntygstypTsDiabetes() {
         intygTyp.value("string:ts-diabetes")
     }
-    
+
     def valjIntygsTyp(String typ) {
         if (typ == "FK7263") {
             valjIntygstypFk7263();

@@ -52,7 +52,7 @@ class SparaUtkast {
     String diagnosKod = "S50"
     String diagnosBeskrivning1 = "Kontusion på armbåge"
     String diagnosBeskrivning = "Skada underarm"
-    
+
     String nedsattMed100 = null
 
     boolean komplett = false

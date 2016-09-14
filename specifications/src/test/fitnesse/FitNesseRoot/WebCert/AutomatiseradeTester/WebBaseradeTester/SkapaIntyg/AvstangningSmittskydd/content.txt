@@ -99,7 +99,7 @@
 
 | Verifiera Utkast Fk7263|
 | sjukdomsforlopp? |
-| Först feber, därefter massa konstiga prickar överallt | 
+| Först feber, därefter massa konstiga prickar överallt |
 
 !4 verifiera - form4
 

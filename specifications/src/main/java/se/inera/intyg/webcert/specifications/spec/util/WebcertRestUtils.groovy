@@ -59,7 +59,7 @@ public class WebcertRestUtils extends RestClientFixture {
     /**
      * Get the expected number of notifications present in the stub,
      * timeout if this takes more than 4 seconds.
-     * 
+     *
      * @param expected the number of expected notifications to get
      * @return a collection of notifications
      */
@@ -84,11 +84,11 @@ public class WebcertRestUtils extends RestClientFixture {
 
     /**
      *  Check if a notification with the specified id and code is present in the stub.
-     *  
+     *
      *  @param id the utlatandeId
      *  @param code, the code for the notification
      *  @param timeOutMillis, timout after this many millis
-     *  @return true if a matching notification is found, false othewise 
+     *  @return true if a matching notification is found, false othewise
      */
     public static boolean awaitNotification(final String id, final String code, final long timeOutMillis) {
         final long timeOut = System.currentTimeMillis() + timeOutMillis;
@@ -105,7 +105,7 @@ public class WebcertRestUtils extends RestClientFixture {
 
     /**
      * Save Utkast.
-     * 
+     *
      * @param intygsTyp
      * @param utkastId
      * @param json
@@ -129,7 +129,7 @@ public class WebcertRestUtils extends RestClientFixture {
 
     /**
      * Send an Intyg to a recipient.
-     * @param intygsTyp 
+     * @param intygsTyp
      * @param intygsId
      * @param recipientId id of the recipient (i.e FK)
      * @return HttpResponseDecorator
@@ -161,8 +161,8 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static HttpResponseDecorator setQuestionAsAnswered(String intygsTyp, String internReferens) {
         def restPath= "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/stang"
-        def response = webcert.get(path : restPath) 
-        response 
+        def response = webcert.get(path : restPath)
+        response
     }
 
     /**
@@ -173,12 +173,12 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static HttpResponseDecorator setQuestionAsUnhandled(String intygsTyp, String internReferens) {
         def restPath= "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/oppna"
-        def response = webcert.get(path : restPath) 
-        response 
+        def response = webcert.get(path : restPath)
+        response
     }
 
     /**
-     * 
+     *
      * @param intygsTyp
      * @param internReferens
      * @param json
@@ -195,7 +195,7 @@ public class WebcertRestUtils extends RestClientFixture {
         def response = webcert.get(path : restPath, requestContentType : JSON)
         response.data.internReferens
     }
-    
+
 
     /**
      * Delete a draft

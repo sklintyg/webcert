@@ -35,9 +35,6 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
     def kopiaintygsid
     def intygsid
 
-
-    // ------- navigation
-
     def gaTillSokSkrivIntyg() {
         Browser.drive {
             go "/web/dashboard#/create/index"
@@ -70,8 +67,6 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
             page.sendWithValidation()
         }
     }
-
-    // ------- pages
 
     boolean sokSkrivIntygSidanVisas() {
         boolean result
@@ -232,8 +227,6 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         }
     }
 
-    // ------- state
-
     boolean namnFinnsEjMeddelandeVisas() {
         boolean result
         Browser.drive {
@@ -245,13 +238,13 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         result
     }
 
-	String PUTjänstFel() {
-		String felmeddelande
-		Browser.drive {
-			felmeddelande = page.puFelmeddelande.text()
-		}
-		return felmeddelande
-	}
+    String PUTjänstFel() {
+        String felmeddelande
+        Browser.drive {
+            felmeddelande = page.puFelmeddelande.text()
+        }
+        return felmeddelande
+    }
 
     boolean valjIntygstypSynlig() {
         boolean result
@@ -363,7 +356,6 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         result
     }
 
-    // BEGIN these go to the same page but for different classes. should be merged in the future
     boolean visaSidanVisas() {
         boolean result
         Browser.drive {
@@ -386,7 +378,6 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         }
         return result;
     }
-    // END
 
     boolean visaEditIntygSidanVisas() {
         Browser.drive {

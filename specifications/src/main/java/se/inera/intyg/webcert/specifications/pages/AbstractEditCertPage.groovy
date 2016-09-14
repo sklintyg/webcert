@@ -24,7 +24,7 @@ import geb.Page
 import se.inera.intyg.common.specifications.spec.Browser
 
 class AbstractEditCertPage extends AbstractLoggedInPage {
-    
+
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
 
     void onLoad(Page previousPage) {
@@ -112,7 +112,7 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
     boolean harSparat(){
         return intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed();
     }
-    
+
     boolean isSignBtnDisplayed(){
         signeraBtn.isDisplayed()
     }

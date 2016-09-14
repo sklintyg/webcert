@@ -37,7 +37,7 @@ class LogConsumer {
     LogConsumer(String queue) {
         destination = DestinationFixture.getDestination(queue)
     }
-    
+
     public void setTimeout(int timeout) {
         this.timeout = timeout
     }
@@ -111,16 +111,16 @@ class LogConsumer {
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE)
             browser = session.createBrowser(destination)
             Enumeration<Message> messages = browser.getEnumeration();
-            
+
             while(messages.hasMoreElements()) {
                 depth++;
                 messages.nextElement();
             }
-            
+
         } finally {
             JMSUtils.closeQuitely(conn, session, browser);
         }
         return depth;
     }
-    
+
 }

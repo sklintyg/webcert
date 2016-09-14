@@ -50,7 +50,7 @@ class JournalsystemSkaparUtkast extends WsClientFixtureNyaKontraktet {
     String enhetsId = "enhetsId"
     String enhetsNamn = "enhetsNamn"
     String typAvUtlatande = "fk7263"
-    
+
     public JournalsystemSkaparUtkast() {
         super()
     }
@@ -67,7 +67,7 @@ class JournalsystemSkaparUtkast extends WsClientFixtureNyaKontraktet {
     }
 
     private CreateDraftCertificateResponseType response
-    
+
     def execute() {
         Utlatande utlatande = new Utlatande()
         utlatande.typAvUtlatande = new TypAvUtlatande()
@@ -96,11 +96,11 @@ class JournalsystemSkaparUtkast extends WsClientFixtureNyaKontraktet {
 
         response = createDraftResponder.createDraftCertificate(logicalAddress.value, draftCertificate);
     }
-    
+
     String utkastId() {
         response.utlatandeId.extension
     }
-    
+
     String resultat() {
         resultAsString(response)
     }

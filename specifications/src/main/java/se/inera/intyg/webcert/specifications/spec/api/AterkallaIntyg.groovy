@@ -27,11 +27,11 @@ public class AterkallaIntyg extends RestClientFixture {
 
     String intygsId
     String intygsTyp
-    
+
     String hsaId = "SE4815162344-1B01"
     String enhetId = "SE4815162344-1A02"
     String meddelande = "ett meddelande"
-    
+
     def execute() {
         def restClient = createRestClient(baseUrl)
         WebcertRestUtils.login(restClient, hsaId, enhetId)

@@ -41,7 +41,7 @@ class ValideraFraga extends WsClientFixture {
     public ValideraFraga() {
         super()
     }
-    
+
     public ValideraFraga(String logiskAddress) {
         super(logiskAddress)
     }
@@ -53,7 +53,7 @@ class ValideraFraga extends WsClientFixture {
     }
 
     String filnamn
-    
+
     ReceiveMedicalCertificateQuestionResponseType response
 
     public void execute() {

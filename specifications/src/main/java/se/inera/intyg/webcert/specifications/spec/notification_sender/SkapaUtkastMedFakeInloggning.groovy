@@ -28,7 +28,7 @@ class SkapaUtkastMedFakeInloggning {
     String patientPersonnummer
     String patientFornamn = "Test"
     String patientEfternamn = "Testsson"
-    
+
     def response
 
     public void execute() {

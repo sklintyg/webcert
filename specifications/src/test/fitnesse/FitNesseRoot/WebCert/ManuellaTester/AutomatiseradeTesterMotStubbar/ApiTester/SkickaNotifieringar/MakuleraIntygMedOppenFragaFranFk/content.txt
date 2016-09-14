@@ -25,21 +25,21 @@
 
 !3 Rensa notifieringar så att vi kan verifiera de relevanta
 | webcert rest utils |
-| reset? | 
-| true | 
+| reset? |
+| true |
 
 !3 Makulera intyget
 | makulera intyg |
 | intygId   | intygTyp | intygMakulerat? |
-| $utkastId |  fk7263  | true | 
+| $utkastId |  fk7263  | true |
 
 !3 Verifiera att förväntade notifieringar gick iväg
-| verifiera notifiering | 
-| id         | kod  |  handelseSkapad?   |  
-| $utkastId  | HAN5 |  true              | 
-| $utkastId  | HAN9 |  true              | 
+| verifiera notifiering |
+| id         | kod  |  handelseSkapad?   |
+| $utkastId  | HAN5 |  true              |
+| $utkastId  | HAN9 |  true              |
 
 !3 Kolla antalet hanterade svar
 | skickade notifieringar |
-| id        | kod  | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| id        | kod  | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? |
 | $utkastId | HAN9 | 0                   | 0          |  1                    | 1            |

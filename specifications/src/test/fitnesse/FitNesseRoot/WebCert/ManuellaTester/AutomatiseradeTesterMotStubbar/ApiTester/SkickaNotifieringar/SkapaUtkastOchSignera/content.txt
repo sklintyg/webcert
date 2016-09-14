@@ -1,7 +1,7 @@
 !contents -R2 -g -p -f -h
 
 !3 Rensa eventuella gamla notifieringar
-| webcert rest utils | 
+| webcert rest utils |
 | reset? |
 | true   |
 
@@ -16,12 +16,12 @@
 | ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= |
 
 !3 Givet att det finns ett komplett utkast, verifiera att det går att signera det (vilket ska ge en HAN2, se nedan)
-| signera utkast | 
+| signera utkast |
 | intygId   | intygTyp | version  | utkastSignerat? | version?  |
 | $utkastId | fk7263   | $version | true            | $version= |
 
 !3 Verifiera att notifieringar mottogs av notifierings-stubben
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  | handelseSkapad? |
 | $utkastId  | HAN1 | true              |
 | $utkastId  | HAN11| true              |

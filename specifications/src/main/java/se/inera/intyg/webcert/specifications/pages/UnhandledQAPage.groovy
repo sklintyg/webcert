@@ -54,7 +54,7 @@ class UnhandledQAPage extends AbstractLoggedInPage {
         visaAllaFragaBtn(required: false) { $("#select-active-unit-wc-all") }
         vcCentrumVastBtn(required: false) { $("select-active-unit-centrum-vast") }
         fetchMoreBtn { $("#hamtaFler") }
-        
+
         visaFragaBtn(required: false) {internReferens -> $("#showqaBtn-${internReferens}")}
 
         patientId() {internReferens -> $("#patientId-${internReferens}")}

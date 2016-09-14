@@ -13,7 +13,7 @@
 !3 Spara utkastet
 
 | patientPersonnummer | hsaId | enhetId             | intygId    | intygTyp | komplett | utkastSparat? |
-| ${person1.personnummer} | IFV1239877878-104N | IFV1239877878-1045 | webcert-fitnesse-signera-1 | fk7263    | nej | true | 
+| ${person1.personnummer} | IFV1239877878-104N | IFV1239877878-1045 | webcert-fitnesse-signera-1 | fk7263    | nej | true |
 
 !3 Verifiera att en PDL-loggning gjorts
 

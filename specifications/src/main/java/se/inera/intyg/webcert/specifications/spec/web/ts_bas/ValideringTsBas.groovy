@@ -75,7 +75,7 @@ class ValideringTsBas extends ExceptionHandlingFixture {
                 !page.valideringBedomning.isDisplayed() &&
                 !page.valideringVardEnhet.isDisplayed() &&
                 !page.valideringDiabetes.isDisplayed()
-                
+
         }
         result
     }

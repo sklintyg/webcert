@@ -179,7 +179,7 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         return result
     }
 
-    boolean qaUnhandledPanel(String id) { 
+    boolean qaUnhandledPanel(String id) {
         def ref = "#qaunhandled-${id}";
         def result
         Browser.drive {
