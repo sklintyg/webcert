@@ -23,12 +23,11 @@ module.exports = function(config) {
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = SRC_DIR;
-    var WEBJAR_DIR = 'build/webjars/';
 
     config.set({
 
         // base path, that will be used to resolve files and exclude
-        basePath: '../../../',
+        basePath: '',
 
         // frameworks to use
         frameworks: [ 'jasmine' ],
@@ -51,15 +50,21 @@ module.exports = function(config) {
         files: [
 
             // Dependencies
-            WEBJAR_DIR + 'angularjs/angular.js',
-            WEBJAR_DIR + 'angularjs/angular-mocks.js',
-            WEBJAR_DIR + 'angularjs/1.4.10/angular-locale_sv-se.js',
-            WEBJAR_DIR + 'angularjs/angular-cookies.js',
-            WEBJAR_DIR + 'angular-ui-router/angular-ui-router.js',
-            WEBJAR_DIR + 'angularjs/angular-sanitize.js',
-            WEBJAR_DIR + 'angular-ui-bootstrap/ui-bootstrap-tpls.js',
-            WEBJAR_DIR + 'jquery/jquery.js',
-            WEBJAR_DIR + 'momentjs/moment.js',
+            // bower:js
+            'src/main/webapp/bower_components/angular/angular.js',
+            'src/main/webapp/bower_components/angular-animate/angular-animate.js',
+            'src/main/webapp/bower_components/angular-cookies/angular-cookies.js',
+            'src/main/webapp/bower_components/angular-i18n/angular-locale_sv-se.js',
+            'src/main/webapp/bower_components/angular-sanitize/angular-sanitize.js',
+            'src/main/webapp/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+            'src/main/webapp/bower_components/api-check/dist/api-check.js',
+            'src/main/webapp/bower_components/angular-formly/dist/formly.js',
+            'src/main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
+            'src/main/webapp/bower_components/jquery/jquery.js',
+            'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
+            'src/main/webapp/bower_components/momentjs/moment.js',
+            // endbower
+            'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
 
             // Load these first
             TEST_DIR + 'app-test.js',

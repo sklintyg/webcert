@@ -389,10 +389,10 @@
 
 
     angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly']);
 
     var app = angular.module('showcase',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'webcert', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap', 'ngMockE2E']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'webcert', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ngMockE2E']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000

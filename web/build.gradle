@@ -25,55 +25,28 @@ sourceSets {
       exclude '**/*.scss'
       exclude '**/*.spec.js'
       exclude '**/*.test.js'
-      exclude '**/karma*.conf.js'
-      exclude '**/karma*.conf.ci.js'
     }
   }
 }
 
-// TODO: just for now. Pin bootstrap version.
-configurations.all {
-  resolutionStrategy {
-    force 'org.webjars:bootstrap:3.1.1'
-  }
+task bowerInstall(type: NodeTask, dependsOn:npmInstall) {
+  script = file('node_modules/bower/bin/bower')
+  args = ["--config.storage.cache=${gradle.getGradleUserHomeDir()}/caches/bower/cache",
+          "--config.storage.packages=${gradle.getGradleUserHomeDir()}/caches/bower/packages",
+          "--config.storage.registry=${gradle.getGradleUserHomeDir()}/caches/bower/registry",
+          'install']
+  inputs.files file('bower.json')
+  outputs.files file('src/main/webapp/bower_components')
 }
 
-// TODO: this list should not be required, copy dependencies whose group is org.webjars instead
-List webjars = [[group: 'org.webjars', name: 'angularjs', version: '1.4.10'],
-                [group: 'org.webjars', name: 'angular-ui-bootstrap', version: '0.12.1'],
-                [group: 'org.webjars', name: 'angular-ui-router', version: '0.2.15'],
-                [group: 'org.webjars', name: 'bootstrap', version: '3.1.1'],
-                [group: 'org.webjars', name: 'momentjs', version: '2.7.0'],
-                [group: 'org.webjars', name: 'jquery', version: '1.9.0'],
-                [group: 'se.inera.intyg.common', name: 'common-web']]
-
-task unzipWebjars(type: Copy) {
-    description 'Copies anything that is a webjar from the classpath and expands it so that we can use their static resources with karma'
-    into "$buildDir/webjars/"
-    from {
-        configurations.compile.filter{file ->
-            webjars.any{jar -> file.name.startsWith(jar.name) }
-        }.collect{zipTree(it)}
-    }
-}
-
-task moveJsFiles(type: Copy, dependsOn: unzipWebjars) {
-  description 'Moves everything up one level, which gets rid of version directory (angular/1.2.4/* -> angular/)'
-  from { "${buildDir}/webjars/META-INF/resources/webjars/" }
-  eachFile {details ->
-    details.path = details.path.replaceAll('([^/]+)/[0-9.]+(/.*)', '$1$2')
-  }
-  into "${buildDir}/webjars"
-}
-
-task jsTests(type: NodeTask, dependsOn: [npmInstall, moveJsFiles]) {
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage='+(!project.hasProperty('runSonar'))]
+task jsTests(type: NodeTask, dependsOn: [bowerInstall]) {
+  script = file('node_modules/grunt-cli/bin/grunt')
+  args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage='+(!project.hasProperty('runSonar'))]
 }
 
 test.dependsOn(jsTests)
 
-task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
+task jsInclude(type: NodeTask, dependsOn: [bowerInstall, unzipBuildTools]) {
   script = file('node_modules/grunt-cli/bin/grunt')
   args = ['default', '--outputDir=' + webappOutputDir]
 }

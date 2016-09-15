@@ -42,6 +42,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-sass-lint');
+    grunt.loadNpmTasks('grunt-wiredep');
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
@@ -153,7 +154,7 @@ module.exports = function(grunt) {
 
         karma: {
             ci: {
-                configFile: 'src/main/resources/karma.conf.ci.js',
+                configFile: 'karma.conf.ci.js',
                 client: {
                     args: ['--skip-coverage=' + SKIP_COVERAGE]
                 },
@@ -164,7 +165,7 @@ module.exports = function(grunt) {
                 }
             },
             watch: {
-                configFile: 'src/main/resources/karma.conf.ci.js',
+                configFile: 'karma.conf.ci.js',
                 reporters: ['mocha'],
                 autoWatch: true,
                 singleRun: false
@@ -352,12 +353,47 @@ module.exports = function(grunt) {
                 logConcurrentOutput: true
             },
             tasks: ['connect:server', 'watch']
+        },
+
+        wiredep: {
+            webcert: {
+                directory: 'src/main/webapp/bower_components',
+                src: [
+                    SRC_DIR + '../pubapp/**/*.html',
+                    SRC_DIR + '../**/*.jsp',
+                    'karma.conf.js'
+                ],
+                ignorePath: '../..',
+                fileTypes: {
+                    jsp: {
+                        block: /(([ \t]*)<!--\s*bower:*(\S*)\s*-->)(\n|\r|.)*?(<!--\s*endbower\s*-->)/gi,
+                        detect: {
+                            js: /<script.*src=['"]([^'"]+)/gi,
+                            css: /<link.*href=['"]([^'"]+)/gi
+                        },
+                        replace: {
+                            js: function(filePath) {
+                                if (filePath[0] !== '/') {
+                                    filePath = '/' + filePath;
+                                }
+                                return '<script type="text/javascript" src="'+filePath+'"></script>';
+                            },
+                            css: function(filePath) {
+                                if (filePath[0] !== '/') {
+                                    filePath = '/' + filePath;
+                                }
+                                return '<link rel="stylesheet" href="'+filePath+'" />';
+                            }
+                        }
+                    }
+                }
+            }
         }
     });
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist', 'jshint' ]);
+    grunt.registerTask('default', ['jshint', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma:ci']);
     grunt.registerTask('test:watch', ['karma:watch']);
