@@ -5,9 +5,9 @@ $("input[id*='date_undersokningAvPatienten_']").click();
 $("input[id*='_date_journaluppgifter_']").click();
 $("input[id*='_date_anhorigsBeskrivningAvPatienten_']").click();
 $("input[id*='_date_annatGrundForMU_']").click();
-$("input[id*='_single-text_annatGrundForMUBeskrivning_']").val('Journal fran Dalarnas lan').change();
-/*$("#annatGrundForMUBeskrivning").val('Journal from down below').change();*/
-$("input[id*='date_kannedomOmPatient_']").click();
+$("#annatGrundForMUBeskrivning").val('Journal from down below').change();
+/*$("input[id*='date_kannedomOmPatient_']").click();*/
+$("#underlag-2-datum").val(todayDateString).change();
 $("#underlagFinnsYes").prop("checked", true);
 $("#underlagFinnsYes").click();
 $("#underlag-0-typ").val('string:LOGOPED').change();
@@ -31,7 +31,7 @@ $("#underlag-4-datum").val(todayDateString).change();
 $("#underlag-4-hamtasFran").val('CSK').change();*/
 $("#sjukdomsforlopp").val("Patienten har haft besvären i olika omgångar och aldrig riktigt fått vara helt frisk, Patienten känner sig trött och orkeslös efter alla års sjukdom. Forsta insjuknandet inföll sig vid 6 års ålder och har sedan dess pågått.");
 $("#sjukdomsforlopp").change();
-$("#diagnoseCode").val("S47").change().blur();
+$("#diagnoseCode-0").val("S47").change().blur();
 $("#diagnoseDescription").val("Klämskada på skuldra och överarm").change().blur();
 $("a:contains('Lägg till övriga diagnoser')").click();
 $("input[id*='diagnoseCode']").eq(1).val('F000').change().blur();
