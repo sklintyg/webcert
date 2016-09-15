@@ -5,7 +5,7 @@ $("input[id*='date_undersokningAvPatienten_']").click();
 $("input[id*='_date_journaluppgifter_']").click();
 $("input[id*='_date_anhorigsBeskrivningAvPatienten_']").click();
 $("input[id*='_date_annatGrundForMU_']").click();
-$("input[name*='_single-text_annatGrundForMUBeskrivning_']").val('Journal fran Dalarnas lan').change();
+$("input[id*='_single-text_annatGrundForMUBeskrivning_']").val('Journal fran Dalarnas lan').change();
 /*$("#annatGrundForMUBeskrivning").val('Journal from down below').change();*/
 $("input[id*='date_kannedomOmPatient_']").click();
 $("#underlagFinnsYes").prop("checked", true);
