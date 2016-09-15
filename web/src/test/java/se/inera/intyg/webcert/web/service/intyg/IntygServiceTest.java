@@ -26,6 +26,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -57,6 +58,7 @@ import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
@@ -138,6 +140,9 @@ public class IntygServiceTest {
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
     @InjectMocks
+    private IntygDraftsConverter intygConverter = new IntygDraftsConverter();
+
+    @InjectMocks
     private IntygServiceImpl intygService;
 
 
@@ -189,6 +194,13 @@ public class IntygServiceTest {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         Utlatande utlatande = objectMapper.readValue(json, Utlatande.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+
+        // use reflection to set IntygDraftsConverter in IntygService
+        Field field = IntygServiceImpl.class.getDeclaredField("intygConverter");
+        field.setAccessible(true);
+        field.set(intygService, intygConverter);
+
+        when(moduleRegistry.getModuleIdFromExternalId(anyString())).thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
 
     @Test

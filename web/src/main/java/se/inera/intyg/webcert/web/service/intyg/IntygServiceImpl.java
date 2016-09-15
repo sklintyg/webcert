@@ -114,6 +114,9 @@ public class IntygServiceImpl implements IntygService {
     private UtkastIntygDecorator utkastIntygDecorator;
 
     @Autowired
+    private IntygDraftsConverter intygConverter;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -174,7 +177,7 @@ public class IntygServiceImpl implements IntygService {
 
             switch (response.getResult().getResultCode()) {
             case OK:
-                List<ListIntygEntry> fullIntygItemList = IntygDraftsConverter.convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
+                List<ListIntygEntry> fullIntygItemList = intygConverter.convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
                 fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
                 addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
                 return Pair.of(fullIntygItemList, Boolean.FALSE);

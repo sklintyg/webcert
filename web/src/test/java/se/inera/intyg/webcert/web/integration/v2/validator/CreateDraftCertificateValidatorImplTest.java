@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.web.integration.v2.validator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,6 +47,11 @@ public class CreateDraftCertificateValidatorImplTest {
 
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
+
+    @Before
+    public void setup() {
+        when(moduleRegistry.getModuleIdFromExternalId(anyString())).thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
+    }
 
     @Test
     public void testValidate() {

@@ -29,6 +29,7 @@ import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.integration.hsa.util.HsaAttributeExtractor;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
 import se.riv.infrastructure.directory.v1.CommissionType;
@@ -43,13 +44,16 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     @Autowired
     private HsaPersonService hsaPersonService;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     private HsaAttributeExtractor hsaAttributeExtractor = new HsaAttributeExtractor();
 
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, CommissionType miuOnUnit) {
         CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
 
-        utkastsRequest.setIntygType(intyg.getTypAvIntyg().getCode().toLowerCase());
+        utkastsRequest.setIntygType(moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()));
 
         Patient patient = TransportConverterUtil.getPatient(intyg.getPatient());
         utkastsRequest.setPatient(patient);

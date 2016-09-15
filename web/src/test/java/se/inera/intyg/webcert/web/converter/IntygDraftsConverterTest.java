@@ -26,9 +26,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-import java.time.LocalDateTime;
 import org.junit.Test;
 
 import se.inera.intyg.common.support.model.CertificateState;
@@ -41,10 +41,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.Statuskod;
 import se.riv.clinicalprocess.healthcond.certificate.v2.IntygsStatus;
 
 public class IntygDraftsConverterTest {
-
-    public IntygDraftsConverterTest() {
-
-    }
 
     @Test
     public void testMergeWithEmptyLists() {

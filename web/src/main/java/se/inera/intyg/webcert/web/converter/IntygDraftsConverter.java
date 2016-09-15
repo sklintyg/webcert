@@ -25,16 +25,20 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v2.IntygsStatus;
 
-public final class IntygDraftsConverter {
+@Component
+public class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
@@ -45,9 +49,8 @@ public final class IntygDraftsConverter {
 
     private static final List<String> ARCHIVED_STATUSES = Arrays.asList(StatusKod.DELETE.name(), StatusKod.RESTOR.name());
 
-    private IntygDraftsConverter() {
-
-    }
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
     public static List<ListIntygEntry> merge(List<ListIntygEntry> intygList, List<Utkast> utkastList) {
 
@@ -85,19 +88,19 @@ public final class IntygDraftsConverter {
         return entry;
     }
 
-    public static List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
+    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
 
         return intygList.stream()
-                .map(IntygDraftsConverter::convertIntygToListIntygEntry)
+                .map(intyg -> convertIntygToListIntygEntry(intyg))
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
     }
 
-    private static ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
+    private ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
 
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(source.getIntygsId().getExtension());
-        entry.setIntygType(source.getTyp().getCode().toLowerCase());
+        entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
         entry.setSource(IntygSource.IT);
         entry.setStatus(findLatestStatus(source.getStatus()).name());
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
