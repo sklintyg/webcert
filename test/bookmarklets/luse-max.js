@@ -21,13 +21,13 @@ $("#underlag-2-typ").val('string:!!!PSYKOLOG').change();
 $("#underlag-2-datum").val(todayDateString).change();
 $("#underlag-2-hamtasFran").val('CSK!!!!!!!!').change();
 $("button:contains('ytterligare underlag')").click();
-$("#underlag-3-typ").val('string:PSYKOLOG').change();
+/*$("#underlag-3-typ").val('string:PSYKOLOG').change();
 $("#underlag-3-datum").val(todayDateString).change();
 $("#underlag-3-hamtasFran").val('CSK').change();
 $("button:contains('ytterligare underlag')").click();
 $("#underlag-4-typ").val('string:PSYKOLOG').change();
 $("#underlag-4-datum").val(todayDateString).change();
-$("#underlag-4-hamtasFran").val('CSK').change();
+$("#underlag-4-hamtasFran").val('CSK').change();*/
 $("#sjukdomsforlopp").val("Patienten har haft besvären i olika omgångar och aldrig riktigt fått vara helt frisk, Patienten känner sig trött och orkeslös efter alla års sjukdom. Forsta insjuknandet inföll sig vid 6 års ålder och har sedan dess pågått.");
 $("#sjukdomsforlopp").change();
 $("#diagnoseCode").val("S47").change().blur();
