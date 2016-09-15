@@ -36,7 +36,7 @@ var helpers = require('../helpers.js');
 
 // webcertBase.flikarsokSkrivIntyg
 
-function gotoPatient(pnr) {
+function gotoPatient(pnr) {//förutsätter  att personen finns i PU-tjänsten
     person.id = pnr;
 
     if (global.user.origin !== 'DJUPINTEGRATION') {
@@ -49,6 +49,13 @@ function gotoPatient(pnr) {
     var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
     return expect(patientUppgifter.getText()).to.eventually.contain(pnr);
 }
+function gotoPerson(pnr,callback) {//förutsätter inte att personen finns i PU-tjänsten
+    person.id = pnr;
+
+    sokSkrivIntygPage.selectPersonnummer(pnr);
+    logger.info('Går in på patient ' + pnr);
+    callback();
+}
 
 var forkedBrowser;
 
@@ -59,9 +66,14 @@ function setForkedBrowser(forkedBrowser2) {
 
 module.exports = function() {
 
-    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) {
+    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) {//förutsätter att personen finns i PU-tjänsten
         return gotoPatient(personnummer);
     });
+
+     this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function (callback) {
+         return gotoPerson(testdata.values.patienterMedSamordningsnummerEjPU[0].nummer,callback);//personnummret finns inte med i PU-tjänsten
+       });
+
 
     this.Given(/^jag går in på en patient med sekretessmarkering$/, function() {
         var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];

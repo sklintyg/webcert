@@ -1,6 +1,6 @@
 # language: sv
 @hsa @negativa
-Egenskap: Inloggning med felaktiga HSA luppgifter
+Egenskap: Inloggning med felaktiga HSAuppgifter
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
@@ -17,7 +17,7 @@ Exempel:
   |befattning	  		|
   |adress			    	|
 
-   #personHSAID			|enhet	|enhetsHSAID|
+  #personHSAID			|enhet	|enhetsHSAID|
   #Felaktig telefonuppgift =Johan TSTNMT2321000156-107V	|TestEnhet2		|TSTNMT2321000156-107Q|
   #Har medarbetaruppdrag som är Administratör TSTNMT2321000156-1084	|TestEnhet2		|TSTNMT2321000156-107Q|
   #Felaktig befattning = Susanne TSTNMT2321000156-107W	|TestEnhet1		|TSTNMT2321000156-107P|

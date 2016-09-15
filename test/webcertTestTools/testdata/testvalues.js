@@ -26,16 +26,16 @@ module.exports = {
         '19000119-9801',
         '19000717-9815',
         '19000128-9818'
-        // sekretessmarkerad (skyddad identitet)
     ],
     patienterMedSamordningsnummer: [{
-        nummer: '200810632398',
+        nummer: '19440178-6530',
         namn: '',
         efternamn: ''
-    }, {
-        nummer: '196403602391',
-        namn: '',
-        efternamn: ''
+    }],
+    patienterMedSamordningsnummerEjPU: [{
+      nummer: '20081063-2398 ',
+      namn: '',
+      efternamn: ''
     }],
 
     patienterMedSekretessmarkering: [{
