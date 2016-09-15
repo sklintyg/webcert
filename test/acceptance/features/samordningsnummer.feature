@@ -1,6 +1,6 @@
 #language: sv
 
-@samordningsnummer @notReady 
+@samordningsnummer
 Egenskap: Samordningsnummer
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -18,19 +18,19 @@ Scenario: Det ska gå att öppna ett signerat FK7263 intyg i Mina intyg för en 
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
 
-@samordningsnummer
+@createDraft1
 Scenario: Det ska gå att skicka CreateDraft:1 med ett samordningsnummer
 	Givet att jag är inloggad som djupintegrerad läkare
 	Och att vårdsystemet skapat ett intygsutkast för "fk7263" med samordningsnummer
 	Så jag går in på intygsutkastet via djupintegrationslänk
 
-@samordningsnummer
+@createDraft2
 Scenario: Det ska gå att skicka CreateDraft:2 med ett samordningsnummer
   Givet att jag är inloggad som djupintegrerad läkare
   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning" med samordningsnummer
   Så jag går in på intygsutkastet via djupintegrationslänk
 
-@samordningsnummer @kristina
+@saknatsamordningsnummer
 Scenario: Jag ska få ett felmeddelande när ett samordningsnummer saknas i PUtjänsten
 	Givet att jag är inloggad som läkare
 	När jag matar in personnummer som inte finns i PUtjänsten

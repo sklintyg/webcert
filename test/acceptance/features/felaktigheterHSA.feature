@@ -25,6 +25,6 @@ Exempel:
   @felaktigadmin
   Scenario:Skapar intyg med createDraft trots att användaren har medarbetaruppdrag som administratör
   När jag loggar in som läkare med medarbetaruppdrag som administatör
-  Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
+  lOch att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
   Så jag går in på intygsutkastet via djupintegrationslänk
  
