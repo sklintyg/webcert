@@ -83,6 +83,7 @@
       <script type="text/javascript" src="/vendor/formly/api-check.min.js"></script>
       <script type="text/javascript" src="/vendor/formly/formly.min.js"></script>
       <script type="text/javascript" src="/vendor/formly/angular-formly-templates-bootstrap.min.js"></script>
+      <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.min.js"></script>
       <script type="text/javascript" src="/app/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
@@ -101,6 +102,7 @@
       <script type="text/javascript" src="/vendor/formly/api-check.js"></script>
       <script type="text/javascript" src="/vendor/formly/formly.js"></script>
       <script type="text/javascript" src="/vendor/formly/angular-formly-templates-bootstrap.js"></script>
+      <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.js"></script>
       <script type="text/javascript" src="/app/app.js"></script>
     </c:otherwise>
   </c:choose>

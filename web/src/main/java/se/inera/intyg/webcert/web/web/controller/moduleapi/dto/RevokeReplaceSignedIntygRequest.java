@@ -26,9 +26,7 @@ public class RevokeReplaceSignedIntygRequest {
     private CopyIntygRequest copyIntygRequest;
     private RevokeSignedIntygParameter revokeSignedIntygParameter;
 
-    public RevokeReplaceSignedIntygRequest(CopyIntygRequest copyIntygRequest, RevokeSignedIntygParameter revokeSignedIntygParameter) {
-        this.copyIntygRequest = copyIntygRequest;
-        this.revokeSignedIntygParameter = revokeSignedIntygParameter;
+    public RevokeReplaceSignedIntygRequest() {
     }
 
     public CopyIntygRequest getCopyIntygRequest() {
