@@ -29,6 +29,10 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         state('integrationenhetsval', {
             url: '/integration-enhetsval',
             views: {
+                'header': {
+                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
+                    controller: 'integration.EnhetsvalHeaderCtrl'
+                },
                 'content@': {
                     templateUrl: '/app/views/integrationEnhetsval/enhetsval.page.html',
                     controller: 'integration.EnhetsvalPageCtrl'
