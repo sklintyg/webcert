@@ -54,9 +54,14 @@ subprojects {
 
   jar.dependsOn(createVersionPropertyFile)
 
+  configurations {
+    buildtools
+  }
+
   dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.0'
+    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
   }
 
   buildscript {
@@ -91,13 +96,6 @@ subprojects {
     }
   }
 
-  configurations {
-    buildtools
-  }
-  dependencies {
-    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
-  }
-
   task unzipBuildTools(type: Copy) {
     description 'Extracts common-build-tools'
     into "$buildDir/build-tools/"
@@ -107,10 +105,18 @@ subprojects {
   }
 
   if (project.hasProperty('codeQuality')) {
-      apply from: rootProject.file("tools/codeQuality/codeQuality.gradle")
+    apply plugin: 'checkstyle'
+
+    checkstyle {
+      config = resources.text.fromFile("${buildDir}/build-tools/checkstyle/checkstyle.xml")
+      ignoreFailures = false
+      showViolations = true
+    }
+
+    checkstyleMain.dependsOn unzipBuildTools
+    checkstyleMain.source = "src/main/java"
+    checkstyleTest.enabled = false
   }
-
-
 }
 
 project(':webcert-common') {
