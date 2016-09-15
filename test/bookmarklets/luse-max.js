@@ -19,7 +19,7 @@ $("#underlag-1-hamtasFran").val('CSK').change();
 $("button:contains('ytterligare underlag')").click();
 $("#underlag-2-typ").val('string:!!!PSYKOLOG').change();
 $("#underlag-2-datum").val(todayDateString).change();
-$("#underlag-2-hamtasFran").val('CSK!!!!!!!!').change();
+$("#underlag-2-hamtasFran").val('CentralSjukhuset').change();
 $("button:contains('ytterligare underlag')").click();
 /*$("#underlag-3-typ").val('string:PSYKOLOG').change();
 $("#underlag-3-datum").val(todayDateString).change();
