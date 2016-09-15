@@ -58,7 +58,3 @@ $("#formagaTrotsBegransning").val("Laga mat går bra, men endast på fredagar").
 $("#ovrigt").val("Mycket material är hemligstämplat").change();
 $("input[id*='kontaktMedFk']").click();
 $("#anledningTillKontakt").val("Jag har hemligt material på mitt skrivbord som kan vara intressant för er").change();
-$("#underlag-2-typ").val('string:PSYKOLOG').change();
-$("#underlag-2-datum").val(todayDateString).change();
-$("#underlag-2-hamtasFran").val('CentralSjukhuset').change();
-$("button:contains('ytterligare underlag')").click();
