@@ -21,13 +21,12 @@ package se.inera.intyg.webcert.web.integration.integrationtest;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.cxf.common.xmlschema.LSInputImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
-
-import com.sun.org.apache.xerces.internal.dom.DOMInputImpl;
 
 /**
  * Resource resolver util that will search the entire classpath for a schema resource. Some schema imports (mainly
@@ -41,7 +40,7 @@ public class ClasspathSchemaResourceResolver implements LSResourceResolver {
     @Override
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         try {
-            return new DOMInputImpl(publicId, systemId, baseURI, load(systemId), null);
+            return new LSInputImpl(publicId, systemId, load(systemId));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
