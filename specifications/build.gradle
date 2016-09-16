@@ -1,5 +1,7 @@
 description = 'Intyg Common (FitNesse fixturer)'
 
+apply plugin: 'groovy'
+
 dependencies {
   compile project(':integration-util')
 
@@ -7,7 +9,8 @@ dependencies {
   compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessVersion}"
   compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringVersion}"
   compile "se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:${intygInsuranceprocessVersion}"
-
+  compile "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenVersion}"
+  
   compile 'org.apache.activemq:activemq-client:5.13.0'
   compile 'javax.jms:jms-api:1.1-rev-1'
   compile 'org.codehaus.groovy:groovy-all:2.4.3'
