@@ -120,16 +120,11 @@ subprojects {
   if (project.hasProperty('runSonar')) {
     apply plugin: 'jacoco'
     jacoco {
-      toolVersion = "0.7.1.201405082137"
+      toolVersion = "0.7.6.201602180812"
     }
-    jacocoTestReport {
-
-      classDirectories =  files(sourceSets.main.output)
-      sourceDirectories = files(sourceSets.main.allJava.srcDirs)
-      reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
+    test {
+      jacoco {
+        destinationFile = file("$buildDir/jacoco/test.exec")
       }
     }
   }
@@ -177,12 +172,6 @@ if (project.hasProperty('runSonar')) {
       property "sonar.host.url", "https://build-inera.nordicmedtest.se/sonar"
 
       ext.sonarPassword = System.properties['sonarPassword']
-
-      // Database config
-      property "sonar.jdbc.url", "jdbc:mysql://localhost:3306/sonar"
-      property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
-      property "sonar.jdbc.username", "sonar"
-      property "sonar.jdbc.password", sonarPassword
 
       //Exclusions
       property "sonar.test.exclusions", "src/test/**"
