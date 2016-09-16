@@ -22,9 +22,9 @@ Exempel:
   #Har medarbetaruppdrag som är Administratör TSTNMT2321000156-1084	|TestEnhet2		|TSTNMT2321000156-107Q|
   #Felaktig befattning = Susanne TSTNMT2321000156-107W	|TestEnhet1		|TSTNMT2321000156-107P|
   #Felaktig adress = Karin TSTNMT2321000156-107T	|TestEnhet1		|TSTNMT2321000156-107P|
+  
   @felaktigadmin
   Scenario:Skapar intyg med createDraft trots att användaren har medarbetaruppdrag som administratör
   När jag loggar in som läkare med medarbetaruppdrag som administatör
-  lOch att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
+  Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
   Så jag går in på intygsutkastet via djupintegrationslänk
- 
