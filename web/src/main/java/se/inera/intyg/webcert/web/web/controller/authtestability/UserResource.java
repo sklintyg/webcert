@@ -19,8 +19,14 @@
 
 package se.inera.intyg.webcert.web.web.controller.authtestability;
 
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,17 +34,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.common.security.common.model.Role;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.swagger.annotations.Api;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Rest interface only used for testing and in dev environments. It seems like it must be in
@@ -99,6 +96,13 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response setOrigin(@PathParam("origin") String origin) {
         webCertUserService.updateOrigin(origin);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/preferences/delete")
+    public Response deleteUserPreferences() {
+        webCertUserService.deleteUserPreferences();
         return Response.ok().build();
     }
 

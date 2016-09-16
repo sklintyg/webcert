@@ -54,7 +54,6 @@ describe('Validera sändning av luae_na Intyg', function() {
         it('Skicka intyget', function() {
             IntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
             browser.wait(IntygPage.skicka.dialogKnapp.isDisplayed())
-                .then(IntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE))
                 .then(IntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
 
 

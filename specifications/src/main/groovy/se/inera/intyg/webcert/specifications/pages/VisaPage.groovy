@@ -56,10 +56,7 @@ class VisaPage extends AbstractPage {
         waitFor {
             doneLoading()
         }
-        skickaDialogCheck.click()
-        waitFor {
-            doneLoading()
-        }
+
         skickaDialogSkickaKnapp.click()
     }
 }

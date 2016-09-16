@@ -19,17 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.matchers.JUnitMatchers.containsString;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 public class IntygServiceConfigurationManagerTest {
 
@@ -44,27 +41,25 @@ public class IntygServiceConfigurationManagerTest {
     @Test
     public void testUnmarshallForSendIntygWithConsent() {
 
-        String configAsJson = "{\"recipient\":\"FK\",\"patientConsent\":true}";
+        String configAsJson = "{\"recipient\":\"FK\"}";
 
         SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
         assertNotNull(config);
         assertEquals("FK", config.getRecipient());
-        assertTrue(config.isPatientConsent());
-        assertThat(config.getPatientConsentMessage(), containsString("mottagare FK med "));
+        assertThat(config.getPatientConsentMessage(), containsString("mottagare FK"));
     }
 
     @Test
-    public void testUnmarshallForSendIntygWithoutConsent() {
+    public void testUnmarshallForSendIntygWithoutConsentToTs() {
 
-        String configAsJson = "{\"recipient\":\"TS\",\"patientConsent\":false}";
+        String configAsJson = "{\"recipient\":\"TS\"}";
 
         SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
         assertNotNull(config);
         assertEquals("TS", config.getRecipient());
-        assertFalse(config.isPatientConsent());
-        assertThat(config.getPatientConsentMessage(), containsString("mottagare TS utan "));
+        assertThat(config.getPatientConsentMessage(), containsString("mottagare TS"));
     }
 
 }

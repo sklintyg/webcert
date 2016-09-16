@@ -76,11 +76,7 @@ class VisaTsDiabetesPage extends AbstractViewCertPage {
         skickaKnapp.click()
         waitFor {
             doneLoading()
-            skickaDialogBodyTsDiabetes.text().trim().equals("")
-            skickaDialogCheck.isDisplayed()
-        }
-        skickaDialogCheck.click()
-        waitFor {
+            skickaDialogBodyTsDiabetes.text().trim().contains("Transportstyrelsen")
             skickaDialogSkickaKnapp.isEnabled()
         }
         skickaDialogSkickaKnapp.click()

@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -77,6 +78,25 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             anvandarPreferenceRepository.delete(am);
         }
         user.getAnvandarPreference().remove(key);
+    }
+
+    @Override
+    public void deleteUserPreferences() {
+        WebCertUser user = getUser();
+        String hsaId = user.getHsaId();
+        Map<String, String> anvandarPreferences = anvandarPreferenceRepository.getAnvandarPreference(hsaId);
+        int deleteCount = 0;
+        for (Map.Entry<String, String> preference : anvandarPreferences.entrySet()) {
+            AnvandarPreference toDelete = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, preference.getKey());
+            if (toDelete != null) {
+                anvandarPreferenceRepository.delete(toDelete);
+                deleteCount++;
+            }
+        }
+        if (deleteCount > 0) {
+            user.getAnvandarPreference().clear();
+            LOG.info("Successfully deleted " + deleteCount + " user preferences for user " + hsaId);
+        }
     }
 
     @Override

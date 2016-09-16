@@ -87,7 +87,6 @@ function createTsIntyg(typ, status) {
                 promiseArr.push(fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE));
                 if (status === 'Mottaget') {
                     promiseArr.push(fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE));
-                    promiseArr.push(fkIntygPage.skicka.samtyckeCheckbox.sendKeys(protractor.Key.SPACE));
                     promiseArr.push(fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
                 }
                 promiseArr.push(loginHelpers.logInAsUserRole(userObj, standardUser.roleName));

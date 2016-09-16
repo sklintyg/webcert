@@ -1,0 +1,50 @@
+<div class="integration-enhetsval-page container-fluid">
+  <div class="content-container">
+    <div class="row">
+      <div class="col-xs-6">
+        <img class="pull-right webcert-logo" src="/img/webcert_big.png" />
+      </div>
+      <div class="col-xs-6">
+        <h1>Välkommen till Webcert</h1>
+        <p>
+          Var god välj enhet:
+
+        </p>
+
+        <wc-integration-enhet-selector user="user" on-unit-selection="onUnitSelected(enhet)"></wc-integration-enhet-selector>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="content-footer">
+  <p>Webcert använder kakor. <a href="#" ng-click="showCookieText = !showCookieText">Läs mer om Kakor (cookies)</a>
+  </p>
+  <div uib-collapse="!showCookieText" class="bluebox">
+    <h4>Om Kakor (cookies)</h4>
+    <p>
+      Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som
+      lagras på din dator och som innehåller information. Denna webbplats använder så kallade sessionskakor.
+      Sessionskakor lagras temporärt i din dators minne under tiden du är inne på en webbsida. Sessionskakor
+      försvinner när du stänger din webbläsare. Ingen personlig information om dig sparas vid användning av
+      sessionskakor.
+    <p>
+      Genom att använda Webcert accepterar du användningen av kakor på den här webbplatsen.
+    </p>
+    Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares
+    säkerhetsinställningar. Du kan även ställa in webbläsaren så att du får en varning varje gång webbplatsen
+    försöker sätta en kaka på din dator.</p>
+    <p>
+      <strong>Observera!</strong> Om du stänger av kakor i din webbläsare kan du inte logga in i Webcert.</p>
+    <p>
+      Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens
+      webbplats.</p>
+    <p>
+      <a href='https://www.pts.se/sv/Privat/Internet/Integritet1/Fragor-och-svar-om-kakor-for-anvandare2/'
+         target='_blank'>Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a>
+    </p>
+  </div>
+</div>

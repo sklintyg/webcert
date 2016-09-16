@@ -36,5 +36,16 @@ public interface WebCertUserService extends CommonUserService {
      */
      void storeUserPreference(String key, String value);
 
+    /**
+     * Deletes the specified user preference for the current user.
+     *
+     * @param key
+     *      Preference key.
+     */
     void deleteUserPreference(String key);
+
+    /**
+     * Deletes all user preferences for the current user.
+     */
+    void deleteUserPreferences();
 }

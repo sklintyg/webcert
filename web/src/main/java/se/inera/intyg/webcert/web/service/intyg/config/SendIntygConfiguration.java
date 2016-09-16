@@ -19,19 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import java.text.MessageFormat;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.text.MessageFormat;
 
 public class SendIntygConfiguration {
 
-    private static final String PATIENT_CONSENT_PATTERN = "Intyget skickat till mottagare {0} {1,choice,0#utan|1#med} patientens medgivande";
+    private static final String PATIENT_CONSENT_PATTERN = "Intyget skickat till mottagare {0}";
 
     private String recipient;
-
-    private boolean patientConsent;
 
     private WebCertUser webCertUser;
 
@@ -39,17 +36,15 @@ public class SendIntygConfiguration {
 
     }
 
-    public SendIntygConfiguration(String recipient, boolean patientConsent, WebCertUser webCertUser) {
+    public SendIntygConfiguration(String recipient, WebCertUser webCertUser) {
         super();
         this.recipient = recipient;
-        this.patientConsent = patientConsent;
         this.webCertUser = webCertUser;
     }
 
     @JsonIgnore
     public String getPatientConsentMessage() {
-        int hasConsent = (isPatientConsent()) ? 1 : 0;
-        return MessageFormat.format(PATIENT_CONSENT_PATTERN, recipient, hasConsent);
+        return MessageFormat.format(PATIENT_CONSENT_PATTERN, recipient);
     }
 
     public String getRecipient() {
@@ -58,14 +53,6 @@ public class SendIntygConfiguration {
 
     public void setRecipient(String recipient) {
         this.recipient = recipient;
-    }
-
-    public boolean isPatientConsent() {
-        return patientConsent;
-    }
-
-    public void setPatientConsent(boolean patientConsent) {
-        this.patientConsent = patientConsent;
     }
 
     public WebCertUser getWebCertUser() {
