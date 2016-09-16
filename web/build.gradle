@@ -29,24 +29,14 @@ sourceSets {
   }
 }
 
-task bowerInstall(type: NodeTask, dependsOn:npmInstall) {
-  script = file('node_modules/bower/bin/bower')
-  args = ["--config.storage.cache=${gradle.getGradleUserHomeDir()}/caches/bower/cache",
-          "--config.storage.packages=${gradle.getGradleUserHomeDir()}/caches/bower/packages",
-          "--config.storage.registry=${gradle.getGradleUserHomeDir()}/caches/bower/registry",
-          'install']
-  inputs.files file('bower.json')
-  outputs.files file('src/main/webapp/bower_components')
-}
-
-task jsTests(type: NodeTask, dependsOn: [bowerInstall]) {
+task jsTests(type: NodeTask, dependsOn: [npmInstall]) {
   script = file('node_modules/grunt-cli/bin/grunt')
   args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage='+(!project.hasProperty('runSonar'))]
 }
 
 test.dependsOn(jsTests)
 
-task jsInclude(type: NodeTask, dependsOn: [bowerInstall, unzipBuildTools]) {
+task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
   script = file('node_modules/grunt-cli/bin/grunt')
   args = ['default', '--outputDir=' + webappOutputDir]
 }

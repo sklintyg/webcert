@@ -29,6 +29,8 @@ require('path');
 module.exports = function(grunt) {
     'use strict';
 
+    require('time-grunt')(grunt);
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-csslint');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -355,11 +357,19 @@ module.exports = function(grunt) {
             tasks: ['connect:server', 'watch']
         },
 
+        bower: {
+            install: {
+                options: {
+                    copy: false
+                }
+            }
+        },
+
         wiredep: {
             webcert: {
                 directory: 'src/main/webapp/bower_components',
                 src: [
-                    SRC_DIR + '../pubapp/**/*.html',
+                    SRC_DIR + '../pubapp/**/index.html',
                     SRC_DIR + '../**/*.jsp',
                     'karma.conf.js'
                 ],
@@ -393,7 +403,7 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', ['jshint', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
+    grunt.registerTask('default', ['jshint', 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma:ci']);
     grunt.registerTask('test:watch', ['karma:watch']);
