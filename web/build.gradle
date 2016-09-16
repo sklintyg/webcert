@@ -97,6 +97,7 @@ task integrationTest(type: Test) {
 gretty {
   contextPath = '/'
   httpPort = 9088
+  scanInterval = 0
 
   contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
 
