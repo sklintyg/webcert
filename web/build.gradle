@@ -61,13 +61,10 @@ test {
   exclude '**/*IT*'
 }
 
-// TODO: make run of integration tests configurable
-task integrationTest(type: Test) {
-  systemProperty "integration.tests.baseUrl", "http://localhost:9088/"
-  include '**/*IT*'
-}
-
 gretty {
+  if (project.hasProperty('jenkins-build')) {
+    integrationTestTask = null
+  }
   contextPath = '/'
   httpPort = 9088
   scanInterval = 0
@@ -100,6 +97,16 @@ gretty {
   //   reloadOnClassChange = false
   //   reloadOnConfigChange = false
   //   reloadOnLibChange = false
+}
+
+// TODO: make run of integration tests configurable
+task integrationTest(type: Test) {
+  if (project.hasProperty('jenkins-build')) {
+    systemProperty "integration.tests.baseUrl", project.getProperty('baseUri')
+  } else {
+    systemProperty "integration.tests.baseUrl", "http://localhost:9088/"
+  }
+  include '**/*IT*'
 }
 
 war.dependsOn createVersionPropertyFile
