@@ -19,31 +19,27 @@
 
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import java.sql.Time;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.jms.*;
+import javax.persistence.*;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import java.sql.Time;
-import java.util.Enumeration;
-import java.util.List;
 
 /**
  * Service for getting the health status of the application.
@@ -113,17 +109,22 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     @Override
     public HealthStatus checkSignatureQueue() {
-        int queueDepth = jmsCertificateSenderTemplate.browse((session, browser) -> {
-            Enumeration<?> enumeration = browser.getEnumeration();
-            int qd = 0;
-            while (enumeration.hasMoreElements()) {
-                enumeration.nextElement();
-                qd++;
-            }
-            return qd;
-        });
-        LOG.info("Operation checkSignatureQueue completed with queue size {}", queueDepth);
-        return new HealthStatus(queueDepth, true);
+        try {
+            int queueDepth = jmsCertificateSenderTemplate.browse((session, browser) -> {
+                Enumeration<?> enumeration = browser.getEnumeration();
+                int qd = 0;
+                while (enumeration.hasMoreElements()) {
+                    enumeration.nextElement();
+                    qd++;
+                }
+                return qd;
+            });
+            LOG.info("Operation checkSignatureQueue completed with queue size {}", queueDepth);
+            return new HealthStatus(queueDepth, true);
+        } catch (Exception e) {
+            LOG.warn("Error when checking queue depth", e);
+            return new HealthStatus(-1, false);
+        }
     }
 
 

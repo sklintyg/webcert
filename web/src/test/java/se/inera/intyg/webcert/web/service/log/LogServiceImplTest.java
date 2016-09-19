@@ -19,42 +19,41 @@
 
 package se.inera.intyg.webcert.web.service.log;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.common.logmessages.ActivityPurpose;
-import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.PdlLogMessage;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.Role;
-import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.jms.Session;
-import java.util.Collections;
-
 import static java.time.LocalDateTime.now;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+
+import javax.jms.Session;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.*;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+import org.springframework.jms.support.destination.DestinationResolutionException;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.logmessages.*;
+import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by pehr on 13/11/13.
@@ -126,6 +125,26 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertEquals("webcert", intygReadMessage.getSystemId());
         assertEquals("WebCert", intygReadMessage.getSystemName());
+    }
+
+    @Test(expected = JmsException.class)
+    public void logServiceJmsException() throws Exception {
+        ReflectionTestUtils.setField(logService, "systemId", "webcert");
+        ReflectionTestUtils.setField(logService, "systemName", "WebCert");
+
+        when(userService.getUser()).thenReturn(createUser());
+        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+
+        LogRequest logRequest = new LogRequest();
+        logRequest.setIntygId("abc123");
+        logRequest.setPatientId(new Personnummer("19121212-1212"));
+        logRequest.setPatientName("Hans Olof van der Test");
+
+        try {
+            logService.logReadIntyg(logRequest);
+        } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+        }
     }
 
     private WebCertUser createUser() {
