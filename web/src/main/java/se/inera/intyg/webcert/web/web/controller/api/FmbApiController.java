@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -125,14 +126,18 @@ public class FmbApiController extends AbstractApiController {
     private String checkIcd10ForFmbInfo(String icd10) {
         String icd10WithFmbInfo = icd10;
         while (icd10WithFmbInfo.length() >= MIN_ICD10_POSITION) {
-            FmbContent fmbContent = getFmbContent(icd10WithFmbInfo, FmbType.SYMPTOM_PROGNOS_BEHANDLING);
-            if (fmbContent != null) {
+            if (fmbContentExists(icd10WithFmbInfo, FmbType.values())) {
                 return icd10WithFmbInfo;
             }
             // Make the icd10-code one position shorter, and thus more general.
             icd10WithFmbInfo = StringUtils.chop(icd10WithFmbInfo);
         }
         return icd10;
+    }
+
+    private boolean fmbContentExists(String icd10Code, FmbType... types) {
+        return Stream.of(types)
+                .anyMatch(t -> getFmbContent(icd10Code, t) != null);
     }
 
     private FmbForm getFmbForm(String icd10, FmbFormName name, FmbType... fmbTypes) {
