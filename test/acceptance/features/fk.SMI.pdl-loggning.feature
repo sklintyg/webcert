@@ -57,16 +57,16 @@ Exempel:
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
   |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
-# @skriv-ut @utskrift
-# Scenariomall: Skriv ut <intygtyp> intyg
-#     När jag går in på ett <intyg> med status "Signerat"
-# 	Och jag skriver ut intyget
-# 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
+@skriv-ut @utskrift @notReady
+Scenariomall: Skriv ut <intygtyp> intyg
+    När jag går in på ett <intyg> med status "Signerat"
+	Och jag skriver ut intyget
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
 
-# Exempel:
-#   |intygKod | 	intyg 								| 
-#   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-#   |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
 @radera
 Scenariomall: Radera <intygKod> utkast

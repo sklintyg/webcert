@@ -23,6 +23,7 @@
 
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var helpers = require('./helpers.js');
 
 module.exports = function() {
     this.Given(/^jag signerar intyget$/, function() {
@@ -65,7 +66,13 @@ module.exports = function() {
 
 
     this.Given(/^jag skriver ut intyget$/, function() {
-        return fkIntygPage.skrivUtFullstandigtIntyg();
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+
+        if (isSMIIntyg) {
+            return element(by.id('downloadprint')).sendKeys(protractor.Key.SPACE);
+        } else {
+            return fkIntygPage.skrivUtFullstandigtIntyg();
+        }
     });
 
 };
