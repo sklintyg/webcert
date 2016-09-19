@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,logger,pages,Promise,wcTestTools,user,person,protractor, JSON*/
+/*global intyg,logger,pages,Promise,wcTestTools,person,protractor*/
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
 var loginHelpers = require('./inloggning/login.helpers.js');
@@ -26,38 +26,38 @@ var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
-var rUtil = wcTestTools.restUtil;
+// var rUtil = wcTestTools.restUtil;
 // var intygGenerator = wcTestTools.intygGenerator;
-var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
+// var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-function createIntygWithRest(intygObj) {
+// function createIntygWithRest(intygObj) {
 
-    var userObj = {
-        fornamn: user.fornamn,
-        efternamn: user.efternamn,
-        hsaId: user.hsaId,
-        enhetId: user.enhetId,
-        lakare: user.lakare,
-        forskrivarKod: user.forskrivarKod
-    };
+//     var userObj = {
+//         fornamn: user.fornamn,
+//         efternamn: user.efternamn,
+//         hsaId: user.hsaId,
+//         enhetId: user.enhetId,
+//         lakare: user.lakare,
+//         forskrivarKod: user.forskrivarKod
+//     };
 
-    return rUtil.login(userObj).then(function(data) {
-        logger.info('Login OK');
-        return Promise.resolve('SUCCESS');
-    }, function(error) {
-        throw ('Login error: ' + error);
-    }).then(function() {
-        rUtil.createIntyg(intygObj).then(function(response) {
-            logger.info('Skapat intyg via REST-api');
-            console.log(JSON.parse(response.request.body));
-        }, function(error) {
-            throw ('Error calling createIntyg' + error);
-        });
-    });
-}
+//     return rUtil.login(userObj).then(function(data) {
+//         logger.info('Login OK');
+//         return Promise.resolve('SUCCESS');
+//     }, function(error) {
+//         throw ('Login error: ' + error);
+//     }).then(function() {
+//         rUtil.createIntyg(intygObj).then(function(response) {
+//             logger.info('Skapat intyg via REST-api');
+//             console.log(JSON.parse(response.request.body));
+//         }, function(error) {
+//             throw ('Error calling createIntyg' + error);
+//         });
+//     });
+// }
 
 
-function createTsIntyg(typ, status) {
+function writeNewIntyg(typ, status) {
     var standardUser = global.user;
 
     var userObj = {
@@ -95,9 +95,9 @@ function createTsIntyg(typ, status) {
         });
 }
 
-function isFKIntyg(typ) {
-    return ((typ.indexOf('Läkarintyg') > -1) || (typ.indexOf('Läkarutlåtande') > -1));
-}
+// function isFKIntyg(typ) {
+//     return ((typ.indexOf('Läkarintyg') > -1) || (typ.indexOf('Läkarutlåtande') > -1));
+// }
 
 module.exports = {
     createIntygWithStatus: function(typ, status) {
@@ -106,52 +106,52 @@ module.exports = {
         intyg.id = testdataHelper.generateTestGuid();
         // var signeringsDatum = '2015-04-28T14:00:00.000';
         logger.debug('intyg.id = ' + intyg.id);
+        return writeNewIntyg(typ, status);
+        // if (typ.indexOf('Transportstyrelsen') > -1) {
+        //     return writeNewIntyg(typ, status);
 
-        if (typ.indexOf('Transportstyrelsen') > -1) {
-            return createTsIntyg(typ, status);
+        // } else if (isFKIntyg(typ)) {
+        //     var intygObj;
 
-        } else if (isFKIntyg(typ)) {
-            var intygObj;
+        //     if (typ === 'Läkarintyg FK 7263') {
+        //         intygObj = intygFromJsonFactory.defaultFK7263();
 
-            if (typ === 'Läkarintyg FK 7263') {
-                intygObj = intygFromJsonFactory.defaultFK7263();
+        //     } else if (typ === 'Läkarutlåtande för sjukersättning') {
+        //         intygObj = intygFromJsonFactory.defaultLuse();
 
-            } else if (typ === 'Läkarutlåtande för sjukersättning') {
-                intygObj = intygFromJsonFactory.defaultLuse();
+        //     } else if (typ === 'Läkarintyg för sjukpenning utökat') {
+        //         //intygObj = intygFromJsonFactory.defaultLisu();
+        //         throw ('TODO: Skapa LISU via REST');
+        //     }
+        //     var intygDoc = JSON.parse(intygObj.document);
+        //     intygDoc.grundData.patient.personId = person.id;
+        //     intygDoc.grundData.patient.personId = person.id;
+        //     intygDoc.grundData.skapadAv.vardenhet.enhetsid = user.enhetId;
+        //     intygDoc.grundData.skapadAv.personId = user.hsaId;
 
-            } else if (typ === 'Läkarintyg för sjukpenning utökat') {
-                //intygObj = intygFromJsonFactory.defaultLisu();
-                throw ('TODO: Skapa LISU via REST');
-            }
-            var intygDoc = JSON.parse(intygObj.document);
-            intygDoc.grundData.patient.personId = person.id;
-            intygDoc.grundData.patient.personId = person.id;
-            intygDoc.grundData.skapadAv.vardenhet.enhetsid = user.enhetId;
-            intygDoc.grundData.skapadAv.personId = user.hsaId;
+        //     intygObj.signingDoctorName = user.fornamn + ' ' + user.efternamn;
+        //     intygObj.careUnitId = user.enhetId;
+        //     intygObj.civicRegistrationNumber = person.id;
 
-            intygObj.signingDoctorName = user.fornamn + ' ' + user.efternamn;
-            intygObj.careUnitId = user.enhetId;
-            intygObj.civicRegistrationNumber = person.id;
+        //     intygObj.revoked = (status === 'Makulerat');
 
-            intygObj.revoked = (status === 'Makulerat');
+        //     intygObj.certificateStates = [{
+        //         target: 'HV',
+        //         state: 'RECEIVED',
+        //         timestamp: '2016-04-28T14:00:00.000'
+        //     }];
+        //     if (status === 'Mottaget' || status === 'Makulerat') {
+        //         intygObj.certificateStates.push({
+        //             state: 'SENT',
+        //             target: 'FK',
+        //             timestamp: '2016-08-05T14:31:03.227'
+        //         });
+        //     }
+        //     intygObj.document = JSON.stringify(intygDoc);
+        //     return createIntygWithRest(intygObj);
 
-            intygObj.certificateStates = [{
-                target: 'HV',
-                state: 'RECEIVED',
-                timestamp: '2016-04-28T14:00:00.000'
-            }];
-            if (status === 'Mottaget' || status === 'Makulerat') {
-                intygObj.certificateStates.push({
-                    state: 'SENT',
-                    target: 'FK',
-                    timestamp: '2016-08-05T14:31:03.227'
-                });
-            }
-            intygObj.document = JSON.stringify(intygDoc);
-            return createIntygWithRest(intygObj);
-
-        } else {
-            throw ('TODO: Hantera fall då det inte redan finns något intyg att använda');
-        }
+        // } else {
+        //     throw ('TODO: Hantera fall då det inte redan finns något intyg att använda');
+        // }
     }
 };

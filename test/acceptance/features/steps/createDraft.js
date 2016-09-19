@@ -92,7 +92,7 @@ module.exports = function() {
         sendCreateDraft(url, body, callback);
     });
 
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)" med samordningsnummer$/, function (intygstyp, callback) {
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)" med samordningsnummer$/, function(intygstyp, callback) {
         global.intyg.typ = intygstyp;
         global.person.id = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0].nummer;
         var body, path;

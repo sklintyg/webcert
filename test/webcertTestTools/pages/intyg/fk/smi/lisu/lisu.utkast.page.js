@@ -156,10 +156,6 @@ var LisuUtkast = BaseSmiUtkast._extend({
         return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
     },
     angeBaserasPa: function(intygetBaserasPa) {
-        // if (!intygetBaserasPa) {
-        //     return Promise.resolve('Success');
-        // }
-
         var promisesArr = [];
         if (intygetBaserasPa.undersokning) {
             promisesArr.push(this.baseratPa.minUndersokningAvPatienten.datum.sendKeys(intygetBaserasPa.undersokning));

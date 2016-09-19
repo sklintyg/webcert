@@ -40,12 +40,12 @@ exports.config = {
         // shardTestFiles: true,
         // maxInstances: 15,
         browserName: 'firefox',
+        // browserName: 'internet explorer',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
         version: '',
         platform: 'ANY'
     },
-
     cucumberOpts: {
         format: ['json:./acceptance/report/acc_results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js']

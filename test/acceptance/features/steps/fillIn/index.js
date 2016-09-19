@@ -16,23 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*global browser*/
 'use strict';
 
 module.exports = {
     fillIn: function(intyg) {
-        switch (intyg.typ) {
-            case 'Transportstyrelsens läkarintyg':
-                return require('./ts.bas.js').fillIn(intyg);
-            case 'Transportstyrelsens läkarintyg, diabetes':
-                return require('./ts.diabetes.js').fillIn(intyg);
-            case 'Läkarintyg FK 7263':
-                return require('./fk.7263.js').fillIn(intyg);
-            case 'Läkarutlåtande för sjukersättning':
-                return require('./fk.LUSE.js').fillIn(intyg);
-            case 'Läkarintyg för sjukpenning utökat':
-                return require('./fk.lisu.js').fillIn(intyg);
-            default:
-                throw 'Intyg.typ odefinierad.';
-        }
+
+        // Vänta på animering
+        return browser.sleep(2000).then(function() {
+            switch (intyg.typ) {
+                case 'Transportstyrelsens läkarintyg':
+                    return require('./ts.bas.js').fillIn(intyg);
+                case 'Transportstyrelsens läkarintyg, diabetes':
+                    return require('./ts.diabetes.js').fillIn(intyg);
+                case 'Läkarintyg FK 7263':
+                    return require('./fk.7263.js').fillIn(intyg);
+                case 'Läkarutlåtande för sjukersättning':
+                    return require('./fk.LUSE.js').fillIn(intyg);
+                case 'Läkarintyg för sjukpenning utökat':
+                    return require('./fk.lisu.js').fillIn(intyg);
+                default:
+                    throw 'Intyg.typ odefinierad.';
+            }
+        });
+
     }
 };

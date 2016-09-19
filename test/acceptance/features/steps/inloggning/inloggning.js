@@ -36,7 +36,7 @@ var helpers = require('../helpers.js');
 
 // webcertBase.flikarsokSkrivIntyg
 
-function gotoPatient(pnr) {//förutsätter  att personen finns i PU-tjänsten
+function gotoPatient(pnr) { //förutsätter  att personen finns i PU-tjänsten
     person.id = pnr;
 
     if (global.user.origin !== 'DJUPINTEGRATION') {
@@ -49,7 +49,8 @@ function gotoPatient(pnr) {//förutsätter  att personen finns i PU-tjänsten
     var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
     return expect(patientUppgifter.getText()).to.eventually.contain(pnr);
 }
-function gotoPerson(pnr,callback) {//förutsätter inte att personen finns i PU-tjänsten
+
+function gotoPerson(pnr, callback) { //förutsätter inte att personen finns i PU-tjänsten
     person.id = pnr;
 
     sokSkrivIntygPage.selectPersonnummer(pnr);
@@ -66,13 +67,13 @@ function setForkedBrowser(forkedBrowser2) {
 
 module.exports = function() {
 
-    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) {//förutsätter att personen finns i PU-tjänsten
+    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) { //förutsätter att personen finns i PU-tjänsten
         return gotoPatient(personnummer);
     });
 
-     this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function (callback) {
-         return gotoPerson(testdata.values.patienterMedSamordningsnummerEjPU[0].nummer,callback);//personnummret finns inte med i PU-tjänsten
-       });
+    this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function(callback) {
+        return gotoPerson(testdata.values.patienterMedSamordningsnummerEjPU[0].nummer, callback); //personnummret finns inte med i PU-tjänsten
+    });
 
 
     this.Given(/^jag går in på en patient med sekretessmarkering$/, function() {
@@ -164,5 +165,25 @@ module.exports = function() {
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {
         expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
     });
+
+
+    this.Given(/^ska jag bli inloggad som "([^"]*)"$/, function(arg1) {
+        var wcHeader = element(by.id('wcHeader'));
+        return expect(wcHeader.getText()).to.eventually.contain(arg1);
+    });
+
+    this.Given(/^jag loggar in med SITHS$/, function() {
+
+        return browser.get('').then(function() {
+            return browser.sleep(200000).then(function() {
+                return pages.welcome.loginButton.sendKeys(protractor.Key.SPACE).then(function() {
+                    return browser.sleep(200000);
+                });
+            });
+        });
+    });
+
+
+
 
 };

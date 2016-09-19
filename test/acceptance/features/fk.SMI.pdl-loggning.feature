@@ -23,7 +23,7 @@ Exempel:
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
   |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
-@öppna @notReady
+@öppna
 Scenariomall: Öppna <intygKod>-intyg
 	När jag går in på ett <intyg> med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
@@ -35,7 +35,7 @@ Exempel:
 
 
 @signera
-Scenariomall: Signera <intygtyp> intyg
+Scenariomall: Signera <intygKod> intyg
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -46,33 +46,59 @@ Exempel:
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
   |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
-# @skicka @utskrift
-# Scenario: Skicka intyg till mottagare
-#     När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-# 	Och jag skickar intyget till Försäkringskassan
-# 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
+@skicka @utskrift
+Scenariomall: Skicka <intygKod> intyg till mottagare
+    När jag går in på ett <intyg> med status "Signerat"
+	Och jag skickar intyget till Försäkringskassan
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
+
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
 # @skriv-ut @utskrift
-# Scenario: Skriv ut intyg
-#     När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+# Scenariomall: Skriv ut <intygtyp> intyg
+#     När jag går in på ett <intyg> med status "Signerat"
 # 	Och jag skriver ut intyget
 # 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
 
-# @radera
-# Scenario: Radera utkast
-#     När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
-# 	Och jag raderar utkastet
-# 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
+# Exempel:
+#   |intygKod | 	intyg 								| 
+#   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+#   |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
 
-# @makulera
-# Scenario: Makulera intyg
-# 	När  jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
-# 	Och jag makulerar intyget
-# 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
+@radera
+Scenariomall: Radera <intygKod> utkast
+    När jag går in på att skapa ett <intyg> intyg
+	Och jag raderar utkastet
+	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
-# @kopiera
-# Scenario: Kopiera intyg
-# 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-# 	Och jag kopierar intyget
-# 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
-# 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
+
+
+@makulera
+Scenariomall: Makulera <intygKod> intyg
+	När  jag går in på ett <intyg> med status "Mottaget"
+	Och jag makulerar intyget
+	Så ska loggaktivitet "Radera" skickas till loggtjänsten
+
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 
+
+@kopiera
+Scenariomall: Kopiera <intygKod> intyg
+	När jag går in på ett <intyg> med status "Signerat"
+	Och jag kopierar intyget
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
+	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
+
+Exempel:
+  |intygKod | 	intyg 								| 
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
+  |LISU		| 	"Läkarintyg för sjukpenning utökat" | 

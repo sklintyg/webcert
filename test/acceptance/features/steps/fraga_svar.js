@@ -22,7 +22,7 @@
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
-var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+// var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var lisuUtkastPage = pages.intyg.lisu.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
@@ -109,7 +109,7 @@ module.exports = function() {
     });
 
 
-    this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ, callback) {
+    this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
         var fragaText;
 
         if (typ === 'intygs') {
@@ -118,27 +118,15 @@ module.exports = function() {
             fragaText = global.ursprungligtIntyg.guidcheck;
         }
 
+        var page = fkIntygPage;
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        if (isSMIIntyg) {
+            page = fkLusePage;
+        }
+
         console.log('Letar efter fråga som innehåller text: ' + fragaText);
-        expect(fkUtkastPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
-            logger.info('OK - hittade fråga med text: ' + fragaText);
-            callback();
-        }, function(reason) {
-            callback('FEL : ' + reason);
-        });
+        return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
     });
-
-    // this.Given(/^ska jag se kompletteringsfrågan på intygs\-sidan$/, function(callback) {
-
-    //     var fragaText = global.intyg.guidcheck;
-
-    //     console.log('Letar efter fråga som innehåller text: ' + fragaText);
-    //     expect(fkIntygPage.getQAElementByText(fragaText).panel.isPresent()).to.become(true).then(function() {
-    //         logger.info('OK - hittade fråga med text: ' + fragaText);
-    //         callback();
-    //     }, function(reason) {
-    //         callback('FEL : ' + reason);
-    //     });
-    // });
 
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
         var answerWithIntygBtn = element(by.id('answerWithIntygBtn-' + global.intyg.messages[0].id));

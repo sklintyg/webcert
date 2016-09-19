@@ -28,6 +28,7 @@ var loginButton = element(by.id('loginBtn'));
 var jsonDisplay = element(by.id('userJsonDisplay'));
 
 module.exports = {
+    loginButton:loginButton,
     get: function() {
         return browser.get('welcome.jsp');
     },

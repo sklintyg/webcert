@@ -6,7 +6,8 @@ Egenskap: Komplettering av LUSE-intyg
 Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
-
+   
+@nyttIntyg
 Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg
    Och jag fyller i alla nödvändiga fält för intyget

@@ -47,7 +47,7 @@ module.exports = function() {
         });
 
         return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
-                return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
+            return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
         });
 
         // callback();
