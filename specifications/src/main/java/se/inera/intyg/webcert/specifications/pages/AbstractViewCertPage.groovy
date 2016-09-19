@@ -26,7 +26,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
     static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
     
     static content = {
-        intygSaknas { $('#cert-load-error') }
+        intygSaknas { $('#intyg-load-error') }
         intygLaddat { $('#intyg-vy-laddad') }
 
         skrivUtKnapp(required: false) { $("#downloadprint") }
