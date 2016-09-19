@@ -31,8 +31,9 @@ var BaseIntyg = JClass._extend({
         this.at = element(by.id('viewCertAndQA'));
         this.makulera = {
             btn: element(by.id('makuleraBtn')),
-            dialogAterta: element(by.id('button1makulera-dialog')),
-            kvittensOKBtn: element(by.id('confirmationOkButton')),
+            dialogMakulera: element(by.id('button1makulera-dialog')),
+            dialogErsatt: element(by.id('button2makulera-dialog')),
+            dialogRadioFelaktigtIntyg: element(by.id('reason-FELAKTIGT_INTYG')),
             statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
             statusRevoked: element(by.id('certificate-is-revoked-message-text'))
         };

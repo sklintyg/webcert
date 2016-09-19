@@ -31,7 +31,7 @@ angular.module('webcert').factory('webcert.IntygProxy',
                 $http.get(restPath).success(function(data, statusCode, headers) {
                     $log.debug('got data:' + data);
                     if (typeof headers('offline_mode') !== 'undefined' && headers('offline_mode') === 'true') {
-                        onError(statusCode, 'info.certload.offline');
+                        onError(statusCode, 'info.intygload.offline');
                     }
                     onSuccess(data);
                 }).error(function(data, status) {

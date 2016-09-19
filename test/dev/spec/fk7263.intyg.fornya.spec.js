@@ -24,7 +24,6 @@
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.testdata;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
@@ -105,10 +104,10 @@ describe('Generate fk intyg', function() {
                     expect(lastEffectiveDate.getTime() + 1000 * 60 * 60 * 24)
                         .toEqual(med25FromDate.getTime());
                 });
+            browser.ignoreSynchronization = false;
         });
 
         it('should sign copy', function() {
-            browser.ignoreSynchronization = false;
             FkUtkastPage.whenSigneraButtonIsEnabled().then(function() {
                 FkUtkastPage.signeraButtonClick();
                 expect(FkIntygPage.isAt()).toBeTruthy();
