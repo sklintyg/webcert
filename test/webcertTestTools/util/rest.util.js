@@ -114,6 +114,23 @@ module.exports = {
         return restClient.run(options, 'json');
     },
 
+    // Fråga/svar
+    createFragasvar: function(createJson) {
+        var options = {
+            url: 'testability/questions/',
+            method: 'POST',
+            body: createJson
+        };
+        return restClient.run(options, 'json');
+    },
+    deleteAllFragasvar: function() {
+        var options = {
+            url: 'testability/questions/',
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
+
     // Intygstjänst - intyg
 
     createIntyg: function(createJson) {

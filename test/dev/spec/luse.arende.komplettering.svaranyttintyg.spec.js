@@ -31,6 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('arende on luse intyg', function() {
 
+    var utkastId;
     var intygId = 'luse-arende-intyg-1';
     var meddelandeId = 'luse-arende-komplt';
 
@@ -58,6 +59,7 @@ describe('arende on luse intyg', function() {
 
     afterAll(function() {
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteUtkast(utkastId);
     });
 
     describe('make sure intyg page has been loaded', function() {
@@ -81,6 +83,12 @@ describe('arende on luse intyg', function() {
         it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
             LuseIntygPage.kompletteraMedNyttIntygButton.click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
+
+            // Extract ID of new utkast so we can delete it when we're done.
+            // Save id so it can be removed in cleanup stage.
+            browser.getCurrentUrl().then(function(url) {
+                utkastId = url.split('/').pop();
+            });
         });
     });
 
@@ -103,6 +111,35 @@ describe('arende on luse intyg', function() {
         it('should return to intyg when Visa button is clicked', function() {
             LuseUtkastPage.relatedIntygList.row(3).visa.click();
             expect(LuseIntygPage.isAt()).toBeTruthy();
+        });
+    });
+
+    describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
+        it('is showing fk intyg', function() {
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Is showing the Fortsatt button in arende view', function() {
+            expect(LuseIntygPage.getSvaraPaKompletteringFortsattPaIntygsutkastButton(meddelandeId).isDisplayed()).toBeTruthy();
+            LuseIntygPage.getSvaraPaKompletteringFortsattPaIntygsutkastButton(meddelandeId).click();
+            expect(LuseUtkastPage.isAt()).toBeTruthy();
+        });
+
+
+    });
+
+    describe('make sure we go to the previously created utkast when clicking the appropriate button in the modal', function() {
+        it('Click related intyg button again, assert is showing fk intyg', function() {
+            LuseUtkastPage.togglerelatedIntygList.click();
+            LuseUtkastPage.relatedIntygList.row(3).visa.click();
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Is showing the Fortsatt button in modal', function() {
+            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteraMedFortsattPaIntygsutkastButton.isDisplayed()).toBeTruthy();
+            LuseIntygPage.kompletteraMedFortsattPaIntygsutkastButton.click();
+            expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
     });
 

@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -71,6 +73,8 @@ import java.util.List;
 @Path("/questions")
 public class QuestionResource {
 
+    private static final Logger LOG = LoggerFactory.getLogger(QuestionResource.class);
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -112,7 +116,8 @@ public class QuestionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertQuestion(FragaSvar question) {
-        fragasvarRepository.save(question);
+        question = fragasvarRepository.save(question);
+        LOG.info("Created FragaSvar with id {} using testability API", question.getInternReferens());
         return Response.ok(question).build();
     }
 

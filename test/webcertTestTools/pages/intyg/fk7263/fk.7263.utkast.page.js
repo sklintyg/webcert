@@ -136,6 +136,31 @@ var FkUtkast = BaseUtkast._extend({
         };
         this.kontaktFk = element(by.id('kontaktFk'));
 
+        this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
+        this.relatedIntygList = {
+            isDisplayed: function() {
+                return element(by.id('intygRelations')).isDisplayed();
+            },
+            rows: function() {
+                return element.all(by.css('#intygRelations tr'));
+            },
+            row: function(index) {
+                var rowTds = element.all(by.css('#intygRelations tr:nth-child(' + index + ') td'));
+                return {
+                    visa: {
+                        getText: function() {
+                            return rowTds.get(0).getText();
+                        },
+                        click: function() {
+                            rowTds.get(0).element(by.css('button')).sendKeys(protractor.Key.SPACE);
+                        }
+                    },
+                    relation: rowTds.get(1),
+                    status: rowTds.get(2),
+                    datum: rowTds.get(3)
+                };
+            }
+        };
     },
 
     get: function get(intygId) {

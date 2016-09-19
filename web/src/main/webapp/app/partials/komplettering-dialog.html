@@ -20,9 +20,15 @@
               nytt intyg. Fyll i den nya informationen i den kopia som skapas av det befintliga intyget.</p>
           </div>
           <div ng-show="!model.uthopp" class="dialog-choice-box__button-section">
-            <button type="button" id="{{button1id}}" class="btn btn-success" ng-click="button1click()">
+
+            <button type="button" id="{{button1id}}" class="btn btn-success" ng-click="button1click()" ng-if="!model.svaraMedFortsattPaIntygsutkast">
               <img src="/img/loader-small-green.gif" ng-show="model.qa.updateInProgress"> Svara med nytt intyg
             </button>
+
+            <button type="button" id="{{button3id}}" class="btn btn-success" ng-click="button3click()" ng-if="model.svaraMedFortsattPaIntygsutkast">
+              <img src="/img/loader-small-green.gif" ng-show="model.qa.updateInProgress"> Fortsätt på intygsutkast
+            </button>
+
           </div>
         </div>
       </div>

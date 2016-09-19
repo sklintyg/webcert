@@ -146,8 +146,10 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.komplettera = {
             dialog: {
                 modal: element(by.css('.modal-dialog')),
+                modalDialogHeader: element(by.id('komplettering-dialog')),
                 svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog')),
-                svaraMedTextKnapp: element(by.id('button2answermessage-dialog'))
+                svaraMedTextKnapp: element(by.id('button2answermessage-dialog')),
+                fortsattPaIntygsutkastKnapp: element(by.id('button3gotoutkast-dialog'))
             }
         };
     },
@@ -179,6 +181,19 @@ var Fk7263Intyg = BaseIntyg._extend({
     },
     svaraMedNyttIntyg: function(id) {
         return element(by.id('answerWithIntygBtn-' + id)).sendKeys(protractor.Key.SPACE);
+    },
+    fortsattPaIntygsutkast: function(id) {
+        return element(by.id('continueWithUtkastBtn-' + id)).sendKeys(protractor.Key.SPACE);
+    },
+    getQAById: function(handled, id) {
+        var subgroup = 'unhandled';
+        if (handled) {
+            subgroup = 'handled';
+        }
+        return element(by.id('qa' + subgroup + '-' + id));
+    },
+    getKompletteringsDialog: function() {
+        return this.komplettera.dialog;
     }
 });
 

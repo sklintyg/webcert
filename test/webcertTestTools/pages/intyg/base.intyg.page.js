@@ -151,7 +151,11 @@ var BaseIntyg = JClass._extend({
     },
     getSvaraPaKompletteringButton: function(id) {
         return element(by.id('answer-kompletteringsatgard-open-' + id));
+    },
+    getSvaraPaKompletteringFortsattPaIntygsutkastButton: function(id) {
+        return element(by.id('answer-kompletteringsatgard-open-utkast-' + id));
     }
+
 });
 
 module.exports = BaseIntyg;

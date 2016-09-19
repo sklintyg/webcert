@@ -117,6 +117,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         };
         this.kompletteringsAtgardDialog = element(by.id('komplettering-modal-dialog'));
         this.kompletteraMedNyttIntygButton = element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
+        this.kompletteraMedFortsattPaIntygsutkastButton = element(by.id('komplettering-modal-dialog-goToUtkast-button'));
         this.kompletteraMedMeddelandeButton = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
 
     },

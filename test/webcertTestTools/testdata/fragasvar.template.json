@@ -1,0 +1,33 @@
+{
+    "internReferens" : 1,
+    "amne": "KOMPLETTERING_AV_LAKARINTYG",
+    "frageText": "",
+    "externaKontakter": [],
+    "intygsReferens": {
+        "intygsId": "",
+        "intygsTyp":  "fk7263",
+        "patientId": "",
+        "patientNamn": "Tolvan Tolvansson",
+        "signeringsDatum": "2016-09-16T13:37:00"
+    },
+    "kompletteringar": [],
+    "status":"",
+    "vidarebefordrad": false,
+    "senasteHandelse": "",
+    "senasteHandelseDatum":  "2016-09-16T13:37:00",
+    "frageSkickadDatum":  "2016-09-16T13:37:00",
+    "meddelandeRubrik": "",
+    "frageStallare": "FK",
+    "frageSigneringsDatum":  "2016-09-16T13:37:00",
+    "vardAktorNamn": "",
+    "vardAktorHsaId": "",
+    "externReferens": "",
+    "svarsText": "",
+    "svarSigneringsDatum":  "2016-09-16T13:37:00",
+    "svarSkickadDatum":  "2016-09-16T13:37:00",
+    "vardperson": {
+        "hsaId": "",
+        "namn": "Leonie Koehl",
+        "enhetsId": ""
+    }
+}

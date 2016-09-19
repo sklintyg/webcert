@@ -24,10 +24,16 @@
 
 var restUtil = require('./../util/rest.util.js');
 var arendeFromJsonFactory = require('./../util/arendeFromJsonFactory.js');
+var fragasvarFromJsonFactory = require('./../util/fragasvarFromJsonFactory.js');
 
 function createArende(createJson) {
     restUtil.login();
     return restUtil.createArende(createJson);
+}
+
+function createFragasvar(createJson) {
+    restUtil.login();
+    return restUtil.createFragasvar(createJson);
 }
 
 module.exports = {
@@ -76,33 +82,78 @@ module.exports = {
 
     // Ärenden
     createArende: createArende,
-    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering, svarPa) {
-    	var arende = arendeFromJsonFactory.get({
-    	    intygType:intygType,
-            intygId:intygId,
-            meddelandeId:meddelandeId,
-            meddelande:'Hur är det med arbetstiden?',
-            amne:amne,
-            status:status,
-            kompletteringar:komplettering
-    	});
+    createArendeFromTemplate: function(intygType, intygId, meddelandeId, meddelande, amne, status, komplettering,
+        svarPa) {
+        var arende = arendeFromJsonFactory.get({
+            intygType: intygType,
+            intygId: intygId,
+            meddelandeId: meddelandeId,
+            meddelande: 'Hur är det med arbetstiden?',
+            amne: amne,
+            status: status,
+            kompletteringar: komplettering
+        });
 
-        if(svarPa){
+        if (svarPa) {
             arende.svarPa = svarPa;
         }
-        
-    	console.log('arende to be created: '+JSON.stringify(arende));
-    	createArende(arende).then(function(response) {
+
+        console.log('arende to be created: ' + JSON.stringify(arende));
+        createArende(arende).then(function(response) {
             console.log('response code:' + response.statusCode);
         });
     },
     deleteAllArenden: function() {
-    	console.log('deleting all arenden');
+        console.log('deleting all arenden');
         restUtil.login();
         return restUtil.deleteAllArenden();
     },
     deleteArende: function(id) {
         restUtil.login();
         return restUtil.deleteArende(id);
+    },
+
+    // Fråga/svar
+    createFragasvar: createFragasvar,
+
+    /*
+     fragaSvar.amne = fragaSvarOptions.amne;
+     fragaSvar.internReferens = fragaSvarOptions.internReferens;
+     fragaSvar.intygsReferens.intygsTyp = fragaSvarOptions.intygType;
+     fragaSvar.intygsReferens.intygsId = fragaSvarOptions.intygId;
+     fragaSvar.intygsReferens.patientId = fragaSvarOptions.patientId;
+     fragaSvar.frageText = fragaSvarOptions.frageText;
+     fragaSvar.svarsText = fragaSvarOptions.svarsText;
+     fragaSvar.meddelandeRubrik = fragaSvarOptions.meddelandeRubrik;
+     fragaSvar.status = fragaSvarOptions.status;
+     fragaSvar.kompletteringar = fragaSvarOptions.kompletteringar;
+     fragaSvar.vardperson = fragaSvarOptions.vardperson;
+     fragaSvar.externaKontakter = [];
+     fragaSvar.vidarebefordrad = fragaSvarOptions.vidarebefordrad;
+     */
+    createFragasvarFromTemplate: function(internReferens, intygsId, patientId, amne, status, komplettering,
+        vidarebefordrad, callback) {
+        var fraga = fragasvarFromJsonFactory.get({
+            internReferens: internReferens,
+
+            intygsId: intygsId,
+            intygsTyp: 'fk7263',
+            patientId: patientId,
+
+            frageText: 'Hur är det med arbetstiden?',
+            amne: amne,
+            status: status,
+            kompletteringar: [komplettering],
+            vidarebefordrad: vidarebefordrad
+        });
+
+
+        console.log('fragasvar to be created: ' + JSON.stringify(fraga));
+        createFragasvar(fraga).then(function(response) {
+            console.log('response code:' + response.statusCode);
+            console.log('response output: ' + response.body.internReferens);
+            callback(response.body.internReferens);
+        });
     }
+
 };
