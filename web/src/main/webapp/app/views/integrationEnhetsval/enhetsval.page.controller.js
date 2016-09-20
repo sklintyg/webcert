@@ -22,7 +22,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
             'use strict';
 
             // Construct base destination url
-            var baseDestUrl = getParameterByName('destination', $window.location.search) + '&enhet=';
+            var baseDestUrl = getParameterByName('destination', $window.location.search);
 
             //Util function that parses destination argument from current url
             function getParameterByName(name, url) {
@@ -33,10 +33,31 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
                 return decodeURIComponent(results[2].replace(/\+/g, ' '));
             }
 
+            function updateQueryParameter(uri, key, value) {
+                var re = new RegExp('([?|&])' + key + '=.*?(&|#|$)', 'i');
+                if (uri.match(re)) {
+                    return uri.replace(re, '$1' + key + '=' + value + '$2');
+                } else {
+                    var hash =  '';
+                    if( uri.indexOf('#') !== -1 ){
+                        hash = uri.replace(/.*#/, '#');
+                        uri = uri.replace(/#.*/, '');
+                    }
+                    var separator = uri.indexOf('?') !== -1 ? '&' : '?';
+                    return uri + separator + key + '=' + value + hash;
+                }
+            }
+
+            function buildTargetUri(baseUrl, enhetsId) {
+                return updateQueryParameter(baseUrl, 'enhet', enhetsId);
+            }
+
             //When enhet is selected in dialog, redirect window to original destination + &enhet=<selected enhetsid>
             function onUnitSelected(enhet) {
-                $window.location.replace(baseDestUrl + enhet.id);
+                $window.location.replace(buildTargetUri(baseDestUrl, enhet.id));
             }
+
+            $scope.onUnitSelected = onUnitSelected;
 
             function showDialog() {
                 // We don't handle any results from this dialog - and it cant be closed other than by choosing
