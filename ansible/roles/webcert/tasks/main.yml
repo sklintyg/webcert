@@ -30,6 +30,7 @@
 - name: Download webcert-web-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
            dest={{ releases_folder }}/webcert-web-{{ version }}.war
+           timeout=120
   when: deploy_from_repo
 
 - name: Copy webcert-web-{{ version }}.war from THIS machine when not deploying from remote repo
