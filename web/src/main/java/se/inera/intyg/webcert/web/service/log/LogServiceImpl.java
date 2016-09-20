@@ -27,6 +27,7 @@ import javax.jms.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
@@ -232,7 +233,12 @@ public class LogServiceImpl implements LogService {
 
         LOGGER.debug("Logging {} of Intyg {}", logMsg.getActivityType(), logMsg.getActivityLevel());
 
-        jmsTemplate.send(new MC(logMsg));
+        try {
+            jmsTemplate.send(new MC(logMsg));
+        } catch (JmsException e) {
+            LOGGER.error("Could not log {} of Intyg '{}'", logMsg.getActivityType(), logMsg.getActivityLevel(), e);
+            throw e;
+        }
     }
 
     private static final class MC implements MessageCreator {

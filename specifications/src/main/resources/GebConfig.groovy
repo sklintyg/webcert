@@ -38,8 +38,8 @@ environments {
     }
     safari {
         driver = {
-            SafariOptions options = new SafariOptions(); 
-            options.setUseCleanSession(true); 
+            SafariOptions options = new SafariOptions();
+            options.setUseCleanSession(true);
             new SafariDriver(options)
         }
     }

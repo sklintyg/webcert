@@ -227,7 +227,7 @@ public final class FileUtil {
                 try {
                     target.close();
                 } catch (IOException ex) {
-                    // what to to?
+                    System.err.println(ex);
                 }
             }
         }

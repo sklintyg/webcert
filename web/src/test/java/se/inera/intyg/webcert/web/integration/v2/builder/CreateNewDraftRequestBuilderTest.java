@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -37,6 +38,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
@@ -69,8 +71,16 @@ public class CreateNewDraftRequestBuilderTest {
     @Mock
     private HsaPersonService hsaPersonService;
 
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
     @InjectMocks
     private CreateNewDraftRequestBuilderImpl builder;
+
+    @Before
+    public void setup() {
+        when(moduleRegistry.getModuleIdFromExternalId(anyString())).thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
+    }
 
     @Test
     public void testBuildCreateNewDraftRequest() {

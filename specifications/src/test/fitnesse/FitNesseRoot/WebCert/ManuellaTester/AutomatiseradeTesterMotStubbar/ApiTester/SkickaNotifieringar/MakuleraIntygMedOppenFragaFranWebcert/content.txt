@@ -1,7 +1,7 @@
 !3 Rensa eventuella tidigare notifieringar
 | webcert rest utils |
-| reset? | 
-| true | 
+| reset? |
+| true |
 
 !3 Skapa ett utkast, fyll på med data och spara och signera
 | skapa utkast med fake inloggning |
@@ -10,9 +10,9 @@
 
 
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | diagnosKod | diagnosBeskrivning1  | nedsattMed100                                            | intygId   | intygTyp | version  | komplett | utkastSparat? | version?  |
-| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId | fk7263   | $version | true     | true          | $version= | 
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId | fk7263   | $version | true     | true          | $version= |
 
-| signera utkast | 
+| signera utkast |
 | intygId   | intygTyp | version  | utkastSignerat? | version?  |
 | $utkastId | fk7263   | $version | true            | $version= |
 
@@ -28,21 +28,21 @@
 
 !3 Rensa notifieringar så att vi kan verifiera de relevanta
 | webcert rest utils |
-| reset? | 
-| true   | 
+| reset? |
+| true   |
 
 !3 Makulera intyget
 | makulera intyg |
 | intygId   | intygTyp | intygMakulerat? |
-| $utkastId |  fk7263  | true            | 
+| $utkastId |  fk7263  | true            |
 
 !3 Verifiera att förväntade notifieringar gick iväg
-| verifiera notifiering | 
-| id         | kod   |  handelseSkapad?   |  
-| $utkastId  | HAN5  |  true              | 
-| $utkastId  | HAN10 |  true              | 
+| verifiera notifiering |
+| id         | kod   |  handelseSkapad?   |
+| $utkastId  | HAN5  |  true              |
+| $utkastId  | HAN10 |  true              |
 
 !3 Kolla antalet hanterade svar
 | skickade notifieringar |
-| id        | kod  | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| id        | kod  | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? |
 | $utkastId | HAN10|   1                 | 0          |  0                    | 0            |

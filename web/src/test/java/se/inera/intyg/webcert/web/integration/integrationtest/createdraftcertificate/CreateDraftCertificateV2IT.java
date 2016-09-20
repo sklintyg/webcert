@@ -19,39 +19,36 @@
 
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
-import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
-import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
-import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.stringtemplate.v4.*;
+
+import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.integration.integrationtest.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
  */
 public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
-    private static final String LUAE_FS = "luae_fs";
-
-    private static final String LUAE_NA = "luae_na";
-
-    private static final String LISU = "lisu";
-
-    private static final String LUSE = "luse";
+    private static final String LUAE_FS = "LUAE_FS";
+    private static final String LUAE_NA = "LUAE_NA";
+    private static final String LISU = "LISU";
+    private static final String LUSE = "LUSE";
+    private static final String TS_BAS = "TSTRK1007";
+    private static final String TS_DIABETES = "TSTRK1031";
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V2_0 = "services/create-draft-certificate/v2.0";
@@ -129,6 +126,36 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .body("intygs-id.extension.size()", is(1));
 
         testMatchesSchemaForType(LUSE);
+    }
+
+    @Test
+    public void testCreateTsBasDraft() throws IOException {
+
+        given().body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
+                .body("intygs-id.extension.size()", is(1));
+
+        testMatchesSchemaForType(TS_BAS);
+    }
+
+    @Test
+    public void testCreateTsDiabetesDraft() throws IOException {
+
+        given().body(createRequestBody(TS_DIABETES, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
+                .body("intygs-id.extension.size()", is(1));
+
+        testMatchesSchemaForType(TS_DIABETES);
     }
 
     @Test

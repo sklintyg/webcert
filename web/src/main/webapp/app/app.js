@@ -48,7 +48,7 @@
     var moduleConfig;
 
     var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'formlyBootstrap', 'ng.shims.placeholder']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ng.shims.placeholder']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000

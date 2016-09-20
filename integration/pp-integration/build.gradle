@@ -1,0 +1,12 @@
+description = 'Webcert (PP-integration)'
+
+dependencies {
+  compile project(':webcert-common')
+
+  compile 'se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:1.0.2'
+
+  compile "se.inera.intyg.common:integration-util:${commonVersion}"
+
+  testCompile "org.springframework:spring-test:${springVersion}"
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+}

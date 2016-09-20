@@ -89,7 +89,7 @@ Kontrollera valideringsmeddelanden.
 !3 Fyll blanktecken i sysselsättning, funktionsnedsattning och aktivitetsbegransning
 
 | Populera Fk7263 |
-| nuvarandearbete | arbetsuppgifter | funktionsnedsattning | aktivitetsbegransning | 
+| nuvarandearbete | arbetsuppgifter | funktionsnedsattning | aktivitetsbegransning |
 | true            | <space>         | <space>              | <space>               |
 
 | skript | !-SkrivIntyg-! |

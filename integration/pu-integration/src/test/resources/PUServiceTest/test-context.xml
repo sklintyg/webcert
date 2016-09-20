@@ -31,6 +31,7 @@
 
     <bean class="se.inera.intyg.webcert.integration.pu.stub.LookupResidentForFullProfileWsStub"/>
 
-    <import resource="../../classes/pu-cache-config.xml" />
+    <!-- TODO: this import should be expressed in a way that doesn't use gradle's specific file structure -->
+    <import resource="../../../resources/main/pu-cache-config.xml" />
 
 </beans>

@@ -1,0 +1,26 @@
+description = 'Webcert (Persistence)'
+
+// JPA expects classes and configuration files to be in the same directory.
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+// B/c of the above, we create duplicates within the JAR. This configuration excludes the duplicates.
+jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+dependencies {
+  compile project(':webcert-common')
+
+  compile "org.springframework:spring-tx:${springVersion}"
+  compile "org.springframework:spring-orm:${springVersion}"
+  compile "org.springframework.data:spring-data-jpa:1.9.0.RELEASE"
+  compile "org.liquibase:liquibase-core:3.3.1"
+  compile ('org.jadira.usertype:usertype.extended:5.0.0.GA') {
+    exclude(module: 'hibernate-entitymanager')
+  }
+  compile 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
+  compile "commons-lang:commons-lang:2.6"
+  compile "commons-io:commons-io:2.4"
+
+  testCompile "org.springframework:spring-test:${springVersion}"
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+
+  testRuntime "com.h2database:h2:1.3.174"
+}

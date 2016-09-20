@@ -93,10 +93,10 @@ describe('wcUtkastFilterSpec', function() {
             spyOn($scope, 'testFilter');
             spyOn($cookies, 'putObject');
 
-            var completeYes = $(element).find('#completeYes').eq(0);
+            var completeYes = element.find('#completeYes')[0];
             completeYes.click();
 
-            var button = $(element).find('#uc-filter-btn').eq(0);
+            var button = element.find('#uc-filter-btn')[0];
             button.click();
 
             var response = utkastFilterModel.build();

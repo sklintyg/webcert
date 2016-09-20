@@ -2,8 +2,8 @@
 
 !3 Rensa eventuella tidigare notifieringar
 | webcert rest utils |
-| reset? | 
-| true | 
+| reset? |
+| true |
 
 !3 Skapa ett utkast, fyll på med data och spara det
 | skapa utkast med fake inloggning |
@@ -15,7 +15,7 @@
 | ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= |
 
 !3 Signera utkastet
-| signera utkast | 
+| signera utkast |
 | intygId   | intygTyp | version  | utkastSignerat? | version?  |
 | $utkastId | fk7263   | $version | true            | $version= |
 
@@ -25,7 +25,7 @@
 | $utkastId | fk7263   |  FK        | true          |
 
 !3 Verifiera att förväntade notifieringar gick iväg
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  | handelseSkapad? |
 | $utkastId  | HAN1 | true              |
 | $utkastId  | HAN11| true              |

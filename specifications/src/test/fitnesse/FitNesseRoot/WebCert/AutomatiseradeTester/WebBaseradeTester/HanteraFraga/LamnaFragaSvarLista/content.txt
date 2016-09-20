@@ -1,6 +1,6 @@
 !contents -R2 -g -p -f -H
 
-Testet beskriver fallet när en användare försöka att lämna fråga svar listen med ej hanterat svar. 
+Testet beskriver fallet när en användare försöka att lämna fråga svar listen med ej hanterat svar.
 En dialog skulle visas med följande knappar : hantera, ej hantera, tillbaka.
 Hantera : alla ej hanterad svar skulle sen blir hanterad, status = CLOSED.
 Ej Hnaterad : inget åtgärd, men browser gå till den nya länk.

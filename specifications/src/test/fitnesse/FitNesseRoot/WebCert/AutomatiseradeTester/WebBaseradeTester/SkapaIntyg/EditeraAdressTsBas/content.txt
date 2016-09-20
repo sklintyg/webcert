@@ -28,7 +28,7 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-bas intyg oc
 | Lillgatan 12 | 12344 | Bankeborg | 223456789 |
 
 !| skript | HanteraUtkast |
-| säkerställ att | har sparat | 
+| säkerställ att | har sparat |
 
 
 !3 Verifiera ändringar i adressfälten

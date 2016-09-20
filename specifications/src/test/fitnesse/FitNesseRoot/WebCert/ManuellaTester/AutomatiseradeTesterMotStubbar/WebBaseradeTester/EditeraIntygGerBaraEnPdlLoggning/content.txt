@@ -18,7 +18,7 @@
 !3 Populera intyget till hälften
 
 | Populera Fk7263 |
-| smittskydd | undersokning | undersokningDatum | telefonkontakt | telefonkontaktDatum | journal | journalDatum | other | otherDatum | otherText | diagnos1 | diagnos1Text | diagnos2 | diagnos2Text | diagnos3 | diagnos3Text | diagnosFortydligande | diagnosSamsjuklighet | sjukdomsforlopp | funktionsnedsattning | aktivitetsbegransning | 
+| smittskydd | undersokning | undersokningDatum | telefonkontakt | telefonkontaktDatum | journal | journalDatum | other | otherDatum | otherText | diagnos1 | diagnos1Text | diagnos2 | diagnos2Text | diagnos3 | diagnos3Text | diagnosFortydligande | diagnosSamsjuklighet | sjukdomsforlopp | funktionsnedsattning | aktivitetsbegransning |
 | false | true | 2014-09-17 | true | 2014-09-16 | true | 2014-09-18 | true | 2014-09-18 | Kontakt med arbetsgivaren | !-B079X-! | Virusvårtor, ospecificerade | !-B080B-! | Falska kokoppor | !-B080W-! | Annan och icke specificerad infektion orsakad av ortopoxvirus | Kan vara något annat också | true | Först feber, därefter massa konstiga prickar överallt | Kliar konstant | Kan inte fokusera på arbetet |
 
 !3 Utkastet sparas

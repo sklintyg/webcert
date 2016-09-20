@@ -1,0 +1,11 @@
+description = 'Webcert (Mail Server Stubs)'
+
+dependencies {
+  compile "org.aspectj:aspectjweaver:1.7.1"
+  compile "javax.mail:mail:1.4"
+  compile "org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.3"
+  compile "org.springframework:spring-context-support:${springVersion}"
+  compile "org.slf4j:slf4j-api:1.7.5"
+
+  testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+}

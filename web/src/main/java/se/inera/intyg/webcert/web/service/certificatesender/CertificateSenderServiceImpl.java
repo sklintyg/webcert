@@ -19,21 +19,19 @@
 
 package se.inera.intyg.webcert.web.service.certificatesender;
 
+import javax.annotation.PostConstruct;
+import javax.jms.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.common.common.Constants;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * Created by eriklupander on 2015-05-20.
@@ -59,22 +57,31 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
     @Override
     public void storeCertificate(String intygsId, String intygsTyp, String jsonBody) {
-        jmsTemplate.send(new StoreCertificateMessageCreator(intygsId, jsonBody, intygsTyp, logicalAddress));
+        send(new StoreCertificateMessageCreator(intygsId, jsonBody, intygsTyp, logicalAddress));
     }
 
     @Override
     public void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) {
-        jmsTemplate.send(new SendCertificateMessageCreator(intygsId, personId, jsonBody, recipientId, logicalAddress));
+        send(new SendCertificateMessageCreator(intygsId, personId, jsonBody, recipientId, logicalAddress));
     }
 
     @Override
     public void revokeCertificate(String intygsId, String xmlBody, String intygsTyp) {
-        jmsTemplate.send(new RevokeCertificateMessageCreator(intygsId, xmlBody, logicalAddress, intygsTyp));
+        send(new RevokeCertificateMessageCreator(intygsId, xmlBody, logicalAddress, intygsTyp));
     }
 
     @Override
     public void sendMessageToRecipient(String intygsId, String xmlBody) {
-        jmsTemplate.send(new SendMessageToRecipientMessageCreator(intygsId, xmlBody, logicalAddress));
+        send(new SendMessageToRecipientMessageCreator(intygsId, xmlBody, logicalAddress));
+    }
+
+    private void send(MessageCreator messageCreator) {
+        try {
+            jmsTemplate.send(messageCreator);
+        } catch (JmsException e) {
+            LOGGER.error("Could not send message", e);
+            throw e;
+        }
     }
 
     static final class StoreCertificateMessageCreator implements MessageCreator {

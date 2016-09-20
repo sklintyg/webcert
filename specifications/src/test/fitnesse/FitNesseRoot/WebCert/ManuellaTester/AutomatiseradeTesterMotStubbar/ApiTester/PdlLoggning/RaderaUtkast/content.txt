@@ -13,7 +13,7 @@
 !3 Radera utkastet
 
 | radera utkast |
-| intygId   | intygTyp | utkastRaderat? | 
+| intygId   | intygTyp | utkastRaderat? |
 | webcert-fitnesse-signera-1 | fk7263   | true  |
 
 !3 Verifiera att en PDL-loggning gjorts

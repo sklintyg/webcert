@@ -58,7 +58,7 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 | diagnos1?   | diagnos1Text?           | diagnos2?| diagnos2Text?             | diagnos3?| diagnos3Text?        | fortydligande? | prognosBeskrivning? | otherText? |
 | S50         | Kontusion på armbåge    | Z233     | Vaccination avseende pest | Z321     | Graviditet bekräftad | Skada underarm | Oklart varför| Mailkontakt med patienten |
 
-!3 Ta bort utkast 
+!3 Ta bort utkast
 | Ta bort utkast |
 | utkastId |
 | webcert-fitnesse-kopiera-och-signera |

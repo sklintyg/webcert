@@ -29,6 +29,8 @@ require('path');
 module.exports = function(grunt) {
     'use strict';
 
+    require('time-grunt')(grunt);
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-csslint');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -42,10 +44,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-sass-lint');
+    grunt.loadNpmTasks('grunt-wiredep');
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
-    var DEST_DIR = 'target/webapp/app/';
+    var DEST_DIR = (grunt.option('outputDir') || 'build/webapp') +  '/app/';
+    var TEST_OUTPUT_DIR = (grunt.option('outputDir') || 'build/karma/');
+    var SKIP_COVERAGE = grunt.option('skip-coverage') || 'true';
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
@@ -75,11 +80,11 @@ module.exports = function(grunt) {
         }
         module.src =
             '/../../' + module.base + '/src/main/resources/META-INF/resources/webjars/' + moduleName + '/webcert';
-        module.dest = '/../../' + module.base + '/target/classes/META-INF/resources/webjars/' + moduleName + '/webcert';
+        module.dest = '/../../' + module.base + '/build/resources/main/META-INF/resources/webjars/' + moduleName + '/webcert';
     });
 
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
-    var CSS_COMMON_DEST_DIR = '/../../common/web/target/classes/META-INF/resources/webjars/common/css';
+    var CSS_COMMON_DEST_DIR = '/../../common/web/build/resources/main/META-INF/resources/webjars/common/css';
 
     function buildListForAllModules(callback) {
         var list = [];
@@ -140,7 +145,7 @@ module.exports = function(grunt) {
 
         jshint: {
             options: {
-                jshintrc: 'target/build-tools/jshint/.jshintrc',
+                jshintrc: 'build/build-tools/jshint/.jshintrc',
                 force: false,
                 ignores: ['**/templates.js', '**/*.min.js', '**/vendor/*.js']
             },
@@ -151,11 +156,18 @@ module.exports = function(grunt) {
 
         karma: {
             ci: {
-                configFile: 'src/main/resources/karma.conf.ci.js',
-                reporters: ['mocha']
+                configFile: 'karma.conf.ci.js',
+                client: {
+                    args: ['--skip-coverage=' + SKIP_COVERAGE]
+                },
+                coverageReporter: {
+                    type : 'lcovonly',
+                    dir : TEST_OUTPUT_DIR,
+                    subdir: '.'
+                }
             },
             watch: {
-                configFile: 'src/main/resources/karma.conf.ci.js',
+                configFile: 'karma.conf.ci.js',
                 reporters: ['mocha'],
                 autoWatch: true,
                 singleRun: false
@@ -260,7 +272,7 @@ module.exports = function(grunt) {
         }), { webcert: {
             cwd: __dirname + '/src/main/webapp',
             src: ['app/views/**/**.html', 'app/partials/**/**.html'],
-            dest: __dirname + '/target/webapp/app/templates.js',
+            dest: DEST_DIR + 'templates.js',
             options: {
                 module: 'webcert',
                 url: function(url) {
@@ -343,12 +355,55 @@ module.exports = function(grunt) {
                 logConcurrentOutput: true
             },
             tasks: ['connect:server', 'watch']
+        },
+
+        bower: {
+            install: {
+                options: {
+                    copy: false
+                }
+            }
+        },
+
+        wiredep: {
+            webcert: {
+                directory: 'src/main/webapp/bower_components',
+                src: [
+                    SRC_DIR + '../pubapp/**/index.html',
+                    SRC_DIR + '../**/*.jsp',
+                    'karma.conf.js'
+                ],
+                ignorePath: '../..',
+                fileTypes: {
+                    jsp: {
+                        block: /(([ \t]*)<!--\s*bower:*(\S*)\s*-->)(\n|\r|.)*?(<!--\s*endbower\s*-->)/gi,
+                        detect: {
+                            js: /<script.*src=['"]([^'"]+)/gi,
+                            css: /<link.*href=['"]([^'"]+)/gi
+                        },
+                        replace: {
+                            js: function(filePath) {
+                                if (filePath[0] !== '/') {
+                                    filePath = '/' + filePath;
+                                }
+                                return '<script type="text/javascript" src="'+filePath+'"></script>';
+                            },
+                            css: function(filePath) {
+                                if (filePath[0] !== '/') {
+                                    filePath = '/' + filePath;
+                                }
+                                return '<link rel="stylesheet" href="'+filePath+'" />';
+                            }
+                        }
+                    }
+                }
+            }
         }
     });
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist', 'jshint']);
+    grunt.registerTask('default', ['jshint', 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma:ci']);
     grunt.registerTask('test:watch', ['karma:watch']);

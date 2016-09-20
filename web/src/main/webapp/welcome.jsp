@@ -31,8 +31,9 @@
 
 <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
-<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
-<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
+<!-- bower:css -->
+<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+<!-- endbower -->
 
 <style type="text/css">
   textarea {
@@ -49,7 +50,7 @@
   }
 </style>
 
-<script type="text/javascript" src="/web/webjars/angularjs/1.4.10/angular.min.js"></script>
+<script type="text/javascript" src="/bower_components/angular/angular.js"></script>
 
 <script type="text/javascript">
   //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar

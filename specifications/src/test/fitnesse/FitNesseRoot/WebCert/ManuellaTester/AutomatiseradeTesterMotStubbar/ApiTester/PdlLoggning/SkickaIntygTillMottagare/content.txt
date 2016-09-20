@@ -6,7 +6,7 @@
 
 
 !3 Signera utkastet
-| signera utkast | 
+| signera utkast |
 | intygId   | intygTyp | utkastSignerat? |
 | webcert-fitnesse-signera-1 | fk7263   | true            |
 

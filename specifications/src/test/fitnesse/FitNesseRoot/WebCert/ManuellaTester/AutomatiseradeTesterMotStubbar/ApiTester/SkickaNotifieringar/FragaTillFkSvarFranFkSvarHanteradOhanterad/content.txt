@@ -2,8 +2,8 @@
 
 !3 Rensa tidigare notifieringar
 | webcert rest utils |
-| reset? | 
-| true | 
+| reset? |
+| true |
 
 !3 Skapa ett utkast, fyll på med data och spara och signera
 | skapa utkast med fake inloggning |
@@ -12,13 +12,13 @@
 
 
 | patientPersonnummer | patientFornamn    | patientEfternamn  | hsaId             | namn             | enhetId           | kodverk   | diagnosKod | diagnosBeskrivning1  | nedsattMed100                                            | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
-| ${person1.personnummer}       | Test              | Testorsson        | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= | 
+| ${person1.personnummer}       | Test              | Testorsson        | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= |
 
 | hamta utkast |
-| intygsId   | intygsTyp | utkastHamtat? | version?  | 
+| intygsId   | intygsTyp | utkastHamtat? | version?  |
 | $utkastId  | fk7263    | true          | $version= |
 
-| signera utkast | 
+| signera utkast |
 | intygId   | intygTyp | version  | utkastSignerat? |
 | $utkastId | fk7263   | $version | true            |
 
@@ -29,24 +29,24 @@
 
 !3 Rensa notifieringar
 | webcert rest utils |
-| reset? | 
-| true | 
+| reset? |
+| true |
 
 !4 Ställ fråga och verifiera att frågehantering fungerar
 
 !3 Ställ en fråga på det nyss skickade intyget, detta skall ge en notifiering av typen HAN8
 | skapa fraga till fk |
-| intygId   | intygTyp |  fragaSkapad? | internReferens?  | 
+| intygId   | intygTyp |  fragaSkapad? | internReferens?  |
 | $utkastId | fk7263   |   true        | $internReferens= |
 
 !3 Verifiera notifiering HAN8
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  |  handelseSkapad? |
 | $utkastId  | HAN8 |  true              |
 
 !3 Kolla antalet frågor och svar
 | skickade notifieringar |
-| id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? |
 | $utkastId | HAN8|   0                  | 0          |  0                    | 0            |
 
 !3 Skicka svar från FK
@@ -55,13 +55,13 @@
 | OVRIGT | $internReferens | Ett svar | SE4815162344-1A02 | OK |
 
 !3 Verifiera notifiering HAN7
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  |  handelseSkapad? |
 | $utkastId  | HAN7 |  true            |
 
 !3 Bör finnas ett svar nu
 | skickade notifieringar |
-| id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? |
 | $utkastId | HAN7|   0                  | 1          | 0                     | 0            |
 
 !3 Hantera svar från FK och sätt svar som hanterat
@@ -70,13 +70,13 @@
 | fk7263   | $internReferens| true |
 
 !3 Verifiera notifiering HAN10
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  |  handelseSkapad? |
 | $utkastId  | HAN10 |  true            |
 
 !3 Bör finnas ett svar nu
 | skickade notifieringar |
-| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? |
 | $utkastId | HAN10 |   1                  | 1          |  0                    | 0            |
 
 !3 Rensa notifieringar så att vi kan verifiera de relevanta
@@ -90,13 +90,13 @@
 | fk7263   | $internReferens| true |
 
 !3 Verifiera notifiering HAN7
-| verifiera notifiering | 
+| verifiera notifiering |
 | id         | kod  |  handelseSkapad? |
 | $utkastId  | HAN7 |  true            |
 
 !3 Bör finnas ett svar nu
 | skickade notifieringar |
-| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? |
 | $utkastId | HAN7  |   0                  | 1          |  0                    | 0            |
 
 !3 Ta bort utkastet
@@ -106,5 +106,5 @@
 
 !3 Rensa notifieringar
 | webcert rest utils |
-| reset? | 
-| true   | 
+| reset? |
+| true   |
