@@ -259,10 +259,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         return element(by.id('tillaggsfragor[' + i + '].svar'));
     },
     getTillaggsfragaText: function(i) {
-        return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
+        return element(by.css('#form_tillaggsfragor_' + i + ' label')).getText();
     },
     getTillaggsfragaSvar: function(i) {
-        return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
+        return element(by.css('#form_tillaggsfragor_' + i + ' textarea')).getAttribute('value');
     }
 });
 

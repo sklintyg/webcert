@@ -39,8 +39,8 @@ xdescribe('fragasvar.intygstyp.filtrering', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        testdataHelper.deleteAllUtkast();
-        testdataHelper.deleteAllIntyg();
+        //testdataHelper.deleteAllUtkast();
+        //testdataHelper.deleteAllIntyg();
     });
 
     describe('Visa signerat luae_fs intyg', function() {

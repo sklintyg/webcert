@@ -51,11 +51,9 @@ describe('Validera makulering av luae_fs Intyg', function() {
 
         it('Makulera intyget', function() {
             IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-            browser.wait(IntygPage.makulera.dialogAterta.isDisplayed())
-                .then(IntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE));
-
-            browser.wait(IntygPage.makulera.kvittensOKBtn.isDisplayed())
-                .then(IntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE));
+            IntygPage.makulera.dialogRadioFelaktigtIntyg.sendKeys(protractor.Key.SPACE)
+            browser.wait(IntygPage.makulera.dialogMakulera.isDisplayed())
+                .then(IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE));
 
             element.all(by.id('#makuleraBtn')).then(function(items) {
                 expect(items.length).toBe(0);

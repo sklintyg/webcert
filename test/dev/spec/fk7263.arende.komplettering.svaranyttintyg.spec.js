@@ -29,7 +29,7 @@ var Fk7263IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var Fk7263UtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-fdescribe('arende on fk7263 intyg', function() {
+describe('arende on fk7263 intyg', function() {
 
     var utkastId;
     var intygId = 'fk7263-arende-intyg-1';
@@ -77,7 +77,7 @@ fdescribe('arende on fk7263 intyg', function() {
 
         it('click svara pa komplettering', function() {
             Fk7263IntygPage.svaraMedNyttIntyg(meddelandeId);
-            expect(Fk7263IntygPage.getKompletteringsDialog().modal.isDisplayed()).toBeTruthy();
+            expect(Fk7263IntygPage.getKompletteringsDialog().modalDialogHeader.isDisplayed()).toBeTruthy();
         });
 
         it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
@@ -134,7 +134,7 @@ fdescribe('arende on fk7263 intyg', function() {
 
         it('Is showing the Fortsatt button in modal', function() {
             Fk7263IntygPage.svaraMedNyttIntyg(meddelandeId);
-            expect(Fk7263IntygPage.getKompletteringsDialog().modal.isDisplayed()).toBeTruthy();
+            expect(Fk7263IntygPage.getKompletteringsDialog().modalDialogHeader.isDisplayed()).toBeTruthy();
             Fk7263IntygPage.getKompletteringsDialog().fortsattPaIntygsutkastKnapp.click();
             expect(Fk7263UtkastPage.isAt()).toBeTruthy();
         });

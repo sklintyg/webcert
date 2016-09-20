@@ -46,7 +46,8 @@ describe('Luse tillaggsfragor variants', function() {
                 'id':'eb53075e-a685-41f6-9a8b-b498300c912e',
                 'grundData':{'skapadAv':{'personId':'IFV1239877878-1049','fullstandigtNamn':'Jan Nilsson','forskrivarKod':'0000000','befattningar':[],'specialiteter':[],'vardenhet':{'enhetsid':'IFV1239877878-1042','enhetsnamn':'WebCert-Enhet1','postadress':'Storgatan 1','postnummer':'12345','postort':'Småmåla','telefonnummer':'0101234567890','epost':'enhet1@webcert.invalid.se','vardgivare':{'vardgivarid':'IFV1239877878-1041','vardgivarnamn':'WebCert-Vårdgivare1'},'arbetsplatsKod':'1234567890'}},
                              'patient':{'personId':'19121212-1212','fullstandigtNamn':'Tolvan Tolvansson','fornamn':'Tolvan','efternamn':'Tolvansson','postadress':'Svensson, Storgatan 1, PL 1234','postnummer':'12345','postort':'Småmåla','samordningsNummer':false}},
-                'textVersion':'0.9','underlag':[],'diagnoser':[],'tillaggsfragor':[{'id':'9001','svar':'50'},{'id':'9002','svar':'200cm'}],'typ':'luse'}};
+                'textVersion':'0.9','underlag':[],'diagnoser':[],'tillaggsfragor':[
+                    {'id':'9001','svar':'50'},{'id':'9002','svar':'200cm'}],'typ':'luse'}};
 
         afterEach(function () {
             proxy.onLoad.reset();
@@ -91,11 +92,11 @@ describe('Luse tillaggsfragor variants', function() {
             proxy.onLoad.whenGET(/.*/).passThrough();
             LuseUtkastPage.get(intygsId);
 
-            expect(LuseUtkastPage.getTillaggsfragaText(0)).toBe('Vilken skostorlek har du?');
-            expect(LuseUtkastPage.getTillaggsfragaSvar(0)).toBe('50');
-            expect(LuseUtkastPage.getTillaggsfragaText(1)).toBe('Hur lång är du?');
-            expect(LuseUtkastPage.getTillaggsfragaSvar(1)).toBe('200cm');
-            expect(LuseUtkastPage.getTillaggsfraga(2).isPresent()).toBeFalsy();
+            expect(LuseUtkastPage.getTillaggsfragaText(9001)).toBe('Vilken skostorlek har du?');
+            expect(LuseUtkastPage.getTillaggsfragaSvar(9001)).toBe('50');
+            expect(LuseUtkastPage.getTillaggsfragaText(9002)).toBe('Hur lång är du?');
+            expect(LuseUtkastPage.getTillaggsfragaSvar(9002)).toBe('200cm');
+            expect(LuseUtkastPage.getTillaggsfraga(9003).isPresent()).toBeFalsy();
 
             expect(LuseUtkastPage.isSigneraButtonEnabled()).toBeTruthy();
         });
@@ -111,11 +112,11 @@ describe('Luse tillaggsfragor variants', function() {
             LuseUtkastPage.get(intygsId);
 
             // En extrafråga har tagits bort, en annan ska ha tillkommit
-            expect(LuseUtkastPage.getTillaggsfragaText(0)).toBe('Vilken skostorlek har du?');
-            expect(LuseUtkastPage.getTillaggsfragaSvar(0)).toBe('50');
-            expect(LuseUtkastPage.getTillaggsfragaText(1)).toBe('Det här är en ny extrafråga');
-            expect(LuseUtkastPage.getTillaggsfragaSvar(1)).toBe('');
-            expect(LuseUtkastPage.getTillaggsfraga(2).isPresent()).toBeFalsy();
+            expect(LuseUtkastPage.getTillaggsfragaText(9001)).toBe('Vilken skostorlek har du?');
+            expect(LuseUtkastPage.getTillaggsfragaSvar(9001)).toBe('50');
+            expect(LuseUtkastPage.getTillaggsfragaText(9003)).toBe('Det här är en ny extrafråga');
+            expect(LuseUtkastPage.getTillaggsfragaSvar(9003)).toBe('');
+            expect(LuseUtkastPage.getTillaggsfraga(9002).isPresent()).toBeFalsy();
 
             expect(LuseUtkastPage.isSigneraButtonEnabled()).toBeTruthy();
         });
