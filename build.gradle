@@ -59,6 +59,7 @@ subprojects {
         entry(key: 'gitCommit', default: gitCommit)
         entry(key: 'gitBranch', default: gitBranch)
         entry(key: 'buildNumber', default: buildNumber)
+        entry(key: 'buildTime', default: new Date())
       }
     }
   }
