@@ -54,7 +54,8 @@ module.exports = function() {
                 url += 'enhet=' + global.user.enhetId;
 
             } else {
-                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+                //EN WORKAROUND med parameter TILLS INTYG 2711 är LÖST
+                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
             }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
             url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
@@ -63,7 +64,6 @@ module.exports = function() {
             if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
             } else {
-
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
             }
         } else {
@@ -72,7 +72,19 @@ module.exports = function() {
 
         return browser.get(url).then(function() {
             console.log('Går till url: ' + url);
-            return helpers.fetchMessageIds(intyg.typ);
+            if (!isSMIIntyg) { // om djupintegration v1 så kommer det fram uppdragsval
+                return element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link')).sendKeys(protractor.Key.SPACE).then(function() {
+                    return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                        return helpers.fetchMessageIds(intyg.typ);
+                    });
+
+                });
+            } else {
+                return helpers.fetchMessageIds(intyg.typ);
+            }
+
+
+
         });
     });
 };
