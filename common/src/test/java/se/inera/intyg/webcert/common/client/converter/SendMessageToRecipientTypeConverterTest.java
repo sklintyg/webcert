@@ -84,7 +84,7 @@ public class SendMessageToRecipientTypeConverterTest {
         res.setSkickatTidpunkt(LocalDateTime.now());
         res.setSvarPa(new MeddelandeReferens());
         res.getSvarPa().setMeddelandeId("5d665d73-7029-4619-9a91-3225a90d81c8");
-        res.getSvarPa().getReferensId().add("referensid2");
+        res.getSvarPa().setReferensId("referensid2");
         return res;
     }
 }

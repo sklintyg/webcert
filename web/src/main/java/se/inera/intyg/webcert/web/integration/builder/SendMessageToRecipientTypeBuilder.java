@@ -113,7 +113,7 @@ public final class SendMessageToRecipientTypeBuilder {
             MeddelandeReferens meddelandeReferens = new MeddelandeReferens();
             meddelandeReferens.setMeddelandeId(arende.getSvarPaId());
             if (arende.getSvarPaReferens() != null) {
-                meddelandeReferens.getReferensId().add(arende.getSvarPaReferens());
+                meddelandeReferens.setReferensId(arende.getSvarPaReferens());
             }
             request.setSvarPa(meddelandeReferens);
         }

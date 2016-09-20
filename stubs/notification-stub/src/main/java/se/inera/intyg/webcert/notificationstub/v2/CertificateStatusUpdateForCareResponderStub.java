@@ -23,11 +23,9 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.FragorOchSvar;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
 @SchemaValidation
@@ -59,12 +57,12 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
             sb.append("\n");
         }
 
-        FragorOchSvar fs = request.getFragorOchSvar();
-        sb.append(" Fragor: " + fs.getAntalFragor());
-        sb.append(", Hant. fragor: " + fs.getAntalHanteradeFragor());
-        sb.append(", Svar: " + fs.getAntalSvar());
-        sb.append(", Hant. svar: " + fs.getAntalHanteradeSvar());
-        sb.append("\n");
+//        FragorOchSvar fs = request.getFragorOchSvar();
+//        sb.append(" Fragor: " + fs.getAntalFragor());
+//        sb.append(", Hant. fragor: " + fs.getAntalHanteradeFragor());
+//        sb.append(", Svar: " + fs.getAntalSvar());
+//        sb.append(", Hant. svar: " + fs.getAntalHanteradeSvar());
+//        sb.append("\n");
 
         LOG.info("\n*********************************************************************************\n"
                 + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"

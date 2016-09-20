@@ -132,8 +132,8 @@ public final class ArendeConverter {
     // There are between 0 and 1 referensid in the MeddelandeReferens according to specification 2.0.RC3
     // Because of this we get the first item if there exists one
     private static String extractReferensId(MeddelandeReferens meddelandeReferens) {
-        return meddelandeReferens.getReferensId() != null && !meddelandeReferens.getReferensId().isEmpty()
-                ? meddelandeReferens.getReferensId().get(0)
+        return meddelandeReferens.getReferensId() != null && meddelandeReferens.getReferensId() != null
+                ? meddelandeReferens.getReferensId()
                 : null;
     }
 

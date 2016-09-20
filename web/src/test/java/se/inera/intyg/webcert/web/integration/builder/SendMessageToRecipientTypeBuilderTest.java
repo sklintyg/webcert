@@ -88,7 +88,7 @@ public class SendMessageToRecipientTypeBuilderTest {
         assertEquals(SISTA_DATUM_FOR_SVAR, result.getSistaDatumForSvar());
         assertEquals(SKICKAT_TIDPUNKT, result.getSkickatTidpunkt());
         assertEquals(SVAR_PA_ID, result.getSvarPa().getMeddelandeId());
-        assertEquals(SVAR_PA_REFERENS, result.getSvarPa().getReferensId().get(0));
+        assertEquals(SVAR_PA_REFERENS, result.getSvarPa().getReferensId());
         assertEquals(ENHET_ID, result.getIntygsId().getRoot());
         assertEquals(INTYG_ID, result.getIntygsId().getExtension());
         assertEquals(PERSONAL_HSA_ID, result.getSkickatAv().getPersonalId().getExtension());

@@ -323,7 +323,7 @@ public class ArendeConverterTest {
 
         MeddelandeReferens mr = new MeddelandeReferens();
         mr.setMeddelandeId(svarPa);
-        mr.getReferensId().add(svarReferensId);
+        mr.setReferensId(svarReferensId);
         res.setSvarPa(mr);
 
         IntygId ii = new IntygId();
