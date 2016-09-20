@@ -39,17 +39,27 @@ subprojects {
     maven { url "http://repo.maven.apache.org/maven2" }
   }
 
-  task createVersionPropertyFile(dependsOn: processResources) << {
+  task createVersionPropertyFile(dependsOn: processResources) {
     def propertyFile = "${buildDir}/resources/main/version.properties"
-    ant.touch(file: propertyFile, mkdirs: "true")
-    ant.propertyfile(file: propertyFile) {
-      entry(key: 'project.version', default: rootProject.version)
-      entry(key: 'buildTime', default: new Date())
-      entry(key: 'gitCommit', default: "${grgit.head().id}")
-      entry(key: 'gitBranch', default: "${grgit.branch.getCurrent().getName()}")
-      entry(key: 'buildNumber', default: System.env.BUILD_NUMBER)
-      entry(key: 'commonVersion', default: "${resolvedCommonVersion}")
-      entry(key: 'typerVersion', default: "${resolvedTyperVersion}")
+    def projectVersion = rootProject.version
+    def gitCommit = grgit.head().id
+    def gitBranch = grgit.branch.getCurrent().getName()
+    def buildNumber = System.env.BUILD_NUMBER
+
+    inputs.property("project.version", projectVersion)
+    inputs.property("gitCommit", gitCommit)
+    inputs.property("gitBranch", gitBranch)
+    inputs.property("buildNumber", buildNumber)
+    outputs.file(propertyFile)
+
+    doLast {
+      ant.touch(file: propertyFile, mkdirs: "true")
+      ant.propertyfile(file: propertyFile) {
+        entry(key: 'project.version', default: projectVersion)
+        entry(key: 'gitCommit', default: gitCommit)
+        entry(key: 'gitBranch', default: gitBranch)
+        entry(key: 'buildNumber', default: buildNumber)
+      }
     }
   }
 

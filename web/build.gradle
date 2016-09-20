@@ -29,7 +29,12 @@ sourceSets {
   }
 }
 
-task jsTests(type: NodeTask, dependsOn: [npmInstall]) {
+task jsTests(type: NodeTask, dependsOn: npmInstall) {
+  inputs.dir("$projectDir/src/main/resources")
+  inputs.files(fileTree(projectDir).include('*.js'))
+  inputs.files(fileTree(projectDir).include('*.json'))
+  outputs.dir(webappTestOutputDir)
+
   script = file('node_modules/grunt-cli/bin/grunt')
   args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage='+(!project.hasProperty('runSonar'))]
 }
@@ -37,6 +42,11 @@ task jsTests(type: NodeTask, dependsOn: [npmInstall]) {
 test.dependsOn(jsTests)
 
 task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
+  inputs.dir("$projectDir/src/main/resources")
+  inputs.files(fileTree(projectDir).include('*.js'))
+  inputs.files(fileTree(projectDir).include('*.json'))
+  outputs.dir(webappOutputDir)
+
   script = file('node_modules/grunt-cli/bin/grunt')
   args = ['default', '--outputDir=' + webappOutputDir]
 }
@@ -121,15 +131,14 @@ buildscript {
 dependencies {
   buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
 
-  compile project(':webcert-persistence')
+  compile project(':fmb-integration')
   compile project(':pu-integration')
   compile project(':pp-integration')
+  compile project(':notification-sender')
   compile project(':fk-stub')
-  compile project(':fmb-integration')
   compile project(':notification-stub')
   compile project(':intygstjanst-stub')
   compile project(':mail-stub')
-  compile project(':notification-sender')
 
   compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.2'
   compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.2'
