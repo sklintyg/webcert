@@ -80,10 +80,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createValidationErrorResponse(resultsValidator);
         }
 
-        String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
-        LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
+        LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastsParams.getSkapadAv().getPersonalId().getExtension(), invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
         CommissionType unitMIU = checkMIU(utkastsParams);
@@ -99,9 +98,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     private Utkast createNewDraft(Intyg utkastRequest, CommissionType unitMIU) {
 
-        String invokingUserHsaId = utkastRequest.getSkapadAv().getPersonalId().getExtension();
-        String invokingUnitHsaId = utkastRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-        LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
+        LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastRequest.getSkapadAv().getPersonalId().getExtension(),
+                utkastRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
         // Create draft request
         CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastRequest, unitMIU);
