@@ -1,21 +1,30 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import org.junit.Test;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-
-import javax.servlet.http.HttpServletResponse;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Test;
+
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -195,6 +204,159 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().redirects().follow(false).and().pathParam("intygsId", intygsId)
             .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
             .when().get("moduleapi/intyg/fk7263/{intygsId}")
+                .then()
+                    .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                    .body("message", not(isEmptyString()));
+    }
+
+    @Test
+    public void testCreateNewUtkastCopyBasedOnExistingUtkast() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", utkastId);
+
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(200).
+                when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").
+                then().
+                body("intygsUtkastId", not(isEmptyString())).
+                body("intygsUtkastId", not(equalTo(utkastId))).
+                body("intygsTyp", equalTo("fk7263"));
+    }
+
+    @Test
+    public void testCreateNewUtkastCopyBasedOnExistingUtkastFailsForMissingPriveliges() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Lakare role has the KOPIERA_INTYG priviledge, but the privilege is restricted to origintype=NORMAL /
+        // DJUPINTEGRERAD.
+        // We change the current users origin to be uthop which should trigger an auth exception response.
+        changeOriginTo(WebCertUserOriginType.UTHOPP.name());
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", utkastId);
+
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).
+                expect().statusCode(500).
+                when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").
+                then().
+                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name())).
+                body("message", not(isEmptyString()));
+
+    }
+
+    /**
+     * Check that trying to copy utkast with bad input gives error response.
+     */
+    @Test
+    public void testCreateNewUtkastCopyBasedOnExistingUtkastWithInvalidPatientpersonNummer() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(null);
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", utkastId);
+
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).
+                when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").then().
+                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name())).
+                body("message", not(isEmptyString()));
+
+    }
+
+    @Test
+    public void testCreateNewUtkastCopyBasedOnIntygFromDifferentCareUnitWithCoherentJournalingSuccess() throws IOException {
+        // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Then logout
+        given()
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().get("logout");
+
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
+        changeOriginTo("DJUPINTEGRATION");
+
+        // Set coherentJournaling=true in copyIntygRequest, this is normally done in the js using the copyService.
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setCoherentJournaling(true);
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", intygsId);
+
+        String newIntygsId = given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .then()
+                    .body("intygsUtkastId", not(isEmptyString()))
+                    .body("intygsUtkastId", not(equalTo(intygsId)))
+                    .body("intygsTyp", equalTo("fk7263"))
+                        .extract()
+                            .path("intygsUtkastId");
+
+        // Check that the copy contains the correct stuff
+        given().expect().statusCode(200)
+        .when().get("moduleapi/intyg/fk7263/" + newIntygsId + "?sjf=true")
+            .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+                .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
+                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+    }
+
+    @Test
+    public void testCreateNewUtkastCopyBasedOnIntygFromDifferentCareUnitWithCoherentJournalingFail() throws IOException {
+        // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Then logout
+        given()
+        .expect().statusCode(HttpServletResponse.SC_OK)
+        .when().get("logout");
+
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
+        changeOriginTo("DJUPINTEGRATION");
+
+        // coherentJournaling defaults to false, so don't set it here.
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", intygsId);
+
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+                .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
                 .then()
                     .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                     .body("message", not(isEmptyString()));
