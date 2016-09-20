@@ -175,10 +175,12 @@ module.exports = function() {
     this.Given(/^jag loggar in med SITHS$/, function() {
 
         return browser.get('').then(function() {
-            return browser.sleep(200000).then(function() {
-                return pages.welcome.loginButton.sendKeys(protractor.Key.SPACE).then(function() {
-                    return browser.sleep(200000);
-                });
+            return browser.sleep(5000).then(function() {
+                return pages.welcome.loginButton.click()
+                    .then(function() {
+                        return browser.sleep(5000);
+                        // return pages.welcome.loginButton.sendKeys(protractor.Key.SPACE);
+                    });
             });
         });
     });
