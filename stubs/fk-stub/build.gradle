@@ -1,7 +1,7 @@
 description = 'Webcert (FK Stub)'
 
 dependencies {
-  compile 'se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:3.1.0.1'
+  compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${healthreportingSchemasVersion}"
 
   compile "se.inera.intyg.common:common-schemas:${commonVersion}"
 

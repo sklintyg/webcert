@@ -16,6 +16,7 @@ ext {
   ppSchemasVersion = "1.0.2"
   ppTermsSchemasVersion = "1.0.2"
   healthcondSchemasVersion = "2.0.RC5.1"
+  healthreportingSchemasVersion = "3.1.0.1"
 }
 
 allprojects  {
