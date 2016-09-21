@@ -36,8 +36,6 @@ import org.apache.camel.test.spring.*;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,8 +60,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @MockEndpointsAndSkip("bean:notificationAggregator|direct:signatWireTap|bean:notificationWSClient|bean:notificationWSClientV2|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
 
     @Autowired
     CamelContext camelContext;
@@ -491,8 +487,13 @@ public class RouteTest {
             sb.append(version.name());
             sb.append("\",");
         }
-        sb.append("\"utkast\":{\"id\":\"" + currentId + "\",\"typ\":\"" + intygsTyp
-                + "\" },\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
+        sb.append("\"utkast\":{\"id\":\"" + currentId + "\",\"typ\":\"" + intygsTyp + "\" },");
+        if (SchemaVersion.VERSION_2 == version) {
+            sb.append("\"skickadeFragor\":{\"totalt\":0,\"besvarade\":0,\"ejBesvarade\":0,\"hanterade\":0},");
+            sb.append("\"mottagnaFragor\":{\"totalt\":0,\"besvarade\":0,\"ejBesvarade\":0,\"hanterade\":0}}");
+        } else {
+            sb.append("\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}");
+        }
         return sb.toString();
     }
 

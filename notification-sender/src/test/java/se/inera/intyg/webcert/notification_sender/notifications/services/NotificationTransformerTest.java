@@ -38,9 +38,8 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.modules.support.api.notification.Arenden;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
@@ -72,7 +71,7 @@ public class NotificationTransformerTest {
     public void testSend() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -99,7 +98,7 @@ public class NotificationTransformerTest {
     public void testSendBackwardsCompatibility() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, "ref");
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, null, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -125,7 +124,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSchemaVersion2Transformation() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_2, "ref");
+                LOGISK_ADRESS, "{ }", null, Arenden.getEmpty(), Arenden.getEmpty(), SchemaVersion.VERSION_2, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -166,7 +165,7 @@ public class NotificationTransformerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), SchemaVersion.VERSION_1, "ref");
+                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
         transformer.process(message);

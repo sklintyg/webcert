@@ -22,11 +22,13 @@ package se.inera.intyg.webcert.web.service.notification;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.common.support.modules.support.api.notification.Arenden;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -58,25 +60,75 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
      * createFragorOchSvar(java.lang.String)
      */
     @Override
-    public FragorOchSvar createFragorOchSvar(String intygsId, String intygstyp) {
-        FragorOchSvar fs = null;
-
-        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
-            fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
-        } else {
-            fs = performArendeCount(arendeRepository.findByIntygsId(intygsId));
-        }
+    public FragorOchSvar createFragorOchSvar(String intygsId) {
+        FragorOchSvar fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
 
         LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
 
         return fs;
     }
 
-    private FragorOchSvar performArendeCount(List<Arende> arenden) {
-        int antalSvar = 0;
-        int antalHanteradeSvar = 0;
-        int antalFragor = 0;
-        int antalHanteradeFragor = 0;
+    @Override
+    public Pair<Arenden, Arenden> createArenden(String intygsId, String intygstyp) {
+        Pair<Arenden, Arenden> fragor;
+
+        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
+            fragor = performFragorCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
+        } else {
+            fragor = performArendeCount(arendeRepository.findByIntygsId(intygsId));
+        }
+
+        LOG.debug("Created SkickadeFragor ({}) for intyg {}", fragor.getLeft().toString(), intygsId);
+        LOG.debug("Created MottagnaFragor ({}) for intyg {}", fragor.getRight().toString(), intygsId);
+
+        return fragor;
+    }
+
+    private Pair<Arenden, Arenden> performFragorCount(List<FragaSvarStatus> fsStatuses) {
+        int skickadeFragorTotalt = 0;
+        int skickadeFragorBesvarade = 0;
+        int skickadeFragorEjBesvarade = 0;
+        int skickadeFragorHanterade = 0;
+        int mottagnaFragorTotalt = 0;
+        int mottagnaFragorBesvarade = 0;
+        int mottagnaFragorEjBesvarade = 0;
+        int mottagnaFragorHanterade = 0;
+
+        for (FragaSvarStatus fsStatus : fsStatuses) {
+            if (isFromWebcert(fsStatus)) {
+                skickadeFragorTotalt++;
+                if (fsStatus.isClosed()) {
+                    skickadeFragorHanterade++;
+                } else if (fsStatus.hasAnswerSet()) {
+                    skickadeFragorBesvarade++;
+                } else {
+                    skickadeFragorEjBesvarade++;
+                }
+            } else if (isFromFK(fsStatus)) {
+                mottagnaFragorTotalt++;
+                if (fsStatus.isClosed()) {
+                    mottagnaFragorHanterade++;
+                } else if (fsStatus.hasAnswerSet()) {
+                    mottagnaFragorBesvarade++;
+                } else {
+                    mottagnaFragorEjBesvarade++;
+                }
+            }
+        }
+
+        return Pair.of(new Arenden(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
+                new Arenden(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+    }
+
+    private Pair<Arenden, Arenden> performArendeCount(List<Arende> arenden) {
+        int skickadeFragorTotalt = 0;
+        int skickadeFragorBesvarade = 0;
+        int skickadeFragorEjBesvarade = 0;
+        int skickadeFragorHanterade = 0;
+        int mottagnaFragorTotalt = 0;
+        int mottagnaFragorBesvarade = 0;
+        int mottagnaFragorEjBesvarade = 0;
+        int mottagnaFragorHanterade = 0;
         Set<String> isAnswered = new HashSet<>();
 
         for (Arende arende : arenden) {
@@ -91,20 +143,27 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
                 continue;
             }
             if (FRAGESTALLARE_WEBCERT.equalsIgnoreCase(arende.getSkickatAv())) {
-                if (isAnswered.contains(arende.getMeddelandeId())) {
-                    antalSvar++;
-                    if (Status.CLOSED.equals(arende.getStatus())) {
-                        antalHanteradeSvar++;
-                    }
+                skickadeFragorTotalt++;
+                if (Status.CLOSED.equals(arende.getStatus())) {
+                    skickadeFragorHanterade++;
+                } else if (isAnswered.contains(arende.getMeddelandeId())) {
+                    skickadeFragorBesvarade++;
+                } else {
+                    skickadeFragorEjBesvarade++;
                 }
             } else if (FRAGESTALLARE_FK.equalsIgnoreCase(arende.getSkickatAv())) {
-                antalFragor++;
+                mottagnaFragorTotalt++;
                 if (Status.CLOSED.equals(arende.getStatus())) {
-                    antalHanteradeFragor++;
+                    mottagnaFragorHanterade++;
+                } else if (isAnswered.contains(arende.getMeddelandeId())) {
+                    mottagnaFragorBesvarade++;
+                } else {
+                    mottagnaFragorEjBesvarade++;
                 }
             }
         }
-        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+        return Pair.of(new Arenden(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
+                new Arenden(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
     }
 
     private FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
@@ -145,4 +204,5 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         return fsStatus.getFrageStallare().equalsIgnoreCase(
                 FRAGESTALLARE_WEBCERT);
     }
+
 }

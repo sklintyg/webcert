@@ -198,7 +198,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionHandled(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANFRA);
+            createAndSendNotification(utkast.get(), HANFRFM);
         }
     }
 
@@ -214,7 +214,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionSent(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYFRTM);
+            createAndSendNotification(utkast.get(), NYFRFV);
         }
     }
 
@@ -246,18 +246,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForAnswerHandled(FragaSvar fragaSvar) {
         Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANSVA);
+            createAndSendNotification(utkast.get(), HANFRFV);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.
-     * inera.intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
     public void sendNotificationForQuestionReceived(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
@@ -266,46 +258,22 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.
-     * inera.intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
     public void sendNotificationForQuestionHandled(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANFRA);
+            createAndSendNotification(utkast.get(), HANFRFM);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.
-     * intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
     public void sendNotificationForQuestionSent(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYFRTM);
+            createAndSendNotification(utkast.get(), NYFRFV);
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera
-     * .intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
     public void sendNotificationForAnswerRecieved(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
@@ -314,19 +282,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.
-     * intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
-    public void sendNotificationForAnswerHandled(Arende arende) {
+    public void sendNotificationForQuestionToRecipientHandled(Arende arende) {
         Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANSVA);
+            createAndSendNotification(utkast.get(), HANFRFV);
         }
     }
 

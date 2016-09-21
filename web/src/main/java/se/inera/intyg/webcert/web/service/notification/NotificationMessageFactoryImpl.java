@@ -19,10 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import java.time.LocalDateTime;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +35,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
 
     private static final List<HandelsekodEnum> USES_FRAGOR_OCH_SVAR = Arrays.asList(HandelsekodEnum.NYFRFM,
-            HandelsekodEnum.NYSVFM, HandelsekodEnum.NYFRTM, HandelsekodEnum.HANFRA,
-            HandelsekodEnum.HANSVA, HandelsekodEnum.MAKULE);
+            HandelsekodEnum.NYSVFM, HandelsekodEnum.NYFRFV, HandelsekodEnum.HANFRFM,
+            HandelsekodEnum.HANFRFV, HandelsekodEnum.MAKULE);
 
     @Autowired
     private FragorOchSvarCreator fragorOchSvarCreator;
@@ -55,16 +56,27 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
         LocalDateTime handelseTid = LocalDateTime.now();
         String logiskAdress = utkast.getEnhetsId();
 
-        FragorOchSvar fragaSvar = FragorOchSvar.getEmpty();
-
-        // Add a count of questions to the message
-        if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
-            fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId, intygsTyp);
-        }
-
         String utkastJson = utkast.getModel();
 
-        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, version, reference);
+        if (SchemaVersion.VERSION_2 == version) {
+            Pair<Arenden, Arenden> arenden = Pair.of(Arenden.getEmpty(), Arenden.getEmpty());
+
+            // Add a count of questions to the message
+            if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
+                arenden = fragorOchSvarCreator.createArenden(intygsId, intygsTyp);
+            }
+
+            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, null, arenden.getLeft(), arenden.getRight(), version, reference);
+        } else {
+            FragorOchSvar fragaSvar = FragorOchSvar.getEmpty();
+
+            // Add a count of questions to the message
+            if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
+                fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId);
+            }
+
+            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, null, null, version, reference);
+        }
     }
 
 }

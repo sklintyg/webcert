@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
 @SchemaValidation
@@ -57,12 +58,18 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
             sb.append("\n");
         }
 
-//        FragorOchSvar fs = request.getFragorOchSvar();
-//        sb.append(" Fragor: " + fs.getAntalFragor());
-//        sb.append(", Hant. fragor: " + fs.getAntalHanteradeFragor());
-//        sb.append(", Svar: " + fs.getAntalSvar());
-//        sb.append(", Hant. svar: " + fs.getAntalHanteradeSvar());
-//        sb.append("\n");
+        Arenden skickadeFragor = request.getSkickadeFragor();
+        sb.append(" Skickade fragor totalt: " + skickadeFragor.getTotalt());
+        sb.append(" Skickade fragor hanterade: " + skickadeFragor.getHanterade());
+        sb.append(" Skickade fragor besvarade: " + skickadeFragor.getBesvarade());
+        sb.append(" Skickade fragor ej besvarade: " + skickadeFragor.getEjBesvarade());
+        sb.append("\n");
+        Arenden mottagnaFragor = request.getMottagnaFragor();
+        sb.append(" Mottagna fragor totalt: " + mottagnaFragor.getTotalt());
+        sb.append(" Mottagna fragor hanterade: " + mottagnaFragor.getHanterade());
+        sb.append(" Mottagna fragor besvarade: " + mottagnaFragor.getBesvarade());
+        sb.append(" Mottagna fragor ej besvarade: " + mottagnaFragor.getEjBesvarade());
+        sb.append("\n");
 
         LOG.info("\n*********************************************************************************\n"
                 + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"

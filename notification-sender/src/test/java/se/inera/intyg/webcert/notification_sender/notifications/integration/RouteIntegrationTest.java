@@ -52,9 +52,9 @@ import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.Arenden;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
@@ -282,8 +282,13 @@ public class RouteIntegrationTest {
 
     private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType, String intygsTyp,
             SchemaVersion schemaVersion) {
-        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0),
-                schemaVersion, "ref");
+        if (SchemaVersion.VERSION_2 == schemaVersion) {
+            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, null, Arenden.getEmpty(), Arenden.getEmpty(),
+                    schemaVersion, "ref");
+        } else {
+            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, FragorOchSvar.getEmpty(),
+                    null, null, schemaVersion, "ref");
+        }
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {

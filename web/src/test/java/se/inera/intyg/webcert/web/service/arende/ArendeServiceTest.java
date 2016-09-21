@@ -557,7 +557,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForAnswerHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionToRecipientHandled(any(Arende.class));
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
     }
 
@@ -603,7 +603,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.ANSWERED, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForAnswerHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionToRecipientHandled(any(Arende.class));
     }
 
     @Test
@@ -974,7 +974,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(repo).findByIntygsId(INTYG_ID);
         verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
-        verify(notificationService).sendNotificationForAnswerHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionToRecipientHandled(any(Arende.class));
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo, times(2)).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(0).getStatus());

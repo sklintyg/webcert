@@ -341,7 +341,7 @@ public class NotificationServiceImplTest {
     public void testQuestionHandledFragaSvar() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQuestionHandled(createFragaSvar());
-        verifySuccessfulInvocations(HandelsekodEnum.HANFRA);
+        verifySuccessfulInvocations(HandelsekodEnum.HANFRFM);
     }
 
     @Test(expected = JmsException.class)
@@ -360,7 +360,7 @@ public class NotificationServiceImplTest {
     public void testQuestionSentFragaSvar() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQuestionSent(createFragaSvar());
-        verifySuccessfulInvocations(HandelsekodEnum.NYFRTM);
+        verifySuccessfulInvocations(HandelsekodEnum.NYFRFV);
     }
 
     @Test(expected = JmsException.class)
@@ -398,7 +398,7 @@ public class NotificationServiceImplTest {
     public void testAnswerHandledFragaSvar() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForAnswerHandled(createFragaSvar());
-        verifySuccessfulInvocations(HandelsekodEnum.HANSVA);
+        verifySuccessfulInvocations(HandelsekodEnum.HANFRFV);
     }
 
     @Test(expected = JmsException.class)
@@ -436,7 +436,7 @@ public class NotificationServiceImplTest {
     public void testQuestionHandledArende() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQuestionHandled(createArende());
-        verifySuccessfulInvocations(HandelsekodEnum.HANFRA);
+        verifySuccessfulInvocations(HandelsekodEnum.HANFRFM);
     }
 
     @Test(expected = JmsException.class)
@@ -455,7 +455,7 @@ public class NotificationServiceImplTest {
     public void testQuestionSentArende() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQuestionSent(createArende());
-        verifySuccessfulInvocations(HandelsekodEnum.NYFRTM);
+        verifySuccessfulInvocations(HandelsekodEnum.NYFRFV);
     }
 
     @Test(expected = JmsException.class)
@@ -492,8 +492,8 @@ public class NotificationServiceImplTest {
     @Test
     public void testAnswerHandledArende() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
-        notificationService.sendNotificationForAnswerHandled(createArende());
-        verifySuccessfulInvocations(HandelsekodEnum.HANSVA);
+        notificationService.sendNotificationForQuestionToRecipientHandled(createArende());
+        verifySuccessfulInvocations(HandelsekodEnum.HANFRFV);
     }
 
     @Test(expected = JmsException.class)
@@ -529,7 +529,7 @@ public class NotificationServiceImplTest {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = LocalDateTime.of(2001, 12, 31, 12, 34, 56, 789);
         NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs,
-                SchemaVersion.VERSION_1, null);
+                null, null, SchemaVersion.VERSION_1, null);
         return notMsg;
     }
 

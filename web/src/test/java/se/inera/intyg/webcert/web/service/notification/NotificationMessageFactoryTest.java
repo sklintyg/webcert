@@ -21,7 +21,13 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,8 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
@@ -42,6 +47,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 public class NotificationMessageFactoryTest {
 
     private static final String INTYGS_ID = "1234";
+    private static final String INTYGS_TYP = "fk7263";
 
     @Mock
     private FragorOchSvarCreator mockFragorOchSvarCreator;
@@ -65,12 +71,108 @@ public class NotificationMessageFactoryTest {
         assertEquals(HandelsekodEnum.SIGNAT, msg.getHandelse());
         assertNotNull(msg.getHandelseTid());
         assertEquals(INTYGS_ID, msg.getIntygsId());
-        assertEquals("fk7263", msg.getIntygsTyp());
+        assertEquals(INTYGS_TYP, msg.getIntygsTyp());
         assertEquals("SE12345678-1000", msg.getLogiskAdress());
         assertEquals("{model}", msg.getUtkast());
         assertNotNull(msg.getFragaSvar());
         assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
         assertEquals(reference, msg.getReference());
+        assertNotNull(msg.getFragaSvar());
+        assertNull(msg.getSkickadeFragor());
+        assertNull(msg.getMottagnaFragor());
+
+        verifyZeroInteractions(mockFragorOchSvarCreator);
+    }
+
+    @Test
+    public void testCreateNotificationMessageForUtkastSchemaVersion2() {
+
+        Utkast utkast = createUtkast(INTYGS_ID);
+        final String reference = "ref";
+        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.SIGNAT,
+                SchemaVersion.VERSION_2, reference);
+
+        assertNotNull(msg);
+        assertNotNull(msg.getHandelse());
+        assertEquals(HandelsekodEnum.SIGNAT, msg.getHandelse());
+        assertNotNull(msg.getHandelseTid());
+        assertEquals(INTYGS_ID, msg.getIntygsId());
+        assertEquals(INTYGS_TYP, msg.getIntygsTyp());
+        assertEquals("SE12345678-1000", msg.getLogiskAdress());
+        assertEquals("{model}", msg.getUtkast());
+        assertEquals(SchemaVersion.VERSION_2, msg.getVersion());
+        assertEquals(reference, msg.getReference());
+        assertNull(msg.getFragaSvar());
+        assertNotNull(msg.getSkickadeFragor());
+        assertNotNull(msg.getMottagnaFragor());
+
+        verifyZeroInteractions(mockFragorOchSvarCreator);
+    }
+
+    @Test
+    public void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion1() {
+        when(mockFragorOchSvarCreator.createFragorOchSvar(INTYGS_ID)).thenReturn(new FragorOchSvar(1, 1, 1, 1));
+
+        Utkast utkast = createUtkast(INTYGS_ID);
+        final String reference = "ref";
+        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.NYFRFM,
+                SchemaVersion.VERSION_1, reference);
+
+        assertNotNull(msg);
+        assertNotNull(msg.getHandelse());
+        assertEquals(HandelsekodEnum.NYFRFM, msg.getHandelse());
+        assertNotNull(msg.getHandelseTid());
+        assertEquals(INTYGS_ID, msg.getIntygsId());
+        assertEquals(INTYGS_TYP, msg.getIntygsTyp());
+        assertEquals("SE12345678-1000", msg.getLogiskAdress());
+        assertEquals("{model}", msg.getUtkast());
+        assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
+        assertEquals(reference, msg.getReference());
+        assertNotNull(msg.getFragaSvar());
+        assertEquals(1, msg.getFragaSvar().getAntalFragor());
+        assertEquals(1, msg.getFragaSvar().getAntalHanteradeFragor());
+        assertEquals(1, msg.getFragaSvar().getAntalHanteradeSvar());
+        assertEquals(1, msg.getFragaSvar().getAntalSvar());
+        assertNull(msg.getSkickadeFragor());
+        assertNull(msg.getMottagnaFragor());
+
+        verify(mockFragorOchSvarCreator).createFragorOchSvar(INTYGS_ID);
+        verifyNoMoreInteractions(mockFragorOchSvarCreator);
+    }
+
+    @Test
+    public void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion2() {
+        when(mockFragorOchSvarCreator.createArenden(INTYGS_ID, INTYGS_TYP)).thenReturn(Pair.of(new Arenden(1, 1, 1, 1), new Arenden(2, 2, 2, 2)));
+
+        Utkast utkast = createUtkast(INTYGS_ID);
+        final String reference = "ref";
+        NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.NYFRFV,
+                SchemaVersion.VERSION_2, reference);
+
+        assertNotNull(msg);
+        assertNotNull(msg.getHandelse());
+        assertEquals(HandelsekodEnum.NYFRFV, msg.getHandelse());
+        assertNotNull(msg.getHandelseTid());
+        assertEquals(INTYGS_ID, msg.getIntygsId());
+        assertEquals(INTYGS_TYP, msg.getIntygsTyp());
+        assertEquals("SE12345678-1000", msg.getLogiskAdress());
+        assertEquals("{model}", msg.getUtkast());
+        assertEquals(SchemaVersion.VERSION_2, msg.getVersion());
+        assertEquals(reference, msg.getReference());
+        assertNull(msg.getFragaSvar());
+        assertNotNull(msg.getSkickadeFragor());
+        assertEquals(1, msg.getSkickadeFragor().getTotalt());
+        assertEquals(1, msg.getSkickadeFragor().getBesvarade());
+        assertEquals(1, msg.getSkickadeFragor().getEjBesvarade());
+        assertEquals(1, msg.getSkickadeFragor().getHanterade());
+        assertNotNull(msg.getMottagnaFragor());
+        assertEquals(2, msg.getMottagnaFragor().getTotalt());
+        assertEquals(2, msg.getMottagnaFragor().getBesvarade());
+        assertEquals(2, msg.getMottagnaFragor().getEjBesvarade());
+        assertEquals(2, msg.getMottagnaFragor().getHanterade());
+
+        verify(mockFragorOchSvarCreator).createArenden(INTYGS_ID, INTYGS_TYP);
+        verifyNoMoreInteractions(mockFragorOchSvarCreator);
     }
 
     private Utkast createUtkast(String intygId) {
@@ -81,7 +183,7 @@ public class NotificationMessageFactoryTest {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
-        utkast.setIntygsTyp("fk7263");
+        utkast.setIntygsTyp(INTYGS_TYP);
         utkast.setEnhetsId("SE12345678-1000");
         utkast.setEnhetsNamn("Vårdenhet 1");
         utkast.setPatientPersonnummer(new Personnummer("19121212-1212"));

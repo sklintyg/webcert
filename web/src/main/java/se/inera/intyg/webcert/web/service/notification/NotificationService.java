@@ -86,27 +86,27 @@ public interface NotificationService {
     void sendNotificationForAnswerHandled(FragaSvar fragaSvar);
 
     /**
-     * New question received from FK (HAN6).
+     * New question received from recipient (NYFRFM).
      */
     void sendNotificationForQuestionReceived(Arende arende);
 
     /**
-     * Question from FK handled (HAN9).
+     * Question from recipient handled (HANFRFM).
      */
     void sendNotificationForQuestionHandled(Arende arende);
 
     /**
-     * New question sent to FK (HAN8).
+     * New question sent to recipient (NYFRFV).
      */
     void sendNotificationForQuestionSent(Arende arende);
 
     /**
-     * New answer received from FK (HAN7).
+     * New answer received from recipient (NYSVFM).
      */
     void sendNotificationForAnswerRecieved(Arende arende);
 
     /**
-     * Answer from FK handled (HAN10).
+     * Question to recipient handled (HANFRFV).
      */
-    void sendNotificationForAnswerHandled(Arende arende);
+    void sendNotificationForQuestionToRecipientHandled(Arende arende);
 }

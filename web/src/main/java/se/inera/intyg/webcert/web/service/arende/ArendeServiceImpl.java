@@ -433,10 +433,10 @@ public class ArendeServiceImpl implements ArendeService {
     private void sendNotification(Arende arende, NotificationEvent event) {
         switch (event) {
         case ANSWER_FROM_FK_HANDLED:
-            notificationService.sendNotificationForAnswerHandled(arende);
+            notificationService.sendNotificationForQuestionToRecipientHandled(arende);
             break;
         case ANSWER_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForAnswerHandled(arende);
+            notificationService.sendNotificationForQuestionToRecipientHandled(arende);
             break;
         case ANSWER_SENT_TO_FK:
             notificationService.sendNotificationForQuestionHandled(arende);
