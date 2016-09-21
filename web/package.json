@@ -21,6 +21,7 @@
         "grunt-sass": "^1.1.0",
         "grunt-sass-lint": "0.1.0-beta.4",
         "grunt-wiredep": "3.0.0",
+        "jit-grunt": "0.10.0",
         "karma": "^0.12.17",
         "karma-chrome-launcher": "^0.1.7",
         "karma-coverage": "^0.5.2",
