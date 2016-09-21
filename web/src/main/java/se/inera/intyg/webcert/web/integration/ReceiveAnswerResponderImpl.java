@@ -36,7 +36,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatean
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -117,13 +116,8 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
     }
 
     private void sendNotificationToQueue(FragaSvar fragaSvar) {
-        if (fragaSvar.getStatus() == Status.CLOSED) {
-            notificationService.sendNotificationForAnswerHandled(fragaSvar);
-            LOGGER.debug("Notification sent: a closed answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
-        } else {
-            notificationService.sendNotificationForAnswerRecieved(fragaSvar);
-            LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
-        }
+        notificationService.sendNotificationForAnswerRecieved(fragaSvar);
+        LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
     }
 
     private void sendNotificationByMail(FragaSvar fragaSvar) {

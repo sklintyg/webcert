@@ -26,33 +26,25 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -105,21 +97,6 @@ public class ReceiveQuestionResponderImplTest {
 
         // should place notification on queue
         verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
-
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
-    }
-
-    @Test
-    public void testReceiveHandledQuestionForIntegratedUnit() {
-        FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.CLOSED);
-        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
-
-        ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
-        ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
-
-        // should place notification on queue
-        verify(mockNotificationService).sendNotificationForQuestionHandled(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
