@@ -17,7 +17,7 @@ dependencies {
   }
   compile 'org.hibernate:hibernate-entitymanager:4.3.11.Final'
   compile "commons-lang:commons-lang:2.6"
-  compile "commons-io:commons-io:2.4"
+  compile "commons-io:commons-io:${commonsIoVersion}"
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"

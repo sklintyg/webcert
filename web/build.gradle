@@ -140,7 +140,7 @@ dependencies {
   compile project(':intygstjanst-stub')
   compile project(':mail-stub')
 
-  compile 'se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:1.0.2'
+  compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
   compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.2'
 
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
@@ -159,13 +159,13 @@ dependencies {
     exclude(module: "ServiceContracts_itintegration_monitoring")
   }
 
-  compile 'org.springframework:spring-web:4.2.2.RELEASE'
-  compile 'org.springframework:spring-webmvc:4.2.2.RELEASE'
-  compile 'org.apache.lucene:lucene-analyzers-common:4.10.2'
+  compile "org.springframework:spring-web:${springVersion}"
+  compile "org.springframework:spring-webmvc:${springVersion}"
+  compile "org.apache.lucene:lucene-analyzers-common:4.10.2"
 
-  compile 'org.springframework.security:spring-security-config:4.0.3.RELEASE'
-  compile 'org.springframework.security:spring-security-web:4.0.3.RELEASE'
-  compile 'org.springframework.security:spring-security-taglibs:4.0.3.RELEASE'
+  compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
+  compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
+  compile "org.springframework.security:spring-security-taglibs:${springSecurityVersion}"
   compile 'org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE'
 
   compile(group: 'org.opensaml', name: 'opensaml', version:'2.5.3') {
@@ -182,7 +182,7 @@ dependencies {
   }
 
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-  testCompile 'org.springframework:spring-test:4.2.2.RELEASE'
+  testCompile "org.springframework:spring-test:${springVersion}"
   testCompile 'javax.servlet:javax.servlet-api:3.1.0'
   testCompile 'org.kubek2k:springockito:1.0.8'
   testCompile 'xmlunit:xmlunit:1.4'

@@ -8,8 +8,14 @@ ext.nexusPassword = System.properties['nexusPassword']
 
 ext {
   springVersion = "4.2.2.RELEASE"
+  springSecurityVersion = "4.0.3.RELEASE"
   camelVersion = "2.16.0"
   hamcrestVersion = "1.3"
+  commonsIoVersion = "2.4"
+  cxfVersion = "3.1.3"
+  ppSchemasVersion = "1.0.2"
+  ppTermsSchemasVersion = "1.0.2"
+  healthcondSchemasVersion = "2.0.RC5.1"
 }
 
 allprojects  {

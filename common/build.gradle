@@ -8,7 +8,7 @@ dependencies {
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
   compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"
 
-  compile(group: 'org.springframework.security', name: 'spring-security-config', version:'4.0.3.RELEASE') {
+  compile(group: 'org.springframework.security', name: 'spring-security-config', version:"${springSecurityVersion}") {
     exclude(module: 'spring-core')
     exclude(module: 'spring-aop')
     exclude(module: 'spring-beans')
