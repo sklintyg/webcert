@@ -1,8 +1,30 @@
 description = 'Webcert (Liquibase Runner)'
 
-dependencies {
-  compile project(':webcert-persistence')
+apply plugin: 'application'
 
-  compile group: 'mysql', name: 'mysql-connector-java', version:'5.1.24'
-  compile group: 'org.liquibase', name: 'liquibase-core', version:'3.3.1'
+mainClassName = "liquibase.integration.commandline.Main"
+applicationDefaultJvmArgs = ["-Dfile.encoding=utf8"]
+
+startScripts << {
+    def webcertPersistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
+
+    unixScript.text = unixScript.text.replaceAll(/"\$@"$/,
+            "--driver=com.mysql.jdbc.Driver --classpath=lib/${webcertPersistenceDependency} --changeLogFile=changelog/changelog.xml \"\\\$@\"")
+    windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
+            "--driver=com.mysql.jdbc.Driver --classpath=lib/${webcertPersistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
+}
+
+artifacts {
+    archives distZip
+}
+
+configurations.runtime {
+    transitive = false
+}
+
+dependencies {
+  runtime project(':webcert-persistence')
+
+  runtime group: 'mysql', name: 'mysql-connector-java', version:'5.1.24'
+  runtime group: 'org.liquibase', name: 'liquibase-core', version:'3.3.1'
 }
