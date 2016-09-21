@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser, protractor*/
+/*globals browser, protractor,Promise*/
 'use strict';
 
 var JClass = require('jclass');
@@ -34,6 +34,13 @@ var BaseIntyg = JClass._extend({
             dialogMakulera: element(by.id('button1makulera-dialog')),
             dialogErsatt: element(by.id('button2makulera-dialog')),
             dialogRadioFelaktigtIntyg: element(by.id('reason-FELAKTIGT_INTYG')),
+            dialogRadioFelaktigtIntygClarification: element(by.id('clarification-FELAKTIGT_INTYG')),
+            dialogRadioPatientNyInfo: element(by.id('reason-PATIENT_NY_INFO')),
+            dialogRadioPatientNyInfoClarification: element(by.id('clarification-PATIENT_NY_INFO')),
+            dialogRadioMinBedomingAndrad: element(by.id('reason-MIN_BEDOMNING_ANDRAD')),
+            dialogRadioMinBedomingAndradClarification: element(by.id('clarification-MIN_BEDOMNING_ANDRAD')),
+            dialogRadioOvrigt: element(by.id('reason-OVRIGT')),
+            dialogRadioOvrigtClarification: element(by.id('clarification-OVRIGT')),
             statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
             statusRevoked: element(by.id('certificate-is-revoked-message-text'))
         };
@@ -68,6 +75,13 @@ var BaseIntyg = JClass._extend({
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
+    },
+    getReason: function(reasonBth) {
+        for (var key in this.makulera) {
+            if (reasonBth === key) {
+                return Promise.resolve(this.makulera[key]);
+            }
+        }
     },
     getIntegration: function(intygId, params) {
         var url = '/visa/intyg/' + intygId;

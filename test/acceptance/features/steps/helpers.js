@@ -179,6 +179,12 @@ module.exports = {
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003'
         }
-    }
+    },
+    makuleraReason: [
+        'dialogRadioFelaktigtIntyg',
+        'dialogRadioPatientNyInfo',
+        'dialogRadioMinBedomingAndrad',
+        'dialogRadioOvrigt'
+    ]
 
 };

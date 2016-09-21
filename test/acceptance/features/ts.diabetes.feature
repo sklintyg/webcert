@@ -28,7 +28,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 Scenario: Makulera ett skickat intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"
     Och jag makulerar intyget
-	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
+	Så ska intyget visa varningen "Intyget är makulerat"
 
     När jag går till Mina intyg för patienten
     Så ska intygets status i Mina intyg visa "Makulerat"

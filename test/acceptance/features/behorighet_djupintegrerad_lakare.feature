@@ -10,7 +10,7 @@ Bakgrund: Logga in och gå in på en patient
 Scenario: Kan makulera sjukintyg
 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag makulerar intyget
-	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
+	Så ska intyget visa varningen "Intyget är makulerat"
 
 @fornya
 Scenario: Kan förnya och signera ett intyg

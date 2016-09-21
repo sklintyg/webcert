@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, protractor, browser, logger*/
+/* globals pages, intyg, protractor, browser, logger, browser*/
 
 'use strict';
 
@@ -40,8 +40,22 @@ module.exports = function() {
         });
 
         fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.makulera.dialogAterta.sendKeys(protractor.Key.SPACE);
-        fkIntygPage.makulera.kvittensOKBtn.sendKeys(protractor.Key.SPACE).then(callback);
+
+        browser.sleep(2000).then(function() { // fix för animering
+            var reason = helpers.makuleraReason[Math.floor(Math.random() * 3)];
+            fkIntygPage.getReason(reason).then(function(radioBthEl) {
+                radioBthEl.sendKeys(protractor.Key.SPACE).then(function() {
+                    fkIntygPage.getReason(reason + 'Clarification').then(function(txtEl) {
+                        txtEl.sendKeys(helpers.randomTextString()).then(function() {
+                            fkIntygPage.getReason('dialogMakulera').then(function(dialogMakuleraEl) {
+                                dialogMakuleraEl.sendKeys(protractor.Key.SPACE).then(callback);
+                            });
+
+                        });
+                    });
+                });
+            });
+        });
     });
 
     this.Given(/^jag kopierar intyget$/, function() {

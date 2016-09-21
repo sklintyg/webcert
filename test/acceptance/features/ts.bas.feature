@@ -26,4 +26,4 @@ Scenario: Makulera ett skickat intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Mottaget"
     Så ska intygets status vara "Intyget är signerat och mottaget av Transportstyrelsens system"
 	Och jag makulerar intyget
-	Så ska intyget visa varningen "Begäran om makulering skickad till intygstjänsten"
+	Så ska intyget visa varningen "Intyget är makulerat"
