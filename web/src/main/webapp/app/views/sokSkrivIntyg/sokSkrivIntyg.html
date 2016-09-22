@@ -3,7 +3,7 @@
       <div id="skapa-valj-patient" class="col-xs-7 webcert-col webcert-col-single">
 
         <form name="pnrForm" ng-submit="lookupPatient()" novalidate autocomplete="off">
-          <h1>Sök/skriv intyg</h1>
+          <h1 class="page-title">Sök/skriv intyg</h1>
           <div class="form-group">
             <label for="pnr" class="control-label">Patientens personnummer</label>
             <input id="pnr" class="form-control" name="pnr" type="text" placeholder="Exempel: ååååmmdd-nnnn" ng-model="personnummer" required wc-person-number wc-visited maxlength="13" wc-focus-me="focusPnr" />
