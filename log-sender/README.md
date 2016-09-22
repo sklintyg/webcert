@@ -65,6 +65,6 @@ Fejka fel (errorType = någon av NONE,ERROR,VALIDATION)
 
     http://localhost:9097/log-sender/loggtjanst-stub/error/{errorType}
     
-Fejkla latency, (latencyMs = artificiell fördröjning i millisekunder)
+Fejka latency, (latencyMs = artificiell fördröjning i millisekunder)
 
      http://localhost:9097/log-sender/loggtjanst-stub/latency/{latencyMs}
