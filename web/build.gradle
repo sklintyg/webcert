@@ -16,6 +16,8 @@ node {
   version = '0.12.4'
   download = true
   distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
+  workDir = projectDir
+  nodeModulesDir = projectDir
 }
 
 // TODO: these still show up in the built war file.
