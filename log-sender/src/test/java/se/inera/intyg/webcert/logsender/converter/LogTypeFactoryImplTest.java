@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.logsender.converter;
 
 import org.junit.Test;
 import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 import se.riv.ehr.log.v1.LogType;
@@ -47,5 +48,19 @@ public class LogTypeFactoryImplTest {
 
         assertEquals(resourceType.getCareProvider().getCareProviderId(), pdlLogMessage.getPdlResourceList().get(0).getResourceOwner().getVardgivareId());
         assertEquals(resourceType.getCareProvider().getCareProviderName(), pdlLogMessage.getPdlResourceList().get(0).getResourceOwner().getVardgivareNamn());
+    }
+
+    @Test
+    public void testLeadingAndTrailingWhitespacesAreTrimmed() {
+        PdlLogMessage pdlLogMessage = TestDataHelper.buildBasePdlLogMessage(ActivityType.READ);
+        Enhet enhet = new Enhet(" enhet-1", " enhets namn ", "vardgivare-1 ", "Vardgivare namn ");
+        pdlLogMessage.setUserCareUnit(enhet);
+
+        LogType logType = testee.convert(pdlLogMessage);
+        assertEquals("enhet-1", logType.getUser().getCareUnit().getCareUnitId());
+        assertEquals("enhets namn", logType.getUser().getCareUnit().getCareUnitName());
+
+        assertEquals("vardgivare-1", logType.getUser().getCareProvider().getCareProviderId());
+        assertEquals("Vardgivare namn", logType.getUser().getCareProvider().getCareProviderName());
     }
 }
