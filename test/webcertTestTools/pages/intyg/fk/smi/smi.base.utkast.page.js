@@ -32,6 +32,12 @@ function sendKeysWithBackspaceFix(el, text) {
         });
 }
 
+function sendEnterToElement(el) {
+    return function() {
+        el.sendKeys(protractor.Key.ENTER);
+    };
+}
+
 
 var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
@@ -193,16 +199,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeSjukdomsforlopp: function(forlopp) {
         return this.sjukdomsforlopp.sendKeys(forlopp);
     },
-    angeDiagnos: function(diagnosObj) {
-        var diagnoser = diagnosObj.diagnoser;
+    angeDiagnosKoder: function(diagnoser) {
         var promiseArr = [];
-
-        function sendEnterToElement(el) {
-            return function() {
-                el.sendKeys(protractor.Key.ENTER);
-            };
-        }
-        //Ange diagnoser
         for (var i = 0; i < diagnoser.length; i++) {
             if (i !== 0) {
                 promiseArr.push(this.diagnos.laggTillDiagnosKnapp.sendKeys(protractor.Key.SPACE));
@@ -211,6 +209,17 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 
         }
+        return Promise.all(promiseArr);
+
+    },
+    angeDiagnos: function(diagnosObj) {
+        var diagnoser = diagnosObj.diagnoser;
+        var promiseArr = [];
+
+
+        //Ange diagnoser
+        promiseArr.push(this.angeDiagnosKoder(diagnoser));
+
         //Ange när och var diagnoser ställts
         promiseArr.push(this.diagnos.narOchVarStalldesDiagnoser.sendKeys(diagnosObj.narOchVarStalldesDiagnoserna));
 
