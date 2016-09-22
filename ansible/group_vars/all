@@ -3,6 +3,7 @@
 
 # General
 inera_root: /opt/inera
+java_home: "{{ inera_root }}/jre8"
 releases_folder: "{{ inera_root }}/releases"
 deploy_from_repo: true
 
