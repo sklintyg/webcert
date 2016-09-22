@@ -113,8 +113,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Autowired
     private MonitoringLogService monitoringService;
 
-    /* --------------------- Public scope --------------------- */
-
     @Override
     public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
 
@@ -283,7 +281,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 ((saved.getAmne() == null) ? null : saved.getAmne().toString()));
 
         // Notify stakeholders
-        sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
+        sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
         return saved;
     }
@@ -375,7 +373,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 ((fraga.getAmne() == null) ? null : fraga.getAmne().toString()));
 
         // Notify stakeholders
-        sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
+        sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);
 
         return saved;
     }
@@ -448,10 +446,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         }
         FragaSvar openedFragaSvar = fragaSvarRepository.save(fragaSvar);
-
-        if (notificationEvent != null) {
-            sendNotification(openedFragaSvar, notificationEvent);
-        }
+        sendNotification(openedFragaSvar, notificationEvent);
 
         return openedFragaSvar;
     }
@@ -523,8 +518,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return resultsMap;
     }
 
-    /* --------------------- Protected scope --------------------- */
-
     protected void verifyEnhetsAuth(String enhetsId) {
         if (!webCertUserService.isAuthorizedForUnit(enhetsId, false)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
@@ -540,16 +533,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
     }
 
-    /* --------------------- Private scope --------------------- */
     private FragaSvar closeQuestionAsHandled(FragaSvar fragaSvar) {
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
 
         fragaSvar.setStatus(Status.CLOSED);
         FragaSvar closedFragaSvar = fragaSvarRepository.save(fragaSvar);
+        sendNotification(closedFragaSvar, notificationEvent);
 
-        if (notificationEvent != null) {
-            sendNotification(closedFragaSvar, notificationEvent);
-        }
         return closedFragaSvar;
     }
 
@@ -560,17 +550,21 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
             if (Status.PENDING_INTERNAL_ACTION.equals(fragaSvarStatus)) {
-                return NotificationEvent.QUESTION_FROM_FK_HANDLED;
+                return NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED;
             } else if (Status.CLOSED.equals(fragaSvarStatus)) {
-                return NotificationEvent.QUESTION_FROM_FK_UNHANDLED;
+                return NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED;
             }
         }
 
         if (FrageStallare.WEBCERT.equals(frageStallare)) {
             if (Status.ANSWERED.equals(fragaSvarStatus)) {
-                return NotificationEvent.ANSWER_FROM_FK_HANDLED;
+                return NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED;
             } else if (Status.CLOSED.equals(fragaSvarStatus) && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
-                return NotificationEvent.ANSWER_FROM_FK_UNHANDLED;
+                return NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED;
+            } else if (Status.CLOSED.equals(fragaSvarStatus)) {
+                return NotificationEvent.QUESTION_FROM_CARE_UNHANDLED;
+            } else {
+                return NotificationEvent.QUESTION_FROM_CARE_HANDLED;
             }
         }
 
@@ -598,31 +592,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {
-
-        switch (event) {
-        case ANSWER_FROM_FK_HANDLED:
-            notificationService.sendNotificationForAnswerHandled(fragaSvar);
-            break;
-        case ANSWER_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForAnswerRecieved(fragaSvar);
-            break;
-        case ANSWER_SENT_TO_FK:
-            notificationService.sendNotificationForQuestionHandled(fragaSvar);
-            break;
-        case QUESTION_FROM_FK_HANDLED:
-            notificationService.sendNotificationForQuestionHandled(fragaSvar);
-            break;
-        case QUESTION_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForQuestionReceived(fragaSvar);
-            break;
-        case QUESTION_SENT_TO_FK:
-            notificationService.sendNotificationForQuestionSent(fragaSvar);
-            break;
-        default:
-            LOGGER.warn(
-                    "FragaSvarServiceImpl.sendNotification(FragaSvar, NotificationEvent) - cannot send notification. Incoming event not handled!");
+        if (event != null) {
+            notificationService.sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), event);
         }
-
     }
 
     private void validateAcceptsQuestions(FragaSvar fragaSvar) {

@@ -39,10 +39,12 @@ import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -122,6 +124,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(signeratAvName, res.getSigneratAvName());
 
         verify(utkastRepository).findOne(INTYG_ID);
+        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
     }
 
     @Test
@@ -213,6 +216,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
         assertNotNull(updatedQuestion.getSenasteHandelse());
         assertEquals(Status.ANSWERED, updatedQuestion.getStatus());
+        verify(notificationService, only()).sendNotificationForAnswerRecieved(any(Arende.class));
     }
 
     @Test
@@ -241,6 +245,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
         assertNotNull(updatedQuestion.getSenasteHandelse());
+        verify(notificationService, only()).sendNotificationForQuestionReceived(any(Arende.class));
     }
 
     @Test
@@ -251,6 +256,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("Should throw");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -262,6 +269,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("Should throw");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -273,26 +282,29 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("Should throw");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
         }
     }
 
+    @Test
     public void createQuestionTest() throws CertificateSenderException {
         LocalDateTime now = LocalDateTime.now();
-        when(utkastRepository.findOne(anyString())).thenReturn(buildUtkast());
+        Utkast utkast = buildUtkast();
+        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         Arende arende = new Arende();
         arende.setSenasteHandelse(now);
-        when(arendeViewConverter.convert(any(Arende.class))).thenReturn(mock(ArendeView.class));
         ArendeConversationView result = service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
         assertNotNull(result.getFraga());
         assertNull(result.getSvar());
-        assertEquals(now, result.getSenasteHandelse());
+        assertNotNull(result.getSenasteHandelse());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(repo).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
-        verify(notificationService).sendNotificationForQuestionSent(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
     }
 
     @Test
@@ -302,6 +314,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getErrorCode());
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -313,6 +327,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -324,6 +340,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -338,6 +356,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -352,6 +372,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, e.getErrorCode());
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
         }
     }
 
@@ -374,17 +396,27 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(repo, times(2)).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
-        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void answerSvarsTextNullTest() throws CertificateSenderException {
-        service.answer("svarPaMeddelandeId", null);
+        try {
+            service.answer("svarPaMeddelandeId", null);
+        } finally {
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test(expected = WebCertServiceException.class)
     public void answerSvarsTextEmptyTest() throws CertificateSenderException {
-        service.answer("svarPaMeddelandeId", "");
+        try {
+            service.answer("svarPaMeddelandeId", "");
+        } finally {
+            verifyZeroInteractions(repo);
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -394,7 +426,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
-        service.answer(svarPaMeddelandeId, "svarstext");
+        try {
+            service.answer(svarPaMeddelandeId, "svarstext");
+        } finally {
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -405,7 +442,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setAmne(ArendeAmne.PAMINN);
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
-        service.answer(svarPaMeddelandeId, "svarstext");
+        try {
+            service.answer(svarPaMeddelandeId, "svarstext");
+        } finally {
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -417,7 +459,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
-        service.answer(svarPaMeddelandeId, "svarstext");
+        try {
+            service.answer(svarPaMeddelandeId, "svarstext");
+        } finally {
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test
@@ -440,6 +487,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        verify(repo, times(2)).save(any(Arende.class));
     }
 
     @Test
@@ -460,7 +509,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
-        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo, times(2)).save(arendeCaptor.capture());
 
@@ -471,7 +520,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void setForwardedArendeNotFoundTest() {
-        service.setForwarded(MEDDELANDE_ID, true);
+        try {
+            service.setForwarded(MEDDELANDE_ID, true);
+        } finally {
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test
@@ -486,6 +540,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(repo).findByPaminnelseMeddelandeId(MEDDELANDE_ID); // lookup reminders for response
 
         assertEquals(true, arendeCaptor.getValue().getVidarebefordrad());
+        verifyZeroInteractions(notificationService);
     }
 
     @Test
@@ -500,11 +555,17 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(repo).findByPaminnelseMeddelandeId(MEDDELANDE_ID); // lookup reminders for response
 
         assertEquals(false, arendeCaptor.getValue().getVidarebefordrad());
+        verifyZeroInteractions(notificationService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void closeArendeAsHandledArendeNotFoundTest() {
-        service.closeArendeAsHandled(MEDDELANDE_ID, INTYG_TYP);
+        try {
+            service.closeArendeAsHandled(MEDDELANDE_ID, INTYG_TYP);
+        } finally {
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test
@@ -518,7 +579,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
     }
 
@@ -541,7 +602,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
-        verifyNoMoreInteractions(notificationService);
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_HANDLED);
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
     }
 
@@ -557,13 +618,18 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForQuestionToRecipientHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void openArendeAsUnhandledArendeNotFoundTest() {
-        service.openArendeAsUnhandled(MEDDELANDE_ID);
+        try {
+            service.openArendeAsUnhandled(MEDDELANDE_ID);
+        } finally {
+            verify(repo, never()).save(any(Arende.class));
+            verifyZeroInteractions(notificationService);
+        }
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -588,7 +654,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_INTERNAL_ACTION, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED);
     }
 
     @Test
@@ -603,7 +669,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.ANSWERED, arendeCaptor.getValue().getStatus());
-        verify(notificationService).sendNotificationForQuestionToRecipientHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED);
     }
 
     @Test
@@ -617,7 +683,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_EXTERNAL_ACTION, arendeCaptor.getValue().getStatus());
-        verifyNoMoreInteractions(notificationService);
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_UNHANDLED);
     }
 
     @Test
@@ -973,8 +1039,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         service.closeAllNonClosed(INTYG_ID);
 
         verify(repo).findByIntygsId(INTYG_ID);
-        verify(notificationService).sendNotificationForQuestionHandled(any(Arende.class));
-        verify(notificationService).sendNotificationForQuestionToRecipientHandled(any(Arende.class));
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(repo, times(2)).save(arendeCaptor.capture());
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(0).getStatus());
@@ -1010,7 +1076,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(0).getStatus());
         assertEquals(arende3.getMeddelandeId(), arendeCaptor.getAllValues().get(1).getMeddelandeId());
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(1).getStatus());
-        verify(notificationService, times(2)).sendNotificationForQuestionHandled(any(Arende.class));
+        verify(notificationService, times(2)).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
     }
 
     @Test
@@ -1036,11 +1102,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private Arende buildArende(String meddelandeId, String enhetId) {
-        return buildArende(meddelandeId, "<intygsId>", LocalDateTime.now(), LocalDateTime.now(), enhetId);
+        return buildArende(meddelandeId, INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), enhetId);
     }
 
     private Arende buildArende(String meddelandeId, LocalDateTime senasteHandelse, LocalDateTime timestamp) {
-        return buildArende(meddelandeId, "<intygsId>", senasteHandelse, timestamp, ENHET_ID);
+        return buildArende(meddelandeId, INTYG_ID, senasteHandelse, timestamp, ENHET_ID);
     }
 
     private Arende buildArende(String meddelandeId, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp, String enhetId) {
@@ -1077,6 +1143,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private Utkast buildUtkast() {
         final String signeratAv = "signeratAv";
         Utkast utkast = new Utkast();
+        utkast.setIntygsId(INTYG_ID);
         utkast.setSkapadAv(new VardpersonReferens());
         utkast.getSkapadAv().setHsaId(signeratAv);
         utkast.setSignatur(mock(Signatur.class));

@@ -133,12 +133,10 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = arendeRepository.save(arende);
 
-        if (ArendeAmne.PAMINN == saved.getAmne()) {
+        if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
             notificationService.sendNotificationForQuestionReceived(saved);
-        } else if (saved.getSvarPaId() != null) {
-            notificationService.sendNotificationForAnswerRecieved(saved);
         } else {
-            notificationService.sendNotificationForQuestionReceived(saved);
+            notificationService.sendNotificationForAnswerRecieved(saved);
         }
         return saved;
     }
@@ -158,7 +156,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(),
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.QUESTION_SENT_TO_FK);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE);
 
         return arendeViewConverter.convertToArendeConversationView(saved, null, new ArrayList<>());
     }
@@ -198,7 +196,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(),
                 webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.ANSWER_SENT_TO_FK);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved,
                 arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId));
@@ -241,9 +239,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende openedArende = arendeRepository.save(arende);
 
-        if (notificationEvent != null) {
-            sendNotification(openedArende, notificationEvent);
-        }
+        sendNotification(openedArende, notificationEvent);
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
@@ -413,17 +409,21 @@ public class ArendeServiceImpl implements ArendeService {
 
         if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
             if (Status.PENDING_INTERNAL_ACTION.equals(arendeSvarStatus)) {
-                return NotificationEvent.QUESTION_FROM_FK_HANDLED;
+                return NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED;
             } else if (Status.CLOSED.equals(arendeSvarStatus)) {
-                return NotificationEvent.QUESTION_FROM_FK_UNHANDLED;
+                return NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED;
             }
         }
 
         if (FrageStallare.WEBCERT.equals(frageStallare)) {
             if (Status.ANSWERED.equals(arendeSvarStatus)) {
-                return NotificationEvent.ANSWER_FROM_FK_HANDLED;
+                return NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED;
             } else if (Status.CLOSED.equals(arendeSvarStatus) && arendeIsAnswered) {
-                return NotificationEvent.ANSWER_FROM_FK_UNHANDLED;
+                return NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED;
+            } else if (Status.CLOSED.equals(arendeSvarStatus)) {
+                return NotificationEvent.QUESTION_FROM_CARE_UNHANDLED;
+            } else {
+                return NotificationEvent.QUESTION_FROM_CARE_HANDLED;
             }
         }
 
@@ -431,27 +431,8 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private void sendNotification(Arende arende, NotificationEvent event) {
-        switch (event) {
-        case ANSWER_FROM_FK_HANDLED:
-            notificationService.sendNotificationForQuestionToRecipientHandled(arende);
-            break;
-        case ANSWER_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForQuestionToRecipientHandled(arende);
-            break;
-        case ANSWER_SENT_TO_FK:
-            notificationService.sendNotificationForQuestionHandled(arende);
-            break;
-        case QUESTION_FROM_FK_HANDLED:
-            notificationService.sendNotificationForQuestionHandled(arende);
-            break;
-        case QUESTION_FROM_FK_UNHANDLED:
-            notificationService.sendNotificationForQuestionHandled(arende);
-            break;
-        case QUESTION_SENT_TO_FK:
-            notificationService.sendNotificationForQuestionSent(arende);
-            break;
-        default:
-            LOG.warn("ArendeServiceImpl.sendNotification(Arende, NotificationEvent) - cannot send notification. Incoming event not handled!");
+        if (event != null) {
+            notificationService.sendNotificationForQAs(arende.getIntygsId(), event);
         }
     }
 
@@ -521,9 +502,8 @@ public class ArendeServiceImpl implements ArendeService {
         arendeToClose.setStatus(Status.CLOSED);
         Arende closedArende = arendeRepository.save(arendeToClose);
 
-        if (notificationEvent != null) {
-            sendNotification(closedArende, notificationEvent);
-        }
+        sendNotification(closedArende, notificationEvent);
+
         return closedArende;
     }
 }

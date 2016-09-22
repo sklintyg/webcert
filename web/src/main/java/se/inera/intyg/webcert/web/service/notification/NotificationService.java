@@ -66,24 +66,9 @@ public interface NotificationService {
     void sendNotificationForQuestionReceived(FragaSvar fragaSvar);
 
     /**
-     * Question from FK handled (HAN9).
-     */
-    void sendNotificationForQuestionHandled(FragaSvar fragaSvar);
-
-    /**
-     * New question sent to FK (HAN8).
-     */
-    void sendNotificationForQuestionSent(FragaSvar fragaSvar);
-
-    /**
      * New answer received from FK (HAN7).
      */
     void sendNotificationForAnswerRecieved(FragaSvar fragaSvar);
-
-    /**
-     * Answer from FK handled (HAN10).
-     */
-    void sendNotificationForAnswerHandled(FragaSvar fragaSvar);
 
     /**
      * New question received from recipient (NYFRFM).
@@ -91,22 +76,9 @@ public interface NotificationService {
     void sendNotificationForQuestionReceived(Arende arende);
 
     /**
-     * Question from recipient handled (HANFRFM).
-     */
-    void sendNotificationForQuestionHandled(Arende arende);
-
-    /**
-     * New question sent to recipient (NYFRFV).
-     */
-    void sendNotificationForQuestionSent(Arende arende);
-
-    /**
      * New answer received from recipient (NYSVFM).
      */
     void sendNotificationForAnswerRecieved(Arende arende);
 
-    /**
-     * Question to recipient handled (HANFRFV).
-     */
-    void sendNotificationForQuestionToRecipientHandled(Arende arende);
+    void sendNotificationForQAs(String intygsId, NotificationEvent event);
 }

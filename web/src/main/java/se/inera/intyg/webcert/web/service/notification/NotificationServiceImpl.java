@@ -170,123 +170,97 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.
-     * inera.intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
-        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYFRFM);
-        }
+        sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.
-     * inera.intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
-    @Override
-    public void sendNotificationForQuestionHandled(FragaSvar fragaSvar) {
-        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANFRFM);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.
-     * intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
-    @Override
-    public void sendNotificationForQuestionSent(FragaSvar fragaSvar) {
-        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYFRFV);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera
-     * .intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
     @Override
     public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
-        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYSVFM);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.
-     * intyg.webcert.web
-     * .persistence.fragasvar.model.FragaSvar)
-     */
-    @Override
-    public void sendNotificationForAnswerHandled(FragaSvar fragaSvar) {
-        Optional<Utkast> utkast = getUtkast(fragaSvar.getIntygsReferens().getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANFRFV);
-        }
+        sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
     }
 
     @Override
     public void sendNotificationForQuestionReceived(Arende arende) {
-        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYFRFM);
-        }
-    }
-
-    @Override
-    public void sendNotificationForQuestionHandled(Arende arende) {
-        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANFRFM);
-        }
-    }
-
-    @Override
-    public void sendNotificationForQuestionSent(Arende arende) {
-        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYFRFV);
-        }
+        sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
     }
 
     @Override
     public void sendNotificationForAnswerRecieved(Arende arende) {
-        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), NYSVFM);
-        }
+        sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
     }
 
     @Override
-    public void sendNotificationForQuestionToRecipientHandled(Arende arende) {
-        Optional<Utkast> utkast = getUtkast(arende.getIntygsId());
+    public void sendNotificationForQAs(String intygsId, NotificationEvent event) {
+        Optional<Utkast> utkast = getUtkast(intygsId);
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), HANFRFV);
+            createAndSendNotification(utkast.get(), event);
+        }
+    }
+
+    protected void createAndSendNotification(Utkast utkast, NotificationEvent event) {
+        Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
+
+        if (!version.isPresent()) {
+            LOGGER.debug("Will not send notification message");
+            return;
+        }
+        HandelsekodEnum handelse = null;
+        if (SchemaVersion.VERSION_2 == version.get()) {
+            handelse = getHandelseV2(event);
+        } else {
+            handelse = getHandelseV1(event);
+        }
+        if (handelse == null) {
+            LOGGER.debug("Will not send notification message for event {} in version {}", event.name(), version.get().name());
+            return;
+        }
+
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(), null);
+        send(notificationMessage, utkast.getEnhetsId());
+    }
+
+    private HandelsekodEnum getHandelseV1(NotificationEvent event) {
+        switch (event) {
+        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+            return HANFRFV;
+        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+        case NEW_ANSWER_FROM_RECIPIENT:
+            return NYSVFM;
+        case NEW_ANSWER_FROM_CARE:
+        case QUESTION_FROM_RECIPIENT_HANDLED:
+            return HANFRFM;
+        case NEW_QUESTION_FROM_RECIPIENT:
+        case QUESTION_FROM_RECIPIENT_UNHANDLED:
+            return NYFRFM;
+        case NEW_QUESTION_FROM_CARE:
+            return NYFRFV;
+        case QUESTION_FROM_CARE_HANDLED:
+        case QUESTION_FROM_CARE_UNHANDLED:
+        default:
+            return null;
+        }
+    }
+
+    private HandelsekodEnum getHandelseV2(NotificationEvent event) {
+        switch (event) {
+        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+        case QUESTION_FROM_CARE_HANDLED:
+        case QUESTION_FROM_CARE_UNHANDLED:
+            return HANFRFV;
+        case NEW_ANSWER_FROM_CARE:
+        case QUESTION_FROM_RECIPIENT_HANDLED:
+        case QUESTION_FROM_RECIPIENT_UNHANDLED:
+            return HANFRFM;
+        case NEW_QUESTION_FROM_CARE:
+            return NYFRFV;
+        case NEW_QUESTION_FROM_RECIPIENT:
+            return NYFRFM;
+        case NEW_ANSWER_FROM_RECIPIENT:
+            return NYSVFM;
+        default:
+            return null;
         }
     }
 
