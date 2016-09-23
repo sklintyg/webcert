@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @lisu
+@statusuppdateringar @lisu @notReady
 Egenskap: Statusuppdateringar för LISU
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.

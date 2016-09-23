@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @luse
+@statusuppdateringar @luse @notReady
 Egenskap: Statusuppdateringar för LUSE
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
@@ -42,13 +42,18 @@ Scenario: Statusuppdateringar vid fråga från FK
 
     När Försäkringskassan skickar ett "Kontakt" meddelande på intyget
     Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag svarar på frågan
-    Så ska statusuppdatering "HANFRA" skickas till vårdsystemet. Totalt: "1"
+    Så ska statusuppdatering "HANFRFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+
 
 @fråga-till-fk
-Scenario: Statusuppdateringar vid fråga till FK
+Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag skickar intyget till Försäkringskassan
@@ -57,19 +62,44 @@ Scenario: Statusuppdateringar vid fråga till FK
 
     Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
-    Så ska statusuppdatering "NYFRTM" skickas till vårdsystemet. Totalt: "1"
+    Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
 
     Och Försäkringskassan skickar ett svar
     Så ska statusuppdatering "NYSVFM" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
     Och jag markerar svaret från Försäkringskassan som hanterat
+
     Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 1
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
     Och jag markerar svaret från Försäkringskassan som INTE hanterat
     Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "2"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+
+@fråga-till-fk
+Scenario: Statusuppdateringar vid hantering av fråga från vården
+    När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag skickar intyget till Försäkringskassan
+
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+    Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
+
+    När jag markerar frågan från vården som hanterad
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 1
 
 @ANDRAT
 Scenario: Statusuppdateringar vid ändring av utkast
