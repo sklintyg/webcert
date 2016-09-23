@@ -27,19 +27,15 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.*;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 
@@ -52,16 +48,10 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveAnswerResponderImpl.class);
 
     @Autowired
-    private MailNotificationService mailNotificationService;
-
-    @Autowired
     private FragaSvarService fragaSvarService;
 
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     @Override
     public ReceiveMedicalCertificateAnswerResponseType receiveMedicalCertificateAnswer(
@@ -100,39 +90,11 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
         String text = answerContents.getMeddelandeText();
         LocalDateTime ldt = answerContents.getSigneringsTidpunkt();
 
-        FragaSvar fragaSvar = fragaSvarService.processIncomingAnswer(refId, text, ldt);
-        return fragaSvar;
+        return fragaSvarService.processIncomingAnswer(refId, text, ldt);
     }
 
     private void sendNotification(FragaSvar fragaSvar) {
-
-        String careUnitId = fragaSvar.getVardperson().getEnhetsId();
-
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(careUnitId, Fk7263EntryPoint.MODULE_ID)) {
-            sendNotificationToQueue(fragaSvar);
-        } else {
-            sendNotificationByMail(fragaSvar);
-        }
-    }
-
-    private void sendNotificationToQueue(FragaSvar fragaSvar) {
         notificationService.sendNotificationForAnswerRecieved(fragaSvar);
         LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
-    }
-
-    private void sendNotificationByMail(FragaSvar fragaSvar) {
-        // Send mail to enhet to inform about new answer
-        try {
-            mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
-        } catch (MailSendException e) {
-            Long svarsId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOGGER.error("Notification mail for answer '" + svarsId
-                    + "' concerning certificate '" + intygsId
-                    + "' couldn't be sent to " + enhetsId
-                    + " (" + enhetsNamn + "): " + e.getMessage());
-        }
     }
 }

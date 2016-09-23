@@ -19,6 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.mail;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -27,20 +34,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.integration.hsa.stub.HsaServiceStub;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
 import se.inera.intyg.webcert.mailstub.MailStore;
 import se.inera.intyg.webcert.mailstub.OutgoingMail;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author andreaskaltenbach
@@ -76,7 +77,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingQuestion() throws Exception {
 
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar(CITYAKUTEN));
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(CITYAKUTEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -92,7 +93,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingAnswer() throws Exception {
 
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar(CITYAKUTEN));
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(CITYAKUTEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -108,7 +109,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingQuestionToMottagning() throws Exception {
 
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar(VANSTERAKUTEN));
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(VANSTERAKUTEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -124,7 +125,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingAnswerToMottagning() throws Exception {
 
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar(VANSTERAKUTEN));
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(VANSTERAKUTEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -140,7 +141,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingQuestionForEnhetWithoutMail() throws Exception {
 
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar(LANDCENTRALEN));
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(LANDCENTRALEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -156,7 +157,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingAnswerForEnhetWithoutMail() throws Exception {
 
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar(LANDCENTRALEN));
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(LANDCENTRALEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -172,7 +173,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingQuestionToMottagningWithoutMailButParentEnhetWithMail() throws Exception {
 
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar(KUSTAKUTEN));
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(KUSTAKUTEN));
         mailStore.waitForMails(1);
 
         assertEquals(1, mailStore.getMails().size());
@@ -188,7 +189,7 @@ public class MailNotificationServiceTest {
     @Test
     public void testMailDeliveryForIncomingAnswerToMottagningWithoutMailButParentEnhetWithMail() throws Exception {
 
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar(KUSTAKUTEN));
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(KUSTAKUTEN));
 
         mailStore.waitForMails(1);
         assertEquals(1, mailStore.getMails().size());
@@ -206,7 +207,7 @@ public class MailNotificationServiceTest {
 
         long startTimestamp = System.currentTimeMillis();
         mailStore.setWait(true);
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar(CITYAKUTEN));
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(CITYAKUTEN));
         mailStore.setWait(false);
         mailStore.waitForMails(1);
         long endTimestamp = System.currentTimeMillis();
@@ -223,9 +224,164 @@ public class MailNotificationServiceTest {
 
     @Test
     public void linkHasCorrectId() {
-        String url = mailNotificationService.intygsUrl(fragaSvar("enhet"));
+        String url = mailNotificationService.intygsUrl(mailNotification("enhet"));
 
         assertEquals("https://www.webcert.se/webcert/web/user/certificate/1/questions", url);
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingQuestionNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(CITYAKUTEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("cityakuten@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har ställt en fråga angående ett intyg", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-question-body-cityakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingAnswerNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(CITYAKUTEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("cityakuten@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har svarat på en fråga", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-answer-body-cityakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingQuestionToMottagningNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(VANSTERAKUTEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("vansterakuten@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har ställt en fråga angående ett intyg", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-question-body-vansterakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingAnswerToMottagningNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(VANSTERAKUTEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("vansterakuten@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har svarat på en fråga", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-answer-body-vansterakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingQuestionForEnhetWithoutMailNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(LANDCENTRALEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("admin@sverige.se", mail.getRecipients().get(0));
+        assertEquals("Fråga/svar Webcert: Enhet utan mailadress eller koppling", mail.getSubject());
+        assertEquals(expectationFromFile("admin-body.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingAnswerForEnhetWithoutMailNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(LANDCENTRALEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("admin@sverige.se", mail.getRecipients().get(0));
+        assertEquals("Fråga/svar Webcert: Enhet utan mailadress eller koppling", mail.getSubject());
+        assertEquals(expectationFromFile("admin-body.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingQuestionToMottagningWithoutMailButParentEnhetWithMailNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(KUSTAKUTEN, LuseEntryPoint.MODULE_ID));
+        mailStore.waitForMails(1);
+
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("sjocentralen@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har ställt en fråga angående ett intyg", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-question-body-kustakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testMailDeliveryForIncomingAnswerToMottagningWithoutMailButParentEnhetWithMailNotFk7263() throws Exception {
+
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification(KUSTAKUTEN, LuseEntryPoint.MODULE_ID));
+
+        mailStore.waitForMails(1);
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("sjocentralen@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har svarat på en fråga", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-answer-body-kustakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void testAsyncMailDeliveryForIncomingQuestionNotFk7263() throws Exception {
+
+        long startTimestamp = System.currentTimeMillis();
+        mailStore.setWait(true);
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification(CITYAKUTEN, LuseEntryPoint.MODULE_ID));
+        mailStore.setWait(false);
+        mailStore.waitForMails(1);
+        long endTimestamp = System.currentTimeMillis();
+        assertTrue((endTimestamp - startTimestamp) < THRESHOLD);
+        assertEquals(1, mailStore.getMails().size());
+        OutgoingMail mail = mailStore.getMails().get(0);
+
+        assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
+        assertEquals("cityakuten@testland.se", mail.getRecipients().get(0));
+        assertEquals("Försäkringskassan har ställt en fråga angående ett intyg", mail.getSubject());
+        assertEquals(expectationFromFile("incoming-question-body-cityakuten.html", "luse"), mail.getBody());
+    }
+
+    @Test
+    public void linkHasCorrectIdNotFk7263() {
+        String url = mailNotificationService.intygsUrl(mailNotification("enhet", LuseEntryPoint.MODULE_ID));
+
+        assertEquals("https://www.webcert.se/webcert/web/user/certificate/luse/1/questions", url);
     }
 
     @After
@@ -233,15 +389,16 @@ public class MailNotificationServiceTest {
         mailStore.getMails().clear();
     }
 
-    private FragaSvar fragaSvar(String enhetsId) {
-        FragaSvar fragaSvar = new FragaSvar();
-        fragaSvar.setVardperson(new Vardperson());
-        fragaSvar.getVardperson().setEnhetsId(enhetsId);
-        fragaSvar.setInternReferens(2L);
-        fragaSvar.setIntygsReferens(new IntygsReferens());
-        fragaSvar.getIntygsReferens().setIntygsId("1");
-        fragaSvar.getIntygsReferens().setIntygsTyp("FK7263");
-        return fragaSvar;
+    private MailNotification mailNotification(String enhetsId) {
+        return mailNotification(enhetsId, Fk7263EntryPoint.MODULE_ID);
+    }
+
+    private MailNotification mailNotification(String enhetsId, String intygsTyp) {
+        return new MailNotification("2L", "1", intygsTyp, enhetsId, null, null);
+    }
+
+    private String expectationFromFile(String filename, String folder) throws Exception {
+        return FileUtils.readFileToString(new ClassPathResource("MailNotificationServiceTest/" + folder + "/" + filename).getFile());
     }
 
     private String expectationFromFile(String filename) throws Exception {

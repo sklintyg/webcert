@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +34,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,12 +44,9 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -60,12 +55,8 @@ public class ReceiveAnswerResponderImplTest {
     private static final Long QUESTION_ID = 1234L;
 
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
-    private static final String EJ_INTEGRERAD_ENHET = "SE4815162344-1A03";
 
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
-
-    @Mock
-    private MailNotificationService mockMailNotificationService;
 
     @Mock
     private FragaSvarService mockFragaSvarService;
@@ -73,20 +64,11 @@ public class ReceiveAnswerResponderImplTest {
     @Mock
     private NotificationService mockNotificationService;
 
-    @Mock
-    private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
-
     @InjectMocks
     private ReceiveAnswerResponderImpl receiveAnswerResponder;
 
-    @Before
-    public void integreradeEnheterExpectations() {
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.TRUE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(EJ_INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.FALSE);
-    }
-
     @Test
-    public void testReceiveAnswerToIntegratedUnit() {
+    public void testReceiveAnswerOK() {
 
         FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(), INTEGRERAD_ENHET,
                 Status.PENDING_INTERNAL_ACTION);
@@ -97,23 +79,6 @@ public class ReceiveAnswerResponderImplTest {
 
         // should place notification on queue
         verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
-
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
-    }
-
-    @Test
-    public void testReceiveAnswerToNonIntegratedUnit() {
-
-        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(), EJ_INTEGRERAD_ENHET,
-                Status.PENDING_INTERNAL_ACTION);
-        when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
-
-        ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk.xml");
-        ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
-
-        // should mail notification
-        verify(mockMailNotificationService).sendMailForIncomingAnswer(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());

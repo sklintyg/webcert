@@ -19,16 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.mail;
 
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-
 /**
  * @author andreaskaltenbach
  */
 public interface MailNotificationService {
 
-    void sendMailForIncomingQuestion(FragaSvar fragaSvar);
+    void sendMailForIncomingQuestion(MailNotification mailNotification);
 
-    void sendMailForIncomingAnswer(FragaSvar fragaSvar);
+    void sendMailForIncomingAnswer(MailNotification mailNotification);
 
-    String intygsUrl(FragaSvar fragaSvar);
+    String intygsUrl(MailNotification mailNotification);
 }

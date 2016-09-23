@@ -40,7 +40,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
@@ -73,7 +73,7 @@ public class MailNotificationServiceMockedTest {
         doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
         mockOrganizationUnitServiceGetUnit();
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar("enhetsid"));
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification("enhetsid"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class MailNotificationServiceMockedTest {
         doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
         mockOrganizationUnitServiceGetUnit();
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
     }
 
     private void mockOrganizationUnitServiceGetUnit() throws ExternalServiceCallException {
@@ -100,22 +100,15 @@ public class MailNotificationServiceMockedTest {
         } catch (SOAPException e) {
             e.printStackTrace();
         }
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
     }
 
     @Test
     public void setAdminMailAddress() throws Exception {
     }
 
-    private FragaSvar fragaSvar(String enhetsId) {
-        FragaSvar fragaSvar = new FragaSvar();
-        fragaSvar.setVardperson(new Vardperson());
-        fragaSvar.getVardperson().setEnhetsId(enhetsId);
-        fragaSvar.setInternReferens(1L);
-        fragaSvar.setIntygsReferens(new IntygsReferens());
-        fragaSvar.getIntygsReferens().setIntygsId("1L");
-        fragaSvar.getIntygsReferens().setIntygsTyp("FK7263");
-        return fragaSvar;
+    private MailNotification mailNotification(String enhetsId) {
+        return new MailNotification(null, "1L", Fk7263EntryPoint.MODULE_ID, enhetsId, null, null);
     }
 
 }

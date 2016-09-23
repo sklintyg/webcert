@@ -52,11 +52,13 @@ import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.service.mail.MailNotification;
+import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /**
@@ -66,14 +68,20 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 public class NotificationServiceImplTest {
 
     private static final String INTYG_TYP_FK = "fk7263";
-
     private static final String INTYG_ID = "1234";
-
     private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
-
     private static final String LOGISK_ADDR = "SE12345678-1234";
-
     private static final String ENHET_ID = "enhetId";
+    private static final String ENHET_NAMN = "enhetName";
+    private static final String SIGNED_BY_HSA_ID = "signedByHsaId";
+    private static final String ARENDE_ID = "arendeId";
+    private static final Long FRAGASVAR_ID = 1L;
+
+    @Mock
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+
+    @Mock
+    private MailNotificationService mailNotificationService;
 
     @Mock
     private Session session;
@@ -323,14 +331,16 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testQuestionReceivedFragaSvar() throws Exception {
+    public void testQuestionReceivedFragaSvarIntegreradEnhet() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQuestionReceived(createFragaSvar());
         verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
     }
 
     @Test(expected = JmsException.class)
-    public void testQuestionReceivedFragaSvarJmsException() throws Exception {
+    public void testQuestionReceivedFragaSvarIntegreradEnhetJmsException() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
@@ -342,14 +352,36 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testAnswerRecievedFragaSvar() throws Exception {
+    public void testQuestionReceivedFragaSvarSendsMail() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
+        when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
+        notificationService.sendNotificationForQuestionReceived(createFragaSvar());
+
+        ArgumentCaptor<MailNotification> mailNotificationCaptor = ArgumentCaptor.forClass(MailNotification.class);
+        verify(mailNotificationService).sendMailForIncomingQuestion(mailNotificationCaptor.capture());
+        assertEquals(ENHET_ID, mailNotificationCaptor.getValue().getCareUnitId());
+        assertEquals(FRAGASVAR_ID.toString(), mailNotificationCaptor.getValue().getQaId());
+        assertEquals(INTYG_ID, mailNotificationCaptor.getValue().getCertificateId());
+        assertEquals(INTYG_TYP_FK, mailNotificationCaptor.getValue().getCertificateType());
+        assertEquals(ENHET_NAMN, mailNotificationCaptor.getValue().getCareUnitName());
+        assertEquals(SIGNED_BY_HSA_ID, mailNotificationCaptor.getValue().getSignedByHsaId());
+        // no jms notifications triggered
+        verifyZeroInteractions(mockNotificationMessageFactory);
+        verifyZeroInteractions(template);
+        verifyZeroInteractions(mockMonitoringLogService);
+    }
+
+    @Test
+    public void testAnswerRecievedFragaSvarIntegreradEnhet() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForAnswerRecieved(createFragaSvar());
         verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
     }
 
     @Test(expected = JmsException.class)
-    public void testAnswerRecievedFragaSvarJmsException() throws Exception {
+    public void testAnswerRecievedFragaSvarIntegreradEnhetJmsException() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
@@ -361,14 +393,36 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testQuestionReceivedArende() throws Exception {
+    public void testAnswerRecievedFragaSvarSendsMail() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
+        when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
+        notificationService.sendNotificationForAnswerRecieved(createFragaSvar());
+
+        ArgumentCaptor<MailNotification> mailNotificationCaptor = ArgumentCaptor.forClass(MailNotification.class);
+        verify(mailNotificationService).sendMailForIncomingAnswer(mailNotificationCaptor.capture());
+        assertEquals(ENHET_ID, mailNotificationCaptor.getValue().getCareUnitId());
+        assertEquals(FRAGASVAR_ID.toString(), mailNotificationCaptor.getValue().getQaId());
+        assertEquals(INTYG_ID, mailNotificationCaptor.getValue().getCertificateId());
+        assertEquals(INTYG_TYP_FK, mailNotificationCaptor.getValue().getCertificateType());
+        assertEquals(ENHET_NAMN, mailNotificationCaptor.getValue().getCareUnitName());
+        assertEquals(SIGNED_BY_HSA_ID, mailNotificationCaptor.getValue().getSignedByHsaId());
+        // no jms notifications triggered
+        verifyZeroInteractions(mockNotificationMessageFactory);
+        verifyZeroInteractions(template);
+        verifyZeroInteractions(mockMonitoringLogService);
+    }
+
+    @Test
+    public void testQuestionReceivedArendeIntegreradEnhet() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQuestionReceived(createArende());
         verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
     }
 
     @Test(expected = JmsException.class)
-    public void testQuestionReceivedArendeJmsException() throws Exception {
+    public void testQuestionReceivedArendeIntegreradEnhetJmsException() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
@@ -380,14 +434,36 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testAnswerRecievedArende() throws Exception {
+    public void testQuestionReceivedArendeSendsMail() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
+        when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
+        notificationService.sendNotificationForQuestionReceived(createArende());
+
+        ArgumentCaptor<MailNotification> mailNotificationCaptor = ArgumentCaptor.forClass(MailNotification.class);
+        verify(mailNotificationService).sendMailForIncomingQuestion(mailNotificationCaptor.capture());
+        assertEquals(ENHET_ID, mailNotificationCaptor.getValue().getCareUnitId());
+        assertEquals(ARENDE_ID, mailNotificationCaptor.getValue().getQaId());
+        assertEquals(INTYG_ID, mailNotificationCaptor.getValue().getCertificateId());
+        assertEquals(INTYG_TYP_FK, mailNotificationCaptor.getValue().getCertificateType());
+        assertEquals(ENHET_NAMN, mailNotificationCaptor.getValue().getCareUnitName());
+        assertEquals(SIGNED_BY_HSA_ID, mailNotificationCaptor.getValue().getSignedByHsaId());
+        // no jms notifications triggered
+        verifyZeroInteractions(mockNotificationMessageFactory);
+        verifyZeroInteractions(template);
+        verifyZeroInteractions(mockMonitoringLogService);
+    }
+
+    @Test
+    public void testAnswerRecievedArendeIntegreradEnhet() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForAnswerRecieved(createArende());
         verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
     }
 
     @Test(expected = JmsException.class)
-    public void testAnswerRecievedArendeJmsException() throws Exception {
+    public void testAnswerRecievedArendeIntegreradEnhetJmsException() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
@@ -396,6 +472,26 @@ public class NotificationServiceImplTest {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);
         }
+    }
+
+    @Test
+    public void testAnswerRecievedArendeSendsMail() throws Exception {
+        when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
+        when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
+        notificationService.sendNotificationForAnswerRecieved(createArende());
+
+        ArgumentCaptor<MailNotification> mailNotificationCaptor = ArgumentCaptor.forClass(MailNotification.class);
+        verify(mailNotificationService).sendMailForIncomingAnswer(mailNotificationCaptor.capture());
+        assertEquals(ENHET_ID, mailNotificationCaptor.getValue().getCareUnitId());
+        assertEquals(ARENDE_ID, mailNotificationCaptor.getValue().getQaId());
+        assertEquals(INTYG_ID, mailNotificationCaptor.getValue().getCertificateId());
+        assertEquals(INTYG_TYP_FK, mailNotificationCaptor.getValue().getCertificateType());
+        assertEquals(ENHET_NAMN, mailNotificationCaptor.getValue().getCareUnitName());
+        assertEquals(SIGNED_BY_HSA_ID, mailNotificationCaptor.getValue().getSignedByHsaId());
+        // no jms notifications triggered
+        verifyZeroInteractions(mockNotificationMessageFactory);
+        verifyZeroInteractions(template);
+        verifyZeroInteractions(mockMonitoringLogService);
     }
 
     @Test(expected = JmsException.class)
@@ -625,14 +721,25 @@ public class NotificationServiceImplTest {
 
     private FragaSvar createFragaSvar() {
         FragaSvar fs = new FragaSvar();
+        fs.setInternReferens(FRAGASVAR_ID);
         fs.setIntygsReferens(new IntygsReferens());
         fs.getIntygsReferens().setIntygsId(INTYG_ID);
+        fs.getIntygsReferens().setIntygsTyp(INTYG_TYP_FK);
+        fs.setVardperson(new Vardperson());
+        fs.getVardperson().setEnhetsId(ENHET_ID);
+        fs.getVardperson().setEnhetsnamn(ENHET_NAMN);
+        fs.getVardperson().setHsaId(SIGNED_BY_HSA_ID);
         return fs;
     }
 
     private Arende createArende() {
         Arende arende = new Arende();
+        arende.setMeddelandeId(ARENDE_ID);
         arende.setIntygsId(INTYG_ID);
+        arende.setEnhetId(ENHET_ID);
+        arende.setEnhetName(ENHET_NAMN);
+        arende.setSigneratAv(SIGNED_BY_HSA_ID);
+        arende.setIntygTyp(INTYG_TYP_FK);
         return arende;
     }
 }

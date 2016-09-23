@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +32,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -43,13 +41,10 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.*;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,12 +54,7 @@ public class ReceiveQuestionResponderImplTest {
 
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
-    private static final String EJ_INTEGRERAD_ENHET = "SE4815162344-1A03";
-
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
-
-    @Mock
-    private MailNotificationService mockMailNotificationService;
 
     @Spy
     private FragaSvarConverter converter = new FragaSvarConverter();
@@ -75,20 +65,11 @@ public class ReceiveQuestionResponderImplTest {
     @Mock
     private NotificationService mockNotificationService;
 
-    @Mock
-    private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
-
     @InjectMocks
     private ReceiveQuestionResponderImpl receiveQuestionResponder;
 
-    @Before
-    public void integreradeEnheterExpectations() {
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.TRUE);
-        when(mockIntegreradeEnheterRegistry.isEnhetIntegrerad(eq(EJ_INTEGRERAD_ENHET), eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(Boolean.FALSE);
-    }
-
     @Test
-    public void testReceiveQuestionForIntegratedUnit() {
+    public void testReceiveQuestionOK() {
         FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
         when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
@@ -97,21 +78,6 @@ public class ReceiveQuestionResponderImplTest {
 
         // should place notification on queue
         verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
-
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
-    }
-
-    @Test
-    public void testReceive() {
-        FragaSvar fraga = buildFraga(EJ_INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
-        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
-
-        ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk.xml");
-        ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
-
-        // should mail notification
-        verify(mockMailNotificationService).sendMailForIncomingQuestion(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());

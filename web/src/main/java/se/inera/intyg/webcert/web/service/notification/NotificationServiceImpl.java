@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
@@ -48,6 +50,9 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.service.mail.MailNotification;
+import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /**
@@ -59,6 +64,12 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 public class NotificationServiceImpl implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+    @Autowired
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+
+    @Autowired
+    private MailNotificationService mailNotificationService;
 
     @Autowired(required = false)
     @Qualifier("jmsNotificationTemplateForAggregation")
@@ -172,22 +183,48 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
-        sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+            sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+        } else {
+            sendNotificationForIncomingQuestionByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
+                    fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
+                    fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn(),
+                    fragaSvar.getVardperson().getHsaId()));
+        }
     }
 
     @Override
     public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
-        sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+            sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
+        } else {
+            sendNotificationForIncomingAnswerByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
+                    fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
+                    fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn(),
+                    fragaSvar.getVardperson().getHsaId()));
+        }
     }
 
     @Override
     public void sendNotificationForQuestionReceived(Arende arende) {
-        sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+        } else {
+            sendNotificationForIncomingQuestionByMail(
+                    new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(),
+                            arende.getEnhetName(), arende.getSigneratAv()));
+        }
     }
 
     @Override
     public void sendNotificationForAnswerRecieved(Arende arende) {
-        sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
+        } else {
+            sendNotificationForIncomingAnswerByMail(
+                    new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(),
+                            arende.getEnhetName(), arende.getSigneratAv()));
+        }
     }
 
     @Override
@@ -291,8 +328,8 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             jmsTemplateForAggregation.send(
                     new NotificationMessageCreator(
-                            notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(), notificationMessage.getHandelse())
-            );
+                            notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
+                            notificationMessage.getHandelse()));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
@@ -312,6 +349,30 @@ public class NotificationServiceImpl implements NotificationService {
         } catch (JsonProcessingException e) {
             LOGGER.error("Problem occured when trying to create and marshall NotificationMessage.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+        }
+    }
+
+    private void sendNotificationForIncomingQuestionByMail(MailNotification mailNotification) {
+        // send mail to enhet to inform about new question
+        try {
+            mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+        } catch (MailSendException e) {
+            LOGGER.error("Notification mail for question '" + mailNotification.getQaId()
+                    + "' concerning certificate '" + mailNotification.getCertificateId()
+                    + "' couldn't be sent to " + mailNotification.getCareUnitId()
+                    + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+        }
+    }
+
+    private void sendNotificationForIncomingAnswerByMail(MailNotification mailNotification) {
+        // send mail to enhet to inform about new question
+        try {
+            mailNotificationService.sendMailForIncomingAnswer(mailNotification);
+        } catch (MailSendException e) {
+            LOGGER.error("Notification mail for answer '" + mailNotification.getQaId()
+                    + "' concerning certificate '" + mailNotification.getCertificateId()
+                    + "' couldn't be sent to " + mailNotification.getCareUnitId()
+                    + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
         }
     }
 
