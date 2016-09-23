@@ -22,6 +22,8 @@ package se.inera.intyg.webcert.web.service.mail;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
@@ -29,21 +31,14 @@ import javax.mail.internet.MimeMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -59,8 +54,6 @@ public class MailNotificationServiceImplTest {
     @Mock
     private JavaMailSender mailSender;
 
-//    @Mock
-//    private HSAWebServiceCalls hsaClient;
     @Mock
     private OrganizationUnitService organizationUnitService;
 
@@ -229,54 +222,60 @@ public class MailNotificationServiceImplTest {
 
     @Test
     public void testIntygsUrlUthopp() throws Exception {
+        final String intygsId = "intygsId";
         //Given
         final FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.setIntygsReferens(new IntygsReferens());
+        fragaSvar.getIntygsReferens().setIntygsId(intygsId);
 
-        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(null);
+        Mockito.when(utkastRepository.findOne(intygsId)).thenReturn(null);
 
         //When
         final String url = mailNotificationService.intygsUrl(fragaSvar);
 
         //Then
-        assertEquals("WebCertHostUrl/webcert/web/user/certificate/null/questions", url);
+        assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
+        verify(utkastRepository).findOne(intygsId);
     }
 
     @Test
     public void testIntygsUrlLandsting() throws Exception {
+        final String intygsId = "intygsId";
         //Given
         final FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.setIntygsReferens(new IntygsReferens());
+        fragaSvar.getIntygsReferens().setIntygsId(intygsId);
 
         Utkast utkast = new Utkast();
-        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        Mockito.when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
 
         //When
         final String url = mailNotificationService.intygsUrl(fragaSvar);
 
         //Then
-        assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/null/questions", url);
+        assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
+        verify(utkastRepository).findOne(intygsId);
     }
 
     @Test
     public void testIntygsUrlPp() throws Exception {
+        final String intygsId = "intygsId";
         //Given
         final FragaSvar fragaSvar = new FragaSvar();
         final Vardperson vardperson = new Vardperson();
         vardperson.setEnhetsId(MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");
         fragaSvar.setVardperson(vardperson);
         fragaSvar.setIntygsReferens(new IntygsReferens());
-
-        Utkast utkast = new Utkast();
-        Mockito.when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        fragaSvar.getIntygsReferens().setIntygsId(intygsId);
 
         //When
         final String url = mailNotificationService.intygsUrl(fragaSvar);
 
         //Then
-        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/null/questions", url);
+        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions", url);
+        verifyZeroInteractions(utkastRepository);
     }
 
 }

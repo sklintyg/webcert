@@ -19,12 +19,16 @@
 
 package se.inera.intyg.webcert.mailstub;
 
+import java.util.stream.Collectors;
+
 import javax.mail.internet.MimeMessage;
 
 import org.apache.cxf.common.util.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -32,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Aspect
 public class JavaMailSenderAroundAdvice {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JavaMailSenderAroundAdvice.class);
 
     @Autowired
     private MailStore mailStore;
@@ -54,7 +60,14 @@ public class JavaMailSenderAroundAdvice {
         if (StringUtils.isEmpty(mailHost)) {
             for (Object argument : pjp.getArgs()) {
                 if (argument instanceof MimeMessage) {
-                    mailStore.getMails().add(new OutgoingMail((MimeMessage) argument));
+                    OutgoingMail outgoingMail = new OutgoingMail((MimeMessage) argument);
+                    mailStore.getMails().add(outgoingMail);
+
+                    LOG.info("\n*********************************************************************************\n"
+                            + " Intercepting mail to : '{}' subject: '{}' from: '{}'.\n"
+                            + "{}\n"
+                            + "*********************************************************************************", outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")), outgoingMail.getSubject(), outgoingMail.getFrom(), outgoingMail.getBody());
+
                     mailStore.waitToContinue();
                 }
             }
