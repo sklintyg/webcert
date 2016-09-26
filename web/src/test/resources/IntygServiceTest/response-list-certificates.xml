@@ -103,9 +103,9 @@
             <ns3:instans>1</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>1</code>
+                  <code>HELT_NEDSATT</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>100%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -119,9 +119,9 @@
             <ns3:instans>2</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>2</code>
+                  <code>TRE_FJARDEDEL</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>75%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -135,9 +135,9 @@
             <ns3:instans>3</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>3</code>
+                  <code>HALFTEN</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>50%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -151,9 +151,9 @@
             <ns3:instans>4</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>4</code>
+                  <code>EN_FJARDEDEL</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>25%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -248,9 +248,9 @@
             <ns3:instans>1</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>1</code>
+                  <code>HELT_NEDSATT</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>100%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -264,9 +264,9 @@
             <ns3:instans>2</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>2</code>
+                  <code>TRE_FJARDEDEL</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>75%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -280,9 +280,9 @@
             <ns3:instans>3</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>3</code>
+                  <code>HALFTEN</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>50%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
@@ -296,9 +296,9 @@
             <ns3:instans>4</ns3:instans>
             <ns3:delsvar id="32.1">
                <cv>
-                  <code>4</code>
+                  <code>EN_FJARDEDEL</code>
                   <codeSystem>KV_FKMU_0003</codeSystem>
-                  <displayName>KV_FKMU_0003</displayName>
+                  <displayName>25%</displayName>
                </cv>
             </ns3:delsvar>
             <ns3:delsvar id="32.2">
