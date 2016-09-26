@@ -23,8 +23,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -103,7 +102,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
-        signeraUtkastWithTestbarhetsApi(intygsId);
+        signeraUtkastWithTestabilityApi(intygsId);
 
         SendSignedIntygParameter sendParam = new SendSignedIntygParameter();
         sendParam.setRecipient("FK");
@@ -120,7 +119,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
-        signeraUtkastWithTestbarhetsApi(intygsId);
+        signeraUtkastWithTestabilityApi(intygsId);
 
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
         revokeParam.setRevokeMessage("Makulera!");
@@ -137,7 +136,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
-        signeraUtkastWithTestbarhetsApi(intygsId);
+        signeraUtkastWithTestabilityApi(intygsId);
 
         // Change role to admin - which does not have sign privilege..
         changeRoleTo(AuthoritiesConstants.ROLE_ADMIN);
@@ -155,8 +154,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     /**
-     * Verify that coherent journaling works, i.e that requests with the parameter sjf=true can access certificates created
-     * on different care units than the currently active / selected one.
+     * Verify that coherent journaling works, i.e that requests with the parameter sjf=true can access certificates
+     * created on different care units than the currently active / selected one.
      */
     @Test
     public void testGetIntygFromDifferentCareUnitWithCoherentJournalingFlagSuccess() {
@@ -165,26 +164,28 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given()
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().get("logout");
+                .expect().statusCode(HttpServletResponse.SC_OK)
+                .when().get("logout");
 
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
+        // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
 
         changeOriginTo("DJUPINTEGRATION");
 
         given().redirects().follow(false).and().pathParam("intygsId", intygsId)
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().get("moduleapi/intyg/fk7263/{intygsId}?sjf=true")
+                .expect().statusCode(HttpServletResponse.SC_OK)
+                .when().get("moduleapi/intyg/fk7263/{intygsId}?sjf=true")
                 .then()
-                    .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                    .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                    .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+                .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
     }
 
     /**
-     * Requests without the parameter sjf=true should get an INTERNAL_SERVER_ERROR  with error message AUTHORIZATION_PROBLEM
-     * when accessing certificates on different care units than the currently active / selected one.
+     * Requests without the parameter sjf=true should get an INTERNAL_SERVER_ERROR with error message
+     * AUTHORIZATION_PROBLEM when accessing certificates on different care units than the currently active / selected
+     * one.
      */
     @Test
     public void testGetIntygFromDifferentCareUnitWithoutCoherentJournalingFlagFail() {
@@ -193,20 +194,21 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given()
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().get("logout");
+                .expect().statusCode(HttpServletResponse.SC_OK)
+                .when().get("logout");
 
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
+        // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
 
         changeOriginTo("DJUPINTEGRATION");
 
         given().redirects().follow(false).and().pathParam("intygsId", intygsId)
-            .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-            .when().get("moduleapi/intyg/fk7263/{intygsId}")
+                .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                .when().get("moduleapi/intyg/fk7263/{intygsId}")
                 .then()
-                    .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-                    .body("message", not(isEmptyString()));
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -224,12 +226,12 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(200).
-                when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").
-                then().
-                body("intygsUtkastId", not(isEmptyString())).
-                body("intygsUtkastId", not(equalTo(utkastId))).
-                body("intygsTyp", equalTo("fk7263"));
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(200).when()
+                .post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .then()
+                .body("intygsUtkastId", not(isEmptyString()))
+                .body("intygsUtkastId", not(equalTo(utkastId)))
+                .body("intygsTyp", equalTo("fk7263"));
     }
 
     @Test
@@ -252,12 +254,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).
-                expect().statusCode(500).
-                when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").
-                then().
-                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name())).
-                body("message", not(isEmptyString()));
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).when()
+                .post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").then()
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name())).body("message", not(isEmptyString()));
 
     }
 
@@ -279,10 +278,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).
-                when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").then().
-                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name())).
-                body("message", not(isEmptyString()));
+        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).when()
+                .post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").then()
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name())).body("message", not(isEmptyString()));
 
     }
 
@@ -294,10 +292,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Then logout
         given()
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().get("logout");
+                .expect().statusCode(HttpServletResponse.SC_OK)
+                .when().get("logout");
 
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
+        // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
 
@@ -312,19 +311,19 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", intygsId);
 
         String newIntygsId = given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .expect().statusCode(HttpServletResponse.SC_OK)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
                 .then()
-                    .body("intygsUtkastId", not(isEmptyString()))
-                    .body("intygsUtkastId", not(equalTo(intygsId)))
-                    .body("intygsTyp", equalTo("fk7263"))
-                        .extract()
-                            .path("intygsUtkastId");
+                .body("intygsUtkastId", not(isEmptyString()))
+                .body("intygsUtkastId", not(equalTo(intygsId)))
+                .body("intygsTyp", equalTo("fk7263"))
+                .extract()
+                .path("intygsUtkastId");
 
         // Check that the copy contains the correct stuff
         given().expect().statusCode(200)
-        .when().get("moduleapi/intyg/fk7263/" + newIntygsId + "?sjf=true")
-            .then()
+                .when().get("moduleapi/intyg/fk7263/" + newIntygsId + "?sjf=true")
+                .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
@@ -337,11 +336,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
-        given()
-        .expect().statusCode(HttpServletResponse.SC_OK)
-        .when().get("logout");
+        given().expect().statusCode(HttpServletResponse.SC_OK)
+                .when().get("logout");
 
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
+        // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
 
@@ -358,11 +357,38 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
                 .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
                 .then()
-                    .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-                    .body("message", not(isEmptyString()));
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
     }
 
-    private void signeraUtkastWithTestbarhetsApi(String intygsId) {
+    @Test
+    public void testRevokeReplaceSignedIntyg() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsTyp = "fk7263";
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
+        signeraUtkastWithTestabilityApi(intygsId);
+
+        RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
+        revokeParam.setRevokeMessage("Makulera!");
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+
+        RevokeReplaceSignedIntygRequest request = new RevokeReplaceSignedIntygRequest();
+        request.setRevokeSignedIntygParameter(revokeParam);
+        request.setCopyIntygRequest(copyIntygRequest);
+
+        given().contentType(ContentType.JSON).body(request).expect().statusCode(200)
+                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkallaersatt").then()
+                .body("intygsUtkastId", not(isEmptyString()))
+                .body("intygsUtkastId", not(equalTo(intygsId)))
+                .body("intygsTyp", equalTo(intygsTyp));
+
+        deleteUtkast(intygsId);
+    }
+
+    private void signeraUtkastWithTestabilityApi(String intygsId) {
         String completePath = "testability/intyg/" + intygsId + "/komplett";
         String signPath = "testability/intyg/" + intygsId + "/signerat";
         given().contentType(ContentType.JSON).expect().statusCode(200).when().put(completePath);

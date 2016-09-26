@@ -43,9 +43,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeReplaceSignedIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
 
 /**
  * Controller exposing services to be used by modules.
@@ -145,7 +143,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/skicka")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, SendSignedIntygParameter param) {
+    public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            SendSignedIntygParameter param) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.SKICKA_INTYG).orThrow();
         IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient());
         return Response.ok(sendResult).build();
@@ -165,13 +164,9 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.MAKULERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-                .orThrow();
-        String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
-        IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
-        return Response.ok(revokeResult).build();
+        validateRevokeAuthority(intygsTyp);
+        IntygServiceResult result = revokeIntyg(intygsTyp, intygsId, param);
+        return Response.ok(result).build();
     }
 
     /**
@@ -187,41 +182,18 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeReplaceSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-                                             RevokeReplaceSignedIntygRequest revokeReplaceRequest) {
+            RevokeReplaceSignedIntygRequest revokeReplaceRequest) {
 
-        /*
-                ändra frontend att skicka ett copyrequest också enligt nya formatet
-        */
-
-        // Makulera
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.MAKULERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-                .orThrow();
-        String revokeMessage = (revokeReplaceRequest != null && revokeReplaceRequest.getRevokeSignedIntygParameter() != null) ? revokeReplaceRequest.getRevokeSignedIntygParameter().getRevokeMessage() : null;
-        IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
-
-        // Copy
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
-                .orThrow();
-
-        LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, intygsId,
-                revokeReplaceRequest.getCopyIntygRequest().isCoherentJournaling());
+        validateRevokeAuthority(intygsTyp);
+        validateCopyAuthority(intygsTyp);
 
         if (!revokeReplaceRequest.getCopyIntygRequest().isValid()) {
-            LOG.error("Request to create copy of '{}' is not valid", intygsId);
+            LOG.warn("Request to revoke and replace '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(intygsId, intygsTyp, revokeReplaceRequest.getCopyIntygRequest());
-        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
-
-        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}",
-                new Object[] { intygsId, serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType() });
-
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+        revokeIntyg(intygsTyp, intygsId, revokeReplaceRequest.getRevokeSignedIntygParameter());
+        CopyIntygResponse response = replaceIntyg(revokeReplaceRequest.getCopyIntygRequest(), intygsTyp, intygsId);
 
         return Response.ok().entity(response).build();
     }
@@ -240,10 +212,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
-                .orThrow();
+        validateCopyAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
                 request.isCoherentJournaling());
@@ -253,15 +222,8 @@ public class IntygModuleApiController extends AbstractApiController {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
-        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
-
-        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}",
-                new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType() });
-
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-
-        return Response.ok().entity(response).build();
+        CopyIntygResponse result = copyIntyg(request, intygsTyp, orgIntygsId);
+        return Response.ok().entity(result).build();
     }
 
     /**
@@ -277,7 +239,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId,
-                                     @PathParam("meddelandeId") String meddelandeId) {
+            @PathParam("meddelandeId") String meddelandeId) {
+
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.KOPIERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
@@ -314,10 +277,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
-                .orThrow();
+        validateCopyAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -330,8 +290,7 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {}, renewing certificate with id '{}'.",
-                new Object[] { serviceResponse.getNewDraftIntygId(),
-                        serviceResponse.getNewDraftIntygType(), orgIntygsId });
+                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
 
@@ -357,7 +316,7 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     private CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
-                                                                    CopyIntygRequest copyRequest) {
+            CopyIntygRequest copyRequest) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
@@ -401,7 +360,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
         patient.setPersonId(copyRequest.getPatientPersonnummer());
 
-        // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
         if (!StringUtils.isBlank(copyRequest.getFornamn())
                 && !StringUtils.isBlank(copyRequest.getEfternamn())
                 && !StringUtils.isBlank(copyRequest.getPostadress())
@@ -415,5 +373,44 @@ public class IntygModuleApiController extends AbstractApiController {
             patient.setPostort(copyRequest.getPostort());
         }
         return patient;
+    }
+
+    private IntygServiceResult revokeIntyg(String intygsTyp, String intygsId, RevokeSignedIntygParameter param) {
+        String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
+        return intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
+    }
+
+    private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId) {
+        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
+        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
+
+        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
+                serviceResponse.getNewDraftIntygType());
+
+        return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+    }
+
+    private CopyIntygResponse replaceIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId) {
+        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
+        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
+
+        LOG.debug("Created a new replacement copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
+                serviceResponse.getNewDraftIntygType());
+
+        return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+    }
+
+    private void validateRevokeAuthority(String intygsTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .orThrow();
+    }
+
+    private void validateCopyAuthority(String intygsTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.KOPIERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
+                .orThrow();
     }
 }

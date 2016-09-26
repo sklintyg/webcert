@@ -81,9 +81,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling)
-                    throws ModuleNotFoundException,
-                    ModuleException {
+            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String intygsTyp = copyRequest.getTyp();
@@ -141,9 +139,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling)
-                    throws ModuleNotFoundException,
-                    ModuleException {
+            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 

@@ -94,6 +94,9 @@ public class CopyUtkastServiceImplTest {
     @Mock(name = "createRenewalUtkastBuilder")
     private CreateRenewalCopyUtkastBuilder createRenewalCopyUtkastBuilder;
 
+    @Mock(name = "createReplacementUtkastBuilder")
+    private CopyUtkastBuilder<CreateCopyRequest> createReplacementUtkastBuilder;
+
     @Mock
     private NotificationService mockNotificationService;
 
@@ -182,7 +185,37 @@ public class CopyUtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
+    }
 
+    @Test
+    public void testCreateReplacementCopy() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setReference(reference);
+        when(userService.getUser()).thenReturn(user);
+
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), eq(true),
+                any(boolean.class))).thenReturn(resp);
+
+        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+
+        CreateNewDraftCopyResponse copyResp = copyService.createReplacementCopy(copyReq);
+
+        assertNotNull(copyResp);
+        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
+
+        verify(mockPUService).getPerson(PATIENT_SSN);
+        verify(createReplacementUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class), any(boolean.class),
+                any(boolean.class));
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
+        verify(logService).logCreateIntyg(any(LogRequest.class));
     }
 
     @Test

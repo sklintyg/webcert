@@ -79,6 +79,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
     @Autowired
+    @Qualifier("createReplacementUtkastBuilder")
+    private CopyUtkastBuilder<CreateCopyRequest> createReplacementUtkastBuilder;
+
+    @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     @Autowired
@@ -190,6 +194,33 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    @Override
+    @Transactional("jpaTransactionManager")
+    public CreateNewDraftCopyResponse createReplacementCopy(CreateNewDraftCopyRequest copyRequest) {
+
+        String originalIntygId = copyRequest.getOriginalIntygId();
+
+        LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
+
+        try {
+            CopyUtkastBuilderResponse builderResponse;
+
+            builderResponse = buildReplacementUtkastBuilderResponse(copyRequest, originalIntygId);
+
+            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+
+            return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
+
+        } catch (ModuleException | ModuleNotFoundException me) {
+            LOG.error("Module exception occured when trying to make a replacement copy of " + originalIntygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
+
     private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
@@ -244,6 +275,21 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation, false);
         } else {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation, false);
+        }
+
+        return builderResponse;
+    }
+
+    private CopyUtkastBuilderResponse buildReplacementUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
+            throws ModuleNotFoundException, ModuleException {
+
+        Person patientDetails = updatePatientDetails(copyRequest);
+
+        CopyUtkastBuilderResponse builderResponse;
+        if (utkastRepository.exists(originalIntygId)) {
+            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, copyRequest.isCoherentJournaling());
+        } else {
+            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, copyRequest.isCoherentJournaling());
         }
 
         return builderResponse;

@@ -52,4 +52,12 @@ public interface CopyUtkastService {
      */
     CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest);
 
+    /**
+     * Create a replacement copy, which is a copy of a revoked Intyg.
+     *
+     * @param copyRequest
+     * @return {@link CreateNewDraftCopyResponse}
+     */
+    CreateNewDraftCopyResponse createReplacementCopy(CreateNewDraftCopyRequest copyRequest);
+
 }

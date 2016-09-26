@@ -138,6 +138,7 @@
     <bean id="copyCompletionUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CopyCompletionUtkastBuilder"/>
     <bean id="createCopyUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateCopyUtkastBuilder"/>
     <bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
+    <bean id="createReplacementUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateReplacementUtkastBuilder"/>
 
     <!-- Exposes healthCheckService for use in health-check.jsp -->
     <bean
