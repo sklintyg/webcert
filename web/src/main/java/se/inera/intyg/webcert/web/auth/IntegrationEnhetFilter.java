@@ -50,6 +50,7 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURI
 public class IntegrationEnhetFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationEnhetFilter.class);
+
     private static final String ENHET = "enhet";
 
     @Override
@@ -67,16 +68,34 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
         WebCertUser webCertUser = (WebCertUser) ((SecurityContextImpl) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication().getPrincipal();
         Map<String, List<String>> queryMap = splitQuery(request.getQueryString());
         if (!queryMap.containsKey(ENHET)) {
-            LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-            response.sendRedirect("/web/dashboard?destination=" + URLEncoder.encode(requestUrl, "UTF-8") + "#/integration-enhetsval");
+
+            // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
+            // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
+            // the UserDetailsService that built the Principal, but better safe than sorry...
+            if (userHasExactlyOneSelectableVardenhet(webCertUser)) {
+                webCertUser.changeValdVardenhet(webCertUser.getVardgivare().get(0).getVardenheter().get(0).getId());
+                filterChain.doFilter(request, response);
+            } else {
+                LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
+                response.sendRedirect("/web/dashboard?destination=" + URLEncoder.encode(requestUrl, "UTF-8") + "#/integration-enhetsval");
+            }
+
         } else {
             List<String> enhet = queryMap.get(ENHET);
             if (webCertUser.changeValdVardenhet(enhet.get(0))) {
                 filterChain.doFilter(request, response);
             } else {
+                LOG.warn("Authorization Validation failed for deep-integration request for intyg because user {} is not authorized for enhet {}", webCertUser.getHsaId(), enhet.get(0));
                 response.sendRedirect("/error.jsp?reason=login.medarbetaruppdrag");
             }
         }
+    }
+
+    private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {
+        return webCertUser.getVardgivare().stream()
+                .distinct()
+                .flatMap(vg -> vg.getVardenheter().stream().distinct())
+                .count() == 1L;
     }
 
     private String buildFullUrl(HttpServletRequest request) {

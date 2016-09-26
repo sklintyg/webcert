@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
@@ -55,7 +56,7 @@ public class IntegrationEnhetFilterTest {
     private static final String ENHET_ID = "enhet-789";
     private static final String ENHET_ANNAN = "annan-enhet";
     private static final String VARDGIVAR_ID = "vg-1";
-
+    private static final String VARDGIVAR_ID_2 = "vg-2";
 
     private IntegrationEnhetFilter testee;
 
@@ -88,7 +89,7 @@ public class IntegrationEnhetFilterTest {
 
     @Test
     public void testRedirectsWhenNoEnhetIsSpecified() throws ServletException, IOException {
-        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUser()));
+        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUserWithMultipleVgAndVe()));
         when(req.getQueryString()).thenReturn("fornamn=Fornamnet");
         testee.doFilterInternal(req, resp, filterChain);
 
@@ -98,7 +99,7 @@ public class IntegrationEnhetFilterTest {
 
     @Test
     public void testRedirectsWhenNoQueryStringIsSpecified() throws ServletException, IOException {
-        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUser()));
+        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUserWithMultipleVgAndVe()));
         when(req.getQueryString()).thenReturn("");
         testee.doFilterInternal(req, resp, filterChain);
 
@@ -108,7 +109,7 @@ public class IntegrationEnhetFilterTest {
 
     @Test
     public void testRedirectsToErrorPageWhenEnhetNotAvailableForUser() throws ServletException, IOException {
-        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUser()));
+        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUserWithMultipleVgAndVe()));
         when(req.getQueryString()).thenReturn("fornamn=Fornamnet&enhet=" + ENHET_ANNAN);
         testee.doFilterInternal(req, resp, filterChain);
 
@@ -118,31 +119,60 @@ public class IntegrationEnhetFilterTest {
 
     @Test
     public void testContinuesFilterChainWhenValidEnhetIsSpecified() throws ServletException, IOException {
-        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUser()));
-        when(req.getQueryString()).thenReturn("fornamn=Fornamnet&enhet=" + ENHET_ID);
+        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUserWithMultipleVgAndVe()));
+        when(req.getQueryString()).thenReturn("fornamn=Fornamnet&enhet=" + ENHET_ID + "-0");
         testee.doFilterInternal(req, resp, filterChain);
 
         verify(resp, times(0)).sendRedirect(any());
         verify(filterChain, times(1)).doFilter(req, resp);
     }
 
+    @Test
+    public void testContinuesFilterChainWhenNoEnhetIsSuppliedButUserHasExactlyOneSelectableEnhet() throws IOException, ServletException {
+        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUserWithSingleEnhet()));
+        when(req.getQueryString()).thenReturn("");
+        testee.doFilterInternal(req, resp, filterChain);
 
+        verify(resp, times(0)).sendRedirect(any());
+        verify(filterChain, times(1)).doFilter(req, resp);
+    }
 
-    private IntygUser buildIntygUser() {
+    @Test
+    public void testRedirectsToSelectionPageWhenNoEnhetIsSuppliedButUserHasMultipleEnhetsToChooseFrom() throws IOException, ServletException {
+        when(authentication.getPrincipal()).thenReturn(new WebCertUser(buildIntygUserWithMultipleVgAndVe()));
+        when(req.getQueryString()).thenReturn("");
+        testee.doFilterInternal(req, resp, filterChain);
+
+        verify(resp, times(1)).sendRedirect(any());
+        verify(filterChain, times(0)).doFilter(req, resp);
+    }
+
+    private IntygUser buildIntygUserWithMultipleVgAndVe() {
         IntygUser intygUser = new IntygUser(EMPLOYEE_HSA_ID);
-        intygUser.setVardgivare(Arrays.asList(buildVardgivare()));
+        intygUser.setVardgivare(Arrays.asList(
+                buildVardgivare(VARDGIVAR_ID, "vårdgivaren 1", 2),
+                buildVardgivare(VARDGIVAR_ID_2, "vårdgivaren 2", 2)
+        ));
         return intygUser;
     }
 
-    private Vardgivare buildVardgivare() {
-        Vardgivare vg = new Vardgivare(VARDGIVAR_ID, "Vårdgivare 1");
-        vg.getVardenheter().add(buildVardenhet());
+    private IntygUser buildIntygUserWithSingleEnhet() {
+        IntygUser intygUser = new IntygUser(EMPLOYEE_HSA_ID);
+        intygUser.setVardgivare(Collections.singletonList(buildVardgivare(VARDGIVAR_ID, "vårdgivaren 1", 1)));
+        return intygUser;
+    }
+
+    private Vardgivare buildVardgivare(String vardgivarId, String vardgivarNamn, int antalEnheter) {
+        Vardgivare vg = new Vardgivare(vardgivarId, vardgivarNamn);
+        for (int a = 0; a < antalEnheter; a++) {
+            vg.getVardenheter().add(buildVardenhet(ENHET_ID + "-" + a, "Vårdenhet 123-" + a));
+        }
+
         return vg;
     }
 
-    private Vardenhet buildVardenhet() {
-        Vardenhet vardenhet = new Vardenhet(ENHET_ID, "Vårdenhet 123");
-        return vardenhet;
+    private Vardenhet buildVardenhet(String enhetId, String enhetNamn) {
+        return new Vardenhet(enhetId, enhetNamn);
     }
 
 }
