@@ -18,8 +18,12 @@
  */
 package se.inera.intyg.webcert.logsender.converter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.logmessages.Enhet;
 import se.inera.intyg.common.logmessages.Patient;
 import se.inera.intyg.common.logmessages.PdlLogMessage;
@@ -33,9 +37,6 @@ import se.riv.ehr.log.v1.ResourceType;
 import se.riv.ehr.log.v1.ResourcesType;
 import se.riv.ehr.log.v1.SystemType;
 import se.riv.ehr.log.v1.UserType;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Encapsulates PdlLogMessage (internal format) -> LogType (ehr format) conversion.
