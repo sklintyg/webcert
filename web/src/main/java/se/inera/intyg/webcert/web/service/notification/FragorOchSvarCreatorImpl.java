@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.intyg.common.support.modules.support.api.notification.Arenden;
+import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -69,8 +69,8 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     }
 
     @Override
-    public Pair<Arenden, Arenden> createArenden(String intygsId, String intygstyp) {
-        Pair<Arenden, Arenden> fragor;
+    public Pair<ArendeCount, ArendeCount> createArenden(String intygsId, String intygstyp) {
+        Pair<ArendeCount, ArendeCount> fragor;
 
         if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
             fragor = performFragorCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
@@ -84,7 +84,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         return fragor;
     }
 
-    private Pair<Arenden, Arenden> performFragorCount(List<FragaSvarStatus> fsStatuses) {
+    private Pair<ArendeCount, ArendeCount> performFragorCount(List<FragaSvarStatus> fsStatuses) {
         int skickadeFragorTotalt = 0;
         int skickadeFragorBesvarade = 0;
         int skickadeFragorEjBesvarade = 0;
@@ -116,11 +116,11 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
             }
         }
 
-        return Pair.of(new Arenden(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
-                new Arenden(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+        return Pair.of(new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
+                new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
     }
 
-    private Pair<Arenden, Arenden> performArendeCount(List<Arende> arenden) {
+    private Pair<ArendeCount, ArendeCount> performArendeCount(List<Arende> arenden) {
         int skickadeFragorTotalt = 0;
         int skickadeFragorBesvarade = 0;
         int skickadeFragorEjBesvarade = 0;
@@ -162,8 +162,8 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
                 }
             }
         }
-        return Pair.of(new Arenden(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
-                new Arenden(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+        return Pair.of(new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
+                new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
     }
 
     private FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {

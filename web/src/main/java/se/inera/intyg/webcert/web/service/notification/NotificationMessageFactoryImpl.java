@@ -59,7 +59,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
         String utkastJson = utkast.getModel();
 
         if (SchemaVersion.VERSION_2 == version) {
-            Pair<Arenden, Arenden> arenden = Pair.of(Arenden.getEmpty(), Arenden.getEmpty());
+            Pair<ArendeCount, ArendeCount> arenden = Pair.of(ArendeCount.getEmpty(), ArendeCount.getEmpty());
 
             // Add a count of questions to the message
             if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {

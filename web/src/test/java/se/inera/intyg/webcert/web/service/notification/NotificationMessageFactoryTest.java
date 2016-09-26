@@ -142,7 +142,7 @@ public class NotificationMessageFactoryTest {
 
     @Test
     public void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion2() {
-        when(mockFragorOchSvarCreator.createArenden(INTYGS_ID, INTYGS_TYP)).thenReturn(Pair.of(new Arenden(1, 1, 1, 1), new Arenden(2, 2, 2, 2)));
+        when(mockFragorOchSvarCreator.createArenden(INTYGS_ID, INTYGS_TYP)).thenReturn(Pair.of(new ArendeCount(1, 1, 1, 1), new ArendeCount(2, 2, 2, 2)));
 
         Utkast utkast = createUtkast(INTYGS_ID);
         final String reference = "ref";
