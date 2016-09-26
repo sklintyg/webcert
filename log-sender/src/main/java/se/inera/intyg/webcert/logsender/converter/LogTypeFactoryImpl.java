@@ -67,8 +67,8 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private void buildUserType(PdlLogMessage source, LogType logType) {
         UserType user = new UserType();
-        user.setUserId(nullSafeTrim(source.getUserId()));
-        user.setName(nullSafeTrim(source.getUserName()));
+        user.setUserId(StringUtils.trim(source.getUserId()));
+        user.setName(StringUtils.trim(source.getUserName()));
         user.setCareProvider(careProvider(source.getUserCareUnit()));
         user.setCareUnit(careUnit(source.getUserCareUnit()));
         logType.setUser(user);
@@ -76,8 +76,8 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private void buildSystemType(PdlLogMessage source, LogType logType) {
         SystemType system = new SystemType();
-        system.setSystemId(nullSafeTrim(source.getSystemId()));
-        system.setSystemName(nullSafeTrim(source.getSystemName()));
+        system.setSystemId(StringUtils.trim(source.getSystemId()));
+        system.setSystemName(StringUtils.trim(source.getSystemName()));
         logType.setSystem(system);
     }
 
@@ -97,22 +97,22 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private PatientType patient(Patient source) {
         PatientType patient = new PatientType();
-        patient.setPatientId(nullSafeTrim(source.getPatientId().getPersonnummerWithoutDash()));
-        patient.setPatientName(nullSafeTrim(source.getPatientNamn()));
+        patient.setPatientId(StringUtils.trim(source.getPatientId().getPersonnummerWithoutDash()));
+        patient.setPatientName(StringUtils.trim(source.getPatientNamn()));
         return patient;
     }
 
     private CareUnitType careUnit(Enhet source) {
         CareUnitType careUnit = new CareUnitType();
-        careUnit.setCareUnitId(nullSafeTrim(source.getEnhetsId()));
-        careUnit.setCareUnitName(nullSafeTrim(source.getEnhetsNamn()));
+        careUnit.setCareUnitId(StringUtils.trim(source.getEnhetsId()));
+        careUnit.setCareUnitName(StringUtils.trim(source.getEnhetsNamn()));
         return careUnit;
     }
 
     private CareProviderType careProvider(Enhet source) {
         CareProviderType careProvider = new CareProviderType();
-        careProvider.setCareProviderId(nullSafeTrim(source.getVardgivareId()));
-        careProvider.setCareProviderName(nullSafeTrim(source.getVardgivareNamn()));
+        careProvider.setCareProviderId(StringUtils.trim(source.getVardgivareId()));
+        careProvider.setCareProviderName(StringUtils.trim(source.getVardgivareNamn()));
         return careProvider;
     }
 
@@ -124,9 +124,5 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
         resource.setPatient(patient(source.getPatient()));
         return resource;
-    }
-
-    private String nullSafeTrim(String input) {
-        return input != null ? input.trim() : null;
     }
 }
