@@ -126,14 +126,6 @@ configurations {
   buildtools
 }
 
-buildscript {
-  dependencies {
-    classpath 'org.akhikhl.gretty:gretty:+'
-    classpath 'com.moowork.gradle:gradle-node-plugin:0.12'
-    classpath 'com.moowork.gradle:gradle-grunt-plugin:0.12'
-  }
-}
-
 dependencies {
   buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
 

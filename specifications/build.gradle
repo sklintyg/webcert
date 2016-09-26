@@ -1,11 +1,5 @@
 description = 'Webcert (FitNesse)'
 
-buildscript {
-  dependencies {
-    classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0-SNAPSHOT'
-  }
-}
-
 apply plugin: 'groovy'
 apply plugin: 'inera-fitnesse'
 
@@ -21,11 +15,11 @@ fitnesse {
 
   extraProperties = [
     'geb.env': "chrome",
-    'webcert.web.baseUrl' : "http://localhost:9088/",
-    'webcert.baseUrl' : "http://localhost:9088/",
-    'logsender.baseUrl' : "http://localhost:9097/log-sender/",
-    'certificate.baseUrl' : "http://localhost:8080/inera-certificate/",
-    'fitnesse.working' : "src/test/fitnesse"
+                     'webcert.web.baseUrl' : "http://localhost:9088/",
+                     'webcert.baseUrl' : "http://localhost:9088/",
+                     'logsender.baseUrl' : "http://localhost:9097/log-sender/",
+                     'certificate.baseUrl' : "http://localhost:8080/inera-certificate/",
+                     'fitnesse.working' : "src/test/fitnesse"
   ]
 
 }
