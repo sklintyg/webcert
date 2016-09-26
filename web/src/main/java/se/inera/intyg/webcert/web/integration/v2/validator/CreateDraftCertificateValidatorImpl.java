@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.TypAvIntyg;
@@ -61,6 +63,12 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
         if (StringUtils.isBlank(patient.getFornamn())) {
             errors.addError("fornamn is required");
+        }
+
+        if (patient.getPersonId() == null || StringUtils.isBlank(patient.getPersonId().getExtension())) {
+            errors.addError("personId is required");
+        } else {
+            PersonnummerChecksumValidator.validate(new Personnummer(patient.getPersonId().getExtension()), errors);
         }
     }
 

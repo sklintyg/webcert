@@ -34,6 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Patient;
 
@@ -50,60 +51,90 @@ public class CreateDraftCertificateValidatorImplTest {
 
     @Before
     public void setup() {
+        when(moduleRegistry.moduleExists(CODE.toLowerCase())).thenReturn(Boolean.TRUE);
         when(moduleRegistry.getModuleIdFromExternalId(anyString())).thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
 
     @Test
     public void testValidate() {
-        when(moduleRegistry.moduleExists(CODE.toLowerCase())).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertFalse(result.hasErrors());
     }
 
     @Test
     public void testValidateInvalidIntygsTyp() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.FALSE);
+        when(moduleRegistry.moduleExists(CODE.toLowerCase())).thenReturn(false);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientEfternamnMissing() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, null, "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientFornamnMissing() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", null, "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
+    public void testValidatePatientPersonIdMissing() {
+        ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true, null));
+        assertTrue(result.hasErrors());
+    }
+
+    @Test
+    public void testValidatePatientPersonIdExtensionMissing() {
+        ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true, ""));
+        assertTrue(result.hasErrors());
+    }
+
+    @Test
+    public void testValidatePatientPersonnummerOk() {
+        ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true, "191212121212"));
+        assertFalse(result.hasErrors());
+    }
+
+    @Test
+    public void testValidatePatientSamordningsnummerOk() {
+        ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true, "198001910002"));
+        assertFalse(result.hasErrors());
+    }
+
+    @Test
+    public void testValidatePatientInvalidPersonnummer() {
+        ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true, "190101010101"));
+        assertTrue(result.hasErrors());
+    }
+
+    @Test
     public void testValidateHoSPersonalFullstandigtnamnMissing() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "fornamn", null, "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetMissing() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "fornamn", "fullständigt namn", "enhetsnamn", false));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetsnamnMissing() {
-        when(moduleRegistry.moduleExists(CODE)).thenReturn(Boolean.TRUE);
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "fornamn", "fullständigt namn", null, true));
         assertTrue(result.hasErrors());
     }
 
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn, String enhetsnamn,
             boolean createUnit) {
+        return buildIntyg(intygsKod, patientEfternamn, patientFornamn, hosPersonalFullstandigtNamn, enhetsnamn, createUnit, "191212121212");
+    }
+
+    private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn, String enhetsnamn,
+            boolean createUnit, String personId) {
         Intyg intyg = new Intyg();
         TypAvIntyg typAvIntyg = new TypAvIntyg();
         typAvIntyg.setCode(intygsKod);
@@ -111,6 +142,10 @@ public class CreateDraftCertificateValidatorImplTest {
         Patient patient = new Patient();
         patient.setEfternamn(patientEfternamn);
         patient.setFornamn(patientFornamn);
+        if (personId != null) {
+            patient.setPersonId(new PersonId());
+            patient.getPersonId().setExtension(personId);
+        }
         intyg.setPatient(patient);
         HosPersonal hosPersonal = new HosPersonal();
         hosPersonal.setFullstandigtNamn(hosPersonalFullstandigtNamn);
