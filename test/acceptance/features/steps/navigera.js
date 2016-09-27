@@ -51,6 +51,7 @@ module.exports = function() {
                 url += 'postadress=Langgatan%2012&';
                 url += 'postnummer=990%2090&';
                 url += 'postort=Simrishamn&';
+                url += 'ref=testref&';
                 url += 'enhet=' + global.user.enhetId;
 
             } else {

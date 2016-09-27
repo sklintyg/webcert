@@ -17,63 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, protractor, logger, ursprungligtIntyg, Promise, JSON */
+/* global pages, protractor, ursprungligtIntyg, Promise, JSON, intyg */
 
 'use strict';
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./dbActions');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
 var statusuppdateringarRows;
+var helpers = require('./helpers');
 
-var handelseRegex = /(HAN\d{1,2})/g;
-
-
-function selectTable(handelsekod) {
-    var res = handelsekod.match(handelseRegex);
-    if (res) {
-        if (res.length > 1) {
-            logger.error('ERROR: More than one "händelse" found.');
-            return;
-        }
-        // console.log('Database: webcert_requests.requests');
-        return 'webcert_requests.requests';
-    } else {
-        console.log('Database: webcert_requests.statusupdates_2');
-        return 'webcert_requests.statusupdates_2';
-    }
-}
-
-function selectExtension(handelsekod) {
-    var res = handelsekod.match(handelseRegex);
-    if (res) {
-        if (res.length > 1) {
-            throw ('ERROR: More than one "händelse" found. Cannot select determine extension');
-        }
-        return 'utlatandeExtension';
-    } else {
-        return 'intygsExtension';
-    }
-}
-
-function selectHandelseTidName(handelsekod) {
-    var res = handelsekod.match(handelseRegex);
-    if (res) {
-        return 'handelsetidpunkt';
-    } else {
-        return 'handelseTid';
-    }
-}
 
 
 function getNotificationEntries(intygsId, handelsekod, numEvents) {
-    // Select table and extension based on if 'händelse' contains the pattern HAN{1-2digit} or NOT
-    var table = selectTable(handelsekod);
-    var extensionType = selectExtension(handelsekod);
-    var handelseTidName = selectHandelseTidName(handelsekod);
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var table = 'webcert_requests.requests';
+    var handelseTidName = 'handelsetidpunkt';
+    var extensionType = 'utlatandeExtension';
+    var selectStatement = 'SELECT  utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
+
+    if (isSMIIntyg) {
+        table = 'webcert_requests.statusupdates_2';
+        handelseTidName = 'handelseTid';
+        extensionType = 'intygsExtension';
+
+        selectStatement = 'SELECT ' + extensionType + ', handelseKod,' +
+            ' skickadeFragorTotal, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade,' +
+            ' mottagnaFragorTotal, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade,' +
+            handelseTidName + ';';
+    }
 
     var databaseTable = table;
     var query =
-        'SELECT ' + extensionType + ', handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName +
+        selectStatement +
         ' FROM ' + databaseTable +
         ' WHERE ' + databaseTable + '.handelseKod = "' + handelsekod + '"' +
         ' AND ' + databaseTable + '.' + extensionType + ' = "' + intygsId + '"' +
@@ -147,9 +122,40 @@ module.exports = function() {
     this.Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
         console.log(statusuppdateringarRows[0]);
         var row = statusuppdateringarRows[0];
-        expect(fragor).to.equal(row.antalFragor.toString());
-        expect(hanFragor).to.equal(row.antalHanteradeFragor.toString());
-        expect(svar).to.equal(row.antalSvar.toString());
-        expect(hanSvar).to.equal(row.antalHanteradeSvar.toString());
+        return Promise.all([
+            expect(fragor).to.equal(row.antalFragor.toString()),
+            expect(hanFragor).to.equal(row.antalHanteradeFragor.toString()),
+            expect(svar).to.equal(row.antalSvar.toString()),
+            expect(hanSvar).to.equal(row.antalHanteradeSvar.toString())
+        ]);
     });
+
+
+    this.Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
+        function(totalt, ejBesvarade, besvarade, hanterade) {
+            console.log(statusuppdateringarRows[0]);
+            var row = statusuppdateringarRows[0];
+
+            return Promise.all([
+                expect(totalt).to.equal(row.mottagnaFragorTotal.toString()),
+                expect(ejBesvarade).to.equal(row.mottagnaFragorEjBesvarade.toString()),
+                expect(besvarade).to.equal(row.mottagnaFragorBesvarade.toString()),
+                expect(hanterade).to.equal(row.mottagnaFragorHanterade.toString())
+            ]);
+        }
+    );
+
+    this.Given(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
+        function(totalt, ejBesvarade, besvarade, hanterade) {
+            console.log(statusuppdateringarRows[0]);
+            var row = statusuppdateringarRows[0];
+
+            return Promise.all([
+                expect(totalt).to.equal(row.skickadeFragorTotal.toString()),
+                expect(ejBesvarade).to.equal(row.skickadeFragorEjBesvarade.toString()),
+                expect(besvarade).to.equal(row.skickadeFragorBesvarade.toString()),
+                expect(hanterade).to.equal(row.skickadeFragorHanterade.toString())
+            ]);
+        }
+    );
 };
