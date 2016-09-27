@@ -183,8 +183,13 @@ if (project.hasProperty('runSonar')) {
         "**/stub/**",
         "**/exception/**",
         "**/*Exception*.java",
-        "**/*Fake*.java"
+        "**/*Fake*.java",
+        "**/templates.js",
+        "**/vendor/**",
+        "**/swagger-ui/**"
       ]
+
+      property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
 
       //Skip these projects entirely
       project(":webcert-specifications") {
