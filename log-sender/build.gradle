@@ -5,7 +5,7 @@ apply plugin: 'war'
 dependencies {
   compile project(':webcert-common')
 
-  compile 'se.riv.ehr.logstore:ehr-logstore-schemas:1.2.2'
+  compile 'se.riv.ehr.logstore:ehr-logstore-schemas:1.2.3'
 
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"

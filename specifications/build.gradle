@@ -30,7 +30,7 @@ dependencies {
 
   compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${healthcondSchemasVersion}"
   compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${healthreportingSchemasVersion}"
-  compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.1'
+  compile 'se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.3'
   compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
 
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
