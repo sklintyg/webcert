@@ -30,7 +30,7 @@ var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);
 
-xdescribe('Patient lookup variants', function() {
+describe('Patient lookup variants', function() {
     it('Login through the welcome page with user', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();

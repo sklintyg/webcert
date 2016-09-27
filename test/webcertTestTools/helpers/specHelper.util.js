@@ -122,7 +122,7 @@ module.exports = {
             }
 
             loadScript([
-                '/web/webjars/angularjs/1.4.10/angular-mocks.js'
+                '/bower_components/angular-mocks/angular-mocks.js'
             ]);
 
             angular.module('httpBackendMock', ['ngMockE2E']);

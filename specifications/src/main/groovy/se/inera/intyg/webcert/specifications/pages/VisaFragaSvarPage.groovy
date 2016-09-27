@@ -170,7 +170,7 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
     }
 
     boolean qaHandledPanel(String internid) {
-        def ref = "#qahandled-${internid}";
+        def ref = "#arende-handled-${internid}";
         def result
         Browser.drive {
                 result = $(ref).isDisplayed()
@@ -179,7 +179,7 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
     }
 
     boolean qaUnhandledPanel(String id) {
-        def ref = "#qaunhandled-${id}";
+        def ref = "#arende-unhandled-${id}";
         def result
         Browser.drive {
                 result = $(ref).isDisplayed()

@@ -146,10 +146,10 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.komplettera = {
             dialog: {
                 //modal: element(by.id('komplettering-dialog')),
-                modalDialogHeader: element(by.id('komplettering-dialog')),
-                svaraMedNyttIntygKnapp: element(by.id('button1answerintyg-dialog')),
-                svaraMedTextKnapp: element(by.id('button2answermessage-dialog')),
-                fortsattPaIntygsutkastKnapp: element(by.id('button3gotoutkast-dialog'))
+                modalDialogHeader: element(by.id('komplettering-modal-dialog')),
+                svaraMedNyttIntygKnapp: element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button')),
+                svaraMedTextKnapp: element(by.id('komplettering-modal-dialog-answerWithMessage-button')),
+                fortsattPaIntygsutkastKnapp: element(by.id('komplettering-modal-dialog-goToUtkast-button'))
             }
         };
     },
@@ -161,10 +161,10 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.question.topic.element(by.cssContainingText('option', amne)).click();
     },
     getMarkAsHandledButtonForID: function(id) {
-        return element(by.id('qaunhandled-' + id)).element(by.css('input[type="checkbox"]'));
+        return element(by.id('handleCheck-' + id));
     },
     getQAElementByText: function(containingText) {
-        var panel = element(by.cssContainingText('.qa-panel', containingText));
+        var panel = element(by.cssContainingText('.arende-panel', containingText));
         return {
             panel: panel,
             text: panel.element(by.css('textarea')),
@@ -180,17 +180,17 @@ var Fk7263Intyg = BaseIntyg._extend({
         return this.getMarkAsHandledButtonForID(id).sendKeys(protractor.Key.SPACE);
     },
     svaraMedNyttIntyg: function(id) {
-        return element(by.id('answerWithIntygBtn-' + id)).sendKeys(protractor.Key.SPACE);
+        return element(by.id('answer-kompletteringsatgard-open-' + id)).sendKeys(protractor.Key.SPACE);
     },
     fortsattPaIntygsutkast: function(id) {
-        return element(by.id('continueWithUtkastBtn-' + id)).sendKeys(protractor.Key.SPACE);
+        return element(by.id('answer-kompletteringsatgard-open-utkast-' + id)).sendKeys(protractor.Key.SPACE);
     },
     getQAById: function(handled, id) {
         var subgroup = 'unhandled';
         if (handled) {
             subgroup = 'handled';
         }
-        return element(by.id('qa' + subgroup + '-' + id));
+        return element(by.id('arende-' + subgroup + '-' + id));
     },
     getKompletteringsDialog: function() {
         return this.komplettera.dialog;
