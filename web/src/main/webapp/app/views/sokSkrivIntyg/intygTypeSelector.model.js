@@ -16,12 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('webcert').controller('webcert.InitCertCtrl',
-    [ '$location', 'common.PatientModel',
-        function($location, PatientModel) {
+
+angular.module('webcert').factory('webcert.IntygTypeSelectorModel',
+    ['$log',
+        function($log) {
             'use strict';
 
-            PatientModel.build();
-            $location.replace(true);
-            $location.path('/create/choose-patient/index');
-        }]);
+            return {
+                build: function() {
+                    this.intygType = 'default';
+                    this.certificateTypeText = '';
+                    this.intygTypes = []; // Format: { id: 'default', label: '' }
+                    return this;
+                }
+            };
+        }
+    ]);
