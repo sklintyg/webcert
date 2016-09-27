@@ -140,6 +140,7 @@ dependencies {
 
   compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
   compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.3'
+  compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.3"
 
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:security-siths:${commonVersion}"
