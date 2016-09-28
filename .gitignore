@@ -12,6 +12,7 @@ rebel.xml
 
 .DS_Store
 
+generated
 bin
 node
 node_modules
