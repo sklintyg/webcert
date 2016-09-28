@@ -37,7 +37,7 @@ public abstract class BaseIntegrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationController.class);
 
-    private WebCertUserService webCertUserService;
+    protected WebCertUserService webCertUserService;
     private String urlBaseTemplate;
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 

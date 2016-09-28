@@ -19,23 +19,18 @@
 
 package se.inera.intyg.webcert.web.service.mail;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-
-import javax.mail.Address;
-import javax.mail.internet.MimeMessage;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
@@ -45,6 +40,15 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+
+import javax.mail.Address;
+import javax.mail.internet.MimeMessage;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceImplTest {
@@ -242,7 +246,7 @@ public class MailNotificationServiceImplTest {
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         //Then
-        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions", url);
+        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet=" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
         verifyZeroInteractions(utkastRepository);
     }
 
@@ -289,7 +293,7 @@ public class MailNotificationServiceImplTest {
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         //Then
-        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions", url);
+        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet=" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
         verifyZeroInteractions(utkastRepository);
     }
 

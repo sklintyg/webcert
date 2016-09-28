@@ -19,22 +19,33 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -44,9 +55,9 @@ import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationCont
  */
 @Path("/certificate")
 @Api(value = "webcert web user certificate (Fråga/Svar uthopp)", description = "REST API för fråga/svar via uthoppslänk, landstingspersonal", produces = MediaType.APPLICATION_JSON)
-public class LegacyIntygIntegrationController extends BaseIntegrationController {
+public class FragaSvarUthoppController extends BaseIntegrationController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
@@ -56,6 +67,9 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     private static final String DEFAULT_TYPE = Fk7263EntryPoint.MODULE_ID;
 
     private String urlFragmentTemplate;
+
+    @Autowired
+    private IntygService intygService;
 
     @Override
     protected String[] getGrantedRoles() {
@@ -76,9 +90,10 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
      */
     @GET
     @Path("/{type}/{intygId}/questions")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("intygId") String intygId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("intygId") String intygId, @QueryParam("enhet") String enhetHsaId) {
 
         super.validateRedirectToIntyg(intygId);
+        this.validateAndChangeEnhet(intygId, type, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
 
@@ -94,11 +109,12 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
      */
     @GET
     @Path("/{intygId}/questions")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @QueryParam("enhet") String enhetHsaId) {
 
         super.validateRedirectToIntyg(intygId);
 
         String intygType = DEFAULT_TYPE;
+        this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 
         return buildRedirectResponse(uriInfo, intygType, intygId);
@@ -109,6 +125,31 @@ public class LegacyIntygIntegrationController extends BaseIntegrationController 
     }
 
     // - - - - - Private scope - - - - -
+
+    /**
+     * Makes sure we change (if possible) the current vardEnhet to the one either specified in the URL or to the one
+     * the intyg was issued on.
+     */
+    private void validateAndChangeEnhet(String intygsId, String intygsTyp, String enhetHsaId) {
+        WebCertUser user = webCertUserService.getUser();
+        if (user == null) {
+            LOG.error("No user in session, cannot continue");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No user session, cannot view questions for intyg " + intygsId);
+        }
+
+        if (StringUtils.isNotBlank(enhetHsaId)) {
+            // Link contained not empty ?enhet= query param, try to set on user!
+            if (!user.changeValdVardenhet(enhetHsaId)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User does not have access to enhet " + enhetHsaId);
+            }
+        } else {
+            // No enhet on link (legacy fallback for pre WC 5.0 links)
+            enhetHsaId = intygService.getIssuingVardenhetHsaId(intygsId, intygsTyp);
+            if (!user.changeValdVardenhet(enhetHsaId)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User does not have access to enhet " + enhetHsaId);
+            }
+        }
+    }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
 

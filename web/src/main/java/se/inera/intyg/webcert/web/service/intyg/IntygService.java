@@ -92,4 +92,13 @@ public interface IntygService {
      * Arende as handled.
      */
     void handleSignedCompletion(Utkast utkast, String recipient);
+
+    /**
+     * Retrieves the hsaId of the vardenhet this intyg is issued on.
+     *
+     * @param intygId
+     * @param intygsTyp
+     * @return
+     */
+    String getIssuingVardenhetHsaId(String intygId, String intygsTyp);
 }

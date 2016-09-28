@@ -161,7 +161,7 @@
     <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
     <bean id="termsFilter" class="se.inera.intyg.webcert.web.auth.TermsFilter"/>
 
-    <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
+    <!-- Declare the IntegrationEnhetFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
     <bean id="integrationEnhetFilter" class="se.inera.intyg.webcert.web.auth.IntegrationEnhetFilter"/>
 
     <!-- Eleg login redirect filter for easier URL handling in PP -->

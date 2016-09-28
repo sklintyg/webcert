@@ -29,8 +29,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -63,6 +66,9 @@ public class PageController {
 
     @Autowired
     private MailLinkService mailLinkService;
+
+    @Autowired
+    private IntygService intygService;
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
@@ -110,6 +116,14 @@ public class PageController {
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
+        // WC 5.0 new: change vårdenhet
+        String enhetHsaId = intygService.getIssuingVardenhetHsaId(intygId, typ);
+
+        WebCertUser user = webCertUserService.getUser();
+        if (!user.changeValdVardenhet(enhetHsaId)) {
+            return new ResponseEntity<>("Behörighet saknas för vårdenhet '" + enhetHsaId + "'", HttpStatus.UNAUTHORIZED);
+        }
+
         URI uri = mailLinkService.intygRedirect(typ, intygId);
 
         if (uri == null) {

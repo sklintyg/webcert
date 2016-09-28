@@ -330,6 +330,12 @@ public class IntygServiceImpl implements IntygService {
         arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
     }
 
+    @Override
+    public String getIssuingVardenhetHsaId(String intygId, String intygsTyp) {
+        IntygContentHolder intygData = getIntygData(intygId, intygsTyp, false);
+        return intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+    }
+
     public void setLogicalAddress(String logicalAddress) {
         this.logicalAddress = logicalAddress;
     }

@@ -19,17 +19,15 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.legacyintegration;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.endsWith;
+import com.jayway.restassured.RestAssured;
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import com.jayway.restassured.RestAssured;
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.endsWith;
 
 /**
  * Check that certificate-links are redirected correctly.
@@ -46,7 +44,7 @@ public class LegacyIntegrationControllerIT extends BaseRestIntegrationTest {
 
         given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("webcert/web/user/certificate/{intygsId}/questions").
+                when().get("webcert/web/user/certificate/{intygsId}/questions?enhet=IFV1239877878-1042").
                 then().
                 header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + DEFAULT_INTYGSID));
     }

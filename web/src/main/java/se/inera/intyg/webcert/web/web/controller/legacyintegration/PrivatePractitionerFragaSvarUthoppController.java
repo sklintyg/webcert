@@ -19,20 +19,20 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.common.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.security.common.model.UserOriginType;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.security.common.model.UserOriginType;
+import static se.inera.intyg.common.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
 /**
  * Created by eriklupander on 2015-10-08.
  */
 @Path("/pp-certificate")
 @Api(value = "webcert web user pp-certificate (Fråga/Svar, uthopp privatläkare)", description = "REST API för fråga/svar via uthoppslänk, privatläkare", produces = MediaType.APPLICATION_JSON)
-public class PrivatePractitionerFragaSvarIntegrationController extends LegacyIntygIntegrationController {
+public class PrivatePractitionerFragaSvarUthoppController extends FragaSvarUthoppController {
 
     @Override
     protected String[] getGrantedRoles() {
