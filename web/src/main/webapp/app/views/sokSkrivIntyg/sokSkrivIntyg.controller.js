@@ -18,19 +18,20 @@
  */
 
 angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    [ '$scope', '$state',
-        function($scope, $state) {
+    [ '$scope', '$state', 'webcert.SokSkrivValjUtkastService',
+        function($scope, $state, Service) {
             'use strict';
-            var widgetState = {
-                errorid: undefined
+            var viewState = {
+                loading: false,
+                errorid: null
             };
 
-            $scope.widgetState = angular.copy(widgetState);
+            $scope.viewState = angular.copy(viewState);
 
             // Clear errormessage when user starts typing a new personnummer
             $scope.$watch('personnummer', function personnummerWatch () {
-                if ($scope.widgetState.errorid) {
-                    $scope.widgetState = angular.copy(widgetState);
+                if ($scope.viewState.errorid) {
+                    $scope.viewState = angular.copy(viewState);
                 }
             });
 
@@ -38,7 +39,20 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
             $scope.personnummer = '';
 
             $scope.loadPatient = function() {
-                $state.go('webcert.create-choose-certtype-index', { 'patientId': $scope.personnummer});
+                $scope.viewState.loading = true;
+                Service.lookupPatient($scope.personnummer).then(function(patientResult) {
+                    $scope.viewState.loading = false;
+                    $state.go('webcert.create-choose-certtype-index', { 'patientId': patientResult.personnummer});
+                }, function(errorId) {
+                    $scope.viewState.loading = false;
+                    $scope.viewState.errorid = errorId;
+                    if(errorId === null){
+                        // If the pu-service isn't available the doctor can write any name they want.
+                        // redirect to edit patient name
+                        $state.go('webcert.create-edit-patientname', {mode:'errorOccured'});
+                    }
+                });
+                
             };
 
         }]);

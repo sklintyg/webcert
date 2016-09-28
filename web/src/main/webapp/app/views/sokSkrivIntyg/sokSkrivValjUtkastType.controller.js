@@ -35,7 +35,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.viewState = Viewstate.build();
             $scope.intygTypeModel = IntygTypeSelectorModel.build();
-            $scope.patientModel = PatientModel.build();
+
+            PatientModel.personnummer = $stateParams.patientId;
+            if(!PatientModel.isValid()){
+                $scope.patientModel = PatientModel.build();
+            } else {
+                $scope.patientModel = PatientModel;
+            }
             onPageLoad();
 
             /**
@@ -45,7 +51,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             function onPageLoad() {
 
-                PatientModel.personnummer = $stateParams.patientId;
                 if(ObjectHelper.isEmpty(PatientModel.personnummer)) {
                     $state.go('webcert.create-choosepatient-index');
                     return;
@@ -173,7 +178,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
                         patientPersonnummer: PatientModel.personnummer,
-                        nyttPatientPersonnummer: PatientModel.personnummer
+                        nyttPatientPersonnummer: null
                     }),
                     isOtherCareUnit
                 );
@@ -191,7 +196,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
                         patientPersonnummer: PatientModel.personnummer,
-                        nyttPatientPersonnummer: PatientModel.personnummer
+                        nyttPatientPersonnummer: null
                     }),
                     isOtherCareUnit
                 );

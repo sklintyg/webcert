@@ -21,48 +21,64 @@ describe('ChoosePatientCtrl', function() {
     'use strict';
 
     var $controller;
-    var PatientProxy;
+    var $rootScope;
     var $scope;
-    var $location;
+    var $q;
+    var $state;
     var basePerson;
+    var SokSkrivValjUtkastService;
 
-    beforeEach(function(){
+    beforeEach(function() {
 
+        //module('htmlTemplates');
         module('webcert', function($provide) {
-            var personIdValidator = {};
-
-            personIdValidator.validateSamordningsnummer = function(number) {
-                if (number === '195401875760') {
-                    return number;
+            /*            var PatientProxy = {
+             getPatient: function(personnummer, onSuccess, onNotFound, onError) {
+             }
+             };
+             $provide.value('common.PatientProxy', PatientProxy);
+             $provide.value('common.PersonIdValidatorService', {});*/
+            SokSkrivValjUtkastService = {
+                lookupPatient: function() {
                 }
-
-                return null;
             };
-
-            personIdValidator.validResult = function(result) {
-                return result !== undefined && result !== null;
-            };
-
-            $provide.value('common.PersonIdValidatorService', personIdValidator);
-
-            PatientProxy = { getPatient: function() {} };
-            $provide.value('common.PatientProxy', PatientProxy);
-            $provide.value('common.PatientModel', {});
+            $provide.value('$state', jasmine.createSpyObj('$state', ['go']));
+            $provide.value('webcert.SokSkrivValjUtkastService', SokSkrivValjUtkastService);
         });
 
-        inject(function($rootScope, _$location_, _$controller_) {
+        inject(function(_$rootScope_, _$controller_, _$state_, _$q_) {
+            $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
-            $location = _$location_;
+            $q = _$q_;
+            $state = _$state_;
             $controller = _$controller_;
-            $controller('webcert.ChoosePatientCtrl', { $scope: $scope });
+            $controller('webcert.ChoosePatientCtrl', {$scope: $scope});
         });
     });
 
-    describe('lookupPatient', function() {
+    describe('loadPatient', function() {
 
-        var successResult = function(personnummer, onSuccess, onNotFound, onError) {
+        var successResult = function(personnummer) {
             basePerson.personnummer = personnummer;
-            onSuccess(basePerson);
+            var promise = $q.defer();
+            promise.resolve(basePerson);
+            return promise.promise;
+        };
+
+        var notFoundResult = function(personnummer) {
+            var promise = $q.defer();
+            promise.reject('error.pu.namenotfound');
+            return promise.promise;
+        };
+        var notFoundSamordningResult = function(personnummer) {
+            var promise = $q.defer();
+            promise.reject('error.pu.samordningsnummernotfound');
+            return promise.promise;
+        };
+        var noConnectionResult = function(personnummer) {
+            var promise = $q.defer();
+            promise.reject(null);
+            return promise.promise;
         };
 
         beforeEach(function() {
@@ -77,110 +93,85 @@ describe('ChoosePatientCtrl', function() {
                 postnummer: '12345',
                 postort: 'Staden'
             };
-
-            spyOn($location, 'path').and.callThrough();
         });
 
-        it('should redirect to choose-intyg-type without errors on a correct personnummer accepted by the PU-tjanst', function() {
+        it('should redirect to choose-intyg-type without errors on a correct personnummer accepted by the PU-tjanst',
+            function() {
 
-            spyOn(PatientProxy, 'getPatient').and.callFake(successResult);
+                spyOn(SokSkrivValjUtkastService, 'lookupPatient').and.callFake(successResult);
 
-            $scope.personnummer = '191212121212';
-            $scope.lookupPatient();
+                $scope.personnummer = '191212121212';
+                $scope.$digest();
+                $scope.loadPatient();
+                $scope.$digest();
 
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/create/choose-intyg-type/index');
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBe(undefined);
-        });
+                expect(SokSkrivValjUtkastService.lookupPatient).toHaveBeenCalled();
+                expect($state.go).toHaveBeenCalledWith('webcert.create-choose-certtype-index',
+                    {'patientId': '191212121212'});
+                expect($scope.viewState.loading).toBe(false);
+                expect($scope.viewState.errorid).toBe(null);
+            });
 
-        it('should redirect to choose-intyg-type without errors on a correct samordningsnummer accepted by the PU-tjanst', function() {
+        it('should redirect to choose-intyg-type without errors on a correct samordningsnummer accepted by the PU-tjanst',
+            function() {
 
-            spyOn(PatientProxy, 'getPatient').and.callFake(successResult);
+                spyOn(SokSkrivValjUtkastService, 'lookupPatient').and.callFake(successResult);
 
-            $scope.personnummer = '195401875769';
-            $scope.lookupPatient();
+                $scope.personnummer = '195401875769';
+                $scope.$digest();
+                $scope.loadPatient();
+                $scope.$digest();
 
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/create/choose-intyg-type/index');
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBe(undefined);
-        });
+                expect(SokSkrivValjUtkastService.lookupPatient).toHaveBeenCalled();
+                expect($state.go).toHaveBeenCalledWith('webcert.create-choose-certtype-index',
+                    {'patientId': '195401875769'});
+                expect($scope.viewState.loading).toBe(false);
+                expect($scope.viewState.errorid).toBe(null);
+            });
 
         it('should call onNotFound on a personnummer that does not exist', function() {
 
-            spyOn(PatientProxy, 'getPatient').and.callFake(function(personnummer, onSuccess, onNotFound, onError) {
-                onNotFound();
-            });
+            spyOn(SokSkrivValjUtkastService, 'lookupPatient').and.callFake(notFoundResult);
 
             $scope.personnummer = '191212121213';
-            $scope.lookupPatient();
+            $scope.$digest();
+            $scope.loadPatient();
+            $scope.$digest();
 
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).not.toHaveBeenCalled();
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBe('error.pu.namenotfound');
+            expect(SokSkrivValjUtkastService.lookupPatient).toHaveBeenCalled();
+            expect($state.go).not.toHaveBeenCalled();
+            expect($scope.viewState.loading).toBe(false);
+            expect($scope.viewState.errorid).toBe('error.pu.namenotfound');
         });
 
         it('should call onNotFound on samordningsnummer that does not exist', function() {
 
-            spyOn(PatientProxy, 'getPatient').and.callFake(function(personnummer, onSuccess, onNotFound, onError) {
-                onNotFound();
-            });
+            spyOn(SokSkrivValjUtkastService, 'lookupPatient').and.callFake(notFoundSamordningResult);
 
             $scope.personnummer = '195401875760';
-            $scope.lookupPatient();
+            $scope.$digest();
+            $scope.loadPatient();
+            $scope.$digest();
 
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).not.toHaveBeenCalled();
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBe('error.pu.samordningsnummernotfound');
+            expect(SokSkrivValjUtkastService.lookupPatient).toHaveBeenCalled();
+            expect($state.go).not.toHaveBeenCalled();
+            expect($scope.viewState.loading).toBe(false);
+            expect($scope.viewState.errorid).toBe('error.pu.samordningsnummernotfound');
         });
 
         it('should redirect to edit-patient-name if the pu-service isnt available', function() {
-            spyOn(PatientProxy, 'getPatient').and.callFake(function(personnummer, onSuccess, onNotFound, onError) {
-                onError();
-            });
+            spyOn(SokSkrivValjUtkastService, 'lookupPatient').and.callFake(noConnectionResult);
 
             $scope.personnummer = '195401875760';
-            $scope.lookupPatient();
+            $scope.$digest();
+            $scope.loadPatient();
+            $scope.$digest();
 
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/create/edit-patient-name/errorOccured');
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBeUndefined();
+            expect(SokSkrivValjUtkastService.lookupPatient).toHaveBeenCalled();
+            expect($state.go).toHaveBeenCalledWith('webcert.create-edit-patientname', {mode:'errorOccured'});
+            expect($scope.viewState.loading).toBe(false);
+            expect($scope.viewState.errorid).toBeNull();
         });
 
-        it('should present an error if the request was successful but the response does not contain personnummer', function() {
-            spyOn(PatientProxy, 'getPatient').and.callFake(function(personnummer, onSuccess, onNotFound, onError) {
-                basePerson.personnummer = '';
-                onSuccess(basePerson);
-            });
-
-            $scope.personnummer = '195401875760';
-            $scope.lookupPatient();
-
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).not.toHaveBeenCalled();
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBe('error.pu.nopersonnummer');
-        });
-
-        it('should present an error if the request was successful but the response does not contain fornamn or efternamn', function() {
-            spyOn(PatientProxy, 'getPatient').and.callFake(function(personnummer, onSuccess, onNotFound, onError) {
-                basePerson.personnummer = personnummer;
-                basePerson.fornamn = '';
-                basePerson.efternamn = '';
-                onSuccess(basePerson);
-            });
-
-            $scope.personnummer = '195401875760';
-            $scope.lookupPatient();
-
-            expect(PatientProxy.getPatient).toHaveBeenCalled();
-            expect($location.path).not.toHaveBeenCalled();
-            expect($scope.widgetState.waiting).toBe(false);
-            expect($scope.widgetState.errorid).toBe('error.pu.noname');
-        });
     });
 });
