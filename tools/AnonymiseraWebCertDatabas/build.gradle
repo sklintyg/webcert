@@ -1,0 +1,26 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+      }
+    }
+  }
+}
+
+dependencies {
+  compile 'se.inera.intyg.tools:anonymisering:2.1.4'
+  compile 'org.codehaus.groovy:groovy-all:2.4.7'
+  compile 'org.apache.commons:commons-dbcp2:2.0'
+  compile 'org.codehaus.gpars:gpars:1.1.0'
+}
+
+repositories {
+  mavenLocal()
+  maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+  maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
+  maven { url "http://repo.maven.apache.org/maven2" }
+}

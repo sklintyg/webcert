@@ -96,13 +96,6 @@ gretty {
   ]
 
   extraResourceBase webappOutputDir
-
-  // TODO: use?
-  //   debugSuspend = false
-  //   recompileOnSourceChange = false
-  //   reloadOnClassChange = false
-  //   reloadOnConfigChange = false
-  //   reloadOnLibChange = false
 }
 
 // TODO: make run of integration tests configurable
