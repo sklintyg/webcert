@@ -136,6 +136,7 @@ module.exports = function(grunt) {
         jshint: {
             options: {
                 jshintrc: 'build/build-tools/jshint/.jshintrc',
+                reporterOutput: '',
                 force: false,
                 ignores: ['**/templates.js', '**/*.min.js', '**/vendor/*.js']
             },
@@ -279,48 +280,49 @@ module.exports = function(grunt) {
                     hostname: '*',
                     middleware: function(connect/*, options*/) {
                         var proxy = require('grunt-connect-proxy/lib/utils').proxyRequest;
+                        var serveStatic = require('serve-static');
                         var middlewares = [];
                         middlewares.push(
                             connect().use(
                                 '/web',
-                                connect.static(__dirname + '/src/main/webapp') // jshint ignore:line
+                                serveStatic(__dirname + '/src/main/webapp') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/app',
-                                connect.static(__dirname + '/src/main/webapp/app') // jshint ignore:line
+                                serveStatic(__dirname + '/src/main/webapp/app') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/app/app-deps.js',
-                                connect.static(__dirname + DEST_DIR + '/app-deps.js') // jshint ignore:line
+                                serveStatic(__dirname + DEST_DIR + '/app-deps.js') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common/css',
-                                connect.static(__dirname + CSS_COMMON_DEST_DIR) // jshint ignore:line
+                                serveStatic(__dirname + CSS_COMMON_DEST_DIR) // jshint ignore:line
                             ));
                         Object.keys(modules).forEach(function(moduleName) {
                             var module = modules[moduleName];
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert',
-                                    connect.static(__dirname + module.src) //jshint ignore:line
+                                    serveStatic(__dirname + module.src) //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert/templates.js',
-                                    connect.static(__dirname + module.dest + '/templates.js') //jshint ignore:line
+                                    serveStatic(__dirname + module.dest + '/templates.js') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert/module-deps.json',
-                                    connect.static(__dirname + module.dest + '/module-deps.json') //jshint ignore:line
+                                    serveStatic(__dirname + module.dest + '/module-deps.json') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert/css',
-                                    connect.static(__dirname + module.dest + '/css')//jshint ignore:line
+                                    serveStatic(__dirname + module.dest + '/css')//jshint ignore:line
                                 ));
                         });
                         middlewares.push(proxy);
@@ -338,13 +340,6 @@ module.exports = function(grunt) {
 
             }
 
-        },
-
-        concurrent: {
-            options: {
-                logConcurrentOutput: true
-            },
-            tasks: ['connect:server', 'watch']
         },
 
         bower: {

@@ -62,11 +62,22 @@ module.exports = function(config) {
             return plugins;
         })(),
 
-        preprocessors: {
-            'src/main/webapp/app/**/*.html': ['ng-html2js'],
-            'src/main/webapp/app/**/*.js': ['coverage']
-        },
+        preprocessors: (function() {
+            var preprocessors = {
+                'src/main/webapp/app/**/*.html': ['ng-html2js']
+            };
+            if (runCoverage) {
+                preprocessors['src/main/webapp/app/**/*.js'] = ['coverage'];
+            }
+            return preprocessors;
+        })(),
 
-        reporters: [ 'dots', 'coverage' ]
+        reporters: (function() {
+            var reporters = [ 'dots' ];
+            if (runCoverage) {
+                reporters.push('coverage');
+            }
+            return reporters;
+        })()
     });
 };
