@@ -28,13 +28,14 @@ var helpers = require('./helpers');
 
 
 
-function getNotificationEntries(intygsId, handelsekod, numEvents) {
+function getNotificationEntries(intygsId, value, numEvents) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var table = 'webcert_requests.requests';
     var handelseTidName = 'handelsetidpunkt';
     var extensionType = 'utlatandeExtension';
-    var selectStatement = 'SELECT  utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
+    var selectStatement = 'SELECT utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
 
+    var columnValue;
     if (isSMIIntyg) {
         table = 'webcert_requests.statusupdates_2';
         handelseTidName = 'handelseTid';
@@ -44,13 +45,26 @@ function getNotificationEntries(intygsId, handelsekod, numEvents) {
             ' skickadeFragorTotal, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade,' +
             ' mottagnaFragorTotal, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade,' +
             handelseTidName;
+
+        var valueObj = helpers.statusCodes.find(function(codes) {
+            return codes.status === value;
+        });
+
+        // columnValue = (valueObj !== 'undefined') ? ('.handelseKod = "' + valueObj.status + '"') : ('.intygRef = "' + value + '"');
+
+        if (valueObj) {
+            columnValue = '.handelseKod = "' + valueObj.status + '"';
+        } else {
+            columnValue = '.intygRef = "' + value + '"';
+        }
+
+    } else {
+        columnValue = '.handelseKod = "' + value + '"';
     }
 
     var databaseTable = table;
-    var query =
-        selectStatement +
-        ' FROM ' + databaseTable +
-        ' WHERE ' + databaseTable + '.handelseKod = "' + handelsekod + '"' +
+    var query = selectStatement + ' FROM ' + databaseTable +
+        ' WHERE ' + databaseTable + columnValue +
         ' AND ' + databaseTable + '.' + extensionType + ' = "' + intygsId + '"' +
         ' ORDER BY ' + handelseTidName + ' DESC;';
 
@@ -76,10 +90,10 @@ function getNotificationEntries(intygsId, handelsekod, numEvents) {
     return promise;
 }
 
-function waitForCount(intygsId, handelsekod, numEvents, cb) {
+function waitForEntries(intygsId, statusValue, numEvents, cb) {
     var intervall = 5000;
 
-    getNotificationEntries(intygsId, handelsekod, numEvents).then(function(result) {
+    getNotificationEntries(intygsId, statusValue, numEvents).then(function(result) {
         if (result.length >= numEvents) {
             console.log('Hittade rader: ' + JSON.stringify(result));
             statusuppdateringarRows = result;
@@ -88,7 +102,7 @@ function waitForCount(intygsId, handelsekod, numEvents, cb) {
             console.log('Hittade färre än ' + numEvents + 'rader i databasen');
             console.log('Ny kontroll sker efter ' + intervall + 'ms');
             setTimeout(function() {
-                waitForCount(intygsId, handelsekod, numEvents, cb);
+                waitForEntries(intygsId, statusValue, numEvents, cb);
             }, intervall);
         }
 
@@ -105,11 +119,11 @@ module.exports = function() {
     });
 
     this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
-        waitForCount(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
+        waitForEntries(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
     });
 
     this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
-        waitForCount(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
+        waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
     });
 
     this.Given(/^jag raderar intyget$/, function(callback) {
@@ -118,6 +132,9 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^egenskapen ref med värdet "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(intygRefValue, antal, callback) {
+        waitForEntries(global.intyg.id, intygRefValue, parseInt(antal, 10), callback);
+    });
 
     this.Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
         console.log(statusuppdateringarRows[0]);

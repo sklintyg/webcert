@@ -185,6 +185,30 @@ module.exports = {
         'dialogRadioPatientNyInfo',
         'dialogRadioMinBedomingAndrad',
         'dialogRadioOvrigt'
-    ]
+    ],
+    statusCodes: [{
+        status: 'SKAPAT'
+    }, {
+        status: 'SIGNAT'
+    }, {
+        status: 'SKICKA'
+    }, {
+        status: 'RADERA'
+    }, {
+        status: 'MAKULE'
+    }, {
+        status: 'NYFRFM'
+    }, {
+        status: 'NYSVFM'
+    }, {
+        status: 'NYFRFV'
+    }, {
+        status: 'HANFRFV'
+    }, {
+        status: 'HANFRFM'
+    }, {
+        status: 'ANDRAT'
+    }]
+
 
 };
