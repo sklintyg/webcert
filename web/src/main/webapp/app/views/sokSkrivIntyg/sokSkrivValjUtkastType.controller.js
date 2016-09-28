@@ -36,6 +36,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.viewState = Viewstate.build();
             $scope.intygTypeModel = IntygTypeSelectorModel.build();
             $scope.patientModel = PatientModel.build();
+            onPageLoad();
 
             /**
              * Private functions
@@ -44,13 +45,14 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             function onPageLoad() {
 
-                if(ObjectHelper.isEmpty($stateParams.patientId)) {
+                PatientModel.personnummer = $stateParams.patientId;
+                if(ObjectHelper.isEmpty(PatientModel.personnummer)) {
                     $state.go('webcert.create-choosepatient-index');
                     return;
                 }
 
                 Viewstate.patientLoading = true;
-                Service.lookupPatient($stateParams.patientId).then(function(patientResult) {
+                Service.lookupPatient(PatientModel.personnummer).then(function(patientResult) {
 
                     Viewstate.loadErrorMessageKey = null;
                     Viewstate.patientLoading = false;
@@ -64,18 +66,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     // Load intyg types user can choose from
                     UtkastProxy.getUtkastTypes(function(types) {
                         IntygTypeSelectorModel.intygTypes = types;
-                        if (PatientModel.intygType) {
-                            $scope.intygType = PatientModel.intygType;
-                        }
                     });
 
                     // Load intyg for person with specified pnr
                     Viewstate.tidigareIntygLoading = true;
-                    IntygProxy.getIntygForPatient($scope.personnummer, function(data) {
+                    IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
                         Viewstate.intygListUnhandled = data;
                         $scope.updateIntygList();
                         Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
-                        $window.tidigareIntygLoading = false;
+                        Viewstate.tidigareIntygLoading = false;
                     }, function(errorData, errorCode) {
                         Viewstate.tidigareIntygLoading = false;
                         $log.debug('Query Error' + errorData);
@@ -136,7 +135,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.createDraft = function() {
 
                 var createDraftRequestPayload = {
-                    intygType: $scope.intygType,
+                    intygType: IntygTypeSelectorModel.intygType,
                     patientPersonnummer: PatientModel.personnummer,
                     patientFornamn: PatientModel.fornamn,
                     patientMellannamn: PatientModel.mellannamn,
@@ -173,8 +172,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     IntygCopyRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
-                        patientPersonnummer: $scope.personnummer,
-                        nyttPatientPersonnummer: $stateParams.patientId
+                        patientPersonnummer: PatientModel.personnummer,
+                        nyttPatientPersonnummer: PatientModel.personnummer
                     }),
                     isOtherCareUnit
                 );
@@ -191,12 +190,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     IntygFornyaRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
-                        patientPersonnummer: $scope.personnummer,
-                        nyttPatientPersonnummer: $stateParams.patientId
+                        patientPersonnummer: PatientModel.personnummer,
+                        nyttPatientPersonnummer: PatientModel.personnummer
                     }),
                     isOtherCareUnit
                 );
             };
-
-            onPageLoad();
         }]);
