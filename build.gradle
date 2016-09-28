@@ -1,6 +1,3 @@
-ext.nexusUsername = System.properties['nexusUsername']
-ext.nexusPassword = System.properties['nexusPassword']
-
 ext {
   springVersion = "4.2.2.RELEASE"
   springSecurityVersion = "4.0.3.RELEASE"
@@ -84,7 +81,7 @@ subprojects {
         pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
       }
       repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
-        authentication(userName: nexusUsername, password: nexusPassword)
+        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
       }
     }
   }
