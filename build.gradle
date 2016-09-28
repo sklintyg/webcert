@@ -30,13 +30,6 @@ subprojects {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  repositories {
-    mavenLocal()
-    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-  }
-
   task createVersionPropertyFile(dependsOn: processResources) {
     def propertyFile = "${buildDir}/resources/main/version.properties"
     def projectVersion = rootProject.version
@@ -63,37 +56,6 @@ subprojects {
   }
 
   jar.dependsOn(createVersionPropertyFile)
-
-  configurations {
-    buildtools
-  }
-
-  dependencies {
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.9.0'
-    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
-  }
-
-  uploadArchives {
-    repositories.mavenDeployer {
-      pom.whenConfigured {pom ->
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
-      }
-      repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
-        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
-      }
-    }
-  }
-
-  install {
-    repositories.mavenInstaller {
-      pom.whenConfigured {pom ->
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
-      }
-    }
-  }
 
   task unzipBuildTools(type: Copy) {
     description 'Extracts common-build-tools'
@@ -128,6 +90,46 @@ subprojects {
       }
     }
   }
+
+  uploadArchives {
+    repositories.mavenDeployer {
+      pom.whenConfigured {pom ->
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
+      }
+      repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+      }
+    }
+  }
+
+  install {
+    repositories.mavenInstaller {
+      pom.whenConfigured {pom ->
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
+      }
+    }
+  }
+
+  configurations {
+    buildtools
+  }
+
+  dependencies {
+    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.9.0'
+  }
+
+  repositories {
+    mavenLocal()
+    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+  }
+
 }
 
 project(':webcert-common') {
