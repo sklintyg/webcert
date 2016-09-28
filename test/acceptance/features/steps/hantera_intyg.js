@@ -32,6 +32,12 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^jag signerar och skickar kompletteringen$/, function() {
+        return browser.sleep(2000).then(function() { // fix för nåt med animering?
+            return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+        });
+    });
+
     this.Given(/^jag makulerar intyget$/, function(callback) {
 
         browser.getCurrentUrl().then(function(text) {

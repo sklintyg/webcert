@@ -111,7 +111,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         var panel = element(by.css('.qa-panel'));
 
         this.qaPanel = panel;
-        this.qaPanels = element.all(by.css('.qa-panel'));
+        this.qaPanels = element.all(by.css('.arende-panel'));
 
         this.FMBprognos = element(by.id('arbetsformagaPrognos'));
 

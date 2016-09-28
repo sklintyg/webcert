@@ -34,6 +34,6 @@ Scenario: Svara med nytt intyg
    Och jag väljer att svara med ett nytt intyg
    Så ska jag se kompletteringsfrågan på utkast-sidan
 
-   När jag signerar intyget
-   Och jag skickar intyget till Försäkringskassan
+   När jag signerar och skickar kompletteringen
    Och ska intygets status vara "Intyget är signerat"
+
