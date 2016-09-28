@@ -66,6 +66,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
                     templateUrl: '/app/views/integrationEnhetsval/enhetsval.dialog.html',
                     backdrop: 'static',
                     keyboard: false,
+                    windowClass: 'wc-integration-enhet-selector',
                     controller: function($scope, $uibModalInstance, userModel, onUnitSelected) {
                         $scope.user = userModel;
                         $scope.onUnitSelected = onUnitSelected;
