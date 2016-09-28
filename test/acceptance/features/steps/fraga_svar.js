@@ -38,7 +38,7 @@ module.exports = function() {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         console.log('isSMIIntyg : ' + isSMIIntyg);
 
-        var fragaText = 'En ' + amne + '-fråga';
+        var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
 
         if (isSMIIntyg) {
 
@@ -388,6 +388,16 @@ module.exports = function() {
     this.Given(/^ska frågan vara hanterad$/, function(callback) {
         // Write code here that turns the phrase above into concrete actions
         callback(null, 'pending');
+    });
+
+    this.Given(/^jag markerar frågan från vården som hanterad$/, function() {
+        var fragaText;
+        for (var k = 0; k < global.meddelanden.length; k++) {
+            if (global.meddelanden[k].typ === 'Fråga') {
+                fragaText = global.meddelanden[k].text;
+            }
+        }
+        return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).sendKeys(protractor.Key.SPACE);
     });
 
 };

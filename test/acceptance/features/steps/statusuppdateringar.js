@@ -43,7 +43,7 @@ function getNotificationEntries(intygsId, handelsekod, numEvents) {
         selectStatement = 'SELECT ' + extensionType + ', handelseKod,' +
             ' skickadeFragorTotal, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade,' +
             ' mottagnaFragorTotal, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade,' +
-            handelseTidName + ';';
+            handelseTidName;
     }
 
     var databaseTable = table;

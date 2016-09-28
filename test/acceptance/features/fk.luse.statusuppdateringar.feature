@@ -48,7 +48,7 @@ Scenario: Statusuppdateringar vid fråga från FK
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag svarar på frågan
     Så ska statusuppdatering "HANFRFM" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 1
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
 
@@ -84,7 +84,7 @@ Scenario: Statusuppdateringar vid fråga från vården
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-@fråga-till-fk
+@fråga-till-fk @hantera
 Scenario: Statusuppdateringar vid hantering av fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
