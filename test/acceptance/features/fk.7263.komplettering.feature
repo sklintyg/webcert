@@ -31,3 +31,4 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
    Och jag går in på intyget
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska kunna svara med textmeddelande
+

@@ -35,6 +35,18 @@ module.exports = function() {
         };
         return logInAsUserRole(userObj, 'Tandläkare');
     });
+    this.Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() {
+        var userObj = {
+            fornamn: 'Per',
+            efternamn: 'Nilsson',
+            hsaId: 'TST2321000156-102C',
+            enhetId: 'SE2321000156-1004',
+            lakare: 'true',
+            origin: 'NORMAL'
+        };
+        return logInAsUserRole(userObj, 'Läkare');
+    });
+
 
     this.Given(/^att jag är inloggad som vårdadministratör$/, function() {
         var userObj = {

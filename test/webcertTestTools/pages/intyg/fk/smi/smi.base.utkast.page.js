@@ -43,6 +43,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
 
+
         this.at = element(by.css('.edit-form'));
 
         this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
@@ -132,6 +133,13 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         this.ovrigt = element(by.id('ovrigt'));
         this.kontaktMedFK = element(by.id('form_kontaktMedFk')).element(by.css('input'));
         this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
+        //enhetsadress lika för alla SMI-intyg
+        this.enhetensAdress = {
+            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
+            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
+            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
+            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+        };
     },
     angeBaseratPa: function(baseratPa) {
         var promiseArr = [];

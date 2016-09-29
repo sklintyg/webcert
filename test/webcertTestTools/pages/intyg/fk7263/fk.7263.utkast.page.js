@@ -50,6 +50,12 @@ var FkUtkast = BaseUtkast._extend({
         this.faktiskTjanstgoring = element(by.id('capacityForWorkActualWorkingHoursPerWeek'));
         this.aktuelltSjukdomsForlopp = element(by.id('diseaseCause'));
         this.arbetsformagaFMB = element(by.id('capacityForWorkText'));
+        this.enhetsAdress = {
+            postAdress: element(by.id('clinicInfoPostalAddress')),
+            postNummer: element(by.id('clinicInfoPostalCode')),
+            postOrt: element(by.id('clinicInfoPostalCity')),
+            enhetsTelefon: element(by.id('clinicInfoPhone'))
+        };
         this.prognos = {
             JA: element(by.id('capacityForWork1')),
             JA_DELVIS: element(by.id('capacityForWork2')),

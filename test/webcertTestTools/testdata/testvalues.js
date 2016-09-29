@@ -18,7 +18,7 @@
  */
 
 'use strict';
-
+var shuffle = require('./../helpers/testdataHelper.js').shuffle;
 module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
@@ -33,14 +33,27 @@ module.exports = {
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-      nummer: '20081063-2398 ',
-      namn: '',
-      efternamn: ''
+        nummer: '20081063-2398 ',
+        namn: '',
+        efternamn: ''
     }],
 
     patienterMedSekretessmarkering: [{
         nummer: '19420119-9124',
         namn: '',
         efternamn: ''
-    }]
+    }],
+
+    enhetsAdress: function() {
+        return {
+            gata: shuffle(['Bryggaregatan 1', 'Svampstigen 2'])[0],
+            postnummer: shuffle(['655 91', '655 90'])[0],
+            postadress: shuffle(['Karlstad', 'Säffle'])[0],
+            telefon: shuffle(['0705121314', '054121314'][0])
+
+
+        };
+    }
+
+
 };

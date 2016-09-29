@@ -56,6 +56,7 @@ var LuseUtkast = BaseSmiUtkast._extend({
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
+
         this.baseratPa = {
             minUndersokningAvPatienten: {
                 checkbox: element(by.id('formly_1_date_undersokningAvPatienten_1')),

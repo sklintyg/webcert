@@ -132,7 +132,8 @@ var random = {
     },
     arbetsformagaFMB: function() {
         return 'Arbetsförmåga bedöms nedsatt längre tid än FMB anger text';
-    }
+    },
+
 
 };
 
