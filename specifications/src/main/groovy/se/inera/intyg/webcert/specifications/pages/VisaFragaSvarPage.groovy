@@ -30,15 +30,15 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         intygVy(wait: true) { $('#intyg-vy-laddad') }
 
         // Buttons
-        newQuestionBtn(required: false, wait: true) { $("#askQuestionBtn") }
-        newQuestionBtnNoWait(required: false) { $("#askQuestionBtn") }
-        newQuestionForm(required: false) { $("#newQuestionForm") }
-        newQuestionFormNoWait(required: false) {$("#newQuestionForm") }
-        newQuestionText { $("#newQuestionText") }
+        newQuestionBtn(required: false, wait: true) { $("#askArendeBtn") }
+        newQuestionBtnNoWait(required: false) { $("#askArendeBtn") }
+        newQuestionForm(required: false) { $("#arendeNewModelForm") }
+        newQuestionFormNoWait(required: false) {$("#arendeNewModelForm") }
+        newQuestionText { $("#arendeNewModelText") }
         newQuestionTopic { $("#new-question-topic") }
 
-        sendQuestionBtn(required: false, wait: true) { $("#sendQuestionBtn") }
-        cancelQuestionBtn { $("#cancelQuestionBtn") }
+        sendQuestionBtn(required: false, wait: true) { $("#sendArendeBtn") }
+        cancelQuestionBtn { $("#cancelArendeBtn") }
         makuleraButton { $("#makuleraBtn") }
 
         skrivUtBtn(required: false, wait: true) { $("#downloadprint") }
@@ -59,17 +59,17 @@ class VisaFragaSvarPage extends AbstractViewCertPage {
         qaOnlyDialogFortsatt(required: false, wait: true) { $("#button1continue-dialog") }
         qaOnlyDialogCancel(required: false) { $("#button2qa-only-warning-dialog") }
 
-        unhandledQAList(wait: true) { $("#unhandledQACol") }
+        unhandledQAList(wait: true) { $("#unhandledArendeCol") }
 
-        questionIsSentToFkMessage(required: false, wait: true) { $("#question-is-sent-to-fk-message-text") }
-        questionIsSentToFkMessageNoWait(required: false) { $("#question-is-sent-to-fk-message-text") }
+        questionIsSentToFkMessage(required: false, wait: true) { $("#arende-is-sent-to-fk-message-text") }
+        questionIsSentToFkMessageNoWait(required: false) { $("#arende-is-sent-to-fk-message-text") }
 
-        closeSentMessage(wait: true) { $("#question-is-sent-to-fk-message-text > button") }
+        closeSentMessage(wait: true) { $("#arende-is-sent-to-fk-message-text > button") }
 
         certificateRevokedMessage(required: false, wait: true) { $("#certificate-is-revoked-message-text") }
-        certificateIsSentToFKMessage(required: false, wait: true) { $("#certificate-is-sent-to-fk-message-text") }
-        certificateIsSentToFKMessageNoWait(required: false) { $("#certificate-is-sent-to-fk-message-text") }
-        certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
+        certificateIsSentToFKMessage(required: false, wait: true) { $("#intyg-is-sent-to-fk-message-text") }
+        certificateIsSentToFKMessageNoWait(required: false) { $("#intyg-is-sent-to-fk-message-text") }
+        certificateIsNotSentToFkMessage(required: false) { $("#intyg-is-not-sent-to-fk-message-text") }
 
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogMakuleraKnapp { $("#button1makulera-dialog") }

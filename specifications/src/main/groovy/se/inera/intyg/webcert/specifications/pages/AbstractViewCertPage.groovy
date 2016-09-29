@@ -59,46 +59,44 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
         // Questions and Answers
-        newQuestionBtn(required: false) { $("#askQuestionBtn") }
-        newQuestionForm(required: false) {$("#newQuestionForm") }
-        newQuestionText { $("#newQuestionText") }
+        newQuestionBtn(required: false) { $("#askArendeBtn") }
+        newQuestionForm(required: false) {$("#arendeNewModelForm") }
+        newQuestionText { $("#arendeNewModelText") }
         newQuestionTopic { $("#new-question-topic") }
-        sendQuestionBtn(required: false) { $("#sendQuestionBtn") }
-        cancelQuestionBtn { $("#cancelQuestionBtn") }
+        sendQuestionBtn(required: false) { $("#sendArendeBtn") }
+        cancelQuestionBtn { $("#cancelArendeBtn") }
 
         qaOnlyDialog(required: false) { $("#qa-only-warning-dialog") }
         qaOnlyDialogFortsatt(required: false) { $("#button1continue-dialog") }
         qaOnlyDialogCancel(required: false) { $("#button2qa-only-warning-dialog") }
 
-        unhandledQAList { $("#unhandledQACol") }
-        unhandledQAPanel(required: false) {internid -> $("#qaunhandled-${internid}")}
-        unhandledQAPanelWithText(required: false) {text -> $("#unhandledQACol div", text: text)}
+        unhandledQAList { $("#unhandledArendeCol") }
+        unhandledQAPanel(required: false) {internid -> $("#arende-unhandled-${internid}")}
+        unhandledQAPanelWithText(required: false) {text -> $("#unhandledArendeCol div", text: text)}
 
-        handledQAList { $("#handledQACol") }
-        handledQAPanel(required: false) {internid -> $("#qahandled-${internid}")}
+        handledQAList { $("#handledArendeCol") }
+        handledQAPanel(required: false) {internid -> $("#arende-unhandled-${internid}")}
 
         answerText {internid -> $("#answerText-${internid}")}
         sendAnswerBtn {internid -> $("#sendAnswerBtn-${internid}")}
         forwardBtn {internid -> $("#forwardBtn-${internid}")}
-        markQuestionAsHandledBtn {internid -> $("#markAsHandledWcOriginBtn-${internid}")}
-        markAnswerAsHandledBtn {internid -> $("#markAsHandledFkOriginBtn-${internid}")}
-        markAsUnhandledBtn {internid -> $("#markAsUnhandledBtn-${internid}")}
+        markAsUnhandledBtn {internid -> $("#handleCheck-${internid}")}
 
         frageStallarNamn {internid -> $("#fraga-vard-aktor-namn-${internid}")}
         besvarareNamn {internid -> $("#svar-vard-aktor-namn-${internid}")}
-        fkMeddelandeRubrik {internid -> $("#fkMeddelandeRubrik-${internid}")}
+        fkMeddelandeRubrik {internid -> $("#fkrubrik-${internid}")}
         fkKompletteringar {internid -> $("#unhandled-fkKompletteringar-${internid}")}
         fkKontakter {internid -> $("#unhandled-fkKontakter-${internid}")}
         qaFragaSkickadDatum {internid -> $("#qa-skickaddatum-${internid}")}
         qaFragetext {internid -> $("#qa-fragetext-${internid}")}
         qaSvarstext {internid -> $("#answerText-${internid}")}
 
-        questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
-        closeSentMessage(wait: true) { $("#question-is-sent-to-fk-message-text > button") }
+        questionIsSentToFkMessage(required: false) { $("#arende-is-sent-to-fk-message-text") }
+        closeSentMessage(wait: true) { $("#arende-is-sent-to-fk-message-text > button") }
 
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
-        certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text")}
-        certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
+        certificateIsSentToFKMessage(required: false) { $("#intyg-is-sent-to-fk-message-text")}
+        certificateIsNotSentToFkMessage(required: false) { $("#intyg-is-not-sent-to-fk-message-text") }
 
         hanteraButton(to: UnhandledQAPage, toWait: true) { $("#button1checkhanterad-dialog-hantera") }
         ejHanteraButton(to: UnhandledQAPage, toWait: true) { $("#button1checkhanterad-dialog-ejhantera") }

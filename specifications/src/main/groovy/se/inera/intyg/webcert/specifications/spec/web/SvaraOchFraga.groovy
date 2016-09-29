@@ -247,6 +247,18 @@ class SvaraOchFraga extends ExceptionHandlingFixture {
 
     void skickaFragaMedAmne(String fraga, String amne) {
         Browser.drive {
+            if (amne == "ARBETSTIDSFORLAGGNING") {
+                amne = "ARBTID"
+            }
+            if (amne == "AVSTAMNINGSMOTE") {
+                amne = "AVSTMN"
+            }
+            if (amne == "KONTAKT") {
+                amne = "KONTKT"
+            }
+            if (amne == "OVRIGT") {
+                amne = "OVRIGT"
+            }
             page.newQuestionText = fraga
             page.newQuestionTopic = amne
             page.sendQuestion()
