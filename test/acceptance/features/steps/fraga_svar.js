@@ -29,8 +29,10 @@ var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
 
-function kontrolleraKompletteringsFragaHanterad(kontrollnr) {
-    return expect(element(by.cssContainingText('.qa-block-handled', kontrollnr)).isPresent()).to.eventually.be.ok;
+function kontrolleraKompletteringsFragaHanterad(id) {
+    var selector = 'arende-handled-' + id;
+    logger.info('Letar efter element med id ' + selector);
+    return expect(element(by.id(selector)).isPresent()).to.eventually.be.ok;
 }
 
 module.exports = function() {
@@ -180,19 +182,28 @@ module.exports = function() {
             });
     });
 
-
+    var messageID;
     this.Given(/^jag svarar på frågan$/, function() {
+
+
         return browser.refresh()
             .then(function() {
                 return helpers.fetchMessageIds(intyg.typ);
             })
             .then(function() {
-                return fkIntygPage.sendAnswerForMessageID(intyg.messages[0].id, 'Ett svar till FK, ' + global.intyg.guidcheck);
+                for (var k = 0; k < intyg.messages.length; k++) {
+                    console.log('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, true));
+                    var amneMatcharSkickadFraga = intyg.messages[k].amne === helpers.getSubjectFromCode(global.meddelanden[0].amne, true);
+                    if (amneMatcharSkickadFraga && !intyg.messages[k].isHandled) {
+                        messageID = intyg.messages[k].id;
+                    }
+                }
+                return fkIntygPage.sendAnswerForMessageID(messageID, 'Ett svar till FK, ' + global.intyg.guidcheck);
             });
     });
 
     this.Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
-        return kontrolleraKompletteringsFragaHanterad(global.intyg.guidcheck);
+        return kontrolleraKompletteringsFragaHanterad(messageID);
     });
 
     this.Given(/^ska jag se påminnelsen på intygssidan$/, function() {
@@ -307,8 +318,10 @@ module.exports = function() {
                 }
 
                 client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
-                    // logger.debug(body);
-                    // logger.debug(result);
+                    global.meddelanden.push({
+                        typ: 'Fråga',
+                        amne: amne
+                    });
                     callback(err);
                 });
             });

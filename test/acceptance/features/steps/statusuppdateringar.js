@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, protractor, ursprungligtIntyg, Promise, JSON, intyg */
+/* global pages, protractor, ursprungligtIntyg, Promise, JSON, intyg, logger */
 
 'use strict';
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
@@ -137,7 +137,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
-        console.log(statusuppdateringarRows[0]);
+        logger.info(statusuppdateringarRows[0]);
         var row = statusuppdateringarRows[0];
         return Promise.all([
             expect(fragor).to.equal(row.antalFragor.toString()),
@@ -150,7 +150,7 @@ module.exports = function() {
 
     this.Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
         function(totalt, ejBesvarade, besvarade, hanterade) {
-            console.log(statusuppdateringarRows[0]);
+            logger.info(statusuppdateringarRows[0]);
             var row = statusuppdateringarRows[0];
 
             return Promise.all([
@@ -164,7 +164,7 @@ module.exports = function() {
 
     this.Given(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
         function(totalt, ejBesvarade, besvarade, hanterade) {
-            console.log(statusuppdateringarRows[0]);
+            logger.info(statusuppdateringarRows[0]);
             var row = statusuppdateringarRows[0];
 
             return Promise.all([

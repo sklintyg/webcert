@@ -73,13 +73,13 @@ Scenario: Statusuppdateringar vid fråga från vården
 
     Och jag markerar svaret från Försäkringskassan som hanterat
 
-    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 1
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
     Och jag markerar svaret från Försäkringskassan som INTE hanterat
-    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "2"
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "2"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
@@ -90,11 +90,8 @@ Scenario: Statusuppdateringar vid hantering av fråga från vården
     Och jag signerar intyget
     Och jag skickar intyget till Försäkringskassan
 
-    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
-
     Och jag går in på intygsutkastet via djupintegrationslänk
-    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
-    Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassanh
 
     När jag markerar frågan från vården som hanterad
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
