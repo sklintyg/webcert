@@ -99,6 +99,7 @@ public interface IntygService {
      * @param intygId
      * @param intygsTyp
      * @return
+     *      The HSA Id of the vardenhet where the intyg was created/issued.
      */
     String getIssuingVardenhetHsaId(String intygId, String intygsTyp);
 }

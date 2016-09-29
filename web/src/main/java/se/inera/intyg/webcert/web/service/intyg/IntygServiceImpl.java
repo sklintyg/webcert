@@ -332,8 +332,15 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public String getIssuingVardenhetHsaId(String intygId, String intygsTyp) {
-        IntygContentHolder intygData = getIntygData(intygId, intygsTyp, false);
-        return intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+        try {
+            IntygContentHolder intygData = getIntygData(intygId, intygsTyp, false);
+            return intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+        } catch (WebCertServiceException e) {
+            if (e.getErrorCode() == WebCertServiceErrorCodeEnum.DATA_NOT_FOUND) {
+                return null;
+            }
+            throw e;
+        }
     }
 
     public void setLogicalAddress(String logicalAddress) {

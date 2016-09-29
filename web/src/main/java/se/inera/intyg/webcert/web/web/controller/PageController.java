@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -105,7 +103,7 @@ public class PageController {
         return new ModelAndView(ADMIN_VIEW);
     }
 
-    public void populateUseMinifiedJavaScript(ModelAndView model) {
+    private void populateUseMinifiedJavaScript(ModelAndView model) {
         final WebCertUser user = webCertUserService.getUser();
         if (user != null) {
             model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED.getName()));
@@ -118,6 +116,10 @@ public class PageController {
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
         // WC 5.0 new: change vårdenhet
         String enhetHsaId = intygService.getIssuingVardenhetHsaId(intygId, typ);
+        if (enhetHsaId == null) {
+            LOG.error("Could not redirect user to utkast using /maillink for intygsId '" + intygId + "'. No enhetsId found for utkast. Does the utkast exist?");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         WebCertUser user = webCertUserService.getUser();
         if (!user.changeValdVardenhet(enhetHsaId)) {

@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.endsWith;
 /**
  * Check that certificate-links are redirected correctly.
  */
-public class LegacyIntegrationControllerIT extends BaseRestIntegrationTest {
+public class FragaSvarUthoppIntegrationControllerIT extends BaseRestIntegrationTest {
 
     private static final String DEFAULT_INTYGSID = "abcd123-abcd123-abcd123";
 
