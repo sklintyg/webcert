@@ -19,15 +19,17 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import com.jayway.restassured.RestAssured;
-import org.junit.Before;
-import org.junit.Test;
-import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.core.IsEqual.equalTo;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Basic verification of endpoint that looks up patients by personnummer.
@@ -39,7 +41,6 @@ public class PersonAPIControllerIT extends BaseRestIntegrationTest {
 
     @Before
     public void setup() {
-        super.setup();
         //User is not so interesting in this case - so we run all request in same session
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
     }

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
+import org.junit.After;
 import org.junit.Before;
 
 import com.jayway.restassured.RestAssured;
@@ -33,9 +34,13 @@ public abstract class BaseWSIntegrationTest {
      */
     @Before
     public void setupBase() {
-        RestAssured.reset();
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
+    }
+
+    @After
+    public void cleanupBase() {
+        RestAssured.reset();
     }
 }

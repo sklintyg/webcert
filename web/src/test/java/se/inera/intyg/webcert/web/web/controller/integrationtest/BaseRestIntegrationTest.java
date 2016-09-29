@@ -26,11 +26,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import java.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 
@@ -62,7 +62,7 @@ public abstract class BaseRestIntegrationTest {
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
             "IFV1239877878-1042").lakare(true).build();
-    
+
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
             "TSTNMT2321000156-1039").lakare(true).build();
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
@@ -75,8 +75,7 @@ public abstract class BaseRestIntegrationTest {
      * Common setup for all tests
      */
     @Before
-    public void setup() {
-        RestAssured.reset();
+    public void setupBase() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
     }
@@ -88,6 +87,7 @@ public abstract class BaseRestIntegrationTest {
     public void tearDown() {
         // Remove all utkast after each test
         given().expect().statusCode(200).when().delete("testability/intyg");
+        RestAssured.reset();
     }
 
     /**
