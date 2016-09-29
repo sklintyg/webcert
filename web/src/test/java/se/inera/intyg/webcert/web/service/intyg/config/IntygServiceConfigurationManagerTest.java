@@ -19,14 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import org.junit.Before;
-import org.junit.Test;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 public class IntygServiceConfigurationManagerTest {
 
@@ -47,7 +47,7 @@ public class IntygServiceConfigurationManagerTest {
 
         assertNotNull(config);
         assertEquals("FK", config.getRecipient());
-        assertThat(config.getPatientConsentMessage(), containsString("mottagare FK"));
+        assertTrue(config.getPatientConsentMessage().contains("mottagare FK"));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class IntygServiceConfigurationManagerTest {
 
         assertNotNull(config);
         assertEquals("TS", config.getRecipient());
-        assertThat(config.getPatientConsentMessage(), containsString("mottagare TS"));
+        assertTrue(config.getPatientConsentMessage().contains("mottagare TS"));
     }
 
 }
