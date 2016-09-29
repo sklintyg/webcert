@@ -68,7 +68,7 @@ public abstract class BaseRestIntegrationTest {
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
     protected static final String DEFAULT_INTYGSTYP = "fk7263";
 
-    protected final String DEFAULT_PATIENT_PERSONNUMMER = "19121212-1212";
+    protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
     /**
@@ -271,6 +271,10 @@ public abstract class BaseRestIntegrationTest {
      */
     protected void deleteQuestion(int internId) {
         given().pathParam("id", internId).expect().statusCode(200).when().delete("testability/questions/{id}");
+    }
+
+    protected void deleteQuestionsByEnhet(String enhetsId) {
+        given().pathParam("enhetsId", enhetsId).expect().statusCode(200).when().delete("testability/questions/enhet/{enhetsId}");
     }
 
     /**

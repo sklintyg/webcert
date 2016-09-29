@@ -213,14 +213,15 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
     public void testCreateNewUtkastCopyBasedOnExistingUtkast() {
+        final String personnummer = "19121212-1212";
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("fk7263", personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
@@ -363,17 +364,18 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
     public void testRevokeReplaceSignedIntyg() {
+        final String personnummer = "19121212-1212";
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createUtkast(intygsTyp, personnummer);
         signeraUtkastWithTestabilityApi(intygsId);
 
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
         revokeParam.setRevokeMessage("Makulera!");
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
 
         RevokeReplaceSignedIntygRequest request = new RevokeReplaceSignedIntygRequest();
         request.setRevokeSignedIntygParameter(revokeParam);

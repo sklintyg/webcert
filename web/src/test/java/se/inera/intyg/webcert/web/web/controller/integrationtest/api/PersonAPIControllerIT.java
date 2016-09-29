@@ -37,7 +37,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
  */
 public class PersonAPIControllerIT extends BaseRestIntegrationTest {
 
-//    private static final String PATIENT_PERSON_NUMMER = "191212121212";
+    private static final String PATIENT_PERSONNUMMER = "19121212-1212";
 
     @Before
     public void setup() {
@@ -56,10 +56,10 @@ public class PersonAPIControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetExistingPerson() {
 
-        given().pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/person/{personNummer}").
+        given().pathParam("personNummer", PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/person/{personNummer}").
                 then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json")).
-                body("person.personnummer", equalTo(DEFAULT_PATIENT_PERSONNUMMER)).
+                body("person.personnummer", equalTo(PATIENT_PERSONNUMMER)).
                 body("status", equalTo(PersonSvar.Status.FOUND.name()));
     }
 }
