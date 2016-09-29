@@ -102,7 +102,7 @@
             <c:when test="${param.reason eq 'denied'}">
               <h1><spring:message code="error.noauth.title" /></h1>
               <div id="noAuth" class="alert alert-warning">
-                <spring:message code="error.noauth.text" />
+                <spring:message code="error.noaccess.text" />
               </div>
               <jsp:include page="login.jsp" />
             </c:when>

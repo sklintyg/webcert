@@ -39,12 +39,11 @@
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>
-  <security:http security="none" pattern="/pubapp/**"/>
 
+  <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/index.jsp"/>
   <security:http security="none" pattern="/healthcheck.jsp"/>
-  <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/saml2/web/**"/>
@@ -103,8 +102,11 @@
     <property name="defaultFailureUrl" value="/error.jsp?reason=login.failed"/>
   </bean>
 
-  <bean id="http403ForbiddenEntryPoint"
-        class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+  <bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+    <property name="errorPage" value="/error.jsp?reason=denied" />
+  </bean>
+
+  <bean id="http403ForbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
   <!-- SessionRegistry is needed for keeping track of authenticated sessions (i.e users), this impl performs audit logging of login and logouts. -->
   <bean id="loggingSessionRegistry" class="se.inera.intyg.webcert.web.auth.WebcertLoggingSessionRegistryImpl" />
@@ -115,18 +117,24 @@
   </bean>
 
   <!-- =============================================================== -->
+  <!-- Unsecured pages when not in production                          -->
+  <!-- =============================================================== -->
+  <beans profile="!prod">
+    <security:http security="none" pattern="/pubapp/**"/>
+  </beans>
+
+  <!-- =============================================================== -->
   <!-- These URLs are unsecured in all profiles except wc-security-prod -->
   <!-- =============================================================== -->
   <beans profile="dev,wc-security-dev,wc-security-test">
     <security:http security="none" pattern="/welcome.jsp"/>
-    <!-- This enables access to the stubs of log-sender and notification-sender
-        if they are co-deployed with Webcert as the root application -->
-    <security:http security="none" pattern="/notification-sender/**"/>
-    <security:http security="none" pattern="/log-sender/**"/>
 
-    <!-- For non-production, allow unsecured access to swagger paths for REST doc purposes -->
-    <security:http security="none" pattern="/services/swagger/**"/>
-    <security:http security="none" pattern="/swagger-ui/**"/>
+    <!--
+      This enables access to the stubs of log-sender and notification-sender
+      if they are co-deployed with Webcert as the root application
+    -->
+    <security:http security="none" pattern="/log-sender/**"/>
+    <security:http security="none" pattern="/notification-sender/**"/>
   </beans>
 
   <!-- =============================================================== -->
@@ -158,6 +166,7 @@
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
       </security:http>
+
       <security:authentication-manager alias="authenticationManager">
     <!--    <security:authentication-provider ref="fakeAuthenticationProvider"/>    -->
         <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
@@ -203,6 +212,12 @@
   <!-- The wc-security-prod profile only supports Säkerhetstjänst and CGI e-leg login -->
   <!-- =============================================================== -->
   <beans profile="prod,wc-security-prod">
+    <!-- /swagger-ui och /pubapp/simulator ska vara nedstängda i produktion -->
+    <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/swagger-ui\/.*)|(\/pubapp\/simulator\/.*)" request-matcher="regex">
+      <security:access-denied-handler ref="accessDeniedHandler" />
+      <security:intercept-url pattern="/**" access="denyAll"/>
+    </security:http>
+
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
@@ -211,6 +226,7 @@
       <security:request-cache ref="httpSessionRequestCache" />
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
+
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -218,20 +234,11 @@
       <security:request-cache ref="httpSessionRequestCache" />
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
+
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
     </security:authentication-manager>
-
-    <!-- Make sure swagger is unavailable in prod
-    <security:http use-expressions="true">
-      <security:intercept-url pattern="/swagger-ui/**"
-          access="denyAll"/>
-      <security:intercept-url pattern="/services/swagger/**"
-          access="denyAll"/>
-    </security:http>
-    -->
   </beans>
-
 
   <beans profile="dev,wc-security-dev,wc-security-test">
     <bean id="fakeAuthFilter" class="se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationFilter">
@@ -545,4 +552,5 @@
     </bean>
 
   </beans>
+
 </beans>
