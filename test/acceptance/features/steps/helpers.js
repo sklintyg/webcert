@@ -208,7 +208,28 @@ module.exports = {
         status: 'HANFRFM'
     }, {
         status: 'ANDRAT'
-    }]
+    }],
+
+    getRandomDigit: function(digit) {
+        return Promise.resolve(Math.floor(Math.random() * digit));
+    },
+
+    getRandomNedsattKey: function() {
+        var nedsatt = ['med25', 'med50', 'med75', 'med100'];
+        return Promise.resolve(nedsatt[Math.floor(Math.random() * 3)]);
+    },
+
+    diffDays: function(dateFrom, dateTo) {
+        var fromEl = dateFrom.split('-');
+        var toEl = dateTo.split('-');
+
+        var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+        var firstDate = new Date(fromEl[0], fromEl[1], fromEl[2]);
+        var secondDate = new Date(toEl[0], toEl[1], toEl[2]);
+
+        return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+    }
 
 
 };
