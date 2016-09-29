@@ -53,5 +53,5 @@ dependencies {
   compile 'com.jayway.awaitility:awaitility:1.4.0'
 
   fitnesse "org.fitnesse:fitnesse:20150814"
-  fitnesse "se.inera.intyg.common:common-specifications:${commonVersion}"
+  fitnesse ("se.inera.intyg.common:common-specifications:${commonVersion}") { transitive = false }
 }
