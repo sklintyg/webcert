@@ -19,28 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.swagger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.springframework.stereotype.Service;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.config.FilterFactory;
@@ -53,6 +31,18 @@ import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.models.Swagger;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * This class intefaces with io.swagger core classes for on-the-fly generation of Swagger .JSON files for use by
  * swagger-ui.
@@ -63,7 +53,6 @@ import io.swagger.models.Swagger;
  */
 @Path("/")
 @Api(value = "/services/swagger", description = "REST API för att generera swagger-beskrivning av våra REST API:er", produces = MediaType.APPLICATION_JSON)
-@Service
 public class ApiScanner {
 
     private static final String SWAGGER_TOKEN = "swagger";
