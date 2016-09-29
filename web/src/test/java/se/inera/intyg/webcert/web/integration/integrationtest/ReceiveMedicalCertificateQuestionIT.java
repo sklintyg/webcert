@@ -28,12 +28,9 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
 
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
@@ -88,7 +85,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -101,7 +98,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
                 responseBodyExtractorFilter)
                 .body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
@@ -117,7 +114,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     public void testRequestSchemaValidationError() {
         given().body(createRequestBody("Ovrigt", INTYGS_ID, "fk-" + System.currentTimeMillis(), ""))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -133,7 +130,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody("NON_EXISTING_AMNE", INTYGS_ID))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -149,7 +146,7 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)

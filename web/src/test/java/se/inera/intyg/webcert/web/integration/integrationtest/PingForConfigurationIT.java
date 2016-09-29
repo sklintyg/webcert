@@ -31,12 +31,9 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
 
 /**
  * Created by marced on 2016-06-02.
@@ -71,7 +68,7 @@ public class PingForConfigurationIT extends BaseWSIntegrationTest {
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + PING_FOR_CONFIGURATION_V1_0)
+                .post(PING_FOR_CONFIGURATION_V1_0)
                 .then()
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
@@ -80,7 +77,7 @@ public class PingForConfigurationIT extends BaseWSIntegrationTest {
     public void testPingForConfigurationBasic() throws Exception {
 
         given().body(requestTemplate.render()).when()
-                .post(RestAssured.baseURI + PING_FOR_CONFIGURATION_V1_0)
+                .post(PING_FOR_CONFIGURATION_V1_0)
                 .then().statusCode(200)
                 .rootPath(BASE)
                 .body("version", not(isEmptyString()))

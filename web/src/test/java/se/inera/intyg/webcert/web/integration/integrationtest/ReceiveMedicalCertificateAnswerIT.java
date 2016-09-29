@@ -25,26 +25,20 @@ import static org.hamcrest.core.Is.is;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.time.LocalDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
@@ -89,7 +83,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
         given().body(createRequestBody(internalReferens, HOS_PERSONAL_ID, SVAR_MEDDELANDE_TEXT, SIGNERINGS_TIDPUNKT))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -103,7 +97,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
                 responseBodyExtractorFilter)
                 .body(createRequestBody(internalReferens, HOS_PERSONAL_ID, "Här är ett svar från FK", SIGNERINGS_TIDPUNKT))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
@@ -119,7 +113,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     public void testRequestSchemaValidationError() {
         given().body(createRequestBody(1, HOS_PERSONAL_ID, "Här är ett svar från FK", ""))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -135,7 +129,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
         given().body(createRequestBody(internalReferens, "", "", SIGNERINGS_TIDPUNKT))
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -152,7 +146,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + RECEIVE_QUESTION_V1_0)
+                .post(RECEIVE_QUESTION_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -192,7 +186,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
 
         Response response = given().log().all().contentType(ContentType.JSON)
                 .body(fs).expect().statusCode(200).when()
-                .post(RestAssured.baseURI + "testability/questions").then().extract().response();
+                .post("testability/questions").then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("internReferens");

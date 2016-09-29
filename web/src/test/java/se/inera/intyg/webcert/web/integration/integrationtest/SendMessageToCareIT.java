@@ -28,12 +28,9 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
 
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
@@ -76,7 +73,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V1_0)
                 .then()
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
@@ -88,7 +85,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().body(requestTemplate.render()).when()
-                .post(RestAssured.baseURI + SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V1_0)
                 .then().statusCode(200)
                 .rootPath(BASE)
                 .body("result.resultCode", is(ResultCodeType.ERROR.value()))
@@ -102,7 +99,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().body(requestTemplate.render()).when()
-                .post(RestAssured.baseURI + SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V1_0)
                 .then().statusCode(200)
                 .rootPath(BASE)
                 .body("result.resultCode", is(ResultCodeType.ERROR.value()))
@@ -117,7 +114,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)

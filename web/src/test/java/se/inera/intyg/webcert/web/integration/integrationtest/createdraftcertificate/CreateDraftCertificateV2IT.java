@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.stringtemplate.v4.*;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
 
 import se.inera.intyg.webcert.web.integration.integrationtest.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
@@ -87,7 +86,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(LUAE_FS, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -103,7 +102,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(LUAE_NA, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -118,7 +117,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(LUSE, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -133,7 +132,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -148,7 +147,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(TS_DIABETES, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -163,7 +162,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(LISU, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -178,7 +177,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 responseBodyExtractorFilter)
                 .body(createRequestBody(type, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .body(matchesXsd(IOUtils.toString(xsdInputstream)).with(new ClasspathSchemaResourceResolver()));
@@ -190,7 +189,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -206,7 +205,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -222,7 +221,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(LISU, OTHER_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V2_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)

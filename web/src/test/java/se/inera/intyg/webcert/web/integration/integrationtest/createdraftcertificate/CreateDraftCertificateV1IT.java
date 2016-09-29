@@ -19,26 +19,23 @@
 
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
-import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
-import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
-import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.stringtemplate.v4.*;
+
+import com.google.common.collect.ImmutableMap;
+
+import se.inera.intyg.webcert.web.integration.integrationtest.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -82,7 +79,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -97,7 +94,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
                 responseBodyExtractorFilter)
                 .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
                 .statusCode(200)
                 .body(matchesXsd(IOUtils.toString(xsdInputstream)).with(new ClasspathSchemaResourceResolver()));
@@ -109,7 +106,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
 
         given().body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -125,7 +122,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -140,7 +137,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     public void testCreateDraftFailsWithValidationErrorWhenNoMiUOnUnit() {
         given().body(createRequestBody(FK_7263, OTHER_LAKARE_HSAID))
                 .when()
-                .post(RestAssured.baseURI + CREATE_DRAFT_CERTIFICATE_V1_0)
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)

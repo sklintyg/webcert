@@ -35,8 +35,8 @@ public abstract class BaseWSIntegrationTest {
     @Before
     public void setupBase() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
+        RestAssured.requestSpecification = new RequestSpecBuilder().setContentType("application/xml;charset=utf-8").build();
     }
 
     @After

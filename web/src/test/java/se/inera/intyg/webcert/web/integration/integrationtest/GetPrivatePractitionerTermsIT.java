@@ -30,12 +30,9 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.*;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
 
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEnum;
 
@@ -73,7 +70,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
 
         given().body(requestTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
+                .post(GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
                 .then().statusCode(200)
                 .rootPath(BASE)
                 .body("resultCode", is(ResultCodeEnum.OK.value()))
@@ -87,7 +84,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
+                .post(GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
                 .then()
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
@@ -100,7 +97,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
+                .post(GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)
@@ -113,7 +110,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().filter(responseBodyExtractorFilter).body(brokenTemplate.render())
                 .when()
-                .post(RestAssured.baseURI + GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
+                .post(GET_PRIVATE_PRACTITIONER_TERMS_V1_0)
                 .then()
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
