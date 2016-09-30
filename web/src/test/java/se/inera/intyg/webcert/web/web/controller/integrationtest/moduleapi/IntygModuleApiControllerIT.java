@@ -193,8 +193,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given()
-                .expect().statusCode(HttpServletResponse.SC_OK)
+        given().redirects().follow(false)
+                .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
@@ -292,8 +292,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
-        given()
-                .expect().statusCode(HttpServletResponse.SC_OK)
+        given().redirects().follow(false)
+                .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
@@ -337,7 +337,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
-        given().expect().statusCode(HttpServletResponse.SC_OK)
+        given().redirects().follow(false)
+                .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in

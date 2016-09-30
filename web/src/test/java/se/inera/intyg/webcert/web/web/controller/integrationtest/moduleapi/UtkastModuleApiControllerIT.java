@@ -69,9 +69,9 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given()
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().get("logout");
+        given().redirects().follow(false)
+                .expect().statusCode(HttpServletResponse.SC_FOUND)
+                .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
@@ -91,9 +91,9 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given()
-        .expect().statusCode(HttpServletResponse.SC_OK)
-        .when().get("logout");
+        given().redirects().follow(false)
+                .expect().statusCode(HttpServletResponse.SC_FOUND)
+                .when().get("logout");
         
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
