@@ -1,223 +1,236 @@
 ext {
-  springVersion = "4.2.2.RELEASE"
-  springSecurityVersion = "4.0.3.RELEASE"
-  camelVersion = "2.16.0"
-  hamcrestVersion = "1.3"
-  commonsIoVersion = "2.4"
-  cxfVersion = "3.1.3"
-  ppSchemasVersion = "1.0.3"
-  ppTermsSchemasVersion = "1.0.3"
-  healthcondSchemasVersion = "2.0.RC6.1"
-  healthreportingSchemasVersion = "3.1.0.3"
+    springVersion = "4.2.2.RELEASE"
+    springSecurityVersion = "4.0.3.RELEASE"
+    camelVersion = "2.16.0"
+    hamcrestVersion = "1.3"
+    commonsIoVersion = "2.4"
+    cxfVersion = "3.1.3"
+    ppSchemasVersion = "1.0.3"
+    ppTermsSchemasVersion = "1.0.3"
+    healthcondSchemasVersion = "2.0.RC6.1"
+    healthreportingSchemasVersion = "3.1.0.3"
 }
 
-allprojects  {
-  apply plugin: 'maven'
-  apply plugin: 'org.ajoberstar.grgit'
+allprojects {
+    apply plugin: 'maven'
+    apply plugin: 'org.ajoberstar.grgit'
 
-  def baseVersion = '5.0.'
-  def commonBaseVersion = '3.0.'
+    def baseVersion = '5.0.'
+    def commonBaseVersion = '3.0.'
 
-  group = 'se.inera.intyg.webcert'
-  version = System.env.BUILD_NUMBER != null ? baseVersion + System.env.BUILD_NUMBER : '0-SNAPSHOT'
-  rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : commonBaseVersion + '+'
-  rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : commonBaseVersion + '+'
+    group = 'se.inera.intyg.webcert'
+    version = System.env.BUILD_NUMBER != null ? baseVersion + System.env.BUILD_NUMBER : '0-SNAPSHOT'
+    rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : commonBaseVersion + '+'
+    rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : commonBaseVersion + '+'
 }
 
 subprojects {
-  apply plugin: 'java'
+    apply plugin: 'java'
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-  task createVersionPropertyFile(dependsOn: processResources) {
-    def propertyFile = "${buildDir}/resources/main/version.properties"
-    def projectVersion = rootProject.version
-    def gitCommit = grgit.head().id
-    def gitBranch = grgit.branch.getCurrent().getName()
-    def buildNumber = System.env.BUILD_NUMBER
+    task createVersionPropertyFile(dependsOn: processResources) {
+        def propertyFile = "${buildDir}/resources/main/version.properties"
+        def projectVersion = rootProject.version
+        def gitCommit = grgit.head().id
+        def gitBranch = grgit.branch.getCurrent().getName()
+        def buildNumber = System.env.BUILD_NUMBER
 
-    inputs.property("project.version", projectVersion)
-    inputs.property("gitCommit", gitCommit)
-    inputs.property("gitBranch", gitBranch)
-    inputs.property("buildNumber", buildNumber)
-    outputs.file(propertyFile)
+        inputs.property("project.version", projectVersion)
+        inputs.property("gitCommit", gitCommit)
+        inputs.property("gitBranch", gitBranch)
+        inputs.property("buildNumber", buildNumber)
+        outputs.file(propertyFile)
 
-    doLast {
-      ant.touch(file: propertyFile, mkdirs: "true")
-      ant.propertyfile(file: propertyFile) {
-        entry(key: 'project.version', default: projectVersion)
-        entry(key: 'gitCommit', default: gitCommit)
-        entry(key: 'gitBranch', default: gitBranch)
-        entry(key: 'buildNumber', default: buildNumber)
-        entry(key: 'buildTime', default: new Date())
-      }
-    }
-  }
-
-  jar.dependsOn(createVersionPropertyFile)
-
-  task unzipBuildTools(type: Copy) {
-    description 'Extracts common-build-tools'
-    into "$buildDir/build-tools/"
-    from {
-      configurations.buildtools.collect { zipTree(it) }
-    }
-  }
-
-  if (project.hasProperty('codeQuality')) {
-    apply plugin: 'checkstyle'
-
-    checkstyle {
-      config = resources.text.fromFile("${buildDir}/build-tools/checkstyle/checkstyle.xml")
-      ignoreFailures = false
-      showViolations = true
+        doLast {
+            ant.touch(file: propertyFile, mkdirs: "true")
+            ant.propertyfile(file: propertyFile) {
+                entry(key: 'project.version', default: projectVersion)
+                entry(key: 'gitCommit', default: gitCommit)
+                entry(key: 'gitBranch', default: gitBranch)
+                entry(key: 'buildNumber', default: buildNumber)
+                entry(key: 'buildTime', default: new Date())
+            }
+        }
     }
 
-    checkstyleMain.dependsOn unzipBuildTools
-    checkstyleMain.source = "src/main/java"
-    checkstyleTest.enabled = false
-  }
+    jar.dependsOn(createVersionPropertyFile)
 
-  if (project.hasProperty('runSonar')) {
-    apply plugin: 'jacoco'
-    jacoco {
-      toolVersion = "0.7.6.201602180812"
+    task unzipBuildTools(type: Copy) {
+        description 'Extracts common-build-tools'
+        into "$buildDir/build-tools/"
+        from {
+            configurations.buildtools.collect { zipTree(it) }
+        }
     }
-    test {
-      jacoco {
-        destinationFile = file("$buildDir/jacoco/test.exec")
-      }
+
+    if (project.hasProperty('codeQuality')) {
+        apply plugin: 'checkstyle'
+
+        checkstyle {
+            config = resources.text.fromFile("${buildDir}/build-tools/checkstyle/checkstyle.xml")
+            ignoreFailures = false
+            showViolations = true
+        }
+
+        checkstyleMain.dependsOn unzipBuildTools
+        checkstyleMain.source = "src/main/java"
+        checkstyleTest.enabled = false
     }
-  }
 
-  uploadArchives {
-    repositories.mavenDeployer {
-      pom.whenConfigured {pom ->
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
-      }
-      repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
-        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
-      }
+    if (project.hasProperty('runSonar')) {
+        apply plugin: 'jacoco'
+        jacoco {
+            toolVersion = "0.7.6.201602180812"
+        }
+        test {
+            jacoco {
+                destinationFile = file("$buildDir/jacoco/test.exec")
+            }
+        }
     }
-  }
 
-  install {
-    repositories.mavenInstaller {
-      pom.whenConfigured {pom ->
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common' }.each { it.version = rootProject.resolvedCommonVersion }
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each { it.version = rootProject.resolvedTyperVersion }
-      }
+    uploadArchives {
+        repositories.mavenDeployer {
+            pom.whenConfigured { pom ->
+                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.common' }.each {
+                    it.version = rootProject.resolvedCommonVersion
+                }
+                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each {
+                    it.version = rootProject.resolvedTyperVersion
+                }
+            }
+            repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+                authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+            }
+        }
     }
-  }
 
-  configurations {
-    buildtools
-  }
+    install {
+        repositories.mavenInstaller {
+            pom.whenConfigured { pom ->
+                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.common' }.each {
+                    it.version = rootProject.resolvedCommonVersion
+                }
+                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each {
+                    it.version = rootProject.resolvedTyperVersion
+                }
+            }
+        }
+    }
 
-  dependencies {
-    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
+    configurations {
+        buildtools
+    }
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.9.0'
-  }
+    dependencies {
+        buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
 
-  repositories {
-    mavenLocal()
-    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-  }
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.mockito:mockito-core:1.9.0'
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
 
 }
 
 project(':webcert-common') {
-  afterEvaluate { project ->
-    project.configurations.find{ it.name == 'compile' }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
-      if (it.moduleGroup == 'se.inera.intyg.common') {
-        rootProject.ext.resolvedCommonVersion = it.moduleVersion
-        return true
-      }
-      return false
+    afterEvaluate { project ->
+        project.configurations.find {
+            it.name == 'compile'
+        }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
+            if (it.moduleGroup == 'se.inera.intyg.common') {
+                rootProject.ext.resolvedCommonVersion = it.moduleVersion
+                return true
+            }
+            return false
+        }
+        project.configurations.find {
+            it.name == 'compile'
+        }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
+            if (it.moduleGroup == 'se.inera.intyg.intygstyper') {
+                rootProject.ext.resolvedTyperVersion = it.moduleVersion
+                return true
+            }
+            return false
+        }
     }
-    project.configurations.find{ it.name == 'compile' }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
-      if (it.moduleGroup == 'se.inera.intyg.intygstyper') {
-        rootProject.ext.resolvedTyperVersion = it.moduleVersion
-        return true
-      }
-      return false
-    }
-  }
 }
 
 task tagRelease {
-  description = 'Tags the current head with the projects version.'
-  doLast {
-    grgit.tag.add {
-      name = version
-      message = "Release of ${version}"
+    description = 'Tags the current head with the projects version.'
+    doLast {
+        grgit.tag.add {
+            name = version
+            message = "Release of ${version}"
+        }
+        //grgit.push(tags: true)
     }
-    //grgit.push(tags: true)
-  }
 }
 
 if (project.hasProperty('runSonar')) {
-  apply plugin: "org.sonarqube"
-  sonarqube {
-    properties {
-      property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
-      property "sonar.projectName", projectName
-      property "sonar.projectKey", projectId
+    apply plugin: "org.sonarqube"
+    sonarqube {
+        properties {
+            property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
+            property "sonar.projectName", projectName
+            property "sonar.projectKey", projectId
 
-      // Address of SonarQube server
-      property "sonar.host.url", "https://build-inera.nordicmedtest.se/sonar"
+            // Address of SonarQube server
+            property "sonar.host.url", "https://build-inera.nordicmedtest.se/sonar"
 
-      ext.sonarPassword = System.properties['sonarPassword']
+            ext.sonarPassword = System.properties['sonarPassword']
 
-      //Exclusions
-      property "sonar.test.exclusions", "src/test/**"
+            //Exclusions
+            property "sonar.test.exclusions", "src/test/**"
 
-      property "sonar.exclusions", [
-        "**/stub/**",
-        "**/exception/**",
-        "**/*Exception*.java",
-        "**/*Fake*.java",
-        "**/templates.js",
-        "**/vendor/**",
-        "**/swagger-ui/**"
-      ]
+            property "sonar.exclusions", [
+                    "**/stub/**",
+                    "**/exception/**",
+                    "**/*Exception*.java",
+                    "**/*Fake*.java",
+                    "**/templates.js",
+                    "**/vendor/**",
+                    "**/swagger-ui/**"
+            ]
 
-      property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
+            property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
 
-      //Skip these projects entirely
-      project(":webcert-specifications") {
-        sonarqube {
-          skipProject = true
+            //Skip these projects entirely
+            project(":webcert-specifications") {
+                sonarqube {
+                    skipProject = true
+                }
+            }
+            project(":webcert-liquibase-runner") {
+                sonarqube {
+                    skipProject = true
+                }
+            }
         }
-      }
-      project(":webcert-liquibase-runner") {
-        sonarqube {
-          skipProject = true
-        }
-      }
     }
-  }
 }
 
 buildscript {
-  dependencies {
-    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
-    classpath 'org.ajoberstar:gradle-git:1.5.1'
-    classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0-SNAPSHOT'
-    classpath 'org.akhikhl.gretty:gretty:+'
-    classpath 'com.moowork.gradle:gradle-node-plugin:0.12'
-    classpath 'com.moowork.gradle:gradle-grunt-plugin:0.12'
-  }
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
+        classpath 'org.ajoberstar:gradle-git:1.5.1'
+        classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0.+'
+        classpath 'org.akhikhl.gretty:gretty:+'
+        classpath 'com.moowork.gradle:gradle-node-plugin:0.12'
+        classpath 'com.moowork.gradle:gradle-grunt-plugin:0.12'
+    }
 
-  repositories {
-    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-    maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
-    maven { url "https://plugins.gradle.org/m2/" }
-  }
+    repositories {
+        mavenLocal()
+        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
 }
