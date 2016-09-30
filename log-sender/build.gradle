@@ -18,7 +18,7 @@ dependencies {
   compile "org.springframework:spring-tx:${springVersion}"
   compile "org.springframework:spring-jms:${springVersion}"
   compile "org.apache.camel:camel-spring:${camelVersion}"
-  compile "org.apache.activemq:activemq-camel:5.9.1"
+  compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
   compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
   compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
 
@@ -27,8 +27,8 @@ dependencies {
   testCompile "xmlunit:xmlunit:1.4"
   testCompile "com.jayway.awaitility:awaitility:1.4.0"
   testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
-  testCompile "org.apache.activemq:activemq-spring:5.13.0"
-  testCompile "org.apache.activemq:activemq-broker:5.13.0"
+  testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
+  testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
 
   providedCompile "javax.servlet:servlet-api:2.5"
   providedCompile "org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1"
