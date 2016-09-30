@@ -25,7 +25,7 @@ import java.util.*;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

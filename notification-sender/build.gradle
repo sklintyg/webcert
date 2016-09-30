@@ -5,7 +5,7 @@ dependencies {
 
   compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${healthcondSchemasVersion}"
 
-  compile (group: "se.inera.intyg.intygstyper", name:"fk7263", version: "${typerVersion}") {
+  compile ("se.inera.intyg.intygstyper:fk7263:${typerVersion}") {
     exclude(module: 'insuranceprocess-healthreporting-schemas')
     exclude(module: 'fk-vardgivare-sjukvard-schemas')
     exclude(module: 'ServiceContracts_itintegration_monitoring')
@@ -26,9 +26,8 @@ dependencies {
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.apache.activemq:activemq-broker:5.13.0"
   testCompile "org.apache.activemq:activemq-spring:5.13.0"
-  testCompile "commons-io:commons-io:${commonsIoVersion}"
   testCompile "com.h2database:h2:1.3.174"
-  testCompile(group: "org.dbunit", name: "dbunit", version:"2.4.9") {
+  testCompile("org.dbunit:dbunit:2.4.9") {
     exclude(module: "junit")
   }
 }

@@ -1,9 +1,7 @@
 description = 'Webcert (Notifcation Stub)'
 
 dependencies {
-  compile "se.inera.intyg.common:common-schemas:${commonVersion}"
-
-  compile "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+  compile project(":webcert-common")
 
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }

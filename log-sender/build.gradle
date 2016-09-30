@@ -10,7 +10,7 @@ dependencies {
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:logging-util:${commonVersion}"
-  compile(group: "se.inera.intyg.common", name: "integration-util", version:"${commonVersion}") {
+  compile("se.inera.intyg.common:integration-util:${commonVersion}") {
     exclude(module: "logging-util")
   }
 
@@ -19,9 +19,7 @@ dependencies {
   compile "org.springframework:spring-jms:${springVersion}"
   compile "org.apache.camel:camel-spring:${camelVersion}"
   compile "org.apache.activemq:activemq-camel:5.9.1"
-  compile "org.apache.commons:commons-lang3:3.1"
   compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
-  compile "commons-io:commons-io:${commonsIoVersion}"
   compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
 
   testCompile "org.kubek2k:springockito:1.0.8"

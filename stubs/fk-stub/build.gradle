@@ -1,11 +1,7 @@
 description = 'Webcert (FK Stub)'
 
 dependencies {
-  compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${healthreportingSchemasVersion}"
-
-  compile "se.inera.intyg.common:common-schemas:${commonVersion}"
-
-  compile "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+  compile project(":webcert-common")
 
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }

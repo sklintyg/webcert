@@ -1,7 +1,5 @@
 description = 'Webcert (Intygstjänsten Stub)'
 
 dependencies {
-  compile "se.inera.intyg.intygstyper:luse:${commonVersion}"
-
-  compile "commons-io:commons-io:${commonsIoVersion}"
+  compile project(":webcert-common")
 }
