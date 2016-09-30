@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @lisu @notReady
+@statusuppdateringar @lisu
 Egenskap: Statusuppdateringar för LISU
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
@@ -17,7 +17,6 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
 
    När jag skickar intyget till Försäkringskassan
    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
-   Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
 @makulera
 Scenario: Statusuppdateringar då intyg makuleras
@@ -27,14 +26,12 @@ Scenario: Statusuppdateringar då intyg makuleras
 
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
 @radera
 Scenario: Statusuppdateringar då intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
 @fråga-från-fk
 Scenario: Statusuppdateringar vid fråga från FK
@@ -42,42 +39,64 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och jag signerar intyget
     Och jag skickar intyget till Försäkringskassan
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
     När Försäkringskassan skickar ett "Kontakt" meddelande på intyget
     Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 1, hanterade frågor 0,antal svar 0, hanterade svar 0
+    Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag svarar på frågan
-    Så ska statusuppdatering "HANFRA" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 1, hanterade frågor 1,antal svar 0, hanterade svar 0
+    Så ska statusuppdatering "HANFRFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
+    Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+
 
 @fråga-till-fk
-Scenario: Statusuppdateringar vid fråga till FK
+Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag skickar intyget till Försäkringskassan
 
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
 
     Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
-    Så ska statusuppdatering "NYFRTM" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 0, hanterade svar 0
+    Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
 
     Och Försäkringskassan skickar ett svar
     Så ska statusuppdatering "NYSVFM" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
     Och jag markerar svaret från Försäkringskassan som hanterat
-    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
+
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
     Och jag markerar svaret från Försäkringskassan som INTE hanterat
-    Så ska statusuppdatering "HANSVA" skickas till vårdsystemet. Totalt: "2"
-    Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "2"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+
+@fråga-till-fk @hantera
+Scenario: Statusuppdateringar vid hantering av fråga från vården
+    När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag skickar intyget till Försäkringskassan
+
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+
+    När jag markerar frågan från vården som hanterad
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
 
 @ANDRAT
 Scenario: Statusuppdateringar vid ändring av utkast

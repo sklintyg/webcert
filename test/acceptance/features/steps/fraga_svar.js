@@ -184,7 +184,7 @@ module.exports = function() {
 
     var messageID;
     this.Given(/^jag svarar på frågan$/, function() {
-
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
 
         return browser.refresh()
             .then(function() {
@@ -192,8 +192,8 @@ module.exports = function() {
             })
             .then(function() {
                 for (var k = 0; k < intyg.messages.length; k++) {
-                    console.log('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, true));
-                    var amneMatcharSkickadFraga = intyg.messages[k].amne === helpers.getSubjectFromCode(global.meddelanden[0].amne, true);
+                    logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
+                    var amneMatcharSkickadFraga = intyg.messages[k].amne === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
                     if (amneMatcharSkickadFraga && !intyg.messages[k].isHandled) {
                         messageID = intyg.messages[k].id;
                     }
