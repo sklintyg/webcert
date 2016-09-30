@@ -107,12 +107,12 @@ Scenario: Statusuppdateringar vid ändring av utkast
 
 @vardkontakt-skickas-med
 Scenario: Vårdkontakt skickas med statusuppdateringar
-    Så ska jag gå in på intyget med extra parametrar
+    Så ska jag gå in på intyget med en extra "ref" parametrar med värdet "testref"
 
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag kopierar intyget
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
-    Och egenskapen ref med värdet "testref" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa att parametern "ref" är mottagen med värdet "testref"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0

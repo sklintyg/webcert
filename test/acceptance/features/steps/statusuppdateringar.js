@@ -35,7 +35,6 @@ function getNotificationEntries(intygsId, value, numEvents) {
     var extensionType = 'utlatandeExtension';
     var selectStatement = 'SELECT utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
 
-    var columnValue;
     if (isSMIIntyg) {
         table = 'webcert_requests.statusupdates_2';
         handelseTidName = 'handelseTid';
@@ -44,27 +43,13 @@ function getNotificationEntries(intygsId, value, numEvents) {
         selectStatement = 'SELECT ' + extensionType + ', handelseKod,' +
             ' skickadeFragorTotal, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade,' +
             ' mottagnaFragorTotal, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade,' +
-            handelseTidName;
+            handelseTidName + ', intygRef';
 
-        var valueObj = helpers.statusCodes.find(function(codes) {
-            return codes.status === value;
-        });
-
-        // columnValue = (valueObj !== 'undefined') ? ('.handelseKod = "' + valueObj.status + '"') : ('.intygRef = "' + value + '"');
-
-        if (valueObj) {
-            columnValue = '.handelseKod = "' + valueObj.status + '"';
-        } else {
-            columnValue = '.intygRef = "' + value + '"';
-        }
-
-    } else {
-        columnValue = '.handelseKod = "' + value + '"';
     }
 
     var databaseTable = table;
     var query = selectStatement + ' FROM ' + databaseTable +
-        ' WHERE ' + databaseTable + columnValue +
+        ' WHERE ' + databaseTable + '.handelseKod = "' + value + '"' +
         ' AND ' + databaseTable + '.' + extensionType + ' = "' + intygsId + '"' +
         ' ORDER BY ' + handelseTidName + ' DESC;';
 
@@ -132,8 +117,12 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^egenskapen ref med värdet "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(intygRefValue, antal, callback) {
-        waitForEntries(global.intyg.id, intygRefValue, parseInt(antal, 10), callback);
+    this.Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {
+        console.log(statusuppdateringarRows[0]);
+        var row = statusuppdateringarRows[0];
+        var dbParam = (param === 'ref') ? 'intygRef' : 'undefined';
+        console.log('\'' + param + '\' converted to database equivalent => \'' + dbParam + '\'');
+        expect(paramValue).to.equal(row[dbParam].toString());
     });
 
     this.Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {

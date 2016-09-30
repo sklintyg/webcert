@@ -72,7 +72,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska jag gå in på intyget med extra parametrar$/, function(callback) {
+    this.Given(/^ska jag gå in på intyget med en extra "([^"]*)" parametrar med värdet "([^"]*)"$/, function(param, paramValue, callback) {
 
         var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
         url += '?';
@@ -82,7 +82,7 @@ module.exports = function() {
         url += 'postnummer=990%2090&';
         url += 'postort=Simrishamn&';
         url += 'enhet=' + global.user.enhetId + '&';
-        url += 'ref=testref';
+        url += param + '=' + paramValue;
 
         console.log('Går till url: ' + url);
         browser.get(url).then(callback);
