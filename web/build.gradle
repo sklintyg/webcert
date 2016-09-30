@@ -93,6 +93,7 @@ gretty {
 
 // TODO: make run of integration tests configurable
 task integrationTest(type: Test) {
+    outputs.upToDateWhen { false }
     if (project.hasProperty('jenkins-build')) {
         systemProperty "integration.tests.baseUrl", project.getProperty('baseUri')
     } else {
