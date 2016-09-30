@@ -21,21 +21,19 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.web.controller.api.dto.*;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
@@ -52,9 +50,13 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/intyg/person/{personNummer}").
+        ListIntygEntry[] intygArray = given().pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/intyg/person/{personNummer}").
                 then().
-                body(equalTo("[]"));
+                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
+                .as(ListIntygEntry[].class);
+
+        // assert there are no drafts from WebCert
+        assertFalse(Arrays.asList(intygArray).stream().anyMatch(i -> IntygSource.WC.equals(i.getSource())));
     }
 
     @Test
@@ -71,7 +73,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
                         body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
                         .as(ListIntygEntry[].class);
 
-        assertEquals(1, intygArray.length);
+        assertTrue(intygArray.length > 0);
 
         assertEquals(utkastId, intygArray[0].getIntygId());
         assertEquals(DEFAULT_PATIENT_PERSONNUMMER, intygArray[0].getPatientId().getPersonnummer());
