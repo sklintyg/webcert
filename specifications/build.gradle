@@ -13,13 +13,13 @@ dependencies {
   
   compile 'org.apache.activemq:activemq-client:5.13.0'
   compile 'javax.jms:jms-api:1.1-rev-1'
-  compile 'org.codehaus.groovy:groovy-all:2.4.3'
+  compile 'org.codehaus.groovy:groovy-all:2.4.7'
   compile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1') {
     exclude(module: 'groovy')
   }
-  compile 'org.fitnesse:fitnesse:20131110'
+  compile 'org.fitnesse:fitnesse:20150814'
   compile 'org.gebish:geb-core:0.10.0'
-  compile 'org.seleniumhq.selenium:selenium-server:2.48.2'
+  compile 'org.seleniumhq.selenium:selenium-server:2.52.0'
   compile('org.skyscreamer:jsonassert:1.2.0') {
     exclude(module: 'commons-collections')
   }
