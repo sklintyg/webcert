@@ -24,22 +24,24 @@ describe('SokSkrivValjUtkastService', function() {
     var PatientProxy;
     var basePerson;
     var $scope;
+    var PatientModel;
 
     beforeEach(function() {
 
         module('webcert', function($provide) {
-            var personIdValidator = {};
-
-            personIdValidator.validateSamordningsnummer = function(number) {
-                if (number === '195401875760') {
-                    return number;
+            var personIdValidator = {
+                validateSamordningsnummer: function(number) {
+                    if (number === '195401875760') {
+                        return number;
+                    }
+                    return null;
+                },
+                validResult: function(result) {
+                    return result !== undefined && result !== null;
+                },
+                validate: function(pnr) {
+                    return pnr;
                 }
-
-                return null;
-            };
-
-            personIdValidator.validResult = function(result) {
-                return result !== undefined && result !== null;
             };
 
             $provide.value('common.PersonIdValidatorService', personIdValidator);
@@ -49,13 +51,62 @@ describe('SokSkrivValjUtkastService', function() {
                 }
             };
             $provide.value('common.PatientProxy', PatientProxy);
-            //$provide.value('common.PatientModel', {});
+            $provide.value('common.ObjectHelper', jasmine.createSpyObj('common.ObjectHelper', ['isEmpty']));
         });
 
         inject(['$rootScope', 'webcert.SokSkrivValjUtkastService', function(_$rootScope_, _SokSkrivValjUtkastService_) {
             SokSkrivValjUtkastService = _SokSkrivValjUtkastService_;
             $scope = _$rootScope_.$new();
         }]);
+    });
+
+    describe('setupPatientModel', function() {
+
+        beforeEach(function() {
+            PatientModel = {
+                personnummer: null,
+                build: function() {
+                    this.personnummer = null;
+                    return this;
+                },
+                isValid: function() {
+                    return this.personnummer !== null && typeof this.personnummer !== undefined;
+                }
+            };
+        });
+
+        it('should return a model with a personnummer set if sent a correct patientId',
+            function() {
+                var testpnr = '191212121212';
+                var result = SokSkrivValjUtkastService.setupPatientModel(PatientModel, testpnr);
+                expect(result.personnummer).toBe(testpnr);
+            });
+
+        it('should return a model with a personnummer set if patientId is "default" and PatientModel already has a id',
+            function() {
+                var testpnr = '191212121212';
+                PatientModel.personnummer = testpnr;
+                var patientIdParam = 'default';
+                var result = SokSkrivValjUtkastService.setupPatientModel(PatientModel, patientIdParam);
+                expect(result.personnummer).toBe(testpnr);
+            });
+
+        it('should return a model with a personnummer set if patientId is null and PatientModel already has a id',
+            function() {
+                var testpnr = '191212121212';
+                PatientModel.personnummer = testpnr;
+                var patientIdParam = null;
+                var result = SokSkrivValjUtkastService.setupPatientModel(PatientModel, patientIdParam);
+                expect(result.personnummer).toBe(testpnr);
+            });
+
+        // Negative
+        it('should return a model with a personnummer set to null if patientId is invalid and PatientModel doesnt have id',
+            function() {
+                var patientIdParam = null;
+                var result = SokSkrivValjUtkastService.setupPatientModel(PatientModel, patientIdParam);
+                expect(result.personnummer).toBe(null);
+            });
     });
 
     describe('lookupPatient', function() {
@@ -234,31 +285,34 @@ describe('SokSkrivValjUtkastService', function() {
         it('should return null if list is invalid', function() {
             var result = SokSkrivValjUtkastService.hasUnsigned(null);
             expect(result).toBe(null);
-        })
+        });
+
         it('should return empty if list is empty', function() {
             var result = SokSkrivValjUtkastService.hasUnsigned([]);
             expect(result).toBe('intyglist-empty');
-        })
+        });
+
         it('should return unsigned if any items in the list is unsigned', function() {
 
             var intygList = [
-                { status: 'DRAFT_COMPLETE'},
-                { status: 'SIGNED'},
+                {status: 'DRAFT_COMPLETE'},
+                {status: 'SIGNED'}
             ];
 
             var result = SokSkrivValjUtkastService.hasUnsigned(intygList);
             expect(result).toBe('signed');
-        })
+        });
+
         it('should return signed if no items list in the list is unsigned', function() {
 
             var intygList = [
-                { status: 'RECIEVED'},
-                { status: 'SIGNED'},
+                {status: 'RECIEVED'},
+                {status: 'SIGNED'}
             ];
 
             var result = SokSkrivValjUtkastService.hasUnsigned(intygList);
             expect(result).toBe('unsigned');
-        })
+        });
     });
 
 });

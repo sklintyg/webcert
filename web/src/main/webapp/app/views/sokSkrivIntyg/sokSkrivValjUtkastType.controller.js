@@ -36,12 +36,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.viewState = Viewstate.build();
             $scope.intygTypeModel = IntygTypeSelectorModel.build();
 
-            PatientModel.personnummer = $stateParams.patientId;
-            if(!PatientModel.isValid()){
-                $scope.patientModel = PatientModel.build();
-            } else {
-                $scope.patientModel = PatientModel;
-            }
+            // In case callers do not know the patientId they can use 'default' in which case the controller
+            // will use what's currently in PatientModel, or, if that's not available, redirect user to enter a
+            // new id on the choose patient screen.
+            $scope.patientModel = Service.setupPatientModel(PatientModel, $stateParams.patientId);
             onPageLoad();
 
             /**
@@ -56,47 +54,56 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     return;
                 }
 
-                Viewstate.patientLoading = true;
-                Service.lookupPatient(PatientModel.personnummer).then(function(patientResult) {
+                if(PatientModel.isValid()){
+                    // All is well just load the rest
+                    loadUtkastTypesAndIntyg();
+                } else {
+                    // PatientModel is missing name information. Load that first
+                    Viewstate.patientLoading = true;
+                    Service.lookupPatient(PatientModel.personnummer).then(function(patientResult) {
 
-                    Viewstate.loadErrorMessageKey = null;
-                    Viewstate.patientLoading = false;
+                        Viewstate.loadErrorMessageKey = null;
+                        Viewstate.patientLoading = false;
 
-                    // Redirect to index if pnr and name isn't specified
-                    if (!PatientModel.update(patientResult)) {
-                        $state.go(choosePatientStateName);
-                        return;
-                    }
+                        // Redirect to index if pnr and name still isn't specified
+                        if (!PatientModel.update(patientResult)) {
+                            $state.go(choosePatientStateName);
+                            return;
+                        }
 
-                    // Load intyg types user can choose from
-                    UtkastProxy.getUtkastTypes(function(types) {
-                        IntygTypeSelectorModel.intygTypes = types;
+                        loadUtkastTypesAndIntyg();
+
+                    }, function(errorId) {
+                        Viewstate.loadErrorMessageKey = errorId;
+                        Viewstate.patientLoading = false;
+
+                        if(errorId === null){
+                            // If the pu-service isn't available the doctor can write any name they want.
+                            // redirect to edit patient name
+                            $state.go('webcert.create-edit-patientname', {mode:'errorOccured'});
+                        }
                     });
+                }
+            }
 
-                    // Load intyg for person with specified pnr
-                    Viewstate.tidigareIntygLoading = true;
-                    IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
-                        Viewstate.intygListUnhandled = data;
-                        $scope.updateIntygList();
-                        Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
-                        Viewstate.tidigareIntygLoading = false;
-                    }, function(errorData, errorCode) {
-                        Viewstate.tidigareIntygLoading = false;
-                        $log.debug('Query Error' + errorData);
-                        Viewstate.intygListErrorMessageKey = errorCode;
-                    });
-
-                }, function(errorId) {
-                    Viewstate.loadErrorMessageKey = errorId;
-                    Viewstate.patientLoading = false;
-
-                    if(errorId === null){
-                        // If the pu-service isn't available the doctor can write any name they want.
-                        // redirect to edit patient name
-                        $state.go('webcert.create-edit-patientname', {mode:'errorOccured'});
-                    }
+            function loadUtkastTypesAndIntyg() {
+                // Load intyg types user can choose from
+                UtkastProxy.getUtkastTypes(function(types) {
+                    IntygTypeSelectorModel.intygTypes = types;
                 });
 
+                // Load intyg for person with specified pnr
+                Viewstate.tidigareIntygLoading = true;
+                IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
+                    Viewstate.intygListUnhandled = data;
+                    $scope.updateIntygList();
+                    Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
+                    Viewstate.tidigareIntygLoading = false;
+                }, function(errorData, errorCode) {
+                    Viewstate.tidigareIntygLoading = false;
+                    $log.debug('Query Error' + errorData);
+                    Viewstate.intygListErrorMessageKey = errorCode;
+                });
             }
 
             /**

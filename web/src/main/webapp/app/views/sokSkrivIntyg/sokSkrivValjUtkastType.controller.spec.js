@@ -55,8 +55,9 @@ describe('ChooseCertTypeCtrl', function() {
                 postadress: 'Skogsvägen 1',
                 postnummer: '111 22',
                 postort: 'Skogen',
-                build: function() {
-                }
+                build: function() {},
+                isValid: function() {},
+                update: function() {}
             };
             CommonMessageServiceSpy.getProperty.and.returnValue('Test text');
             IntygFornyaRequestModelSpy.build.and.returnValue(IntygFornyaRequestInstanceMock);
@@ -78,14 +79,16 @@ describe('ChooseCertTypeCtrl', function() {
             $provide.value('common.messageService', CommonMessageServiceSpy);
             $provide.value('$stateParams', $stateParamsMock);
             $provide.value('common.ObjectHelper', jasmine.createSpyObj('common.ObjectHelper', ['isEmpty']));
+
             SokSkrivValjUtkastService = {
+                setupPatientModel: function setupPatientModel(PatientModel, patientId) {},
                 lookupPatient: function lookupPatient(personnummer) {
                     var deferred = $q.defer();
                     PatientModelMock.personnummer = personnummer;
                     deferred.resolve(PatientModelMock);
                     return deferred.promise;
                 }
-            }
+            };
             $provide.value('webcert.SokSkrivValjUtkastService', SokSkrivValjUtkastService);
         });
 
@@ -113,7 +116,7 @@ describe('ChooseCertTypeCtrl', function() {
             expect(IntygFornyaRequestModelSpy.build).toHaveBeenCalledWith({
                 intygType: 'fk7263',
                 intygId: 'abc123',
-                patientPersonnummer: 'PAT-ID-TEST',
+                patientPersonnummer: '19121212-1212',
                 nyttPatientPersonnummer: null
             });
             expect(CommonIntygCopyFornyaSpy.fornya).toHaveBeenCalledWith(

@@ -84,8 +84,10 @@ describe('Generate fk intyg', function() {
                     datum:'2015-01-01'
                 }
             }).then(function () {
-                expect(FkUtkastPage.baserasPa.minUndersokning.input.getAttribute('value'))
+                expect(FkUtkastPage.baserasPa.minUndersokning.datum.getAttribute('value'))
                     .toEqual('2015-01-01');
+            }, function() {
+                console.log('error calling FkUtkastPage.angeIntygetBaserasPa');
             });
         });
 

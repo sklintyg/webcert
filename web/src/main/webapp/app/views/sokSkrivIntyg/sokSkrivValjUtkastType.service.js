@@ -18,9 +18,33 @@
  */
 
 angular.module('webcert').factory('webcert.SokSkrivValjUtkastService',
-    [ '$q', 'common.PersonIdValidatorService', 'common.PatientProxy',
-        function($q, PersonIdValidator, PatientProxy) {
+    [ '$q', 'common.PersonIdValidatorService', 'common.PatientProxy', 'common.ObjectHelper',
+        function($q, PersonIdValidator, PatientProxy, ObjectHelper) {
             'use strict';
+
+            function _setupPatientModel(PatientModel, patientIdParam){
+                if(patientIdParam === 'default'){
+                    // if param is 'default' we won't use it, instead try to rely on already stored id in PatientModel
+                    patientIdParam = null;
+                } else {
+                    // if param is a valid personnummer use that
+                    if(PersonIdValidator.validResult(PersonIdValidator.validate(patientIdParam))) {
+                        PatientModel.personnummer = patientIdParam;
+                    } else {
+                        patientIdParam = null;
+                    }
+                }
+
+                if(!PatientModel.isValid()){
+                    var patientModel = PatientModel.build();
+                    if(!ObjectHelper.isEmpty(patientIdParam)){
+                        PatientModel.personnummer = patientIdParam;
+                    }
+                    return patientModel;
+                } else {
+                    return PatientModel;
+                }
+            }
 
             function _lookupPatient(personnummer) {
 
@@ -85,6 +109,7 @@ angular.module('webcert').factory('webcert.SokSkrivValjUtkastService',
 
             // Return public API for the service
             return {
+                setupPatientModel: _setupPatientModel,
                 lookupPatient: _lookupPatient,
                 hasUnsigned: _hasUnsigned
             };
