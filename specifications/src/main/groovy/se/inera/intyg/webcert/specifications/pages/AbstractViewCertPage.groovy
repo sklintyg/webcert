@@ -75,7 +75,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         unhandledQAPanelWithText(required: false) {text -> $("#unhandledArendeCol div", text: text)}
 
         handledQAList { $("#handledArendeCol") }
-        handledQAPanel(required: false) {internid -> $("#arende-unhandled-${internid}")}
+        handledQAPanel(required: false) {internid -> $("#arende-handled-${internid}")}
 
         answerText {internid -> $("#answerText-${internid}")}
         sendAnswerBtn {internid -> $("#sendAnswerBtn-${internid}")}
