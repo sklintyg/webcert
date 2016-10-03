@@ -9,19 +9,16 @@ fitnesse {
     workingDir = "src/test/fitnesse"
     wikiStartPage = "WebCert.AutomatiseradeTester"
 
-    if (project.hasProperty("fileOutput")) {
-        outputFormat = "xml&includehtml"
-    }
+    if (project.hasProperty("fileOutput")) outputFormat = "xml&includehtml"
 
     extraProperties = [
-            "geb.env"            : "chrome",
             "fitnesse.working"   : "src/test/fitnesse",
-            "webcert.web.baseUrl": "http://localhost:9088/",
-            "webcert.baseUrl"    : "http://localhost:9088/",
-            "logsender.baseUrl"  : "http://localhost:9097/log-sender/",
-            "certificate.baseUrl": "http://localhost:8080/inera-certificate/"
+            "geb.env"            : System.properties['geb.env'] ?: "chrome",
+            "webcert.web.baseUrl": System.properties['web.baseUrl'] ?: "http://localhost:9088/",
+            "webcert.baseUrl"    : System.properties['baseUrl'] ?: "http://localhost:9088/",
+            "logsender.baseUrl"  : System.properties['logsender.baseUrl'] ?: "http://localhost:9097/log-sender/",
+            "certificate.baseUrl": System.properties['certificat.baseUrl'] ?: "http://localhost:8080/inera-certificate/"
     ]
-
 }
 
 dependencies {
