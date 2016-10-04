@@ -19,32 +19,24 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
-import io.swagger.annotations.Api;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/fragasvar")
 @Api(value = "fragasvar", description = "REST API - moduleapi - fragasvar", produces = MediaType.APPLICATION_JSON)
@@ -97,7 +89,11 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createQuestion(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
             CreateQuestionParameter parameter) {
-        abortIfFragaSvarNotActive(intygsTyp);
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_FRAGOR, WebcertFeature.SKAPA_NYFRAGA)
+                .orThrow();
+
         LOG.debug("New question for cert {} with subject {}", intygsId, parameter.getAmne());
         FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygsId, intygsTyp, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();

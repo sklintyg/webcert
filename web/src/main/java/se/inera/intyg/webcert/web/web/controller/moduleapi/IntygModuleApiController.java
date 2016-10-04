@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import java.util.Arrays;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -77,7 +80,9 @@ public class IntygModuleApiController extends AbstractApiController {
     public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @DefaultValue("false") @QueryParam("sjf") boolean coherentJournaling) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+                .orThrow();
 
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
@@ -99,7 +104,11 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+                .features(WebcertFeature.UTSKRIFT)
+                .orThrow();
+
         return getPdf(intygsTyp, intygsId, false);
     }
 
@@ -116,7 +125,11 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
     @Produces("application/pdf")
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+                .features(WebcertFeature.ARBETSGIVARUTSKRIFT)
+                .orThrow();
+
         return getPdf(intygsTyp, intygsId, true);
     }
 
