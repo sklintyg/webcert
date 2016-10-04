@@ -61,9 +61,7 @@ test {
 }
 
 gretty {
-    if (project.hasProperty('jenkins-build')) {
-        integrationTestTask = null
-    }
+    integrationTestTask = null
     contextPath = '/'
     httpPort = 9088
     scanInterval = 0
@@ -91,14 +89,9 @@ gretty {
     extraResourceBase webappOutputDir
 }
 
-// TODO: make run of integration tests configurable
-task integrationTest(type: Test) {
+task restAssuredTest(type: Test) {
     outputs.upToDateWhen { false }
-    if (project.hasProperty('jenkins-build')) {
-        systemProperty "integration.tests.baseUrl", project.getProperty('baseUri')
-    } else {
-        systemProperty "integration.tests.baseUrl", "http://localhost:9088/"
-    }
+    systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:9088/"
     include '**/*IT*'
 }
 

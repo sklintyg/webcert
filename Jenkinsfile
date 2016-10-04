@@ -23,6 +23,6 @@ stage 'test'
 
 node {
   withEnv(javaEnv()) {
-    sh './gradlew integrationTest'
+    sh './gradlew restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/'
   }
 }
