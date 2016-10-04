@@ -27,7 +27,9 @@ public enum WebcertFeature implements Feature {
     HANTERA_INTYGSUTKAST("hanteraIntygsutkast"),
     KOPIERA_INTYG("kopieraIntyg"),
     MAKULERA_INTYG("makuleraIntyg"),
+    SKAPA_NYFRAGA("skapaNyFraga"),
     SKICKA_INTYG("skickaIntyg"),
+    UTSKRIFT("utskrift"),
     ARBETSGIVARUTSKRIFT("arbetsgivarUtskrift"),
     JS_LOGGNING("jsLoggning"),
     JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript");

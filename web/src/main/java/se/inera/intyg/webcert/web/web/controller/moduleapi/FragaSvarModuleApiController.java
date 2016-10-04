@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -97,7 +98,11 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createQuestion(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
             CreateQuestionParameter parameter) {
-        abortIfFragaSvarNotActive(intygsTyp);
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_FRAGOR, WebcertFeature.SKAPA_NYFRAGA)
+                .orThrow();
+
         LOG.debug("New question for cert {} with subject {}", intygsId, parameter.getAmne());
         FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygsId, intygsTyp, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();
