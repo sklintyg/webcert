@@ -17,47 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    ['$rootScope', '$window', '$filter', '$location', '$log', '$scope', '$stateParams',
-        'common.IntygCopyFornya',
-        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
-        'common.PatientModel', 'common.messageService',
-        function($rootScope, $window, $filter, $location, $log, $scope, $stateParams, CommonIntygCopyFornya,
-            IntygProxy, UtkastProxy, IntygFornyaRequestModel, IntygCopyRequestModel, PatientModel, messageService) {
+    ['$window', '$filter', '$log', '$scope', '$stateParams', '$state', '$location',
+        'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
+        'common.IntygCopyFornya', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
+        'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
+        function($window, $filter, $log, $scope, $stateParams, $state, $location,
+            Viewstate, IntygTypeSelectorModel, PatientModel,
+            CommonIntygCopyFornya, IntygFornyaRequestModel, IntygCopyRequestModel,
+            IntygProxy, UtkastProxy, Service, ObjectHelper) {
             'use strict';
 
             /**
              * Page state
              */
-            var changePatientUrl = '/create/index';
 
-            // Page setup
-            $scope.focusFirstInput = true;
-            $scope.viewState = {
-                doneLoading: true,
-                activeErrorMessageKey: null,
-                createErrorMessageKey: null,
-                inlineErrorMessageKey: null,
-                currentList: undefined,
-                unsigned: 'intyglist-empty' // unsigned, unsigned-mixed,
-            };
+            var choosePatientStateName = 'webcert.create-choosepatient-index';
 
-            $scope.filterForm = {
-                intygFilter: 'current' // possible values: current, revoked, all
-            };
+            $scope.viewState = Viewstate.build();
+            $scope.intygTypeModel = IntygTypeSelectorModel.build();
 
-            $scope.personnummer = PatientModel.personnummer;
-            $scope.sekretessmarkering = PatientModel.sekretessmarkering;
-            $scope.fornamn = PatientModel.fornamn;
-            $scope.mellannamn = PatientModel.mellannamn;
-            $scope.efternamn = PatientModel.efternamn;
-            $scope.fornyaTitleText = messageService.getProperty('fk7263.label.fornya.text');
-
-            $scope.intygType = 'default';
-            $scope.certificateTypeText = '';
-
-            // Format: { id: 'default', label: '' }
-            $scope.intygTypes = [];
-
+            // In case callers do not know the patientId they can use 'default' in which case the controller
+            // will use what's currently in PatientModel, or, if that's not available, redirect user to enter a
+            // new id on the choose patient screen.
+            $scope.patientModel = Service.setupPatientModel(PatientModel, $stateParams.patientId);
+            onPageLoad();
 
             /**
              * Private functions
@@ -65,100 +48,106 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              */
 
             function onPageLoad() {
-                // Redirect to index if pnr and name isn't specified
-                if (!PatientModel.personnummer || !PatientModel.fornamn || !PatientModel.efternamn) {
-                    $location.url(changePatientUrl, true);
+
+                if(ObjectHelper.isEmpty(PatientModel.personnummer)) {
+                    $state.go('webcert.create-choosepatient-index');
                     return;
                 }
 
+                if(PatientModel.isValid()){
+                    // All is well just load the rest
+                    loadUtkastTypesAndIntyg();
+                } else {
+                    // PatientModel is missing name information. Load that first
+                    Viewstate.patientLoading = true;
+                    Service.lookupPatient(PatientModel.personnummer).then(function(patientResult) {
+
+                        Viewstate.loadErrorMessageKey = null;
+                        Viewstate.patientLoading = false;
+
+                        // Redirect to index if pnr and name still isn't specified
+                        if (!PatientModel.update(patientResult)) {
+                            $state.go(choosePatientStateName);
+                            return;
+                        }
+
+                        loadUtkastTypesAndIntyg();
+
+                    }, function(errorId) {
+                        Viewstate.loadErrorMessageKey = errorId;
+                        Viewstate.patientLoading = false;
+
+                        if(errorId === null){
+                            // If the pu-service isn't available the doctor can write any name they want.
+                            // redirect to edit patient name
+                            $state.go('webcert.create-edit-patientname', {mode:'errorOccured'});
+                        }
+                    });
+                }
+            }
+
+            function loadUtkastTypesAndIntyg() {
                 // Load intyg types user can choose from
                 UtkastProxy.getUtkastTypes(function(types) {
-                    $scope.intygTypes = types;
-                    if (PatientModel.intygType) {
-                        $scope.intygType = PatientModel.intygType;
-                    }
+                    IntygTypeSelectorModel.intygTypes = types;
                 });
 
                 // Load intyg for person with specified pnr
-                IntygProxy.getIntygForPatient($scope.personnummer, function(data) {
-                    $scope.viewState.doneLoading = false;
-                    $scope.viewState.intygListUnhandled = data;
+                Viewstate.tidigareIntygLoading = true;
+                IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
+                    Viewstate.intygListUnhandled = data;
                     $scope.updateIntygList();
-                    hasUnsigned($scope.viewState.currentList);
-                    $window.doneLoading = true;
+                    Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
+                    Viewstate.tidigareIntygLoading = false;
                 }, function(errorData, errorCode) {
-                    $scope.viewState.doneLoading = false;
+                    Viewstate.tidigareIntygLoading = false;
                     $log.debug('Query Error' + errorData);
-                    $scope.viewState.activeErrorMessageKey = errorCode;
-                });
-
-                $scope.$watch('current.selected', function(newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        $scope.intygType = newValue;
-                    }
+                    Viewstate.intygListErrorMessageKey = errorCode;
                 });
             }
-
-            function hasUnsigned(list) {
-                if (!list) {
-                    return;
-                }
-                if (list.length === 0) {
-                    $scope.viewState.unsigned = 'intyglist-empty';
-                    return;
-                }
-                var unsigned = true;
-                for (var i = 0; i < list.length; i++) {
-                    var item = list[i];
-                    if (item.status === 'DRAFT_COMPLETE') {
-                        unsigned = false;
-                        break;
-                    }
-                }
-                if (unsigned) {
-                    $scope.viewState.unsigned = 'unsigned';
-                } else {
-                    $scope.viewState.unsigned = 'signed';
-                }
-            }
-
 
             /**
              * Watches
              */
 
-            $scope.$watch('filterForm.intygFilter', function() {
+            $scope.$watch('viewState.intygFilter', function() {
                 $scope.updateIntygList();
             });
+
+            /*
+            $scope.$watch('current.selected', function(newValue, oldValue) {
+                if (newValue !== oldValue) {
+                    $scope.intygType = newValue;
+                }
+            });*/
 
             /**
              * Exposed to scope
              */
 
             $scope.updateIntygList = function() {
-                $scope.viewState.currentList =
-                    $filter('TidigareIntygFilter')($scope.viewState.intygListUnhandled, $scope.filterForm.intygFilter);
+                Viewstate.currentList =
+                    $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);
             };
 
             $scope.changePatient = function() {
-                $location.path(changePatientUrl);
+                $state.go(choosePatientStateName);
             };
 
             //Use loaded module metadata to look up detailed description for a intygsType
             $scope.getDetailedDescription = function(intygsType) {
-                var intygTypes = $scope.intygTypes.filter(function(intygType) {
+                var intygTypes = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
                     return (intygType.id === intygsType);
                 });
-                if (intygTypes && intygTypes.length>0) {
+                if (intygTypes && intygTypes.length > 0) {
                     return intygTypes[0].detailedDescription;
                 }
             };
 
-
             $scope.createDraft = function() {
 
                 var createDraftRequestPayload = {
-                    intygType: $scope.intygType,
+                    intygType: IntygTypeSelectorModel.intygType,
                     patientPersonnummer: PatientModel.personnummer,
                     patientFornamn: PatientModel.fornamn,
                     patientMellannamn: PatientModel.mellannamn,
@@ -168,11 +157,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     patientPostort: PatientModel.postort
                 };
                 UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
-                    $scope.viewState.createErrorMessageKey = undefined;
+                    Viewstate.createErrorMessageKey = undefined;
                     $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId, true);
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
-                    $scope.viewState.createErrorMessageKey = 'error.failedtocreateintyg';
+                    Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
                 });
             };
 
@@ -185,40 +174,38 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.copyIntyg = function(intyg) {
-                $scope.viewState.createErrorMessageKey = null;
+                Viewstate.createErrorMessageKey = null;
 
                 // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygCopyFornya.copy($scope.viewState,
+                CommonIntygCopyFornya.copy(Viewstate,
                     IntygCopyRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
-                        patientPersonnummer: $scope.personnummer,
-                        nyttPatientPersonnummer: $stateParams.patientId
+                        patientPersonnummer: PatientModel.personnummer,
+                        nyttPatientPersonnummer: null
                     }),
                     isOtherCareUnit
                 );
             };
 
             $scope.fornyaIntyg = function(intyg) {
-                $scope.viewState.createErrorMessageKey = null;
+                Viewstate.createErrorMessageKey = null;
 
                 // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygCopyFornya.fornya($scope.viewState,
+                CommonIntygCopyFornya.fornya(Viewstate,
                     IntygFornyaRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
-                        patientPersonnummer: $scope.personnummer,
-                        nyttPatientPersonnummer: $stateParams.patientId
+                        patientPersonnummer: PatientModel.personnummer,
+                        nyttPatientPersonnummer: null
                     }),
                     isOtherCareUnit
                 );
             };
-
-            onPageLoad();
         }]);

@@ -18,12 +18,12 @@
  */
 
 angular.module('webcert').controller('webcert.EditPatientNameCtrl',
-    [ '$location', '$stateParams' ,'$scope', 'common.PatientModel',
-        function($location, $stateParams, $scope, PatientModel) {
+    [ '$state', '$location', '$stateParams' ,'$scope', 'common.PatientModel',
+        function($state, $location, $stateParams, $scope, PatientModel) {
             'use strict';
 
             if (!PatientModel.personnummer) {
-                $location.url('/create/choose-patient/index', true);
+                $state.go('webcert.create-choosepatient-index');
             }
 
             $scope.personnummer = PatientModel.personnummer;
@@ -42,10 +42,10 @@ angular.module('webcert').controller('webcert.EditPatientNameCtrl',
                 PatientModel.fornamn = $scope.fornamn;
                 PatientModel.mellannamn = null;
                 PatientModel.efternamn = $scope.efternamn;
-                $location.path('/create/choose-intyg-type/index');
+                $state.go('webcert.create-choose-certtype-index', { 'patientId': PatientModel.personnummer});
             };
 
             $scope.changePatient = function() {
-                $location.path('/create/index');
+                $state.go('webcert.create-choosepatient-index');
             };
         }]);

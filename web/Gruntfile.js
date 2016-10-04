@@ -38,7 +38,7 @@ module.exports = function(grunt) {
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
-    var DEST_DIR = (grunt.option('outputDir') || 'build/webapp') +  '/app/';
+    var DEST_DIR = (grunt.option('outputDir') || 'build/apps') +  '/app/';
     var TEST_OUTPUT_DIR = (grunt.option('outputDir') || 'build/karma/');
     var SKIP_COVERAGE = grunt.option('skip-coverage') || 'true';
 

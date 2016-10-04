@@ -135,7 +135,10 @@ module.exports = {
         'Övrigt': 'OVRIGT'
     },
     subjectCodesFK7263: {
-        'Avstämningsmöte': 'Avstamningsmote'
+        'Avstämningsmöte': 'Avstamningsmote',
+        'Kontakt': 'Kontakt',
+        'Arbetstidsförläggning': 'Arbetstidsforlaggning',
+        'Påminnelse': 'Paminnelse'
     },
     getSubjectFromCode: function(value, isFK7263) {
         var subjectCodes = this.subjectCodes;

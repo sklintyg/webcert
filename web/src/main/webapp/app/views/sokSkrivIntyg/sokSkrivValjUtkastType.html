@@ -1,152 +1,167 @@
 <div class="container-fluid" wc-authority feature="hanteraIntygsutkast">
-  <div class="row">
-    <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
-      <div class="row">
-        <div class="col-xs-12">
-        <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
-          <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
-          <h1 class="page-title">Sök/skriv intyg</h1>
+
+  <div wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading"
+       show-content="!viewState.patientLoading">
+
+    <div class="row">
+      <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
+        <div class="row">
+          <div class="col-xs-12">
+
+            <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
+              <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
+              <h1 class="page-title">Sök/skriv intyg</h1>
+
+              <div id="load-error" ng-show="viewState.loadErrorMessageKey != null" class="alert alert-danger">
+                <span message key="{{viewState.loadErrorMessageKey}}"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="control-label">Patientuppgifter</label>
+                <div class="form-group">
+                  <span
+                      id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span><br />
+                  {{patientModel.personnummer}}
+                </div>
+
+                <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
+              </div>
+
+              <!-- New intyg -->
+              <div class="webcert-col-section qa-table-section">
+                <div class="form-group">
+                  <label for="intygType" class="control-label">Skriv nytt intyg</label>
+                  <div ng-show="!patientModel.sekretessmarkering">
+                    <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
+                            ng-options="type.id as type.label for type in intygTypeModel.intygTypes"
+                            wc-focus-me="viewState.focusFirstInput"></select>
+
+                  </div>
+                </div>
+                <div ng-show="!patientModel.sekretessmarkering" class="form-group" id="fortsattBtn">
+                  <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
+                          ng-disabled="intygTypeModel.intygType == 'default'">Fortsätt
+                  </button>
+                </div>
+                <div ng-if="patientModel.sekretessmarkering" class="form-group">
+                  <div class="alert alert-warning col-lg-7" id="sekretessmarkering">
+                    <span message key='label.createutkast.sekretessmarkering'></span>
+                  </div>
+                  <div class="clearfix"></div>
+                </div>
+
+                <!-- error message -->
+                <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+                  <span message key="{{viewState.createErrorMessageKey}}"></span>
+                </div>
+
+                <div class="alert alert-warning col-lg-7"
+                     ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
+                     id="intygTypeWarning">
+                  <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
+                </div>
+              </div>
+
+
+            </form>
+          </div>
+        </div>
+
+        <!-- Tidigare intyg table -->
+        <div class="webcert-col-section">
+          <h2 class="col-head">Tidigare intyg för {{patientModel.fornamn}} {{patientModel.efternamn}}</h2>
+          <div class="form-group" ng-if="patientModel.sekretessmarkering">
+            <div class="alert alert-warning col-lg-7">
+              <span message key='label.copyutkast.sekretessmarkering'></span>
+            </div>
+            <div class="clearfix"></div>
+          </div>
           <div class="form-group">
-            <label class="control-label">Patientuppgifter</label>
-            <div class="form-group">
-              <span id="patientNamn">{{fornamn}} {{mellannamn}} {{efternamn}}</span><br />
-              {{personnummer}}
-            </div>
-
-            <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
+            <label class="radio-inline">
+              <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
+                     ng-model="viewState.intygFilter" checked="checked"> Aktuella intyg
+            </label>
+            <label class="radio-inline">
+              <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
+                     ng-model="viewState.intygFilter" checked="checked"> Makulerade intyg
+            </label>
+            <label class="radio-inline">
+              <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all"
+                     ng-model="viewState.intygFilter" checked="checked"> Samtliga intyg
+            </label>
           </div>
 
-          <!-- New intyg -->
-          <div class="webcert-col-section qa-table-section">
-            <div class="form-group">
-              <label for="intygType" class="control-label">Skriv nytt intyg</label>
-              <div ng-show="!sekretessmarkering">
-                <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType"
-                        data-ng-options="type.id as type.label for type in intygTypes" wc-focus-me="focusFirstInput"></select>
+          <div wc-spinner label="info.loadingdata" show-spinner="viewState.tidigareIntygLoading"
+               show-content="!viewState.tidigareIntygLoading">
+            <div class="webcert-col-section qa-table-section" id="intygLista">
+
+              <!-- No intyg for person -->
+              <div id="current-list-noResults-unit"
+                   ng-show="!viewState.activeErrorMessageKey && viewState.currentList.length < 1"
+                   class="alert alert-info">
+                <span message key="info.nointygfound"></span>
+              </div>
+
+              <!-- error message -->
+              <div id="current-list-noResults-error" ng-show="viewState.activeErrorMessageKey"
+                   class="alert alert-danger">
+                <span message key="{{viewState.activeErrorMessageKey}}"></span>
+              </div>
+              <div ng-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
+                <span message key="{{viewState.inlineErrorMessageKey}}"></span>
+              </div>
+
+              <!-- Previous intyg table -->
+              <div class="row" ng-show="viewState.currentList.length>0" id="prevIntygTable">
+                <table class="col-md-12 table table-striped table-qa">
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
+                    <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
+                    <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
+                    <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by"></th>
+                  </tr>
+                  <tr ng-repeat="intyg in viewState.currentList">
+                    <td>
+                      <button type="button" class="btn btn-info" title="Visa intyget" ng-click="openIntyg(intyg)"
+                              id="showBtn-{{intyg.intygId}}">Visa
+                      </button>
+                    </td>
+                    <td ng-switch on="intyg.intygType">
+                      <button type="button" ng-switch-when="fk7263"
+                              ng-show="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
+                              class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
+                              intygstyp="{{intyg.intygType}}" title="{{fornyaTitleText}}" ng-click="fornyaIntyg(intyg)"
+                              id="fornyaBtn-{{intyg.intygId}}">
+                        Förnya
+                      </button>
+                      <button type="button" ng-switch-default
+                              ng-show="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
+                              class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
+                              intygstyp="{{intyg.intygType}}"
+                              title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
+                              ng-click="copyIntyg(intyg)" id="copyBtn-{{intyg.intygId}}">
+                        Kopiera
+                      </button>
+                    </td>
+                    <td><span message key="intygtypes.{{intyg.intygType}}.typename"></span></td>
+                    <td class="unbreakable"><span message key="intyg.status.{{intyg.status}}"></span></td>
+                    <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'shortDate'}}</td>
+                    <td class="unbreakable table-qa-last">{{intyg.updatedSignedBy}}</td>
+                  </tr>
+                </table>
 
               </div>
-            </div>
-            <div ng-show="!sekretessmarkering" class="form-group" id="fortsattBtn">
-              <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
-                      ng-disabled="intygType == 'default'">Fortsätt
-              </button>
-            </div>
-            <div ng-if="sekretessmarkering" class="form-group">
-              <div class="alert alert-warning col-lg-7" id="sekretessmarkering">
-                <span message key='label.createutkast.sekretessmarkering'></span>
-              </div>
-              <div class="clearfix"></div>
-            </div>
-
-            <!-- error message -->
-            <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
-              <span message key="{{viewState.createErrorMessageKey}}"></span>
-            </div>
-
-            <div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined" id="intygTypeWarning">
-              <span ng-bind-html="getDetailedDescription(intygType)" class="multiline"></span>
+              <span class="{{viewState.unsigned}}"></span>
             </div>
           </div>
-
-
-        </form>
-      </div>
-    </div>
-
-    <!-- Tidigare intyg table -->
-    <div class="webcert-col-section">
-      <h2 class="col-head">Tidigare intyg för {{fornamn}} {{efternamn}}</h2>
-      <div class="form-group" ng-if="sekretessmarkering">
-        <div class="alert alert-warning col-lg-7">
-          <span message key='label.copyutkast.sekretessmarkering'></span>
+          <!-- spinner tidigare intyg end -->
         </div>
-        <div class="clearfix"></div>
+
       </div>
-      <div class="form-group">
-        <label class="radio-inline">
-          <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
-                 ng-model="filterForm.intygFilter" checked="checked"> Aktuella intyg
-        </label>
-        <label class="radio-inline">
-          <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
-                 ng-model="filterForm.intygFilter" checked="checked"> Makulerade intyg
-        </label>
-        <label class="radio-inline">
-          <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all" ng-model="filterForm.intygFilter"
-                 checked="checked"> Samtliga intyg
-        </label>
-      </div>
-
-      <div wc-spinner label="info.loadingdata" show-spinner="viewState.doneLoading"
-           show-content="!viewState.doneLoading">
-        <div class="webcert-col-section qa-table-section" id="intygLista">
-
-          <!-- No intyg for person -->
-          <div id="current-list-noResults-unit"
-               ng-show="!viewState.activeErrorMessageKey && viewState.currentList.length < 1" class="alert alert-info">
-            <span message key="info.nointygfound"></span>
-          </div>
-
-          <!-- error message -->
-          <div id="current-list-noResults-error" ng-show="viewState.activeErrorMessageKey" class="alert alert-danger">
-            <span message key="{{viewState.activeErrorMessageKey}}"></span>
-          </div>
-          <div ng-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
-            <span message key="{{viewState.inlineErrorMessageKey}}"></span>
-          </div>
-
-          <!-- Previous intyg table -->
-          <div class="row" ng-show="viewState.currentList.length>0" id="prevIntygTable">
-            <table class="col-md-12 table table-striped table-qa">
-              <tr>
-                <th></th>
-                <th></th>
-                <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
-                <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
-                <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
-                <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by"></th>
-              </tr>
-              <tr ng-repeat="intyg in viewState.currentList">
-                <td>
-                  <button type="button" class="btn btn-info" title="Visa intyget" ng-click="openIntyg(intyg)"
-                          id="showBtn-{{intyg.intygId}}">Visa
-                  </button>
-                </td>
-                <td ng-switch on="intyg.intygType">
-                  <button
-                      type="button"
-                      ng-switch-when="fk7263"
-                      ng-show="!sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
-                      class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
-                      intygstyp="{{intyg.intygType}}"
-                      title="{{fornyaTitleText}}"
-                      ng-click="fornyaIntyg(intyg)" id="fornyaBtn-{{intyg.intygId}}">
-                    Förnya
-                  </button>
-                  <button
-                      type="button"
-                      ng-switch-default
-                      ng-show="!sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
-                      class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
-                      intygstyp="{{intyg.intygType}}"
-                      title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
-                      ng-click="copyIntyg(intyg)" id="copyBtn-{{intyg.intygId}}">
-                    Kopiera
-                  </button>
-                </td>
-                <td><span message key="intygtypes.{{intyg.intygType}}.typename"></span></td>
-                <td class="unbreakable"><span message key="intyg.status.{{intyg.status}}"></span></td>
-                <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'shortDate'}}</td>
-                <td class="unbreakable table-qa-last">{{intyg.updatedSignedBy}}</td>
-              </tr>
-            </table>
-
-          </div>
-          <span class="{{viewState.unsigned}}"></span>
-        </div>
-      </div>
-      <!-- spinner end -->
-
     </div>
   </div>
-</div></div>
+  <!-- load spinner end -->
+
+</div>

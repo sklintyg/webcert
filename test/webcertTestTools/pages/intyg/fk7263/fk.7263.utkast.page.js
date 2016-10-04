@@ -42,7 +42,6 @@ var FkUtkast = BaseUtkast._extend({
         this.travelRadioGroupChecked = element(by.css('input[name="recommendationsToFkTravel"]:checked'));
 
         this.capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
-        this.minUndersokning = element(by.id('basedOnExamination'));
         this.diagnosKod = element(by.id('diagnoseCode'));
         this.funktionsNedsattning = element(by.id('disabilities'));
         this.aktivitetsBegransning = element(by.id('activityLimitation'));
@@ -197,7 +196,7 @@ var FkUtkast = BaseUtkast._extend({
         return this.capacityForWorkForecastText;
     },
     minUndersokningAvPatClick: function() {
-        this.minUndersokning.sendKeys(protractor.Key.SPACE);
+        this.baserasPa.minUndersokning.sendKeys(protractor.Key.SPACE);
     },
     angeDiagnosKod: function(kod) {
 

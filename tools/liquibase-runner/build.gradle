@@ -25,6 +25,6 @@ configurations.runtime {
 dependencies {
   runtime project(':webcert-persistence')
 
-  runtime 'mysql:mysql-connector-java:5.1.24'
-  runtime 'org.liquibase:liquibase-core:3.3.1'
+  runtime "mysql:mysql-connector-java:${mysqlVersion}"
+  runtime "org.liquibase:liquibase-core:3.3.5"
 }
