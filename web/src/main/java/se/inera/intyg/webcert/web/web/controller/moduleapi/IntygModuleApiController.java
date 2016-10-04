@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import java.util.Arrays;
 
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -29,26 +30,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeReplaceSignedIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-import io.swagger.annotations.Api;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
 
 /**
  * Controller exposing services to be used by modules.
@@ -108,7 +106,7 @@ public class IntygModuleApiController extends AbstractApiController {
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(Arrays.asList(WebcertFeature.UTSKRIFT))
+                .features(WebcertFeature.UTSKRIFT)
                 .orThrow();
 
         return getPdf(intygsTyp, intygsId, false);
@@ -129,7 +127,7 @@ public class IntygModuleApiController extends AbstractApiController {
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(Arrays.asList(WebcertFeature.ARBETSGIVARUTSKRIFT))
+                .features(WebcertFeature.ARBETSGIVARUTSKRIFT)
                 .orThrow();
 
         return getPdf(intygsTyp, intygsId, true);
