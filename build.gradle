@@ -172,8 +172,8 @@ if (project.hasProperty('runSonar')) {
     sonarqube {
         properties {
             property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
-            property "sonar.projectName", projectName
-            property "sonar.projectKey", projectId
+            property "sonar.projectName", "Webcert"
+            property "sonar.projectKey", "webcert"
 
             // Address of SonarQube server
             property "sonar.host.url", "https://build-inera.nordicmedtest.se/sonar"
