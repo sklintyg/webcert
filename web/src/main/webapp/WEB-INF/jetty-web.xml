@@ -32,10 +32,6 @@
     <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
     <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
   </Call>
-  <Call name="setInitParameter">
-    <Arg>org.eclipse.jetty.servlet.Default.useFileMappedBuffer</Arg>
-    <Arg>false</Arg>
-  </Call>
   <New id="DataSource" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
       <Ref refid="webAppContext"/>
