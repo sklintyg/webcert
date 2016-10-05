@@ -21,7 +21,7 @@ allprojects {
     def commonBaseVersion = '3.0.'
 
     group = 'se.inera.intyg.webcert'
-    version = System.env.BUILD_NUMBER != null ? "${baseVersion}${System.env.BUILD_NUMBER}" : '0-SNAPSHOT'
+    version = System.env.BUILD_NUMBER != null ? baseVersion + System.env.BUILD_NUMBER : '0-SNAPSHOT'
     rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : "${commonBaseVersion}+"
     rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : "${commonBaseVersion}+"
 }
@@ -81,15 +81,13 @@ subprojects {
         checkstyleTest.enabled = false
     }
 
-    if (project.hasProperty('runSonar')) {
-        apply plugin: 'jacoco'
+    apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = "0.7.6.201602180812"
+    }
+    test {
         jacoco {
-            toolVersion = "0.7.6.201602180812"
-        }
-        test {
-            jacoco {
-                destinationFile = file("$buildDir/jacoco/test.exec")
-            }
+            destinationFile = file("$buildDir/jacoco/test.exec")
         }
     }
 
@@ -167,46 +165,36 @@ task tagRelease {
     }
 }
 
-if (project.hasProperty('runSonar')) {
-    apply plugin: "org.sonarqube"
-    sonarqube {
-        properties {
-            property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
-            property "sonar.projectName", "Webcert"
-            property "sonar.projectKey", "webcert"
+apply plugin: "org.sonarqube"
 
-            // Address of SonarQube server
-            property "sonar.host.url", "https://build-inera.nordicmedtest.se/sonar"
-
-            ext.sonarPassword = System.properties['sonarPassword']
-
-            //Exclusions
-            property "sonar.test.exclusions", "src/test/**"
-
-            property "sonar.exclusions", [
-                    "**/stub/**",
-                    "**/exception/**",
-                    "**/*Exception*.java",
-                    "**/*Fake*.java",
-                    "**/templates.js",
-                    "**/vendor/**",
-                    "**/swagger-ui/**"
+sonarqube {
+    properties {
+        property "sonar.jacoco.reportPath", "$buildDir/jacoco/test.exec"
+        property "sonar.projectName", "Webcert"
+        property "sonar.projectKey", "webcert"
+        property "sonar.host.url", System.properties['sonarUrl'] ?: "https://build-inera.nordicmedtest.se/sonar"
+        ext.sonarPassword = System.properties['sonarPassword']
+        property "sonar.test.exclusions", "src/test/**"
+        property "sonar.exclusions", [
+            "**/stub/**",
+            "**/exception/**",
+            "**/*Exception*.java",
+            "**/*Fake*.java",
+            "**/templates.js",
+            "**/vendor/**",
+            "**/swagger-ui/**"
             ]
-
-            property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
-
-            //Skip these projects entirely
-            project(":webcert-specifications") {
-                sonarqube {
-                    skipProject = true
-                }
-            }
-            project(":webcert-liquibase-runner") {
-                sonarqube {
-                    skipProject = true
-                }
-            }
-        }
+        property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
+    }
+}
+project(":webcert-specifications") {
+    sonarqube {
+        skipProject = true
+    }
+}
+project(":webcert-liquibase-runner") {
+    sonarqube {
+        skipProject = true
     }
 }
 

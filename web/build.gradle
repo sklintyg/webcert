@@ -29,7 +29,11 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
     outputs.dir(webappTestOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', "--outputDir=${webappTestOutputDir}", '--skip-coverage=' + (!project.hasProperty('runSonar'))]
+    doFirst {
+        args = ['test',
+                "--outputDir=${webappTestOutputDir}",
+                '--skip-coverage=' + !gradle.taskGraph.allTasks.any{it.name == 'sonarcube'}]
+    }
 }
 
 test.dependsOn(jsTests)
@@ -71,17 +75,17 @@ gretty {
     def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 
     jvmArgs = [
-            "-Dcatalina.base=${buildDir}/catalina.base",
-            "-Dspring.profiles.active=dev",
-            "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
-            "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-            "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-            "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-            "-Dwebcert.useMinifiedJavaScript=${minified}",
-            "-Dh2.tcp.port=9094",
-            "-Dh2.web.port=9090",
-            "-Djetty.port=9088"
-    ]
+        "-Dcatalina.base=${buildDir}/catalina.base",
+        "-Dspring.profiles.active=dev",
+        "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+        "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
+        "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
+        "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
+        "-Dwebcert.useMinifiedJavaScript=${minified}",
+        "-Dh2.tcp.port=9094",
+        "-Dh2.web.port=9090",
+        "-Djetty.port=9088"
+        ]
 
     extraResourceBase webappOutputDir
 }
