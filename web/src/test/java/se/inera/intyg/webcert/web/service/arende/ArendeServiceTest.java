@@ -1,9 +1,6 @@
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -489,6 +486,49 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getSvar());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(repo, times(2)).save(any(Arende.class));
+    }
+
+    @Test
+    public void answerKompltQuestionClosesAllCompletionsAsHandled() throws CertificateSenderException {
+        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        Arende fraga = buildArende(svarPaMeddelandeId, null);
+        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
+        fraga.setAmne(ArendeAmne.KOMPLT);
+        fraga.setPatientPersonId("191212121212");
+        Arende komplt1 = buildArende(UUID.randomUUID().toString(), null);
+        komplt1.setStatus(Status.PENDING_INTERNAL_ACTION);
+        komplt1.setAmne(ArendeAmne.KOMPLT);
+        komplt1.setPatientPersonId("191212121212");
+        Arende komplt2 = buildArende(UUID.randomUUID().toString(), null);
+        komplt2.setStatus(Status.PENDING_INTERNAL_ACTION);
+        komplt2.setAmne(ArendeAmne.KOMPLT);
+        komplt2.setPatientPersonId("191212121212");
+        Arende otherSubject = buildArende(UUID.randomUUID().toString(), null);
+        otherSubject.setStatus(Status.PENDING_INTERNAL_ACTION);
+        otherSubject.setAmne(ArendeAmne.ARBTID);
+        otherSubject.setPatientPersonId("191212121212");
+        when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
+        when(repo.findByIntygsId(INTYG_ID)).thenReturn(Arrays.asList(fraga, komplt1, otherSubject, komplt2));
+        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        WebCertUser webcertUser = new WebCertUser();
+        webcertUser.setAuthorities(new HashMap<>());
+        Privilege privilege = new Privilege();
+        privilege.setRequestOrigins(new ArrayList<>());
+        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA, privilege);
+        when(webcertUserService.getUser()).thenReturn(webcertUser);
+
+        ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
+
+        assertNotNull(result.getFraga());
+        assertNotNull(result.getSvar());
+        verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        verify(repo).findByIntygsId(INTYG_ID);
+        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
+        verify(repo, times(4)).save(arendeCaptor.capture());
+        for (Arende a : arendeCaptor.getAllValues()) {
+            assertEquals(Status.CLOSED, a.getStatus());
+            assertTrue(Arrays.asList(result.getSvar().getInternReferens(), svarPaMeddelandeId, komplt1.getId(), komplt2.getId()).contains(a.getId()));
+        }
     }
 
     @Test

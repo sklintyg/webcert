@@ -283,6 +283,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
+        // Implement Business Rule FS-045
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
+            closeCompletionsAsHandled(fragaSvar.getIntygsReferens().getIntygsId());
+        }
+
         return saved;
     }
 

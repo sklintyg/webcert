@@ -19,9 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -59,8 +57,7 @@ import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.common.security.common.model.*;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
@@ -437,8 +434,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
                 .thenReturn(getIntygContentHolder());
 
-        // ArgumentCaptor<NotificationRequestType> notCapture = ArgumentCaptor.forClass(NotificationRequestType.class);
-
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.getUser()).thenReturn(createUser());
@@ -632,6 +627,90 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             verify(fragasvarRepositoryMock, never()).save(any(FragaSvar.class));
             verifyZeroInteractions(notificationServiceMock);
         }
+    }
+
+    @Test
+    public void testSaveSvarForKompletteringAuthorized() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
+                .thenReturn(getIntygContentHolder());
+
+        WebCertUser webcertUser = createUser();
+        Privilege privilege = new Privilege();
+        privilege.setRequestOrigins(new ArrayList<>());
+        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA, privilege);
+        when(webCertUserService.getUser()).thenReturn(webcertUser);
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+        when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
+        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
+        wsResponse.setResult(ResultOfCallUtil.okResult());
+        when(sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
+
+        FragaSvar result = service.saveSvar(1L, "svarsText");
+
+        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(webCertUserService).getUser();
+        verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(false));
+        verify(fragasvarRepositoryMock).save(fragaSvar);
+        verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class));
+        verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        verify(monitoringServiceMock).logAnswerSent(anyString(), any(Long.class), anyString(), anyString(), anyString());
+
+        assertEquals("svarsText", result.getSvarsText());
+        assertEquals(Status.CLOSED, result.getStatus());
+        assertNotNull(result.getSvarSkickadDatum());
+    }
+
+    @Test
+    public void testSaveSvarForKompletteringClosesAllCompletionsAsHandled() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        FragaSvar komplt1 = buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now());
+        komplt1.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        FragaSvar komplt2 = buildFragaSvar(3L, LocalDateTime.now(), LocalDateTime.now());
+        komplt2.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        FragaSvar otherSubject = buildFragaSvar(4L, LocalDateTime.now(), LocalDateTime.now());
+        otherSubject.setAmne(Amne.KONTAKT);
+
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
+                .thenReturn(getIntygContentHolder());
+        WebCertUser webcertUser = createUser();
+        Privilege privilege = new Privilege();
+        privilege.setRequestOrigins(new ArrayList<>());
+        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA, privilege);
+        when(webCertUserService.getUser()).thenReturn(webcertUser);
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+        when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
+        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
+        wsResponse.setResult(ResultOfCallUtil.okResult());
+        when(sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(INTYG_ID)).thenReturn(Arrays.asList(fragaSvar, komplt1, otherSubject, komplt2));
+
+        FragaSvar result = service.saveSvar(1L, "svarsText");
+
+        verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class));
+        verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        verify(monitoringServiceMock).logAnswerSent(anyString(), any(Long.class), anyString(), anyString(), anyString());
+
+        ArgumentCaptor<FragaSvar> fragaSvarCaptor = ArgumentCaptor.forClass(FragaSvar.class);
+        verify(fragasvarRepositoryMock, times(3)).save(fragaSvarCaptor.capture());
+
+        for (FragaSvar fs : fragaSvarCaptor.getAllValues()) {
+            assertEquals(Status.CLOSED, fs.getStatus());
+            assertNotEquals(otherSubject.getInternReferens(), fs.getInternReferens());
+            assertTrue(Arrays.asList(fragaSvar.getInternReferens(), komplt1.getInternReferens(), komplt2.getInternReferens()).contains(fs.getInternReferens()));
+        }
+        assertEquals("svarsText", result.getSvarsText());
+        assertEquals(Status.CLOSED, result.getStatus());
+        assertNotNull(result.getSvarSkickadDatum());
     }
 
     @Test(expected = WebCertServiceException.class)

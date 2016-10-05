@@ -198,6 +198,10 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
+        // Implement Business Rule FS-045
+        if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
+            closeCompletionsAsHandled(svarPaMeddelande.getIntygsId(), svarPaMeddelande.getIntygTyp());
+        }
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved,
                 arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId));
     }
