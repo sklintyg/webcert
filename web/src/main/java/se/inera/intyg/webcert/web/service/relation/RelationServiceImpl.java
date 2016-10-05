@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 @Service
@@ -35,6 +36,9 @@ public class RelationServiceImpl implements RelationService {
 
     @Autowired
     private UtkastRepository utkastRepo;
+
+    @Autowired
+    private WebCertUserService userService;
 
     @Override
     public List<RelationItem> getParentRelations(String intygsId) {
@@ -44,17 +48,19 @@ public class RelationServiceImpl implements RelationService {
         // While we have a parent in the reference intyg
         while (reference != null && StringUtils.isNotEmpty(reference.getRelationIntygsId())) {
             reference = utkastRepo.findOne(reference.getRelationIntygsId());
-            if (reference == null) {
+            if (reference == null || !userService.getUser().getIdsOfSelectedVardenhet().contains(reference.getEnhetsId())) {
                 break;
             }
             relationList.add(new RelationItem(reference));
         }
         return relationList;
+
     }
 
     @Override
     public List<RelationItem> getChildRelations(String intygsId) {
         return utkastRepo.findAllByRelationIntygsId(intygsId).stream()
+                .filter(utkast -> userService.getUser().getIdsOfSelectedVardenhet().contains(utkast.getEnhetsId()))
                 .map(RelationItem::new)
                 .sorted(Comparator.comparing(RelationItem::getDate).reversed())
                 .collect(Collectors.toList());
