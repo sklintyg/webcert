@@ -1,18 +1,13 @@
 description = 'Webcert (Common)'
 
 dependencies {
-  // TODO: these dependencies are put here to make sure that the webcert-common project depends on both
-  // common and intygstyper, so that the parent build.gradle can find a resolved dependency for the
-  // maven publishing. We cannot at the moment evaluate the resolved dependencies in the web project, 
-  // b/c of some evaluation order conflict with the war plugin. This workaround solves the problem.
-  compile "se.inera.intyg.common:log-messages:${commonVersion}"
-  compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"
-  compile "commons-io:commons-io:2.4"
+    compile "se.inera.intyg.common:log-messages:${commonVersion}"
+    compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"  
 
-  compile("org.springframework.security:spring-security-config:${springSecurityVersion}") {
-    exclude(module: 'spring-core')
-    exclude(module: 'spring-aop')
-    exclude(module: 'spring-beans')
-  }
-
+    compile "commons-io:commons-io:2.4"
+    compile("org.springframework.security:spring-security-config:${springSecurityVersion}") {
+        exclude(module: 'spring-core')
+        exclude(module: 'spring-aop')
+        exclude(module: 'spring-beans')
+    }
 }
