@@ -1,6 +1,6 @@
 {
     "dev": {
-        "WEBCERT_URL": "http://localhost:9089/",
+        "WEBCERT_URL": "http://localhost:9088/",
         "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
         "INTYGTJANST_URL": "http://localhost:8080/inera-certificate"
     },
