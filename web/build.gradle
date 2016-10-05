@@ -29,7 +29,7 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
     outputs.dir(webappTestOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage=' + (!project.hasProperty('runSonar'))]
+    args = ['test', "--outputDir=${webappTestOutputDir}", '--skip-coverage=' + (!project.hasProperty('runSonar'))]
 }
 
 test.dependsOn(jsTests)
@@ -43,7 +43,7 @@ task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
     outputs.dir(webappOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['default', '--outputDir=' + webappOutputDir]
+    args = ['default', "--outputDir=${webappOutputDir}"]
 }
 
 war.dependsOn(jsInclude)
@@ -68,10 +68,7 @@ gretty {
 
     contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
 
-    def useMinifiedJavaScript = false;
-    if (System.properties['webcert.useMinifiedJavaScript'] != null) {
-        useMinifiedJavaScript = System.properties['webcert.useMinifiedJavaScript'];
-    }
+    def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 
     jvmArgs = [
             "-Dcatalina.base=${buildDir}/catalina.base",
@@ -80,7 +77,7 @@ gretty {
             "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
             "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
             "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-            "-Dwebcert.useMinifiedJavaScript=" + useMinifiedJavaScript,
+            "-Dwebcert.useMinifiedJavaScript=${minified}",
             "-Dh2.tcp.port=9094",
             "-Dh2.web.port=9090",
             "-Djetty.port=9088"

@@ -21,9 +21,9 @@ allprojects {
     def commonBaseVersion = '3.0.'
 
     group = 'se.inera.intyg.webcert'
-    version = System.env.BUILD_NUMBER != null ? baseVersion + System.env.BUILD_NUMBER : '0-SNAPSHOT'
-    rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : commonBaseVersion + '+'
-    rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : commonBaseVersion + '+'
+    version = System.env.BUILD_NUMBER != null ? "${baseVersion}${System.env.BUILD_NUMBER}" : '0-SNAPSHOT'
+    rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : "${commonBaseVersion}+"
+    rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : "${commonBaseVersion}+"
 }
 
 subprojects {
