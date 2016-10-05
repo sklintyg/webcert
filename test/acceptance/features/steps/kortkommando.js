@@ -28,6 +28,8 @@ var date;
 var key;
 var digit;
 
+var pattern = /\d{4}\-\d{2}\-\d{2}/g;
+
 function storeDate(tmpDate) {
     date = tmpDate;
 }
@@ -51,7 +53,6 @@ module.exports = function() {
 
 
     this.Given(/^jag fyller i kortkommando som till och med datum$/, function(callback) {
-
         helpers.getRandomDigit(999).then(function(randomDigit) {
             storeDigit(randomDigit);
 
@@ -65,13 +66,13 @@ module.exports = function() {
     });
 
     this.Given(/^ska till och med datum räknas ut automatiskt$/, function() {
-
-        var patt = /\d{4}\-\d{2}\-\d{2}/g;
-        var result = patt.test(date);
+        var result = pattern.test(date);
 
         if (result) {
-            console.log(date);
-            expect(digit).to.equal(helpers.diffDays(testdataHelper.dateFormat(new Date()), date));
+            var futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + digit);
+            var formattedFutureDate = testdataHelper.dateFormat(futureDate);
+            expect(date).to.equal(formattedFutureDate);
         }
     });
 };
