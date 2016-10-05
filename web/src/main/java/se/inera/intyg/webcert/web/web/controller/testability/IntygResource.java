@@ -19,63 +19,43 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.Api;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.parsers.*;
+import javax.xml.xpath.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -183,6 +163,8 @@ public class IntygResource {
     public Response deleteAllDrafts() {
         // Need deleteAll here, deleteAllInBatch doesn't apply cascade delete
         utkastRepository.deleteAll();
+        fragaSvarRepository.deleteAll();
+        arendeRepository.deleteAll();
         return Response.ok().build();
     }
 
@@ -191,17 +173,7 @@ public class IntygResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
         Utkast utkast = utkastRepository.findOne(id);
-        if (utkast != null) {
-            List<Arende> arenden = arendeRepository.findByIntygsId(utkast.getIntygsId());
-            if (arenden != null) {
-                arenden.stream().forEach(a -> arendeRepository.delete(a));
-            }
-            List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(utkast.getIntygsId());
-            if (fragaSvarList != null) {
-                fragaSvarList.stream().forEach(fs -> fragaSvarRepository.delete(fs));
-            }
-            utkastRepository.delete(utkast);
-        }
+        deleteDraftAndRelatedQAs(utkast);
         return Response.ok().build();
     }
 
@@ -217,7 +189,7 @@ public class IntygResource {
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);
         if (utkast != null) {
             for (Utkast u : utkast) {
-                utkastRepository.delete(u);
+                deleteDraftAndRelatedQAs(u);
             }
         }
         return Response.ok().build();
@@ -344,6 +316,20 @@ public class IntygResource {
     public Response sendDraft(@PathParam("id") String id) {
         updateUtkastForSend(id);
         return Response.ok().build();
+    }
+
+    private void deleteDraftAndRelatedQAs(Utkast utkast) {
+        if (utkast != null) {
+            List<Arende> arenden = arendeRepository.findByIntygsId(utkast.getIntygsId());
+            if (arenden != null) {
+                arenden.stream().forEach(a -> arendeRepository.delete(a));
+            }
+            List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(utkast.getIntygsId());
+            if (fragaSvarList != null) {
+                fragaSvarList.stream().forEach(fs -> fragaSvarRepository.delete(fs));
+            }
+            utkastRepository.delete(utkast);
+        }
     }
 
     private void updateStatus(String id, UtkastStatus status) {
