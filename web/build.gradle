@@ -161,6 +161,10 @@ dependencies {
         exclude(module: 'jsr311-api')
     }
 
+    compileOnly 'javax.servlet:servlet-api:2.5'
+    compileOnly 'com.google.auto.value:auto-value:1.1'
+    compileOnly 'org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1'
+
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
     testCompile 'javax.servlet:javax.servlet-api:3.1.0'
@@ -171,10 +175,6 @@ dependencies {
     testCompile 'org.antlr:ST4:4.0.8'
 
     testRuntime "com.h2database:h2:${h2Version}"
-
-    providedCompile 'javax.servlet:servlet-api:2.5'
-    providedCompile 'com.google.auto.value:auto-value:1.1'
-    providedCompile 'org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1'
 
     gretty "org.apache.activemq:activemq-client:${activeMqVersion}"
     gretty "org.apache.activemq:activemq-broker:${activeMqVersion}"

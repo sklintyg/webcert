@@ -67,24 +67,25 @@ subprojects {
         }
     }
 
-    if (project.hasProperty('codeQuality')) {
-        apply plugin: 'checkstyle'
+    apply plugin: 'checkstyle'
 
-        checkstyle {
-            config = resources.text.fromFile("${buildDir}/build-tools/checkstyle/checkstyle.xml")
-            ignoreFailures = false
-            showViolations = true
-        }
-
-        checkstyleMain.dependsOn unzipBuildTools
-        checkstyleMain.source = "src/main/java"
-        checkstyleTest.enabled = false
+    checkstyle {
+        config = resources.text.fromFile("${buildDir}/build-tools/checkstyle/checkstyle.xml")
+        ignoreFailures = false
+        showViolations = true
     }
 
+    checkstyleMain.onlyIf { project.hasProperty('codeQuality') }
+    checkstyleMain.dependsOn unzipBuildTools
+    checkstyleMain.source = "src/main/java"
+    checkstyleTest.enabled = false
+
     apply plugin: 'jacoco'
+
     jacoco {
         toolVersion = "0.7.6.201602180812"
     }
+
     test {
         jacoco {
             destinationFile = file("$buildDir/jacoco/test.exec")
