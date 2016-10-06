@@ -11,7 +11,7 @@ dependencies {
   compile "org.springframework:spring-tx:${springVersion}"
   compile "org.springframework:spring-orm:${springVersion}"
   compile "org.springframework.data:spring-data-jpa:1.9.0.RELEASE"
-  compile "org.liquibase:liquibase-core:3.3.1"
+  compile "org.liquibase:liquibase-core:${liquibaseVersion}"
   compile ('org.jadira.usertype:usertype.extended:5.0.0.GA') {
     exclude(module: 'hibernate-entitymanager')
   }

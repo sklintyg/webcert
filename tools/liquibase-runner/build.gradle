@@ -22,9 +22,13 @@ configurations.runtime {
     transitive = false
 }
 
+sonarqube {
+    skipProject = true
+}
+
 dependencies {
   runtime project(':webcert-persistence')
 
   runtime "mysql:mysql-connector-java:${mysqlVersion}"
-  runtime "org.liquibase:liquibase-core:3.3.5"
+  runtime "org.liquibase:liquibase-core:${liquibaseVersion}"
 }

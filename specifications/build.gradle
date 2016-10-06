@@ -21,6 +21,10 @@ fitnesse {
     ]
 }
 
+sonarqube {
+    skipProject = true
+}
+
 dependencies {
     def seleniumVersion = "2.52.0"
 
