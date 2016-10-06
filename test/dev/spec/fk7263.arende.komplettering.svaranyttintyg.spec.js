@@ -102,7 +102,7 @@ describe('arende on fk7263 intyg', function() {
             expect(Fk7263UtkastPage.relatedIntygList.isDisplayed()).toBeTruthy();
             expect(Fk7263UtkastPage.relatedIntygList.rows().count()).toBe(3);
             expect(Fk7263UtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
-            expect(Fk7263UtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Komplettering');
+            expect(Fk7263UtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Kompletterar');
             expect(Fk7263UtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast, kan signeras');
             expect(Fk7263UtkastPage.relatedIntygList.row(3).relation.getText()).toBe('');
             expect(Fk7263UtkastPage.relatedIntygList.row(3).status.getText()).toBe('Signerat');
