@@ -131,10 +131,10 @@ module.exports = function() {
     });
 
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
-        var answerWithIntygBtn = element(by.id('answerWithIntygBtn-' + global.intyg.messages[0].id));
-
-        return answerWithIntygBtn.sendKeys(protractor.Key.SPACE).then(function() {
-            return expect(element(by.cssContainingText('.btn', 'Svara med nytt intyg')).isDisplayed()).to.eventually.not.be.ok;
+        return fkIntygPage.svaraMedNyttIntyg(global.intyg.messages[0].id).then(function() {
+            browser.sleep(3000).then(function() {
+                return expect(element(by.cssContainingText('.btn', 'Svara med nytt intyg')).isPresent()).to.become(false);
+            });
         });
 
     });
