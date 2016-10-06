@@ -11,7 +11,7 @@ Detta test ska visa på att man kan kopiera ett signerat ts-diabetes-intyg från
 | sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
-| visa intyg | intyg-fit-5 |
+| visa intyg | intyg-fit-10 |
 | visa intyg sidan visas |
 
 !3 Kopiera intyget
