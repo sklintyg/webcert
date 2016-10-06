@@ -66,8 +66,8 @@ Scenario: Ska få varning vid svar med nytt intyg
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska inte kunna komplettera med nytt intyg från webcert
-   Och ska kompletteringsdialogen innehålla texten "Besvara kompletteringsbegäran"
-   
+   Och ska kompletteringsdialogen innehålla texten "Kopiera/förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
+
 @komplettering
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på en patient
