@@ -38,6 +38,7 @@ dependencies {
 
     compile "com.jayway.awaitility:awaitility:1.4.0"
 
+    fitnesse "com.jayway.awaitility:awaitility:1.4.0"
     fitnesse "se.inera.intyg.common:common-specifications:${commonVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-firefox-driver:${seleniumVersion}"
