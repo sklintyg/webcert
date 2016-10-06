@@ -196,8 +196,8 @@ module.exports = function(grunt) {
             //them for the browser in dev mode,
             'css': {
                 files: buildListForAllModules(function(module) {
-                    return __dirname + module.src + '/css/*.scss';
-                }).concat([__dirname + CSS_COMMON_SRC_DIR + '/*.scss']),
+                    return __dirname + module.src + '/**/*.scss';
+                }).concat([__dirname + CSS_COMMON_SRC_DIR + '/**/*.scss']),
                 tasks: ['sass:dev']
             },
             js: {
