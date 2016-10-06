@@ -61,6 +61,7 @@ module.exports = function(config) {
             'src/main/webapp/bower_components/api-check/dist/api-check.js',
             'src/main/webapp/bower_components/angular-formly/dist/formly.js',
             'src/main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
+            'src/main/webapp/bower_components/angular-ui-select/dist/select.js',
             'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
             'src/main/webapp/bower_components/momentjs/moment.js',
             // endbower
