@@ -82,11 +82,11 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        when(utkastService.getDraft(CERTIFICATE_ID, false)).thenReturn(buildUtkast(intygTyp, intygId));
+        when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, false)).thenReturn(buildUtkast(intygTyp, intygId));
         when(relationService.getRelations(eq(intygId))).thenReturn(Optional.empty());
 
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, false, request);
-        verify(utkastService).getDraft(CERTIFICATE_ID, false);
+        verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, false);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 

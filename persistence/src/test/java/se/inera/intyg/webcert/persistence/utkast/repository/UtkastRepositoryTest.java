@@ -23,6 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
@@ -221,4 +222,38 @@ public class UtkastRepositoryTest {
         assertTrue(res.isEmpty());
     }
 
+    @Test
+    public void testFindOneByIntygsIdAndIntygsTyp() {
+        final String intygsId = "intygsId";
+        final String intygsTyp = "intygsTyp";
+        Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
+        utkast.setIntygsId(intygsId);
+        utkast.setIntygsTyp(intygsTyp);
+        utkastRepository.save(utkast);
+
+        Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
+        assertNotNull(res);
+    }
+
+    @Test
+    public void testFindOneByIntygsIdAndIntygsTypNotFound() {
+        final String intygsId = "intygsId";
+        final String intygsTyp = "intygsTyp";
+
+        Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
+        assertNull(res);
+    }
+
+    @Test
+    public void testFindOneByIntygsIdAndIntygsTypInvalidIntygstyp() {
+        final String intygsId = "intygsId";
+        final String intygsTyp = "intygsTyp";
+        Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
+        utkast.setIntygsId(intygsId);
+        utkast.setIntygsTyp(intygsTyp);
+        utkastRepository.save(utkast);
+
+        Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, "anotherIntygsTyp");
+        assertNull(res);
+    }
 }

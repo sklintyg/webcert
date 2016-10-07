@@ -103,7 +103,7 @@ public class UtkastModuleApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
-        Utkast utkast = utkastService.getDraft(intygsId, coherentJournaling);
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, coherentJournaling);
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 

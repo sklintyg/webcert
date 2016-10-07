@@ -19,23 +19,28 @@
 
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.security.authorities.validation.AuthExpectationSpecImpl;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -55,9 +60,7 @@ import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -67,16 +70,7 @@ import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
-
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
 
 /**
  * @author andreaskaltenbach
@@ -428,14 +422,14 @@ public class IntygServiceImpl implements IntygService {
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
             // exception
-            Utkast utkast = utkastRepository.findOne(intygId);
+            Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
             return buildIntygContentHolder(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
-            Utkast utkast = utkastRepository.findOne(intygId);
+            Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
