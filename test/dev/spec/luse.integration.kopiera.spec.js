@@ -63,6 +63,7 @@ describe('Djupintegration on luse intyg', function() {
             enhet:'TSTNMT2321000156-1039'
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
+        expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
     });
 
     it('should copy intyg and view resulting utkast', function() {

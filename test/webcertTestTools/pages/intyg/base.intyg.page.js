@@ -72,6 +72,11 @@ var BaseIntyg = JClass._extend({
         this.arendeText = element(by.id('arendeNewModelText'));
         this.arendeAmne = element(by.id('new-question-topic'));
         this.arendeSend = element(by.id('sendArendeBtn'));
+
+        // Statusmeddelanden vid namn/adressändring vid djupintegration
+        this.statusNameChanged = element(by.id('intyg-djupintegration-name-changed'));
+        this.statusAddressChanged = element(by.id('intyg-djupintegration-address-changed'));
+        this.statusNameAndAddressChanged = element(by.id('intyg-djupintegration-name-and-address-changed'));
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
