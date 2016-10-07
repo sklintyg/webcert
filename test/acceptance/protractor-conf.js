@@ -28,7 +28,7 @@ exports.config = {
     baseUrl: process.env.WEBCERT_URL,
     allScriptsTimeout: 50000,
     getPageTimeout: 20000,
-    seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
+    //seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
 
     // path relative to the current config file

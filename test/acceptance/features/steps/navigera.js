@@ -59,13 +59,14 @@ module.exports = function() {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
             }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
-            url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
+            url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
 
         } else if (intygstyp === 'intyget' && origin === undefined) {
             if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
             } else {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+
             }
         } else {
             logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
