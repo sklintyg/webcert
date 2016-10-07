@@ -108,6 +108,10 @@ var TsBasUtkast = BaseTsUtkast._extend({
             aYes: element(by.id('kognitivtay')),
             aNo: element(by.id('kognitivtan'))
         };
+        this.somnOchVakenhetsStorningar = {
+            JA: element(by.id('somnvakenheta')),
+            NEJ: element(by.id('somnvakenhetb'))
+        };
     },
     fillInSynfunktioner: function(utkast) {
         var promiseArr = [];
@@ -293,13 +297,11 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return Promise.all(promiseArr);
     },
     fillInSomnOchVakenhet: function(utkast) {
-        return element.all(by.css('[name="somnvakenheta"]')).then(function(elm) {
-            if (utkast.somnVakenhet === 'Ja') {
-                return elm[0].sendKeys(protractor.Key.SPACE);
-            } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
-            }
-        });
+        if (utkast.somnVakenhet === 'Ja') {
+            return this.somnOchVakenhetsStorningar.JA.sendKeys(protractor.Key.SPACE);
+        } else {
+            return this.somnOchVakenhetsStorningar.NEJ.sendKeys(protractor.Key.SPACE);
+        }
     },
     fillInAlkoholNarkotikaLakemedel: function(utkast) {
         var promiseArr = [];
