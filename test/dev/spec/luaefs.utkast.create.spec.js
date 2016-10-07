@@ -118,11 +118,6 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
                 }]
             };
             UtkastPage.angeDiagnos(diagnosObj);
-
-            expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3);
-
-            UtkastPage.taBortDiagnos(1);
-            expect(UtkastPage.getNumberOfDiagnosRows()).toBe(2);
         });
 
         it('Ange funktionsnedsättningar', function() {
