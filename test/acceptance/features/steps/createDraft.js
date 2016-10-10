@@ -62,7 +62,7 @@ function sendCreateDraft(url, body, callback) {
 
 
 module.exports = function() {
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)" (med samordningsnummer)$/, function(intygstyp, samordningsnummer, callback) {
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"( med samordningsnummer)?$/, function(intygstyp, samordningsnummer, callback) {
         global.intyg.typ = intygstyp;
         global.person.id = testdataHelpers.shuffle(testvalues.patienter)[0];
         if (samordningsnummer) {
