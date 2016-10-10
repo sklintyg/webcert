@@ -191,12 +191,12 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private String mailBodyForFraga(MailNotificationEnhet unit, MailNotification mailNotification) {
         return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg."
-                + "<br><a href=\"" + intygsUrl(mailNotification) + "\">Läs och besvara frågan i Webcert</a></p>";
+                + "<br><a href=\"" + intygsUrl(mailNotification) + "\">Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
     private String mailBodyForSvar(MailNotificationEnhet unit, MailNotification mailNotification) {
         return "<p>Det har kommit ett svar från Försäkringskassan på en fråga som " + unit.getName() + " har ställt"
-                + ".<br><a href=\"" + intygsUrl(mailNotification) + "\">Läs svaret i Webcert</a></p>";
+                + ".<br><a href=\"" + intygsUrl(mailNotification) + "\">Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
@@ -229,6 +229,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         body.append("<a href=\"").append(intygsUrl(mailNotification)).append("\">Länk till frågan</a>");
 
         body.append("</p>");
+        body.append("<p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>");
         message.setContent(body.toString(), "text/html; charset=utf-8");
 
         mailSender.send(message);
