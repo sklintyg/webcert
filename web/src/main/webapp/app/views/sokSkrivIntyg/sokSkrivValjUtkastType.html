@@ -21,7 +21,7 @@
                 <div class="form-group">
                   <span
                       id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span><br />
-                  {{patientModel.personnummer}}
+                  {{patientModel.personnummer | PersonIdFormatter}}
                 </div>
 
                 <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
