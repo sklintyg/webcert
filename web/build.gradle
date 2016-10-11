@@ -5,11 +5,11 @@ apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.moowork.grunt'
 apply plugin: 'com.moowork.node'
 
-def webappOutputDir = 'build/apps/';
-def webappTestOutputDir = 'build/karma/';
+def webappOutputDir = 'build/apps/'
+def webappTestOutputDir = 'build/karma/'
 
 grunt {
-    colors = true
+    colors = System.properties['gruntColors'] ?: true
 }
 
 node {
