@@ -31,7 +31,6 @@ class SkrivSigneraSkickaIntyg extends Simulation {
           .post("/api/utkast/fk7263")
           .headers(Headers.json)
           .body(StringBody("""{"intygType":"fk7263","patientPersonnummer":"${personNr}","patientFornamn":"test","patientEfternamn":"test"}"""))
-          //.check(bodyString.saveAs("intyg"))
           .check(jsonPath("$.intygsId").saveAs("intyg")))
         .pause(100 milliseconds)
         .exec(http("Get draft certificate")
@@ -47,7 +46,6 @@ class SkrivSigneraSkickaIntyg extends Simulation {
           .post("/moduleapi/diagnos/kod/sok")
           .body(StringBody("""{"codeSystem":"ICD_10_SE","codeFragment":"A00","nbrOfResults":10}"""))
           .headers(Headers.json))
-        // TODO FMB lookup?
         .pause(1 seconds)
         .exec(http("Lookup FMB")
           .get("/api/fmb/J22?cacheSlayer=" + System.currentTimeMillis())

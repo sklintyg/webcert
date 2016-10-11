@@ -27,7 +27,6 @@ class Arende extends Simulation {
         .exec(http("Inject Arende")
           .post("/testability/arendetest")
           .headers(Headers.json)
-          // "hsaId": "IFV1239877878-104B", "enhetId": "IFV1239877878-1042"
           .body(StringBody("""
             {"id": 0,
             "timestamp": "2016-10-06T07:25:17.989Z",
