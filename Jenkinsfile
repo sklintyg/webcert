@@ -5,53 +5,53 @@ def javaEnv() {
     ["PATH=${env.PATH}:${javaHome}/bin", "JAVA_HOME=${javaHome}"]
 }
 
-stage('checkout') {
-    node {
-        try {
-            checkout scm
-        } catch (e) {
-            currentBuild.result = "FAILED"
-            notifyFailed()
-            throw e
-        }
-    }
-}
+// stage('checkout') {
+//     node {
+//         try {
+//             checkout scm
+//         } catch (e) {
+//             currentBuild.result = "FAILED"
+//             notifyFailed()
+//             throw e
+//         }
+//     }
+// }
 
-stage('build') {
-    node {
-        try {
-            withEnv(javaEnv()) {
-                sh './gradlew --refresh-dependencies clean build sonarqube -PcodeQuality -DgruntColors=false'
-            }
-        } catch (e) {
-            currentBuild.result = "FAILED"
-            notifyFailed()
-            throw e
-        }
-    }
-}
+// stage('build') {
+//     node {
+//         try {
+//             withEnv(javaEnv()) {
+//                 sh './gradlew --refresh-dependencies clean build sonarqube -PcodeQuality -DgruntColors=false'
+//             }
+//         } catch (e) {
+//             currentBuild.result = "FAILED"
+//             notifyFailed()
+//             throw e
+//         }
+//     }
+// }
 
-stage('deploy') {
-    node {
-        try {
-            ansiblePlaybook extraVars: [version: "5.0.$BUILD_NUMBER", ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                installation: 'ansible-yum', \
-                inventory: 'ansible/hosts_test', \
-                playbook: 'ansible/deploy.yml', \
-                sudoUser: null
-        } catch (e) {
-            currentBuild.result = "FAILED"
-            notifyFailed()
-            throw e
-        }
-    }
-}
+// stage('deploy') {
+//     node {
+//         try {
+//             ansiblePlaybook extraVars: [version: "5.0.$BUILD_NUMBER", ansible_ssh_port: "22", deploy_from_repo: "false"], \
+//                 installation: 'ansible-yum', \
+//                 inventory: 'ansible/hosts_test', \
+//                 playbook: 'ansible/deploy.yml', \
+//                 sudoUser: null
+//         } catch (e) {
+//             currentBuild.result = "FAILED"
+//             notifyFailed()
+//             throw e
+//         }
+//     }
+// }
 
 stage('integration tests') {
     node {
         try {
             withEnv(javaEnv()) {
-                sh './gradlew restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ --stacktrace'
+                sh './gradlew restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/web --stacktrace'
             }
 
             wrap([$class: 'Xvfb']) {
