@@ -34,7 +34,7 @@ stage('build') {
 stage('deploy') {
     node {
         try {
-            ansiblePlaybook extraVars: [version: "3.0.$BUILD_NUMBER", ansible_ssh_port: "22", deploy_from_repo: "false"], \
+            ansiblePlaybook extraVars: [version: "5.0.$BUILD_NUMBER", ansible_ssh_port: "22", deploy_from_repo: "false"], \
                 installation: 'ansible-yum', \
                 inventory: 'ansible/hosts_test', \
                 playbook: 'ansible/deploy.yml', \
