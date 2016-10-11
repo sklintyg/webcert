@@ -77,10 +77,11 @@ stage('tag and upload') {
                     -DgithubUser=$GITHUB_USERNAME -DgithubPassword=$GITHUB_PASSWORD'
             }
         }
-    } catch (e) {
-        currentBuild.result = "FAILED"
-        notifyFailed()
-        throw e
+        catch (e) {
+            currentBuild.result = "FAILED"
+            notifyFailed()
+            throw e
+        }
     }
 }
 
